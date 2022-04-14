@@ -49,5 +49,12 @@ public interface Button {
 	 */
 	public boolean isPermament();
 	
+	/**
+	 * Allows to change the type of a button
+	 * 
+	 * @param classz
+	 * @return T
+	 */
+	public <T extends Button> T toButton(Class<T> classz);
 	
 }
