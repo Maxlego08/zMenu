@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.buttons;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public interface Button {
@@ -56,5 +58,32 @@ public interface Button {
 	 * @return T
 	 */
 	public <T extends Button> T toButton(Class<T> classz);
+	
+	/**
+	 * This method is called when the player makes a right click
+	 * 
+	 * @param player Player who will perform the click
+	 * @param event Event that will be called
+	 * @param inventory Inventory where the button comes from
+	 */
+	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory);
+	
+	/**
+	 * This method is called when the player makes a left click
+	 * 
+	 * @param player Player who will perform the click
+	 * @param event Event that will be called
+	 * @param inventory Inventory where the button comes from
+	 */
+	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory);
+	
+	/**
+	 * This method is called when the player makes a middle click or a drop key click
+	 * 
+	 * @param player Player who will perform the click
+	 * @param event Event that will be called
+	 * @param inventory Inventory where the button comes from
+	 */
+	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory);
 	
 }
