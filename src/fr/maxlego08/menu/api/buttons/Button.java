@@ -28,6 +28,13 @@ public interface Button {
 	public ItemStack getCustomItemStack(Player player);
 	
 	/**
+	 * Returns the slot used by the button
+	 * 
+	 * @return slot
+	 */
+	public int getSlot();
+	
+	/**
 	 * Allows to know if the button can be clicked
 	 * 
 	 * @return boolean
