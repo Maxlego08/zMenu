@@ -3,7 +3,7 @@ package fr.maxlego08.menu.api;
 import java.util.Collection;
 import java.util.List;
 
-import fr.maxlego08.menu.api.buttons.Button;
+import fr.maxlego08.menu.api.button.Button;
 
 public interface Inventory {
 

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.buttons;
+package fr.maxlego08.menu.api.button;
 
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.buttons;
+package fr.maxlego08.menu.api.button;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

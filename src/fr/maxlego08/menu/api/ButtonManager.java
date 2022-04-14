@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.bukkit.plugin.Plugin;
 
-import fr.maxlego08.menu.api.buttons.Button;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 
 public interface ButtonManager {

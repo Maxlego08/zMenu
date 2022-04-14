@@ -1,10 +1,10 @@
-package fr.maxlego08.menu.buttons;
+package fr.maxlego08.menu.button;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.menu.api.buttons.Button;
-import fr.maxlego08.menu.api.buttons.PlaceholderButton;
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 
 public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton {

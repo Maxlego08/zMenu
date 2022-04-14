@@ -1,9 +1,9 @@
-package fr.maxlego08.menu.buttons;
+package fr.maxlego08.menu.button;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.menu.api.buttons.Button;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public abstract class ZButton extends ZUtils implements Button {
