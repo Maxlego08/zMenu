@@ -188,14 +188,14 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	/**
 	 * @return the args
 	 */
-	public Object[] getObjets() {
+	public Object[] getArgs() {
 		return args;
 	}
 
 	/**
 	 * @return the inventory
 	 */
-	public Inventory getInventory() {
+	public Inventory getSpigotInventory() {
 		return inventory;
 	}
 

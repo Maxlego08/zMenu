@@ -103,13 +103,34 @@ public class InventoryDefault extends VInventory {
 		int slot = button.getRealSlot(this.inventory.size(), this.page);
 		ItemStack itemStack = button.getCustomItemStack(this.player);
 		ItemButton itemButton = this.addItem(slot, itemStack);
-		if (button.isClickable()){
-			itemButton.setClick(event -> button.onClick(this.player, event, this.inventory, slot, button));
-			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this.inventory, slot, button));
-			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this.inventory, slot, button));
-			itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this.inventory, slot, button));
+		if (button.isClickable()) {
+			itemButton.setClick(event -> button.onClick(this.player, event, this, slot, button));
+			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot, button));
+			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot, button));
+			itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot, button));
 		}
-		
+
+	}
+
+	/**
+	 * @return the inventory
+	 */
+	public Inventory getInventory() {
+		return inventory;
+	}
+
+	/**
+	 * @return the oldInventories
+	 */
+	public List<Inventory> getOldInventories() {
+		return oldInventories;
+	}
+
+	/**
+	 * @return the maxPage
+	 */
+	public int getMaxPage() {
+		return maxPage;
 	}
 
 }

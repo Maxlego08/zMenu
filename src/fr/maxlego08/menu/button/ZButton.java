@@ -4,8 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public abstract class ZButton extends ZUtils implements Button {
@@ -60,19 +60,19 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
-	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
+	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
 	}
 
 	@Override
-	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
+	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
 	}
 
 	@Override
-	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
+	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
 	}
 
 	@Override
-	public void onClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
+	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
 	}
 
 	/**

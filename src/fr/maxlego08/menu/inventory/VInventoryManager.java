@@ -111,7 +111,7 @@ public class VInventoryManager extends ListenerAdapter {
 		try {
 			InventoryResult result = clonedInventory.preOpenInventory(plugin, player, page, objects);
 			if (result.equals(InventoryResult.SUCCESS)) {
-				player.openInventory(clonedInventory.getInventory());
+				player.openInventory(clonedInventory.getSpigotInventory());
 				this.playerInventories.put(player.getUniqueId(), clonedInventory);
 			} else if (result.equals(InventoryResult.ERROR)) {
 				message(player, Message.INVENTORY_OPEN_ERROR, "%id%", id);
@@ -123,7 +123,7 @@ public class VInventoryManager extends ListenerAdapter {
 	}
 
 	public void createInventory(VInventory parent, Player player) {
-		createInventory(parent.getId(), player, parent.getPage(), parent.getObjets());
+		createInventory(parent.getId(), player, parent.getPage(), parent.getArgs());
 	}
 
 	@Override

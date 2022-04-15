@@ -48,6 +48,8 @@ public enum Message {
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
 	
+	INVENTORY_NOT_FOUND("§cImpossible de trouver l'inventaire §f%toName% §cdans l'inventaire §f%name%§c."),
+	
 	
 	;
 
