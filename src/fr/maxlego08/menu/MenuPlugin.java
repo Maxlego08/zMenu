@@ -3,11 +3,14 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.CommandManager;
+import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.inventory.VInventoryManager;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.zcore.ZPlugin;
+import fr.maxlego08.menu.zcore.enums.EnumInventory;
 
 /**
  * System to create your plugins very simply Projet:
@@ -29,6 +32,9 @@ public class MenuPlugin extends ZPlugin {
 
 		this.commandManager = new CommandManager(this);
 		this.vinventoryManager = new VInventoryManager(this);
+
+		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
+		this.registerCommand("zmenu", new CommandMenu(this), "zm");
 
 		/* Add Listener */
 		this.addListener(new AdapterListener(this));

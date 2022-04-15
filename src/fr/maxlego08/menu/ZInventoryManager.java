@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.ButtonManager;
@@ -17,6 +18,7 @@ import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.SlotLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 
@@ -42,8 +44,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	public void load(Persist persist) {
 
 		// Loading ButtonLoader
-		// The first step will be to load the buttons in the plugin, so each inventory will have the same list of buttons
-		
+		// The first step will be to load the buttons in the plugin, so each
+		// inventory will have the same list of buttons
+
 		ButtonManager buttonManager = this.plugin.getButtonManager();
 		buttonManager.register(new NoneLoader(this.plugin));
 		buttonManager.register(new SlotLoader(this.plugin));
@@ -95,6 +98,21 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	@Override
 	public void deleteInventories(Plugin plugin) {
 		this.inventories.remove(plugin.getName());
+	}
+
+	@Override
+	public void openInventory(Player player, Inventory inventory) {
+		this.openInventory(player, inventory, 1, new ArrayList<>());
+	}
+
+	@Override
+	public void openInventory(Player player, Inventory inventory, int page) {
+		this.openInventory(player, inventory, page, new ArrayList<>());
+	}
+
+	@Override
+	public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
+		this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
 	}
 
 }

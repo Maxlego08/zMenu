@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.plugin.Plugin;
@@ -68,8 +69,12 @@ public class ZInventory implements Inventory {
 
 	@Override
 	public int getMaxPage(Object... objects) {
-		int maxSlot = this.buttons.stream().map(Button::getSlot).max(Integer::compare).get();
-		return (maxSlot / this.size) + 1;
+		Optional<Integer> optional = this.buttons.stream().map(Button::getSlot).max(Integer::compare);
+		if (optional.isPresent()) {
+			int maxSlot = optional.get();
+			return (maxSlot / this.size) + 1;
+		}
+		return 1;
 	}
 
 	@Override
