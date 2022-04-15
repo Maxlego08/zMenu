@@ -59,10 +59,6 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	protected void postEnable() {
 
-		if (this.vinventoryManager != null) {
-			this.vinventoryManager.sendLog();
-		}
-
 		if (this.commandManager != null) {
 			this.commandManager.validCommands();
 		}

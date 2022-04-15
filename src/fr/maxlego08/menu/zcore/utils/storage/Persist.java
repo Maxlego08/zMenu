@@ -92,7 +92,7 @@ public class Persist extends ZUtils {
 			return def;
 		} else {
 
-			p.getLog().log(file.getAbsolutePath() + " loaded successfully !", LogType.SUCCESS);
+			p.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
 
 		}
 

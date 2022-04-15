@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,13 +21,14 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
-import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.SlotLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
+import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
@@ -59,31 +59,31 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		// inventory will have the same list of buttons
 
 		ButtonManager buttonManager = this.plugin.getButtonManager();
+
 		buttonManager.register(new NoneLoader(this.plugin));
 		buttonManager.register(new SlotLoader(this.plugin));
-		ButtonLoader inventoryLoader = new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin,
-				this.plugin.getInventoryManager());
-		buttonManager.register(inventoryLoader);
+		buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));
+		buttonManager.register(new BackLoader(this.plugin, this));
 
 		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
 		event.callEvent();
 
+		// Check if file exist
 		File folder = new File(this.plugin.getDataFolder(), "inventories");
 		if (!folder.exists()) {
 			folder.mkdir();
 		}
 
+		// Load inventories
 		try {
-			List<Inventory> inventories = Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile)
-					.filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).map(file -> {
+			Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
+					.filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
 						try {
-							return this.loadInventory(this.plugin, file);
+							this.loadInventory(this.plugin, file);
 						} catch (InventoryException e1) {
 							e1.printStackTrace();
 						}
-						return null;
-					}).filter(Objects::nonNull).collect(Collectors.toList());
-			this.inventories.put(this.plugin.getName(), inventories);
+					});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -106,7 +106,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 		Loader<Inventory> loader = new InventoryLoader(this.plugin);
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-		return loader.load(configuration, "", file);
+		Inventory inventory = loader.load(configuration, "", file);
+
+		List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+		inventories.add(inventory);
+		this.inventories.put(plugin.getName(), inventories);
+
+		this.plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.INFO);
+
+		return inventory;
 	}
 
 	@Override

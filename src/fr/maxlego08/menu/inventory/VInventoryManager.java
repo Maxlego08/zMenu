@@ -21,7 +21,6 @@ import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 
@@ -37,10 +36,6 @@ public class VInventoryManager extends ListenerAdapter {
 	public VInventoryManager(MenuPlugin plugin) {
 		super();
 		this.plugin = plugin;
-	}
-
-	public void sendLog() {
-		plugin.getLog().log("Loading " + this.inventories.size() + " inventories", LogType.SUCCESS);
 	}
 
 	/**
