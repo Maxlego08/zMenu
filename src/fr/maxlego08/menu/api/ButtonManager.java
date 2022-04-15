@@ -16,7 +16,7 @@ public interface ButtonManager {
 	 * @param plugin
 	 * @param button
 	 */
-	public void register(Plugin plugin, ButtonLoader button);
+	public void register(ButtonLoader button);
 	
 	/**
 	 * Allows you to delete a ButtonLoader
@@ -54,5 +54,13 @@ public interface ButtonManager {
 	 * @return optional
 	 */
 	public Optional<ButtonLoader> getLoader(Class<? extends Button> classz);
+	
+	/**
+	 * Returns a ButtonLoader based on a button name
+	 * 
+	 * @param name
+	 * @return optional
+	 */
+	public Optional<ButtonLoader> getLoader(String name);
 	
 }

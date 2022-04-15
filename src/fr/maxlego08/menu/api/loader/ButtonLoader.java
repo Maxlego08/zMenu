@@ -17,6 +17,13 @@ public interface ButtonLoader {
 	public Class<? extends Button> getButton();
 
 	/**
+	 * Returns the name of the button
+	 * 
+	 * @return name
+	 */
+	public String getName();
+	
+	/**
 	 * Return the plugin where the loader button comes from
 	 * 
 	 * @return plugin

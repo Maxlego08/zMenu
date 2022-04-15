@@ -13,6 +13,9 @@ import org.bukkit.plugin.Plugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.button.loader.NoneLoader;
+import fr.maxlego08.menu.button.loader.SlotLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
@@ -39,10 +42,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	public void load(Persist persist) {
 
 		// Loading ButtonLoader
-		
+
 		ButtonManager buttonManager = this.plugin.getButtonManager();
-		
-		
+		buttonManager.register(new NoneLoader(this.plugin));
+		buttonManager.register(new SlotLoader(this.plugin));
+
+		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
+		event.callEvent();
+
 	}
 
 	@Override

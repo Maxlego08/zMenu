@@ -21,7 +21,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 	private final Map<String, List<ButtonLoader>> loaders = new HashMap<String, List<ButtonLoader>>();
 
 	@Override
-	public void register(Plugin plugin, ButtonLoader button) {
+	public void register(ButtonLoader button) {
 
 		Optional<ButtonLoader> optional = this.getLoader(button.getButton());
 		if (optional.isPresent()) {
@@ -30,6 +30,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 					+ " was already register in the " + loader.getPlugin().getName());
 		}
 
+		Plugin plugin = button.getPlugin();
 		List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(plugin.getName(), new ArrayList<ButtonLoader>());
 		buttonLoaders.add(button);
 		this.loaders.put(plugin.getName(), buttonLoaders);
@@ -61,6 +62,11 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 	@Override
 	public Optional<ButtonLoader> getLoader(Class<? extends Button> classz) {
 		return this.getLoaders().stream().filter(e -> e.getClass().isAssignableFrom(classz)).findFirst();
+	}
+
+	@Override
+	public Optional<ButtonLoader> getLoader(String name) {
+		return this.getLoaders().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
 	}
 
 }
