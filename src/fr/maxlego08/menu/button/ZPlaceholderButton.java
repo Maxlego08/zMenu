@@ -48,6 +48,11 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 	}
 
 	@Override
+	public boolean hasPermission() {
+		return super.hasPermission() || this.hasPlaceHolder();
+	}
+	
+	@Override
 	public String getValue() {
 		return this.value;
 	}

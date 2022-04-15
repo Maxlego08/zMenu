@@ -61,6 +61,15 @@ public interface Button {
 	public <T extends Button> T toButton(Class<T> classz);
 	
 	/**
+	 * This method is called when the player makes a click
+	 * 
+	 * @param player Player who will perform the click
+	 * @param event Event that will be called
+	 * @param inventory Inventory where the button comes from
+	 */
+	public void onClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button);
+	
+	/**
 	 * This method is called when the player makes a right click
 	 * 
 	 * @param player Player who will perform the click
@@ -86,5 +95,14 @@ public interface Button {
 	 * @param inventory Inventory where the button comes from
 	 */
 	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button);
+
+	/**
+	 * Allows to get the real slot of the button
+	 * 
+	 * @param inventorySize
+	 * @param page
+	 * @return slot
+	 */
+	public int getRealSlot(int inventorySize, int page);
 	
 }

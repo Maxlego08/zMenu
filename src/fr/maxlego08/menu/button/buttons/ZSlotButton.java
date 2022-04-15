@@ -3,11 +3,8 @@ package fr.maxlego08.menu.button.buttons;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.SlotButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
@@ -43,21 +40,6 @@ public class ZSlotButton extends ZPlaceholderButton implements SlotButton {
 	@Override
 	public boolean isClickable() {
 		return false;
-	}
-
-	@Override
-	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory,
-			int slot, Button button) {
-	}
-
-	@Override
-	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory,
-			int slot, Button button) {
-	}
-
-	@Override
-	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory,
-			int slot, Button button) {
 	}
 
 }

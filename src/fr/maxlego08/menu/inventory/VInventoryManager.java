@@ -112,7 +112,7 @@ public class VInventoryManager extends ListenerAdapter {
 			InventoryResult result = clonedInventory.preOpenInventory(plugin, player, page, objects);
 			if (result.equals(InventoryResult.SUCCESS)) {
 				player.openInventory(clonedInventory.getInventory());
-				playerInventories.put(player.getUniqueId(), clonedInventory);
+				this.playerInventories.put(player.getUniqueId(), clonedInventory);
 			} else if (result.equals(InventoryResult.ERROR)) {
 				message(player, Message.INVENTORY_OPEN_ERROR, "%id%", id);
 			}

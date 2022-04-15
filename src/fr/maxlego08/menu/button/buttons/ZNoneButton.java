@@ -1,10 +1,7 @@
 package fr.maxlego08.menu.button.buttons;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.button.ZPlaceholderButton;
@@ -19,18 +16,6 @@ public class ZNoneButton extends ZPlaceholderButton {
 	@Override
 	public boolean isClickable() {
 		return false;
-	}
-
-	@Override
-	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
-	}
-
-	@Override
-	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
-	}
-
-	@Override
-	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
 	}
 
 }

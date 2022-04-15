@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.PlaceholderButton;
 
 public interface Inventory {
 
@@ -60,5 +61,14 @@ public interface Inventory {
 	 * @return page
 	 */
 	public int getMaxPage(Object... objects);
+
+	/**
+	 * Allows you to sort the buttons according to a page
+	 * 
+	 * @param page
+	 * @param objects
+	 * @return buttons
+	 */
+	public List<PlaceholderButton> sortButtons(int page, Object... objects);
 
 }

@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.PlaceholderButton;
 
 public class ZInventory implements Inventory {
 
@@ -17,7 +18,7 @@ public class ZInventory implements Inventory {
 	private final String fileName;
 	private final int size;
 	private final List<Button> buttons;
-	
+
 	/**
 	 * @param plugin
 	 * @param name
@@ -67,7 +68,16 @@ public class ZInventory implements Inventory {
 
 	@Override
 	public int getMaxPage(Object... objects) {
-		return 1;
+		int maxSlot = this.buttons.stream().map(Button::getSlot).max(Integer::compare).get();
+		return (maxSlot / this.size) + 1;
+	}
+
+	@Override
+	public List<PlaceholderButton> sortButtons(int page, Object... objects) {
+		return this.buttons.stream().filter(button -> {
+			int slot = button.getRealSlot(this.size, page);
+			return (slot >= 0 && slot < this.size) || button.isPermament();
+		}).map(button -> button.toButton(PlaceholderButton.class)).collect(Collectors.toList());
 	}
 
 }
