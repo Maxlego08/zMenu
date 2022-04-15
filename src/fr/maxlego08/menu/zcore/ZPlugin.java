@@ -19,8 +19,8 @@ import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.exceptions.ListenerNullException;
-import fr.maxlego08.menu.inventory.InventoryManager;
 import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -42,7 +42,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	private long enableTime;
 
 	protected CommandManager commandManager;
-	protected InventoryManager inventoryManager;
+	protected VInventoryManager vinventoryManager;
 
 	protected void preEnable() {
 
@@ -59,11 +59,13 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	protected void postEnable() {
 
-		if (this.inventoryManager != null)
-			this.inventoryManager.sendLog();
+		if (this.vinventoryManager != null) {
+			this.vinventoryManager.sendLog();
+		}
 
-		if (this.commandManager != null)
+		if (this.commandManager != null) {
 			this.commandManager.validCommands();
+		}
 
 		this.log.log(
 				"=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
@@ -176,21 +178,21 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @return listenerAdapters
 	 */
 	public List<ListenerAdapter> getListenerAdapters() {
-		return listenerAdapters;
+		return this.listenerAdapters;
 	}
 
 	/**
 	 * @return the commandManager
 	 */
 	public CommandManager getCommandManager() {
-		return commandManager;
+		return this.commandManager;
 	}
 
 	/**
 	 * @return the inventoryManager
 	 */
-	public InventoryManager getInventoryManager() {
-		return inventoryManager;
+	public VInventoryManager getVInventoryManager() {
+		return this.vinventoryManager;
 	}
 
 	/**
@@ -222,7 +224,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param aliases
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-		commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
+		this.commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
 	}
 
 	/**
@@ -232,7 +234,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param vInventory
 	 */
 	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
-		inventoryManager.registerInventory(inventory, vInventory);
+		this.vinventoryManager.registerInventory(inventory, vInventory);
 	}
 
 }

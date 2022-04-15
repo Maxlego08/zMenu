@@ -11,7 +11,7 @@ import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 
 public enum Message {
 
-	PREFIX("§8(§6Template§8) "),
+	PREFIX("§8(§6zMenu§8) "),
 	
 	TELEPORT_MOVE("§cYou must not move!"),
 	TELEPORT_MESSAGE("§7Teleportation in §3%second% §7seconds!"),

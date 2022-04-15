@@ -42,7 +42,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	public void load(Persist persist) {
 
 		// Loading ButtonLoader
-
+		// The first step will be to load the buttons in the plugin, so each inventory will have the same list of buttons
+		
 		ButtonManager buttonManager = this.plugin.getButtonManager();
 		buttonManager.register(new NoneLoader(this.plugin));
 		buttonManager.register(new SlotLoader(this.plugin));

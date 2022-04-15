@@ -25,7 +25,7 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 
-public class InventoryManager extends ListenerAdapter {
+public class VInventoryManager extends ListenerAdapter {
 
 	private final Map<Integer, VInventory> inventories = new HashMap<>();
 	private final Map<UUID, VInventory> playerInventories = new HashMap<>();
@@ -34,7 +34,7 @@ public class InventoryManager extends ListenerAdapter {
 	/**
 	 * @param plugin
 	 */
-	public InventoryManager(MenuPlugin plugin) {
+	public VInventoryManager(MenuPlugin plugin) {
 		super();
 		this.plugin = plugin;
 	}

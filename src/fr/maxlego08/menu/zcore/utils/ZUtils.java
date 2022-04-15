@@ -495,7 +495,7 @@ public abstract class ZUtils extends MessageUtils {
 	 */
 	protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page,
 			Object... objects) {
-		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
+		plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
 	}
 
 	/**
@@ -506,7 +506,7 @@ public abstract class ZUtils extends MessageUtils {
 	 * @param objects
 	 */
 	protected void createInventory(MenuPlugin plugin, Player player, int inventory, int page, Object... objects) {
-		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
+		plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
 	}
 
 	/**
