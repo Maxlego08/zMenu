@@ -8,7 +8,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
 import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -35,7 +34,7 @@ public class ZInventoryButton extends ZPlaceholderButton implements InventoryBut
 	}
 
 	@Override
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
+	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 		
 		Inventory fromInventory = inventory.getInventory();
 		List<Inventory> oldInventories = inventory.getOldInventories();

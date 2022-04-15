@@ -67,7 +67,7 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventoryDefault Inventory where the button comes from
 	 */
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button);
+	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 	
 	/**
 	 * This method is called when the player makes a right click
@@ -76,7 +76,7 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventory Inventory where the button comes from
 	 */
-	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button);
+	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 	
 	/**
 	 * This method is called when the player makes a left click
@@ -85,7 +85,7 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventory Inventory where the button comes from
 	 */
-	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button);
+	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 	
 	/**
 	 * This method is called when the player makes a middle click or a drop key click
@@ -94,8 +94,16 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventory Inventory where the button comes from
 	 */
-	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button);
+	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
+	/**
+	 * This method is called when the player open the inventory
+	 * 
+	 * @param player
+	 * @param inventory
+	 */
+	public void onInventoryOpen(Player player, InventoryDefault inventory);
+	
 	/**
 	 * Allows to get the real slot of the button
 	 * 

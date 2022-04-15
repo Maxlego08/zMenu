@@ -33,6 +33,8 @@ public class InventoryDefault extends VInventory {
 		super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
 
 		List<PlaceholderButton> buttons = this.inventory.sortButtons(page, args);
+		buttons.forEach(button -> button.onInventoryOpen(player, this));
+
 		buttons.forEach(this::buildButton);
 
 		return InventoryResult.SUCCESS;
@@ -104,10 +106,10 @@ public class InventoryDefault extends VInventory {
 		ItemStack itemStack = button.getCustomItemStack(this.player);
 		ItemButton itemButton = this.addItem(slot, itemStack);
 		if (button.isClickable()) {
-			itemButton.setClick(event -> button.onClick(this.player, event, this, slot, button));
-			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot, button));
-			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot, button));
-			itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot, button));
+			itemButton.setClick(event -> button.onClick(this.player, event, this, slot));
+			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
+			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
+			itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
 		}
 
 	}

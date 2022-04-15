@@ -60,19 +60,24 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
-	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
+	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 	}
 
 	@Override
-	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
+	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 	}
 
 	@Override
-	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
+	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 	}
 
 	@Override
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
+	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+	}
+	
+	@Override
+	public void onInventoryOpen(Player player, InventoryDefault inventory) {
+		
 	}
 
 	/**

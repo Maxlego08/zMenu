@@ -7,7 +7,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.BackButton;
 import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -26,23 +25,24 @@ public class ZBackButton extends ZPlaceholderButton implements BackButton {
 		this.inventoryManager = inventoryManager;
 	}
 
-
 	@Override
-	public void setBackInventory(Inventory inventory) {
-		this.inventory = inventory;
-	}
+	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 
-	@Override
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Button button) {
-
-		Inventory fromInventory = inventory.getInventory();
 		List<Inventory> oldInventories = inventory.getOldInventories();
-		System.out.println("A > " + oldInventories);
-		oldInventories.remove(fromInventory);
-		System.out.println("B > " + oldInventories);
+		oldInventories.remove(this.inventory);
 
 		Inventory toInventory = this.inventory;
 		this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
+	}
+
+	@Override
+	public void onInventoryOpen(Player player, InventoryDefault inventory) {
+
+		List<Inventory> oldInventories = inventory.getOldInventories();
+		if (oldInventories.size() >= 1) {
+			this.inventory = oldInventories.get(oldInventories.size() - 1);
+		}
+
 	}
 
 }
