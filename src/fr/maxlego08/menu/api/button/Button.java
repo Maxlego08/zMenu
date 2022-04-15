@@ -2,8 +2,9 @@ package fr.maxlego08.menu.api.button;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import fr.maxlego08.menu.api.Inventory;
 
 public interface Button {
 
@@ -66,7 +67,7 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventory Inventory where the button comes from
 	 */
-	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory);
+	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button);
 	
 	/**
 	 * This method is called when the player makes a left click
@@ -75,7 +76,7 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventory Inventory where the button comes from
 	 */
-	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory);
+	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button);
 	
 	/**
 	 * This method is called when the player makes a middle click or a drop key click
@@ -84,6 +85,6 @@ public interface Button {
 	 * @param event Event that will be called
 	 * @param inventory Inventory where the button comes from
 	 */
-	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory);
+	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button);
 	
 }

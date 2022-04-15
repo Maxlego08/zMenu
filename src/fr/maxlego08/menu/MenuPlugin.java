@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.command.CommandManager;
 import fr.maxlego08.menu.inventory.InventoryManager;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -15,6 +16,8 @@ import fr.maxlego08.menu.zcore.ZPlugin;
  *
  */
 public class MenuPlugin extends ZPlugin {
+
+	private final ButtonManager buttonManager = new ZButtonManager();
 
 	@Override
 	public void onEnable() {
@@ -35,7 +38,7 @@ public class MenuPlugin extends ZPlugin {
 		// addSave(new CooldownBuilder());
 
 		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
-		
+
 		this.postEnable();
 	}
 
@@ -48,6 +51,15 @@ public class MenuPlugin extends ZPlugin {
 
 		this.postDisable();
 
+	}
+	
+	/**
+	 * Returns the class that will manage the loading of the buttons
+	 * 
+	 * @return {@link ButtonManager}
+	 */
+	public ButtonManager getButtonManager() {
+		return buttonManager;
 	}
 
 }
