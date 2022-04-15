@@ -11,6 +11,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.buttons.ZSlotButton;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -29,6 +30,9 @@ public class CommandMenu extends VCommand {
 		List<Button> buttons = new ArrayList<Button>();
 		buttons.add(new ZSlotButton("slot", new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), 1, (byte) 8), 0,
 				false, null, null, null, null, null, Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8)));
+		
+		buttons.add(new ZNoneButton("slot", new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), 1, (byte) 14), 13,
+				false, null, null, null, null, null));
 		Inventory inventory = new ZInventory(plugin, "§7Test", "test", 54, buttons);
 
 		plugin.getInventoryManager().openInventory(this.player, inventory);
