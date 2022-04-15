@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.InventoryException;
@@ -36,7 +37,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public void load(Persist persist) {
-		// TODO
+
+		// Loading ButtonLoader
+		
+		ButtonManager buttonManager = this.plugin.getButtonManager();
+		
+		
 	}
 
 	@Override
