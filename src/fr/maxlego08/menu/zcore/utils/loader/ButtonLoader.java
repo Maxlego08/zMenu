@@ -13,7 +13,7 @@ import fr.maxlego08.menu.zcore.utils.inventory.Button;
 public class ButtonLoader extends ZUtils implements Loader<Button> {
 
 	@Override
-	public Button load(YamlConfiguration configuration, String path) {
+	public Button load(YamlConfiguration configuration, String path, Object... objects) {
 
 		String name = configuration.getString(path + "name") == null ? null
 				: color(configuration.getString(path + "name"));
@@ -26,7 +26,7 @@ public class ButtonLoader extends ZUtils implements Loader<Button> {
 	}
 
 	@Override
-	public void save(Button object, YamlConfiguration configuration, String path) {
+	public void save(Button object, YamlConfiguration configuration, String path, Object... objects) {
 
 		configuration.set(path + "name", object.getName() != null ? colorReverse(object.getName()) : null);
 		configuration.set(path + "slot", object.getSlot());

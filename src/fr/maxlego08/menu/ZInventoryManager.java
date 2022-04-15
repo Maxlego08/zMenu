@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -18,8 +20,11 @@ import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.SlotLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
+import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
@@ -54,12 +59,27 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
 		event.callEvent();
 
+		File folder = this.plugin.getDataFolder();
+		if (folder.exists()) {
+			folder.mkdir();
+		}
+
+		
+		
 	}
 
 	@Override
 	public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
-		// TODO Auto-generated method stub
-		return null;
+
+		Loader<Inventory> loader = new InventoryLoader(this.plugin);
+
+		File file = new File(plugin.getDataFolder(), fileName);
+		if (!file.exists()) {
+			throw new InventoryFileNotFound("Cannot find " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
+		}
+
+		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+		return loader.load(configuration, "", file);
 	}
 
 	@Override

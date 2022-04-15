@@ -27,7 +27,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 	/**
 	 * Load ItemStack
 	 */
-	public ItemStack load(YamlConfiguration configuration, String path) {
+	public ItemStack load(YamlConfiguration configuration, String path, Object... objects) {
 
 		int data = configuration.getInt(path + "data", 0);
 		int amount = configuration.getInt(path + "amount", 1);
@@ -177,7 +177,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 	/**
 	 * 
 	 */
-	public void save(ItemStack item, YamlConfiguration configuration, String path) {
+	public void save(ItemStack item, YamlConfiguration configuration, String path, Object... objects) {
 
 		if (item == null) {
 			Logger.info("Impossible de sauvegarder l'item car il est null ! Le path: " + path, LogType.ERROR);
