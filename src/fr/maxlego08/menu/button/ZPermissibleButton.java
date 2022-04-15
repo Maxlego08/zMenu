@@ -1,30 +1,14 @@
 package fr.maxlego08.menu.button;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
 
 public abstract class ZPermissibleButton extends ZButton implements PermissibleButton {
 
-	private final String permission;
-	private final Button elseButton;
-
-	/**
-	 * @param buttonName
-	 * @param itemStack
-	 * @param slot
-	 * @param isPermanent
-	 * @param permission
-	 * @param elseButton
-	 */
-	public ZPermissibleButton(String buttonName, ItemStack itemStack, int slot, boolean isPermanent, String permission,
-			Button elseButton) {
-		super(buttonName, itemStack, slot, isPermanent);
-		this.permission = permission;
-		this.elseButton = elseButton;
-	}
+	private String permission;
+	private Button elseButton;
 
 	@Override
 	public Button getElseButton() {
@@ -49,6 +33,22 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	@Override
 	public boolean checkPermission(Player player) {
 		return this.permission == null || player.hasPermission(this.permission);
+	}
+
+	/**
+	 * @param permission
+	 *            the permission to set
+	 */
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+
+	/**
+	 * @param elseButton
+	 *            the elseButton to set
+	 */
+	public void setElseButton(Button elseButton) {
+		this.elseButton = elseButton;
 	}
 
 }

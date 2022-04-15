@@ -1,36 +1,15 @@
 package fr.maxlego08.menu.button;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 
 public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton {
 
-	private final PlaceholderAction action;
-	private final String placeholder;
-	private final String value;
-
-	/**
-	 * @param buttonName
-	 * @param itemStack
-	 * @param slot
-	 * @param isPermanent
-	 * @param permission
-	 * @param elseButton
-	 * @param action
-	 * @param placeholder
-	 * @param value
-	 */
-	public ZPlaceholderButton(String buttonName, ItemStack itemStack, int slot, boolean isPermanent, String permission,
-			Button elseButton, PlaceholderAction action, String placeholder, String value) {
-		super(buttonName, itemStack, slot, isPermanent, permission, elseButton);
-		this.action = action;
-		this.placeholder = placeholder;
-		this.value = value;
-	}
+	private PlaceholderAction action;
+	private String placeholder;
+	private String value;
 
 	@Override
 	public String getPlaceHolder() {
@@ -51,7 +30,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 	public boolean hasPermission() {
 		return super.hasPermission() || this.hasPlaceHolder();
 	}
-	
+
 	@Override
 	public String getValue() {
 		return this.value;
@@ -75,7 +54,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 				}
 
 			} else if (this.action.isString()) {
-				
+
 				switch (action) {
 				case EQUALS_STRING:
 					return valueAsString.equals(this.value);
@@ -86,9 +65,9 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 				default:
 					return super.checkPermission(player);
 				}
-				
+
 			} else {
-				
+
 				try {
 
 					double value = Double.valueOf(valueAsString);
@@ -110,10 +89,34 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 				} catch (Exception exception) {
 					return super.checkPermission(player);
 				}
-				
+
 			}
 			return super.checkPermission(player);
 		}
+	}
+
+	/**
+	 * @param action
+	 *            the action to set
+	 */
+	public void setAction(PlaceholderAction action) {
+		this.action = action;
+	}
+
+	/**
+	 * @param placeholder
+	 *            the placeholder to set
+	 */
+	public void setPlaceholder(String placeholder) {
+		this.placeholder = placeholder;
+	}
+
+	/**
+	 * @param value
+	 *            the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 }

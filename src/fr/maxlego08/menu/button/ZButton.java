@@ -10,24 +10,10 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public abstract class ZButton extends ZUtils implements Button {
 
-	private final String buttonName;
-	private final ItemStack itemStack;
-	private final int slot;
-	private final boolean isPermanent;
-
-	/**
-	 * @param buttonName
-	 * @param itemStack
-	 * @param slot
-	 * @param isPermanent
-	 */
-	public ZButton(String buttonName, ItemStack itemStack, int slot, boolean isPermanent) {
-		super();
-		this.buttonName = buttonName;
-		this.itemStack = itemStack;
-		this.slot = slot;
-		this.isPermanent = isPermanent;
-	}
+	private String buttonName;
+	private ItemStack itemStack;
+	private int slot;
+	private boolean isPermanent;
 
 	@Override
 	public String getName() {
@@ -72,21 +58,53 @@ public abstract class ZButton extends ZUtils implements Button {
 	public int getRealSlot(int inventorySize, int page) {
 		return this.slot - ((page - 1) * inventorySize);
 	}
-	
+
 	@Override
 	public void onLeftClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
 	}
-	
+
 	@Override
 	public void onRightClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
 	}
-	
+
 	@Override
 	public void onMiddleClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
 	}
-	
+
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, Inventory inventory, int slot, Button button) {
+	}
+
+	/**
+	 * @param buttonName
+	 *            the buttonName to set
+	 */
+	public void setButtonName(String buttonName) {
+		this.buttonName = buttonName;
+	}
+
+	/**
+	 * @param itemStack
+	 *            the itemStack to set
+	 */
+	public void setItemStack(ItemStack itemStack) {
+		this.itemStack = itemStack;
+	}
+
+	/**
+	 * @param slot
+	 *            the slot to set
+	 */
+	public void setSlot(int slot) {
+		this.slot = slot;
+	}
+
+	/**
+	 * @param isPermanent
+	 *            the isPermanent to set
+	 */
+	public void setPermanent(boolean isPermanent) {
+		this.isPermanent = isPermanent;
 	}
 
 }

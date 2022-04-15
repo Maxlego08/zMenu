@@ -3,12 +3,10 @@ package fr.maxlego08.menu.button.loader;
 import java.util.List;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.SlotButton;
-import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZSlotButton;
 
@@ -40,12 +38,9 @@ public class SlotLoader implements ButtonLoader {
 	}
 
 	@Override
-	public Button load(YamlConfiguration configuration, String path, String buttonName, ItemStack itemStack, int slot,
-			boolean isPermanent, String permission, Button elseButton, PlaceholderAction action, String placeholder,
-			String value) {
+	public Button load(YamlConfiguration configuration, String path) {
 		List<Integer> slots = configuration.getIntegerList(path + "slots");
-		return new ZSlotButton(buttonName, itemStack, slot, isPermanent, permission, elseButton, action, placeholder,
-				value, slots);
+		return new ZSlotButton(slots);
 	}
 
 }
