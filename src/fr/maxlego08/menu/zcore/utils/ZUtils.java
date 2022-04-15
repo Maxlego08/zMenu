@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -1251,6 +1252,11 @@ public abstract class ZUtils extends MessageUtils {
 		}
 
 		return false;
+	}
+
+	public String getFileNameWithoutExtension(File file) {
+		Pattern pattern= Pattern.compile("(?<=.)\\.[^.]+$");
+	    return pattern.matcher(file.getName()).replaceAll("");
 	}
 
 }

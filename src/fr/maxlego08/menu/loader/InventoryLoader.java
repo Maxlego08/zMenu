@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
@@ -48,15 +47,14 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 		}
 
 		List<Button> buttons = new ArrayList<Button>();
-		Loader<Button> loader = new ButtonLoader();
+		Loader<Button> loader = new ZButtonLoader(this.plugin, file);
 		ConfigurationSection section = configuration.getConfigurationSection("items.");
 
 		for (String buttonPath : section.getKeys(false)) {
-			buttons.add(loader.load(configuration, "items." + buttonPath + ".", file));
+			buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
 		}
 
-		String fileName = FilenameUtils.removeExtension(file.getName());
-		System.out.println(fileName);
+		String fileName = this.getFileNameWithoutExtension(file);
 
 		return new ZInventory(this.plugin, name, fileName, size, buttons);
 	}

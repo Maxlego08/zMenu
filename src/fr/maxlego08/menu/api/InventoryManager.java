@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,17 @@ public interface InventoryManager extends Saveable {
 	 * @throws InventoryException
 	 */
 	public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException;
+	
+	/**
+	 * Allows you to load an inventory from a file You must add the class of
+	 * your plugin as a parameter
+	 * 
+	 * @param plugin
+	 * @param file
+	 * @return inventory
+	 * @throws InventoryException
+	 */
+	public Inventory loadInventory(Plugin plugin, File file) throws InventoryException;
 
 	/**
 	 * Allows you to return an inventory according to its name

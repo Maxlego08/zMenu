@@ -1,11 +1,16 @@
 package fr.maxlego08.menu;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,25 +64,44 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
 		event.callEvent();
 
-		File folder = this.plugin.getDataFolder();
-		if (folder.exists()) {
+		File folder = new File(this.plugin.getDataFolder(), "inventories");
+		if (!folder.exists()) {
 			folder.mkdir();
 		}
 
-		
-		
+		try {
+			List<Inventory> inventories = Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile)
+					.filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).map(file -> {
+						try {
+							return this.loadInventory(this.plugin, file);
+						} catch (InventoryException e1) {
+							e1.printStackTrace();
+						}
+						return null;
+					}).filter(Objects::nonNull).collect(Collectors.toList());
+			
+			this.inventories.put(this.plugin.getName(), inventories);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
-
-		Loader<Inventory> loader = new InventoryLoader(this.plugin);
 
 		File file = new File(plugin.getDataFolder(), fileName);
 		if (!file.exists()) {
 			throw new InventoryFileNotFound("Cannot find " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
 		}
 
+		return this.loadInventory(plugin, file);
+	}
+
+	@Override
+	public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
+
+		Loader<Inventory> loader = new InventoryLoader(this.plugin);
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 		return loader.load(configuration, "", file);
 	}
