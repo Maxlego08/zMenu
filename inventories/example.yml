@@ -1,0 +1,83 @@
+name: "&7Example"
+size: 54
+items:
+  # Will display an item that has no action on the different slots
+  slots:
+    type: NONE_SLOT
+    isPermanent: true
+    item:
+      material: STAINED_GLASS_PANE
+      data: 7
+      name: "&e"
+    slots:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 18
+      - 27
+      - 17
+      - 26
+      - 35
+      - 36
+      - 44
+      - 46
+      - 47
+      - 49
+      - 51
+      - 52
+      - 53
+  example2:
+    type: INVENTORY
+    slot: 45
+    isPermanent: true
+    inventory: "example2"
+    item:
+      material: CHEST
+      name: "&fClique pour accéder"
+      lore:
+        - "&7à un autre inventaire"      
+  testPage:
+    type: NONE
+    slot: 13
+    page: 2
+    item:
+      material: DIAMOND
+      name: "&fJe suis à la page 2"
+  next:
+    type: NEXT
+    isPermanent: true
+    slot: 50
+    item:
+      material: ARROW
+      name: "&fNext"
+    else: #Displays another button if there is no next page.
+      slot: 50
+      type: NONE
+      isPermanent: true
+      item:
+        material: STAINED_GLASS_PANE
+        data: 7
+        name: "&bbbb" 
+  previous:
+    type: PREVIOUS
+    isPermanent: true
+    slot: 48
+    item:
+      material: ARROW
+      name: "&fPrevious"
+    else: #Displays another button if there is no previous page.
+      slot: 48
+      type: NONE
+      isPermanent: true
+      item:
+        material: STAINED_GLASS_PANE
+        data: 7
+        name: "&aaaa"      
+      

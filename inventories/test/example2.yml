@@ -1,0 +1,46 @@
+name: "&7Example &32"
+size: 54
+items:
+  # Will display an item that has no action on the different slots
+  slots:
+    type: NONE_SLOT
+    isPermanent: true
+    item:
+      material: STAINED_GLASS_PANE
+      data: 3
+      name: "&e"
+    slots:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 18
+      - 27
+      - 17
+      - 26
+      - 35
+      - 36
+      - 44
+      - 13      
+  back:
+    type: BACK
+    isPermanent: true
+    item:
+      material: NETHER_STAR
+      name: "&fRetour"
+    slot: 49      
+  example3:
+    type: INVENTORY
+    slot: 45
+    isPermanent: true
+    inventory: "example3"
+    item:
+      material: CHEST
+      name: "&fClique pour accéder"
+      lore:
+        - "&7à un autre inventaire"    

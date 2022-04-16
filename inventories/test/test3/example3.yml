@@ -1,0 +1,45 @@
+name: "&7Example &b3"
+size: 54
+items:
+  # Will display an item that has no action on the different slots
+  slots:
+    type: NONE_SLOT
+    isPermanent: true
+    item:
+      material: STAINED_GLASS_PANE
+      data: 5
+      name: "&e"
+    slots:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 18
+      - 27
+      - 17
+      - 26
+      - 35
+      - 36
+      - 44
+      - 10      
+      - 16
+  back:
+    type: BACK
+    isPermanent: true
+    item:
+      material: NETHER_STAR
+      name: "&fRetour"
+    slot: 49      
+  home:
+    type: HOME
+    item:
+      material: CHEST
+      name: "&fHome"
+    slot: 45
+    
