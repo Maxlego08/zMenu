@@ -6,7 +6,7 @@ public class ZNoneButton extends ZPlaceholderButton {
 
 	@Override
 	public boolean isClickable() {
-		return false;
+		return this.closeInventory();
 	}
 
 }

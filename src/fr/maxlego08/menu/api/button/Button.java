@@ -113,4 +113,11 @@ public interface Button {
 	 */
 	public int getRealSlot(int inventorySize, int page);
 	
+	/**
+	 * Allows you to know if you have to close the inventory when clicking
+	 * 
+	 * @return boolean
+	 */
+	boolean closeInventory();
+	
 }

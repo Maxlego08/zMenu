@@ -62,9 +62,10 @@ public class ZButtonLoader implements Loader<Button> {
 		int page = configuration.getInt(path + "page", 1);
 		page = page < 1 ? 1 : page;
 		slot = slot + ((page - 1) * this.inventorySize);
-		
+
 		button.setSlot(slot);
 		button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
+		button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
 

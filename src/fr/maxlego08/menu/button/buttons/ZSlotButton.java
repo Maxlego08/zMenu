@@ -25,7 +25,7 @@ public class ZSlotButton extends ZPlaceholderButton implements SlotButton {
 
 	@Override
 	public boolean isClickable() {
-		return false;
+		return this.closeInventory();
 	}
 
 }

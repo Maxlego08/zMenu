@@ -61,6 +61,16 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 	public String getConsolePermission() {
 		return this.consolePermission;
 	}
+	
+	@Override
+	public List<String> getConsoleRightCommands() {
+		return this.consoleRightCommands;
+	}
+	
+	@Override
+	public List<String> getConsoleLeftCommands() {
+		return this.consoleLeftCommands;
+	}
 
 	@Override
 	public void execute(Player player, ClickType type) {
@@ -87,18 +97,11 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 	}
 
 	@Override
-	public List<String> getConsoleRightCommands() {
-		return this.consoleRightCommands;
-	}
-
-	@Override
-	public List<String> getConsoleLeftCommands() {
-		return this.consoleLeftCommands;
-	}
-
-	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+		
 		this.execute(player, event.getClick());
+		super.onClick(player, event, inventory, slot);
+		
 	}
 
 }

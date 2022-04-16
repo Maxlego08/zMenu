@@ -12,8 +12,9 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	private String buttonName;
 	private ItemStack itemStack;
-	private int slot;
-	private boolean isPermanent;
+	private int slot = 0;
+	private boolean isPermanent = false;
+	private boolean closeInventory = false;
 
 	@Override
 	public String getName() {
@@ -73,11 +74,19 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+		if (this.closeInventory()) {
+			player.closeInventory();
+		}
 	}
-	
+
 	@Override
 	public void onInventoryOpen(Player player, InventoryDefault inventory) {
-		
+
+	}
+
+	@Override
+	public boolean closeInventory() {
+		return this.closeInventory;
 	}
 
 	/**
@@ -110,6 +119,14 @@ public abstract class ZButton extends ZUtils implements Button {
 	 */
 	public void setPermanent(boolean isPermanent) {
 		this.isPermanent = isPermanent;
+	}
+
+	/**
+	 * 
+	 * @param closeInventory
+	 */
+	public void setCloseInventory(boolean closeInventory) {
+		this.closeInventory = closeInventory;
 	}
 
 }
