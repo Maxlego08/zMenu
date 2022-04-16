@@ -100,24 +100,27 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 	 * @param action
 	 *            the action to set
 	 */
-	public void setAction(PlaceholderAction action) {
+	public ZPlaceholderButton setAction(PlaceholderAction action) {
 		this.action = action;
+		return this;
 	}
 
 	/**
 	 * @param placeholder
 	 *            the placeholder to set
 	 */
-	public void setPlaceholder(String placeholder) {
+	public ZPlaceholderButton setPlaceholder(String placeholder) {
 		this.placeholder = placeholder;
+		return this;
 	}
 
 	/**
 	 * @param value
 	 *            the value to set
 	 */
-	public void setValue(String value) {
+	public ZPlaceholderButton setValue(String value) {
 		this.value = value;
+		return this;
 	}
 
 }

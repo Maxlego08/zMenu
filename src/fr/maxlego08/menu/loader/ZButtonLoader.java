@@ -12,12 +12,14 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.api.enums.XSound;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
 import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.utils.loader.ItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
@@ -42,7 +44,7 @@ public class ZButtonLoader implements Loader<Button> {
 	@Override
 	public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
 
-		String buttonType = configuration.getString(path + "type");
+		String buttonType = configuration.getString(path + "type", "NONE");
 		String buttonName = (String) objects[0];
 
 		ButtonManager buttonManager = this.plugin.getButtonManager();
@@ -69,6 +71,14 @@ public class ZButtonLoader implements Loader<Button> {
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
 		button.setMessages(configuration.getStringList(path + "messages"));
+
+		Optional<XSound> optionalXSound = XSound.matchXSound(configuration.getString(path + "sound", null));
+		if (optionalXSound.isPresent()) {
+			XSound xSound = optionalXSound.get();
+			float pitch = Float.valueOf(configuration.getString(path + "pitch", "1.0f"));
+			float volume = Float.valueOf(configuration.getString(path + "volume", "1.0f"));
+			button.setSoundOption(new ZSoundOption(xSound, pitch, volume));
+		}
 
 		if (button instanceof PermissibleButton) {
 

@@ -40,16 +40,18 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	 * @param permission
 	 *            the permission to set
 	 */
-	public void setPermission(String permission) {
+	public ZPermissibleButton setPermission(String permission) {
 		this.permission = permission;
+		return this;
 	}
 
 	/**
 	 * @param elseButton
 	 *            the elseButton to set
 	 */
-	public void setElseButton(Button elseButton) {
+	public ZPermissibleButton setElseButton(Button elseButton) {
 		this.elseButton = elseButton;
+		return this;
 	}
 
 }

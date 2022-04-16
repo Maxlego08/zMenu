@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
 public interface Button {
@@ -16,44 +17,46 @@ public interface Button {
 	 * @return name
 	 */
 	public String getName();
-	
+
 	/**
 	 * Returns the itemstack that will be displayed
 	 * 
 	 * @return {@link ItemStack}
 	 */
 	public ItemStack getItemStack();
-	
+
 	/**
-	 * This method will return the itemstack that will be used in the inventory with a player in parameter
+	 * This method will return the itemstack that will be used in the inventory
+	 * with a player in parameter
 	 * 
-	 * @param player Player who opens the inventory
+	 * @param player
+	 *            Player who opens the inventory
 	 * @return {@link ItemStack}
 	 */
 	public ItemStack getCustomItemStack(Player player);
-	
+
 	/**
 	 * Returns the slot used by the button
 	 * 
 	 * @return slot
 	 */
 	public int getSlot();
-	
+
 	/**
 	 * Allows to know if the button can be clicked
 	 * 
 	 * @return boolean
 	 */
 	public boolean isClickable();
-	
+
 	/**
-	 * Allows to know if the button is permanent
-	 * A permanent button will always be present in the inventory no matter the page
+	 * Allows to know if the button is permanent A permanent button will always
+	 * be present in the inventory no matter the page
 	 * 
 	 * @return boolean
 	 */
 	public boolean isPermament();
-	
+
 	/**
 	 * Allows to change the type of a button
 	 * 
@@ -61,40 +64,53 @@ public interface Button {
 	 * @return T
 	 */
 	public <T extends Button> T toButton(Class<T> classz);
-	
+
 	/**
 	 * This method is called when the player makes a click
 	 * 
-	 * @param player Player who will perform the click
-	 * @param event Event that will be called
-	 * @param inventoryDefault Inventory where the button comes from
+	 * @param player
+	 *            Player who will perform the click
+	 * @param event
+	 *            Event that will be called
+	 * @param inventoryDefault
+	 *            Inventory where the button comes from
 	 */
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
-	
+
 	/**
 	 * This method is called when the player makes a right click
 	 * 
-	 * @param player Player who will perform the click
-	 * @param event Event that will be called
-	 * @param inventory Inventory where the button comes from
+	 * @param player
+	 *            Player who will perform the click
+	 * @param event
+	 *            Event that will be called
+	 * @param inventory
+	 *            Inventory where the button comes from
 	 */
 	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
-	
+
 	/**
 	 * This method is called when the player makes a left click
 	 * 
-	 * @param player Player who will perform the click
-	 * @param event Event that will be called
-	 * @param inventory Inventory where the button comes from
+	 * @param player
+	 *            Player who will perform the click
+	 * @param event
+	 *            Event that will be called
+	 * @param inventory
+	 *            Inventory where the button comes from
 	 */
 	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
-	
+
 	/**
-	 * This method is called when the player makes a middle click or a drop key click
+	 * This method is called when the player makes a middle click or a drop key
+	 * click
 	 * 
-	 * @param player Player who will perform the click
-	 * @param event Event that will be called
-	 * @param inventory Inventory where the button comes from
+	 * @param player
+	 *            Player who will perform the click
+	 * @param event
+	 *            Event that will be called
+	 * @param inventory
+	 *            Inventory where the button comes from
 	 */
 	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
@@ -105,7 +121,7 @@ public interface Button {
 	 * @param inventory
 	 */
 	public void onInventoryOpen(Player player, InventoryDefault inventory);
-	
+
 	/**
 	 * Allows to get the real slot of the button
 	 * 
@@ -114,19 +130,26 @@ public interface Button {
 	 * @return slot
 	 */
 	public int getRealSlot(int inventorySize, int page);
-	
+
 	/**
 	 * Allows you to know if you have to close the inventory when clicking
 	 * 
 	 * @return boolean
 	 */
 	public boolean closeInventory();
-	
+
 	/**
-	 * Messages that the player will receive by clicking 
+	 * Messages that the player will receive by clicking
 	 * 
 	 * @return messages
 	 */
 	public List<String> getMessages();
-	
+
+	/**
+	 * Sound that will be played when the player clicks
+	 * 
+	 * @return sound
+	 */
+	public SoundOption getSound();
+
 }

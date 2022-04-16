@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 
@@ -19,6 +20,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private boolean isPermanent = false;
 	private boolean closeInventory = false;
 	private List<String> messages = new ArrayList<String>();
+	private SoundOption soundOption;
 
 	@Override
 	public String getName() {
@@ -70,6 +72,11 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
+	public SoundOption getSound() {
+		return this.soundOption;
+	}
+
+	@Override
 	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 	}
 
@@ -91,6 +98,11 @@ public abstract class ZButton extends ZUtils implements Button {
 		if (this.messages.size() > 0) {
 			this.messages.forEach(message -> player.sendMessage(papi(message, player)));
 		}
+
+		if (this.soundOption != null) {
+			this.soundOption.play(player);
+		}
+
 	}
 
 	@Override
@@ -107,48 +119,63 @@ public abstract class ZButton extends ZUtils implements Button {
 	 * @param buttonName
 	 *            the buttonName to set
 	 */
-	public void setButtonName(String buttonName) {
+	public ZButton setButtonName(String buttonName) {
 		this.buttonName = buttonName;
+		return this;
 	}
 
 	/**
 	 * @param itemStack
 	 *            the itemStack to set
 	 */
-	public void setItemStack(ItemStack itemStack) {
+	public ZButton setItemStack(ItemStack itemStack) {
 		this.itemStack = itemStack;
+		return this;
 	}
 
 	/**
 	 * @param slot
 	 *            the slot to set
 	 */
-	public void setSlot(int slot) {
+	public ZButton setSlot(int slot) {
 		this.slot = slot;
+		return this;
 	}
 
 	/**
 	 * @param isPermanent
 	 *            the isPermanent to set
 	 */
-	public void setPermanent(boolean isPermanent) {
+	public ZButton setPermanent(boolean isPermanent) {
 		this.isPermanent = isPermanent;
+		return this;
 	}
 
 	/**
 	 * 
 	 * @param closeInventory
 	 */
-	public void setCloseInventory(boolean closeInventory) {
+	public ZButton setCloseInventory(boolean closeInventory) {
 		this.closeInventory = closeInventory;
+		return this;
 	}
 
 	/**
 	 * 
 	 * @param messages
 	 */
-	public void setMessages(List<String> messages) {
+	public ZButton setMessages(List<String> messages) {
 		this.messages = color(messages);
+		return this;
+	}
+
+	/**
+	 * 
+	 * @param soundOption
+	 */
+	public ZButton setSoundOption(SoundOption soundOption) {
+		this.soundOption = soundOption;
+		return this;
 	}
 
 }
