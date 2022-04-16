@@ -60,6 +60,7 @@ public class ZButtonLoader implements Loader<Button> {
 
 		int slot = configuration.getInt(path + "slot", 0);
 		int page = configuration.getInt(path + "page", 1);
+		page = page < 1 ? 1 : page;
 		slot = slot + ((page - 1) * this.inventorySize);
 		
 		button.setSlot(slot);

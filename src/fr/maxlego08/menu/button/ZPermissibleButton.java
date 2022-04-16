@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
 public abstract class ZPermissibleButton extends ZButton implements PermissibleButton {
 
@@ -31,7 +32,7 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	}
 
 	@Override
-	public boolean checkPermission(Player player) {
+	public boolean checkPermission(Player player, InventoryDefault inventory) {
 		return this.permission == null || player.hasPermission(this.permission);
 	}
 

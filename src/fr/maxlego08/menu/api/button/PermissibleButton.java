@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.button;
 
 import org.bukkit.entity.Player;
 
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+
 public interface PermissibleButton extends Button {
 
 	/**
@@ -36,8 +38,9 @@ public interface PermissibleButton extends Button {
 	 * Allows to check if the player has the permission
 	 * 
 	 * @param player
+	 * @param inventory
 	 * @return boolean
 	 */
-	public boolean checkPermission(Player player);
+	public boolean checkPermission(Player player, InventoryDefault inventory);
 	
 }

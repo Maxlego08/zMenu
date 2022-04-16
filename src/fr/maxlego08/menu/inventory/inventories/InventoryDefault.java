@@ -52,7 +52,7 @@ public class InventoryDefault extends VInventory {
 
 			// We will check if the player has the permission to display the
 			// button
-			if (!button.checkPermission(this.player)) {
+			if (!button.checkPermission(this.player, this)) {
 
 				// If there is an ElseButton we will display it
 				if (button.hasElseButton()) {

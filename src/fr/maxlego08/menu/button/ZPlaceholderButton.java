@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
 public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton {
 
@@ -37,10 +38,10 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 	}
 
 	@Override
-	public boolean checkPermission(Player player) {
+	public boolean checkPermission(Player player, InventoryDefault inventory) {
 		if (!this.hasPlaceHolder()) {
 
-			return super.checkPermission(player);
+			return super.checkPermission(player, inventory);
 
 		} else {
 
@@ -63,7 +64,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 				case CONTAINS_STRING:
 					return valueAsString.contains(this.value);
 				default:
-					return super.checkPermission(player);
+					return super.checkPermission(player, inventory);
 				}
 
 			} else {
@@ -83,15 +84,15 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 					case SUPERIOR_OR_EQUAL:
 						return value >= currentValue;
 					default:
-						return super.checkPermission(player);
+						return super.checkPermission(player, inventory);
 					}
 
 				} catch (Exception exception) {
-					return super.checkPermission(player);
+					return super.checkPermission(player, inventory);
 				}
 
 			}
-			return super.checkPermission(player);
+			return super.checkPermission(player, inventory);
 		}
 	}
 

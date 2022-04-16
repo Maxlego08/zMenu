@@ -81,7 +81,7 @@ public class ZInventory implements Inventory {
 	public List<PlaceholderButton> sortButtons(int page, Object... objects) {
 		return this.buttons.stream().filter(button -> {
 			int slot = button.getRealSlot(this.size, page);
-			return (slot >= 0 && slot < this.size) || button.isPermament();
+			return slot >= 0 && slot < this.size;
 		}).map(button -> button.toButton(PlaceholderButton.class)).collect(Collectors.toList());
 	}
 
