@@ -35,6 +35,8 @@ public class ZHomeButton extends ZPlaceholderButton implements HomeButton {
 
 		Inventory toInventory = this.inventory;
 		this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<Inventory>());
+		
+		super.onClick(player, event, inventory, slot);
 	}
 
 	@Override

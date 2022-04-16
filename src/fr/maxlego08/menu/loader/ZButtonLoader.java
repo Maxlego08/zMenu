@@ -68,6 +68,7 @@ public class ZButtonLoader implements Loader<Button> {
 		button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
+		button.setMessages(configuration.getStringList(path + "messages"));
 
 		if (button instanceof PermissibleButton) {
 

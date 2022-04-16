@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.button;
 
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -118,6 +120,13 @@ public interface Button {
 	 * 
 	 * @return boolean
 	 */
-	boolean closeInventory();
+	public boolean closeInventory();
+	
+	/**
+	 * Messages that the player will receive by clicking 
+	 * 
+	 * @return messages
+	 */
+	public List<String> getMessages();
 	
 }

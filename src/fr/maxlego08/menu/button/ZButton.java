@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.button;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +18,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private int slot = 0;
 	private boolean isPermanent = false;
 	private boolean closeInventory = false;
+	private List<String> messages = new ArrayList<String>();
 
 	@Override
 	public String getName() {
@@ -51,6 +55,11 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
+	public List<String> getMessages() {
+		return this.messages;
+	}
+
+	@Override
 	public <T extends Button> T toButton(Class<T> classz) {
 		return (T) this;
 	}
@@ -74,8 +83,13 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+
 		if (this.closeInventory()) {
 			player.closeInventory();
+		}
+
+		if (this.messages.size() > 0) {
+			this.messages.forEach(message -> player.sendMessage(papi(message, player)));
 		}
 	}
 
@@ -127,6 +141,14 @@ public abstract class ZButton extends ZUtils implements Button {
 	 */
 	public void setCloseInventory(boolean closeInventory) {
 		this.closeInventory = closeInventory;
+	}
+
+	/**
+	 * 
+	 * @param messages
+	 */
+	public void setMessages(List<String> messages) {
+		this.messages = color(messages);
 	}
 
 }

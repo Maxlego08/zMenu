@@ -49,6 +49,8 @@ public class ZInventoryButton extends ZPlaceholderButton implements InventoryBut
 		
 		Inventory toInventory = optional.get();
 		this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
+		
+		super.onClick(player, event, inventory, slot);
 	}
 	
 }

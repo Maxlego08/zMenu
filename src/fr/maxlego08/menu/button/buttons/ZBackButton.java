@@ -37,6 +37,8 @@ public class ZBackButton extends ZPlaceholderButton implements BackButton {
 
 		Inventory toInventory = this.inventory;
 		this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
+		
+		super.onClick(player, event, inventory, slot);
 	}
 
 	@Override
