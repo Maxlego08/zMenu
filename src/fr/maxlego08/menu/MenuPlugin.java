@@ -11,6 +11,7 @@ import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
+import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 
 /**
  * System to create your plugins very simply Projet:
@@ -47,6 +48,8 @@ public class MenuPlugin extends ZPlugin {
 
 		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 
+		new Metrics(this, 14951);
+		
 		this.postEnable();
 	}
 
