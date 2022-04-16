@@ -5,6 +5,7 @@ items:
   slots:
     type: NONE_SLOT
     isPermanent: true
+    closeInventory: true
     item:
       material: STAINED_GLASS_PANE
       data: 7
@@ -44,12 +45,21 @@ items:
       lore:
         - "&7à un autre inventaire"      
   testPage:
-    type: NONE
+    type: PERFORM_COMMAND
     slot: 13
     page: 2
+    closeInventory: true
+    consoleCommands:
+      - "bc %player% est trop beau"
+    consoleLeftCommands:
+      - "bc Le clique gauche"
+    consoleRightCommands:
+      - "bc Le clique droit"
     item:
       material: DIAMOND
       name: "&fJe suis à la page 2"
+    messages:
+      - "&8(&6Groupe&fZ&8) &7Vous venez de cliquer sur un bouton"
   next:
     type: NEXT
     isPermanent: true
@@ -79,5 +89,28 @@ items:
       item:
         material: STAINED_GLASS_PANE
         data: 7
-        name: "&aaaa"      
-      
+        name: "&aaaa" 
+  testPlaceHolder:
+    type: NONE
+    slot: 40
+    item:
+      material: IRON_INGOT
+      name: "&fOUI"
+    placeHolder: "%player_level%"
+    action: LOWER_OR_EQUAL
+    value: 5
+    else:
+      type: NONE
+      slot: 40
+      item:
+        material: GOLD_INGOT
+        name: "&3OUI"
+      placeHolder: "%player_level%"
+      action: LOWER_OR_EQUAL
+      value: 10
+      else:
+        type: NONE
+        slot: 40
+        item:
+          material: DIAMOND
+          name: "&dOUI"
