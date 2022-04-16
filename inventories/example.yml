@@ -6,6 +6,9 @@ items:
     type: NONE_SLOT
     isPermanent: true
     closeInventory: true
+    sound: ENTITY_COW_HURT
+    pitch: 1.5
+    volume: 0.5    
     item:
       material: STAINED_GLASS_PANE
       data: 7
