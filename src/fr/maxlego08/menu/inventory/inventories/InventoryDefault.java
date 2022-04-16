@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
-import fr.maxlego08.menu.api.button.buttons.SlotButton;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -85,10 +84,9 @@ public class InventoryDefault extends VInventory {
 	 */
 	private void displayButton(PlaceholderButton button) {
 
-		if (button instanceof SlotButton) {
+		if (button.hasSpecialRender()) {
 
-			SlotButton slotButton = button.toButton(SlotButton.class);
-			slotButton.getSlots().forEach(slot -> this.displayFinalButton(slotButton, slot));
+			button.onRender(player, this);
 
 		} else {
 
@@ -104,7 +102,7 @@ public class InventoryDefault extends VInventory {
 	 * @param button
 	 * @param slot
 	 */
-	private void displayFinalButton(PlaceholderButton button, int slot) {
+	public void displayFinalButton(PlaceholderButton button, int slot) {
 
 		ItemStack itemStack = button.getCustomItemStack(this.player);
 		ItemButton itemButton = this.addItem(slot, itemStack);

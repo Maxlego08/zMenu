@@ -58,6 +58,22 @@ public interface Button {
 	public boolean isPermament();
 
 	/**
+	 * Allows buttons that are going to be rendered in multiple slots to be
+	 * rendered correctly
+	 * 
+	 * @return boolean
+	 */
+	public boolean hasSpecialRender();
+
+	/**
+	 * Allows you to make the buttons special
+	 * 
+	 * @param player
+	 * @param inventory
+	 */
+	public void onRender(Player player, InventoryDefault inventory);
+
+	/**
 	 * Allows to change the type of a button
 	 * 
 	 * @param classz

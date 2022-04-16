@@ -77,6 +77,15 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
+	public boolean hasSpecialRender() {
+		return false;
+	}
+
+	@Override
+	public void onRender(Player player, InventoryDefault inventory) {
+	}
+
+	@Override
 	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 	}
 

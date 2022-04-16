@@ -1318,7 +1318,7 @@ public enum XSound {
      * @since 1.0.0
      */
     @Nonnull
-    private static String format(@Nonnull String name) {
+    private static String format(@Nonnull String name) {        	
         int len = name.length();
         char[] chs = new char[len];
         int count = 0;
@@ -1355,9 +1355,8 @@ public enum XSound {
      * @since 1.0.0
      */
     @Nonnull
-    public static Optional<XSound> matchXSound(@Nonnull String sound) {
-        Validate.notEmpty(sound, "Cannot match XSound of a null or empty sound name");
-        return Optional.ofNullable(Data.NAMES.get(format(sound)));
+    public static Optional<XSound> matchXSound(String sound) {
+        return sound == null ? Optional.empty() : Optional.ofNullable(Data.NAMES.get(format(sound)));
     }
 
     /**

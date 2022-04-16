@@ -70,8 +70,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			item = new Potion(type, level, splash, extended).toItemStack(amount);
 
 		}
-
-		// Si aprÃ¨s tout l'item est null alors fuck off
+		
 		if (item == null)
 			return null;
 
