@@ -163,7 +163,7 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	 * 
 	 * @param disableClick
 	 */
-	protected void setDisableClick(boolean disableClick) {
+	public void setDisableClick(boolean disableClick) {
 		this.disableClick = disableClick;
 	}
 

@@ -88,21 +88,24 @@ public class InventoryDefault extends VInventory {
 		if (button instanceof SlotButton) {
 
 			SlotButton slotButton = button.toButton(SlotButton.class);
-			slotButton.getSlots().forEach(slot -> {
-				this.addItem(slot, button.getCustomItemStack(player)).setClick(event -> event.setCancelled(true));
-			});
+			slotButton.getSlots().forEach(slot -> this.displayFinalButton(slotButton, slot));
 
 		} else {
 
-			this.displayFinalButton(button);
+			this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
 
 		}
 
 	}
 
-	private void displayFinalButton(PlaceholderButton button) {
+	/**
+	 * Allows to display the button and to put the actions on the clicks
+	 * 
+	 * @param button
+	 * @param slot
+	 */
+	private void displayFinalButton(PlaceholderButton button, int slot) {
 
-		int slot = button.getRealSlot(this.inventory.size(), this.page);
 		ItemStack itemStack = button.getCustomItemStack(this.player);
 		ItemButton itemButton = this.addItem(slot, itemStack);
 		if (button.isClickable()) {
