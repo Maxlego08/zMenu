@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.storage.Saveable;
 
@@ -107,5 +108,16 @@ public interface InventoryManager extends Saveable {
 	 * @param oldInventories
 	 */
 	public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
+	
+	/**
+	 * Allows to load the buttons
+	 * The {@link ButtonLoadEvent} event will be called, so you can add your own buttons using this event
+	 */
+	public void loadButtons();
+	
+	/**
+	 * Allows to load the inventories of the plugin
+	 */
+	public void loadInventories();
 
 }

@@ -57,42 +57,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	@Override
 	public void load(Persist persist) {
 
-		// Loading ButtonLoader
-		// The first step will be to load the buttons in the plugin, so each
-		// inventory will have the same list of buttons
-
-		ButtonManager buttonManager = this.plugin.getButtonManager();
-
-		buttonManager.register(new NoneLoader(this.plugin));
-		buttonManager.register(new SlotLoader(this.plugin));
-		buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));
-		buttonManager.register(new BackLoader(this.plugin, this));
-		buttonManager.register(new HomeLoader(this.plugin, this));
-		buttonManager.register(new NextLoader(this.plugin, this));
-		buttonManager.register(new PreviousLoader(this.plugin, this));
-
-		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
-		event.callEvent();
-
-		// Check if file exist
-		File folder = new File(this.plugin.getDataFolder(), "inventories");
-		if (!folder.exists()) {
-			folder.mkdir();
-		}
-
-		// Load inventories
-		try {
-			Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
-					.filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-						try {
-							this.loadInventory(this.plugin, file);
-						} catch (InventoryException e1) {
-							e1.printStackTrace();
-						}
-					});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.loadButtons();
+		this.loadInventories();
 
 	}
 
@@ -174,6 +140,50 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	@Override
 	public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
 		this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
+	}
+
+	@Override
+	public void loadButtons() {
+
+		// Loading ButtonLoader
+		// The first step will be to load the buttons in the plugin, so each
+		// inventory will have the same list of buttons
+
+		ButtonManager buttonManager = this.plugin.getButtonManager();
+
+		buttonManager.register(new NoneLoader(this.plugin));
+		buttonManager.register(new SlotLoader(this.plugin));
+		buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));
+		buttonManager.register(new BackLoader(this.plugin, this));
+		buttonManager.register(new HomeLoader(this.plugin, this));
+		buttonManager.register(new NextLoader(this.plugin, this));
+		buttonManager.register(new PreviousLoader(this.plugin, this));
+
+		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
+		event.callEvent();
+	}
+
+	@Override
+	public void loadInventories() {
+		// Check if file exist
+		File folder = new File(this.plugin.getDataFolder(), "inventories");
+		if (!folder.exists()) {
+			folder.mkdir();
+		}
+
+		// Load inventories
+		try {
+			Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
+					.filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
+						try {
+							this.loadInventory(this.plugin, file);
+						} catch (InventoryException e1) {
+							e1.printStackTrace();
+						}
+					});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
