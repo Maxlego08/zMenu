@@ -22,7 +22,7 @@ public class CommandMenu extends VCommand {
 
 	public CommandMenu(MenuPlugin plugin) {
 		super(plugin);
-		// TODO Auto-generated constructor stub
+		this.addSubCommand(new CommandMenuReload(plugin));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -42,16 +42,14 @@ public class CommandMenu extends VCommand {
 
 		InventoryManager inventoryManager = plugin.getInventoryManager();
 		Optional<Inventory> optional = inventoryManager.getInventory("example");
-		
-		if (optional.isPresent()){
-			
+
+		if (optional.isPresent()) {
+
 			inventory = optional.get();
-			
+
 		}
-		
+
 		plugin.getInventoryManager().openInventory(this.player, inventory);
-		
-		
 
 		return CommandType.SUCCESS;
 	}

@@ -52,6 +52,8 @@ public enum Message {
 	
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
 	
+	RELOAD("§aYou have just reloaded the configuration files."),
+	
 	
 	;
 
