@@ -47,7 +47,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 		}
 
 		List<Button> buttons = new ArrayList<Button>();
-		Loader<Button> loader = new ZButtonLoader(this.plugin, file);
+		Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);
 		ConfigurationSection section = configuration.getConfigurationSection("items.");
 
 		for (String buttonPath : section.getKeys(false)) {

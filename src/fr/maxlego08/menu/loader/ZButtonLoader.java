@@ -25,15 +25,18 @@ public class ZButtonLoader implements Loader<Button> {
 
 	private final MenuPlugin plugin;
 	private final File file;
+	private final int inventorySize;
 
 	/**
 	 * @param plugin
 	 * @param file
+	 * @param inventorySize
 	 */
-	public ZButtonLoader(MenuPlugin plugin, File file) {
+	public ZButtonLoader(MenuPlugin plugin, File file, int inventorySize) {
 		super();
 		this.plugin = plugin;
 		this.file = file;
+		this.inventorySize = inventorySize;
 	}
 
 	@Override
@@ -55,7 +58,11 @@ public class ZButtonLoader implements Loader<Button> {
 		ButtonLoader loader = optional.get();
 		ZButton button = (ZButton) loader.load(configuration, path);
 
-		button.setSlot(configuration.getInt(path + "slot", 0));
+		int slot = configuration.getInt(path + "slot", 0);
+		int page = configuration.getInt(path + "page", 1);
+		slot = slot + ((page - 1) * this.inventorySize);
+		
+		button.setSlot(slot);
 		button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
