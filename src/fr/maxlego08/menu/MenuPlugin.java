@@ -1,5 +1,9 @@
 package fr.maxlego08.menu;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.CommandManager;
@@ -31,6 +35,17 @@ public class MenuPlugin extends ZPlugin {
 
 		this.preEnable();
 
+		List<String> files = new ArrayList<String>();
+		files.add("inventories/example.yml");
+		files.add("inventories/test/example2.yml");
+		files.add("inventories/test/test3/example3.yml");
+
+		files.forEach(e -> {
+			if (!new File(this.getDataFolder(), e).exists()) {
+				saveResource(e, false);
+			}
+		});
+		
 		this.commandManager = new CommandManager(this);
 		this.vinventoryManager = new VInventoryManager(this);
 
@@ -49,7 +64,7 @@ public class MenuPlugin extends ZPlugin {
 		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 
 		new Metrics(this, 14951);
-		
+
 		this.postEnable();
 	}
 
