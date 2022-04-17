@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.plugin.ServicePriority;
+
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.CommandManager;
@@ -49,6 +51,9 @@ public class MenuPlugin extends ZPlugin {
 		this.commandManager = new CommandManager(this);
 		this.vinventoryManager = new VInventoryManager(this);
 
+		this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this, ServicePriority.Highest);
+		this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this, ServicePriority.Highest);
+		
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
 		this.registerCommand("zmenu", new CommandMenu(this), "zm");
 
