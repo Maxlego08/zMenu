@@ -91,7 +91,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 		Loader<Inventory> loader = new InventoryLoader(this.plugin);
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-		Inventory inventory = loader.load(configuration, "", file, classz);
+		Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
 		List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
 		inventories.add(inventory);

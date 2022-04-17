@@ -63,7 +63,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 			Class<? extends ZInventory> classz = (Class<? extends ZInventory>) objects[1];
 			Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class,
 					String.class, int.class, List.class);
-			return constructor.newInstance(this.plugin, name, fileName, size, buttons);
+			Plugin plugin = (Plugin) objects[2];
+			return constructor.newInstance(plugin, name, fileName, size, buttons);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
