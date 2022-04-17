@@ -20,6 +20,30 @@ public interface InventoryManager extends Saveable {
 	 * 
 	 * @param plugin
 	 * @param fileName
+	 * @param classz - Default class ZInventory
+	 * @return inventory
+	 * @throws InventoryException
+	 */
+	public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
+	
+	/**
+	 * Allows you to load an inventory from a file You must add the class of
+	 * your plugin as a parameter
+	 * 
+	 * @param plugin
+	 * @param file
+	 * @param classz - Default class ZInventory
+	 * @return inventory
+	 * @throws InventoryException
+	 */
+	public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException;
+	
+	/**
+	 * Allows you to load an inventory from a file You must add the class of
+	 * your plugin as a parameter
+	 * 
+	 * @param plugin
+	 * @param fileName
 	 * @return inventory
 	 * @throws InventoryException
 	 */
@@ -30,7 +54,7 @@ public interface InventoryManager extends Saveable {
 	 * your plugin as a parameter
 	 * 
 	 * @param plugin
-	 * @param file
+	 * @param fileF
 	 * @return inventory
 	 * @throws InventoryException
 	 */

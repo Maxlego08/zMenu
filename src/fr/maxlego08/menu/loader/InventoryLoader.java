@@ -1,11 +1,13 @@
 package fr.maxlego08.menu.loader;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
@@ -55,6 +57,17 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 		}
 
 		String fileName = this.getFileNameWithoutExtension(file);
+
+		try {
+
+			Class<? extends ZInventory> classz = (Class<? extends ZInventory>) objects[1];
+			Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class,
+					String.class, int.class, List.class);
+			return constructor.newInstance(this.plugin, name, fileName, size, buttons);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return new ZInventory(this.plugin, name, fileName, size, buttons);
 	}

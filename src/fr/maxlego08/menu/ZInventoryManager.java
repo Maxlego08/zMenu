@@ -64,22 +64,34 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	}
 
 	@Override
+	public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
+		return this.loadInventory(plugin, file, ZInventory.class);
+	}
+
+	@Override
 	public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
+		return this.loadInventory(plugin, fileName, ZInventory.class);
+	}
+
+	@Override
+	public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
+			throws InventoryException {
 
 		File file = new File(plugin.getDataFolder(), fileName);
 		if (!file.exists()) {
 			throw new InventoryFileNotFound("Cannot find " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
 		}
 
-		return this.loadInventory(plugin, file);
+		return this.loadInventory(plugin, file, classz);
 	}
 
 	@Override
-	public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
+	public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz)
+			throws InventoryException {
 
 		Loader<Inventory> loader = new InventoryLoader(this.plugin);
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-		Inventory inventory = loader.load(configuration, "", file);
+		Inventory inventory = loader.load(configuration, "", file, classz);
 
 		List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
 		inventories.add(inventory);
