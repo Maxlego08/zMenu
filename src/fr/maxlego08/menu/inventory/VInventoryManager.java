@@ -155,7 +155,7 @@ public class VInventoryManager extends ListenerAdapter {
 			return;
 		VInventory inventory = playerInventories.get(player.getUniqueId());
 		remove(player);
-		inventory.onClose(event, plugin, player);
+		inventory.onPreClose(event, plugin, player);
 	}
 
 	@Override

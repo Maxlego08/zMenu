@@ -30,7 +30,13 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	protected String guiName;
 	protected boolean disableClick = true;
 	protected boolean openAsync = false;
+	
+	private boolean isClose = false;
 
+	public boolean isClose() {
+		return isClose;
+	}
+	
 	/**
 	 * Inventory Id
 	 * 
@@ -220,6 +226,11 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	public abstract InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args)
 			throws InventoryOpenException;
 
+	protected void onPreClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+		this.isClose = true;
+		this.onClose(event, plugin, player);
+	}
+	
 	/**
 	 * 
 	 * @param event
