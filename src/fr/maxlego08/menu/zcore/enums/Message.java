@@ -52,6 +52,7 @@ public enum Message {
 	INVENTORY_ERROR("§cImpossible de trouver l'inventaire §f%name%§c."), 
 	
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
+	DESCRIPTION_VERSION("Show plugin version"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	
