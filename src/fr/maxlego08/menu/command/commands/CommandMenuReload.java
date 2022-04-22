@@ -2,6 +2,7 @@ package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -27,6 +28,9 @@ public class CommandMenuReload extends VCommand {
 		
 		inventoryManager.deleteInventories(plugin);
 		inventoryManager.loadInventories();
+		
+		CommandManager commandManager = plugin.getCommandManager();
+		commandManager.loadCommands();
 		
 		message(this.sender, Message.RELOAD);
 		

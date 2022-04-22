@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import fr.maxlego08.menu.command.CommandManager;
+import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.exceptions.ListenerNullException;
 import fr.maxlego08.menu.inventory.VInventory;
@@ -41,7 +41,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	private Persist persist;
 	private long enableTime;
 
-	protected CommandManager commandManager;
+	protected VCommandManager zcommandManager;
 	protected VInventoryManager vinventoryManager;
 
 	protected void preEnable() {
@@ -59,8 +59,8 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	protected void postEnable() {
 
-		if (this.commandManager != null) {
-			this.commandManager.validCommands();
+		if (this.zcommandManager != null) {
+			this.zcommandManager.validCommands();
 		}
 
 		this.log.log(
@@ -180,8 +180,8 @@ public abstract class ZPlugin extends JavaPlugin {
 	/**
 	 * @return the commandManager
 	 */
-	public CommandManager getCommandManager() {
-		return this.commandManager;
+	public VCommandManager getVCommandManager() {
+		return this.zcommandManager;
 	}
 
 	/**
@@ -220,7 +220,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	 * @param aliases
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-		this.commandManager.registerCommand(command, vCommand, Arrays.asList(aliases));
+		this.zcommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
 	}
 
 	/**

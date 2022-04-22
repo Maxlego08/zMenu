@@ -17,13 +17,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.command.commands.CommandInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
-public class CommandManager extends ZUtils implements CommandExecutor, TabCompleter {
+public class VCommandManager extends ZUtils implements CommandExecutor, TabCompleter {
 
 	private final MenuPlugin plugin;
 	private final List<VCommand> commands = new ArrayList<VCommand>();
@@ -33,7 +34,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	 * 
 	 * @param template
 	 */
-	public CommandManager(MenuPlugin template) {
+	public VCommandManager(MenuPlugin template) {
 		this.plugin = template;
 	}
 
@@ -278,7 +279,7 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 	 * @param aliases
 	 *            - Command aliases
 	 */
-	public void registerCommand(String string, VCommand vCommand, List<String> aliases) {
+	public void registerCommand(Plugin plugin, String string, VCommand vCommand, List<String> aliases) {
 		try {
 			Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 			bukkitCommandMap.setAccessible(true);
@@ -298,13 +299,18 @@ public class CommandManager extends ZUtils implements CommandExecutor, TabComple
 			commands.add(vCommand.addSubCommand(string));
 			vCommand.addSubCommand(aliases);
 
-			if (!commandMap.register(command.getName(), this.plugin.getDescription().getName(), command)) {
+			if (!commandMap.register(command.getName(), plugin.getDescription().getName(), command)) {
 				Logger.info("Unable to add the command " + vCommand.getSyntax());
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void registerCommand(fr.maxlego08.menu.api.command.Command command) {
+		this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command),
+				command.getAliases());
 	}
 
 }

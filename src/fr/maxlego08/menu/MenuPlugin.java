@@ -8,7 +8,8 @@ import org.bukkit.plugin.ServicePriority;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.command.CommandManager;
+import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -33,6 +34,7 @@ public class MenuPlugin extends ZPlugin {
 
 	private final ButtonManager buttonManager = new ZButtonManager();
 	private final InventoryManager inventoryManager = new ZInventoryManager(this);
+	private final CommandManager commandManager = new ZCommandManager(this);
 	private final MessageLoader messageLoader = new MessageLoader(this);
 
 	@Override
@@ -44,6 +46,8 @@ public class MenuPlugin extends ZPlugin {
 		files.add("inventories/example.yml");
 		files.add("inventories/test/example2.yml");
 		files.add("inventories/test/test3/example3.yml");
+		files.add("commands/commands.yml");
+		files.add("commands/example/example.yml");
 
 		files.forEach(e -> {
 			if (!new File(this.getDataFolder(), e).exists()) {
@@ -51,12 +55,14 @@ public class MenuPlugin extends ZPlugin {
 			}
 		});
 
-		this.commandManager = new CommandManager(this);
+		this.zcommandManager = new VCommandManager(this);
 		this.vinventoryManager = new VInventoryManager(this);
 
 		this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this,
 				ServicePriority.Highest);
 		this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this,
+				ServicePriority.Highest);
+		this.getServer().getServicesManager().register(CommandManager.class, this.commandManager, this,
 				ServicePriority.Highest);
 
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -70,14 +76,17 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(Config.getInstance());
 		this.addSave(this.messageLoader);
 		this.addSave(this.inventoryManager);
+		this.addSave(this.commandManager);
 
 		if (this.isEnable(Plugins.HEADDATABASE)) {
 
 			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
 			this.addListener(new DatabaseListener(this));
-			
+
 		} else {
+			
 			this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+			
 		}
 
 		new Metrics(this, 14951);
@@ -123,4 +132,8 @@ public class MenuPlugin extends ZPlugin {
 		return this.messageLoader;
 	}
 
+	public CommandManager getCommandManager() {
+		return commandManager;
+	}
+	
 }

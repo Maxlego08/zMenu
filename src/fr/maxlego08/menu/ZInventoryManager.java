@@ -182,6 +182,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public void loadInventories() {
+		
 		// Check if file exist
 		File folder = new File(this.plugin.getDataFolder(), "inventories");
 		if (!folder.exists()) {

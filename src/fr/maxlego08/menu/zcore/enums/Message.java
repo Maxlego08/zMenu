@@ -49,6 +49,7 @@ public enum Message {
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
 	
 	INVENTORY_NOT_FOUND("§cImpossible de trouver l'inventaire §f%toName% §cdans l'inventaire §f%name%§c."), 
+	INVENTORY_ERROR("§cImpossible de trouver l'inventaire §f%name%§c."), 
 	
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
 	

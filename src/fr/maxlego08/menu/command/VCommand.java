@@ -319,7 +319,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	public VCommand addSubCommand(VCommand command) {
 		command.setParent(this);
-		this.plugin.getCommandManager().registerCommand(command);
+		this.plugin.getVCommandManager().registerCommand(command);
 		this.subVCommands.add(command);
 		return this;
 	}

@@ -1,0 +1,13 @@
+commands:
+  example1:
+    command: examplea
+    aliases:
+      - exampleb
+    inventory: example
+  example2:
+    command: exampled
+    permission: "admin.use"
+    aliases:
+      - examplec
+      - examplee
+    inventory: example2    

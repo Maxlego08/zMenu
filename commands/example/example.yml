@@ -1,0 +1,4 @@
+commands:
+  example1:
+    command: openfiles
+    inventory: example3  
