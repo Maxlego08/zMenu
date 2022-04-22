@@ -9,6 +9,7 @@ public class CommandMenu extends VCommand {
 
 	public CommandMenu(MenuPlugin plugin) {
 		super(plugin);
+		this.addSubCommand(new CommandMenuOpen(plugin));
 		this.addSubCommand(new CommandMenuReload(plugin));
 		this.addSubCommand(new CommandMenuVersion(plugin));
 	}

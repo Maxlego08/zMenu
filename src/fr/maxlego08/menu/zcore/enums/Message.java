@@ -18,11 +18,11 @@ public enum Message {
 	TELEPORT_ERROR("§cYou already have a teleportation in progress!"),
 	TELEPORT_SUCCESS("§7Teleportation done!"),
 	
-	INVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c."),
-	INVENTORY_CLONE_NULL("§cThe inventory clone is null!"),
-	INVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c."),
-	INVENTORY_BUTTON_PREVIOUS("§f» §7Previous page"),
-	INVENTORY_BUTTON_NEXT("§f» §7Next page"),
+	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c."),
+	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!"),
+	VINVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c."),
+	VINVENTORY_BUTTON_PREVIOUS("§f» §7Previous page"),
+	VINVENTORY_BUTTON_NEXT("§f» §7Next page"),
 	
 	TIME_DAY("%02d %day% %02d %hour% %02d %minute% %02d %second%"),
 	TIME_HOUR("%02d %hour% %02d minute(s) %02d %second%"),
@@ -48,9 +48,15 @@ public enum Message {
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
 	
-	INVENTORY_NOT_FOUND("§cImpossible de trouver l'inventaire §f%toName% §cdans l'inventaire §f%name%§c."), 
-	INVENTORY_ERROR("§cImpossible de trouver l'inventaire §f%name%§c."), 
+	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §c inventory in the §f%name%§c inventory."), 
+	INVENTORY_ERROR("§cUnable to find the §f%name%§c inventory."), 
+	INVENTORY_OPEN_OTHER("§aYou have just opened the inventory §f%name%§a to the §3%player%§a."),
+	INVENTORY_OPEN_SUCCESS("§aYou have just opened the inventory §f%name%§a."),
+	INVENTORY_OPEN_ERROR_INVENTORY("§cImpossible to find the inventory §f%name%§c."),
+	INVENTORY_OPEN_ERROR_PLAYER("§cUnable to find the player, please specify."),
+	INVENTORY_OPEN_ERROR_CONSOLE("§cOnly one player can open an inventory."),
 	
+	DESCRIPTION_OPEN("Allows you to open an inventory"),
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
 	DESCRIPTION_VERSION("Show plugin version"),
 	

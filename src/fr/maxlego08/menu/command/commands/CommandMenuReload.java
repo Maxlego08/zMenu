@@ -15,25 +15,25 @@ public class CommandMenuReload extends VCommand {
 		super(plugin);
 		this.addSubCommand("reload", "rl");
 		this.setDescription(Message.DESCRIPTION_RELOAD);
-		this.setPermission(Permission.ZMENU_RELAOD);
+		this.setPermission(Permission.ZMENU_RELOAD);
 	}
 
 	@Override
 	protected CommandType perform(MenuPlugin plugin) {
 
 		InventoryManager inventoryManager = plugin.getInventoryManager();
-		
+
 		plugin.getMessageLoader().load(plugin.getPersist());
 		Config.getInstance().load(plugin.getPersist());
-		
+
 		inventoryManager.deleteInventories(plugin);
 		inventoryManager.loadInventories();
-		
+
 		CommandManager commandManager = plugin.getCommandManager();
 		commandManager.loadCommands();
-		
+
 		message(this.sender, Message.RELOAD);
-		
+
 		return CommandType.SUCCESS;
 	}
 

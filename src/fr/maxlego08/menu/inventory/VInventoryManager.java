@@ -85,7 +85,7 @@ public class VInventoryManager extends ListenerAdapter {
 		Optional<VInventory> optional = this.getInventory(id);
 
 		if (!optional.isPresent()) {
-			message(player, Message.INVENTORY_CLONE_NULL, "%id%", id);
+			message(player, Message.VINVENTORY_CLONE_NULL, "%id%", id);
 			return;
 		}
 
@@ -98,21 +98,21 @@ public class VInventoryManager extends ListenerAdapter {
 		VInventory clonedInventory = inventory.clone();
 
 		if (clonedInventory == null) {
-			message(player, Message.INVENTORY_CLONE_NULL, "%id%", id);
+			message(player, Message.VINVENTORY_CLONE_NULL, "%id%", id);
 			return;
 		}
 
 		clonedInventory.setId(id);
 		try {
-			InventoryResult result = clonedInventory.preOpenInventory(plugin, player, page, objects);
+			InventoryResult result = clonedInventory.preOpenInventory(this.plugin, player, page, objects);
 			if (result.equals(InventoryResult.SUCCESS)) {
 				player.openInventory(clonedInventory.getSpigotInventory());
 				this.playerInventories.put(player.getUniqueId(), clonedInventory);
 			} else if (result.equals(InventoryResult.ERROR)) {
-				message(player, Message.INVENTORY_OPEN_ERROR, "%id%", id);
+				message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
 			}
 		} catch (InventoryOpenException e) {
-			message(player, Message.INVENTORY_OPEN_ERROR, "%id%", id);
+			message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
 			e.printStackTrace();
 		}
 	}
