@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.HomeLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
@@ -40,6 +42,7 @@ import fr.maxlego08.menu.zcore.utils.storage.Persist;
 public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	private final Map<String, List<Inventory>> inventories = new HashMap<String, List<Inventory>>();
+	private final List<MaterialLoader> loaders = new ArrayList<>();
 	private final MenuPlugin plugin;
 
 	/**
@@ -198,6 +201,28 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean registerMaterialLoader(MaterialLoader materialLoader) {
+
+		Optional<MaterialLoader> optional = this.getMaterialLoader(materialLoader.getKey());
+		if (optional.isPresent()) {
+			return false;
+		}
+
+		this.loaders.add(materialLoader);
+		return true;
+	}
+
+	@Override
+	public Optional<MaterialLoader> getMaterialLoader(String key) {
+		return this.loaders.stream().filter(e -> e.getKey().equalsIgnoreCase(key)).findFirst();
+	}
+
+	@Override
+	public Collection<MaterialLoader> getMaterialLoader() {
+		return Collections.unmodifiableCollection(this.loaders);
 	}
 
 }

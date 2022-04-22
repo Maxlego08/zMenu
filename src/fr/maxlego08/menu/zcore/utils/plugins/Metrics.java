@@ -93,7 +93,8 @@ public class Metrics {
      * @param pluginId The id of the plugin.
      *                 It can be found at <a href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
-    public Metrics(Plugin plugin, int pluginId) {
+    @SuppressWarnings("deprecation")
+	public Metrics(Plugin plugin, int pluginId) {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null!");
         }
@@ -279,7 +280,8 @@ public class Metrics {
     /**
      * Collects the data and sends it afterwards.
      */
-    private void submitData() {
+    @SuppressWarnings("deprecation")
+	private void submitData() {
         final JsonObject data = getServerData();
 
         JsonArray pluginData = new JsonArray();

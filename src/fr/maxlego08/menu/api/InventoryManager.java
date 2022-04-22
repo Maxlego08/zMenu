@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.storage.Saveable;
 
@@ -143,5 +144,28 @@ public interface InventoryManager extends Saveable {
 	 * Allows to load the inventories of the plugin
 	 */
 	public void loadInventories();
+	
+	/**
+	 * Allows you to register a material loader
+	 * 
+	 * @param materialLoader
+	 * @return boolean - true if registered
+	 */
+	public boolean registerMaterialLoader(MaterialLoader materialLoader);
+	
+	/**
+	 * Returns a material loader based on a key
+	 * 
+	 * @param key
+	 * @return optional
+	 */
+	public Optional<MaterialLoader> getMaterialLoader(String key);
+	
+	/**
+	 * Return the list of material loader
+	 * 
+	 * @return materials
+	 */
+	public Collection<MaterialLoader> getMaterialLoader();
 
 }

@@ -55,7 +55,7 @@ public class ZButtonLoader implements Loader<Button> {
 					+ " in inventory " + this.file.getAbsolutePath());
 		}
 
-		Loader<ItemStack> itemStackLoader = new ItemStackLoader();
+		Loader<ItemStack> itemStackLoader = new ItemStackLoader(this.plugin.getInventoryManager());
 
 		ButtonLoader loader = optional.get();
 		ZButton button = (ZButton) loader.load(configuration, path);

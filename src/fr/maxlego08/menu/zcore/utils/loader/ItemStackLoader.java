@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils.loader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -14,6 +15,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
+import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.exceptions.ItemFlagException;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -24,6 +27,16 @@ import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 @SuppressWarnings("deprecation")
 public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
+	private final InventoryManager manager;
+
+	/**
+	 * @param manager
+	 */
+	public ItemStackLoader(InventoryManager manager) {
+		super();
+		this.manager = manager;
+	}
+
 	/**
 	 * Load ItemStack
 	 */
@@ -32,52 +45,83 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 		int data = configuration.getInt(path + "data", 0);
 		int amount = configuration.getInt(path + "amount", 1);
 		short durability = (short) configuration.getInt(path + "durability", 0);
-		int modelID = configuration.getInt(path + "modelID", 0);
 		Material material = null;
 
-		int value = configuration.getInt(path + "material", 0);
-		if (value != 0)
-			material = getMaterial(value);
+		int materialAsId = configuration.getInt(path + "material", 0);
+		if (materialAsId != 0) {
+			material = this.getMaterial(materialAsId);
+		}
 
 		if (material == null) {
 			String str = configuration.getString(path + "material", null);
-			if (str == null)
+			if (str == null) {
 				return null;
+			}
 			material = Material.getMaterial(str.toUpperCase());
 		}
 
-		if (modelID < 0)
-			modelID = 0;
+		ItemStack itemStack = null;
 
-		ItemStack item = null;
+		if (material == null || material.equals(Material.AIR)) {
 
-		if (material == null || material.equals(Material.AIR))
+			String string = configuration.getString(path + "material", null);
+
+			System.out.println(string);
+			if (string.contains(":")) {
+
+				String[] values = string.split(":");
+				System.out.println(values);
+				if (values.length == 2) {
+
+					String key = values[0];
+					String value = values[1];
+
+					Optional<MaterialLoader> optional = this.manager.getMaterialLoader(key);
+					System.out.println(optional + " - " + key + " - " + value);
+					if (optional.isPresent()) {
+
+						MaterialLoader loader = optional.get();
+						System.out.println(loader);
+						itemStack = loader.load(configuration, path, value);
+						System.out.println(itemStack);
+
+					}
+
+				}
+
+			}
+
 			return null;
+		}
 
-		item = new ItemStack(material, amount, (byte) data);
+		itemStack = new ItemStack(material, amount, (byte) data);
 
 		if (configuration.contains(path + "url")) {
 
-			item = createSkull(configuration.getString(path + "url"));
+			itemStack = createSkull(configuration.getString(path + "url"));
 
-		} else if (configuration.contains(path + "potion")) {
+		}
+
+		if (configuration.contains(path + "potion")) {
 
 			PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
 			int level = configuration.getInt(path + "level", 1);
 			boolean splash = configuration.getBoolean(path + "splash", false);
 			boolean extended = configuration.getBoolean(path + "extended", false);
 
-			item = new Potion(type, level, splash, extended).toItemStack(amount);
+			itemStack = new Potion(type, level, splash, extended).toItemStack(amount);
 
 		}
-		
-		if (item == null)
+
+		if (itemStack == null) {
 			return null;
+		}
 
-		if (durability != 0)
-			item.setDurability(durability);
+		if (durability != 0) {
+			itemStack.setDurability(durability);
+		}
 
-		ItemMeta meta = item.getItemMeta();
+		ItemMeta meta = itemStack.getItemMeta();
 
 		List<String> tmpLore = configuration.getStringList(path + "lore");
 		if (tmpLore.size() != 0) {
@@ -87,8 +131,9 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 		}
 
 		String displayName = configuration.getString(path + "name", null);
-		if (displayName != null)
+		if (displayName != null) {
 			meta.setDisplayName(color(displayName));
+		}
 
 		List<String> enchants = configuration.getStringList(path + "enchants");
 
@@ -101,10 +146,11 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 		}
 
-		if (modelID > 0)
+		int modelID = configuration.getInt(path + "modelID", 0);
+		if (modelID > 0) {
 			meta.setCustomModelData(modelID);
+		}
 
-		// Permet de charger l'enchantement de l'item
 		if (enchants.size() != 0) {
 
 			for (String enchantString : enchants) {
@@ -147,7 +193,6 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 		List<String> flags = configuration.getStringList(path + "flags");
 
-		// Permet de charger les diffÃ©rents flags
 		if (flags.size() != 0 && NMSUtils.getNMSVersion() != 1.7) {
 
 			for (String flagString : flags) {
@@ -168,9 +213,9 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			}
 		}
 
-		item.setItemMeta(meta);
+		itemStack.setItemMeta(meta);
 
-		return item;
+		return itemStack;
 	}
 
 	/**

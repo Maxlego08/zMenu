@@ -13,11 +13,14 @@ import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
+import fr.maxlego08.menu.listener.DatabaseListener;
+import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
+import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 
 /**
  * System to create your plugins very simply Projet:
@@ -47,13 +50,15 @@ public class MenuPlugin extends ZPlugin {
 				saveResource(e, false);
 			}
 		});
-		
+
 		this.commandManager = new CommandManager(this);
 		this.vinventoryManager = new VInventoryManager(this);
 
-		this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this, ServicePriority.Highest);
-		this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this, ServicePriority.Highest);
-		
+		this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this,
+				ServicePriority.Highest);
+		this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this,
+				ServicePriority.Highest);
+
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
 		this.registerCommand("zmenu", new CommandMenu(this), "zm");
 
@@ -66,7 +71,14 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(this.messageLoader);
 		this.addSave(this.inventoryManager);
 
-		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+		if (this.isEnable(Plugins.HEADDATABASE)) {
+
+			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
+			this.addListener(new DatabaseListener(this));
+			
+		} else {
+			this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+		}
 
 		new Metrics(this, 14951);
 
