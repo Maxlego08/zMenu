@@ -98,6 +98,11 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
+	public void onInventoryClose(Player player, InventoryDefault inventory) {
+
+	}
+
+	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 
 		if (this.closeInventory()) {

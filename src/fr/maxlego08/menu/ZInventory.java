@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
+import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 
 public class ZInventory implements Inventory {
 
@@ -68,7 +71,7 @@ public class ZInventory implements Inventory {
 	}
 
 	@Override
-	public int getMaxPage(Object... objects) {
+	public int getMaxPage(Player player, Object... objects) {
 		Optional<Integer> optional = this.buttons.stream().map(Button::getSlot).max(Integer::compare);
 		if (optional.isPresent()) {
 			int maxSlot = optional.get();
@@ -83,6 +86,11 @@ public class ZInventory implements Inventory {
 			int slot = button.getRealSlot(this.size, page);
 			return slot >= 0 && slot < this.size;
 		}).map(button -> button.toButton(PlaceholderButton.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public InventoryResult openInventory(Player player, VInventory inventoryDefault) {
+		return InventoryResult.SUCCESS;
 	}
 
 }

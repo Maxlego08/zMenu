@@ -3,6 +3,7 @@ package fr.maxlego08.menu.inventory.inventories;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.menu.MenuPlugin;
@@ -17,6 +18,7 @@ public class InventoryDefault extends VInventory {
 
 	private Inventory inventory;
 	private List<Inventory> oldInventories;
+	private List<PlaceholderButton> buttons;
 	private int maxPage = 1;
 
 	@Override
@@ -24,19 +26,32 @@ public class InventoryDefault extends VInventory {
 			throws InventoryOpenException {
 
 		this.inventory = (Inventory) args[0];
+
+		InventoryResult result = this.inventory.openInventory(player, this);
+		if (result != InventoryResult.SUCCESS) {
+			return result;
+		}
+
 		this.oldInventories = (List<Inventory>) args[1];
 
-		this.maxPage = this.inventory.getMaxPage(args);
+		this.maxPage = this.inventory.getMaxPage(player, args);
 
 		String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
 		super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
 
-		List<PlaceholderButton> buttons = this.inventory.sortButtons(page, args);
-		buttons.forEach(button -> button.onInventoryOpen(player, this));
+		this.buttons = this.inventory.sortButtons(page, args);
+		this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 
-		buttons.forEach(this::buildButton);
+		this.buttons.forEach(this::buildButton);
 
 		return InventoryResult.SUCCESS;
+	}
+
+	@Override
+	protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+
+		this.buttons.forEach(button -> button.onInventoryClose(player, this));
+
 	}
 
 	/**

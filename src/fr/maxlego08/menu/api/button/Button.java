@@ -139,6 +139,14 @@ public interface Button {
 	public void onInventoryOpen(Player player, InventoryDefault inventory);
 
 	/**
+	 * This method is called when the player close the inventory
+	 * 
+	 * @param player
+	 * @param inventory
+	 */
+	public void onInventoryClose(Player player, InventoryDefault inventory);
+
+	/**
 	 * Allows to get the real slot of the button
 	 * 
 	 * @param inventorySize

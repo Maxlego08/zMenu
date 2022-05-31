@@ -4,6 +4,6 @@ public enum InventoryResult {
 
 	SUCCESS,
 	ERROR,
-	DEFAULT,
+	CLOSE,
 	
 }

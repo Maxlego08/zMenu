@@ -3,10 +3,13 @@ package fr.maxlego08.menu.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
+import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 
 public interface Inventory {
 
@@ -60,7 +63,7 @@ public interface Inventory {
 	 * @param objects
 	 * @return page
 	 */
-	public int getMaxPage(Object... objects);
+	public int getMaxPage(Player player, Object... objects);
 
 	/**
 	 * Allows you to sort the buttons according to a page
@@ -70,5 +73,14 @@ public interface Inventory {
 	 * @return buttons
 	 */
 	public List<PlaceholderButton> sortButtons(int page, Object... objects);
+
+	/**
+	 * When a inventory is open
+	 * 
+	 * @param player
+	 * @param inventoryDefault
+	 * @return result
+	 */
+	public InventoryResult openInventory(Player player, VInventory inventoryDefault);
 
 }
