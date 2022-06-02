@@ -115,7 +115,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	public Optional<Inventory> getInventory(Plugin plugin, String name) {
 		return this.getInventories(plugin).stream().filter(i -> i.getFileName().equalsIgnoreCase(name)).findFirst();
 	}
-	
+
 	@Override
 	public Collection<Inventory> getInventories() {
 		return this.inventories.values().stream().flatMap(List::stream).collect(Collectors.toList());
@@ -165,6 +165,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	}
 
 	@Override
+	public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
+		List<Inventory> oldInventories = new ArrayList<>();
+		for (Inventory i : inventories) {
+			oldInventories.add(i);
+		}
+		this.openInventory(player, inventory, page, oldInventories);
+	}
+
+	@Override
 	public void loadButtons() {
 
 		// Loading ButtonLoader
@@ -188,7 +197,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public void loadInventories() {
-		
+
 		// Check if file exist
 		File folder = new File(this.plugin.getDataFolder(), "inventories");
 		if (!folder.exists()) {

@@ -144,6 +144,16 @@ public interface InventoryManager extends Saveable {
 	public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
 	
 	/**
+	 * Open a inventory to a player
+	 * 
+	 * @param player
+	 * @param inventory
+	 * @param page
+	 * @param inventories
+	 */
+	public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
+	
+	/**
 	 * Allows to load the buttons
 	 * The {@link ButtonLoadEvent} event will be called, so you can add your own buttons using this event
 	 */

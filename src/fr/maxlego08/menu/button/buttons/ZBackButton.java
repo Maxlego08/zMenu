@@ -31,13 +31,13 @@ public class ZBackButton extends ZPlaceholderButton implements BackButton {
 		if (this.inventory == null) {
 			return;
 		}
-		
+
 		List<Inventory> oldInventories = inventory.getOldInventories();
 		oldInventories.remove(this.inventory);
 
 		Inventory toInventory = this.inventory;
 		this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
-		
+
 		super.onClick(player, event, inventory, slot);
 	}
 
