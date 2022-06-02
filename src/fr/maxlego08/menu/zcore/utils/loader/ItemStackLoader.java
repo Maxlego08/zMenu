@@ -66,24 +66,19 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
 			String string = configuration.getString(path + "material", null);
 
-			System.out.println(string);
 			if (string.contains(":")) {
 
 				String[] values = string.split(":");
-				System.out.println(values);
 				if (values.length == 2) {
 
 					String key = values[0];
 					String value = values[1];
 
 					Optional<MaterialLoader> optional = this.manager.getMaterialLoader(key);
-					System.out.println(optional + " - " + key + " - " + value);
 					if (optional.isPresent()) {
 
 						MaterialLoader loader = optional.get();
-						System.out.println(loader);
 						itemStack = loader.load(configuration, path, value);
-						System.out.println(itemStack);
 
 					}
 

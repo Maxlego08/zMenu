@@ -112,6 +112,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	}
 
 	@Override
+	public Optional<Inventory> getInventory(Plugin plugin, String name) {
+		return this.getInventories(plugin).stream().filter(i -> i.getFileName().equalsIgnoreCase(name)).findFirst();
+	}
+	
+	@Override
 	public Collection<Inventory> getInventories() {
 		return this.inventories.values().stream().flatMap(List::stream).collect(Collectors.toList());
 	}
@@ -168,7 +173,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 		ButtonManager buttonManager = this.plugin.getButtonManager();
 
-		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class));
+		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
 		buttonManager.register(new SlotLoader(this.plugin));
 		buttonManager.register(new PerformLoader(this.plugin));
 		buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));

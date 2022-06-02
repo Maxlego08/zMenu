@@ -19,17 +19,6 @@ public class HeadDatabaseLoader implements MaterialLoader{
 		try {
 
 			HeadDatabaseAPI api = new HeadDatabaseAPI();
-			
-			ItemStack item = api.getItemHead("7129");
-			
-			System.out.println("A ------");
-			System.out.println(item);
-            System.out.println(api.getItemID(item));
-			
-            System.out.println("B ------");
-			System.out.println(materialString);
-			System.out.println(api.getItemHead(materialString));
-			
 			return api.getItemHead(materialString);
 			
 		}catch (Exception e) {

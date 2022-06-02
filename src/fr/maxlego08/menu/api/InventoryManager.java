@@ -68,6 +68,15 @@ public interface InventoryManager extends Saveable {
 	 * @return optional
 	 */
 	public Optional<Inventory> getInventory(String name);
+	
+	/**
+	 * Allows you to return an inventory according to its name and the plugin
+	 * 
+	 * @param plugin
+	 * @param name
+	 * @return optional
+	 */
+	public Optional<Inventory> getInventory(Plugin plugin, String name);
 
 	/**
 	 * Allows you to return the list of inventories
