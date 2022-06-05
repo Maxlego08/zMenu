@@ -77,6 +77,15 @@ public interface InventoryManager extends Saveable {
 	 * @return optional
 	 */
 	public Optional<Inventory> getInventory(Plugin plugin, String name);
+	
+	/**
+	 * Allows you to return an inventory according to its name and the plugin name
+	 *  
+	 * @param pluginName
+	 * @param name
+	 * @return optional
+	 */
+	public Optional<Inventory> getInventory(String pluginName, String name);
 
 	/**
 	 * Allows you to return the list of inventories
@@ -187,4 +196,30 @@ public interface InventoryManager extends Saveable {
 	 */
 	public Collection<MaterialLoader> getMaterialLoader();
 
+	/**
+	 * Allows to open an inventory according to the name and the plugin
+	 * 
+	 * @param player
+	 * @param plugin
+	 * @param inventoryName
+	 */
+	public void openInventory(Player player, Plugin plugin, String inventoryName);
+	
+	/**
+	 * Allows to open an inventory according to the name and the plugin name
+	 * 
+	 * @param player
+	 * @param pluginName
+	 * @param inventoryName
+	 */
+	public void openInventory(Player player, String pluginName, String inventoryName);
+	
+	/**
+	 * Allows you to open an inventory according to the name
+	 * 
+	 * @param player
+	 * @param inventoryName
+	 */
+	public void openInventory(Player player, String inventoryName);
+	
 }

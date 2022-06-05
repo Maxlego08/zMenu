@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -35,6 +36,7 @@ import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
+import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
@@ -108,12 +110,20 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public Optional<Inventory> getInventory(String name) {
-		return this.getInventories().stream().filter(i -> i.getFileName().equalsIgnoreCase(name)).findFirst();
+		return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
+				.findFirst();
 	}
 
 	@Override
 	public Optional<Inventory> getInventory(Plugin plugin, String name) {
-		return this.getInventories(plugin).stream().filter(i -> i.getFileName().equalsIgnoreCase(name)).findFirst();
+		return this.getInventories(plugin).stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
+				.findFirst();
+	}
+
+	@Override
+	public Optional<Inventory> getInventory(String pluginName, String name) {
+		Plugin plugin = pluginName == null ? null : Bukkit.getPluginManager().getPlugin(pluginName);
+		return plugin == null || name == null ? Optional.empty() : this.getInventory(plugin, name);
 	}
 
 	@Override
@@ -123,7 +133,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public Collection<Inventory> getInventories(Plugin plugin) {
-		return this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+		return plugin == null ? new ArrayList<>()
+				: this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
 	}
 
 	@Override
@@ -239,6 +250,51 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	@Override
 	public Collection<MaterialLoader> getMaterialLoader() {
 		return Collections.unmodifiableCollection(this.loaders);
+	}
+
+	@Override
+	public void openInventory(Player player, Plugin plugin, String inventoryName) {
+		
+		Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
+
+		if (!optional.isPresent()) {
+			player.closeInventory();
+			message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
+					plugin.getName());
+			return;
+		}
+
+		this.openInventory(player, optional.get());
+	}
+
+	@Override
+	public void openInventory(Player player, String pluginName, String inventoryName) {
+		
+		Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
+
+		if (!optional.isPresent()) {
+			player.closeInventory();
+			message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
+					pluginName);
+			return;
+		}
+
+		this.openInventory(player, optional.get());
+	}
+
+	@Override
+	public void openInventory(Player player, String inventoryName) {
+		
+		Optional<Inventory> optional = this.getInventory(inventoryName);
+
+		if (!optional.isPresent()) {
+			player.closeInventory();
+			message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
+					this.plugin.getName());
+			return;
+		}
+
+		this.openInventory(player, optional.get());
 	}
 
 }

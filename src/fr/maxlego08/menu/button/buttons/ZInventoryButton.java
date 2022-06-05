@@ -17,15 +17,18 @@ public class ZInventoryButton extends ZPlaceholderButton implements InventoryBut
 
 	private final InventoryManager inventoryManager;
 	private final String inventoryName;
+	private final String pluginName;
 
 	/**
 	 * @param inventoryManager
 	 * @param inventoryName
+	 * @param pluginName
 	 */
-	public ZInventoryButton(InventoryManager inventoryManager, String inventoryName) {
+	public ZInventoryButton(InventoryManager inventoryManager, String inventoryName, String pluginName) {
 		super();
 		this.inventoryManager = inventoryManager;
 		this.inventoryName = inventoryName;
+		this.pluginName = pluginName;
 	}
 
 	@Override
@@ -35,22 +38,23 @@ public class ZInventoryButton extends ZPlaceholderButton implements InventoryBut
 
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-		
+
 		Inventory fromInventory = inventory.getInventory();
 		List<Inventory> oldInventories = inventory.getOldInventories();
 		oldInventories.add(fromInventory);
-				
-		Optional<Inventory> optional = this.inventoryManager.getInventory(this.inventoryName);
-		if (!optional.isPresent()){
+
+		Optional<Inventory> optional = this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
+		if (!optional.isPresent()) {
 			player.closeInventory();
-			message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName);
+			message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%",
+					this.inventoryName, "%plugin%", this.pluginName);
 			return;
 		}
-		
+
 		Inventory toInventory = optional.get();
 		this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
-		
+
 		super.onClick(player, event, inventory, slot);
 	}
-	
+
 }
