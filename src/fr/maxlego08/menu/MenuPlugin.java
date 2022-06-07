@@ -20,6 +20,7 @@ import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 
@@ -49,11 +50,20 @@ public class MenuPlugin extends ZPlugin {
 		files.add("commands/commands.yml");
 		files.add("commands/example/example.yml");
 
-		files.forEach(e -> {
-			if (!new File(this.getDataFolder(), e).exists()) {
-				saveResource(e, false);
-			}
-		});
+		File folder = new File(this.getDataFolder(), "inventories");
+		
+		if (!folder.exists()) {
+			files.forEach(e -> {
+				if (!new File(this.getDataFolder(), e).exists()) {
+					
+					if (NMSUtils.isNewVersion()) {
+						saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
+					} else {
+						saveResource(e, false);
+					}
+				}
+			});
+		}
 
 		this.zcommandManager = new VCommandManager(this);
 		this.vinventoryManager = new VInventoryManager(this);
@@ -84,9 +94,9 @@ public class MenuPlugin extends ZPlugin {
 			this.addListener(new DatabaseListener(this));
 
 		} else {
-			
+
 			this.getSavers().forEach(saver -> saver.load(this.getPersist()));
-			
+
 		}
 
 		new Metrics(this, 14951);
@@ -135,5 +145,5 @@ public class MenuPlugin extends ZPlugin {
 	public CommandManager getCommandManager() {
 		return commandManager;
 	}
-	
+
 }

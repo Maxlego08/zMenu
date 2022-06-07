@@ -42,11 +42,13 @@ items:
     slot: 45
     isPermanent: true
     inventory: "example2"
+    # You can specify the name of the plugin to be on the right inventory
+    plugin: "zMenus"    
     item:
       material: CHEST
-      name: "&fClique pour accéder"
+      name: "&fClick to access"
       lore:
-        - "&7à un autre inventaire"      
+        - "&7to another inventory"      
   testPage:
     type: PERFORM_COMMAND
     slot: 13
@@ -92,7 +94,15 @@ items:
       item:
         material: STAINED_GLASS_PANE
         data: 7
-        name: "&aaaa" 
+        name: "&aaaa"
+  testHead1:
+    type: NONE
+    slot: 10
+    playerHead: "Maxlego08"
+    item:
+      material: SKULL_ITEM
+      data: 3
+      name: "Maxlego08" 
   testPlaceHolder:
     type: NONE
     slot: 40

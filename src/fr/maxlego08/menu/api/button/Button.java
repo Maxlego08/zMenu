@@ -175,5 +175,12 @@ public interface Button {
 	 * @return sound
 	 */
 	public SoundOption getSound();
+	
+	/**
+	 * Return the player name
+	 * 
+	 * @return name
+	 */
+	public String getPlayerHead();
 
 }

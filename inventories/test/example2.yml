@@ -39,6 +39,8 @@ items:
     slot: 45
     isPermanent: true
     inventory: "example3"
+    # You can specify the name of the plugin to be on the right inventory
+    plugin: "zMenus"
     item:
       material: CHEST
       name: "&fClique pour accéder"

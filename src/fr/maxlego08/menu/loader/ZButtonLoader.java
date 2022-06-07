@@ -71,6 +71,7 @@ public class ZButtonLoader implements Loader<Button> {
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
 		button.setMessages(configuration.getStringList(path + "messages"));
+		button.setPlayerHead(configuration.getString(path + "playerHead", null));
 
 		Optional<XSound> optionalXSound = XSound.matchXSound(configuration.getString(path + "sound", null));
 		if (optionalXSound.isPresent()) {

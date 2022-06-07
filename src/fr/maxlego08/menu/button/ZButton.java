@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.sound.SoundOption;
@@ -21,6 +22,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private boolean closeInventory = false;
 	private List<String> messages = new ArrayList<String>();
 	private SoundOption soundOption;
+	private String playerHead;
 
 	@Override
 	public String getName() {
@@ -32,13 +34,23 @@ public abstract class ZButton extends ZUtils implements Button {
 		return this.itemStack;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public ItemStack getCustomItemStack(Player player) {
 		if (this.itemStack == null) {
 			return null;
 		}
 		ItemStack itemStack = this.itemStack.clone();
-		return super.playerHead(super.papi(itemStack, player), player);
+
+		if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
+
+			SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+			skullMeta.setOwner(this.papi(this.playerHead.replace("%player%", player.getName()), player));
+			itemStack.setItemMeta(skullMeta);
+
+		}
+
+		return super.papi(itemStack, player);
 	}
 
 	@Override
@@ -79,6 +91,11 @@ public abstract class ZButton extends ZUtils implements Button {
 	@Override
 	public boolean hasSpecialRender() {
 		return false;
+	}
+
+	@Override
+	public String getPlayerHead() {
+		return this.playerHead;
 	}
 
 	@Override
@@ -189,6 +206,11 @@ public abstract class ZButton extends ZUtils implements Button {
 	 */
 	public ZButton setSoundOption(SoundOption soundOption) {
 		this.soundOption = soundOption;
+		return this;
+	}
+
+	public ZButton setPlayerHead(String playerHead) {
+		this.playerHead = playerHead;
 		return this;
 	}
 

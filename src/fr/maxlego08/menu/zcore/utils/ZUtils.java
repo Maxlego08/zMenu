@@ -972,16 +972,19 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return itemstack
 	 */
 	public ItemStack playerHead(ItemStack itemStack, OfflinePlayer player) {
+
 		String name = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
 				? itemStack.getItemMeta().getDisplayName() : null;
+
 		if (NMSUtils.isNewVersion()) {
 			if (itemStack.getType().equals(Material.PLAYER_HEAD) && name != null && name.startsWith("HEAD")) {
 				SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
 				name = name.replace("HEAD", "");
-				if (name.length() == 0)
+				if (name.length() == 0) {
 					meta.setDisplayName(null);
-				else
+				} else {
 					meta.setDisplayName(name);
+				}
 				meta.setOwningPlayer(player);
 				itemStack.setItemMeta(meta);
 			}
@@ -990,10 +993,11 @@ public abstract class ZUtils extends MessageUtils {
 					&& name.startsWith("HEAD")) {
 				SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
 				name = name.replace("HEAD", "");
-				if (name.length() == 0)
+				if (name.length() == 0) {
 					meta.setDisplayName(null);
-				else
+				} else {
 					meta.setDisplayName(name);
+				}
 				meta.setOwner(player.getName());
 				itemStack.setItemMeta(meta);
 			}
@@ -1085,6 +1089,32 @@ public abstract class ZUtils extends MessageUtils {
 		}
 		head.setItemMeta(headMeta);
 		return head;
+	}
+
+	protected String getTexture(SkullMeta meta) {
+
+		try {
+			Field profileField = meta.getClass().getDeclaredField("profile");
+			profileField.setAccessible(true);
+			GameProfile profile = (GameProfile) profileField.get(meta);
+
+			System.out.println(profile);
+
+			if (profile.getProperties().containsKey("textures")) {
+
+				Property property = (Property) profile.getProperties().get("textures");
+				System.out.println(property);
+				System.out.println(property.getName() + " - " + property.getValue() + " - " + property.getSignature());
+
+				return property.getValue();
+
+			}			
+
+		} catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
+			error.printStackTrace();
+		}
+
+		return null;
 	}
 
 	/**
@@ -1255,8 +1285,8 @@ public abstract class ZUtils extends MessageUtils {
 	}
 
 	public String getFileNameWithoutExtension(File file) {
-		Pattern pattern= Pattern.compile("(?<=.)\\.[^.]+$");
-	    return pattern.matcher(file.getName()).replaceAll("");
+		Pattern pattern = Pattern.compile("(?<=.)\\.[^.]+$");
+		return pattern.matcher(file.getName()).replaceAll("");
 	}
 
 }
