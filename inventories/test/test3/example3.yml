@@ -1,5 +1,9 @@
 name: "&7Example &b3"
 size: 54
+fillItem:
+  material: STAINED_GLASS_PANE
+  data: 6
+  name: "&3Filled"
 items:
   # Will display an item that has no action on the different slots
   slots:

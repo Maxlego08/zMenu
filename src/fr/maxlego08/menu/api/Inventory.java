@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.button.Button;
@@ -82,5 +83,12 @@ public interface Inventory {
 	 * @return result
 	 */
 	public InventoryResult openInventory(Player player, VInventory inventoryDefault);
+	
+	/**
+	 * Returns the itemstack that will be used to fill the inventory
+	 * 
+	 * @return itemstack
+	 */
+	public ItemStack getFillItemStack();
 
 }

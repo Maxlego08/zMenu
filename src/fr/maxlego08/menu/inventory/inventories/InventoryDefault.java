@@ -39,6 +39,12 @@ public class InventoryDefault extends VInventory {
 		String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
 		super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
 
+		if (this.inventory.getFillItemStack() != null) {
+			for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
+				this.addItem(a, this.inventory.getFillItemStack());
+			}
+		}
+
 		this.buttons = this.inventory.sortButtons(page, args);
 		this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.MenuPlugin;
@@ -17,6 +18,7 @@ import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.loader.ItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
@@ -50,6 +52,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
 		List<Button> buttons = new ArrayList<Button>();
 		Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);
+
+		Loader<ItemStack> itemStackLoader = new ItemStackLoader(plugin.getInventoryManager());
+		ItemStack itemStack = null;
+		try {
+			if (configuration.contains("fillItem")) {
+				itemStack = itemStackLoader.load(configuration, "fillItem.");
+			}
+		} catch (Exception e) {
+		}
+
 		ConfigurationSection section = configuration.getConfigurationSection("items.");
 
 		for (String buttonPath : section.getKeys(false)) {
@@ -58,19 +70,23 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
 		String fileName = this.getFileNameWithoutExtension(file);
 
+		ZInventory inventory;
+
 		try {
 
 			Class<? extends ZInventory> classz = (Class<? extends ZInventory>) objects[1];
 			Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class,
 					String.class, int.class, List.class);
 			Plugin plugin = (Plugin) objects[2];
-			return constructor.newInstance(plugin, name, fileName, size, buttons);
-			
+			inventory = constructor.newInstance(plugin, name, fileName, size, buttons);
+
 		} catch (Exception e) {
 			e.printStackTrace();
+			inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
 		}
 
-		return new ZInventory(this.plugin, name, fileName, size, buttons);
+		inventory.setFillItemStack(itemStack);
+		return inventory;
 	}
 
 	@Override
