@@ -48,7 +48,15 @@ items:
       material: CHEST
       name: "&fClick to access"
       lore:
-        - "&7to another inventory"    
+        - "&7to another inventory" 
+  shop:
+    type: INVENTORY
+    slot: 46
+    inventory: "shop"
+    plugin: "zMenus"
+    item:
+      material: PAPER
+      name: "&fSHOP"           
   testPlaceholderHead:
     type: NONE
     slot: 21
