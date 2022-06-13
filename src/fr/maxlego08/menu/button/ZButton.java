@@ -30,6 +30,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private String playerHead;
 	private OpenLink openLink;
 	private boolean isUpdated = false;
+	private boolean refreshOnClick = false;
 
 	@Override
 	public String getName() {
@@ -285,4 +286,13 @@ public abstract class ZButton extends ZUtils implements Button {
 		this.isUpdated = isUpdated;
 	}
 
+	@Override
+	public boolean isRefreshOnClick() {
+		return this.refreshOnClick;
+	}
+	
+	public void setRefreshOnClick(boolean refreshOnClick) {
+		this.refreshOnClick = refreshOnClick;
+	}
+	
 }

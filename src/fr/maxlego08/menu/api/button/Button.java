@@ -198,5 +198,12 @@ public interface Button {
 	 * @return boolean
 	 */
 	public boolean isUpdated();
+	
+	/**
+	 * Update 
+	 * 
+	 * @return boolean
+	 */
+	public boolean isRefreshOnClick();
 
 }
