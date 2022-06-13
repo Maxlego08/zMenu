@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.loader;
+package fr.maxlego08.menu.loader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,7 @@ import fr.maxlego08.menu.exceptions.ItemFlagException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 
 @SuppressWarnings("deprecation")
