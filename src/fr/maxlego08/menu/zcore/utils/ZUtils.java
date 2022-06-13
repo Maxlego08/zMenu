@@ -1071,10 +1071,16 @@ public abstract class ZUtils extends MessageUtils {
 	protected ItemStack createSkull(String url) {
 
 		ItemStack head = playerHead();
-		if (url.isEmpty())
+		if (url.isEmpty()) {
 			return head;
+		}
 
-		SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+		this.applyTexture(head, url);
+		return head;
+	}
+
+	protected void applyTexture(ItemStack itemStack, String url) {
+		SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
 		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 
 		profile.getProperties().put("textures", new Property("textures", url));
@@ -1087,8 +1093,7 @@ public abstract class ZUtils extends MessageUtils {
 		} catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
 			error.printStackTrace();
 		}
-		head.setItemMeta(headMeta);
-		return head;
+		itemStack.setItemMeta(headMeta);
 	}
 
 	protected String getTexture(SkullMeta meta) {
@@ -1098,17 +1103,13 @@ public abstract class ZUtils extends MessageUtils {
 			profileField.setAccessible(true);
 			GameProfile profile = (GameProfile) profileField.get(meta);
 
-			System.out.println(profile);
-
 			if (profile.getProperties().containsKey("textures")) {
 
 				Property property = (Property) profile.getProperties().get("textures");
-				System.out.println(property);
-				System.out.println(property.getName() + " - " + property.getValue() + " - " + property.getSignature());
 
 				return property.getValue();
 
-			}			
+			}
 
 		} catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
 			error.printStackTrace();

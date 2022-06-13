@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,7 +71,15 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	public void unregistetCommands(Plugin plugin) {
 
 		List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
-		commands.forEach(command -> this.unregistetCommands(command));
+		Iterator<Command> iterator = commands.iterator();
+		while (iterator.hasNext()) {
+			Command command = iterator.next();
+			JavaPlugin javaPlugin = (JavaPlugin) command.getPlugin();
+			PluginCommand pluginCommand = javaPlugin.getCommand(command.getCommand());
+			if (pluginCommand != null) {
+				this.unRegisterBukkitCommand(javaPlugin, pluginCommand);
+			}
+		}
 
 		this.commands.remove(plugin.getName());
 	}

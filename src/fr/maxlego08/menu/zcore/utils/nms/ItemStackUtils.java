@@ -137,7 +137,7 @@ public class ItemStackUtils {
 		NBTCOMPRESSEDSTREAMTOOLS("NBTCompressedStreamTools", "net.minecraft.nbt.NBTCompressedStreamTools"),
 
 		NBTTAGCOMPOUND("NBTTagCompound", "net.minecraft.nbt.NBTTagCompound"),
-
+		
 		;
 
 		private final String oldClassName;

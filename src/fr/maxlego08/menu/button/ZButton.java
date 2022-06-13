@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public abstract class ZButton extends ZUtils implements Button {
@@ -44,9 +45,19 @@ public abstract class ZButton extends ZUtils implements Button {
 
 		if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
-			SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-			skullMeta.setOwner(this.papi(this.playerHead.replace("%player%", player.getName()), player));
-			itemStack.setItemMeta(skullMeta);
+			String name = this.playerHead.replace("%player%", player.getName());
+			String texture = PlayerSkin.getTexture(name);
+			if (texture == null) {
+
+				SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+				skullMeta.setOwner(this.papi(this.playerHead.replace("%player%", player.getName()), player));
+				itemStack.setItemMeta(skullMeta);
+
+			} else {
+
+				this.applyTexture(itemStack, texture);
+
+			}
 
 		}
 
