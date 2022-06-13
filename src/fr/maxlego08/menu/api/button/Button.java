@@ -191,5 +191,12 @@ public interface Button {
 	 * @return openLink
 	 */ 
 	public OpenLink getOpenLink();
+	
+	/**
+	 * Lets you know if the button needs to be updated
+	 * 
+	 * @return boolean
+	 */
+	public boolean isUpdated();
 
 }

@@ -90,5 +90,12 @@ public interface Inventory {
 	 * @return itemstack
 	 */
 	public MenuItemStack getFillItemStack();
+	
+	/**
+	 * Returns the interval for updating the buttons
+	 * 
+	 * @return interval
+	 */
+	public int getUpdateInterval();
 
 }

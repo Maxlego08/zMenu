@@ -1,5 +1,7 @@
 name: "&7Example &32"
 size: 54
+# Allows you to set the time for the redisplay of the name and the lore for the items that have the update option active.
+update_interval: 1
 items:
   # Will display an item that has no action on the different slots
   slots:
@@ -34,6 +36,16 @@ items:
       material: NETHER_STAR
       name: "&fRetour"
     slot: 49      
+  testUpdate:
+    update: true
+    slot: 4
+    item:
+      material: DIAMOND_SWORD
+      name: "&cInformations"
+      lore:
+        - "&8&m+------------------------+"
+        - "&7Time played: &c%statistic_time_played%"
+        - "&8&m+------------------------+"
   example3:
     type: INVENTORY
     slot: 45

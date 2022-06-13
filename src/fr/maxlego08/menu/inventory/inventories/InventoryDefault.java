@@ -5,10 +5,13 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -56,7 +59,7 @@ public class InventoryDefault extends VInventory {
 	@Override
 	protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
 
-		this.buttons.forEach(button -> button.onInventoryClose(player, this));
+		this.buttons.forEach(button -> ((ZButton) button).onInventoryClose(player, this));
 
 	}
 
@@ -132,6 +135,34 @@ public class InventoryDefault extends VInventory {
 			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
 			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
 			itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
+		}
+
+		if (button.isUpdated()) {
+
+			this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000, (task, canRun) -> {
+
+				if (!canRun) {
+					return;
+				}
+
+				if (this.isClose()) {
+					task.cancel();
+					return;
+				}
+
+				MenuItemStack menuItemStack = button.getItemStack();
+
+				ItemMeta itemMeta = itemStack.getItemMeta();
+
+				itemMeta.setLore(papi(menuItemStack.getLore(), this.player));
+				if (menuItemStack.getDisplayName() != null) {
+					itemMeta.setDisplayName(papi(menuItemStack.getDisplayName(), this.player));
+				}
+
+				itemStack.setItemMeta(itemMeta);
+				this.getSpigotInventory().setItem(slot, itemStack);
+			});
+
 		}
 
 	}

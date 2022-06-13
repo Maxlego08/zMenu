@@ -93,6 +93,7 @@ public class ZButtonLoader implements Loader<Button> {
 		button.setButtonName(buttonName);
 		button.setMessages(configuration.getStringList(path + "messages"));
 		button.setPlayerHead(configuration.getString(path + "playerHead", null));
+		button.setUpdated(configuration.getBoolean(path + "update", false));
 
 		if (configuration.contains(path + "openLink")) {
 

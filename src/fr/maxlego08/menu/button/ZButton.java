@@ -29,6 +29,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private SoundOption soundOption;
 	private String playerHead;
 	private OpenLink openLink;
+	private boolean isUpdated = false;
 
 	@Override
 	public String getName() {
@@ -155,11 +156,11 @@ public abstract class ZButton extends ZUtils implements Button {
 						String[] splitMessages = finalMessage.split(this.openLink.getReplace());
 
 						TextComponent component = buildTextComponent(splitMessages[0]);
-						
+
 						TextComponent clickComponant = buildTextComponent(color(this.openLink.getMessage()));
 						setClickAction(clickComponant, Action.OPEN_URL, this.openLink.getLink());
 						setHoverMessage(clickComponant, color(this.openLink.getHover()));
-						
+
 						component.addExtra(clickComponant);
 						if (splitMessages.length == 2) {
 							component.addExtra(buildTextComponent(splitMessages[1]));
@@ -273,6 +274,15 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	public void setOpenLink(OpenLink openLink) {
 		this.openLink = openLink;
+	}
+
+	@Override
+	public boolean isUpdated() {
+		return this.isUpdated;
+	}
+
+	public void setUpdated(boolean isUpdated) {
+		this.isUpdated = isUpdated;
 	}
 
 }

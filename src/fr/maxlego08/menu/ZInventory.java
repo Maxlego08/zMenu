@@ -23,6 +23,7 @@ public class ZInventory implements Inventory {
 	private final int size;
 	private final List<Button> buttons;
 	private MenuItemStack fillItemStack;
+	private int updateInterval;
 
 	/**
 	 * @param plugin
@@ -42,6 +43,10 @@ public class ZInventory implements Inventory {
 	
 	public void setFillItemStack(MenuItemStack fillItemStack) {
 		this.fillItemStack = fillItemStack;
+	}
+	
+	public void setUpdateInterval(int updateInterval) {
+		this.updateInterval = updateInterval;
 	}
 
 	@Override
@@ -101,6 +106,11 @@ public class ZInventory implements Inventory {
 	@Override
 	public MenuItemStack getFillItemStack() {
 		return this.fillItemStack;
+	}
+
+	@Override
+	public int getUpdateInterval() {
+		return this.updateInterval;
 	}
 
 }
