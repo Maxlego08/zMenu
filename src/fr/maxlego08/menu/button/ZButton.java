@@ -50,7 +50,7 @@ public abstract class ZButton extends ZUtils implements Button {
 			if (texture == null) {
 
 				SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-				skullMeta.setOwner(this.papi(this.playerHead.replace("%player%", player.getName()), player));
+				skullMeta.setOwner(name);
 				itemStack.setItemMeta(skullMeta);
 
 			} else {

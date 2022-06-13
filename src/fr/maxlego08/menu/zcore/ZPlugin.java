@@ -23,11 +23,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import fr.maxlego08.menu.command.VCommandManager;
+import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.exceptions.ListenerNullException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.listener.ListenerAdapter;
+import fr.maxlego08.menu.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
@@ -52,6 +55,8 @@ public abstract class ZPlugin extends JavaPlugin {
 
 	protected void preEnable() {
 
+		LocalPlaceholder.getInstance().setPlugin((MenuPlugin) this);
+
 		this.enableTime = System.currentTimeMillis();
 
 		this.log.log("=== ENABLE START ===");
@@ -61,6 +66,8 @@ public abstract class ZPlugin extends JavaPlugin {
 
 		this.gson = getGsonBuilder().create();
 		this.persist = new Persist(this);
+
+		Placeholder.register();
 	}
 
 	protected void postEnable() {
@@ -238,7 +245,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
 		this.vinventoryManager.registerInventory(inventory, vInventory);
 	}
-	
+
 	/**
 	 * For 1.13+
 	 * 

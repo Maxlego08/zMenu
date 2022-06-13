@@ -95,14 +95,16 @@ items:
         material: STAINED_GLASS_PANE
         data: 7
         name: "&aaaa"
-  testHead1:
+  testPlaceholderHead:
     type: NONE
     slot: 10
-    playerHead: "Maxlego08"
+    playerHead: "%player%"
     item:
       material: SKULL_ITEM
       data: 3
-      name: "Maxlego08" 
+      name: "&3%player_name%'s head"
+      lore:
+        - "&fHead with placeholder"
   testPlaceHolder:
     type: NONE
     slot: 40
