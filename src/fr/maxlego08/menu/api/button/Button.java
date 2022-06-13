@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
 public interface Button {
@@ -182,5 +183,12 @@ public interface Button {
 	 * @return name
 	 */
 	public String getPlayerHead();
+	
+	/**
+	 * Allows you to open a link in a message
+	 * 
+	 * @return openLink
+	 */ 
+	public OpenLink getOpenLink();
 
 }

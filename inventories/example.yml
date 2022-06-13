@@ -48,7 +48,37 @@ items:
       material: CHEST
       name: "&fClick to access"
       lore:
-        - "&7to another inventory"      
+        - "&7to another inventory"    
+  testPlaceholderHead:
+    type: NONE
+    slot: 21
+    playerHead: "%player%"
+    item:
+      material: SKULL_ITEM
+      data: 3
+      name: "&3%player_name%'s head"
+      lore:
+        - "&fHead with placeholder"        
+  clickActionExample:
+    type: NONE
+    slot: 23
+    closeInventory: true
+    messages:
+      - "&8(&6zMenu&8) &fAdd your server to the site &3Serveur Minecraft Vote"
+      - "&8(&6zMenu&8) %link% &d!"
+    openLink: 
+      link: "https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU"
+      message: "&b&lClick here"
+      replace: "%link%"
+      hover:
+        - "&bClick here !"
+    item:
+      material: SKULL_ITEM
+      url: "ewogICJ0aW1lc3RhbXAiIDogMTY1NTEwNjkxNjU3OSwKICAicHJvZmlsZUlkIiA6ICJhM2I2ZjRmOTU2ODg0YWUxYmQzYTBhYzBjY2ZiYmYxZCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNYXhsZWdvMDgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJmNzhiODhlMzBkYjU5MjY1Yzc0YzMwYjc1M2M1N2M0YzVkNzEwM2M5NWFjYWQ4MzJmYjI2OTNiYmFjNmNlMiIKICAgIH0KICB9Cn0="
+      name: "Maxlego08's head"
+      lore:
+        - "&fGo to &b&nhttps://serveur-minecraft-vote.fr/"     
+        - "&fClick to access the site and earn &c5€&f credits."
   testPage:
     type: PERFORM_COMMAND
     slot: 13
@@ -95,16 +125,6 @@ items:
         material: STAINED_GLASS_PANE
         data: 7
         name: "&aaaa"
-  testPlaceholderHead:
-    type: NONE
-    slot: 10
-    playerHead: "%player%"
-    item:
-      material: SKULL_ITEM
-      data: 3
-      name: "&3%player_name%'s head"
-      lore:
-        - "&fHead with placeholder"
   testPlaceHolder:
     type: NONE
     slot: 40

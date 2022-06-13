@@ -10,9 +10,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class ZButton extends ZUtils implements Button {
 
@@ -24,6 +27,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private List<String> messages = new ArrayList<String>();
 	private SoundOption soundOption;
 	private String playerHead;
+	private OpenLink openLink;
 
 	@Override
 	public String getName() {
@@ -138,7 +142,43 @@ public abstract class ZButton extends ZUtils implements Button {
 		}
 
 		if (this.messages.size() > 0) {
-			this.messages.forEach(message -> player.sendMessage(papi(message, player)));
+
+			if (this.openLink != null) {
+
+				this.messages.forEach(message -> {
+
+					String finalMessage = this.papi(message, player);
+
+					if (finalMessage.contains(this.openLink.getReplace())) {
+
+						String[] splitMessages = finalMessage.split(this.openLink.getReplace());
+
+						TextComponent component = buildTextComponent(splitMessages[0]);
+						
+						TextComponent clickComponant = buildTextComponent(color(this.openLink.getMessage()));
+						setClickAction(clickComponant, Action.OPEN_URL, this.openLink.getLink());
+						setHoverMessage(clickComponant, color(this.openLink.getHover()));
+						
+						component.addExtra(clickComponant);
+						if (splitMessages.length == 2) {
+							component.addExtra(buildTextComponent(splitMessages[1]));
+						}
+
+						player.spigot().sendMessage(component);
+
+					} else {
+
+						player.sendMessage(finalMessage);
+
+					}
+
+				});
+
+			} else {
+
+				this.messages.forEach(message -> player.sendMessage(this.papi(message, player)));
+
+			}
 		}
 
 		if (this.soundOption != null) {
@@ -223,6 +263,15 @@ public abstract class ZButton extends ZUtils implements Button {
 	public ZButton setPlayerHead(String playerHead) {
 		this.playerHead = playerHead;
 		return this;
+	}
+
+	@Override
+	public OpenLink getOpenLink() {
+		return this.openLink;
+	}
+
+	public void setOpenLink(OpenLink openLink) {
+		this.openLink = openLink;
 	}
 
 }

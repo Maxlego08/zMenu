@@ -705,10 +705,13 @@ public abstract class ZUtils extends MessageUtils {
 	 * @return
 	 */
 	protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
-		BaseComponent[] list = new BaseComponent[messages.size()];
-		for (int a = 0; a != messages.size(); a++)
-			list[a] = new TextComponent(messages.get(a) + (messages.size() - 1 == a ? "" : "\n"));
-		component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, list));
+		if (messages.size() > 0) {
+			BaseComponent[] list = new BaseComponent[messages.size()];
+			for (int a = 0; a != messages.size(); a++) {
+				list[a] = new TextComponent(messages.get(a) + (messages.size() - 1 == a ? "" : "\n"));
+			}
+			component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, list));
+		}
 		return component;
 	}
 
