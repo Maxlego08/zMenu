@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -22,9 +23,9 @@ public interface Button {
 	/**
 	 * Returns the itemstack that will be displayed
 	 * 
-	 * @return {@link ItemStack}
+	 * @return {@link MenuItemStack}
 	 */
-	public ItemStack getItemStack();
+	public MenuItemStack getItemStack();
 
 	/**
 	 * This method will return the itemstack that will be used in the inventory

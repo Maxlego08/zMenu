@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.button.Button;
@@ -56,13 +56,33 @@ public class ZButtonLoader implements Loader<Button> {
 					+ " in inventory " + this.file.getAbsolutePath());
 		}
 
-		Loader<ItemStack> itemStackLoader = new ItemStackLoader(this.plugin.getInventoryManager());
+		Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
 		ButtonLoader loader = optional.get();
 		ZButton button = (ZButton) loader.load(configuration, path);
 
-		int slot = configuration.getInt(path + "slot", 0);
-		int page = configuration.getInt(path + "page", 1);
+		int slot = 0;
+		int page;
+
+		try {
+
+			String slotString = configuration.getString(path + "slot", "0");
+			if (slotString != null && slotString.contains("-")) {
+
+				String[] strings = slotString.split("-");
+				page = Integer.valueOf(strings[0]);
+				slot = Integer.valueOf(strings[1]);
+
+			} else {
+				slot = configuration.getInt(path + "slot", 0);
+				page = configuration.getInt(path + "page", 1);
+			}
+
+		} catch (Exception e) {
+			slot = configuration.getInt(path + "slot", 0);
+			page = configuration.getInt(path + "page", 1);
+		}
+
 		page = page < 1 ? 1 : page;
 		slot = slot + ((page - 1) * this.inventorySize);
 

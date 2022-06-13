@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
@@ -52,8 +52,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 		List<Button> buttons = new ArrayList<Button>();
 		Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);
 
-		Loader<ItemStack> itemStackLoader = new ItemStackLoader(plugin.getInventoryManager());
-		ItemStack itemStack = null;
+		Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+		MenuItemStack itemStack = null;
 		try {
 			if (configuration.contains("fillItem")) {
 				itemStack = itemStackLoader.load(configuration, "fillItem.");

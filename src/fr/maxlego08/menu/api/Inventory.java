@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.inventory.VInventory;
@@ -89,6 +89,6 @@ public interface Inventory {
 	 * 
 	 * @return itemstack
 	 */
-	public ItemStack getFillItemStack();
+	public MenuItemStack getFillItemStack();
 
 }

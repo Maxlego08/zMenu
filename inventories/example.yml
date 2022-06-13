@@ -85,16 +85,22 @@ items:
     page: 2
     closeInventory: true
     consoleCommands:
-      - "bc %player% est trop beau"
+      - "bc %player% is too beautiful"
     consoleLeftCommands:
-      - "bc Le clique gauche"
+      - "bc The left click"
     consoleRightCommands:
-      - "bc Le clique droit"
+      - "bc The right click"
     item:
       material: DIAMOND
       name: "&fJe suis à la page 2"
     messages:
       - "&8(&6Groupe&fZ&8) &7Vous venez de cliquer sur un bouton"
+  testPage2:
+    type: NONE
+    slot: "2-22"
+    item:
+      material: BOOK 
+      name: "&3Example 2"
   next:
     type: NEXT
     isPermanent: true

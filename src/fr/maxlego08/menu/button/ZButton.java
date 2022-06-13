@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -20,7 +21,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public abstract class ZButton extends ZUtils implements Button {
 
 	private String buttonName;
-	private ItemStack itemStack;
+	private MenuItemStack itemStack;
 	private int slot = 0;
 	private boolean isPermanent = false;
 	private boolean closeInventory = false;
@@ -35,7 +36,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
-	public ItemStack getItemStack() {
+	public MenuItemStack getItemStack() {
 		return this.itemStack;
 	}
 
@@ -45,7 +46,7 @@ public abstract class ZButton extends ZUtils implements Button {
 		if (this.itemStack == null) {
 			return null;
 		}
-		ItemStack itemStack = this.itemStack.clone();
+		ItemStack itemStack = this.itemStack.build(player);
 
 		if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
@@ -210,7 +211,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	 * @param itemStack
 	 *            the itemStack to set
 	 */
-	public ZButton setItemStack(ItemStack itemStack) {
+	public ZButton setItemStack(MenuItemStack itemStack) {
 		this.itemStack = itemStack;
 		return this;
 	}

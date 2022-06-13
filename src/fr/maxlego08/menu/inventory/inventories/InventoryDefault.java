@@ -41,7 +41,7 @@ public class InventoryDefault extends VInventory {
 
 		if (this.inventory.getFillItemStack() != null) {
 			for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
-				this.addItem(a, this.inventory.getFillItemStack());
+				this.addItem(a, this.inventory.getFillItemStack().build(player));
 			}
 		}
 

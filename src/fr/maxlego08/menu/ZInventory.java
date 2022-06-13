@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.Inventory;
@@ -23,7 +22,7 @@ public class ZInventory implements Inventory {
 	private final String fileName;
 	private final int size;
 	private final List<Button> buttons;
-	private ItemStack fillItemStack;
+	private MenuItemStack fillItemStack;
 
 	/**
 	 * @param plugin
@@ -41,7 +40,7 @@ public class ZInventory implements Inventory {
 		this.buttons = buttons;
 	}
 	
-	public void setFillItemStack(ItemStack fillItemStack) {
+	public void setFillItemStack(MenuItemStack fillItemStack) {
 		this.fillItemStack = fillItemStack;
 	}
 
@@ -100,7 +99,7 @@ public class ZInventory implements Inventory {
 	}
 
 	@Override
-	public ItemStack getFillItemStack() {
+	public MenuItemStack getFillItemStack() {
 		return this.fillItemStack;
 	}
 

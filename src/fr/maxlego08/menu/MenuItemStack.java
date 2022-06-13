@@ -98,7 +98,7 @@ public class MenuItemStack extends ZUtils {
 		itemStack = new ItemStack(material, amount, (byte) this.data);
 
 		if (this.url != null) {
-			this.createSkull(this.url);
+			itemStack = this.createSkull(this.url);
 		}
 
 		if (this.potion != null) {
@@ -147,4 +147,185 @@ public class MenuItemStack extends ZUtils {
 
 		return itemStack;
 	}
+
+	/**
+	 * @return the material
+	 */
+	public String getMaterial() {
+		return material;
+	}
+
+	/**
+	 * @return the amount
+	 */
+	public String getAmount() {
+		return amount;
+	}
+
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @return the data
+	 */
+	public int getData() {
+		return data;
+	}
+
+	/**
+	 * @return the durability
+	 */
+	public int getDurability() {
+		return durability;
+	}
+
+	/**
+	 * @return the potion
+	 */
+	public Potion getPotion() {
+		return potion;
+	}
+
+	/**
+	 * @return the lore
+	 */
+	public List<String> getLore() {
+		return lore;
+	}
+
+	/**
+	 * @return the flags
+	 */
+	public List<ItemFlag> getFlags() {
+		return flags;
+	}
+
+	/**
+	 * @return the displayName
+	 */
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/**
+	 * @return the isGlowing
+	 */
+	public boolean isGlowing() {
+		return isGlowing;
+	}
+
+	/**
+	 * @return the modelID
+	 */
+	public int getModelID() {
+		return modelID;
+	}
+
+	/**
+	 * @return the enchantments
+	 */
+	public Map<Enchantment, Integer> getEnchantments() {
+		return enchantments;
+	}
+
+	/**
+	 * @param material
+	 *            the material to set
+	 */
+	public void setMaterial(String material) {
+		this.material = material;
+	}
+
+	/**
+	 * @param amount
+	 *            the amount to set
+	 */
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	/**
+	 * @param url
+	 *            the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @param data
+	 *            the data to set
+	 */
+	public void setData(int data) {
+		this.data = data;
+	}
+
+	/**
+	 * @param durability
+	 *            the durability to set
+	 */
+	public void setDurability(int durability) {
+		this.durability = durability;
+	}
+
+	/**
+	 * @param potion
+	 *            the potion to set
+	 */
+	public void setPotion(Potion potion) {
+		this.potion = potion;
+	}
+
+	/**
+	 * @param lore
+	 *            the lore to set
+	 */
+	public void setLore(List<String> lore) {
+		this.lore = lore;
+	}
+
+	/**
+	 * @param flags
+	 *            the flags to set
+	 */
+	public void setFlags(List<ItemFlag> flags) {
+		this.flags = flags;
+	}
+
+	/**
+	 * @param displayName
+	 *            the displayName to set
+	 */
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	/**
+	 * @param isGlowing
+	 *            the isGlowing to set
+	 */
+	public void setGlowing(boolean isGlowing) {
+		this.isGlowing = isGlowing;
+	}
+
+	/**
+	 * @param modelID
+	 *            the modelID to set
+	 */
+	public void setModelID(int modelID) {
+		this.modelID = modelID;
+	}
+
+	/**
+	 * @param enchantments
+	 *            the enchantments to set
+	 */
+	public void setEnchantments(Map<Enchantment, Integer> enchantments) {
+		this.enchantments = enchantments;
+	}
+
 }
