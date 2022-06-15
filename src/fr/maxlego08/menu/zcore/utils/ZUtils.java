@@ -1099,28 +1099,6 @@ public abstract class ZUtils extends MessageUtils {
 		itemStack.setItemMeta(headMeta);
 	}
 
-	protected String getTexture(SkullMeta meta) {
-
-		try {
-			Field profileField = meta.getClass().getDeclaredField("profile");
-			profileField.setAccessible(true);
-			GameProfile profile = (GameProfile) profileField.get(meta);
-
-			if (profile.getProperties().containsKey("textures")) {
-
-				Property property = (Property) profile.getProperties().get("textures");
-
-				return property.getValue();
-
-			}
-
-		} catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
-			error.printStackTrace();
-		}
-
-		return null;
-	}
-
 	/**
 	 * Allows to check if an itemstack and a head
 	 *
