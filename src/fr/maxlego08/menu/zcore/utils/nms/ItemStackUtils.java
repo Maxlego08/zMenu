@@ -42,7 +42,7 @@ public class ItemStackUtils {
 					.getMethod("asNMSCopy", new Class[] { ItemStack.class })
 					.invoke(null, new Object[] { paramItemStack });
 
-			if (NMS_VERSION == 1.18) {
+			if (NMS_VERSION == 1.18 || NMS_VERSION == 1.19) {
 				EnumReflectionItemStack.ITEMSTACK.getClassz().getMethod("b", new Class[] { localClass })
 						.invoke(localObject2, new Object[] { localObject1 });
 			} else {
@@ -137,7 +137,7 @@ public class ItemStackUtils {
 		NBTCOMPRESSEDSTREAMTOOLS("NBTCompressedStreamTools", "net.minecraft.nbt.NBTCompressedStreamTools"),
 
 		NBTTAGCOMPOUND("NBTTagCompound", "net.minecraft.nbt.NBTTagCompound"),
-		
+
 		;
 
 		private final String oldClassName;
