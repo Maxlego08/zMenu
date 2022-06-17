@@ -47,6 +47,7 @@ public enum Message {
 	COMMAND_NO_CONSOLE("§cOnly one player can execute this command."),
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
+	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://zmenu.groupez.dev/"),
 	
 	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §cinventory in the §f%name%§c inventory."), 
 	INVENTORY_ERROR("§cUnable to find the §f%name%§c inventory."), 
@@ -59,6 +60,7 @@ public enum Message {
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
 	DESCRIPTION_VERSION("Show plugin version"),
+    DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	

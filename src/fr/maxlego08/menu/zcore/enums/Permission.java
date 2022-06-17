@@ -5,6 +5,7 @@ public enum Permission {
 	ZMENU_RELOAD,
 	ZMENU_OPEN, 
 	ZMENU_USE,
+	ZMENU_CONVERT,
 
 	;
 

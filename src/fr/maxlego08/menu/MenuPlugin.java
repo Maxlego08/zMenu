@@ -37,6 +37,7 @@ public class MenuPlugin extends ZPlugin {
 	private final InventoryManager inventoryManager = new ZInventoryManager(this);
 	private final CommandManager commandManager = new ZCommandManager(this);
 	private final MessageLoader messageLoader = new MessageLoader(this);
+	private CommandMenu commandMenu;
 
 	@Override
 	public void onEnable() {
@@ -52,11 +53,11 @@ public class MenuPlugin extends ZPlugin {
 		files.add("commands/example/example.yml");
 
 		File folder = new File(this.getDataFolder(), "inventories");
-		
+
 		if (!folder.exists()) {
 			files.forEach(e -> {
 				if (!new File(this.getDataFolder(), e).exists()) {
-					
+
 					if (NMSUtils.isNewVersion()) {
 						saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
 					} else {
@@ -77,7 +78,7 @@ public class MenuPlugin extends ZPlugin {
 				ServicePriority.Highest);
 
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
-		this.registerCommand("zmenu", new CommandMenu(this), "zm");
+		this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
 		/* Add Listener */
 		this.addListener(new AdapterListener(this));
@@ -147,4 +148,7 @@ public class MenuPlugin extends ZPlugin {
 		return commandManager;
 	}
 
+	public CommandMenu getCommandMenu() {
+		return commandMenu;
+	}
 }

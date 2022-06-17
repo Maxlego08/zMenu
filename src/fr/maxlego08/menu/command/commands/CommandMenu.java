@@ -19,6 +19,7 @@ public class CommandMenu extends VCommand {
 	@Override
 	protected CommandType perform(MenuPlugin plugin) {
 
+		message(this.sender, Message.DOCUMENTATION_INFORMATION);
 		this.subVCommands.forEach(command -> {
 			if (command.getPermission() == null || this.sender.hasPermission(command.getPermission())) {
 				message(this.sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
