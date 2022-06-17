@@ -7,20 +7,15 @@
 #
 # Sponsor: https://serveur-minecraft-vote.fr/
 
-name: "&7Example &b3"
+name: "&7Shop"
 size: 54
-fillItem:
-  material: STAINED_GLASS_PANE
-  data: 6
-  name: "&3Filled"
 items:
   # Will display an item that has no action on the different slots
   slots:
     type: NONE_SLOT
     isPermanent: true
     item:
-      material: STAINED_GLASS_PANE
-      data: 5
+      material: GRAY_STAINED_GLASS_PANE
       name: "&e"
     slots:
       - 0
@@ -40,19 +35,40 @@ items:
       - 35
       - 36
       - 44
-      - 10      
-      - 16
+      - 46
+      - 47
+      - 49
+      - 51
+      - 52
+      - 53
+      - 45
+  shop1:
+    type: PERFORM_COMMAND
+    slot: 22
+    consoleCommands:
+      - "eco take %player% 500"
+      - "give %player% diamond 64"
+    refreshOnClick: true
+    item:
+      material: PAPER
+      name: "&aClick to buy !"
+      lore:
+        - "&fYou have enough money to buy this."
+    placeHolder: "%vault_eco_balance%"
+    action: SUPERIOR_OR_EQUAL
+    value: 500
+    else:
+      slot: 22
+      type: NONE
+      item:
+        material: PAPER
+        name: "&cYou can't do that :'("
+        lore:
+          - "&cYou dont have enough money to buy this."
   back:
     type: BACK
     isPermanent: true
     item:
       material: NETHER_STAR
       name: "&fRetour"
-    slot: 49      
-  home:
-    type: HOME
-    item:
-      material: CHEST
-      name: "&fHome"
-    slot: 45
-    
+    slot: 49

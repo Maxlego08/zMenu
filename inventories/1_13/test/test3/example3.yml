@@ -10,8 +10,7 @@
 name: "&7Example &b3"
 size: 54
 fillItem:
-  material: STAINED_GLASS_PANE
-  data: 6
+  material: GRAY_STAINED_GLASS_PANE
   name: "&3Filled"
 items:
   # Will display an item that has no action on the different slots
@@ -19,8 +18,7 @@ items:
     type: NONE_SLOT
     isPermanent: true
     item:
-      material: STAINED_GLASS_PANE
-      data: 5
+      material: YELLOW_STAINED_GLASS_PANE
       name: "&e"
     slots:
       - 0

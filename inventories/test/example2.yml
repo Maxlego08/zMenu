@@ -1,3 +1,12 @@
+# zMenu
+# This is a default configuration of the plugin. This configuration shows you the different posibilities of the plugin.
+# Before starting the configuration of the plugin we invite you to read the documentation.
+# Documentation: https://zmenu.groupez.dev/
+# Discord: https://discord.groupez.dev/
+# Plugin page: https://groupez.dev/resources/zmenu.253
+#
+# Sponsor: https://serveur-minecraft-vote.fr/
+
 name: "&7Example &32"
 size: 54
 # Allows you to set the time for the redisplay of the name and the lore for the items that have the update option active.
@@ -52,9 +61,9 @@ items:
     isPermanent: true
     inventory: "example3"
     # You can specify the name of the plugin to be on the right inventory
-    plugin: "zMenus"
+    plugin: "zMenu"
     item:
       material: CHEST
-      name: "&fClique pour accéder"
+      name: "&fClick to access"
       lore:
-        - "&7à un autre inventaire"    
+        - "&7to another inventory"    

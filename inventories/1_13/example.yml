@@ -10,13 +10,13 @@
 # Name of the inventory 
 name: "&7Example"
 
-# Inventory size 
+# Inventory size
 size: 54
 
 # List of buttons
 items:
   # Will display an item that has no action on the different slots
-  slots:    
+  slots:
     type: NONE_SLOT # Button type
     isPermanent: true # Allows you to set the button as permanent
     closeInventory: true # Allows you to close the inventory when clicking
@@ -26,8 +26,7 @@ items:
     item: # Item to be displayed 
       # For the material please take the right material according to your version of the game
       # More informations here: https://zmenu.groupez.dev/configurations/informations
-      material: STAINED_GLASS_PANE
-      data: 7
+      material: GRAY_STAINED_GLASS_PANE
       name: "&e"
     slots: # List of slots to display the button
       - 0
@@ -75,10 +74,9 @@ items:
   testPlaceholderHead:
     type: NONE
     slot: 21
-    playerHead: "%player%" # Allows to display the head of the player who will open the inventory
+    playerHead: "%player%"
     item:
-      material: SKULL_ITEM
-      data: 3
+      material: PLAYER_HEAD
       name: "&3%player_name%'s head"
       lore:
         - "&fHead with placeholder"        
@@ -96,8 +94,7 @@ items:
       hover: # Messages when the player will hover the text
         - "&bClick here !"
     item:
-      material: SKULL_ITEM
-      data: 3
+      material: PLAYER_HEAD
       # Texture of a head in base64
       # Check on https://minecraft-heads.com/
       url: "ewogICJ0aW1lc3RhbXAiIDogMTY1NTEwNjkxNjU3OSwKICAicHJvZmlsZUlkIiA6ICJhM2I2ZjRmOTU2ODg0YWUxYmQzYTBhYzBjY2ZiYmYxZCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNYXhsZWdvMDgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJmNzhiODhlMzBkYjU5MjY1Yzc0YzMwYjc1M2M1N2M0YzVkNzEwM2M5NWFjYWQ4MzJmYjI2OTNiYmFjNmNlMiIKICAgIH0KICB9Cn0="
@@ -108,7 +105,7 @@ items:
   testPage:
     type: PERFORM_COMMAND
     slot: 13
-    page: 2    
+    page: 2
     closeInventory: true
     # Commands sent when clicked
     consoleCommands:
@@ -140,9 +137,8 @@ items:
       type: NONE
       isPermanent: true
       item:
-        material: STAINED_GLASS_PANE
-        data: 7
-        name: "&aNop"
+        material: GRAY_STAINED_GLASS_PANE
+        name: "&aNop" 
   previous:
     type: PREVIOUS
     isPermanent: true
@@ -155,8 +151,7 @@ items:
       type: NONE
       isPermanent: true
       item:
-        material: STAINED_GLASS_PANE
-        data: 7
+        material: GRAY_STAINED_GLASS_PANE
         name: "&aNop"
   # Example of a button that will use the placeholder permissions system and that will use several else button
   testPlaceHolder:
@@ -164,7 +159,7 @@ items:
     slot: 40
     item:
       material: IRON_INGOT
-      name: "&fOUI"
+      name: "&fYES"
     placeHolder: "%player_level%"
     action: LOWER_OR_EQUAL
     value: 5
@@ -173,7 +168,7 @@ items:
       slot: 40
       item:
         material: GOLD_INGOT
-        name: "&3OUI"
+        name: "&3YES"
       placeHolder: "%player_level%"
       action: LOWER_OR_EQUAL
       value: 10
@@ -182,4 +177,4 @@ items:
         slot: 40
         item:
           material: DIAMOND
-          name: "&dOUI"
+          name: "&dYES"

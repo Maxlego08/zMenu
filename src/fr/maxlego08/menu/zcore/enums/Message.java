@@ -48,7 +48,7 @@ public enum Message {
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
 	
-	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §c inventory in the §f%name%§c inventory."), 
+	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §cinventory in the §f%name%§c inventory."), 
 	INVENTORY_ERROR("§cUnable to find the §f%name%§c inventory."), 
 	INVENTORY_OPEN_OTHER("§aYou have just opened the inventory §f%name%§a to the §3%player%§a."),
 	INVENTORY_OPEN_SUCCESS("§aYou have just opened the inventory §f%name%§a."),
