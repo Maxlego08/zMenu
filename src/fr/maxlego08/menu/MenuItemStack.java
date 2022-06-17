@@ -58,6 +58,7 @@ public class MenuItemStack extends ZUtils {
 		ItemStack itemStack = null;
 		Material material = null;
 
+		String papiMaterial = papi(this.material, player);
 		int amount = 1;
 		try {
 			amount = Integer.valueOf(papi(this.amount, player));
@@ -65,22 +66,22 @@ public class MenuItemStack extends ZUtils {
 		}
 
 		try {
-			material = getMaterial(Integer.valueOf(this.material));
+			material = getMaterial(Integer.valueOf(papiMaterial));
 		} catch (Exception e) {
 		}
 
 		if (material == null) {
 			try {
-				material = Material.getMaterial(this.material.toUpperCase());
+				material = Material.getMaterial(papiMaterial.toUpperCase());
 			} catch (Exception e) {
 			}
 		}
 
 		if (material == null || material.equals(Material.AIR)) {
 
-			if (this.material.contains(":")) {
+			if (papiMaterial.contains(":")) {
 
-				String[] values = this.material.split(":");
+				String[] values = papiMaterial.split(":");
 				if (values.length == 2) {
 
 					String key = values[0];

@@ -61,12 +61,12 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 	public String getConsolePermission() {
 		return this.consolePermission;
 	}
-	
+
 	@Override
 	public List<String> getConsoleRightCommands() {
 		return this.consoleRightCommands;
 	}
-	
+
 	@Override
 	public List<String> getConsoleLeftCommands() {
 		return this.consoleLeftCommands;
@@ -85,8 +85,10 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 
 		this.execute(player, player, this.commands);
 		this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands);
-		this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands);
 
+		if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
+			this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands);
+		}
 	}
 
 	private void execute(CommandSender executor, Player player, List<String> strings) {
@@ -98,10 +100,10 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-		
+
 		this.execute(player, event.getClick());
 		super.onClick(player, event, inventory, slot);
-		
+
 	}
 
 }

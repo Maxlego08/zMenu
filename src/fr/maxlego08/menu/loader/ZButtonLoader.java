@@ -108,6 +108,7 @@ public class ZButtonLoader implements Loader<Button> {
 		}
 
 		Optional<XSound> optionalXSound = XSound.matchXSound(configuration.getString(path + "sound", null));
+		
 		if (optionalXSound.isPresent()) {
 			XSound xSound = optionalXSound.get();
 			float pitch = Float.valueOf(configuration.getString(path + "pitch", "1.0f"));
