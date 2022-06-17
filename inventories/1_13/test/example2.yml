@@ -52,7 +52,7 @@ items:
       name: "&cInformations"
       lore:
         - "&8&m+------------------------+"
-        - "&7Time played: &c%statistic_time_played%"
+        - "&7Time played: &c%statistic_time_played%" # Dont forget to download ecloud Statistic - /papi ecloud download Statistic
         - "&8&m+------------------------+"
   example3:
     type: INVENTORY

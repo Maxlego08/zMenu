@@ -57,7 +57,7 @@ items:
       name: "&aClick to buy !"
       lore:
         - "&fYou have enough money to buy this."
-    placeHolder: "%vault_eco_balance%"
+    placeHolder: "%vault_eco_balance%" # Donc forget to download Vault ecloud - /papi ecloud download Vault
     action: SUPERIOR_OR_EQUAL
     value: 500
     else:
