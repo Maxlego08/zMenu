@@ -61,7 +61,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
 	@Override
 	public Optional<ButtonLoader> getLoader(Class<? extends Button> classz) {
-		return this.getLoaders().stream().filter(e -> e.getClass().isAssignableFrom(classz)).findFirst();
+		return this.getLoaders().stream().filter(e -> e.getButton().getClass().isAssignableFrom(classz)).findFirst();
 	}
 
 	@Override
