@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.inventory.inventories;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimerTask;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -23,6 +26,8 @@ public class InventoryDefault extends VInventory {
 	private List<Inventory> oldInventories;
 	private List<PlaceholderButton> buttons;
 	private int maxPage = 1;
+
+	private Map<Integer, TimerTask> timers = new HashMap<Integer, TimerTask>();
 
 	@Override
 	public InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args)
@@ -135,6 +140,7 @@ public class InventoryDefault extends VInventory {
 
 				button.onClick(this.player, event, this, slot);
 				if (button.isRefreshOnClick()) {
+					this.cancel(slot);
 					this.buildButton(button.getMasterParentButton().toButton(PlaceholderButton.class));
 				}
 
@@ -146,32 +152,41 @@ public class InventoryDefault extends VInventory {
 
 		if (button.isUpdated()) {
 
-			this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000, (task, canRun) -> {
+			TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000,
+					(task, canRun) -> {
 
-				if (!canRun) {
-					return;
-				}
+						if (!canRun) {
+							return;
+						}
 
-				if (this.isClose()) {
-					task.cancel();
-					return;
-				}
+						if (this.isClose()) {
+							task.cancel();
+							return;
+						}
 
-				MenuItemStack menuItemStack = button.getItemStack();
+						MenuItemStack menuItemStack = button.getItemStack();
 
-				ItemMeta itemMeta = itemStack.getItemMeta();
+						ItemMeta itemMeta = itemStack.getItemMeta();
 
-				itemMeta.setLore(papi(menuItemStack.getLore(), this.player));
-				if (menuItemStack.getDisplayName() != null) {
-					itemMeta.setDisplayName(papi(menuItemStack.getDisplayName(), this.player));
-				}
+						itemMeta.setLore(papi(menuItemStack.getLore(), this.player));
+						if (menuItemStack.getDisplayName() != null) {
+							itemMeta.setDisplayName(papi(menuItemStack.getDisplayName(), this.player));
+						}
 
-				itemStack.setItemMeta(itemMeta);
-				this.getSpigotInventory().setItem(slot, itemStack);
-			});
+						itemStack.setItemMeta(itemMeta);
+						this.getSpigotInventory().setItem(slot, itemStack);
+					});
 
+			this.timers.put(slot, timerTask);
 		}
 
+	}
+
+	public void cancel(int slot) {
+		TimerTask task = this.timers.getOrDefault(slot, null);
+		if (task != null) {
+			task.cancel();
+		}
 	}
 
 	/**
