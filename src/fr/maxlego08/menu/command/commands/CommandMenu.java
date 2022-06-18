@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.command.commands;
 
+import org.bukkit.Bukkit;
+
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -14,6 +16,10 @@ public class CommandMenu extends VCommand {
 		this.addSubCommand(new CommandMenuOpen(plugin));
 		this.addSubCommand(new CommandMenuReload(plugin));
 		this.addSubCommand(new CommandMenuVersion(plugin));
+
+		if (Bukkit.getPluginManager().getPlugin("zMenuConvert") == null) {
+			this.addSubCommand(new CommandMenuConvert(plugin));
+		}
 	}
 
 	@Override

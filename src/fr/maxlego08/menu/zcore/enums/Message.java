@@ -64,6 +64,12 @@ public enum Message {
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	
+	CONVERT_INFO(
+			"§fYou can convert the menu from §eDeluxeMenu§f to §azMenu§f.",
+			"§fYou must install the §3zMenuConvert§f plugin.",
+			"§fDownload link§8: §7https://groupez.dev/resources/zmenuconvert.266",
+			"§fYou must then issue the command §b/zmenu convert§f."
+			)
 	
 	;
 
