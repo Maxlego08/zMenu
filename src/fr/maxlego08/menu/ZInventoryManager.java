@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -109,6 +110,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	}
 
 	@Override
+	public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
+		return Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().filter(e -> {
+			return pluginName != null && e.getName().equalsIgnoreCase(pluginName);
+		}).findFirst();
+	}
+
+	@Override
 	public Optional<Inventory> getInventory(String name) {
 		return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
 				.findFirst();
@@ -122,8 +130,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public Optional<Inventory> getInventory(String pluginName, String name) {
-		Plugin plugin = pluginName == null ? null : Bukkit.getPluginManager().getPlugin(pluginName);
-		return plugin == null || name == null ? Optional.empty() : this.getInventory(plugin, name);
+		Optional<Plugin> optional = this.getPluginIgnoreCase(pluginName);
+		return !optional.isPresent() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
 	}
 
 	@Override
@@ -254,7 +262,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public void openInventory(Player player, Plugin plugin, String inventoryName) {
-		
+
 		Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
 
 		if (!optional.isPresent()) {
@@ -269,7 +277,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public void openInventory(Player player, String pluginName, String inventoryName) {
-		
+
 		Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
 
 		if (!optional.isPresent()) {
@@ -284,7 +292,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public void openInventory(Player player, String inventoryName) {
-		
+
 		Optional<Inventory> optional = this.getInventory(inventoryName);
 
 		if (!optional.isPresent()) {

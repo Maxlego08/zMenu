@@ -222,4 +222,11 @@ public interface InventoryManager extends Saveable {
 	 */
 	public void openInventory(Player player, String inventoryName);
 	
+	/**
+	 * 
+	 * @param pluginName
+	 * @return optional
+	 */
+	public Optional<Plugin> getPluginIgnoreCase(String pluginName);
+	
 }
