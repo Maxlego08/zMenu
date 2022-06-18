@@ -164,6 +164,12 @@ public class InventoryDefault extends VInventory {
 							return;
 						}
 
+						TimerTask tTask = this.timers.get(slot);
+						if (!task.equals(tTask)) {
+							task.cancel();
+							return;
+						}
+
 						MenuItemStack menuItemStack = button.getItemStack();
 
 						ItemMeta itemMeta = itemStack.getItemMeta();
@@ -183,7 +189,7 @@ public class InventoryDefault extends VInventory {
 	}
 
 	public void cancel(int slot) {
-		TimerTask task = this.timers.getOrDefault(slot, null);
+		TimerTask task = this.timers.get(slot);
 		if (task != null) {
 			task.cancel();
 		}
