@@ -132,10 +132,12 @@ public class InventoryDefault extends VInventory {
 		ItemButton itemButton = this.addItem(slot, itemStack);
 		if (button.isClickable()) {
 			itemButton.setClick(event -> {
+
 				button.onClick(this.player, event, this, slot);
 				if (button.isRefreshOnClick()) {
-					this.buildButton(button);
+					this.buildButton(button.getMasterParentButton().toButton(PlaceholderButton.class));
 				}
+
 			});
 			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
 			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));

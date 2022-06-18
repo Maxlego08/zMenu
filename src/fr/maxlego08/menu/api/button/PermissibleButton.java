@@ -14,6 +14,20 @@ public interface PermissibleButton extends Button {
 	public Button getElseButton();
 	
 	/**
+	 * Returns the parent button
+	 * 
+	 * @return button
+	 */
+	public Button getParentButton();
+	
+	/**
+	 * Return the real parent
+	 * 
+	 * @return button
+	 */
+	public Button getMasterParentButton();
+	
+	/**
 	 * The permission that the player will have to have
 	 * 
 	 * @return permission
@@ -42,5 +56,12 @@ public interface PermissibleButton extends Button {
 	 * @return boolean
 	 */
 	public boolean checkPermission(Player player, InventoryDefault inventory);
+	
+	/**
+	 * Allows to check if the player does not have the permissions
+	 * 
+	 * @return boolean
+	 */
+	public boolean isReverse();
 	
 }

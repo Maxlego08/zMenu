@@ -125,7 +125,12 @@ public class ZButtonLoader implements Loader<Button> {
 
 				Button elseButton = this.load(configuration, path + "else.", buttonName + ".else");
 				permissibleButton.setElseButton(elseButton);
-
+				
+				if (elseButton instanceof PermissibleButton) {
+					ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
+					elsePermissibleButton.setParentButton(button);
+				}
+				
 			}
 
 		}

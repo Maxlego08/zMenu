@@ -10,6 +10,8 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 
 	private String permission;
 	private Button elseButton;
+	private Button parentButton;
+	private boolean isReverse;
 
 	@Override
 	public Button getElseButton() {
@@ -33,7 +35,8 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 
 	@Override
 	public boolean checkPermission(Player player, InventoryDefault inventory) {
-		return this.permission == null || player.hasPermission(this.permission);
+		return this.permission == null
+				|| (this.isReverse ? !player.hasPermission(this.permission) : player.hasPermission(this.permission));
 	}
 
 	/**
@@ -42,6 +45,7 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	 */
 	public ZPermissibleButton setPermission(String permission) {
 		this.permission = permission;
+		this.isReverse = permission != null && permission.startsWith("!");
 		return this;
 	}
 
@@ -52,6 +56,32 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	public ZPermissibleButton setElseButton(Button elseButton) {
 		this.elseButton = elseButton;
 		return this;
+	}
+
+	/**
+	 * 
+	 * @param parentButton
+	 * @return button
+	 */
+	public ZPermissibleButton setParentButton(Button parentButton) {
+		this.parentButton = parentButton;
+		return this;
+	}
+
+	@Override
+	public boolean isReverse() {
+		return this.isReverse;
+	}
+
+	@Override
+	public Button getParentButton() {
+		return this.parentButton;
+	}
+
+	@Override
+	public Button getMasterParentButton() {
+		Button button = this.getParentButton();
+		return button == null ? this : button.toButton(PermissibleButton.class).getMasterParentButton();
 	}
 
 }
