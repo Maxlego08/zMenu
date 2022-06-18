@@ -58,6 +58,10 @@ public class MenuItemStack extends ZUtils {
 		ItemStack itemStack = null;
 		Material material = null;
 
+		if (this.material == null){
+			this.material = "STONE";
+		}
+		
 		String papiMaterial = papi(this.material, player);
 		int amount = 1;
 		try {
@@ -70,7 +74,7 @@ public class MenuItemStack extends ZUtils {
 		} catch (Exception e) {
 		}
 
-		if (material == null) {
+		if (material == null && papiMaterial != null) {
 			try {
 				material = Material.getMaterial(papiMaterial.toUpperCase());
 			} catch (Exception e) {

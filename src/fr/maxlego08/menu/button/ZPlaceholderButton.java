@@ -45,6 +45,12 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 
 		} else {
 
+			// First check if player has permission
+			boolean hasPermission = super.checkPermission(player, inventory);
+			if (!hasPermission){
+				return false;
+			}
+			
 			String valueAsString = papi(this.placeholder, player);
 
 			if (this.action.equals(PlaceholderAction.BOOLEAN)) {
@@ -56,7 +62,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 
 			} else if (this.action.isString()) {
 
-				switch (action) {
+				switch (this.action) {
 				case EQUALS_STRING:
 					return valueAsString.equals(this.value);
 				case EQUALSIGNORECASE_STRING:
@@ -64,7 +70,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 				case CONTAINS_STRING:
 					return valueAsString.contains(this.value);
 				default:
-					return super.checkPermission(player, inventory);
+					return hasPermission;
 				}
 
 			} else {
@@ -74,7 +80,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 					double value = Double.valueOf(valueAsString);
 					double currentValue = Double.valueOf(this.value);
 
-					switch (action) {
+					switch (this.action) {
 					case LOWER:
 						return value < currentValue;
 					case LOWER_OR_EQUAL:
@@ -88,11 +94,11 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 					}
 
 				} catch (Exception exception) {
-					return super.checkPermission(player, inventory);
+					return hasPermission;
 				}
 
 			}
-			return super.checkPermission(player, inventory);
+			return hasPermission;
 		}
 	}
 
