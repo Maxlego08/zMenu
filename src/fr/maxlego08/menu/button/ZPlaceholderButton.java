@@ -81,6 +81,8 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 					double currentValue = Double.valueOf(this.value);
 
 					switch (this.action) {
+					case EQUAL_TO:
+						return value == currentValue;
 					case LOWER:
 						return value < currentValue;
 					case LOWER_OR_EQUAL:

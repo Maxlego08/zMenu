@@ -12,9 +12,11 @@ public enum PlaceholderAction {
 
 	EQUALS_STRING, EQUALSIGNORECASE_STRING, CONTAINS_STRING,
 
-	SUPERIOR, LOWER, SUPERIOR_OR_EQUAL,
+	EQUAL_TO,
+	
+	SUPERIOR, SUPERIOR_OR_EQUAL,
 
-	LOWER_OR_EQUAL,;
+	LOWER, LOWER_OR_EQUAL,;
 
 	/**
 	 * Allows you to retrieve the action based on a string without triggering an error
