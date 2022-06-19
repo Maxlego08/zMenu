@@ -63,6 +63,7 @@ public enum Message {
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
+	RELOAD_FILE("§aVous have just reloaded the inventory §f%name%§a."),
 	
 	CONVERT_INFO(
 			"§fYou can convert the menu from §eDeluxeMenu§f to §azMenu§f.",

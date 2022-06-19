@@ -305,4 +305,24 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		this.openInventory(player, optional.get());
 	}
 
+	@Override
+	public void reloadInventory(Inventory inventory) {
+
+		this.deleteInventory(inventory);
+
+		/*
+		 * CommandManager commandManager = this.plugin.getCommandManager();
+		 * Optional<Command> optional = commandManager.getCommand(inventory); if
+		 * (optional.isPresent()) { Command command = optional.get();
+		 * commandManager.unregistetCommands(command); }
+		 */
+
+		try {
+			this.loadInventory(inventory.getPlugin(), inventory.getFile());
+		} catch (InventoryException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 }

@@ -2,9 +2,11 @@ package fr.maxlego08.menu.api.command;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.zcore.utils.storage.Saveable;
 
 public interface CommandManager extends Saveable{
@@ -51,5 +53,13 @@ public interface CommandManager extends Saveable{
 	 * @param file
 	 */
 	public void loadCommand(Plugin plugin, File file);
+	
+	/**
+	 * Return command
+	 * 
+	 * @param inventory
+	 * @return optional
+	 */
+	public Optional<Command> getCommand(Inventory inventory);
 	
 }

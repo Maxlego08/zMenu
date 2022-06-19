@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ZInventory implements Inventory {
 	private final List<Button> buttons;
 	private MenuItemStack fillItemStack;
 	private int updateInterval;
+	private File file;
 
 	/**
 	 * @param plugin
@@ -40,11 +42,11 @@ public class ZInventory implements Inventory {
 		this.size = size;
 		this.buttons = buttons;
 	}
-	
+
 	public void setFillItemStack(MenuItemStack fillItemStack) {
 		this.fillItemStack = fillItemStack;
 	}
-	
+
 	public void setUpdateInterval(int updateInterval) {
 		this.updateInterval = updateInterval;
 	}
@@ -111,6 +113,28 @@ public class ZInventory implements Inventory {
 	@Override
 	public int getUpdateInterval() {
 		return this.updateInterval;
+	}
+
+	/**
+	 * @return the size
+	 */
+	public int getSize() {
+		return size;
+	}
+
+	/**
+	 * @return the file
+	 */
+	public File getFile() {
+		return file;
+	}
+
+	/**
+	 * @param file
+	 *            the file to set
+	 */
+	public void setFile(File file) {
+		this.file = file;
 	}
 
 }

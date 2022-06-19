@@ -21,24 +21,28 @@ public interface InventoryManager extends Saveable {
 	 * 
 	 * @param plugin
 	 * @param fileName
-	 * @param classz - Default class ZInventory
+	 * @param classz
+	 *            - Default class ZInventory
 	 * @return inventory
 	 * @throws InventoryException
 	 */
-	public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
-	
+	public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
+			throws InventoryException;
+
 	/**
 	 * Allows you to load an inventory from a file You must add the class of
 	 * your plugin as a parameter
 	 * 
 	 * @param plugin
 	 * @param file
-	 * @param classz - Default class ZInventory
+	 * @param classz
+	 *            - Default class ZInventory
 	 * @return inventory
 	 * @throws InventoryException
 	 */
-	public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException;
-	
+	public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz)
+			throws InventoryException;
+
 	/**
 	 * Allows you to load an inventory from a file You must add the class of
 	 * your plugin as a parameter
@@ -49,7 +53,7 @@ public interface InventoryManager extends Saveable {
 	 * @throws InventoryException
 	 */
 	public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException;
-	
+
 	/**
 	 * Allows you to load an inventory from a file You must add the class of
 	 * your plugin as a parameter
@@ -68,7 +72,7 @@ public interface InventoryManager extends Saveable {
 	 * @return optional
 	 */
 	public Optional<Inventory> getInventory(String name);
-	
+
 	/**
 	 * Allows you to return an inventory according to its name and the plugin
 	 * 
@@ -77,10 +81,11 @@ public interface InventoryManager extends Saveable {
 	 * @return optional
 	 */
 	public Optional<Inventory> getInventory(Plugin plugin, String name);
-	
+
 	/**
-	 * Allows you to return an inventory according to its name and the plugin name
-	 *  
+	 * Allows you to return an inventory according to its name and the plugin
+	 * name
+	 * 
 	 * @param pluginName
 	 * @param name
 	 * @return optional
@@ -151,7 +156,7 @@ public interface InventoryManager extends Saveable {
 	 * @param oldInventories
 	 */
 	public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
-	
+
 	/**
 	 * Open a inventory to a player
 	 * 
@@ -161,18 +166,18 @@ public interface InventoryManager extends Saveable {
 	 * @param inventories
 	 */
 	public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
-	
+
 	/**
-	 * Allows to load the buttons
-	 * The {@link ButtonLoadEvent} event will be called, so you can add your own buttons using this event
+	 * Allows to load the buttons The {@link ButtonLoadEvent} event will be
+	 * called, so you can add your own buttons using this event
 	 */
 	public void loadButtons();
-	
+
 	/**
 	 * Allows to load the inventories of the plugin
 	 */
 	public void loadInventories();
-	
+
 	/**
 	 * Allows you to register a material loader
 	 * 
@@ -180,7 +185,7 @@ public interface InventoryManager extends Saveable {
 	 * @return boolean - true if registered
 	 */
 	public boolean registerMaterialLoader(MaterialLoader materialLoader);
-	
+
 	/**
 	 * Returns a material loader based on a key
 	 * 
@@ -188,7 +193,7 @@ public interface InventoryManager extends Saveable {
 	 * @return optional
 	 */
 	public Optional<MaterialLoader> getMaterialLoader(String key);
-	
+
 	/**
 	 * Return the list of material loader
 	 * 
@@ -204,7 +209,7 @@ public interface InventoryManager extends Saveable {
 	 * @param inventoryName
 	 */
 	public void openInventory(Player player, Plugin plugin, String inventoryName);
-	
+
 	/**
 	 * Allows to open an inventory according to the name and the plugin name
 	 * 
@@ -213,7 +218,7 @@ public interface InventoryManager extends Saveable {
 	 * @param inventoryName
 	 */
 	public void openInventory(Player player, String pluginName, String inventoryName);
-	
+
 	/**
 	 * Allows you to open an inventory according to the name
 	 * 
@@ -221,12 +226,19 @@ public interface InventoryManager extends Saveable {
 	 * @param inventoryName
 	 */
 	public void openInventory(Player player, String inventoryName);
-	
+
 	/**
 	 * 
 	 * @param pluginName
 	 * @return optional
 	 */
 	public Optional<Plugin> getPluginIgnoreCase(String pluginName);
-	
+
+	/**
+	 * Reload inventory
+	 * 
+	 * @param inventory
+	 */
+	public void reloadInventory(Inventory inventory);
+
 }

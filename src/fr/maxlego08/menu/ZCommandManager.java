@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.command.PluginCommand;
@@ -19,6 +20,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommandManager;
@@ -149,6 +151,12 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	@Override
 	public void load(Persist persist) {
 		this.loadCommands();
+	}
+
+	@Override
+	public Optional<Command> getCommand(Inventory inventory) {
+		return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.getInventory().equals(inventory))
+				.findFirst();
 	}
 
 }

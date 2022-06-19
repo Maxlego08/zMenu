@@ -1,6 +1,10 @@
 package fr.maxlego08.menu.command.commands;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
@@ -16,12 +20,40 @@ public class CommandMenuReload extends VCommand {
 		this.addSubCommand("reload", "rl");
 		this.setDescription(Message.DESCRIPTION_RELOAD);
 		this.setPermission(Permission.ZMENU_RELOAD);
+		this.addOptionalArg("menu", (a, b) -> plugin.getInventoryManager().getInventories().stream().map(e -> {
+			return (e.getPlugin().getName() + ":" + e.getFileName()).toLowerCase();
+		}).collect(Collectors.toList()));
 	}
 
 	@Override
 	protected CommandType perform(MenuPlugin plugin) {
 
+		String inventoryName = this.argAsString(0, null);
 		InventoryManager inventoryManager = plugin.getInventoryManager();
+
+		if (inventoryName != null) {
+			Optional<Inventory> optional;
+			if (inventoryName.contains(":")) {
+				String[] values = inventoryName.split(":");
+				if (values.length == 2) {
+					optional = inventoryManager.getInventory(values[0], values[1]);
+				} else {
+					optional = inventoryManager.getInventory(inventoryName);
+				}
+			} else {
+				optional = inventoryManager.getInventory(inventoryName);
+			}
+
+			if (!optional.isPresent()) {
+				message(this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+				return CommandType.DEFAULT;
+			}
+
+			inventoryManager.reloadInventory(optional.get());
+			message(this.sender, Message.RELOAD_FILE, "%name%", inventoryName);
+
+			return CommandType.SUCCESS;
+		}
 
 		plugin.getMessageLoader().load(plugin.getPersist());
 		Config.getInstance().load(plugin.getPersist());

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -97,5 +98,12 @@ public interface Inventory {
 	 * @return interval
 	 */
 	public int getUpdateInterval();
+	
+	/**
+	 * Returns the configuration file.
+	 * 
+	 * @return file
+	 */
+	public File getFile();
 
 }
