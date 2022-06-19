@@ -91,8 +91,8 @@ public class PlayerSkin {
 
 			return new String[] { texture, signature };
 		} catch (IOException e) {
-			System.err.println("Could not get skin data from session servers!");
-			e.printStackTrace();
+			/*System.err.println("Could not get skin data from session servers!");
+			e.printStackTrace();*/
 			return null;
 		}
 	}

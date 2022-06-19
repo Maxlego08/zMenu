@@ -52,7 +52,7 @@ public abstract class ZButton extends ZUtils implements Button {
 
 		if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
-			String name = this.playerHead.replace("%player%", player.getName());
+			String name = papi(this.playerHead.replace("%player%", player.getName()), player);
 			String texture = PlayerSkin.getTexture(name);
 			if (texture == null) {
 

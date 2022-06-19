@@ -92,7 +92,11 @@ public class ZButtonLoader implements Loader<Button> {
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
 		button.setMessages(configuration.getStringList(path + "messages"));
-		button.setPlayerHead(configuration.getString(path + "playerHead", null));
+		
+		String playerHead = configuration.getString(path + "playerHead",
+				configuration.getString(path + "item.playerHead", null));
+		button.setPlayerHead(playerHead);
+
 		button.setUpdated(configuration.getBoolean(path + "update", false));
 		button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", false));
 
@@ -108,7 +112,7 @@ public class ZButtonLoader implements Loader<Button> {
 		}
 
 		Optional<XSound> optionalXSound = XSound.matchXSound(configuration.getString(path + "sound", null));
-		
+
 		if (optionalXSound.isPresent()) {
 			XSound xSound = optionalXSound.get();
 			float pitch = Float.valueOf(configuration.getString(path + "pitch", "1.0f"));
@@ -125,12 +129,12 @@ public class ZButtonLoader implements Loader<Button> {
 
 				Button elseButton = this.load(configuration, path + "else.", buttonName + ".else");
 				permissibleButton.setElseButton(elseButton);
-				
+
 				if (elseButton instanceof PermissibleButton) {
 					ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
 					elsePermissibleButton.setParentButton(button);
 				}
-				
+
 			}
 
 		}
