@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.bukkit.plugin.ServicePriority;
 
@@ -16,6 +17,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.DatabaseListener;
 import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
+import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.zcore.ZPlugin;
@@ -101,6 +103,12 @@ public class MenuPlugin extends ZPlugin {
 
 		}
 
+		LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
+		localPlaceholder.register("argument_", (player, value) -> {
+			Optional<String> optional = this.commandManager.getPlayerArgument(player, value);
+			return optional.isPresent() ? optional.get() : null;
+		});
+
 		new Metrics(this, 14951);
 
 		this.postEnable();
@@ -112,7 +120,7 @@ public class MenuPlugin extends ZPlugin {
 		this.preDisable();
 
 		this.vinventoryManager.close();
-		
+
 		this.getSavers().forEach(saver -> saver.save(this.getPersist()));
 
 		this.postDisable();

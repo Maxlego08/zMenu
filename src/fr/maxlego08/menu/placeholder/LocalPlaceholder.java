@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.placeholder;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -8,12 +10,14 @@ import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.zcore.utils.interfaces.ReturnBiConsumer;
 
 public class LocalPlaceholder {
-	
+
 	private MenuPlugin plugin;
-	private final String prefix = "template";
+	private final String prefix = "zmenu";
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
+	private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<AutoPlaceholder>();
 
 	/**
 	 * Set plugin instance
@@ -50,6 +54,10 @@ public class LocalPlaceholder {
 		return instance;
 	}
 
+	public void register(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
+		this.autoPlaceholders.add(new AutoPlaceholder(startWith, biConsumer));
+	}
+
 	/**
 	 * 
 	 * @param player
@@ -73,7 +81,7 @@ public class LocalPlaceholder {
 				placeholder = placeholder.replace(stringPlaceholder, replace);
 			}
 		}
-		
+
 		return placeholder;
 	}
 
@@ -96,15 +104,26 @@ public class LocalPlaceholder {
 	 * @return
 	 */
 	public String onRequest(Player player, String string) {
+
+		Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream()
+				.filter(e -> string.startsWith(e.getStartWith())).findFirst();
+		if (optional.isPresent()) {
+
+			AutoPlaceholder autoPlaceholder = optional.get();
+			String value = string.replace(autoPlaceholder.getStartWith(), "");
+			return autoPlaceholder.accept(player, value);
+
+		}
+
 		return null;
 	}
-	
+
 	public String getPrefix() {
 		return prefix;
 	}
-	
+
 	public MenuPlugin getPlugin() {
 		return plugin;
 	}
-	
+
 }

@@ -13,21 +13,25 @@ public class ZCommand implements Command {
 	private final List<String> aliases;
 	private final String permission;
 	private final String inventory;
+	private final List<String> arguments;
 
 	/**
 	 * @param plugin
-	 * @param string
+	 * @param command
 	 * @param aliases
 	 * @param permission
 	 * @param inventory
+	 * @param arguments
 	 */
-	public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory) {
+	public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
+			List<String> arguments) {
 		super();
 		this.plugin = plugin;
 		this.command = command;
 		this.aliases = aliases;
 		this.permission = permission;
 		this.inventory = inventory;
+		this.arguments = arguments;
 	}
 
 	@Override
@@ -64,6 +68,16 @@ public class ZCommand implements Command {
 	public String toString() {
 		return "ZCommand [plugin=" + plugin + ", command=" + command + ", aliases=" + aliases + ", permission="
 				+ permission + ", inventory=" + inventory + "]";
+	}
+
+	@Override
+	public List<String> getArguments() {
+		return this.arguments;
+	}
+
+	@Override
+	public boolean hasArgument() {
+		return this.arguments.size() > 0;
 	}
 
 }

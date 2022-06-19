@@ -36,4 +36,12 @@ public interface Command {
 	 */
 	public Plugin getPlugin();
 	
+	/**
+	 * 
+	 * @return argument
+	 */
+	public List<String> getArguments();
+
+	public boolean hasArgument();
+	
 }

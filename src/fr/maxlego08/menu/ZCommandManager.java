@@ -13,10 +13,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,6 +38,7 @@ import fr.maxlego08.menu.zcore.utils.storage.Persist;
 public class ZCommandManager extends ZUtils implements CommandManager {
 
 	private final Map<String, List<Command>> commands = new HashMap<String, List<Command>>();
+	private final Map<UUID, Map<String, String>> playerArguments = new HashMap<>();
 	private final MenuPlugin plugin;
 
 	/**
@@ -73,12 +76,16 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	}
 
 	@Override
-	public void unregistetCommands(Plugin plugin) {
+	public void unregisterCommands(Plugin plugin) {
 
 		List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
 		Iterator<Command> iterator = commands.iterator();
 		while (iterator.hasNext()) {
+
 			Command command = iterator.next();
+
+			this.plugin.getVCommandManager().unregisterCommand(command);
+
 			JavaPlugin javaPlugin = (JavaPlugin) command.getPlugin();
 			PluginCommand pluginCommand = javaPlugin.getCommand(command.getCommand());
 			if (pluginCommand != null) {
@@ -90,11 +97,13 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	}
 
 	@Override
-	public void unregistetCommands(Command command) {
+	public void unregisterCommands(Command command) {
 		JavaPlugin plugin = (JavaPlugin) command.getPlugin();
 		List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
 		commands.remove(command);
 		this.commands.put(plugin.getName(), commands);
+
+		this.plugin.getVCommandManager().unregisterCommand(command);
 
 		PluginCommand pluginCommand = plugin.getCommand(command.getCommand());
 		if (pluginCommand != null) {
@@ -105,7 +114,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	@Override
 	public void loadCommands() {
 
-		this.unregistetCommands(this.plugin);
+		this.unregisterCommands(this.plugin);
 
 		// Check if file exist
 		File folder = new File(this.plugin.getDataFolder(), "commands");
@@ -160,6 +169,21 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	public Optional<Command> getCommand(Inventory inventory) {
 		return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.getInventory().equals(inventory))
 				.findFirst();
+	}
+
+	@Override
+	public void setPlayerArgument(Player player, String key, String value) {
+
+		Map<String, String> arguments = this.playerArguments.getOrDefault(player.getUniqueId(), new HashMap<>());
+		arguments.put(key, value);
+		this.playerArguments.put(player.getUniqueId(), arguments);
+
+	}
+
+	@Override
+	public Optional<String> getPlayerArgument(Player player, String key) {
+		Map<String, String> arguments = this.playerArguments.getOrDefault(player.getUniqueId(), new HashMap<>());
+		return Optional.ofNullable(arguments.getOrDefault(key, null));
 	}
 
 }

@@ -29,8 +29,9 @@ public class CommandLoader implements Loader<Command> {
 		String permission = configuration.getString(path + "permission");
 		String inventory = configuration.getString(path + "inventory");
 		List<String> aliases = configuration.getStringList(path + "aliases");
+		List<String> arguments = configuration.getStringList(path + "arguments");
 
-		return new ZCommand(this.plugin, command, aliases, permission, inventory);
+		return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments);
 	}
 
 	@Override

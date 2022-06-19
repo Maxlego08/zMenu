@@ -55,6 +55,7 @@ public abstract class VCommand extends Arguments {
 	 */
 	private boolean ignoreParent = false;
 	private boolean ignoreArgs = false;
+	private boolean extendedArgs = false;
 	protected boolean runAsync = false;
 	private CommandType tabCompleter = CommandType.DEFAULT;
 
@@ -256,7 +257,7 @@ public abstract class VCommand extends Arguments {
 		this.ignoreParent = this.parent == null ? true : false;
 		this.ignoreArgs = true;
 	}
-	
+
 	/*
 	 * Ajouter un argument obligatoire
 	 */
@@ -288,7 +289,6 @@ public abstract class VCommand extends Arguments {
 		this.addCompletion(index - 1, runnable);
 	}
 
-	
 	/**
 	 * Mettre la description de la commande
 	 * 
@@ -311,6 +311,10 @@ public abstract class VCommand extends Arguments {
 	//
 	// OTHER
 	//
+
+	public void setExtendedArgs(boolean extendedArgs) {
+		this.extendedArgs = extendedArgs;
+	}
 
 	/**
 	 * Adds sub orders
@@ -435,8 +439,7 @@ public abstract class VCommand extends Arguments {
 			}
 		}
 
-		if (this.argsMinLength != 0 && this.argsMaxLength != 0
-				&& !(args.length >= this.argsMinLength && args.length <= this.argsMaxLength)) {
+		if ((this.argsMinLength != 0 && args.length < this.argsMinLength) || this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
 			return CommandType.SYNTAX_ERROR;
 		}
 
@@ -492,7 +495,7 @@ public abstract class VCommand extends Arguments {
 	public List<String> toTab(MenuPlugin plugin, CommandSender sender, String[] args) {
 
 		this.parentCount = this.parentCount(0);
-		
+
 		int currentInex = (args.length - this.parentCount) - 1;
 		Optional<CollectionBiConsumer> optional = this.getCompletionAt(currentInex);
 

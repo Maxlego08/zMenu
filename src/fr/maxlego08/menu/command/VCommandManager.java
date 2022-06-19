@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -311,6 +312,21 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
 	public void registerCommand(fr.maxlego08.menu.api.command.Command command) {
 		this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command),
 				command.getAliases());
+	}
+
+	public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {
+
+		Optional<VCommand> optional = this.commands.stream().filter(e -> {
+			return e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command);
+		}).findFirst();
+
+		if (optional.isPresent()) {
+
+			VCommand vCommand = optional.get();
+			this.commands.remove(vCommand);
+
+		}
+
 	}
 
 }

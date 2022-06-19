@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.Inventory;
@@ -34,13 +35,13 @@ public interface CommandManager extends Saveable{
 	 * 
 	 * @param plugin
 	 */
-	public void unregistetCommands(Plugin plugin);
+	public void unregisterCommands(Plugin plugin);
 	
 	/**
 	 * 
 	 * @param command
 	 */
-	public void unregistetCommands(Command command);
+	public void unregisterCommands(Command command);
 
 	/**
 	 * 
@@ -61,5 +62,22 @@ public interface CommandManager extends Saveable{
 	 * @return optional
 	 */
 	public Optional<Command> getCommand(Inventory inventory);
+
+	/**
+	 * Allows to register a key and a value for the arguments of a command.
+	 * 
+	 * @param player
+	 * @param value
+	 */
+	public void setPlayerArgument(Player player, String key, String value);
+	
+	/**
+	 * Returns an optional of the argument with the key
+	 * 
+	 * @param player
+	 * @param key
+	 * @return optional
+	 */
+	public Optional<String> getPlayerArgument(Player player, String key);
 	
 }
