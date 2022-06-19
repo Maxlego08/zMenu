@@ -26,6 +26,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.CommandLoader;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
@@ -55,7 +56,9 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 		commands.add(command);
 		this.commands.put(plugin.getName(), commands);
 
-		Logger.info("Command /" + command.getCommand() + " successfully register.", LogType.SUCCESS);
+		if (Config.enableInformationMessage) {
+			Logger.info("Command /" + command.getCommand() + " successfully register.", LogType.SUCCESS);
+		}
 	}
 
 	@Override

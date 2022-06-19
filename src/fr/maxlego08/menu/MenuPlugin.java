@@ -111,6 +111,8 @@ public class MenuPlugin extends ZPlugin {
 
 		this.preDisable();
 
+		this.vinventoryManager.close();
+		
 		this.getSavers().forEach(saver -> saver.save(this.getPersist()));
 
 		this.postDisable();

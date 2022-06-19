@@ -1,10 +1,12 @@
 package fr.maxlego08.menu.inventory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -153,22 +155,23 @@ public class VInventoryManager extends ListenerAdapter {
 	protected void onInventoryClose(InventoryCloseEvent event, Player player) {
 		if (!exist(player))
 			return;
-		VInventory inventory = playerInventories.get(player.getUniqueId());
+		VInventory inventory = this.playerInventories.get(player.getUniqueId());
 		remove(player);
-		inventory.onPreClose(event, plugin, player);
+		inventory.onPreClose(event, this.plugin, player);
 	}
 
 	@Override
 	protected void onInventoryDrag(InventoryDragEvent event, Player player) {
 		if (event.getWhoClicked() instanceof Player) {
-			if (!exist(player))
+			if (!exist(player)) {
 				return;
-			playerInventories.get(player.getUniqueId()).onDrag(event, plugin, player);
+			}
+			this.playerInventories.get(player.getUniqueId()).onDrag(event, this.plugin, player);
 		}
 	}
 
 	public boolean exist(Player player) {
-		return playerInventories.containsKey(player.getUniqueId());
+		return this.playerInventories.containsKey(player.getUniqueId());
 	}
 
 	/**
@@ -178,8 +181,8 @@ public class VInventoryManager extends ListenerAdapter {
 	 *            - Player who will close the inventory
 	 */
 	public void remove(Player player) {
-		if (playerInventories.containsKey(player.getUniqueId())) {
-			playerInventories.remove(player.getUniqueId());
+		if (this.playerInventories.containsKey(player.getUniqueId())) {
+			this.playerInventories.remove(player.getUniqueId());
 		}
 	}
 
@@ -189,7 +192,7 @@ public class VInventoryManager extends ListenerAdapter {
 	 * @return Optional - Allows to return the inventory in an optional
 	 */
 	private Optional<VInventory> getInventory(int id) {
-		return Optional.ofNullable(inventories.getOrDefault(id, null));
+		return Optional.ofNullable(this.inventories.getOrDefault(id, null));
 	}
 
 	/**
@@ -232,6 +235,19 @@ public class VInventoryManager extends ListenerAdapter {
 			VInventory inventory = iterator.next();
 			inventory.getPlayer().closeInventory();
 		}
+	}
+
+	public void close() {
+		this.close(v -> !v.isClose());
+	}
+
+	public void close(Predicate<VInventory> predicate) {
+		new ArrayList<>(this.playerInventories.values()).stream().filter(predicate).forEach(vInventory -> {
+			Player player = vInventory.getPlayer();
+			if (player.isOnline()) {
+				player.closeInventory();
+			}
+		});
 	}
 
 }

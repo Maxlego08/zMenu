@@ -7,6 +7,7 @@ public class Config implements Saveable {
 
 	public static boolean enableDebug = true;
 	public static boolean enableDebugTime = false;
+	public static boolean enableInformationMessage = true;
 	
 	/**
 	 * static Singleton instance.

@@ -36,8 +36,10 @@ import fr.maxlego08.menu.button.loader.SlotLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.loader.InventoryLoader;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
@@ -104,7 +106,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		inventories.add(inventory);
 		this.inventories.put(plugin.getName(), inventories);
 
-		this.plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.INFO);
+		if (Config.enableInformationMessage) {
+			Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
+		}
 
 		return inventory;
 	}
