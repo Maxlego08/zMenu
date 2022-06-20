@@ -101,7 +101,7 @@ items:
       name: "Maxlego08's head"
       lore:
         - "&fGo to &b&nhttps://serveur-minecraft-vote.fr/"     
-        - "&fClick to access the site and earn &c5€&f credits."
+        - "&fClick to access the site and earn &c5â‚¬&f credits."
   testPage:
     type: PERFORM_COMMAND
     slot: 13
