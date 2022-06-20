@@ -19,7 +19,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 
 	@Override
 	public PlaceholderAction getAction() {
-		return this.getAction();
+		return this.action;
 	}
 
 	@Override
@@ -50,6 +50,9 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 			if (!hasPermission){
 				return false;
 			}
+
+			// ToDo
+			// return hasPermission && PlaceholderPermssible
 			
 			String valueAsString = papi(this.placeholder, player);
 
