@@ -33,6 +33,7 @@ items:
     type: PERFORM_COMMAND # https://zmenu.groupez.dev/configurations/buttons#perform_command
     slot: 22
     # You can add a list of actions. An action will contain a click list, permissions, an allow action and a deny action.
+    # https://zmenu.groupez.dev/configurations/buttons#actions    
     actions:
       first:
         # Here is the list of all available click types
