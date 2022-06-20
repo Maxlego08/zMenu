@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.button.buttons.PerformButton;
 import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -23,6 +24,8 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 	private final List<String> consolePermissionCommands;
 	private final String consolePermission;
 
+	private final List<Action> actions;
+
 	/**
 	 * @param commands
 	 * @param consoleCommands
@@ -30,9 +33,11 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 	 * @param consoleLeftCommands
 	 * @param consolePermissionCommands
 	 * @param consolePermission
+	 * @param actions
 	 */
 	public ZPerformButton(List<String> commands, List<String> consoleCommands, List<String> consoleRightCommands,
-			List<String> consoleLeftCommands, List<String> consolePermissionCommands, String consolePermission) {
+			List<String> consoleLeftCommands, List<String> consolePermissionCommands, String consolePermission,
+			List<Action> actions) {
 		super();
 		this.commands = commands;
 		this.consoleCommands = consoleCommands;
@@ -40,6 +45,7 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 		this.consoleLeftCommands = consoleLeftCommands;
 		this.consolePermissionCommands = consolePermissionCommands;
 		this.consolePermission = consolePermission;
+		this.actions = actions;
 	}
 
 	@Override
@@ -89,8 +95,17 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 		if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
 			this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands);
 		}
+
+		this.actions.stream().filter(action -> action.isClick(type)).forEach(action -> action.execute(player, type));
 	}
 
+	/**
+	 * Allows you to execute a list of commands
+	 * 
+	 * @param executor
+	 * @param player
+	 * @param strings
+	 */
 	private void execute(CommandSender executor, Player player, List<String> strings) {
 		strings.forEach(command -> {
 			command = command.replace("%player%", player.getName());
@@ -104,6 +119,11 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 		this.execute(player, event.getClick());
 		super.onClick(player, event, inventory, slot);
 
+	}
+
+	@Override
+	public List<Action> getActions() {
+		return this.actions;
 	}
 
 }

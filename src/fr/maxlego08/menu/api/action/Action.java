@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.action;
 
 import java.util.List;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import fr.maxlego08.menu.api.action.permissible.Permissible;
@@ -18,16 +19,16 @@ public interface Action {
 	/**
 	 * Returns the action if the player has permission
 	 * 
-	 * @return {@link Action}
+	 * @return {@link ActiondClick}
 	 */
-	Action getAllowAction();
+	ActiondClick getAllowAction();
 	
 	/**
 	 * Returns the action if the player does not have permission
 	 * 
-	 * @return {@link Action}
+	 * @return {@link ActiondClick}
 	 */
-	Action getDenyAction();
+	ActiondClick getDenyAction();
 	
 	/**
 	 * Returns the list of permissions that the player must have
@@ -35,4 +36,20 @@ public interface Action {
 	 * @return permissibles
 	 */
 	List<Permissible> getPermissibles();
+
+	/**
+	 * Allows to execute the action
+	 * 
+	 * @param player
+	 * @param type
+	 */
+	public void execute(Player player, ClickType type);
+	
+	/**
+	 * Allows to check if a click is possible
+	 * 
+	 * @param type
+	 * @return boolean
+	 */
+	public boolean isClick(ClickType type);
 }

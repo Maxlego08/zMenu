@@ -46,6 +46,9 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	public ZPermissibleButton setPermission(String permission) {
 		this.permission = permission;
 		this.isReverse = permission != null && permission.startsWith("!");
+		if (this.isReverse){
+			this.permission = permission.substring(1, permission.length());
+		}
 		return this;
 	}
 

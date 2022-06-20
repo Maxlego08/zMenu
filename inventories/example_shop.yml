@@ -7,71 +7,111 @@
 #
 # Sponsor: https://serveur-minecraft-vote.fr/
 
+# https://zmenu.groupez.dev/configurations/inventories
 name: "&7Shop"
 size: 54
 items:
   # Will display an item that has no action on the different slots
   slots:
-    type: NONE_SLOT
+    type: NONE_SLOT # https://zmenu.groupez.dev/configurations/buttons#none_slot
     isPermanent: true
-    item:
-      material: STAINED_GLASS_PANE
-      data: 7
+    item: # https://zmenu.groupez.dev/configurations/items
+      material: GRAY_STAINED_GLASS_PANE
       name: "&e"
+    # Allows you to make a tour of the inventory
     slots:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 9
+      - 0-9 # slot 0 to 9
       - 18
-      - 27
       - 17
       - 26
+      - 27
       - 35
       - 36
-      - 44
-      - 46
-      - 47
-      - 49
-      - 51
-      - 52
-      - 53
-      - 45
-  # Example to use to create a shop
-  # To create a more complete shop you have the zShop plugin which is a shop addon for zMenu
+      - 44-53 # slot 44 to 53
   shop1:
-    type: PERFORM_COMMAND
+    type: PERFORM_COMMAND # https://zmenu.groupez.dev/configurations/buttons#perform_command
     slot: 22
-    consoleCommands:
-      - "eco take %player% 500"
-      - "give %player% diamond 64"
-    refreshOnClick: true # You need to refresh the button to check if the player has permission to click
-    item:
+    # You can add a list of actions. An action will contain a click list, permissions, an allow action and a deny action.
+    actions:
+      first:
+        # Here is the list of all available click types
+        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/inventory/ClickType.html
+        clicks:
+          - RIGHT
+          - LEFT
+          - SHIFT_LEFT
+          - SHIFT_RIGHT
+        permissions:
+          examplePlaceholder:
+            placeHolder: "%vault_eco_balance%" # Donc forget to download Vault ecloud - /papi ecloud download Vault
+            action: SUPERIOR_OR_EQUAL # List of actions available here : https://zmenu.groupez.dev/configurations/buttons#placeholder
+            value: 500 # Here the player's money must be greater than or equal to 500
+          examplePermission:
+            # Allows to define a permission that the player must have to display the item.
+            # You can reverse the permission by adding ! in front of the permission. Thereby the plugin will check that the player does not have the permission.
+            permission: "shop.diamond"
+        # An allow or deny action will allow you to send messages (with a clickable link), commands (player or console) and a sound
+        allow:
+          messages:
+            - "&7You have bought diamonds."
+          #openLink: # Allows to display a link in the messages sent to the player
+          # Action avaible : OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND
+          #  action: "OPEN_URL"
+          #  link: "https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU" # Link that will be used
+          #  message: "&f&nhere" # Message to be replaced
+          #  replace: "%link%" # Text to be replaced
+          #  hover: # Messages when the player will hover the text
+          #    - "&bClick here !"
+          consoleCommands:
+            - "eco take %player% 500"
+            - "give %player% diamond 64"
+          #playerCommands:
+          #  - "msg %player% Hello my friend"
+          sound: ENTITY_COW_HURT # Sound played during the click
+          pitch: 1.5 # Sound pitch
+          volume: 0.5 # Sound volume
+        # An allow or deny action will allow you to send messages (with a clickable link), commands (player or console) and a sound
+        deny:
+          messages:
+            - "&cYou don't have enough money."
+            - "&cClick %link% &cto buy money."
+          openLink: # Allows to display a link in the messages sent to the player
+            # Action avaible : OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND
+            action: "OPEN_URL"
+            link: "https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU" # Link that will be used
+            message: "&f&nhere" # Message to be replaced
+            replace: "%link%" # Text to be replaced
+            hover: # Messages when the player will hover the text
+              - "&bClick here !"
+          #consoleCommands:
+          #  - "eco take %player% 500"
+          #  - "give %player% diamond 64"
+          #playerCommands:
+          #  - "msg %player% Hello my friend"
+          #sound: ENTITY_COW_HURT # Sound played during the click
+          #pitch: 1.5 # Sound pitch
+          #volume: 0.5 # Sound volume
+    refreshOnClick: true
+    item: # https://zmenu.groupez.dev/configurations/items
       material: PAPER
       name: "&aClick to buy !"
       lore:
         - "&fYou have enough money to buy this."
+    action: SUPERIOR_OR_EQUAL # List of actions available here : https://zmenu.groupez.dev/configurations/buttons#placeholder
     placeHolder: "%vault_eco_balance%" # Donc forget to download Vault ecloud - /papi ecloud download Vault
-    action: SUPERIOR_OR_EQUAL
-    value: 500
-    else:
+    value: 500 # Here the player's money must be greater than or equal to 500
+    else: # If the player does not have the permission or the placeholder, we will display another button
       slot: 22
-      type: NONE
-      item:
+      type: NONE # https://zmenu.groupez.dev/configurations/buttons#none
+      item: # https://zmenu.groupez.dev/configurations/items
         material: PAPER
         name: "&cYou can't do that :'("
         lore:
           - "&cYou dont have enough money to buy this."
-  back:
-    type: BACK
+  back: # The button allows you to return to the previous inventory
+    type: BACK # https://zmenu.groupez.dev/configurations/buttons#back
     isPermanent: true
-    item:
+    item: # https://zmenu.groupez.dev/configurations/items
       material: NETHER_STAR
-      name: "&fRetour"
+      name: "&fBack"
     slot: 49

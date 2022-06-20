@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
+import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -28,7 +29,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private List<String> messages = new ArrayList<String>();
 	private SoundOption soundOption;
 	private String playerHead;
-	private OpenLink openLink;
+	private OpenLink openLink = new ZOpenLink();
 	private boolean isUpdated = false;
 	private boolean refreshOnClick = false;
 

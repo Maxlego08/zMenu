@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.action;
 
 import java.util.List;
 
+import org.bukkit.entity.Player;
+
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 
@@ -41,4 +43,11 @@ public interface ActiondClick {
 	 * @return sound
 	 */
 	public SoundOption getSound();
+
+	/**
+	 * Allows to execute the actions of the click
+	 * 
+	 * @param player
+	 */
+	void execute(Player player);
 }

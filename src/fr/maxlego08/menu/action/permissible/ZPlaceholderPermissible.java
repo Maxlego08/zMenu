@@ -8,9 +8,21 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermissible {
 
-	private PlaceholderAction action;
-	private String placeholder;
-	private String value;
+	private final PlaceholderAction action;
+	private final String placeholder;
+	private final String value;
+
+	/**
+	 * @param action
+	 * @param placeholder
+	 * @param value
+	 */
+	public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value) {
+		super();
+		this.action = action;
+		this.placeholder = placeholder;
+		this.value = value;
+	}
 
 	@Override
 	public boolean hasPermission(Player player) {

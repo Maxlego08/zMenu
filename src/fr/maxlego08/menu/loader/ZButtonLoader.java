@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader;
 
 import java.io.File;
-import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,13 +14,13 @@ import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.enums.XSound;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
 import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.sound.ZSoundOption;
-import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
 public class ZButtonLoader implements Loader<Button> {
@@ -92,7 +91,7 @@ public class ZButtonLoader implements Loader<Button> {
 		button.setItemStack(itemStackLoader.load(configuration, path + "item."));
 		button.setButtonName(buttonName);
 		button.setMessages(configuration.getStringList(path + "messages"));
-		
+
 		String playerHead = configuration.getString(path + "playerHead",
 				configuration.getString(path + "item.playerHead", null));
 		button.setPlayerHead(playerHead);
@@ -102,12 +101,8 @@ public class ZButtonLoader implements Loader<Button> {
 
 		if (configuration.contains(path + "openLink")) {
 
-			String link = configuration.getString(path + "openLink.link");
-			String message = configuration.getString(path + "openLink.message");
-			String replace = configuration.getString(path + "openLink.replace");
-			List<String> hover = configuration.getStringList(path + "openLink.hover");
-
-			button.setOpenLink(new ZOpenLink(message, link, replace, hover));
+			Loader<OpenLink> loaderLink = new OpenLinkLoader();
+			button.setOpenLink(loaderLink.load(configuration, path + "openLink."));
 
 		}
 
