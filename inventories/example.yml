@@ -67,7 +67,7 @@ items:
   shop:
     type: INVENTORY
     slot: 46
-    inventory: "shop"
+    inventory: "example_shop"
     plugin: "zMenu"
     item:
       material: PAPER
