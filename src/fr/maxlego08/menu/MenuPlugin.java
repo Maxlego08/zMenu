@@ -48,11 +48,14 @@ public class MenuPlugin extends ZPlugin {
 
 		List<String> files = new ArrayList<String>();
 		files.add("inventories/example.yml");
-		files.add("inventories/shop.yml");
+		files.add("inventories/example_shop.yml");
+		files.add("inventories/example_punish.yml");
 		files.add("inventories/test/example2.yml");
 		files.add("inventories/test/test3/example3.yml");
+		
 		files.add("commands/commands.yml");
 		files.add("commands/example/example.yml");
+		files.add("commands/punish/punish.yml");
 
 		File folder = new File(this.getDataFolder(), "inventories");
 
