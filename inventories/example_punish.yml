@@ -15,7 +15,8 @@ items:
   '1':
     type: NONE_SLOT
     item:
-      material: GRAY_STAINED_GLASS_PANE
+      material: STAINED_GLASS_PANE
+      data: 7
       name: '&f'
     slots:
     - 1-7
