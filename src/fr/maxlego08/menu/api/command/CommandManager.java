@@ -79,5 +79,20 @@ public interface CommandManager extends Saveable{
 	 * @return optional
 	 */
 	public Optional<String> getPlayerArgument(Player player, String key);
+
+	/**
+	 * Get command by name
+	 * 
+	 * @param commandName
+	 * @return optional
+	 */
+	public Optional<Command> getCommand(String commandName);
+
+	/**
+	 * Reload command
+	 * 
+	 * @param command
+	 */
+	public boolean reload(Command command);
 	
 }

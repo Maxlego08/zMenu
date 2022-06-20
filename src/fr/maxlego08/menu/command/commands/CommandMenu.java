@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;

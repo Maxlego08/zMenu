@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.command.commands;
+package fr.maxlego08.menu.command.commands.reload;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -6,20 +6,17 @@ import java.util.stream.Collectors;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
-public class CommandMenuReload extends VCommand {
+public class CommandMenuReloadInventory extends VCommand {
 
-	public CommandMenuReload(MenuPlugin plugin) {
+	public CommandMenuReloadInventory(MenuPlugin plugin) {
 		super(plugin);
-		this.addSubCommand("reload", "rl");
-		this.setDescription(Message.DESCRIPTION_RELOAD);
+		this.addSubCommand("inventory");
 		this.setPermission(Permission.ZMENU_RELOAD);
 		this.addOptionalArg("menu", (a, b) -> plugin.getInventoryManager().getInventories().stream().map(e -> {
 			return (e.getPlugin().getName() + ":" + e.getFileName()).toLowerCase();
@@ -56,23 +53,17 @@ public class CommandMenuReload extends VCommand {
 				return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(inventory);
 			});
 			inventoryManager.reloadInventory(inventory);
-			message(this.sender, Message.RELOAD_FILE, "%name%", inventoryName);
+			message(this.sender, Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
 
 			return CommandType.SUCCESS;
 		}
-
-		plugin.getMessageLoader().load(plugin.getPersist());
-		Config.getInstance().load(plugin.getPersist());
 
 		plugin.getVInventoryManager().close();
 		
 		inventoryManager.deleteInventories(plugin);
 		inventoryManager.loadInventories();
 
-		CommandManager commandManager = plugin.getCommandManager();
-		commandManager.loadCommands();
-
-		message(this.sender, Message.RELOAD);
+		message(this.sender, Message.RELOAD_INVENTORY);
 
 		return CommandType.SUCCESS;
 	}

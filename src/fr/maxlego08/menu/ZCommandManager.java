@@ -145,7 +145,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 		for (String key : configuration.getConfigurationSection("commands.").getKeys(false)) {
 
 			try {
-				Command command = loader.load(configuration, "commands." + key + ".");
+				Command command = loader.load(configuration, "commands." + key + ".", file);
 				this.registerCommand(command);
 			} catch (InventoryException e) {
 				e.printStackTrace();
@@ -184,6 +184,36 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 	public Optional<String> getPlayerArgument(Player player, String key) {
 		Map<String, String> arguments = this.playerArguments.getOrDefault(player.getUniqueId(), new HashMap<>());
 		return Optional.ofNullable(arguments.getOrDefault(key, null));
+	}
+
+	@Override
+	public Optional<Command> getCommand(String commandName) {
+		return this.getCommands().stream().filter(e -> e.getCommand().equalsIgnoreCase(commandName)).findFirst();
+	}
+
+	@Override
+	public boolean reload(Command command) {
+		
+	
+		File file = command.getFile();
+		
+		if (!file.exists()){
+			return false;
+		}
+		
+		this.unregisterCommands(command);
+		String path = command.getPath();
+		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+		
+		Loader<Command> loader = new CommandLoader(this.plugin);
+		try {
+			Command newCommand = loader.load(configuration, path, file);
+			this.registerCommand(newCommand);
+		} catch (InventoryException e) {
+			return false;
+		}
+		
+		return true;
 	}
 
 }

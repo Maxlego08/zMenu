@@ -110,51 +110,56 @@ public class MessageLoader extends YamlUtils implements Saveable {
 
 		if (configuration.contains(key + ".type")) {
 
-			MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type").toUpperCase());
-			String keys = key.substring("messages.".length(), key.length());
-			Message enumMessage = Message.valueOf(keys.toUpperCase().replace(".", "_"));
-			enumMessage.setType(messageType);
-			switch (messageType) {
-			case ACTION: {
-				String message = configuration.getString(key + ".message");
-				enumMessage.setMessage(color(message));
-				break;
-			}
-			case CENTER:
-			case TCHAT: {
-				if (configuration.contains(key + ".messages")) {
-					List<String> messages = configuration.getStringList(key + ".messages");
-					enumMessage.setMessages(color(messages));
-					enumMessage.setMessage(null);
-				} else {
+			try {
+
+				MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type").toUpperCase());
+				String keys = key.substring("messages.".length(), key.length());
+				Message enumMessage = Message.valueOf(keys.toUpperCase().replace(".", "_"));
+				enumMessage.setType(messageType);
+				switch (messageType) {
+				case ACTION: {
 					String message = configuration.getString(key + ".message");
 					enumMessage.setMessage(color(message));
-					enumMessage.setMessages(new ArrayList<String>());
+					break;
 				}
-				break;
-			}
-			case TITLE: {
-				String title = configuration.getString(key + ".title");
-				String subtitle = configuration.getString(key + ".subtitle");
-				int fadeInTime = configuration.getInt(key + ".fadeInTime");
-				int showTime = configuration.getInt(key + ".showTime");
-				int fadeOutTime = configuration.getInt(key + ".fadeOutTime");
-				Map<String, Object> titles = new HashMap<String, Object>();
-				titles.put("title", color(title));
-				titles.put("subtitle", color(subtitle));
-				titles.put("start", fadeInTime);
-				titles.put("time", showTime);
-				titles.put("end", fadeOutTime);
-				titles.put("isUse", true);
-				enumMessage.setTitles(titles);
-				break;
-			}
-			default:
-				break;
+				case CENTER:
+				case TCHAT: {
+					if (configuration.contains(key + ".messages")) {
+						List<String> messages = configuration.getStringList(key + ".messages");
+						enumMessage.setMessages(color(messages));
+						enumMessage.setMessage(null);
+					} else {
+						String message = configuration.getString(key + ".message");
+						enumMessage.setMessage(color(message));
+						enumMessage.setMessages(new ArrayList<String>());
+					}
+					break;
+				}
+				case TITLE: {
+					String title = configuration.getString(key + ".title");
+					String subtitle = configuration.getString(key + ".subtitle");
+					int fadeInTime = configuration.getInt(key + ".fadeInTime");
+					int showTime = configuration.getInt(key + ".showTime");
+					int fadeOutTime = configuration.getInt(key + ".fadeOutTime");
+					Map<String, Object> titles = new HashMap<String, Object>();
+					titles.put("title", color(title));
+					titles.put("subtitle", color(subtitle));
+					titles.put("start", fadeInTime);
+					titles.put("time", showTime);
+					titles.put("end", fadeOutTime);
+					titles.put("isUse", true);
+					enumMessage.setTitles(titles);
+					break;
+				}
+				default:
+					break;
+				}
+
+			} catch (Exception e) {
 			}
 
 		}
-		
+
 		if (configuration.isConfigurationSection(key + ".")) {
 			for (String newKey : configuration.getConfigurationSection(key + ".").getKeys(false)) {
 				loadMessage(configuration, key + "." + newKey);

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader;
 
+import java.io.File;
 import java.util.List;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,7 +24,7 @@ public class CommandLoader implements Loader<Command> {
 	}
 
 	@Override
-	public Command load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+	public Command load(YamlConfiguration configuration, String path, Object... args) throws InventoryException {
 
 		String command = configuration.getString(path + "command");
 		String permission = configuration.getString(path + "permission");
@@ -31,7 +32,9 @@ public class CommandLoader implements Loader<Command> {
 		List<String> aliases = configuration.getStringList(path + "aliases");
 		List<String> arguments = configuration.getStringList(path + "arguments");
 
-		return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments);
+		File file = (File) args[0];
+
+		return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments, path, file);
 	}
 
 	@Override

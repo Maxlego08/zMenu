@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import java.io.File;
 import java.util.List;
 
 import org.bukkit.plugin.Plugin;
@@ -15,6 +16,10 @@ public class ZCommand implements Command {
 	private final String inventory;
 	private final List<String> arguments;
 
+	private final String path;
+	private final File file;
+
+
 	/**
 	 * @param plugin
 	 * @param command
@@ -22,9 +27,11 @@ public class ZCommand implements Command {
 	 * @param permission
 	 * @param inventory
 	 * @param arguments
+	 * @param path
+	 * @param file
 	 */
 	public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
-			List<String> arguments) {
+			List<String> arguments, String path, File file) {
 		super();
 		this.plugin = plugin;
 		this.command = command;
@@ -32,6 +39,8 @@ public class ZCommand implements Command {
 		this.permission = permission;
 		this.inventory = inventory;
 		this.arguments = arguments;
+		this.path = path;
+		this.file = file;
 	}
 
 	@Override
@@ -78,6 +87,16 @@ public class ZCommand implements Command {
 	@Override
 	public boolean hasArgument() {
 		return this.arguments.size() > 0;
+	}
+
+	@Override
+	public String getPath() {
+		return path;
+	}
+
+	@Override
+	public File getFile() {
+		return file;
 	}
 
 }

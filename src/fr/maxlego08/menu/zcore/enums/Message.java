@@ -54,6 +54,7 @@ public enum Message {
 	INVENTORY_OPEN_OTHER("§aYou have just opened the inventory §f%name%§a to the §3%player%§a."),
 	INVENTORY_OPEN_SUCCESS("§aYou have just opened the inventory §f%name%§a."),
 	INVENTORY_OPEN_ERROR_INVENTORY("§cImpossible to find the inventory §f%name%§c."),
+	INVENTORY_OPEN_ERROR_COMMAND("§cImpossible to find the command §f%name%§c."),
 	INVENTORY_OPEN_ERROR_PLAYER("§cUnable to find the player, please specify."),
 	INVENTORY_OPEN_ERROR_CONSOLE("§cOnly one player can open an inventory."),
 	
@@ -63,7 +64,12 @@ public enum Message {
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
-	RELOAD_FILE("§aVous have just reloaded the inventory §f%name%§a."),
+	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),
+	RELOAD_INVENTORY_FILE("§aVous have just reloaded the inventory §f%name%§a."),
+	RELOAD_COMMAND("§aYou have just reloaded the commands files."),
+	RELOAD_COMMAND_FILE("§aVous have just reloaded the command §f%name%§a."),
+	RELOAD_COMMAND_ERROR("§cIt is not possible to reload the command §f%name%§c."),
+	RELOAD_FILES("§aYou have just reloaded config.json and messages.yml files."),
 	
 	CONVERT_INFO(
 			"§fYou can convert the menu from §eDeluxeMenu§f to §azMenu§f.",
