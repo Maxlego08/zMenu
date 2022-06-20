@@ -69,12 +69,12 @@ public class ZActionClick extends ZUtils implements ActiondClick {
 		Bukkit.getScheduler().runTask(plugin, () -> {
 
 			this.consoleCommands.forEach(command -> {
-				String commandLine = papi(command, player);
+				String commandLine = papi(command.replace("%player%", player.getName()), player);
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
 			});
 			
 			this.playerCommands.forEach(command -> {
-				String commandLine = papi(command, player);
+				String commandLine = papi(command.replace("%player%", player.getName()), player);
 				Bukkit.dispatchCommand(player, commandLine);
 			});
 			

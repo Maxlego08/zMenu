@@ -1,12 +1,11 @@
-package fr.maxlego08.menu.api.action.permissible;
+package fr.maxlego08.menu.action.permissible;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import fr.maxlego08.menu.action.permissible.ZPermissionPermissible;
-import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
+import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
@@ -36,9 +35,9 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
 
 				} else {
 
-					String placeholder = configuration.getString(path + "placeHolder", null);
-					PlaceholderAction action = PlaceholderAction.from(configuration.getString(path + "action", null));
-					String value = configuration.getString(path + "value", null);
+					String placeholder = configuration.getString(currentPath + "placeHolder", null);
+					PlaceholderAction action = PlaceholderAction.from(configuration.getString(currentPath + "action", null));
+					String value = configuration.getString(currentPath + "value", null);
 
 					permissibles.add(new ZPlaceholderPermissible(action, placeholder, value));
 

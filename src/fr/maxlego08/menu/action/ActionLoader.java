@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
+import fr.maxlego08.menu.action.permissible.PermissibleLoader;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.ActiondClick;
 import fr.maxlego08.menu.api.action.permissible.Permissible;
-import fr.maxlego08.menu.api.action.permissible.PermissibleLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
@@ -36,11 +36,6 @@ public class ActionLoader implements Loader<Action> {
 
 		Loader<List<Permissible>> loaderPermissible = new PermissibleLoader();
 		List<Permissible> permissibles = loaderPermissible.load(configuration, path);
-
-		System.out.println(permissibles);
-		System.out.println(allow);
-		System.out.println(deny);
-		System.out.println(clickTypes);
 
 		return new ZAction(clickTypes, allow, deny, permissibles);
 	}
