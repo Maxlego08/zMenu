@@ -3,6 +3,7 @@ package fr.maxlego08.menu.action.permissible;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.maxlego08.menu.api.action.permissible.Permissible;
@@ -33,14 +34,22 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
 
 					permissibles.add(new ZPermissionPermissible(permission, isReverse));
 
-				} else {
+				} else if (configuration.contains(currentPath + "placeHolder")) {
 
 					String placeholder = configuration.getString(currentPath + "placeHolder", null);
-					PlaceholderAction action = PlaceholderAction.from(configuration.getString(currentPath + "action", null));
+					PlaceholderAction action = PlaceholderAction
+							.from(configuration.getString(currentPath + "action", null));
 					String value = configuration.getString(currentPath + "value", null);
 
 					permissibles.add(new ZPlaceholderPermissible(action, placeholder, value));
 
+				} else if (configuration.contains(currentPath + "material")) {
+
+					Material material = Material.valueOf(configuration.getString(currentPath + "material"));
+					int amount = configuration.getInt(currentPath+"amount", 0);
+					
+					permissibles.add(new ZItemPermissible(material, amount));
+					
 				}
 
 			}

@@ -63,17 +63,24 @@ public class ItemButton {
 	 * @param event
 	 */
 	public void onClick(InventoryClickEvent event) {
+		
 		if (this.onClick != null) {
 			this.onClick.accept(event);
 		}
 		
 		if ((event.getClick().equals(ClickType.MIDDLE) || event.getClick().equals(ClickType.DROP))
 				&& this.onMiddleClick != null) {
-			this.onMiddleClick.accept(event);			
+			
+			this.onMiddleClick.accept(event);
+			
 		} else if (event.getClick().equals(ClickType.RIGHT) && this.onRightClick != null) {
+			
 			this.onRightClick.accept(event);
+			
 		} else if (event.getClick().equals(ClickType.LEFT) && this.onLeftClick != null) {
+			
 			this.onLeftClick.accept(event);
+			
 		}
 	}
 
