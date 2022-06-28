@@ -41,9 +41,13 @@ public class NoneLoader implements ButtonLoader {
 	@Override
 	public Button load(YamlConfiguration configuration, String path) {
 		try {
-			return this.classz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			return this.classz.getConstructor(Plugin.class).newInstance(this.plugin);
+		} catch (Exception e) {
+			try {
+				return this.classz.newInstance();
+			} catch (Exception e2) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
