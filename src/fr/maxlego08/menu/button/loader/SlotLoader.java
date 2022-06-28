@@ -1,8 +1,6 @@
 package fr.maxlego08.menu.button.loader;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -42,28 +40,7 @@ public class SlotLoader implements ButtonLoader {
 	@Override
 	public Button load(YamlConfiguration configuration, String path) {
 		List<String> slotsAsString = configuration.getStringList(path + "slots");
-		List<Integer> slots = configuration.getIntegerList(path + "slots");
-		if (slotsAsString.size() > 0) {
-			for (String line : slotsAsString) {
-				if (line.contains("-")) {
-					try {
-						String[] values = line.split("-");
-						int from = Integer.valueOf(values[0]);
-						int to = Integer.valueOf(values[1]) + 1;
-						slots.addAll(IntStream.range(Math.min(from, to), Math.max(from, to)).boxed()
-								.collect(Collectors.toList()));
-					} catch (Exception ignored) {
-						ignored.printStackTrace();
-					}
-				} else {
-					try {
-						slots.add(Integer.parseInt(line));
-					} catch (NumberFormatException e) {
-					}
-				}
-
-			}
-		}
+		List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
 		return new ZSlotButton(slots);
 	}
 
