@@ -15,7 +15,6 @@ import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
-import fr.maxlego08.menu.listener.DatabaseListener;
 import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.save.Config;
@@ -95,7 +94,7 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(this.inventoryManager);
 		this.addSave(this.commandManager);
 
-		if (this.isEnable(Plugins.HEADDATABASE)) {
+		/*if (this.isEnable(Plugins.HEADDATABASE)) {
 
 			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
 			this.addListener(new DatabaseListener(this));
@@ -104,7 +103,14 @@ public class MenuPlugin extends ZPlugin {
 
 			this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 
+		}*/
+		
+		if (this.isEnable(Plugins.HEADDATABASE)) {
+
+			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
+
 		}
+		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 
 		LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
 		localPlaceholder.register("argument_", (player, value) -> {
