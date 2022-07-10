@@ -17,6 +17,7 @@ public class CommandMenu extends VCommand {
 		this.addSubCommand(new CommandMenuOpen(plugin));
 		this.addSubCommand(new CommandMenuReload(plugin));
 		this.addSubCommand(new CommandMenuVersion(plugin));
+		this.addSubCommand(new CommandMenuDownload(plugin));
 
 		if (Bukkit.getPluginManager().getPlugin("zMenuConvert") == null) {
 			this.addSubCommand(new CommandMenuConvert(plugin));

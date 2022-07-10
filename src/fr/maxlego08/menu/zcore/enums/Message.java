@@ -61,6 +61,7 @@ public enum Message {
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
 	DESCRIPTION_VERSION("Show plugin version"),
+	DESCRIPTION_DOWNLOAD("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),

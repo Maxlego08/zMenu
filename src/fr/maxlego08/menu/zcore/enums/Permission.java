@@ -6,6 +6,7 @@ public enum Permission {
 	ZMENU_OPEN, 
 	ZMENU_USE,
 	ZMENU_CONVERT,
+	ZMENU_DOWNLOAD,
 
 	;
 
