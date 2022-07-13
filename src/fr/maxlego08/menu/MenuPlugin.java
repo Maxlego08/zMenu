@@ -19,6 +19,7 @@ import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
+import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -40,6 +41,8 @@ public class MenuPlugin extends ZPlugin {
 	private final MessageLoader messageLoader = new MessageLoader(this);
 	private CommandMenu commandMenu;
 
+	private final Token token = new Token();
+
 	@Override
 	public void onEnable() {
 
@@ -51,7 +54,7 @@ public class MenuPlugin extends ZPlugin {
 		files.add("inventories/example_punish.yml");
 		files.add("inventories/test/example2.yml");
 		files.add("inventories/test/test3/example3.yml");
-		
+
 		files.add("commands/commands.yml");
 		files.add("commands/example/example.yml");
 		files.add("commands/punish/punish.yml");
@@ -94,17 +97,6 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(this.inventoryManager);
 		this.addSave(this.commandManager);
 
-		/*if (this.isEnable(Plugins.HEADDATABASE)) {
-
-			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-			this.addListener(new DatabaseListener(this));
-
-		} else {
-
-			this.getSavers().forEach(saver -> saver.load(this.getPersist()));
-
-		}*/
-		
 		if (this.isEnable(Plugins.HEADDATABASE)) {
 
 			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
@@ -120,6 +112,11 @@ public class MenuPlugin extends ZPlugin {
 
 		new Metrics(this, 14951);
 
+		File tokenFile = new File(this.getDataFolder(), "token.json");
+		if (tokenFile.exists()) {
+			this.token.load(this.getPersist());
+		}
+
 		this.postEnable();
 	}
 
@@ -131,6 +128,9 @@ public class MenuPlugin extends ZPlugin {
 		this.vinventoryManager.close();
 
 		this.getSavers().forEach(saver -> saver.save(this.getPersist()));
+		if (Token.token != null) {
+			this.token.save(this.getPersist());
+		}
 
 		this.postDisable();
 
