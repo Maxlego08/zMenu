@@ -10,6 +10,7 @@ import org.bukkit.plugin.ServicePriority;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.inventory.VInventoryManager;
@@ -20,6 +21,7 @@ import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.website.Token;
+import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -41,6 +43,7 @@ public class MenuPlugin extends ZPlugin {
 	private final MessageLoader messageLoader = new MessageLoader(this);
 	private CommandMenu commandMenu;
 
+	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
 	private final Token token = new Token();
 
 	@Override
@@ -82,6 +85,8 @@ public class MenuPlugin extends ZPlugin {
 		this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this,
 				ServicePriority.Highest);
 		this.getServer().getServicesManager().register(CommandManager.class, this.commandManager, this,
+				ServicePriority.Highest);
+		this.getServer().getServicesManager().register(WebsiteManager.class, this.websiteManager, this,
 				ServicePriority.Highest);
 
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -163,10 +168,28 @@ public class MenuPlugin extends ZPlugin {
 		return this.messageLoader;
 	}
 
+	/**
+	 * Returns the class that will manager the commands
+	 * 
+	 * @return the commandManager
+	 */
 	public CommandManager getCommandManager() {
 		return commandManager;
 	}
 
+	/**
+	 * Returns the class that will manage the website
+	 * 
+	 * @return the websitemanager
+	 */
+	public WebsiteManager getWebsiteManager() {
+		return websiteManager;
+	}
+	/**
+	 * Returns the main command
+	 * 
+	 * @return the commandMenu
+	 */
 	public CommandMenu getCommandMenu() {
 		return commandMenu;
 	}

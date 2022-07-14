@@ -62,6 +62,7 @@ public enum Message {
 	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
 	DESCRIPTION_VERSION("Show plugin version"),
 	DESCRIPTION_DOWNLOAD("WIP"),
+	DESCRIPTION_LOGIN("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
@@ -77,7 +78,12 @@ public enum Message {
 			"§fYou must install the §3zMenuConvert§f plugin.",
 			"§fDownload link§8: §7https://groupez.dev/resources/zmenuconvert.266",
 			"§fYou must then issue the command §b/zmenu convert§f."
-			)
+			),
+	
+	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
+	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "%message%"),
+	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
+	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site."),
 	
 	;
 
