@@ -21,8 +21,7 @@ public interface InventoryManager extends Saveable {
 	 * 
 	 * @param plugin
 	 * @param fileName
-	 * @param classz
-	 *            - Default class ZInventory
+	 * @param classz Default class ZInventory
 	 * @return inventory
 	 * @throws InventoryException
 	 */
@@ -182,7 +181,7 @@ public interface InventoryManager extends Saveable {
 	 * Allows you to register a material loader
 	 * 
 	 * @param materialLoader
-	 * @return boolean - true if registered
+	 * @return boolean True if registered
 	 */
 	public boolean registerMaterialLoader(MaterialLoader materialLoader);
 
@@ -197,47 +196,49 @@ public interface InventoryManager extends Saveable {
 	/**
 	 * Return the list of material loader
 	 * 
-	 * @return materials
+	 * @return materials List of material loader
 	 */
 	public Collection<MaterialLoader> getMaterialLoader();
 
 	/**
 	 * Allows to open an inventory according to the name and the plugin
 	 * 
-	 * @param player
-	 * @param plugin
-	 * @param inventoryName
+	 * @param player Player who will open the inventory
+	 * @param plugin The plugin where the inventory comes from
+	 * @param inventoryName Name of the inventory to be opened
 	 */
 	public void openInventory(Player player, Plugin plugin, String inventoryName);
 
 	/**
 	 * Allows to open an inventory according to the name and the plugin name
 	 * 
-	 * @param player
-	 * @param pluginName
-	 * @param inventoryName
+	 * @param player Player who will open the inventory
+	 * @param pluginName The plugin where the inventory comes from
+	 * @param inventoryName Name of the inventory to be opened
 	 */
 	public void openInventory(Player player, String pluginName, String inventoryName);
 
 	/**
 	 * Allows you to open an inventory according to the name
+	 * Attention, here the plugin will search in all inventories, it is more appropriate to use the method {@link #openInventory(Player, Plugin, String)}
 	 * 
-	 * @param player
-	 * @param inventoryName
+	 * @param player Player who will open the inventory
+	 * @param inventoryName Name of the inventory to be opened 
 	 */
 	public void openInventory(Player player, String inventoryName);
 
 	/**
+	 * Returns a plugin optional based on its name. 
 	 * 
-	 * @param pluginName
-	 * @return optional
+	 * @param pluginName The name of the plugin to be found
+	 * @return optional An optional that can contain the plugin if it exists.
 	 */
 	public Optional<Plugin> getPluginIgnoreCase(String pluginName);
 
 	/**
-	 * Reload inventory
+	 * Allows you to reload the configuration of an inventory
 	 * 
-	 * @param inventory
+	 * @param inventory The inventory that needs to be reloaded
 	 */
 	public void reloadInventory(Inventory inventory);
 
