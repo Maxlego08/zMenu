@@ -81,9 +81,9 @@ public enum Message {
 			),
 	
 	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
-	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "%message%"),
+	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "§c%message%"),
 	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
-	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site."),
+	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
 	
 	;
 

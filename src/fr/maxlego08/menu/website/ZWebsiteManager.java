@@ -11,8 +11,10 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
-	private final String API_URL = "https://mib.test/api/";
+	// private final String API_URL = "https://mib.groupez.dev/api/";
+	private final String API_URL = "http://mib.test/api/";
 	private final Plugin plugin;
+	private boolean isLogin = false;
 
 	/**
 	 * @param plugin
@@ -30,13 +32,28 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 			return;
 		}
 
+		if (this.isLogin) {
+			message(sender, Message.WEBSITE_LOGIN_PROCESS);
+			return;
+		}
+
+		this.isLogin = true;
+
+		message(sender, Message.WEBSITE_LOGIN_PROCESS);
+
 		JsonObject data = new JsonObject();
 		data.addProperty("email", email);
 		data.addProperty("password", password);
 		HttpRequest request = new HttpRequest(this.API_URL + "auth/login", data);
 		request.submit(this.plugin, map -> {
-			System.out.println("ici");
-			System.out.println(map);
+			this.isLogin = false;
+			boolean status = (boolean) map.get("status");
+			if (status) {
+				Token.token = (String) map.get("token");
+				message(sender, Message.WEBSITE_LOGIN_SUCCESS);
+			} else {
+				message(sender, Message.WEBSITE_LOGIN_ERROR_INFO, "%message%", map.get("message"));
+			}
 		});
 
 	}

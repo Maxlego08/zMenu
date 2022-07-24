@@ -1,25 +1,20 @@
 package fr.maxlego08.menu.website;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.zip.GZIPOutputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import sun.misc.Request;
 
 public class HttpRequest {
 
@@ -40,27 +35,21 @@ public class HttpRequest {
 
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 
+			Map<String, Object> map;
 			try {
 
 				URL url = new URL(this.url);
-				sun.net.www.protocol.https.HttpsURLConnectionImpl connection = (sun.net.www.protocol.https.HttpsURLConnectionImpl) url.openConnection();
-				//URLConnection connection = (URLConnection) url.openConnection();
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-				System.out.println(this.data.toString());
-				System.out.println(this.data);
-				byte[] compressedData = this.compress(this.data.toString());
 				connection.setRequestMethod("POST");
-				connection.setDoOutput(true);
-				connection.setDoInput(true);
 				connection.addRequestProperty("Accept", "application/json");
-				connection.addRequestProperty("Connection", "close");
-				connection.addRequestProperty("Content-Encoding", "gzip");
-				connection.addRequestProperty("Content-Length", String.valueOf(compressedData.length));
 				connection.setRequestProperty("Content-Type", "application/json");
-				connection.setRequestProperty("User-Agent", "groupez/1");
 				connection.setDoOutput(true);
+
 				DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-				outputStream.write(compressedData);
+				String jsonInputString = this.data.toString();
+				byte[] input = jsonInputString.getBytes("utf-8");
+				outputStream.write(input, 0, input.length);
 				outputStream.flush();
 				outputStream.close();
 
@@ -76,29 +65,19 @@ public class HttpRequest {
 				bufferedReader.close();
 
 				Gson gson = new Gson();
-				Map<String, Object> map = gson.fromJson(builder.toString(), Map.class);
-				consumer.accept(map);
+				map = gson.fromJson(builder.toString(), Map.class);
 
 			} catch (Exception e) {
 
 				e.printStackTrace();
 				consumer.accept(new HashMap<String, Object>());
+				return;
 
 			}
-		});
-		
-		
-	}
 
-	private byte[] compress(final String str) throws IOException {
-		if (str == null) {
-			return null;
-		}
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		GZIPOutputStream gzip = new GZIPOutputStream(outputStream);
-		gzip.write(str.getBytes(StandardCharsets.UTF_8));
-		gzip.close();
-		return outputStream.toByteArray();
+			consumer.accept(map == null ? new HashMap<>() : map);
+		});
+
 	}
 
 }
