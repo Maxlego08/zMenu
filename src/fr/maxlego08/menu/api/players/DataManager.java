@@ -35,5 +35,10 @@ public interface DataManager extends Saveable{
 	 * @return
 	 */
 	Optional<Data> getData(UUID uniqueId, String key);
+
+	/**
+	 * Clear all player's data
+	 */
+	void clearAll();
 	
 }

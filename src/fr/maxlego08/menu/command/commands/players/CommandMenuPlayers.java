@@ -17,6 +17,7 @@ public class CommandMenuPlayers extends VCommand {
 		this.addSubCommand(new CommandMenuPlayersGet(plugin));
 		this.addSubCommand(new CommandMenuPlayersRemove(plugin));
 		this.addSubCommand(new CommandMenuPlayersKeys(plugin));
+		this.addSubCommand(new CommandMenuPlayersClearAll(plugin));
 	}
 
 	@Override

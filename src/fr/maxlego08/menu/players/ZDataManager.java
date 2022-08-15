@@ -11,14 +11,26 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 
 public class ZDataManager implements DataManager {
 
+	private final transient MenuPlugin plugin;
+	private transient long lastSave;
 	private static Map<UUID, ZPlayerData> players = new HashMap<>();
+
+	/**
+	 * @param plugin
+	 */
+	public ZDataManager(MenuPlugin plugin) {
+		super();
+		this.plugin = plugin;
+	}
 
 	@Override
 	public void save(Persist persist) {
@@ -45,6 +57,13 @@ public class ZDataManager implements DataManager {
 
 		ZPlayerData data = new ZPlayerData(uniqueId);
 		players.put(uniqueId, data);
+
+		if (System.currentTimeMillis() > this.lastSave) {
+			Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+				this.save(this.plugin.getPersist());
+				this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000);
+			});
+		}
 
 		return data;
 	}
@@ -88,6 +107,12 @@ public class ZDataManager implements DataManager {
 		} catch (Exception e) {
 			return new ArrayList<String>();
 		}
+	}
+
+	@Override
+	public void clearAll() {
+		players.clear();
+		this.save(this.plugin.getPersist());
 	}
 
 }

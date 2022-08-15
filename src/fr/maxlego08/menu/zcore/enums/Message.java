@@ -69,6 +69,7 @@ public enum Message {
     DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
     DESCRIPTION_PLAYERS_GET("Get player data"),
     DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player."),
+    DESCRIPTION_PLAYERS_CLEARALL("Clear all player's data"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),
@@ -84,6 +85,8 @@ public enum Message {
 			"§fDownload link§8: §7https://groupez.dev/resources/zmenuconvert.266",
 			"§fYou must then issue the command §b/zmenu convert§f."
 			),
+	
+	PLAYERS_DATA_CLEARALL("§aYou have just deleted the deals of all the players."),
 	
 	PLAYERS_DATA_SET("§aYou have just added a data for the §b%player% §a with the §f%key%§a."),
 	PLAYERS_DATA_KEYS_SUCCESS("§aPlayer's Key §f%player%§8: §7%keys%"),
