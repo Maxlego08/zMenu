@@ -48,6 +48,7 @@ public class CommandMenuPlayersRemove extends VCommand {
 		}
 
 		playerData.removeData(key);
+		dataManager.autoSave();
 		message(this.sender, Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", player.getName());
 
 		return CommandType.SUCCESS;

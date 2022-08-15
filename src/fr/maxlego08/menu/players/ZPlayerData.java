@@ -36,7 +36,6 @@ public class ZPlayerData implements PlayerData {
 	@Override
 	public void addData(Data data) {
 		this.datas.put(data.getKey(), data);
-		System.out.println(this.datas);
 	}
 
 	@Override

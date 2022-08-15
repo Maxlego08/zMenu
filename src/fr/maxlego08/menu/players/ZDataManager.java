@@ -58,12 +58,7 @@ public class ZDataManager implements DataManager {
 		ZPlayerData data = new ZPlayerData(uniqueId);
 		players.put(uniqueId, data);
 
-		if (System.currentTimeMillis() > this.lastSave) {
-			Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-				this.save(this.plugin.getPersist());
-				this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000);
-			});
-		}
+		this.autoSave();
 
 		return data;
 	}
@@ -113,6 +108,16 @@ public class ZDataManager implements DataManager {
 	public void clearAll() {
 		players.clear();
 		this.save(this.plugin.getPersist());
+	}
+
+	@Override
+	public void autoSave() {
+		if (System.currentTimeMillis() > this.lastSave) {
+			Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+				this.save(this.plugin.getPersist());
+				this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000);
+			});
+		}
 	}
 
 }

@@ -41,4 +41,9 @@ public interface DataManager extends Saveable{
 	 */
 	void clearAll();
 	
+	/**
+	 * Save auto
+	 */
+	void autoSave();
+	
 }
