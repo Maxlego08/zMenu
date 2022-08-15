@@ -45,5 +45,12 @@ public interface DataManager extends Saveable{
 	 * Save auto
 	 */
 	void autoSave();
+
+	/**
+	 * Clear player's data
+	 * 
+	 * @param uniqueId
+	 */
+	void clearPlayer(UUID uniqueId);
 	
 }

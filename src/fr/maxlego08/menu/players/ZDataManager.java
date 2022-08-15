@@ -120,4 +120,10 @@ public class ZDataManager implements DataManager {
 		}
 	}
 
+	@Override
+	public void clearPlayer(UUID uniqueId) {
+		players.remove(uniqueId);
+		this.autoSave();
+	}
+
 }
