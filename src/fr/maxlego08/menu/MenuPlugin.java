@@ -43,7 +43,7 @@ public class MenuPlugin extends ZPlugin {
 	private final InventoryManager inventoryManager = new ZInventoryManager(this);
 	private final CommandManager commandManager = new ZCommandManager(this);
 	private final MessageLoader messageLoader = new MessageLoader(this);
-	private final DataManager dataManager = new ZDataManager();
+	private final DataManager dataManager = new ZDataManager(this);
 	private CommandMenu commandMenu;
 
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);

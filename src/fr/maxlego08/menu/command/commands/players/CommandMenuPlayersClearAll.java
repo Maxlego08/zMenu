@@ -22,7 +22,7 @@ public class CommandMenuPlayersClearAll extends VCommand {
 		DataManager dataManager = plugin.getDataManager();
 		dataManager.clearAll();
 		
-		message(this.sender, Message.PLAYERS_DATA_SET);
+		message(this.sender, Message.PLAYERS_DATA_CLEARALL);
 		
 		return CommandType.SUCCESS;
 	}
