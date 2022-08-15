@@ -10,6 +10,7 @@ import org.bukkit.plugin.ServicePriority;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
@@ -18,6 +19,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.website.Token;
@@ -41,6 +43,7 @@ public class MenuPlugin extends ZPlugin {
 	private final InventoryManager inventoryManager = new ZInventoryManager(this);
 	private final CommandManager commandManager = new ZCommandManager(this);
 	private final MessageLoader messageLoader = new MessageLoader(this);
+	private final DataManager dataManager = new ZDataManager();
 	private CommandMenu commandMenu;
 
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
@@ -88,6 +91,8 @@ public class MenuPlugin extends ZPlugin {
 				ServicePriority.Highest);
 		this.getServer().getServicesManager().register(WebsiteManager.class, this.websiteManager, this,
 				ServicePriority.Highest);
+		this.getServer().getServicesManager().register(DataManager.class, this.dataManager, this,
+				ServicePriority.Highest);
 
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
 		this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -101,6 +106,7 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(this.messageLoader);
 		this.addSave(this.inventoryManager);
 		this.addSave(this.commandManager);
+		this.addSave(this.dataManager);
 
 		if (this.isEnable(Plugins.HEADDATABASE)) {
 
@@ -185,6 +191,7 @@ public class MenuPlugin extends ZPlugin {
 	public WebsiteManager getWebsiteManager() {
 		return websiteManager;
 	}
+
 	/**
 	 * Returns the main command
 	 * 
@@ -193,4 +200,14 @@ public class MenuPlugin extends ZPlugin {
 	public CommandMenu getCommandMenu() {
 		return commandMenu;
 	}
+
+	/**
+	 * Return the class that will manage data
+	 * 
+	 * @return the dataManager
+	 */
+	public DataManager getDataManager() {
+		return dataManager;
+	}
+
 }

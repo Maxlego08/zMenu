@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.exceptions.ListenerNullException;
 import fr.maxlego08.menu.inventory.VInventory;
@@ -34,6 +35,7 @@ import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
+import fr.maxlego08.menu.zcore.utils.gson.DataAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
@@ -101,6 +103,7 @@ public abstract class ZPlugin extends JavaPlugin {
 		return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
 				.excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
 				.registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter(this))
+				.registerTypeAdapter(Data.class, new DataAdapter(this))
 				.registerTypeAdapter(Location.class, new LocationAdapter(this));
 	}
 
