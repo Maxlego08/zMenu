@@ -59,16 +59,16 @@ public enum Message {
 	INVENTORY_OPEN_ERROR_CONSOLE("§cOnly one player can open an inventory."),
 	
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
-	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
+	DESCRIPTION_RELOAD("Allows you to reload configuration files"),
 	DESCRIPTION_VERSION("Show plugin version"),
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
-    DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration."),
+    DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration"),
     DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
     DESCRIPTION_PLAYERS_GET("Get player data"),
-    DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player."),
+    DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player"),
     DESCRIPTION_PLAYERS_CLEAR_ALL("Clear all player's data"),
     DESCRIPTION_PLAYERS_CLEAR_PLAYER("Clear player's data"),
 	
@@ -105,7 +105,9 @@ public enum Message {
 	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
 	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "§c%message%"),
 	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
-	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
+	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."), 
+	
+	PLACEHOLDER_NEVER("never"),
 	
 	;
 

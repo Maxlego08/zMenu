@@ -15,7 +15,10 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
+import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 
 public class ZDataManager implements DataManager {
@@ -124,6 +127,64 @@ public class ZDataManager implements DataManager {
 	public void clearPlayer(UUID uniqueId) {
 		players.remove(uniqueId);
 		this.autoSave();
+	}
+
+	public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
+
+		localPlaceholder.register("player_value_", (player, key) -> {
+
+			Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+			if (!optional.isPresent()) {
+				return "Key '" + key + "' doesn't exist for this player";
+			}
+
+			PlayerData playerData = optional.get();
+			if (!playerData.containsKey(key)) {
+				return "Key '" + key + "' doesn't exist for this player";
+			}
+
+			Data data = playerData.getData(key).get();
+			return data.getValue().toString();
+		});
+
+		localPlaceholder.register("player_expire_format_", (player, key) -> {
+
+			Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+			if (!optional.isPresent()) {
+				return "Key '" + key + "' doesn't exist for this player";
+			}
+
+			PlayerData playerData = optional.get();
+			if (!playerData.containsKey(key)) {
+				return "Key '" + key + "' doesn't exist for this player";
+			}
+
+			Data data = playerData.getData(key).get();
+
+			if (data.getExpiredAt() <= 0) {
+				return Message.PLACEHOLDER_NEVER.getMessage();
+			}
+
+			long seconds = Math.abs(System.currentTimeMillis() - data.getExpiredAt()) / 1000;
+			return TimerBuilder.getStringTime(seconds);
+		});
+
+		localPlaceholder.register("player_expire_", (player, key) -> {
+
+			Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+			if (!optional.isPresent()) {
+				return "Key '" + key + "' doesn't exist for this player";
+			}
+
+			PlayerData playerData = optional.get();
+			if (!playerData.containsKey(key)) {
+				return "Key '" + key + "' doesn't exist for this player";
+			}
+
+			Data data = playerData.getData(key).get();
+			return String.valueOf(data.getExpiredAt());
+		});
+
 	}
 
 }

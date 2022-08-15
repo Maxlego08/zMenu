@@ -121,6 +121,8 @@ public class MenuPlugin extends ZPlugin {
 			return optional.isPresent() ? optional.get() : null;
 		});
 
+		((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
+
 		new Metrics(this, 14951);
 
 		File tokenFile = new File(this.getDataFolder(), "token.json");
