@@ -32,8 +32,6 @@ public class CommandMenuPlayersSet extends VCommand {
 		String key = this.argAsString(1);
 		long seconds = this.argAsLong(2);
 
-		System.out.print(args.length);
-
 		if (this.args.length < 6) {
 			return CommandType.SYNTAX_ERROR;
 		}
@@ -48,15 +46,14 @@ public class CommandMenuPlayersSet extends VCommand {
 		}
 		
 		String value = builder.substring(0, builder.length() - 1);
-		System.out.print(value);
 
-		long expiredAt = System.currentTimeMillis() + (1000 * seconds);
+		long expiredAt = seconds <= 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
 		Data data = new ZData(key, value, expiredAt);
 		
 		DataManager dataManager = plugin.getDataManager();
 		dataManager.addData(player.getUniqueId(), data);
 		
-		message(this.sender, Message.DESCRIPTION_PLAYERS_SET, "%player%", player.getName(), "%key%", key);
+		message(this.sender, Message.PLAYERS_DATA_SET, "%player%", player.getName(), "%key%", key);
 		
 		return CommandType.SUCCESS;
 	}

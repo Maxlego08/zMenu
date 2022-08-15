@@ -65,7 +65,7 @@ public enum Message {
 	DESCRIPTION_LOGIN("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
-    DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds."),
+    DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration."),
     DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
     DESCRIPTION_PLAYERS_GET("Get player data"),
     DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player."),
@@ -93,9 +93,9 @@ public enum Message {
 			"§fExpired at (timestamp)§8: §7%expiredAt%",
 			"§fValue§8: §7%value%"
 			),
-	PLAYERS_DATA_GET_ERROR("§cCannot find the §f%key%§c."),
+	PLAYERS_DATA_GET_ERROR("§cCannot find the key §f%key%§c."),
 	PLAYERS_DATA_REMOVE_SUCCESS("§aYou have just deleted the §f%key% §for the §b%player%§a."),
-	PLAYERS_DATA_REMOVE_ERROR("§cCannot find the §f%key%§c."),
+	PLAYERS_DATA_REMOVE_ERROR("§cCannot find the key §f%key%§c."),
 	
 	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
 	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "§c%message%"),

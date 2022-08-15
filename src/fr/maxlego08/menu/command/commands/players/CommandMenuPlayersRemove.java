@@ -8,6 +8,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -20,7 +21,10 @@ public class CommandMenuPlayersRemove extends VCommand {
 		this.setDescription(Message.DESCRIPTION_PLAYERS_REMOVE);
 		this.addSubCommand("remove");
 		this.addRequireArg("player");
-		this.addRequireArg("key");
+		this.addRequireArg("key", (sender, args) -> {
+			ZDataManager dataManager = (ZDataManager) plugin.getDataManager();
+			return dataManager.getKeys(args);
+		});
 	}
 
 	@Override
@@ -33,13 +37,13 @@ public class CommandMenuPlayersRemove extends VCommand {
 
 		Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
 		if (!optional.isPresent()) {
-			message(this.sender, Message.PLAYERS_DATA_REMOVE_ERROR);
+			message(this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
 			return CommandType.SUCCESS;
 		}
 
 		PlayerData playerData = optional.get();
 		if (!playerData.containsKey(key)) {
-			message(this.sender, Message.PLAYERS_DATA_REMOVE_ERROR);
+			message(this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
 			return CommandType.SUCCESS;
 		}
 
