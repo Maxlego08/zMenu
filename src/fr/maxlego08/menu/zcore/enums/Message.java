@@ -64,6 +64,11 @@ public enum Message {
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
+    DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
+    DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds."),
+    DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
+    DESCRIPTION_PLAYERS_GET("Get player data"),
+    DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player."),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),
@@ -79,6 +84,18 @@ public enum Message {
 			"§fDownload link§8: §7https://groupez.dev/resources/zmenuconvert.266",
 			"§fYou must then issue the command §b/zmenu convert§f."
 			),
+	
+	PLAYERS_DATA_SET("§aYou have just added a data for the §b%player% §a with the §f%key%§a."),
+	PLAYERS_DATA_KEYS_SUCCESS("§aPlayer's Key §f%player%§8: §7%keys%"),
+	PLAYERS_DATA_KEYS_EMPTY("§cThe §f%player% §chas no key."),
+	PLAYERS_DATA_GET_SUCCESS(
+			"§fKey§8: §7%key%",
+			"§fExpired at (timestamp)§8: §7%expiredAt%",
+			"§fValue§8: §7%value%"
+			),
+	PLAYERS_DATA_GET_ERROR("§cCannot find the §f%key%§c."),
+	PLAYERS_DATA_REMOVE_SUCCESS("§aYou have just deleted the §f%key% §for the §b%player%§a."),
+	PLAYERS_DATA_REMOVE_ERROR("§cCannot find the §f%key%§c."),
 	
 	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
 	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "§c%message%"),

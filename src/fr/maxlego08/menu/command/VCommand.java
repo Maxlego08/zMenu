@@ -439,7 +439,8 @@ public abstract class VCommand extends Arguments {
 			}
 		}
 
-		if ((this.argsMinLength != 0 && args.length < this.argsMinLength) || this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
+		if ((this.argsMinLength != 0 && args.length < this.argsMinLength)
+				|| this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
 			return CommandType.SYNTAX_ERROR;
 		}
 

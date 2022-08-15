@@ -45,14 +45,22 @@ public class ZDataManager implements DataManager {
 
 	@Override
 	public void addData(UUID uniqueId, Data data) {
-		// TODO Auto-generated method stub
-		
+
+		PlayerData playerData = this.getOrCreate(uniqueId);
+		playerData.addData(data);
+
 	}
 
 	@Override
 	public Optional<Data> getData(UUID uniqueId, String key) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Optional<PlayerData> optional = this.getPlayer(uniqueId);
+		if (!optional.isPresent()) {
+			return Optional.empty();
+		}
+
+		PlayerData playerData = optional.get();
+		return playerData.getData(key);
 	}
 
 }

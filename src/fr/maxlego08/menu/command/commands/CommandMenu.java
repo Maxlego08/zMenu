@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -17,6 +18,7 @@ public class CommandMenu extends VCommand {
 		this.addSubCommand(new CommandMenuOpen(plugin));
 		this.addSubCommand(new CommandMenuReload(plugin));
 		this.addSubCommand(new CommandMenuVersion(plugin));
+		this.addSubCommand(new CommandMenuPlayers(plugin));
 		this.addSubCommand(new CommandMenuDownload(plugin));
 		this.addSubCommand(new CommandMenuLogin(plugin));
 
