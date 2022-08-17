@@ -1,11 +1,15 @@
-package fr.maxlego08.menu.action;
+package fr.maxlego08.menu.action.loader;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.action.ZActionClick;
 import fr.maxlego08.menu.api.action.ActiondClick;
+import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.enums.XSound;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -17,9 +21,21 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
 public class ActionClickLoader implements Loader<ActiondClick> {
 
+	private final MenuPlugin plugin;
+
+	/**
+	 * @param plugin
+	 */
+	public ActionClickLoader(MenuPlugin plugin) {
+		super();
+		this.plugin = plugin;
+	}
+
 	@Override
 	public ActiondClick load(YamlConfiguration configuration, String path, Object... objects)
 			throws InventoryException {
+
+		Loader<ActionPlayerData> loader = new ActionPlayerDataLoader();
 
 		List<String> messages = configuration.getStringList(path + "messages");
 		List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
@@ -44,7 +60,20 @@ public class ActionClickLoader implements Loader<ActiondClick> {
 
 		}
 
-		return new ZActionClick(messages, playerCommands, consoleCommands, openLink, soundOption);
+		List<ActionPlayerData> actionPlayerDatas = new ArrayList<ActionPlayerData>();
+		if (configuration.isConfigurationSection(path + "datas")) {
+			for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
+
+				ActionPlayerData actionPlayerData = loader.load(configuration, path + "datas." + key + ".");
+				actionPlayerDatas.add(actionPlayerData);
+
+			}
+		}
+
+		System.out.println(actionPlayerDatas);
+
+		return new ZActionClick(this.plugin, messages, playerCommands, consoleCommands, openLink, soundOption,
+				actionPlayerDatas);
 	}
 
 	@Override

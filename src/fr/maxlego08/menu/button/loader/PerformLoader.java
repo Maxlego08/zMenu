@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.action.ActionLoader;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.button.Button;
@@ -53,7 +54,7 @@ public class PerformLoader implements ButtonLoader {
 		String consolePermission = configuration.getString(path + "consolePermission");
 
 		List<Action> actions = new ArrayList<Action>();
-		Loader<Action> loader = new ActionLoader();
+		Loader<Action> loader = new ActionLoader((MenuPlugin) this.plugin);
 
 		if (configuration.isConfigurationSection(path + "actions.")) {
 			ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "actions.");
