@@ -159,14 +159,27 @@ public class InventoryDefault extends VInventory {
 							return;
 						}
 
+						System.out.println("ici " + this.isClose());
+
 						if (this.isClose()) {
 							task.cancel();
 							return;
 						}
 
 						TimerTask tTask = this.timers.get(slot);
+						System.out.println(tTask + " - " + task + " -- " + task.equals(tTask));
 						if (!task.equals(tTask)) {
 							task.cancel();
+							return;
+						}
+
+						PlaceholderButton masterButton = button.getMasterParentButton()
+								.toButton(PlaceholderButton.class);
+						System.out.println(masterButton.checkPermission(this.player, this));
+						if (masterButton.checkPermission(this.player, this)) {
+							System.out.println("ici je build ?");
+							this.buildButton(masterButton);
+							this.cancel(slot);
 							return;
 						}
 
@@ -183,6 +196,7 @@ public class InventoryDefault extends VInventory {
 						this.getSpigotInventory().setItem(slot, itemStack);
 					});
 
+			System.out.println("ICI " + slot + " -> " + timerTask);
 			this.timers.put(slot, timerTask);
 		}
 

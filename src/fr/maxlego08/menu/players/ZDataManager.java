@@ -131,6 +131,18 @@ public class ZDataManager implements DataManager {
 
 	public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
 
+		localPlaceholder.register("player_key_exist_", (player, key) -> {
+
+			Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+			if (!optional.isPresent()) {
+				return "false";
+			}
+
+			PlayerData playerData = optional.get();
+			return String.valueOf(playerData.containsKey(key));
+
+		});
+
 		localPlaceholder.register("player_value_", (player, key) -> {
 
 			Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
