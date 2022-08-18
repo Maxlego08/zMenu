@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class PlayerSkin {
 	public static GameProfile getProfile(Player player) {
 
 		try {
-			Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+			Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);			
 			return (GameProfile) entityPlayer.getClass().getMethod(getMethodName()).invoke(entityPlayer);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
 				| SecurityException e) {
@@ -113,7 +114,7 @@ public class PlayerSkin {
 	public static String getMethodName() {
 		double version = NMSUtils.getNMSVersion();
 		if (version == 1.18) {
-			return "fp";
+			return "fq";
 		} else if (version == 1.19) {
 			return "fz";
 		}
