@@ -70,8 +70,6 @@ public class ActionClickLoader implements Loader<ActiondClick> {
 			}
 		}
 
-		System.out.println(actionPlayerDatas);
-
 		return new ZActionClick(this.plugin, messages, playerCommands, consoleCommands, openLink, soundOption,
 				actionPlayerDatas);
 	}
