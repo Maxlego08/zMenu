@@ -82,8 +82,6 @@ public class ZActionClick extends ZUtils implements ActiondClick {
 
 			for (ActionPlayerData actionPlayerData : this.datas) {
 
-				System.out.println(actionPlayerData);
-				
 				if (actionPlayerData.getType() == ActionPlayerDataType.REMOVE) {
 
 					Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());

@@ -16,8 +16,6 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class ZButton extends ZUtils implements Button {
 
@@ -149,34 +147,15 @@ public abstract class ZButton extends ZUtils implements Button {
 
 			if (this.openLink != null) {
 
-				this.messages.forEach(message -> {
+				if (this.openLink != null) {
 
-					String finalMessage = this.papi(message, player);
+					this.openLink.send(player, this.messages);
 
-					if (finalMessage.contains(this.openLink.getReplace())) {
+				} else {
 
-						String[] splitMessages = finalMessage.split(this.openLink.getReplace());
+					this.messages.forEach(message -> player.sendMessage(this.papi(message, player)));
 
-						TextComponent component = buildTextComponent(splitMessages[0]);
-
-						TextComponent clickComponant = buildTextComponent(color(this.openLink.getMessage()));
-						setClickAction(clickComponant, Action.OPEN_URL, this.openLink.getLink());
-						setHoverMessage(clickComponant, color(this.openLink.getHover()));
-
-						component.addExtra(clickComponant);
-						if (splitMessages.length == 2) {
-							component.addExtra(buildTextComponent(splitMessages[1]));
-						}
-
-						player.spigot().sendMessage(component);
-
-					} else {
-
-						player.sendMessage(finalMessage);
-
-					}
-
-				});
+				}
 
 			} else {
 
@@ -291,9 +270,9 @@ public abstract class ZButton extends ZUtils implements Button {
 	public boolean isRefreshOnClick() {
 		return this.refreshOnClick;
 	}
-	
+
 	public void setRefreshOnClick(boolean refreshOnClick) {
 		this.refreshOnClick = refreshOnClick;
 	}
-	
+
 }
