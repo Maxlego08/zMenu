@@ -9,7 +9,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.maxlego08.menu.MenuItemStack;
+import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -19,6 +22,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public abstract class ZButton extends ZUtils implements Button {
 
+	private MenuPlugin plugin;
 	private String buttonName;
 	private MenuItemStack itemStack;
 	private int slot = 0;
@@ -30,6 +34,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private OpenLink openLink = new ZOpenLink();
 	private boolean isUpdated = false;
 	private boolean refreshOnClick = false;
+	private List<ActionPlayerData> datas = new ArrayList<>();
 
 	@Override
 	public String getName() {
@@ -143,6 +148,15 @@ public abstract class ZButton extends ZUtils implements Button {
 			player.closeInventory();
 		}
 
+		if (!this.datas.isEmpty()) {
+
+			DataManager dataManager = this.plugin.getDataManager();
+			for (ActionPlayerData actionPlayerData : this.datas) {
+				actionPlayerData.execute(player, dataManager);
+			}
+
+		}
+		
 		if (this.messages.size() > 0) {
 
 			if (this.openLink != null) {
@@ -275,4 +289,17 @@ public abstract class ZButton extends ZUtils implements Button {
 		this.refreshOnClick = refreshOnClick;
 	}
 
+	@Override
+	public List<ActionPlayerData> getData() {
+		return this.datas;
+	}
+
+	public void setDatas(List<ActionPlayerData> datas) {
+		this.datas = datas;
+	}
+
+	public void setPlugin(MenuPlugin plugin) {
+		this.plugin = plugin;
+	}
+	
 }

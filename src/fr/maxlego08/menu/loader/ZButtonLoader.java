@@ -1,13 +1,17 @@
 package fr.maxlego08.menu.loader;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.action.loader.ActionPlayerDataLoader;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
@@ -59,7 +63,8 @@ public class ZButtonLoader implements Loader<Button> {
 
 		ButtonLoader loader = optional.get();
 		ZButton button = (ZButton) loader.load(configuration, path);
-
+		button.setPlugin(this.plugin);
+		
 		int slot = 0;
 		int page;
 
@@ -115,6 +120,20 @@ public class ZButtonLoader implements Loader<Button> {
 			button.setSoundOption(new ZSoundOption(xSound, pitch, volume));
 		}
 
+		Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader();
+		
+		List<ActionPlayerData> actionPlayerDatas = new ArrayList<ActionPlayerData>();
+		if (configuration.isConfigurationSection(path + "datas")) {
+			for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
+
+				ActionPlayerData actionPlayerData = loaderActions.load(configuration, path + "datas." + key + ".");
+				actionPlayerDatas.add(actionPlayerData);
+
+			}
+		}
+		
+		button.setDatas(actionPlayerDatas);
+		
 		if (button instanceof PermissibleButton) {
 
 			ZPermissibleButton permissibleButton = (ZPermissibleButton) button;

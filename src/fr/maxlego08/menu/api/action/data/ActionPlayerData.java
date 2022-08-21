@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.api.action.data;
 
+import org.bukkit.entity.Player;
+
 import fr.maxlego08.menu.api.players.Data;
+import fr.maxlego08.menu.api.players.DataManager;
 
 public interface ActionPlayerData {
 
@@ -38,5 +41,12 @@ public interface ActionPlayerData {
 	 * @return data
 	 */
 	Data toData();
+	
+	/**
+	 * When player click
+	 * 
+	 * @param player
+	 */
+	void execute(Player player, DataManager dataManager);
 	
 }

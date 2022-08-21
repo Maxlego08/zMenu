@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.action;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,9 +9,7 @@ import org.bukkit.plugin.Plugin;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.action.ActiondClick;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
-import fr.maxlego08.menu.api.action.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.players.DataManager;
-import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
@@ -79,23 +76,8 @@ public class ZActionClick extends ZUtils implements ActiondClick {
 		if (!this.datas.isEmpty()) {
 
 			DataManager dataManager = this.plugin.getDataManager();
-
 			for (ActionPlayerData actionPlayerData : this.datas) {
-
-				if (actionPlayerData.getType() == ActionPlayerDataType.REMOVE) {
-
-					Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
-					if (optional.isPresent()) {
-						PlayerData data = optional.get();
-						data.removeData(actionPlayerData.getKey());
-					}
-
-				} else {
-
-					dataManager.addData(player.getUniqueId(), actionPlayerData.toData());
-					
-				}
-
+				actionPlayerData.execute(player, dataManager);
 			}
 
 		}
