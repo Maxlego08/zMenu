@@ -45,6 +45,7 @@ public class PlayerSkin {
 	}
 
 	public static String getTexture(String name) {
+		
 		if (textures.containsKey(name)) {
 			return textures.get(name);
 		}
@@ -104,7 +105,6 @@ public class PlayerSkin {
 			return (GameProfile) entityPlayer.getClass().getMethod(getMethodName()).invoke(entityPlayer);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
 				| SecurityException e) {
-			e.printStackTrace();
 		}
 
 		return null;

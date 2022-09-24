@@ -43,7 +43,7 @@ public class CommandInventory extends VCommand {
 		if (this.command.hasArgument()) {
 
 			CommandManager commandManager = plugin.getCommandManager();
-			
+
 			List<String> arguments = this.command.getArguments();
 			for (int index = 0; index != arguments.size(); index++) {
 
@@ -64,9 +64,8 @@ public class CommandInventory extends VCommand {
 						}
 
 					}
-					
+
 					commandManager.setPlayerArgument(this.player, argument, value);
-					
 
 				} else {
 
@@ -80,7 +79,17 @@ public class CommandInventory extends VCommand {
 
 		String inventoryName = this.command.getInventory();
 		InventoryManager manager = plugin.getInventoryManager();
-		Optional<Inventory> optional = manager.getInventory(inventoryName);
+		Optional<Inventory> optional = Optional.empty();
+
+		if (inventoryName.contains(":")) {
+
+			String[] values = inventoryName.split(":");
+			optional = manager.getInventory(values[0], values[1]);
+
+		} else {
+			optional = manager.getInventory(inventoryName);
+		}
+
 		if (optional.isPresent()) {
 			manager.openInventory(this.player, optional.get());
 		} else {
