@@ -91,7 +91,7 @@ public class ZInventory implements Inventory {
 		}
 		return 1;
 	}
-
+	
 	@Override
 	public List<PlaceholderButton> sortButtons(int page, Object... objects) {
 		return this.buttons.stream().filter(button -> {

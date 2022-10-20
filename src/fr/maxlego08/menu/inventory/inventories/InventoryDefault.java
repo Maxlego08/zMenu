@@ -181,9 +181,9 @@ public class InventoryDefault extends VInventory {
 						MenuItemStack menuItemStack = button.getItemStack();
 
 						ItemMeta itemMeta = itemStack.getItemMeta();
-						itemMeta.setLore(papi(menuItemStack.getLore(), this.player));
+						itemMeta.setLore(color(papi(menuItemStack.getLore(), this.player)));
 						if (menuItemStack.getDisplayName() != null) {
-							itemMeta.setDisplayName(papi(menuItemStack.getDisplayName(), this.player));
+							itemMeta.setDisplayName(color(papi(menuItemStack.getDisplayName(), this.player)));
 						}
 
 						itemStack.setItemMeta(itemMeta);

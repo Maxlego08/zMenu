@@ -93,14 +93,14 @@ public class CommandInventory extends VCommand {
 		if (optional.isPresent()) {
 			manager.openInventory(this.player, optional.get());
 		} else {
-			message(player, Message.INVENTORY_ERROR, "%name%", inventoryName);
+			message(this.player, Message.INVENTORY_ERROR, "%name%", inventoryName);
 		}
 
 		return CommandType.SUCCESS;
 	}
 
 	public Command getCommand() {
-		return command;
+		return this.command;
 	}
 
 }
