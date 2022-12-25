@@ -47,7 +47,6 @@ public class MenuPlugin extends ZPlugin {
 	private CommandMenu commandMenu;
 
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
-	private final Token token = new Token();
 
 	@Override
 	public void onEnable() {
@@ -127,7 +126,7 @@ public class MenuPlugin extends ZPlugin {
 
 		File tokenFile = new File(this.getDataFolder(), "token.json");
 		if (tokenFile.exists()) {
-			this.token.load(this.getPersist());
+			Token.getInstance().load(this.getPersist());
 		}
 
 		this.postEnable();
@@ -142,7 +141,7 @@ public class MenuPlugin extends ZPlugin {
 
 		this.getSavers().forEach(saver -> saver.save(this.getPersist()));
 		if (Token.token != null) {
-			this.token.save(this.getPersist());
+			Token.getInstance().save(this.getPersist());
 		}
 
 		this.postDisable();

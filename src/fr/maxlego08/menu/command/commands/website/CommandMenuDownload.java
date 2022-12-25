@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.command.commands;
+package fr.maxlego08.menu.command.commands.website;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;

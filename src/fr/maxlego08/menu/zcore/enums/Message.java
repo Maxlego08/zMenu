@@ -63,6 +63,7 @@ public enum Message {
 	DESCRIPTION_VERSION("Show plugin version"),
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
+	DESCRIPTION_DISCONNECT("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
     DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration"),
@@ -102,10 +103,14 @@ public enum Message {
 	PLAYERS_DATA_REMOVE_SUCCESS("§aYou have just deleted the §f%key% §for the §b%player%§a."),
 	PLAYERS_DATA_REMOVE_ERROR("§cCannot find the key §f%key%§c."),
 	
+	WEBSITE_LOGIN_ERROR_TOKEN("§cYour token seems invalid, please try again."),
 	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
-	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again.", "§c%message%"),
+	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again."),
 	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
-	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."), 
+	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
+	
+	WEBSITE_DISCONNECT_SUCCESS("§cYou have just deleted the link to the site."), 
+	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."), 
 	
 	PLACEHOLDER_NEVER("never"),
 	

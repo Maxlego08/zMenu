@@ -11,6 +11,13 @@ public interface WebsiteManager {
 	 * @param email
 	 * @param password
 	 */
-	public void login(CommandSender sender, String email, String password);
+	public void login(CommandSender sender, String token);
+
+	/**
+	 * Disconnect to the site
+	 * 
+	 * @param sender
+	 */
+	public void disconnect(CommandSender sender);
 	
 }

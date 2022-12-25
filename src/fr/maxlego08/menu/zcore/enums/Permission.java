@@ -9,6 +9,7 @@ public enum Permission {
 	ZMENU_CONVERT,
 	ZMENU_DOWNLOAD,
 	ZMENU_LOGIN,
+	ZMENU_DESCRIPTION,
 
 	;
 

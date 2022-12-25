@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.website;
+package fr.maxlego08.menu.website.request;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -16,10 +16,13 @@ import org.bukkit.plugin.Plugin;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import fr.maxlego08.menu.save.Config;
+
 public class HttpRequest {
 
 	private final String url;
 	private final JsonObject data;
+	private String bearer;
 
 	/**
 	 * @param url
@@ -31,22 +34,36 @@ public class HttpRequest {
 		this.data = data;
 	}
 
-	public void submit(Plugin plugin, Consumer<Map<String, Object>> consumer) {
+	public void setBearer(String bearer) {
+		this.bearer = bearer;
+	}
+
+	public void submit(Plugin plugin, Consumer<Response> consumer) {
 
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 
-			Map<String, Object> map;
+			Map<String, Object> map = new HashMap<>();
+			HttpURLConnection connection = null;
+			int responseCode = -1;
+
 			try {
 
 				URL url = new URL(this.url);
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				connection = (HttpURLConnection) url.openConnection();
 
 				connection.setRequestMethod("POST");
 				connection.addRequestProperty("Accept", "application/json");
 				connection.setRequestProperty("Content-Type", "application/json");
 				connection.setDoOutput(true);
 
+				if (this.bearer != null) {
+					connection.setRequestProperty("Authorization", "Bearer " + bearer);
+				}
+
 				DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+
+				responseCode = connection.getResponseCode();
+
 				String jsonInputString = this.data.toString();
 				byte[] input = jsonInputString.getBytes("utf-8");
 				outputStream.write(input, 0, input.length);
@@ -68,14 +85,14 @@ public class HttpRequest {
 				map = gson.fromJson(builder.toString(), Map.class);
 
 			} catch (Exception e) {
-
-				e.printStackTrace();
-				consumer.accept(new HashMap<String, Object>());
-				return;
+				if (Config.enableDebug) {
+					e.printStackTrace();
+				}
 
 			}
 
-			consumer.accept(map == null ? new HashMap<>() : map);
+			Response response = new Response(responseCode, map);
+			consumer.accept(response);
 		});
 
 	}
