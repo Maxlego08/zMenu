@@ -1,6 +1,7 @@
 package fr.maxlego08.menu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import com.sun.org.apache.bcel.internal.generic.POP;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
@@ -58,10 +61,10 @@ public class MenuItemStack extends ZUtils {
 		ItemStack itemStack = null;
 		Material material = null;
 
-		if (this.material == null){
+		if (this.material == null) {
 			this.material = "STONE";
 		}
-		
+
 		String papiMaterial = papi(this.material, player);
 		int amount = 1;
 		try {
@@ -86,12 +89,14 @@ public class MenuItemStack extends ZUtils {
 			if (papiMaterial.contains(":")) {
 
 				String[] values = papiMaterial.split(":");
+
 				if (values.length == 2) {
 
 					String key = values[0];
 					String value = values[1];
 
 					Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
+
 					if (optional.isPresent()) {
 						MaterialLoader loader = optional.get();
 						itemStack = loader.load(null, null, value);
@@ -100,7 +105,9 @@ public class MenuItemStack extends ZUtils {
 			}
 		}
 
-		itemStack = new ItemStack(material, amount, (byte) this.data);
+		if (itemStack == null) {
+			itemStack = new ItemStack(material, amount, (byte) this.data);
+		}
 
 		if (this.url != null) {
 			itemStack = this.createSkull(this.url);
