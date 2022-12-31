@@ -26,6 +26,7 @@ public class CommandMenuOpen extends VCommand {
 		}).collect(Collectors.toList()));
 
 		this.addOptionalArg("player");
+		this.addOptionalArg("display message");
 		this.setDescription(Message.DESCRIPTION_OPEN);
 		this.setPermission(Permission.ZMENU_OPEN);
 	}
@@ -37,6 +38,7 @@ public class CommandMenuOpen extends VCommand {
 
 		String inventoryName = this.argAsString(0);
 		Player player = this.argAsPlayer(1, this.player);
+		boolean displayMessage = this.argAsBoolean(2, true);
 		if (player == null) {
 			message(this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
 					: Message.INVENTORY_OPEN_ERROR_PLAYER);
@@ -60,10 +62,13 @@ public class CommandMenuOpen extends VCommand {
 			return CommandType.DEFAULT;
 		}
 
-		if (this.sender == player) {
-			message(this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
-		} else {
-			message(this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
+		if (displayMessage) {
+			if (this.sender == player) {
+				message(this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
+			} else {
+				message(this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%",
+						player.getName());
+			}
 		}
 
 		Inventory inventory = optional.get();
