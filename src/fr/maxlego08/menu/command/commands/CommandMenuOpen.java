@@ -10,6 +10,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -38,7 +39,7 @@ public class CommandMenuOpen extends VCommand {
 
 		String inventoryName = this.argAsString(0);
 		Player player = this.argAsPlayer(1, this.player);
-		boolean displayMessage = this.argAsBoolean(2, true);
+		boolean displayMessage = this.argAsBoolean(2, Config.enableOpenMessage);
 		if (player == null) {
 			message(this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
 					: Message.INVENTORY_OPEN_ERROR_PLAYER);
