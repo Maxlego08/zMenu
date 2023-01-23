@@ -1,7 +1,6 @@
 package fr.maxlego08.menu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +13,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import com.sun.org.apache.bcel.internal.generic.POP;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
@@ -61,6 +58,8 @@ public class MenuItemStack extends ZUtils {
 		ItemStack itemStack = null;
 		Material material = null;
 
+		// If the material is null, then by default it will be stone, stone is a
+		// material present in all versions, so no conflict problem.
 		if (this.material == null) {
 			this.material = "STONE";
 		}

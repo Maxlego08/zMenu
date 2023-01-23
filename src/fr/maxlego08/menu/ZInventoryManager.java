@@ -85,7 +85,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	@Override
 	public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
 			throws InventoryException {
-
+		
 		File file = new File(plugin.getDataFolder(), fileName);
 		if (!file.exists()) {
 			throw new InventoryFileNotFound("Cannot find " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
@@ -327,6 +327,30 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException {
+		
+		File file = new File(plugin.getDataFolder(), resourceName);
+		if (!file.exists()) {
+			plugin.saveResource(resourceName, false);
+		}
+		
+		return this.loadInventory(plugin, file);
+	}
+	
+	@Override
+	public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz)
+			throws InventoryException {
+
+		File file = new File(plugin.getDataFolder(), resourceName);
+		if (!file.exists()) {
+			plugin.saveResource(resourceName, false);
+		}
+		
+		return this.loadInventory(plugin, file, classz);
+		
 	}
 
 }
