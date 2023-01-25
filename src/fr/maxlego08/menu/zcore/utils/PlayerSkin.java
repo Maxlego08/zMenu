@@ -18,8 +18,6 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
-
 /**
  * 
  * Based on

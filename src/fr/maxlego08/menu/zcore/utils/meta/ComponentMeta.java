@@ -67,7 +67,7 @@ public class ComponentMeta implements MetaUpdater {
 
 		String newMessage = message;
 
-		if (NMSUtils.isHexColor()) {
+		/*if (NMSUtils.isHexColor()) {
 			Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 			Matcher matcher = pattern.matcher(message);
 			while (matcher.find()) {
@@ -76,7 +76,7 @@ public class ComponentMeta implements MetaUpdater {
 				message = message.replace(color, "");
 				matcher = pattern.matcher(message);
 			}
-		}
+		}*/
 
 		for (Entry<String, String> entry : this.COLORS_MAPPINGS.entrySet()) {
 			String key = entry.getKey();
