@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils;
 
 import java.util.List;
 
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -17,11 +18,11 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 	private final List<String> hover;
 
 	/**
-	 * @param action
-	 * @param message
-	 * @param link
-	 * @param replace
-	 * @param hover
+	 * @param action - The action
+	 * @param message - The message
+	 * @param link - The link
+	 * @param replace - The replacement
+	 * @param hover - The hover messages
 	 */
 	public ZOpenLink(Action action, String message, String link, String replace, List<String> hover) {
 		super();
@@ -54,7 +55,7 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 	}
 
 	/**
-	 * @return the replace
+	 * @return the replacement
 	 */
 	public String getReplace() {
 		return replace;
@@ -99,7 +100,7 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
 				} else {
 
-					player.sendMessage(finalMessage);
+					Meta.meta.sendMessage(player, finalMessage);
 
 				}
 
@@ -107,7 +108,7 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
 		} else {
 
-			messages.forEach(message -> player.sendMessage(this.papi(message, player)));
+			messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
 
 		}
 	}

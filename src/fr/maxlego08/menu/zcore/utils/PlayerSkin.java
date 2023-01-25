@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +18,6 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
-
 /**
  * 
  * Based on
@@ -29,6 +28,7 @@ public class PlayerSkin {
 
 	private static final Map<String, String> textures = new HashMap<String, String>();
 	private static ExecutorService pool = Executors.newCachedThreadPool();
+	private static String gameProfileMethodName;
 
 	public static String getTexture(Player player) {
 		if (textures.containsKey(player.getName())) {
@@ -45,7 +45,7 @@ public class PlayerSkin {
 	}
 
 	public static String getTexture(String name) {
-		
+
 		if (textures.containsKey(name)) {
 			return textures.get(name);
 		}
@@ -92,8 +92,11 @@ public class PlayerSkin {
 
 			return new String[] { texture, signature };
 		} catch (IOException e) {
-			/*System.err.println("Could not get skin data from session servers!");
-			e.printStackTrace();*/
+			/*
+			 * System.err.
+			 * println("Could not get skin data from session servers!");
+			 * e.printStackTrace();
+			 */
 			return null;
 		}
 	}
@@ -101,23 +104,30 @@ public class PlayerSkin {
 	public static GameProfile getProfile(Player player) {
 
 		try {
-			Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);			
-			return (GameProfile) entityPlayer.getClass().getMethod(getMethodName()).invoke(entityPlayer);
+			Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+			return (GameProfile) entityPlayer.getClass().getMethod(getMethodName(entityPlayer)).invoke(entityPlayer);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-				| SecurityException e) {
+				| SecurityException ignored) {
 		}
 
 		return null;
 	}
 
-	public static String getMethodName() {
-		double version = NMSUtils.getNMSVersion();
+	public static String getMethodName(Object entityPlayer) {
+		/*double version = NMSUtils.getNMSVersion();
 		if (version == 1.18) {
 			return "fq";
 		} else if (version == 1.19) {
-			return "fz";
+			return "fy";
+		}*/
+		if (gameProfileMethodName == null){
+			for (Method method : entityPlayer.getClass().getMethods()) {
+				if (method.getParameterCount() == 0 && method.getReturnType().toString().contains("com.mojang.authlib.GameProfile")) {
+					gameProfileMethodName = method.getName();
+				}
+			}
 		}
-		return "getProfile";
+		return gameProfileMethodName != null ? gameProfileMethodName : "getProfile";
 	}
 
 }

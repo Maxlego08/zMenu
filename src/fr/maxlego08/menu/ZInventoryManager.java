@@ -215,7 +215,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		buttonManager.register(new PreviousLoader(this.plugin, this));
 
 		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
-		event.callEvent();
+		event.call();
 	}
 
 	@Override
