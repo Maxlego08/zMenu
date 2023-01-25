@@ -16,7 +16,6 @@ public class Meta {
 				Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
 				meta = new ComponentMeta();
 			} catch (Exception e) {
-				e.printStackTrace();
 				meta = new ClassicMeta();
 			}
 		}
