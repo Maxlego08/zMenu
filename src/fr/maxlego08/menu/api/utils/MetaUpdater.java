@@ -5,7 +5,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public interface MetaUpdater {
+public interface MetaUpdater extends MessageSender{
 
     /**
      * Allows you to change the display name

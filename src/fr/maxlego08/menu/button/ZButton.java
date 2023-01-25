@@ -3,6 +3,7 @@ package fr.maxlego08.menu.button;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -161,20 +162,10 @@ public abstract class ZButton extends ZUtils implements Button {
 
 			if (this.openLink != null) {
 
-				if (this.openLink != null) {
-
-					this.openLink.send(player, this.messages);
-
-				} else {
-
-					this.messages.forEach(message -> player.sendMessage(this.papi(message, player)));
-
-				}
-
+				this.openLink.send(player, this.messages);
 			} else {
 
-				this.messages.forEach(message -> player.sendMessage(this.papi(message, player)));
-
+				this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
 			}
 		}
 
