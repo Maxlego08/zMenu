@@ -131,66 +131,68 @@ public class InventoryDefault extends VInventory {
 	 * @param button
 	 * @param slot
 	 */
-	public void displayFinalButton(PlaceholderButton button, int slot) {
+	public void displayFinalButton(PlaceholderButton button, int... slots) {
 
 		ItemStack itemStack = button.getCustomItemStack(this.player);
-		ItemButton itemButton = this.addItem(slot, itemStack);
-		if (button.isClickable()) {
-			itemButton.setClick(event -> {
+		for (int slot : slots) {
+			ItemButton itemButton = this.addItem(slot, itemStack);
+			if (button.isClickable()) {
+				itemButton.setClick(event -> {
 
-				button.onClick(this.player, event, this, slot);
-				if (button.isRefreshOnClick()) {
-					this.cancel(slot);
-					this.buildButton(button.getMasterParentButton().toButton(PlaceholderButton.class));
-				}
+					button.onClick(this.player, event, this, slot);
+					if (button.isRefreshOnClick()) {
+						this.cancel(slot);
+						this.buildButton(button.getMasterParentButton().toButton(PlaceholderButton.class));
+					}
 
-			});
-			itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
-			itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
-			itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
-		}
+				});
+				itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
+				itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
+				itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
+			}
 
-		if (button.isUpdated()) {
+			if (button.isUpdated()) {
 
-			TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000,
-					(task, canRun) -> {
+				TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000,
+						(task, canRun) -> {
 
-						if (!canRun) {
-							return;
-						}
+							if (!canRun) {
+								return;
+							}
 
-						if (this.isClose()) {
-							task.cancel();
-							return;
-						}
+							if (this.isClose()) {
+								task.cancel();
+								return;
+							}
 
-						TimerTask tTask = this.timers.get(slot);
-						if (!task.equals(tTask)) {
-							task.cancel();
-							return;
-						}
+							TimerTask tTask = this.timers.get(slot);
+							if (!task.equals(tTask)) {
+								task.cancel();
+								return;
+							}
 
-						PlaceholderButton masterButton = button.getMasterParentButton()
-								.toButton(PlaceholderButton.class);
-						if (masterButton.checkPermission(this.player, this)) {
-							this.buildButton(masterButton);
-							this.cancel(slot);
-							return;
-						}
+							PlaceholderButton masterButton = button.getMasterParentButton()
+									.toButton(PlaceholderButton.class);
+							if (masterButton.checkPermission(this.player, this)) {
+								this.buildButton(masterButton);
+								this.cancel(slot);
+								return;
+							}
 
-						MenuItemStack menuItemStack = button.getItemStack();
+							MenuItemStack menuItemStack = button.getItemStack();
 
-						ItemMeta itemMeta = itemStack.getItemMeta();
-						itemMeta.setLore(color(papi(menuItemStack.getLore(), this.player)));
-						if (menuItemStack.getDisplayName() != null) {
-							itemMeta.setDisplayName(color(papi(menuItemStack.getDisplayName(), this.player)));
-						}
+							ItemMeta itemMeta = itemStack.getItemMeta();
+							itemMeta.setLore(color(papi(menuItemStack.getLore(), this.player)));
+							if (menuItemStack.getDisplayName() != null) {
+								itemMeta.setDisplayName(color(papi(menuItemStack.getDisplayName(), this.player)));
+							}
 
-						itemStack.setItemMeta(itemMeta);
-						this.getSpigotInventory().setItem(slot, itemStack);
-					});
+							itemStack.setItemMeta(itemMeta);
+							this.getSpigotInventory().setItem(slot, itemStack);
+						});
 
-			this.timers.put(slot, timerTask);
+				this.timers.put(slot, timerTask);
+			}
 		}
 
 	}

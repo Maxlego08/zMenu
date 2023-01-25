@@ -33,7 +33,7 @@ public class ZSlotButton extends ZPlaceholderButton implements SlotButton {
 
 	@Override
 	public void onRender(Player player, InventoryDefault inventory) {
-		this.slots.forEach(slot -> inventory.displayFinalButton(this, slot));
+		inventory.displayFinalButton(this, this.slots.stream().mapToInt(Integer::intValue).toArray());
 	}
 
 }
