@@ -81,7 +81,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             String value = entry.getValue();
 
             newMessage = newMessage.replace("&" + key, "<" + value + ">");
-            newMessage = newMessage.replace("ยง" + key, "<" + value + ">");
+            newMessage = newMessage.replace("ง" + key, "<" + value + ">");
         }
         return newMessage;
     }
