@@ -8,7 +8,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 public abstract class ZSlotButton extends ZUtils implements SlotButton {
 
-	private List<Integer> slots;
+	protected List<Integer> slots;
 
 	@Override
 	public Collection<Integer> getSlots() {
