@@ -29,10 +29,10 @@ public class Logger {
 	}
 	
 	public enum LogType{
-		ERROR("งc"),
-		INFO("ง7"),
-		WARNING("ง6"),
-		SUCCESS("ง2");
+		ERROR("ยงc"),
+		INFO("ยง7"),
+		WARNING("ยง6"),
+		SUCCESS("ยง2");
 		
 		private final String color;
 		
@@ -46,11 +46,11 @@ public class Logger {
 	}
 	
 	public void log(String message, LogType type){
-		Bukkit.getConsoleSender().sendMessage("ง8[งe"+prefix+"ง8] " + type.getColor() + getColoredMessage(message));
+		Bukkit.getConsoleSender().sendMessage("ยง8[ยงe"+prefix+"ยง8] " + type.getColor() + getColoredMessage(message));
 	}
 	
 	public void log(String message){
-		Bukkit.getConsoleSender().sendMessage("ง8[งe"+prefix+"ง8] งe" + getColoredMessage(message));
+		Bukkit.getConsoleSender().sendMessage("ยง8[ยงe"+prefix+"ยง8] ยงe" + getColoredMessage(message));
 	}
 	
 	public void log(String message, Object... args){
@@ -68,6 +68,6 @@ public class Logger {
 	}
 	
 	public String getColoredMessage(String message){
-		return message.replace("<&>", "ง");
+		return message.replace("<&>", "ยง");
 	}
 }

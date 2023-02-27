@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.meta;
 
 import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class ComponentMeta implements MetaUpdater {
+public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder()
             .tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
@@ -48,14 +49,14 @@ public class ComponentMeta implements MetaUpdater {
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(text));
+        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)));
         itemMeta.displayName(component);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
         List<Component> components = lore.stream().map(text -> {
-            return this.MINI_MESSAGE.deserialize(colorMiniMessage(text));
+            return this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)));
         }).collect(Collectors.toList());
         itemMeta.lore(components);
     }
@@ -80,7 +81,7 @@ public class ComponentMeta implements MetaUpdater {
             String value = entry.getValue();
 
             newMessage = newMessage.replace("&" + key, "<" + value + ">");
-            newMessage = newMessage.replace("ง" + key, "<" + value + ">");
+            newMessage = newMessage.replace("ยง" + key, "<" + value + ">");
         }
         return newMessage;
     }

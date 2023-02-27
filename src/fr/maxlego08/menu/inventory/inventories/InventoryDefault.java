@@ -20,6 +20,7 @@ import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 
 public class InventoryDefault extends VInventory {
 
@@ -182,9 +183,9 @@ public class InventoryDefault extends VInventory {
 							MenuItemStack menuItemStack = button.getItemStack();
 
 							ItemMeta itemMeta = itemStack.getItemMeta();
-							itemMeta.setLore(color(papi(menuItemStack.getLore(), this.player)));
+							Meta.meta.updateLore(itemMeta, menuItemStack.getLore(), this.player);
 							if (menuItemStack.getDisplayName() != null) {
-								itemMeta.setDisplayName(color(papi(menuItemStack.getDisplayName(), this.player)));
+								Meta.meta.updateDisplayName(itemMeta, menuItemStack.getDisplayName(), this.player);
 							}
 
 							itemStack.setItemMeta(itemMeta);

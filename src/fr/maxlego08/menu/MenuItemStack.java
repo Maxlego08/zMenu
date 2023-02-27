@@ -130,12 +130,10 @@ public class MenuItemStack extends ZUtils {
 
 		if (this.displayName != null) {
 			Meta.meta.updateDisplayName(itemMeta, this.displayName, player);
-			// itemMeta.setDisplayName(color(this.displayName));
 		}
 
 		Meta.meta.updateLore(itemMeta, this.lore, player);
-		// itemMeta.setLore(color(this.lore));
-
+		
 		if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
 
 			itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
