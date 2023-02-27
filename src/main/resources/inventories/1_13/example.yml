@@ -17,7 +17,6 @@ size: 54
 items:
   # Will display an item that has no action on the different slots
   slots:
-    type: NONE_SLOT # Button type
     isPermanent: true # Allows you to set the button as permanent
     closeInventory: true # Allows you to close the inventory when clicking
     sound: ENTITY_COW_HURT # Sound played during the click
@@ -72,7 +71,6 @@ items:
       material: PAPER
       name: "&fSHOP"           
   testPlaceholderHead:
-    type: NONE
     slot: 21
     playerHead: "%player%"
     item:
@@ -81,7 +79,6 @@ items:
       lore:
         - "&fHead with placeholder"        
   clickActionExample:
-    type: NONE
     slot: 23
     closeInventory: true
     messages: # Messages sent to the player when clicking
@@ -103,7 +100,6 @@ items:
         - "&fGo to &b&nhttps://serveur-minecraft-vote.fr/"     
         - "&fClick to access the site and earn &c5€&f credits."
   testPage:
-    type: PERFORM_COMMAND
     slot: 13
     page: 2
     closeInventory: true
@@ -120,7 +116,6 @@ items:
     messages:
       - "&8(&6Groupe&fZ&8) &7You have just clicked on a button"
   testPage2:
-    type: NONE
     slot: "2-22" # Shows the button on page 2 and slot 22
     item:
       material: BOOK 
@@ -155,7 +150,6 @@ items:
         name: "&aNop"
   # Example of a button that will use the placeholder permissions system and that will use several else button
   testPlaceHolder:
-    type: NONE
     slot: 40
     item:
       material: IRON_INGOT

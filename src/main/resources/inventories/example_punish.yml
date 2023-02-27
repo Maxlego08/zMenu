@@ -13,7 +13,6 @@ name: "#03fc98Select ban duration"
 size: 27
 items:
   '0':
-    type: NONE_SLOT
     item:
       material: STAINED_GLASS_PANE
       data: 15
@@ -24,7 +23,6 @@ items:
     - 17-18
     - 26-26
   '1':
-    type: NONE_SLOT
     item:
       material: STAINED_GLASS_PANE
       data: 7
@@ -33,7 +31,6 @@ items:
     - 1-7
     - 19-25
   '10':
-    type: PERFORM_COMMAND
     slot: 10
     closeInventory: true
     commands:
@@ -51,7 +48,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '11':
-    type: PERFORM_COMMAND
     slot: 11
     closeInventory: true
     commands:
@@ -70,7 +66,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '12':
-    type: PERFORM_COMMAND
     slot: 12
     closeInventory: true
     commands:
@@ -89,7 +84,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '13':
-    type: PERFORM_COMMAND
     slot: 13
     closeInventory: true
     commands:
@@ -108,7 +102,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '14':
-    type: PERFORM_COMMAND
     slot: 14
     closeInventory: true
     commands:
@@ -127,7 +120,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '15':
-    type: PERFORM_COMMAND
     slot: 15
     closeInventory: true
     commands:
@@ -146,7 +138,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '16':
-    type: PERFORM_COMMAND
     slot: 16
     closeInventory: true
     commands:
@@ -165,7 +156,6 @@ items:
       - ''
       - '&f» &a&nClick&f to confirm ban'
   '22':
-    type: NONE
     slot: 22
     closeInventory: true
     item:

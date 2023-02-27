@@ -13,7 +13,6 @@ size: 54
 items:
   # Will display an item that has no action on the different slots
   slots:
-    type: NONE_SLOT # https://zmenu.groupez.dev/configurations/buttons#none_slot
     isPermanent: true
     item: # https://zmenu.groupez.dev/configurations/items
       material: GRAY_STAINED_GLASS_PANE
@@ -29,7 +28,6 @@ items:
       - 36
       - 44-53 # slot 44 to 53
   shop1:
-    type: PERFORM_COMMAND # https://zmenu.groupez.dev/configurations/buttons#perform_command
     slot: 22
     # You can add a list of actions. An action will contain a click list, permissions, an allow action and a deny action.
     # https://zmenu.groupez.dev/configurations/buttons#actions

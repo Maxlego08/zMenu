@@ -15,7 +15,6 @@ fillItem:
 items:
   # Will display an item that has no action on the different slots
   slots:
-    type: NONE_SLOT
     isPermanent: true
     item:
       material: YELLOW_STAINED_GLASS_PANE
