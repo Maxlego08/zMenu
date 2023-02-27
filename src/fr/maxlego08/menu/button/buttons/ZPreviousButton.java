@@ -8,10 +8,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public class ZPreviousButton extends ZPlaceholderButton implements HomeButton {
+public class ZPreviousButton extends ZButton implements HomeButton {
 
 	private final InventoryManager inventoryManager;
 

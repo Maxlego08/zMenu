@@ -86,7 +86,6 @@ public class ZDataManager implements DataManager {
 		return playerData.getData(key);
 	}
 
-	@SuppressWarnings("deprecation")
 	public List<String> getKeys(String[] args) {
 		if (args.length != 4) {
 			return new ArrayList<String>();

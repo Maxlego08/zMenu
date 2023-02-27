@@ -91,13 +91,13 @@ public class ZInventory implements Inventory {
 		}
 		return 1;
 	}
-	
+
 	@Override
-	public List<PlaceholderButton> sortButtons(int page, Object... objects) {
+	public List<Button> sortButtons(int page, Object... objects) {
 		return this.buttons.stream().filter(button -> {
 			int slot = button.getRealSlot(this.size, page);
 			return slot >= 0 && slot < this.size;
-		}).map(button -> button.toButton(PlaceholderButton.class)).collect(Collectors.toList());
+		}).collect(Collectors.toList());
 	}
 
 	@Override

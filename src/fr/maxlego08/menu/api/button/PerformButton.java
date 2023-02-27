@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.button.buttons;
+package fr.maxlego08.menu.api.button;
 
 import java.util.List;
 
@@ -6,9 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import fr.maxlego08.menu.api.action.Action;
-import fr.maxlego08.menu.api.button.PlaceholderButton;
 
-public interface PerformButton extends PlaceholderButton {
+public interface PerformButton {
 
 	/**
 	 * Returns the list of commands that the player will execute

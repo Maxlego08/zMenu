@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 
@@ -74,7 +73,7 @@ public interface Inventory {
 	 * @param objects
 	 * @return buttons
 	 */
-	public List<PlaceholderButton> sortButtons(int page, Object... objects);
+	public List<Button> sortButtons(int page, Object... objects);
 
 	/**
 	 * When a inventory is open

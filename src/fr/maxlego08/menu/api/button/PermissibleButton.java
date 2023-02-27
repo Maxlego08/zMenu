@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public interface PermissibleButton extends Button {
+public interface PermissibleButton {
 
 	/**
 	 * Returns the button that will be used if the condition does not pass

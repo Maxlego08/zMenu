@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.enums.PlaceholderAction;
  * The button allows you to make checks using placeholders.
  * You must use the PlaceholderAPI plugin (https://www.spigotmc.org/resources/placeholderapi.6245/)
  */
-public interface PlaceholderButton extends PermissibleButton {
+public interface PlaceholderButton {
 
 	/**
 	 * Returns the placeholder used

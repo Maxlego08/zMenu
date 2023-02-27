@@ -5,23 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.action.ActionLoader;
 import fr.maxlego08.menu.action.loader.ActionPlayerDataLoader;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
-import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.enums.XSound;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.sound.ZSoundOption;
@@ -64,7 +65,7 @@ public class ZButtonLoader implements Loader<Button> {
 		ButtonLoader loader = optional.get();
 		ZButton button = (ZButton) loader.load(configuration, path);
 		button.setPlugin(this.plugin);
-		
+
 		int slot = 0;
 		int page;
 
@@ -90,6 +91,10 @@ public class ZButtonLoader implements Loader<Button> {
 		page = page < 1 ? 1 : page;
 		slot = slot + ((page - 1) * this.inventorySize);
 
+		List<String> slotsAsString = configuration.getStringList(path + "slots");
+		List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
+
+		button.setSlots(slots);
 		button.setSlot(slot);
 		button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
 		button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
@@ -121,7 +126,7 @@ public class ZButtonLoader implements Loader<Button> {
 		}
 
 		Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader();
-		
+
 		List<ActionPlayerData> actionPlayerDatas = new ArrayList<ActionPlayerData>();
 		if (configuration.isConfigurationSection(path + "datas")) {
 			for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
@@ -131,36 +136,57 @@ public class ZButtonLoader implements Loader<Button> {
 
 			}
 		}
-		
+
 		button.setDatas(actionPlayerDatas);
-		
-		if (button instanceof PermissibleButton) {
+		button.setPermission(configuration.getString(path + "permission", null));
 
-			ZPermissibleButton permissibleButton = (ZPermissibleButton) button;
-			permissibleButton.setPermission(configuration.getString(path + "permission", null));
+		if (configuration.contains(path + "else")) {
 
-			if (configuration.contains(path + "else")) {
+			Button elseButton = this.load(configuration, path + "else.", buttonName + ".else");
+			button.setElseButton(elseButton);
 
-				Button elseButton = this.load(configuration, path + "else.", buttonName + ".else");
-				permissibleButton.setElseButton(elseButton);
-
-				if (elseButton instanceof PermissibleButton) {
-					ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
-					elsePermissibleButton.setParentButton(button);
-				}
-
+			if (elseButton instanceof PermissibleButton) {
+				ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
+				elsePermissibleButton.setParentButton(button);
 			}
 
 		}
 
-		if (button instanceof PlaceholderButton) {
+		// Placeholder
+		button.setPlaceholder(configuration.getString(path + "placeHolder", null));
+		button.setAction(PlaceholderAction.from(configuration.getString(path + "action", null)));
+		button.setValue(configuration.getString(path + "value", null));
 
-			ZPlaceholderButton placeholderButton = (ZPlaceholderButton) button;
-			placeholderButton.setPlaceholder(configuration.getString(path + "placeHolder", null));
-			placeholderButton.setAction(PlaceholderAction.from(configuration.getString(path + "action", null)));
-			placeholderButton.setValue(configuration.getString(path + "value", null));
+		// Perform
+		List<String> commands = configuration.getStringList(path + "commands");
+		List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
+		List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
+		List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");
+		List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
+		String consolePermission = configuration.getString(path + "consolePermission");
 
+		List<Action> actions = new ArrayList<Action>();
+		Loader<Action> actiuonLoader = new ActionLoader((MenuPlugin) this.plugin);
+
+		if (configuration.isConfigurationSection(path + "actions.")) {
+			ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "actions.");
+			for (String key : configurationSection.getKeys(false)) {
+
+				try {
+					actions.add(actiuonLoader.load(configuration, path + "actions." + key + "."));
+				} catch (InventoryException e) {
+					e.printStackTrace();
+				}
+			}
 		}
+
+		button.setCommands(commands);
+		button.setConsoleCommands(consoleCommands);
+		button.setConsoleRightCommands(consoleRightCommands);
+		button.setConsoleLeftCommands(consoleLeftCommands);
+		button.setConsolePermissionCommands(consolePermissionCommands);
+		button.setConsolePermission(consolePermission);
+		button.setActions(actions);
 
 		return button;
 	}
