@@ -16,8 +16,8 @@ size: 54
 # List of buttons
 items:
   # Will display an item that has no action on the different slots
-  slots:    
-    type: NONE_SLOT # Button type
+  slots:
+    type: NONE # Button type
     isPermanent: true # Allows you to set the button as permanent
     closeInventory: true # Allows you to close the inventory when clicking
     sound: ENTITY_COW_HURT # Sound played during the click
@@ -25,7 +25,7 @@ items:
     volume: 0.5 # Sound volume
     item: # Item to be displayed 
       # For the material please take the right material according to your version of the game
-      # More informations here: https://zmenu.groupez.dev/configurations/informations
+      # More information here: https://zmenu.groupez.dev/configurations/informations
       material: STAINED_GLASS_PANE
       data: 7
       name: "&e"
@@ -73,7 +73,6 @@ items:
       material: PAPER
       name: "&fSHOP"           
   testPlaceholderHead:
-    type: NONE
     slot: 21
     playerHead: "%player%" # Allows to display the head of the player who will open the inventory
     item:
@@ -83,7 +82,6 @@ items:
       lore:
         - "&fHead with placeholder"        
   clickActionExample:
-    type: NONE
     slot: 23
     closeInventory: true
     messages: # Messages sent to the player when clicking
@@ -106,7 +104,6 @@ items:
         - "&fGo to &b&nhttps://serveur-minecraft-vote.fr/"     
         - "&fClick to access the site and earn &c5€&f credits."
   testPage:
-    type: PERFORM_COMMAND
     slot: 13
     page: 2    
     closeInventory: true
@@ -123,7 +120,6 @@ items:
     messages:
       - "&8(&6Groupe&fZ&8) &7You have just clicked on a button"
   testPage2:
-    type: NONE
     slot: "2-22" # Shows the button on page 2 and slot 22
     item:
       material: BOOK 
@@ -137,7 +133,6 @@ items:
       name: "&fNext"
     else: #Displays another button if there is no next page.
       slot: 50
-      type: NONE
       isPermanent: true
       item:
         material: STAINED_GLASS_PANE
@@ -160,7 +155,6 @@ items:
         name: "&aNop"
   # Example of a button that will use the placeholder permissions system and that will use several else button
   testPlaceHolder:
-    type: NONE
     slot: 40
     item:
       material: IRON_INGOT

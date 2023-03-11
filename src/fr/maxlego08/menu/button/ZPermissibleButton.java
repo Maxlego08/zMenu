@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public abstract class ZPermissibleButton extends ZButton implements PermissibleButton {
+public abstract class ZPermissibleButton extends ZPerformButton implements PermissibleButton{
 
 	private String permission;
 	private Button elseButton;
@@ -84,7 +84,7 @@ public abstract class ZPermissibleButton extends ZButton implements PermissibleB
 	@Override
 	public Button getMasterParentButton() {
 		Button button = this.getParentButton();
-		return button == null ? this : button.toButton(PermissibleButton.class).getMasterParentButton();
+		return button == null ? (Button) this : button.getMasterParentButton();
 	}
 
 }

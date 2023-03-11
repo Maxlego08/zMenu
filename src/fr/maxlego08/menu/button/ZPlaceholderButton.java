@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton {
+public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton{
 
 	private PlaceholderAction action;
 	private String placeholder;

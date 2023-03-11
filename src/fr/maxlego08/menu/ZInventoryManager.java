@@ -30,9 +30,7 @@ import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.HomeLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
 import fr.maxlego08.menu.button.loader.NoneLoader;
-import fr.maxlego08.menu.button.loader.PerformLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
-import fr.maxlego08.menu.button.loader.SlotLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -206,8 +204,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 		ButtonManager buttonManager = this.plugin.getButtonManager();
 
 		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
-		buttonManager.register(new SlotLoader(this.plugin));
-		buttonManager.register(new PerformLoader(this.plugin));
+		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
+		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
 		buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));
 		buttonManager.register(new BackLoader(this.plugin, this));
 		buttonManager.register(new HomeLoader(this.plugin, this));

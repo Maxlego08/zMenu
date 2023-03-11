@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.button.buttons;
+package fr.maxlego08.menu.button;
 
 import java.util.List;
 
@@ -6,47 +6,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
 import fr.maxlego08.menu.api.action.Action;
-import fr.maxlego08.menu.api.button.buttons.PerformButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.button.PerformButton;
 
-public class ZPerformButton extends ZPlaceholderButton implements PerformButton {
+public abstract class ZPerformButton extends ZSlotButton implements PerformButton{
 
-	private final List<String> commands;
+	private List<String> commands;
 
-	private final List<String> consoleCommands;
-	private final List<String> consoleRightCommands;
-	private final List<String> consoleLeftCommands;
+	private List<String> consoleCommands;
+	private List<String> consoleRightCommands;
+	private List<String> consoleLeftCommands;
 
-	private final List<String> consolePermissionCommands;
-	private final String consolePermission;
+	private List<String> consolePermissionCommands;
+	private String consolePermission;
 
-	private final List<Action> actions;
-
-	/**
-	 * @param commands
-	 * @param consoleCommands
-	 * @param consoleRightCommands
-	 * @param consoleLeftCommands
-	 * @param consolePermissionCommands
-	 * @param consolePermission
-	 * @param actions
-	 */
-	public ZPerformButton(List<String> commands, List<String> consoleCommands, List<String> consoleRightCommands,
-			List<String> consoleLeftCommands, List<String> consolePermissionCommands, String consolePermission,
-			List<Action> actions) {
-		super();
-		this.commands = commands;
-		this.consoleCommands = consoleCommands;
-		this.consoleRightCommands = consoleRightCommands;
-		this.consoleLeftCommands = consoleLeftCommands;
-		this.consolePermissionCommands = consolePermissionCommands;
-		this.consolePermission = consolePermission;
-		this.actions = actions;
-	}
+	private List<Action> actions;
 
 	@Override
 	public List<String> getCommands() {
@@ -114,16 +89,64 @@ public class ZPerformButton extends ZPlaceholderButton implements PerformButton 
 	}
 
 	@Override
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-
-		this.execute(player, event.getClick());
-		super.onClick(player, event, inventory, slot);
-
-	}
-
-	@Override
 	public List<Action> getActions() {
 		return this.actions;
+	}
+
+	/**
+	 * @param commands
+	 *            the commands to set
+	 */
+	public void setCommands(List<String> commands) {
+		this.commands = commands;
+	}
+
+	/**
+	 * @param consoleCommands
+	 *            the consoleCommands to set
+	 */
+	public void setConsoleCommands(List<String> consoleCommands) {
+		this.consoleCommands = consoleCommands;
+	}
+
+	/**
+	 * @param consoleRightCommands
+	 *            the consoleRightCommands to set
+	 */
+	public void setConsoleRightCommands(List<String> consoleRightCommands) {
+		this.consoleRightCommands = consoleRightCommands;
+	}
+
+	/**
+	 * @param consoleLeftCommands
+	 *            the consoleLeftCommands to set
+	 */
+	public void setConsoleLeftCommands(List<String> consoleLeftCommands) {
+		this.consoleLeftCommands = consoleLeftCommands;
+	}
+
+	/**
+	 * @param consolePermissionCommands
+	 *            the consolePermissionCommands to set
+	 */
+	public void setConsolePermissionCommands(List<String> consolePermissionCommands) {
+		this.consolePermissionCommands = consolePermissionCommands;
+	}
+
+	/**
+	 * @param consolePermission
+	 *            the consolePermission to set
+	 */
+	public void setConsolePermission(String consolePermission) {
+		this.consolePermission = consolePermission;
+	}
+
+	/**
+	 * @param actions
+	 *            the actions to set
+	 */
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
 	}
 
 }

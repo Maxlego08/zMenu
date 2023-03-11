@@ -3,7 +3,6 @@ package fr.maxlego08.menu.button;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -19,9 +18,9 @@ import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 
-public abstract class ZButton extends ZUtils implements Button {
+public abstract class ZButton extends ZPlaceholderButton implements Button{
 
 	private MenuPlugin plugin;
 	private String buttonName;
@@ -97,11 +96,6 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
-	public <T extends Button> T toButton(Class<T> classz) {
-		return (T) this;
-	}
-
-	@Override
 	public int getRealSlot(int inventorySize, int page) {
 		return this.isPermanent ? this.slot : this.slot - ((page - 1) * inventorySize);
 	}
@@ -113,7 +107,7 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	@Override
 	public boolean hasSpecialRender() {
-		return false;
+		return this.getSlots().size() > 0;
 	}
 
 	@Override
@@ -123,6 +117,9 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	@Override
 	public void onRender(Player player, InventoryDefault inventory) {
+		if (hasSpecialRender()) {
+			inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
+		}
 	}
 
 	@Override
@@ -173,6 +170,7 @@ public abstract class ZButton extends ZUtils implements Button {
 			this.soundOption.play(player);
 		}
 
+		this.execute(player, event.getClick());
 	}
 
 	@Override

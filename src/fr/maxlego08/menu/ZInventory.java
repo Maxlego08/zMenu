@@ -12,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 
@@ -91,13 +90,13 @@ public class ZInventory implements Inventory {
 		}
 		return 1;
 	}
-	
+
 	@Override
-	public List<PlaceholderButton> sortButtons(int page, Object... objects) {
+	public List<Button> sortButtons(int page, Object... objects) {
 		return this.buttons.stream().filter(button -> {
 			int slot = button.getRealSlot(this.size, page);
 			return slot >= 0 && slot < this.size;
-		}).map(button -> button.toButton(PlaceholderButton.class)).collect(Collectors.toList());
+		}).collect(Collectors.toList());
 	}
 
 	@Override

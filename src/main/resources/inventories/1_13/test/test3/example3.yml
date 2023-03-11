@@ -7,23 +7,24 @@
 #
 # Sponsor: https://serveur-minecraft-vote.fr/
 
-name: "&7Example &32"
+name: "&7Example &b3"
 size: 54
-# Allows you to set the time for the redisplay of the name and the lore for the items that have the update option active.
-updateInterval: 1
+fillItem:
+  material: GRAY_STAINED_GLASS_PANE
+  name: "&3Filled"
 items:
   # Will display an item that has no action on the different slots
   slots:
-    type: NONE_SLOT
     isPermanent: true
     item:
-      material: GRAY_STAINED_GLASS_PANE
+      material: YELLOW_STAINED_GLASS_PANE
       name: "&e"
     slots:
       - 0
       - 1
       - 2
       - 3
+      - 4
       - 5
       - 6
       - 7
@@ -36,7 +37,8 @@ items:
       - 35
       - 36
       - 44
-      - 13      
+      - 10      
+      - 16
   back:
     type: BACK
     isPermanent: true
@@ -44,25 +46,10 @@ items:
       material: NETHER_STAR
       name: "&fRetour"
     slot: 49      
-  testUpdate:
-    update: true
-    slot: 4
-    item:
-      material: DIAMOND_SWORD
-      name: "&cInformations"
-      lore:
-        - "&8&m+------------------------+"
-        - "&7Time played: &c%statistic_time_played%" # Dont forget to download ecloud Statistic - /papi ecloud download Statistic
-        - "&8&m+------------------------+"
-  example3:
-    type: INVENTORY
-    slot: 45
-    isPermanent: true
-    inventory: "example3"
-    # You can specify the name of the plugin to be on the right inventory
-    plugin: "zMenu"
+  home:
+    type: HOME
     item:
       material: CHEST
-      name: "&fClick to access"
-      lore:
-        - "&7to another inventory"    
+      name: "&fHome"
+    slot: 45
+    

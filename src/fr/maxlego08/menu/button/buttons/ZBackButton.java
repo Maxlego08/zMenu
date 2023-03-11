@@ -8,13 +8,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.BackButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public class ZBackButton extends ZPlaceholderButton implements BackButton {
+public class ZBackButton extends ZButton implements BackButton {
 
-	private final InventoryManager inventoryManager;
-	private Inventory inventory;
+	protected final InventoryManager inventoryManager;
+	protected Inventory inventory;
 
 	/**
 	 * @param inventoryManager

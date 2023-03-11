@@ -9,11 +9,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Message;
 
-public class ZInventoryButton extends ZPlaceholderButton implements InventoryButton {
+public class ZInventoryButton extends ZButton implements InventoryButton {
 
 	private final InventoryManager inventoryManager;
 	private final String inventoryName;

@@ -12,7 +12,7 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public interface Button {
+public interface Button extends PermissibleButton, PlaceholderButton, SlotButton, PerformButton{
 
 	/**
 	 * Returns the name of the button
@@ -75,14 +75,6 @@ public interface Button {
 	 * @param inventory
 	 */
 	void onRender(Player player, InventoryDefault inventory);
-
-	/**
-	 * Allows to change the type of a button
-	 * 
-	 * @param classz
-	 * @return T
-	 */
-	<T extends Button> T toButton(Class<T> classz);
 
 	/**
 	 * This method is called when the player makes a click
