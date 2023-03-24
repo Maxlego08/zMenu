@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import org.bukkit.plugin.ServicePriority;
 
 import fr.maxlego08.menu.api.ButtonManager;
@@ -47,6 +49,7 @@ public class MenuPlugin extends ZPlugin {
 	private CommandMenu commandMenu;
 
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
+	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer();
 
 	@Override
 	public void onEnable() {
@@ -92,6 +95,8 @@ public class MenuPlugin extends ZPlugin {
 				ServicePriority.Highest);
 		this.getServer().getServicesManager().register(DataManager.class, this.dataManager, this,
 				ServicePriority.Highest);
+		this.getServer().getServicesManager().register(InventoriesPlayer.class, this.inventoriesPlayer, this,
+				ServicePriority.Highest);
 
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
 		this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -99,6 +104,7 @@ public class MenuPlugin extends ZPlugin {
 		/* Add Listener */
 		this.addListener(new AdapterListener(this));
 		this.addListener(this.vinventoryManager);
+		this.addListener(this.inventoriesPlayer);
 
 		/* Add Saver */
 		this.addSave(Config.getInstance());
@@ -211,4 +217,7 @@ public class MenuPlugin extends ZPlugin {
 		return dataManager;
 	}
 
+	public InventoriesPlayer getInventoriesPlayer() {
+		return inventoriesPlayer;
+	}
 }

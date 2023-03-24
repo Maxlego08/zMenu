@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
@@ -101,7 +102,19 @@ public class ZInventory implements Inventory {
 
     @Override
     public InventoryResult openInventory(Player player, VInventory inventoryDefault) {
+        if (this.clearInventory) {
+            InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
+            inventoriesPlayer.storeInventory(player);
+        }
         return InventoryResult.SUCCESS;
+    }
+
+    @Override
+    public void closeInventory(Player player, VInventory inventoryDefault) {
+        if (this.clearInventory) {
+            InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
+            inventoriesPlayer.giveInventory(player);
+        }
     }
 
     @Override

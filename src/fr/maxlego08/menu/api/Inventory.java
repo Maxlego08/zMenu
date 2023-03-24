@@ -44,8 +44,9 @@ public interface Inventory {
     /**
      * Returns the list of buttons according to a type
      *
-     * @param button type
-     * @return buttons list
+     * @param type
+     * @return list of button with this type
+     * @param <T>
      */
     <T extends Button> List<T> getButtons(Class<T> type);
 
@@ -74,13 +75,21 @@ public interface Inventory {
     List<Button> sortButtons(int page, Object... objects);
 
     /**
-     * When a inventory is open
+     * When an inventory is open
      *
-     * @param player
-     * @param inventoryDefault
-     * @return result
+     * @param player The player who will open the inventory
+     * @param inventoryDefault The inventory that will be opened
+     * @return the result of the opening of the inventory
      */
     InventoryResult openInventory(Player player, VInventory inventoryDefault);
+
+    /**
+     * When an inventory is close
+     *
+     * @param player The player who will close the inventory
+     * @param inventoryDefault The inventory that will be closed
+     */
+    void closeInventory(Player player, VInventory inventoryDefault);
 
     /**
      * Returns the itemstack that will be used to fill the inventory
