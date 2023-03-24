@@ -249,15 +249,15 @@ public abstract class VInventory extends ZUtils implements Cloneable {
 	protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
 	}
 
+	public MenuPlugin getPlugin() {
+		return plugin;
+	}
+
 	@Override
 	protected VInventory clone() {
 		try {
 			return (VInventory) getClass().newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return null;

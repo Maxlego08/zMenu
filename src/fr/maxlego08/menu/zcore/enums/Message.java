@@ -13,16 +13,16 @@ public enum Message {
 
 	PREFIX("§8(§6zMenu§8) "),
 	
-	TELEPORT_MOVE("§cYou must not move!"),
-	TELEPORT_MESSAGE("§7Teleportation in §3%second% §7seconds!"),
-	TELEPORT_ERROR("§cYou already have a teleportation in progress!"),
-	TELEPORT_SUCCESS("§7Teleportation done!"),
+	TELEPORT_MOVE("§cYou must not move!", false),
+	TELEPORT_MESSAGE("§7Teleportation in §3%second% §7seconds!", false),
+	TELEPORT_ERROR("§cYou already have a teleportation in progress!", false),
+	TELEPORT_SUCCESS("§7Teleportation done!", false),
 	
-	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c."),
-	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!"),
-	VINVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c."),
-	VINVENTORY_BUTTON_PREVIOUS("§f» §7Previous page"),
-	VINVENTORY_BUTTON_NEXT("§f» §7Next page"),
+	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c.", false),
+	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!", false),
+	VINVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c.", false),
+	VINVENTORY_BUTTON_PREVIOUS("§f» §7Previous page", false),
+	VINVENTORY_BUTTON_NEXT("§f» §7Next page", false),
 	
 	TIME_DAY("%02d %day% %02d %hour% %02d %minute% %02d %second%"),
 	TIME_HOUR("%02d %hour% %02d minute(s) %02d %second%"),
@@ -47,7 +47,7 @@ public enum Message {
 	COMMAND_NO_CONSOLE("§cOnly one player can execute this command."),
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
-	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://zmenu.groupez.dev/"),
+	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://docs.zmenu.dev/"),
 	
 	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §cinventory in the §f%name%§c inventory."), 
 	INVENTORY_ERROR("§cUnable to find the §f%name%§c inventory."), 

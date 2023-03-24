@@ -1,108 +1,122 @@
 package fr.maxlego08.menu.api;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 public interface Inventory {
 
-	/**
-	 * Returns the size of the inventory
-	 * 
-	 * @return size
-	 */
-	public int size();
+    /**
+     * Returns the size of the inventory
+     *
+     * @return size
+     */
+    int size();
 
-	/**
-	 * Returns the name of the inventory
-	 * 
-	 * @return name
-	 */
-	public String getName();
+    /**
+     * Returns the name of the inventory
+     *
+     * @return name
+     */
+    String getName();
 
-	/**
-	 * Returns the name of the file
-	 * 
-	 * @return fileName
-	 */
-	public String getFileName();
+    /**
+     * Returns the name of the file
+     *
+     * @return fileName
+     */
+    String getFileName();
 
-	/**
-	 * Return the list of buttons
-	 * 
-	 * @return buttons
-	 */
-	public Collection<Button> getButtons();
+    /**
+     * Return the list of buttons
+     *
+     * @return buttons
+     */
+    Collection<Button> getButtons();
 
-	/**
-	 * Returns the list of buttons according to a type
-	 * 
-	 * @param button
-	 *            type
-	 * @return buttons list
-	 */
-	public <T extends Button> List<T> getButtons(Class<T> type);
+    /**
+     * Returns the list of buttons according to a type
+     *
+     * @param type
+     * @return list of button with this type
+     * @param <T>
+     */
+    <T extends Button> List<T> getButtons(Class<T> type);
 
-	/**
-	 * Returns the plugin where the inventory comes from
-	 * 
-	 * @return plugin
-	 */
-	public Plugin getPlugin();
+    /**
+     * Returns the plugin where the inventory comes from
+     *
+     * @return plugin
+     */
+    Plugin getPlugin();
 
-	/**
-	 * Returns the maximum number of pages
-	 * 
-	 * @param objects
-	 * @return page
-	 */
-	public int getMaxPage(Player player, Object... objects);
+    /**
+     * Returns the maximum number of pages
+     *
+     * @param objects
+     * @return page
+     */
+    int getMaxPage(Player player, Object... objects);
 
-	/**
-	 * Allows you to sort the buttons according to a page
-	 * 
-	 * @param page
-	 * @param objects
-	 * @return buttons
-	 */
-	public List<Button> sortButtons(int page, Object... objects);
+    /**
+     * Allows you to sort the buttons according to a page
+     *
+     * @param page
+     * @param objects
+     * @return buttons
+     */
+    List<Button> sortButtons(int page, Object... objects);
 
-	/**
-	 * When a inventory is open
-	 * 
-	 * @param player
-	 * @param inventoryDefault
-	 * @return result
-	 */
-	public InventoryResult openInventory(Player player, VInventory inventoryDefault);
-	
-	/**
-	 * Returns the itemstack that will be used to fill the inventory
-	 * 
-	 * @return itemstack
-	 */
-	public MenuItemStack getFillItemStack();
-	
-	/**
-	 * Returns the interval for updating the buttons
-	 * 
-	 * @return interval
-	 */
-	public int getUpdateInterval();
-	
-	/**
-	 * Returns the configuration file.
-	 * 
-	 * @return file
-	 */
-	public File getFile();
+    /**
+     * When an inventory is open
+     *
+     * @param player The player who will open the inventory
+     * @param inventoryDefault The inventory that will be opened
+     * @return the result of the opening of the inventory
+     */
+    InventoryResult openInventory(Player player, VInventory inventoryDefault);
+
+    /**
+     * When an inventory is close
+     *
+     * @param player The player who will close the inventory
+     * @param inventoryDefault The inventory that will be closed
+     */
+    void closeInventory(Player player, VInventory inventoryDefault);
+
+    /**
+     * Returns the itemstack that will be used to fill the inventory
+     *
+     * @return itemstack
+     */
+    MenuItemStack getFillItemStack();
+
+    /**
+     * Returns the interval for updating the buttons
+     *
+     * @return interval
+     */
+    int getUpdateInterval();
+
+    /**
+     * Returns the configuration file.
+     *
+     * @return file
+     */
+    File getFile();
+
+    /**
+     * Delete the player's inventory and give it back to him when he closes the inventory
+     *
+     * @return boolean
+     */
+    boolean cleanInventory();
 
 }
