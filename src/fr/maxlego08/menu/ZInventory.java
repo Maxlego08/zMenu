@@ -111,7 +111,7 @@ public class ZInventory implements Inventory {
     @Override
     public void postOpenInventory(Player player, VInventory inventoryDefault) {
         InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
-        if (this.clearInventory && !(holder instanceof InventoryDefault)) {
+        if (this.clearInventory && holder != null && !(holder instanceof InventoryDefault)) {
             InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
             inventoriesPlayer.storeInventory(player);
         }
@@ -122,7 +122,7 @@ public class ZInventory implements Inventory {
         if (this.clearInventory) {
             Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
                 InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();
-                if (!(newHolder instanceof InventoryDefault)) {
+                if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.giveInventory(player);
                 }

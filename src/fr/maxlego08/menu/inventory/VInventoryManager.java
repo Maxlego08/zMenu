@@ -6,17 +6,17 @@ import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,8 +25,6 @@ import java.util.function.Predicate;
 public class VInventoryManager extends ListenerAdapter {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
-    //private final Map<UUID, VInventory> playerInventories = new HashMap<>();
-    private final Map<Inventory, VInventory> playerInventories = new HashMap<>();
     private final MenuPlugin plugin;
 
     /**
@@ -102,7 +100,6 @@ public class VInventoryManager extends ListenerAdapter {
 
                 Inventory spigotInventory = clonedInventory.getSpigotInventory();
                 player.openInventory(spigotInventory);
-                this.playerInventories.put(spigotInventory, clonedInventory);
 
             } else if (result.equals(InventoryResult.ERROR)) {
                 message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
@@ -113,10 +110,6 @@ public class VInventoryManager extends ListenerAdapter {
         }
     }
 
-    public void createInventory(VInventory parent, Player player) {
-        createInventory(parent.getId(), player, parent.getPage(), parent.getArgs());
-    }
-
     @Override
     protected void onInventoryClick(InventoryClickEvent event, Player player) {
 
@@ -124,45 +117,38 @@ public class VInventoryManager extends ListenerAdapter {
             return;
         }
 
-        if (event.getWhoClicked() instanceof Player) {
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder != null && holder instanceof VInventory inventory) {
 
-            VInventory gui = this.playerInventories.get(event.getInventory());
+            if (inventory.getPlayer().equals(player) && event.getView().getTitle().equals(inventory.getGuiName())) {
 
-            if (gui.getGuiName() == null || gui.getGuiName().length() == 0) {
-                Logger.info("An error has occurred with the menu ! " + gui.getClass().getName());
-                return;
-            }
-            if (gui.getPlayer().equals(player) && event.getView().getTitle().equals(gui.getGuiName())) {
-
-                event.setCancelled(gui.isDisableClick());
+                event.setCancelled(inventory.isDisableClick());
 
                 if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
                     return;
                 }
 
-                ItemButton button = gui.getItems().getOrDefault(event.getSlot(), null);
-                if (button != null)
+                ItemButton button = inventory.getItems().getOrDefault(event.getSlot(), null);
+                if (button != null) {
                     button.onClick(event);
+                }
             }
         }
     }
 
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
-        VInventory inventory = this.playerInventories.get(event.getInventory());
-        if (inventory != null) {
-            System.out.println("CLOSE");
-            System.out.println("Avant EVENT " + this.playerInventories.size() + " -> " + this.playerInventories);
-            this.playerInventories.remove(event.getInventory());
-            inventory.onPreClose(event, this.plugin, player);
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder != null && holder instanceof VInventory) {
+            ((VInventory) holder).onPreClose(event, this.plugin, player);
         }
     }
 
     @Override
     protected void onInventoryDrag(InventoryDragEvent event, Player player) {
-        VInventory inventory = this.playerInventories.get(event.getInventory());
-        if (inventory != null) {
-            inventory.onDrag(event, this.plugin, player);
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder != null && holder instanceof VInventory) {
+            ((VInventory) holder).onDrag(event, this.plugin, player);
         }
     }
 
@@ -179,19 +165,14 @@ public class VInventoryManager extends ListenerAdapter {
     }
 
     public void close(Predicate<VInventory> predicate) {
-        new ArrayList<>(this.playerInventories.values()).stream().filter(predicate).forEach(vInventory -> {
+        Bukkit.getOnlinePlayers().stream().filter(player -> {
+            InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+            return holder != null && holder instanceof VInventory;
+        }).map(player -> (VInventory) player.getOpenInventory().getTopInventory().getHolder()).filter(predicate).forEach(vInventory -> {
             Player player = vInventory.getPlayer();
             if (player.isOnline()) {
                 player.closeInventory();
             }
         });
-    }
-
-    public Map<Inventory, VInventory> getPlayerInventories() {
-        return playerInventories;
-    }
-
-    public boolean hasOpenInventory(Player player) {
-        return this.playerInventories.values().stream().anyMatch(e -> e.getPlayer() == player);
     }
 }
