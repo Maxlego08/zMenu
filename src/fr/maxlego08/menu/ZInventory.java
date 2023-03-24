@@ -4,8 +4,11 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -102,18 +105,28 @@ public class ZInventory implements Inventory {
 
     @Override
     public InventoryResult openInventory(Player player, VInventory inventoryDefault) {
-        if (this.clearInventory) {
+        return InventoryResult.SUCCESS;
+    }
+
+    @Override
+    public void postOpenInventory(Player player, VInventory inventoryDefault) {
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (this.clearInventory && !(holder instanceof InventoryDefault)) {
             InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
             inventoriesPlayer.storeInventory(player);
         }
-        return InventoryResult.SUCCESS;
     }
 
     @Override
     public void closeInventory(Player player, VInventory inventoryDefault) {
         if (this.clearInventory) {
-            InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
-            inventoriesPlayer.giveInventory(player);
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();
+                if (!(newHolder instanceof InventoryDefault)) {
+                    InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
+                    inventoriesPlayer.giveInventory(player);
+                }
+            }, 1);
         }
     }
 

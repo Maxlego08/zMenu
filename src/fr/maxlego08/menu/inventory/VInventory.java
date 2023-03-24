@@ -1,265 +1,271 @@
 package fr.maxlego08.menu.inventory;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
-public abstract class VInventory extends ZUtils implements Cloneable {
+import java.util.HashMap;
+import java.util.Map;
 
-	protected int id;
-	protected MenuPlugin plugin;
-	protected Map<Integer, ItemButton> items = new HashMap<Integer, ItemButton>();
-	protected Player player;
-	protected int page;
-	protected Object[] args;
-	protected Inventory inventory;
-	protected String guiName;
-	protected boolean disableClick = true;
-	protected boolean openAsync = false;
-	
-	private boolean isClose = false;
+public abstract class VInventory extends ZUtils implements Cloneable, InventoryHolder {
 
-	public boolean isClose() {
-		return isClose;
-	}
-	
-	/**
-	 * Inventory Id
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public VInventory setId(int id) {
-		this.id = id;
-		return this;
-	}
+    protected int id;
+    protected MenuPlugin plugin;
+    protected Map<Integer, ItemButton> items = new HashMap<Integer, ItemButton>();
+    protected Player player;
+    protected int page;
+    protected Object[] args;
+    protected Inventory inventory;
+    protected String guiName;
+    protected boolean disableClick = true;
+    protected boolean openAsync = false;
 
-	public int getId() {
-		return id;
-	}
+    private boolean isClose = false;
 
-	/**
-	 * Allows you to create the spigot inventory object
-	 * 
-	 * @param name
-	 * @return this
-	 */
-	protected void createInventory(String name) {
-		createInventory(name, 54);
-	}
+    public boolean isClose() {
+        return isClose;
+    }
 
-	/**
-	 * Allows you to create the spigot inventory object
-	 * 
-	 * @param name - Inventory name
-	 * @param size - Inventory Size
-	 * @return this
-	 */
-	protected void createInventory(String name, int size) {
-		this.guiName = name;
-		this.inventory = Bukkit.createInventory(null, size, name);
-	}
+    /**
+     * Inventory Id
+     *
+     * @param id
+     * @return
+     */
+    public VInventory setId(int id) {
+        this.id = id;
+        return this;
+    }
 
-	/**
-	 * Create default inventory with default size and name
-	 */
-	private void createDefaultInventory() {
-		if (this.inventory == null) {
-			this.inventory = Bukkit.createInventory(null, 54, "§cDefault Inventory");
-		}
-	}
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Adding an item to the inventory
-	 * 
-	 * @param slot - Inventory slot
-	 * @param material - ItemStack material
-	 * @param name - ItemStack name
-	 * @return ItemButton
-	 */
-	public ItemButton addItem(int slot, Material material, String name) {
-		return addItem(slot, new ItemBuilder(material, name).build());
-	}
+    /**
+     * Allows you to create the spigot inventory object
+     *
+     * @param name
+     * @return this
+     */
+    protected void createInventory(String name) {
+        createInventory(name, 54);
+    }
 
-	/**
-	 * Adding an item to the inventory
-	 * 
-	 * @param slot - Inventory slot
-	 * @param item - ItemBuild
-	 * @return ItemButton
-	 */
-	public ItemButton addItem(int slot, ItemBuilder item) {
-		return addItem(slot, item.build());
-	}
+    /**
+     * Allows you to create the spigot inventory object
+     *
+     * @param name - Inventory name
+     * @param size - Inventory Size
+     * @return this
+     */
+    protected void createInventory(String name, int size) {
+        this.guiName = name;
+        this.inventory = Bukkit.createInventory(this, size, name);
+    }
 
-	/**
-	 * Adding an item to the inventory
-	 * Creates the default inventory if it does not exist
-	 * 
-	 * @param slot - Inventory slot
-	 * @param item - ItemStack
-	 * @return ItemButton
-	 */
-	public ItemButton addItem(int slot, ItemStack item) {
-		
-		createDefaultInventory();
+    /**
+     * Create default inventory with default size and name
+     */
+    private void createDefaultInventory() {
+        if (this.inventory == null) {
+            this.inventory = Bukkit.createInventory(this, 54, "§cDefault Inventory");
+        }
+    }
 
-		ItemButton button = new ItemButton(item, slot);
-		this.items.put(slot, button);
+    /**
+     * Adding an item to the inventory
+     *
+     * @param slot     - Inventory slot
+     * @param material - ItemStack material
+     * @param name     - ItemStack name
+     * @return ItemButton
+     */
+    public ItemButton addItem(int slot, Material material, String name) {
+        return addItem(slot, new ItemBuilder(material, name).build());
+    }
 
-		if (this.openAsync) {
-			runAsync(this.plugin, () -> this.inventory.setItem(slot, item));
-		} else {
-			this.inventory.setItem(slot, item);
-		}
-		return button;
-	}
+    /**
+     * Adding an item to the inventory
+     *
+     * @param slot - Inventory slot
+     * @param item - ItemBuild
+     * @return ItemButton
+     */
+    public ItemButton addItem(int slot, ItemBuilder item) {
+        return addItem(slot, item.build());
+    }
 
-	/**
-	 * Allows you to remove an item from the list of items
-	 * 
-	 * @param slot
-	 */
-	public void removeItem(int slot) {
-		this.items.remove(slot);
-	}
+    /**
+     * Adding an item to the inventory
+     * Creates the default inventory if it does not exist
+     *
+     * @param slot - Inventory slot
+     * @param item - ItemStack
+     * @return ItemButton
+     */
+    public ItemButton addItem(int slot, ItemStack item) {
 
-	/**
-	 * Allows you to delete all items
-	 */
-	public void clearItem() {
-		this.items.clear();
-	}
+        createDefaultInventory();
 
-	/**
-	 * Allows you to retrieve all items
-	 * 
-	 * @return
-	 */
-	public Map<Integer, ItemButton> getItems() {
-		return items;
-	}
+        ItemButton button = new ItemButton(item, slot);
+        this.items.put(slot, button);
 
-	/**
-	 * If the click in the inventory is disabled (which is the default)
-	 * then it will return true
-	 * 
-	 * @return vrai ou faux
-	 */
-	public boolean isDisableClick() {
-		return disableClick;
-	}
+        if (this.openAsync) {
+            runAsync(this.plugin, () -> this.inventory.setItem(slot, item));
+        } else {
+            this.inventory.setItem(slot, item);
+        }
+        return button;
+    }
 
-	/**
-	 * Change the ability to click in the inventory
-	 * 
-	 * @param disableClick
-	 */
-	public void setDisableClick(boolean disableClick) {
-		this.disableClick = disableClick;
-	}
+    /**
+     * Allows you to remove an item from the list of items
+     *
+     * @param slot
+     */
+    public void removeItem(int slot) {
+        this.items.remove(slot);
+    }
 
-	/**
-	 * Allows to recover the player
-	 * 
-	 * @return player
-	 */
-	public Player getPlayer() {
-		return player;
-	}
+    /**
+     * Allows you to delete all items
+     */
+    public void clearItem() {
+        this.items.clear();
+    }
 
-	/**
-	 * Allows you to retrieve the page
-	 * 
-	 * @return the page
-	 */
-	public int getPage() {
-		return page;
-	}
+    /**
+     * Allows you to retrieve all items
+     *
+     * @return
+     */
+    public Map<Integer, ItemButton> getItems() {
+        return items;
+    }
 
-	/**
-	 * @return the args
-	 */
-	public Object[] getArgs() {
-		return args;
-	}
+    /**
+     * If the click in the inventory is disabled (which is the default)
+     * then it will return true
+     *
+     * @return vrai ou faux
+     */
+    public boolean isDisableClick() {
+        return disableClick;
+    }
 
-	/**
-	 * @return the inventory
-	 */
-	public Inventory getSpigotInventory() {
-		return inventory;
-	}
+    /**
+     * Change the ability to click in the inventory
+     *
+     * @param disableClick
+     */
+    public void setDisableClick(boolean disableClick) {
+        this.disableClick = disableClick;
+    }
 
-	/**
-	 * @return the guiName
-	 */
-	public String getGuiName() {
-		return guiName;
-	}
+    /**
+     * Allows to recover the player
+     *
+     * @return player
+     */
+    public Player getPlayer() {
+        return player;
+    }
 
-	protected InventoryResult preOpenInventory(MenuPlugin main, Player player, int page, Object... args)
-			throws InventoryOpenException {
+    /**
+     * Allows you to retrieve the page
+     *
+     * @return the page
+     */
+    public int getPage() {
+        return page;
+    }
 
-		this.page = page;
-		this.args = args;
-		this.player = player;
-		this.plugin = main;
+    /**
+     * @return the args
+     */
+    public Object[] getArgs() {
+        return args;
+    }
 
-		return openInventory(main, player, page, args);
-	}
+    /**
+     * @return the inventory
+     */
+    public Inventory getSpigotInventory() {
+        return inventory;
+    }
 
-	public abstract InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args)
-			throws InventoryOpenException;
+    /**
+     * @return the guiName
+     */
+    public String getGuiName() {
+        return guiName;
+    }
 
-	protected void onPreClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
-		this.isClose = true;
-		this.onClose(event, plugin, player);
-	}
-	
-	/**
-	 * 
-	 * @param event
-	 * @param plugin
-	 * @param player
-	 */
-	protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
-	}
+    protected InventoryResult preOpenInventory(MenuPlugin main, Player player, int page, Object... args)
+            throws InventoryOpenException {
 
-	/**
-	 * 
-	 * @param event
-	 * @param plugin
-	 * @param player
-	 */
-	protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
-	}
+        this.page = page;
+        this.args = args;
+        this.player = player;
+        this.plugin = main;
 
-	public MenuPlugin getPlugin() {
-		return plugin;
-	}
+        return openInventory(main, player, page, args);
+    }
 
-	@Override
-	protected VInventory clone() {
-		try {
-			return (VInventory) getClass().newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public abstract InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args)
+            throws InventoryOpenException;
+
+    protected void onPreClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+        this.isClose = true;
+        this.onClose(event, plugin, player);
+    }
+
+    /**
+     * @param event
+     * @param plugin
+     * @param player
+     */
+    protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+    }
+
+    /**
+     * @param event
+     * @param plugin
+     * @param player
+     */
+    protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
+    }
+
+    public MenuPlugin getPlugin() {
+        return plugin;
+    }
+
+    @Override
+    protected VInventory clone() {
+        try {
+            return getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void postOpen(MenuPlugin plugin, Player player, int page, Object[] objects) {
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return this.inventory;
+    }
 }

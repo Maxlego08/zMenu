@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +59,11 @@ public class InventoryDefault extends VInventory {
         this.buttons.forEach(this::buildButton);
 
         return InventoryResult.SUCCESS;
+    }
+
+    @Override
+    public void postOpen(MenuPlugin plugin, Player player, int page, Object[] objects) {
+        this.inventory.postOpenInventory(player, this);
     }
 
     @Override
@@ -205,7 +211,7 @@ public class InventoryDefault extends VInventory {
     /**
      * @return the inventory
      */
-    public Inventory getInventory() {
+    public @NotNull Inventory getMenuInventory() {
         return inventory;
     }
 

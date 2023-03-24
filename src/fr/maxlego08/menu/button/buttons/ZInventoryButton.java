@@ -39,7 +39,7 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 
-		Inventory fromInventory = inventory.getInventory();
+		Inventory fromInventory = inventory.getMenuInventory();
 		List<Inventory> oldInventories = inventory.getOldInventories();
 		oldInventories.add(fromInventory);
 

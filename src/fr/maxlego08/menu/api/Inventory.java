@@ -84,6 +84,13 @@ public interface Inventory {
     InventoryResult openInventory(Player player, VInventory inventoryDefault);
 
     /**
+     *
+     * @param player
+     * @param inventoryDefault
+     */
+    void postOpenInventory(Player player, VInventory inventoryDefault);
+
+    /**
      * When an inventory is close
      *
      * @param player The player who will close the inventory
