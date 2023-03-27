@@ -49,7 +49,7 @@ public class MenuPlugin extends ZPlugin {
 	private CommandMenu commandMenu;
 
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
-	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer();
+	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
 
 	@Override
 	public void onEnable() {

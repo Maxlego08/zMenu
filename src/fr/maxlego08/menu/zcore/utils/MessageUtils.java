@@ -214,7 +214,7 @@ public abstract class MessageUtils extends LocationUtils {
         }
     }
 
-    private final static int CENTER_PX = 154;
+    private transient final static int CENTER_PX = 154;
 
     /**
      * @param message

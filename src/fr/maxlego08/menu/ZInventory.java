@@ -111,9 +111,19 @@ public class ZInventory implements Inventory {
     @Override
     public void postOpenInventory(Player player, VInventory inventoryDefault) {
         InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
-        if (this.clearInventory && holder != null && !(holder instanceof InventoryDefault)) {
-            InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
-            inventoriesPlayer.storeInventory(player);
+        if (holder != null) {
+            if (holder instanceof InventoryDefault) {
+                InventoryDefault inventoryHolder = (InventoryDefault) holder;
+                if (inventoryHolder.getMenuInventory().cleanInventory()) {
+                    InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
+                    inventoriesPlayer.storeInventory(player);
+                }
+            } else {
+                if (this.clearInventory) {
+                    InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
+                    inventoriesPlayer.storeInventory(player);
+                }
+            }
         }
     }
 
