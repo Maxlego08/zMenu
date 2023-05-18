@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class ZInventory implements Inventory {
 
-    private final MenuPlugin plugin;
+    private final Plugin plugin;
     private final String name;
     private final String fileName;
     private final int size;
@@ -39,7 +39,7 @@ public class ZInventory implements Inventory {
      */
     public ZInventory(Plugin plugin, String name, String fileName, int size, List<Button> buttons) {
         super();
-        this.plugin = (MenuPlugin) plugin;
+        this.plugin = plugin;
         this.name = name;
         this.fileName = fileName;
         this.size = size;
@@ -130,7 +130,7 @@ public class ZInventory implements Inventory {
     @Override
     public void closeInventory(Player player, VInventory inventoryDefault) {
         if (this.clearInventory) {
-            plugin.getScheduler().runTaskLater(player.getLocation(), 1, () -> {
+            MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
                 InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();
                 if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
