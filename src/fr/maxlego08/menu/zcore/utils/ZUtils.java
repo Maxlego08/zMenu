@@ -160,7 +160,7 @@ public abstract class ZUtils extends MessageUtils {
     /**
      * Check if the item name is the same as the given string
      *
-     * @param stack
+     * @param itemStack
      * @param name
      * @return true if the item name is the same as string
      */
@@ -171,7 +171,7 @@ public abstract class ZUtils extends MessageUtils {
     /**
      * Check if the item name contains the given string
      *
-     * @param stack
+     * @param itemStack
      * @param name
      * @return true if the item name contains the string
      */
@@ -183,7 +183,6 @@ public abstract class ZUtils extends MessageUtils {
      * Remove the item from the player's hand
      *
      * @param player
-     * @param number of items to withdraw
      */
     protected void removeItemInHand(Player player) {
         removeItemInHand(player, 64);
@@ -193,7 +192,7 @@ public abstract class ZUtils extends MessageUtils {
      * Remove the item from the player's hand
      *
      * @param player
-     * @param number of items to withdraw
+     * @param how of items to withdraw
      */
     protected void removeItemInHand(Player player, int how) {
         if (player.getItemInHand().getAmount() > how)
@@ -206,8 +205,8 @@ public abstract class ZUtils extends MessageUtils {
     /**
      * Check if two locations are identical
      *
-     * @param first  location
-     * @param second location
+     * @param l  location
+     * @param l2 location
      * @return true if both rentals are the same
      */
     protected boolean same(Location l, Location l2) {
@@ -232,7 +231,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param player   who will be teleported
      * @param delay    before the teleportation of the player
      * @param location where the player will be teleported
-     * @param code     executed when the player is teleported or not
+     * @param cmd     executed when the player is teleported or not
      */
     protected void teleport(Player player, int delay, Location location, Consumer<Boolean> cmd) {
         if (teleportPlayers.contains(player.getName())) {
@@ -356,7 +355,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param string
+     * @param itemStack
      * @return
      */
     protected String name(ItemStack itemStack) {
@@ -431,7 +430,7 @@ public abstract class ZUtils extends MessageUtils {
 
     /**
      * @param player
-     * @param inventoryId
+     * @param inventory
      */
     protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory) {
         createInventory(plugin, player, inventory, 1);
@@ -439,7 +438,7 @@ public abstract class ZUtils extends MessageUtils {
 
     /**
      * @param player
-     * @param inventoryId
+     * @param inventory
      * @param page
      */
     protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page) {
@@ -449,7 +448,7 @@ public abstract class ZUtils extends MessageUtils {
 
     /**
      * @param player
-     * @param inventoryId
+     * @param inventory
      * @param page
      * @param objects
      */
@@ -488,7 +487,7 @@ public abstract class ZUtils extends MessageUtils {
 
     /**
      * @param delay
-     * @param runnable
+     * @param consumer
      */
     protected TimerTask scheduleFix(Plugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         return this.scheduleFix(plugin, delay, delay, consumer);
@@ -498,7 +497,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param plugin
      * @param startAt
      * @param delay
-     * @param runnable
+     * @param consumer
      */
     protected TimerTask scheduleFix(Plugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         TimerTask task = new TimerTask() {
@@ -558,13 +557,13 @@ public abstract class ZUtils extends MessageUtils {
         Matcher matcher = pattern.matcher(message);
         while (matcher.find()) {
             String color = message.substring(matcher.start(), matcher.end());
-            String colorReplace = color.replace("§x", "#");
-            colorReplace = colorReplace.replace("§", "");
+            String colorReplace = color.replace("ï¿½x", "#");
+            colorReplace = colorReplace.replace("ï¿½", "");
             message = message.replace(color, colorReplace);
             matcher = pattern.matcher(message);
         }
 
-        return message == null ? null : message.replace("§", "&");
+        return message == null ? null : message.replace("ï¿½", "&");
     }
 
     /**
@@ -634,7 +633,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param message
+     * @param component
      * @return
      */
     protected TextComponent setHoverMessage(TextComponent component, String... messages) {
@@ -646,7 +645,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param message
+     * @param component
      * @return
      */
     protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
@@ -821,7 +820,7 @@ public abstract class ZUtils extends MessageUtils {
     protected boolean isCooldown(Player player, String cooldown, int timer) {
         if (CooldownBuilder.isCooldown(cooldown, player)) {
             ActionBar.sendActionBar(player,
-                    String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.",
+                    String.format("ï¿½cVous devez attendre encore ï¿½6%s ï¿½cavant de pouvoir faire cette action.",
                             timerFormat(player, cooldown)));
             return true;
         }
@@ -835,7 +834,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String toList(Stream<String> list) {
-        return toList(list.collect(Collectors.toList()), "§e", "§6");
+        return toList(list.collect(Collectors.toList()), "ï¿½e", "ï¿½6");
     }
 
     /**
@@ -843,7 +842,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String toList(List<String> list) {
-        return toList(list, "§e", "§6§n");
+        return toList(list, "ï¿½e", "ï¿½6ï¿½n");
     }
 
     /**
@@ -874,7 +873,7 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected String removeColor(String message) {
         for (ChatColor color : ChatColor.values())
-            message = message.replace("§" + color.getChar(), "").replace("&" + color.getChar(), "");
+            message = message.replace("ï¿½" + color.getChar(), "").replace("&" + color.getChar(), "");
         return message;
     }
 
