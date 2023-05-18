@@ -10,4 +10,5 @@ softdepend:
 - HeadDatabase
 - PlaceholderAPI
 - zTranslator
-depend: [ PlaceholderAPI ]
+
+folia-supported: true
