@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,11 +19,21 @@ import java.util.UUID;
 
 public class ZInventoriesPlayer implements InventoriesPlayer {
 
-    private static Map<UUID, ZInventoryPlayer> inventories = new HashMap<>();
+    private static final Map<UUID, ZInventoryPlayer> inventories = new HashMap<>();
     private transient final MenuPlugin plugin;
+    private transient long lastSave;
 
     public ZInventoriesPlayer(MenuPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void autoSave() {
+        if (System.currentTimeMillis() > this.lastSave) {
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                this.save(this.plugin.getPersist());
+                this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerInventories * 1000L);
+            });
+        }
     }
 
     @Override
@@ -38,7 +49,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         inventories.put(player.getUniqueId(), inventoryPlayer);
 
         if (Config.autoSaveFileInventoryOnUpdate) {
-            save(this.plugin.getPersist());
+            autoSave();
         }
     }
 
@@ -51,7 +62,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
             inventories.remove(player.getUniqueId());
 
             if (Config.autoSaveFileInventoryOnUpdate) {
-                save(this.plugin.getPersist());
+                autoSave();
             }
         }
     }
@@ -87,7 +98,6 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        System.out.println("> " + hasSavedInventory(player.getUniqueId()));
         if (hasSavedInventory(player.getUniqueId())) {
             this.giveInventory(player);
         }

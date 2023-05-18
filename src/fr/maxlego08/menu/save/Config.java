@@ -11,6 +11,7 @@ public class Config implements Saveable {
 	public static boolean enableOpenMessage = true;
 	public static boolean enableMiniMessageFormat = true;
 	public static int secondsSavePlayerData = 600;
+	public static int secondsSavePlayerInventories = 600;
     public static boolean autoSaveFileInventoryOnUpdate = true;
 
     /**

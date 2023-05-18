@@ -25,7 +25,7 @@ public class ZDataManager implements DataManager {
 
 	private final transient MenuPlugin plugin;
 	private transient long lastSave;
-	private static Map<UUID, ZPlayerData> players = new HashMap<>();
+	private static final Map<UUID, ZPlayerData> players = new HashMap<>();
 
 	/**
 	 * @param plugin
@@ -117,7 +117,7 @@ public class ZDataManager implements DataManager {
 		if (System.currentTimeMillis() > this.lastSave) {
 			Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
 				this.save(this.plugin.getPersist());
-				this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000);
+				this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000L);
 			});
 		}
 	}

@@ -44,7 +44,7 @@ public interface PlayerData {
 	/**
 	 * Check if data exist
 	 * 
-	 * @param string
+	 * @param key
 	 * @return boolean
 	 */
 	boolean containsKey(String key);
