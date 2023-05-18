@@ -489,7 +489,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param delay
      * @param consumer
      */
-    protected TimerTask scheduleFix(Plugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+    protected TimerTask scheduleFix(MenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         return this.scheduleFix(plugin, delay, delay, consumer);
     }
 
@@ -499,7 +499,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param delay
      * @param consumer
      */
-    protected TimerTask scheduleFix(Plugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+    protected TimerTask scheduleFix(MenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -508,7 +508,7 @@ public abstract class ZUtils extends MessageUtils {
                     consumer.accept(this, false);
                     return;
                 }
-                Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(this, true));
+                plugin.getScheduler().runTask(null, () -> consumer.accept(this, true));
             }
         };
         timer.scheduleAtFixedRate(task, startAt, delay);
