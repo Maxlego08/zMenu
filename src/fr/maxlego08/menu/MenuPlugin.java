@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.scheduler.BukkitScheduler;
 import fr.maxlego08.menu.scheduler.FoliaScheduler;
-import fr.maxlego08.menu.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import org.bukkit.plugin.ServicePriority;
 
 import fr.maxlego08.menu.api.ButtonManager;

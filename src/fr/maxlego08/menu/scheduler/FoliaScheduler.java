@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.scheduler;
 
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;

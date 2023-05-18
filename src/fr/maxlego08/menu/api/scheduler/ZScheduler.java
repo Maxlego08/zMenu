@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.scheduler;
+package fr.maxlego08.menu.api.scheduler;
 
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;

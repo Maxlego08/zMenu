@@ -177,9 +177,9 @@ public class InventoryDefault extends VInventory {
                             }
 
                             Button masterButton = button.getMasterParentButton();
-                            if (masterButton.checkPermission(this.player, this)) {
-                                this.buildButton(masterButton);
+                            if (!masterButton.checkPermission(this.player, this)) {
                                 this.cancel(slot);
+                                this.buildButton(masterButton);
                                 return;
                             }
 

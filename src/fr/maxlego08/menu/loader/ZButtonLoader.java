@@ -75,8 +75,8 @@ public class ZButtonLoader implements Loader<Button> {
 			if (slotString != null && slotString.contains("-")) {
 
 				String[] strings = slotString.split("-");
-				page = Integer.valueOf(strings[0]);
-				slot = Integer.valueOf(strings[1]);
+				page = Integer.parseInt(strings[0]);
+				slot = Integer.parseInt(strings[1]);
 
 			} else {
 				slot = configuration.getInt(path + "slot", 0);
@@ -88,7 +88,7 @@ public class ZButtonLoader implements Loader<Button> {
 			page = configuration.getInt(path + "page", 1);
 		}
 
-		page = page < 1 ? 1 : page;
+		page = Math.max(page, 1);
 		slot = slot + ((page - 1) * this.inventorySize);
 
 		List<String> slotsAsString = configuration.getStringList(path + "slots");
@@ -120,8 +120,8 @@ public class ZButtonLoader implements Loader<Button> {
 
 		if (optionalXSound.isPresent()) {
 			XSound xSound = optionalXSound.get();
-			float pitch = Float.valueOf(configuration.getString(path + "pitch", "1.0f"));
-			float volume = Float.valueOf(configuration.getString(path + "volume", "1.0f"));
+			float pitch = Float.parseFloat(configuration.getString(path + "pitch", "1.0f"));
+			float volume = Float.parseFloat(configuration.getString(path + "volume", "1.0f"));
 			button.setSoundOption(new ZSoundOption(xSound, pitch, volume));
 		}
 

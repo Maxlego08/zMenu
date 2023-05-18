@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils.meta;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
@@ -49,15 +50,16 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)));
+        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)))
+                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
         itemMeta.displayName(component);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        List<Component> components = lore.stream().map(text -> {
-            return this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)));
-        }).collect(Collectors.toList());
+        List<Component> components = lore.stream().map(text -> this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)))
+                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE) // We will force the italics in false, otherwise it will activate for no reason
+                ).collect(Collectors.toList());
         itemMeta.lore(components);
     }
 
