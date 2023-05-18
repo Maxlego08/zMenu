@@ -23,6 +23,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import fr.maxlego08.menu.MenuPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -78,7 +79,7 @@ public class Metrics {
     private static String serverUUID;
 
     // The plugin
-    private final Plugin plugin;
+    private final MenuPlugin plugin;
 
     // The plugin id
     private final int pluginId;
@@ -94,7 +95,7 @@ public class Metrics {
      *                 It can be found at <a href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     @SuppressWarnings("deprecation")
-	public Metrics(Plugin plugin, int pluginId) {
+	public Metrics(MenuPlugin plugin, int pluginId) {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null!");
         }
@@ -193,7 +194,7 @@ public class Metrics {
                 }
                 // Nevertheless we want our code to run in the Bukkit main thread, so we have to use the Bukkit scheduler
                 // Don't be afraid! The connection to the bStats server is still async, only the stats collection is sync ;)
-                Bukkit.getScheduler().runTask(plugin, () -> submitData());
+                plugin.getScheduler().runTask(null, () -> submitData());
             }
         }, 1000 * 60 * 5, 1000 * 60 * 30);
         // Submit the data every 30 minutes, first time after 5 minutes to give other plugins enough time to start

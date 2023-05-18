@@ -1,31 +1,11 @@
 package fr.maxlego08.menu.zcore;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.exceptions.ListenerNullException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.VInventoryManager;
@@ -41,6 +21,20 @@ import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+
+import java.io.*;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
 
 public abstract class ZPlugin extends JavaPlugin {
 
@@ -210,7 +204,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	/**
 	 * Check if plugin is enable
 	 * 
-	 * @param pluginName
+	 * @param pl
 	 * @return
 	 */
 	protected boolean isEnable(Plugins pl) {
@@ -221,7 +215,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	/**
 	 * Get plugin for plugins enum
 	 * 
-	 * @param pluginName
+	 * @param plugin
 	 * @return
 	 */
 	protected Plugin getPlugin(Plugins plugin) {

@@ -7,6 +7,9 @@ import java.util.Optional;
 
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
+import fr.maxlego08.menu.scheduler.BukkitScheduler;
+import fr.maxlego08.menu.scheduler.FoliaScheduler;
+import fr.maxlego08.menu.scheduler.ZScheduler;
 import org.bukkit.plugin.ServicePriority;
 
 import fr.maxlego08.menu.api.ButtonManager;
@@ -50,9 +53,14 @@ public class MenuPlugin extends ZPlugin {
 
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
 	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
+	private ZScheduler scheduler;
 
 	@Override
 	public void onEnable() {
+
+		this.scheduler = isFolia()
+				? new FoliaScheduler(this)
+				: new BukkitScheduler(this);
 
 		this.preEnable();
 
@@ -217,7 +225,21 @@ public class MenuPlugin extends ZPlugin {
 		return dataManager;
 	}
 
+	public ZScheduler getScheduler() {
+		return scheduler;
+	}
+
 	public InventoriesPlayer getInventoriesPlayer() {
 		return inventoriesPlayer;
 	}
+
+	public static boolean isFolia() {
+		try {
+			Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
+
 }
