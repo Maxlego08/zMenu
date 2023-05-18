@@ -78,8 +78,8 @@ public class VersionChecker implements Listener {
 				public void run() {
 					String prefix = Message.PREFIX.getMessage();
 					player.sendMessage(prefix
-							+ "ï¿½cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
-					player.sendMessage(prefix + "ï¿½fDownload plugin here: ï¿½a" + String.format(URL_RESOURCE, pluginID));
+							+ "§cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
+					player.sendMessage(prefix + "§fDownload plugin here: §a" + String.format(URL_RESOURCE, pluginID));
 				}
 			}.runTaskLater(plugin, 20 * 2);
 		}
