@@ -83,7 +83,7 @@ public class ZActionClick extends ZUtils implements ActiondClick {
 		}
 		
 		Plugin plugin = Bukkit.getPluginManager().getPlugin("zMenu");
-		Bukkit.getScheduler().runTask(plugin, () -> {
+		this.plugin.getScheduler().runTask(player.getLocation(), () -> {
 
 			this.consoleCommands.forEach(command -> {
 				String commandLine = papi(command.replace("%player%", player.getName()), player);

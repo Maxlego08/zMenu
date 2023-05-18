@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
-import org.bukkit.Bukkit;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class ZInventory implements Inventory {
 
-    private final Plugin plugin;
+    private final MenuPlugin plugin;
     private final String name;
     private final String fileName;
     private final int size;
@@ -39,7 +39,7 @@ public class ZInventory implements Inventory {
      */
     public ZInventory(Plugin plugin, String name, String fileName, int size, List<Button> buttons) {
         super();
-        this.plugin = plugin;
+        this.plugin = (MenuPlugin) plugin;
         this.name = name;
         this.fileName = fileName;
         this.size = size;
@@ -130,13 +130,13 @@ public class ZInventory implements Inventory {
     @Override
     public void closeInventory(Player player, VInventory inventoryDefault) {
         if (this.clearInventory) {
-            Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+            plugin.getScheduler().runTaskLater(player.getLocation(), 1, () -> {
                 InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();
                 if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.giveInventory(player);
                 }
-            }, 1);
+            });
         }
     }
 
