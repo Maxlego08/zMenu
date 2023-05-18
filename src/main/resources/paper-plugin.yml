@@ -5,6 +5,7 @@ description: Inventory management plugin
 author: Maxlego08
 website: https://groupez.dev
 api-version: '1.19'
+contributors: [ mani1232 ]
 
 folia-supported: true
 
@@ -13,7 +14,7 @@ dependencies:
     required: false
     bootstrap: true
   - name: PlaceholderAPI
-    required: false
+    required: true
     bootstrap: true
   - name: zTranslator
     required: false

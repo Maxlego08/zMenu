@@ -1,11 +1,13 @@
 name: zMenu
-author: Maxlego08
+authors: [ Maxlego08 ]
 main: fr.maxlego08.menu.MenuPlugin
 description: Inventory management plugin
 website: https://groupez.dev
 version: 1.0.0.0
 api-version: 1.13
+contributors: [ mani1232 ]
 softdepend:
 - HeadDatabase
 - PlaceholderAPI
 - zTranslator
+depend: [ PlaceholderAPI ]
