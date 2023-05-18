@@ -55,8 +55,12 @@ public class MenuPlugin extends ZPlugin {
 	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
 	private ZScheduler scheduler;
 
+	private static MenuPlugin instance;
+
 	@Override
 	public void onEnable() {
+
+		instance = this;
 
 		this.scheduler = isFolia()
 				? new FoliaScheduler(this)
@@ -242,4 +246,7 @@ public class MenuPlugin extends ZPlugin {
 		}
 	}
 
+	public static MenuPlugin getInstance() {
+		return instance;
+	}
 }

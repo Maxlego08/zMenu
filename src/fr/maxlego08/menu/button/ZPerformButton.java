@@ -1,14 +1,13 @@
 package fr.maxlego08.menu.button;
 
-import java.util.List;
-
+import fr.maxlego08.menu.api.action.Action;
+import fr.maxlego08.menu.api.button.PerformButton;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-import fr.maxlego08.menu.api.action.Action;
-import fr.maxlego08.menu.api.button.PerformButton;
+import java.util.List;
 
 public abstract class ZPerformButton extends ZSlotButton implements PerformButton{
 
@@ -84,7 +83,11 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
 	private void execute(CommandSender executor, Player player, List<String> strings) {
 		strings.forEach(command -> {
 			command = command.replace("%player%", player.getName());
-			Bukkit.dispatchCommand(executor, papi(command, player));
+			try {
+				Bukkit.dispatchCommand(executor, papi(command, player));
+			} catch (Exception ignored) {
+				// Ignore Async dispatch Exception on Folia
+			}
 		});
 	}
 
