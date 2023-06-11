@@ -1,60 +1,56 @@
 package fr.maxlego08.menu.placeholder;
 
-import java.util.List;
-
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import java.util.List;
 
 public interface Placeholder {
 
-	Placeholder API = new Api();
-	Placeholder LOCAL = new Local();
-	
-	String setPlaceholders(Player player, String string);
+    String setPlaceholders(Player player, String string);
 
-	List<String> setPlaceholders(Player player, List<String> list);
+    List<String> setPlaceholders(Player player, List<String> list);
 
-	static Placeholder getPlaceholder() {
-		return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? API : LOCAL;
-	}
+    static Placeholder getPlaceholder() {
+        return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local();
+    }
 
-	class Api implements Placeholder {
+    class Api implements Placeholder {
 
-		public Api() {
-			PlaceholderExpansion expansion = new DistantPlaceholder(LocalPlaceholder.getInstance());
-			expansion.register();
-		}
-		
-		@Override
-		public String setPlaceholders(Player player, String string) {
-			return PlaceholderAPI.setPlaceholders(player, string);
-		}
+        public Api() {
+            PlaceholderExpansion expansion = new DistantPlaceholder(LocalPlaceholder.getInstance());
+            expansion.register();
+        }
 
-		@Override
-		public List<String> setPlaceholders(Player player, List<String> list) {
-			return PlaceholderAPI.setPlaceholders(player, list);
-		}
+        @Override
+        public String setPlaceholders(Player player, String string) {
+            return PlaceholderAPI.setPlaceholders(player, string);
+        }
 
-	}
+        @Override
+        public List<String> setPlaceholders(Player player, List<String> list) {
+            return PlaceholderAPI.setPlaceholders(player, list);
+        }
 
-	class Local implements Placeholder {
+    }
 
-		@Override
-		public String setPlaceholders(Player player, String string) {
-			return LocalPlaceholder.getInstance().setPlaceholders(player, string);
-		}
+    class Local implements Placeholder {
 
-		@Override
-		public List<String> setPlaceholders(Player player, List<String> list) {
-			return LocalPlaceholder.getInstance().setPlaceholders(player, list);
-		}
+        @Override
+        public String setPlaceholders(Player player, String string) {
+            return LocalPlaceholder.getInstance().setPlaceholders(player, string);
+        }
 
-	}
+        @Override
+        public List<String> setPlaceholders(Player player, List<String> list) {
+            return LocalPlaceholder.getInstance().setPlaceholders(player, list);
+        }
 
-	static void register() {
-	}
+    }
+
+    static void register() {
+    }
 
 }
