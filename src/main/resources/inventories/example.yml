@@ -10,6 +10,7 @@
 #   Documentation: https://docs.zmenu.dev/
 #   Discord: https://discord.groupez.dev/
 #   Plugin page: https://groupez.dev/resources/zmenu.253
+#   Marketplace: https://minecraft-inventory-builder.com/
 #
 #
 #  ?????????????????????????????????????????????
@@ -61,16 +62,7 @@ items:
       data: 7
       name: "&e"
     slots: # List of slots to display the button
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - 7
-      - 8
-      - 9
+      - 0-9
       - 18
       - 27
       - 17
@@ -81,9 +73,7 @@ items:
       - 46
       - 47
       - 49
-      - 51
-      - 52
-      - 53
+      - 51-53
   example2:
     type: INVENTORY # Button type
     slot: 45 # Button slot
@@ -111,7 +101,8 @@ items:
       data: 3
       name: "&3%player_name%'s head"
       lore:
-        - "&fHead with placeholder"        
+        - "&fPlayer name with PAPI eCloud Player"
+        - "&7/papi ecloud download Player"
   clickActionExample:
     slot: 23
     closeInventory: true

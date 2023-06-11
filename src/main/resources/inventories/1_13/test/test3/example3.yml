@@ -2,7 +2,7 @@
 #
 #
 #   Sponsor: https://serveur-minecraft-vote.fr/
-#   5� gift code on Minecraft Vote Server : ZMENU (https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU)
+#   5€ gift code on Minecraft Vote Server : ZMENU (https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU)
 #
 #   This is a default configuration of the plugin. This configuration shows you the different possibilities of the plugin.
 #   Before starting the configuration of the plugin, we invite you to read the documentation.
@@ -10,26 +10,27 @@
 #   Documentation: https://docs.zmenu.dev/
 #   Discord: https://discord.groupez.dev/
 #   Plugin page: https://groupez.dev/resources/zmenu.253
+#   Marketplace: https://minecraft-inventory-builder.com/
 #
 #
-#  ?????????????????????????????????????????????
-#  ?????????????????????????????????????????????
-#  ?????????????????????????????????????????????
-#  ?????????????????????????????????????????????
-#  ?????????????????????????????????????????????
-#  ?????????????????????????????????????????????
+#  ███████╗███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗
+#  ╚════██║████╗░████║██╔════╝████╗░██║██║░░░██║
+#  ░░███╔═╝██╔████╔██║█████╗░░██╔██╗██║██║░░░██║
+#  ██╔══╝░░██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║
+#  ███████╗██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝
+#  ╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░
 #
 #
 #   Commands and permissions:
-#   - /zm � Display the list of commands (aliases: /zmenu) - zmenu.use
-#   - /zm open <menu> [<player>] [<display message>] � Opens the specified inventory - menu.open
-#   - /zm reload � Reload configurations - menu.reload
-#   - /zm reload config � Reload config.json and messages.yml files - zmenu.reload
-#   - /zm reload inventory [<inventory name>] � Reload inventories files - zmenu.reload
-#   - /zm reload command [<command name>] � Reload commands files - zmenu.reload
-#   - /zm version � Show plugin version
-#   - /zm convert � Convert other plugin to zMenu - zmenu.convert
-#   - /<command> � Open specific file - Custom permission
+#   - /zm » Display the list of commands (aliases: /zmenu) - zmenu.use
+#   - /zm open <menu> [<player>] [<display message>] » Opens the specified inventory - menu.open
+#   - /zm reload » Reload configurations - menu.reload
+#   - /zm reload config » Reload config.json and messages.yml files - zmenu.reload
+#   - /zm reload inventory [<inventory name>] » Reload inventories files - zmenu.reload
+#   - /zm reload command [<command name>] » Reload commands files - zmenu.reload
+#   - /zm version » Show plugin version
+#   - /zm convert » Convert other plugin to zMenu - zmenu.convert
+#   - /<command> » Open specific file - Custom permission
 #
 #
 #########################################################################################################################################
@@ -71,7 +72,7 @@ items:
     isPermanent: true
     item:
       material: NETHER_STAR
-      name: "&fRetour"
+      name: "&fBack"
     slot: 49      
   home:
     type: HOME

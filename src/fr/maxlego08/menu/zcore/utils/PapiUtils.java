@@ -7,26 +7,33 @@ import java.util.List;
 
 public class PapiUtils extends TranslationHelper {
 
-    private transient final Placeholder placeholder = Placeholder.Placeholders.getPlaceholder();
+    private static volatile Placeholder placeholder;
+
+    private Placeholder use() {
+        if (placeholder == null) {
+            placeholder = Placeholder.Placeholders.getPlaceholder();
+        }
+        return placeholder;
+    }
 
     /**
-     * @param placeHolder
-     * @param player
+     * @param placeHolder string
+     * @param player      The player
      * @return string
      */
     public String papi(String placeHolder, Player player) {
-        return placeholder.setPlaceholders(player, placeHolder);
+        return this.use().setPlaceholders(player, placeHolder);
     }
 
     /**
      * Transforms a list into a list with placeholder API
      *
-     * @param placeHolder
-     * @param player
+     * @param placeHolders list of string
+     * @param player       The player
      * @return placeholders
      */
-    public List<String> papi(List<String> placeHolder, Player player) {
-        return placeholder.setPlaceholders(player, placeHolder);
+    public List<String> papi(List<String> placeHolders, Player player) {
+        return this.use().setPlaceholders(player, placeHolders);
     }
 
 }

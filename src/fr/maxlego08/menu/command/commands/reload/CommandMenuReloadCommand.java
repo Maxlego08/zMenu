@@ -19,9 +19,7 @@ public class CommandMenuReloadCommand extends VCommand {
 		super(plugin);
 		this.addSubCommand("command", "cmd");
 		this.setPermission(Permission.ZMENU_RELOAD);
-		this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> {
-			return e.getCommand().toLowerCase();
-		}).collect(Collectors.toList()));
+		this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> e.getCommand().toLowerCase()).collect(Collectors.toList()));
 	}
 
 	@Override
