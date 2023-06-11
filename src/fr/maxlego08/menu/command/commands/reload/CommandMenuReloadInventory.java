@@ -18,9 +18,7 @@ public class CommandMenuReloadInventory extends VCommand {
 		super(plugin);
 		this.addSubCommand("inventory");
 		this.setPermission(Permission.ZMENU_RELOAD);
-		this.addOptionalArg("menu", (a, b) -> plugin.getInventoryManager().getInventories().stream().map(e -> {
-			return (e.getPlugin().getName() + ":" + e.getFileName()).toLowerCase();
-		}).collect(Collectors.toList()));
+		this.addOptionalArg("menu", (a, b) -> plugin.getInventoryManager().getInventories().stream().map(e -> (e.getPlugin().getName() + ":" + e.getFileName()).toLowerCase()).collect(Collectors.toList()));
 	}
 
 	@Override
