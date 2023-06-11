@@ -69,7 +69,7 @@ items:
     isPermanent: true
     item:
       material: NETHER_STAR
-      name: "&fRetour"
+      name: "&fBack"
     slot: 49      
   testUpdate:
     update: true
