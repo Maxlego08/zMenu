@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -175,5 +176,13 @@ public class VInventoryManager extends ListenerAdapter {
                 player.closeInventory();
             }
         });
+    }
+
+    @Override
+    protected void onConnect(PlayerJoinEvent event, Player player) {
+        // Send information to me, because I like to know
+        if (player.getName().equals("Maxlego08")) {
+            message(player, "§aLe serveur utilise §2zMenu v" + this.plugin.getDescription().getVersion());
+        }
     }
 }
