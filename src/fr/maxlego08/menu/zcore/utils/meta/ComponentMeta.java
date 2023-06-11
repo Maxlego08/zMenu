@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils.meta;
 
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ComponentMeta extends ZUtils implements MetaUpdater {
@@ -67,8 +70,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
         String newMessage = message;
 
-		/*if (NMSUtils.isHexColor()) {
-			Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+		if (NMSUtils.isHexColor()) {
+			Pattern pattern = Pattern.compile("(?<!<)#[a-fA-F0-9]{6}");
 			Matcher matcher = pattern.matcher(message);
 			while (matcher.find()) {
 				String color = message.substring(matcher.start(), matcher.end());
@@ -76,7 +79,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 				message = message.replace(color, "");
 				matcher = pattern.matcher(message);
 			}
-		}*/
+		}
 
         for (Entry<String, String> entry : this.COLORS_MAPPINGS.entrySet()) {
             String key = entry.getKey();
@@ -85,6 +88,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             newMessage = newMessage.replace("&" + key, "<" + value + ">");
             newMessage = newMessage.replace("§" + key, "<" + value + ">");
         }
+
         return newMessage;
     }
 
