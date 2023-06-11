@@ -214,8 +214,6 @@ public abstract class MessageUtils extends LocationUtils {
         }
     }
 
-    private transient final static int CENTER_PX = 154;
-
     /**
      * @param message
      * @return message
@@ -248,6 +246,7 @@ public abstract class MessageUtils extends LocationUtils {
         }
 
         int halvedMessageSize = messagePxSize / 2;
+        int CENTER_PX = 154;
         int toCompensate = CENTER_PX - halvedMessageSize;
         int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
         int compensated = 0;

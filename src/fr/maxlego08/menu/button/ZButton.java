@@ -72,7 +72,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button{
 
 		}
 
-		return super.papi(itemStack, player);
+		return itemStack;
 	}
 
 	@Override

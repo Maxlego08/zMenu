@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class ZInventoriesPlayer implements InventoriesPlayer {
 
-    private static final Map<UUID, ZInventoryPlayer> inventories = new HashMap<>();
+    private static Map<UUID, ZInventoryPlayer> inventories = new HashMap<>();
     private transient final MenuPlugin plugin;
     private transient long lastSave;
 

@@ -13,10 +13,6 @@ public interface Placeholder {
 
     List<String> setPlaceholders(Player player, List<String> list);
 
-    static Placeholder getPlaceholder() {
-        return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local();
-    }
-
     class Api implements Placeholder {
 
         public Api() {
@@ -50,7 +46,14 @@ public interface Placeholder {
 
     }
 
-    static void register() {
+    class Placeholders {
+
+        private static Placeholder placeholder;
+
+        public static Placeholder getPlaceholder() {
+            return placeholder == null ? (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local()) : placeholder;
+        }
+
     }
 
 }

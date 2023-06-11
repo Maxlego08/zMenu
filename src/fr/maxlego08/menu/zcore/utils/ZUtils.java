@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.builder.CooldownBuilder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
@@ -40,13 +40,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,11 +50,25 @@ import java.util.stream.Stream;
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
 
-    private static final transient List<String> teleportPlayers = new ArrayList<String>();
-    private static final transient Timer timer = new Timer();
+    // For plugin support from 1.8 to 1.12
+    private static Material[] byId;
+
+    static {
+        if (!NMSUtils.isNewVersion()) {
+            byId = new Material[0];
+            for (Material material : Material.values()) {
+                if (byId.length > material.getId()) {
+                    byId[material.getId()] = material;
+                } else {
+                    byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
+                    byId[material.getId()] = material;
+                }
+            }
+        }
+    }
 
     /**
-     * Allows to encode an itemstack in base64
+     * Allows to encode an itemStack in base64
      *
      * @param item - ItemStack
      * @return the encoded item
@@ -71,7 +80,7 @@ public abstract class ZUtils extends MessageUtils {
     /**
      * Allows to decode a string in ItemStack
      *
-     * @param item - the encoded itemstack
+     * @param item - the encoded itemStack
      * @return the decoded item
      */
     protected ItemStack decode(String item) {
@@ -81,18 +90,18 @@ public abstract class ZUtils extends MessageUtils {
     /**
      * Allows to obtain a random number between a and b
      *
-     * @param a
-     * @param b
+     * @param first  First number
+     * @param second second number
      * @return number between a and b
      */
-    protected int getNumberBetween(int a, int b) {
-        return ThreadLocalRandom.current().nextInt(a, b);
+    protected int getNumberBetween(int first, int second) {
+        return ThreadLocalRandom.current().nextInt(first, second);
     }
 
     /**
      * Allows you to check if the inventory is full
      *
-     * @param player
+     * @param player Target player
      * @return true if the player's inventory is full
      */
     protected boolean hasInventoryFull(Player player) {
@@ -118,23 +127,6 @@ public abstract class ZUtils extends MessageUtils {
             player.getWorld().dropItem(player.getLocation(), item);
         else
             player.getInventory().addItem(item);
-    }
-
-    // For plugin support from 1.8 to 1.12
-    private static transient Material[] byId;
-
-    static {
-        if (!NMSUtils.isNewVersion()) {
-            byId = new Material[0];
-            for (Material material : Material.values()) {
-                if (byId.length > material.getId()) {
-                    byId[material.getId()] = material;
-                } else {
-                    byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
-                    byId[material.getId()] = material;
-                }
-            }
-        }
     }
 
     /**
@@ -192,7 +184,7 @@ public abstract class ZUtils extends MessageUtils {
      * Remove the item from the player's hand
      *
      * @param player
-     * @param how of items to withdraw
+     * @param how    of items to withdraw
      */
     protected void removeItemInHand(Player player, int how) {
         if (player.getItemInHand().getAmount() > how)
@@ -212,63 +204,6 @@ public abstract class ZUtils extends MessageUtils {
     protected boolean same(Location l, Location l2) {
         return (l.getBlockX() == l2.getBlockX()) && (l.getBlockY() == l2.getBlockY())
                 && (l.getBlockZ() == l2.getBlockZ()) && l.getWorld().getName().equals(l2.getWorld().getName());
-    }
-
-    /**
-     * Teleport a player to a given location with a given delay
-     *
-     * @param player   who will be teleported
-     * @param delay    before the teleportation of the player
-     * @param location where the player will be teleported
-     */
-    protected void teleport(Player player, int delay, Location location) {
-        teleport(player, delay, location, null);
-    }
-
-    /**
-     * Teleport a player to a given location with a given delay
-     *
-     * @param player   who will be teleported
-     * @param delay    before the teleportation of the player
-     * @param location where the player will be teleported
-     * @param cmd     executed when the player is teleported or not
-     */
-    protected void teleport(Player player, int delay, Location location, Consumer<Boolean> cmd) {
-        if (teleportPlayers.contains(player.getName())) {
-            message(player, Message.TELEPORT_ERROR);
-            return;
-        }
-        ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-        Location playerLocation = player.getLocation();
-        AtomicInteger verif = new AtomicInteger(delay);
-        teleportPlayers.add(player.getName());
-        if (!location.getChunk().isLoaded())
-            location.getChunk().load();
-        ses.scheduleWithFixedDelay(() -> {
-            if (!same(playerLocation, player.getLocation())) {
-                message(player, Message.TELEPORT_MOVE);
-                ses.shutdown();
-                teleportPlayers.remove(player.getName());
-                if (cmd != null)
-                    cmd.accept(false);
-                return;
-            }
-            int currentSecond = verif.getAndDecrement();
-            if (!player.isOnline()) {
-                ses.shutdown();
-                teleportPlayers.remove(player.getName());
-                return;
-            }
-            if (currentSecond == 0) {
-                ses.shutdown();
-                teleportPlayers.remove(player.getName());
-                player.teleport(location);
-                message(player, Message.TELEPORT_SUCCESS);
-                if (cmd != null)
-                    cmd.accept(true);
-            } else
-                message(player, Message.TELEPORT_MESSAGE, currentSecond);
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -326,7 +261,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param runnable
      */
     protected void schedule(long delay, Runnable runnable) {
-        timer.schedule(new TimerTask() {
+        ZScheduler.TIMER.schedule(new TimerTask() {
 
             @Override
             public void run() {
@@ -385,7 +320,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected double percent(double value, double total) {
-        return (double) ((value * 100) / total);
+        return (value * 100) / total;
     }
 
     /**
@@ -394,7 +329,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected double percentNum(double total, double percent) {
-        return (double) (total * (percent / 100));
+        return total * (percent / 100);
     }
 
     /**
@@ -405,7 +340,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param runnable
      */
     protected void schedule(Plugin plugin, long delay, int count, Runnable runnable) {
-        timer.scheduleAtFixedRate(new TimerTask() {
+        ZScheduler.TIMER.scheduleAtFixedRate(new TimerTask() {
             int tmpCount = 0;
 
             @Override
@@ -511,7 +446,7 @@ public abstract class ZUtils extends MessageUtils {
                 plugin.getScheduler().runTask(null, () -> consumer.accept(this, true));
             }
         };
-        timer.scheduleAtFixedRate(task, startAt, delay);
+        ZScheduler.TIMER.scheduleAtFixedRate(task, startAt, delay);
         return task;
     }
 
@@ -679,11 +614,11 @@ public abstract class ZUtils extends MessageUtils {
         if (value < 10000)
             return format(value, "#.#");
         else if (value < 1000000)
-            return String.valueOf(Integer.valueOf((int) (value / 1000))) + "k ";
+            return Integer.valueOf((int) (value / 1000)) + "k ";
         else if (value < 1000000000)
-            return String.valueOf(format((value / 1000) / 1000, "#.#")) + "m ";
-        else if (value < 1000000000000l)
-            return String.valueOf(Integer.valueOf((int) (((value / 1000) / 1000) / 1000))) + "M ";
+            return format((value / 1000) / 1000, "#.#") + "m ";
+        else if (value < 1000000000000L)
+            return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
         else
             return "to much";
     }
@@ -696,11 +631,11 @@ public abstract class ZUtils extends MessageUtils {
         if (value < 10000)
             return format(value, "#.#");
         else if (value < 1000000)
-            return String.valueOf(Integer.valueOf((int) (value / 1000))) + "k ";
+            return Integer.valueOf((int) (value / 1000)) + "k ";
         else if (value < 1000000000)
-            return String.valueOf(format((value / 1000) / 1000, "#.#")) + "m ";
-        else if (value < 1000000000000l)
-            return String.valueOf(Integer.valueOf((int) (((value / 1000) / 1000) / 1000))) + "M ";
+            return format((value / 1000) / 1000, "#.#") + "m ";
+        else if (value < 1000000000000L)
+            return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
         else
             return "to much";
     }
@@ -961,7 +896,7 @@ public abstract class ZUtils extends MessageUtils {
         RegisteredServiceProvider<T> provider = plugin.getServer().getServicesManager().getRegistration(classz);
         if (provider == null)
             return null;
-        return provider.getProvider() != null ? (T) provider.getProvider() : null;
+        return provider.getProvider() != null ? provider.getProvider() : null;
     }
 
     /**

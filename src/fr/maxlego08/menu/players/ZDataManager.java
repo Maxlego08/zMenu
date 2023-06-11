@@ -25,7 +25,7 @@ public class ZDataManager implements DataManager {
 
 	private final transient MenuPlugin plugin;
 	private transient long lastSave;
-	private static final Map<UUID, ZPlayerData> players = new HashMap<>();
+	private static Map<UUID, ZPlayerData> players = new HashMap<>();
 
 	/**
 	 * @param plugin

@@ -4,8 +4,11 @@ import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Timer;
 
 public interface ZScheduler {
+
+    Timer TIMER = new Timer();
 
     /**
      * Run the task.

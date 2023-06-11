@@ -2,48 +2,12 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.placeholder.Placeholder;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
 public class PapiUtils extends TranslationHelper {
 
-    private transient Placeholder placeholder;
-
-    private void mapPlaceholders() {
-        if (this.placeholder == null) {
-            this.placeholder = Placeholder.getPlaceholder();
-        }
-    }
-
-    /**
-     * @param itemStack
-     * @param player
-     * @return itemstack
-     */
-    protected ItemStack papi(ItemStack itemStack, Player player) {
-
-        if (itemStack == null) {
-            return null;
-        }
-
-        this.mapPlaceholders();
-
-        ItemMeta itemMeta = itemStack.getItemMeta();
-
-        if (itemMeta.hasDisplayName()) {
-            itemMeta.setDisplayName(this.placeholder.setPlaceholders(player, itemMeta.getDisplayName()));
-        }
-
-        if (itemMeta.hasLore()) {
-            itemMeta.setLore(this.placeholder.setPlaceholders(player, itemMeta.getLore()));
-        }
-
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-
-    }
+    private transient final Placeholder placeholder = Placeholder.Placeholders.getPlaceholder();
 
     /**
      * @param placeHolder
@@ -51,8 +15,7 @@ public class PapiUtils extends TranslationHelper {
      * @return string
      */
     public String papi(String placeHolder, Player player) {
-        this.mapPlaceholders();
-        return this.placeholder.setPlaceholders(player, placeHolder);
+        return placeholder.setPlaceholders(player, placeHolder);
     }
 
     /**
@@ -63,8 +26,7 @@ public class PapiUtils extends TranslationHelper {
      * @return placeholders
      */
     public List<String> papi(List<String> placeHolder, Player player) {
-        this.mapPlaceholders();
-        return this.placeholder.setPlaceholders(player, placeHolder);
+        return placeholder.setPlaceholders(player, placeHolder);
     }
 
 }

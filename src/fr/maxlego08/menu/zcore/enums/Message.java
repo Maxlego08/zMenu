@@ -13,11 +13,6 @@ public enum Message {
 
 	PREFIX("§8(§6zMenu§8) "),
 	
-	TELEPORT_MOVE("§cYou must not move!", false),
-	TELEPORT_MESSAGE("§7Teleportation in §3%second% §7seconds!", false),
-	TELEPORT_ERROR("§cYou already have a teleportation in progress!", false),
-	TELEPORT_SUCCESS("§7Teleportation done!", false),
-	
 	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c.", false),
 	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!", false),
 	VINVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c.", false),
