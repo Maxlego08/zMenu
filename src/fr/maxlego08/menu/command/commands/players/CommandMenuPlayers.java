@@ -8,31 +8,23 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuPlayers extends VCommand {
 
-	public CommandMenuPlayers(MenuPlugin plugin) {
-		super(plugin);
-		this.setPermission(Permission.ZMENU_PLAYERS);
-		this.setDescription(Message.DESCRIPTION_PLAYERS);
-		this.addSubCommand("players");
-		this.addSubCommand(new CommandMenuPlayersSet(plugin));
-		this.addSubCommand(new CommandMenuPlayersGet(plugin));
-		this.addSubCommand(new CommandMenuPlayersRemove(plugin));
-		this.addSubCommand(new CommandMenuPlayersKeys(plugin));
-		this.addSubCommand(new CommandMenuPlayersClearAll(plugin)); 
-		this.addSubCommand(new CommandMenuPlayersClearPlayer(plugin)); 
-	}
+    public CommandMenuPlayers(MenuPlugin plugin) {
+        super(plugin);
+        this.setPermission(Permission.ZMENU_PLAYERS);
+        this.setDescription(Message.DESCRIPTION_PLAYERS);
+        this.addSubCommand("players");
+        this.addSubCommand(new CommandMenuPlayersSet(plugin));
+        this.addSubCommand(new CommandMenuPlayersGet(plugin));
+        this.addSubCommand(new CommandMenuPlayersRemove(plugin));
+        this.addSubCommand(new CommandMenuPlayersKeys(plugin));
+        this.addSubCommand(new CommandMenuPlayersClearAll(plugin));
+        this.addSubCommand(new CommandMenuPlayersClearPlayer(plugin));
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
-
-		message(this.sender, Message.DOCUMENTATION_INFORMATION);
-		this.subVCommands.forEach(command -> {
-			if (command.getPermission() == null || this.sender.hasPermission(command.getPermission())) {
-				message(this.sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
-						command.getDescription());
-			}
-		});
-
-		return CommandType.SUCCESS;
-	}
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
+        sendSyntax();
+        return CommandType.SUCCESS;
+    }
 
 }

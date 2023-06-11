@@ -10,6 +10,7 @@ import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.scheduler.BukkitScheduler;
 import fr.maxlego08.menu.scheduler.FoliaScheduler;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import org.bukkit.plugin.ServicePriority;
 
 import fr.maxlego08.menu.api.ButtonManager;
@@ -135,7 +136,7 @@ public class MenuPlugin extends ZPlugin {
 		LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
 		localPlaceholder.register("argument_", (player, value) -> {
 			Optional<String> optional = this.commandManager.getPlayerArgument(player, value);
-			return optional.isPresent() ? optional.get() : null;
+			return optional.orElse(null);
 		});
 
 		((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
@@ -146,6 +147,8 @@ public class MenuPlugin extends ZPlugin {
 		if (tokenFile.exists()) {
 			Token.getInstance().load(this.getPersist());
 		}
+
+		// new VersionChecker(this, 253).useLastVersion();
 
 		this.postEnable();
 	}
