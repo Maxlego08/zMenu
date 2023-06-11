@@ -1,0 +1,146 @@
+#########################################################################################################################################
+#
+#
+#   Sponsor: https://serveur-minecraft-vote.fr/
+#   5� gift code on Minecraft Vote Server : ZMENU (https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU)
+#
+#   This is a default configuration of the plugin. This configuration shows you the different possibilities of the plugin.
+#   Before starting the configuration of the plugin, we invite you to read the documentation.
+#
+#   Documentation: https://docs.zmenu.dev/
+#   Discord: https://discord.groupez.dev/
+#   Plugin page: https://groupez.dev/resources/zmenu.253
+#   Marketplace: https://minecraft-inventory-builder.com/
+#
+#
+#  ███████╗███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗
+#  ╚════██║████╗░████║██╔════╝████╗░██║██║░░░██║
+#  ░░███╔═╝██╔████╔██║█████╗░░██╔██╗██║██║░░░██║
+#  ██╔══╝░░██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║
+#  ███████╗██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝
+#  ╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░
+#
+#
+#   Commands and permissions:
+#   - /zm » Display the list of commands (aliases: /zmenu) - zmenu.use
+#   - /zm open <menu> [<player>] [<display message>] » Opens the specified inventory - menu.open
+#   - /zm reload » Reload configurations - menu.reload
+#   - /zm reload config » Reload config.json and messages.yml files - zmenu.reload
+#   - /zm reload inventory [<inventory name>] » Reload inventories files - zmenu.reload
+#   - /zm reload command [<command name>] » Reload commands files - zmenu.reload
+#   - /zm version » Show plugin version
+#   - /zm convert » Convert other plugin to zMenu - zmenu.convert
+#   - /<command> » Open specific file - Custom permission
+#
+#
+#########################################################################################################################################
+
+name: "&7Shop"
+size: 54
+items:
+  # Will display an item that has no action on the different slots
+  slots:
+    type: NONE_SLOT # https://zmenu.groupez.dev/configurations/buttons#none_slot
+    isPermanent: true
+    item: # https://zmenu.groupez.dev/configurations/items
+      material: STAINED_GLASS_PANE
+      data: 7
+      name: "&e"
+    # Allows you to make a tour of the inventory
+    slots:
+      - 0-9 # slot 0 to 9
+      - 18
+      - 17
+      - 26
+      - 27
+      - 35
+      - 36
+      - 44-53 # slot 44 to 53
+  shop1:
+    type: PERFORM_COMMAND # https://zmenu.groupez.dev/configurations/buttons#perform_command
+    slot: 22
+    # You can add a list of actions. An action will contain a click list, permissions, an allow action and a deny action.
+    # https://zmenu.groupez.dev/configurations/buttons#actions    
+    actions:
+      first:
+        # Here is the list of all available click types
+        # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/inventory/ClickType.html
+        clicks:
+          - RIGHT
+          - LEFT
+          - SHIFT_LEFT
+          - SHIFT_RIGHT
+        permissions:
+          examplePlaceholder:
+            placeHolder: "%vault_eco_balance%" # Donc forget to download Vault ecloud - /papi ecloud download Vault
+            action: SUPERIOR_OR_EQUAL # List of actions available here : https://zmenu.groupez.dev/configurations/buttons#placeholder
+            value: 500 # Here the player's money must be greater than or equal to 500
+          examplePermission:
+            # Allows to define a permission that the player must have to display the item.
+            # You can reverse the permission by adding ! in front of the permission. Thereby the plugin will check that the player does not have the permission.
+            permission: "shop.diamond"
+        # An allow or deny action will allow you to send messages (with a clickable link), commands (player or console) and a sound
+        allow:
+          messages:
+            - "&7You have bought diamonds."
+          #openLink: # Allows to display a link in the messages sent to the player
+          # Action avaible : OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND
+          #  action: "OPEN_URL"
+          #  link: "https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU" # Link that will be used
+          #  message: "&f&nhere" # Message to be replaced
+          #  replace: "%link%" # Text to be replaced
+          #  hover: # Messages when the player will hover the text
+          #    - "&bClick here !"
+          consoleCommands:
+            - "eco take %player% 500"
+            - "give %player% diamond 64"
+          #playerCommands:
+          #  - "msg %player% Hello my friend"
+          sound: ENTITY_COW_HURT # Sound played during the click
+          pitch: 1.5 # Sound pitch
+          volume: 0.5 # Sound volume
+        # An allow or deny action will allow you to send messages (with a clickable link), commands (player or console) and a sound
+        deny:
+          messages:
+            - "&cYou don't have enough money."
+            - "&cClick %link% &cto buy money."
+          openLink: # Allows to display a link in the messages sent to the player
+            # Action avaible : OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND
+            action: "OPEN_URL"
+            link: "https://serveur-minecraft-vote.fr/utiliser/un/code/cadeau?code=ZMENU" # Link that will be used
+            message: "&f&nhere" # Message to be replaced
+            replace: "%link%" # Text to be replaced
+            hover: # Messages when the player will hover the text
+              - "&bClick here !"
+          #consoleCommands:
+          #  - "eco take %player% 500"
+          #  - "give %player% diamond 64"
+          #playerCommands:
+          #  - "msg %player% Hello my friend"
+          #sound: ENTITY_COW_HURT # Sound played during the click
+          #pitch: 1.5 # Sound pitch
+          #volume: 0.5 # Sound volume
+    refreshOnClick: true
+    item: # https://zmenu.groupez.dev/configurations/items
+      material: PAPER
+      name: "&aClick to buy !"
+      lore:
+        - "&fYou have enough money to buy this."
+    action: SUPERIOR_OR_EQUAL # List of actions available here : https://zmenu.groupez.dev/configurations/buttons#placeholder
+    placeHolder: "%vault_eco_balance%" # Donc forget to download Vault ecloud - /papi ecloud download Vault
+    value: 500 # Here the player's money must be greater than or equal to 500
+    else: # If the player does not have the permission or the placeholder, we will display another button
+      slot: 22
+      type: NONE # https://zmenu.groupez.dev/configurations/buttons#none
+      item: # https://zmenu.groupez.dev/configurations/items
+        material: PAPER
+        name: "&cYou can't do that :'("
+        lore:
+          - "&cYou dont have enough money to buy this."
+  back: # The button allows you to return to the previous inventory
+    type: BACK # https://zmenu.groupez.dev/configurations/buttons#back
+    isPermanent: true
+    item: # https://zmenu.groupez.dev/configurations/items
+      material: NETHER_STAR
+      name: "&fBack"
+    slot: 49

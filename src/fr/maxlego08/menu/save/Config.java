@@ -8,8 +8,14 @@ public class Config implements Saveable {
 	public static boolean enableDebug = true;
 	public static boolean enableDebugTime = false;
 	public static boolean enableInformationMessage = true;
-	
-	/**
+	public static boolean enableLogStorageFile = false;
+	public static boolean enableOpenMessage = true;
+	public static boolean enableMiniMessageFormat = true;
+	public static int secondsSavePlayerData = 600;
+	public static int secondsSavePlayerInventories = 600;
+    public static boolean autoSaveFileInventoryOnUpdate = true;
+
+    /**
 	 * static Singleton instance.
 	 */
 	private static volatile Config instance;

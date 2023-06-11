@@ -13,16 +13,11 @@ public enum Message {
 
 	PREFIX("§8(§6zMenu§8) "),
 	
-	TELEPORT_MOVE("§cYou must not move!"),
-	TELEPORT_MESSAGE("§7Teleportation in §3%second% §7seconds!"),
-	TELEPORT_ERROR("§cYou already have a teleportation in progress!"),
-	TELEPORT_SUCCESS("§7Teleportation done!"),
-	
-	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c."),
-	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!"),
-	VINVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c."),
-	VINVENTORY_BUTTON_PREVIOUS("§f» §7Previous page"),
-	VINVENTORY_BUTTON_NEXT("§f» §7Next page"),
+	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c.", false),
+	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!", false),
+	VINVENTORY_OPEN_ERROR("§cAn error occurred with the opening of the inventory §6%id%§c.", false),
+	VINVENTORY_BUTTON_PREVIOUS("§f» §7Previous page", false),
+	VINVENTORY_BUTTON_NEXT("§f» §7Next page", false),
 	
 	TIME_DAY("%02d %day% %02d %hour% %02d %minute% %02d %second%"),
 	TIME_HOUR("%02d %hour% %02d minute(s) %02d %second%"),
@@ -47,7 +42,7 @@ public enum Message {
 	COMMAND_NO_CONSOLE("§cOnly one player can execute this command."),
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
-	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://zmenu.groupez.dev/"),
+	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://docs.zmenu.dev/"),
 	
 	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §cinventory in the §f%name%§c inventory."), 
 	INVENTORY_ERROR("§cUnable to find the §f%name%§c inventory."), 
@@ -59,9 +54,19 @@ public enum Message {
 	INVENTORY_OPEN_ERROR_CONSOLE("§cOnly one player can open an inventory."),
 	
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
-	DESCRIPTION_RELOAD("Allows you to reload configuration files."),
+	DESCRIPTION_RELOAD("Allows you to reload configuration files"),
 	DESCRIPTION_VERSION("Show plugin version"),
+	DESCRIPTION_DOWNLOAD("WIP"),
+	DESCRIPTION_LOGIN("WIP"),
+	DESCRIPTION_DISCONNECT("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
+    DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
+    DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration"),
+    DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
+    DESCRIPTION_PLAYERS_GET("Get player data"),
+    DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player"),
+    DESCRIPTION_PLAYERS_CLEAR_ALL("Clear all player's data"),
+    DESCRIPTION_PLAYERS_CLEAR_PLAYER("Clear player's data"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),
@@ -76,7 +81,33 @@ public enum Message {
 			"§fYou must install the §3zMenuConvert§f plugin.",
 			"§fDownload link§8: §7https://groupez.dev/resources/zmenuconvert.266",
 			"§fYou must then issue the command §b/zmenu convert§f."
-			)
+			),
+	
+	PLAYERS_DATA_CLEAR_ALL("§aYou have just deleted the datas of all the players."),
+	PLAYERS_DATA_CLEAR_PLAYER("§aYou have just deleted the player's data §f%player%§a."),
+	
+	PLAYERS_DATA_SET("§aYou have just added a data for the §b%player% §a with the §f%key%§a."),
+	PLAYERS_DATA_KEYS_SUCCESS("§aPlayer's Key §f%player%§8: §7%keys%"),
+	PLAYERS_DATA_KEYS_EMPTY("§cThe §f%player% §chas no key."),
+	PLAYERS_DATA_GET_SUCCESS(
+			"§fKey§8: §7%key%",
+			"§fExpired at (timestamp)§8: §7%expiredAt%",
+			"§fValue§8: §7%value%"
+			),
+	PLAYERS_DATA_GET_ERROR("§cCannot find the key §f%key%§c."),
+	PLAYERS_DATA_REMOVE_SUCCESS("§aYou have just deleted the §f%key% §for the §b%player%§a."),
+	PLAYERS_DATA_REMOVE_ERROR("§cCannot find the key §f%key%§c."),
+	
+	WEBSITE_LOGIN_ERROR_TOKEN("§cYour token seems invalid, please try again."),
+	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
+	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again."),
+	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
+	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
+	
+	WEBSITE_DISCONNECT_SUCCESS("§cYou have just deleted the link to the site."), 
+	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."), 
+	
+	PLACEHOLDER_NEVER("never"),
 	
 	;
 

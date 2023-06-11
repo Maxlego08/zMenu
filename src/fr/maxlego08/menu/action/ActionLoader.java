@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
+import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.action.loader.ActionClickLoader;
 import fr.maxlego08.menu.action.permissible.PermissibleLoader;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.ActiondClick;
@@ -15,10 +17,20 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
 public class ActionLoader implements Loader<Action> {
 
+	private final MenuPlugin plugin;
+
+	/**
+	 * @param plugin
+	 */
+	public ActionLoader(MenuPlugin plugin) {
+		super();
+		this.plugin = plugin;
+	}
+
 	@Override
 	public Action load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
 
-		Loader<ActiondClick> loader = new ActionClickLoader();
+		Loader<ActiondClick> loader = new ActionClickLoader(this.plugin);
 
 		List<ClickType> clickTypes = configuration.getStringList(path + "clicks").stream().map(String::toUpperCase)
 				.map(ClickType::valueOf).collect(Collectors.toList());

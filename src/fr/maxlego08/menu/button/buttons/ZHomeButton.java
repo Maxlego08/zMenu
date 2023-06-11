@@ -9,21 +9,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public class ZHomeButton extends ZPlaceholderButton implements HomeButton {
+public class ZHomeButton extends ZBackButton implements HomeButton {
 
-	private final InventoryManager inventoryManager;
-	private Inventory inventory;
-
-	/**
-	 * @param inventoryManager
-	 * @param inventory
-	 */
 	public ZHomeButton(InventoryManager inventoryManager) {
-		super();
-		this.inventoryManager = inventoryManager;
+		super(inventoryManager);
 	}
 
 	@Override
@@ -35,7 +26,7 @@ public class ZHomeButton extends ZPlaceholderButton implements HomeButton {
 
 		Inventory toInventory = this.inventory;
 		this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<Inventory>());
-		
+
 		super.onClick(player, event, inventory, slot);
 	}
 

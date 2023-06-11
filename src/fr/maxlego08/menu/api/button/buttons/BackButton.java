@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.button.buttons;
 
-import fr.maxlego08.menu.api.button.PlaceholderButton;
+import fr.maxlego08.menu.api.button.Button;
 
-public interface BackButton extends PlaceholderButton {
+public interface BackButton extends Button {
 
 	
 }

@@ -44,7 +44,7 @@ public class VersionChecker implements Listener {
 	}
 
 	/**
-	 * Allows to check if the plugin version is up to date.
+	 * Allows to check if the plugin version is up-to-date.
 	 */
 	public void useLastVersion() {
 
@@ -55,8 +55,8 @@ public class VersionChecker implements Listener {
 		AtomicBoolean atomicBoolean = new AtomicBoolean();
 		this.getVersion(version -> {
 
-			long ver = Long.valueOf(version.replace(".", ""));
-			long plVersion = Long.valueOf(pluginVersion.replace(".", ""));
+			long ver = Long.parseLong(version.replace(".", ""));
+			long plVersion = Long.parseLong(pluginVersion.replace(".", ""));
 			atomicBoolean.set(plVersion >= ver);
 			this.useLastVersion = atomicBoolean.get();
 			if (atomicBoolean.get())

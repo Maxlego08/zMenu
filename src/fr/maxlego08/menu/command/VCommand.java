@@ -439,7 +439,8 @@ public abstract class VCommand extends Arguments {
 			}
 		}
 
-		if ((this.argsMinLength != 0 && args.length < this.argsMinLength) || this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
+		if ((this.argsMinLength != 0 && args.length < this.argsMinLength)
+				|| this.argsMaxLength != 0 && args.length > this.argsMaxLength && !this.extendedArgs) {
 			return CommandType.SYNTAX_ERROR;
 		}
 
@@ -523,10 +524,10 @@ public abstract class VCommand extends Arguments {
 
 	/**
 	 * Generate list for tab completer
-	 * 
+	 *
 	 * @param startWith
 	 * @param strings
-	 * @return
+	 * @return list of string
 	 */
 	protected List<String> generateList(Tab tab, String startWith, String... strings) {
 		return generateList(Arrays.asList(strings), startWith, tab);
@@ -534,10 +535,10 @@ public abstract class VCommand extends Arguments {
 
 	/**
 	 * Generate list for tab completer
-	 * 
-	 * @param defaultList
-	 * @param startWith
-	 * @return
+	 *
+	 * @param defaultList default value
+	 * @param startWith tabulation star with
+	 * @return list of string
 	 */
 	protected List<String> generateList(List<String> defaultList, String startWith) {
 		return generateList(defaultList, startWith, Tab.CONTAINS);
@@ -546,10 +547,10 @@ public abstract class VCommand extends Arguments {
 	/**
 	 * Generate list for tab completer
 	 * 
-	 * @param defaultList
-	 * @param startWith
-	 * @param tab
-	 * @return
+	 * @param defaultList default value
+	 * @param startWith tabulation star with
+	 * @param tab Tab type
+	 * @return list of string
 	 */
 	protected List<String> generateList(List<String> defaultList, String startWith, Tab tab) {
 		List<String> newList = new ArrayList<>();
@@ -565,11 +566,24 @@ public abstract class VCommand extends Arguments {
 
 	/**
 	 * Add list of aliases
-	 * 
-	 * @param aliases
+	 *
+	 * @param aliases - Commands aliases
 	 */
 	public void addSubCommand(List<String> aliases) {
 		this.subCommands.addAll(aliases);
+	}
+
+	/**
+	 * Send a list of commands with their syntax and description
+	 */
+	protected void sendSyntax(){
+		message(this.sender, Message.DOCUMENTATION_INFORMATION);
+		this.subVCommands.forEach(command -> {
+			if (command.getPermission() == null || this.sender.hasPermission(command.getPermission())) {
+				message(this.sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
+						command.getDescription());
+			}
+		});
 	}
 
 }

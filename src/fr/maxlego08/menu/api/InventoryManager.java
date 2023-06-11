@@ -16,13 +16,38 @@ import fr.maxlego08.menu.zcore.utils.storage.Saveable;
 public interface InventoryManager extends Saveable {
 
 	/**
+	 * Allows to load an inventore, the plugin will retrieve the resource of
+	 * your plugin to save it if it does not exist.
+	 * 
+	 * @param plugin
+	 * @param resourceName
+	 * @return inventory
+	 * @throws InventoryException
+	 */
+	public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException;
+	
+	
+	/**
+	 * Allows to load an inventore, the plugin will retrieve the resource of
+	 * your plugin to save it if it does not exist.
+	 * 
+	 * @param plugin
+	 * @param resourceName
+	 * @param classz
+	 *            Default class ZInventory
+	 * @return inventory
+	 * @throws InventoryException
+	 */
+	public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz) throws InventoryException;
+
+	/**
 	 * Allows you to load an inventory from a file You must add the class of
 	 * your plugin as a parameter
 	 * 
 	 * @param plugin
 	 * @param fileName
 	 * @param classz
-	 *            - Default class ZInventory
+	 *            Default class ZInventory
 	 * @return inventory
 	 * @throws InventoryException
 	 */
@@ -182,7 +207,7 @@ public interface InventoryManager extends Saveable {
 	 * Allows you to register a material loader
 	 * 
 	 * @param materialLoader
-	 * @return boolean - true if registered
+	 * @return boolean True if registered
 	 */
 	public boolean registerMaterialLoader(MaterialLoader materialLoader);
 
@@ -197,7 +222,7 @@ public interface InventoryManager extends Saveable {
 	/**
 	 * Return the list of material loader
 	 * 
-	 * @return materials
+	 * @return materials List of material loader
 	 */
 	public Collection<MaterialLoader> getMaterialLoader();
 
@@ -205,8 +230,11 @@ public interface InventoryManager extends Saveable {
 	 * Allows to open an inventory according to the name and the plugin
 	 * 
 	 * @param player
+	 *            Player who will open the inventory
 	 * @param plugin
+	 *            The plugin where the inventory comes from
 	 * @param inventoryName
+	 *            Name of the inventory to be opened
 	 */
 	public void openInventory(Player player, Plugin plugin, String inventoryName);
 
@@ -214,30 +242,40 @@ public interface InventoryManager extends Saveable {
 	 * Allows to open an inventory according to the name and the plugin name
 	 * 
 	 * @param player
+	 *            Player who will open the inventory
 	 * @param pluginName
+	 *            The plugin where the inventory comes from
 	 * @param inventoryName
+	 *            Name of the inventory to be opened
 	 */
 	public void openInventory(Player player, String pluginName, String inventoryName);
 
 	/**
-	 * Allows you to open an inventory according to the name
+	 * Allows you to open an inventory according to the name Attention, here the
+	 * plugin will search in all inventories, it is more appropriate to use the
+	 * method {@link #openInventory(Player, Plugin, String)}
 	 * 
 	 * @param player
+	 *            Player who will open the inventory
 	 * @param inventoryName
+	 *            Name of the inventory to be opened
 	 */
 	public void openInventory(Player player, String inventoryName);
 
 	/**
+	 * Returns a plugin optional based on its name.
 	 * 
 	 * @param pluginName
-	 * @return optional
+	 *            The name of the plugin to be found
+	 * @return optional An optional that can contain the plugin if it exists.
 	 */
 	public Optional<Plugin> getPluginIgnoreCase(String pluginName);
 
 	/**
-	 * Reload inventory
+	 * Allows you to reload the configuration of an inventory
 	 * 
 	 * @param inventory
+	 *            The inventory that needs to be reloaded
 	 */
 	public void reloadInventory(Inventory inventory);
 

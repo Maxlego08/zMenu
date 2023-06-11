@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -58,26 +59,28 @@ public class MenuItemStack extends ZUtils {
 		ItemStack itemStack = null;
 		Material material = null;
 
-		if (this.material == null){
+		// If the material is null, then by default it will be stone, stone is a
+		// material present in all versions, so no conflict problem.
+		if (this.material == null) {
 			this.material = "STONE";
 		}
-		
+
 		String papiMaterial = papi(this.material, player);
 		int amount = 1;
 		try {
-			amount = Integer.valueOf(papi(this.amount, player));
-		} catch (Exception e) {
+			amount = Integer.parseInt(papi(this.amount, player));
+		} catch (Exception ignored) {
 		}
 
 		try {
-			material = getMaterial(Integer.valueOf(papiMaterial));
-		} catch (Exception e) {
+			material = getMaterial(Integer.parseInt(papiMaterial));
+		} catch (Exception ignored) {
 		}
 
 		if (material == null && papiMaterial != null) {
 			try {
 				material = Material.getMaterial(papiMaterial.toUpperCase());
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 		}
 
@@ -86,12 +89,14 @@ public class MenuItemStack extends ZUtils {
 			if (papiMaterial.contains(":")) {
 
 				String[] values = papiMaterial.split(":");
+
 				if (values.length == 2) {
 
 					String key = values[0];
 					String value = values[1];
 
 					Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
+
 					if (optional.isPresent()) {
 						MaterialLoader loader = optional.get();
 						itemStack = loader.load(null, null, value);
@@ -100,7 +105,9 @@ public class MenuItemStack extends ZUtils {
 			}
 		}
 
-		itemStack = new ItemStack(material, amount, (byte) this.data);
+		if (itemStack == null) {
+			itemStack = new ItemStack(material, amount, (byte) this.data);
+		}
 
 		if (this.url != null) {
 			itemStack = this.createSkull(this.url);
@@ -122,10 +129,10 @@ public class MenuItemStack extends ZUtils {
 		ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if (this.displayName != null) {
-			itemMeta.setDisplayName(color(this.displayName));
+			Meta.meta.updateDisplayName(itemMeta, this.displayName, player);
 		}
 
-		itemMeta.setLore(color(this.lore));
+		Meta.meta.updateLore(itemMeta, this.lore, player);
 
 		if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
 
@@ -146,7 +153,7 @@ public class MenuItemStack extends ZUtils {
 			}
 		});
 
-		this.flags.forEach(flag -> itemMeta.addItemFlags(flag));
+		this.flags.forEach(itemMeta::addItemFlags);
 
 		itemStack.setItemMeta(itemMeta);
 

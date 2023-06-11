@@ -2,11 +2,13 @@ package fr.maxlego08.menu.button;
 
 import org.bukkit.entity.Player;
 
+import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
+import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton {
+public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton{
 
 	private PlaceholderAction action;
 	private String placeholder;
@@ -50,60 +52,9 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 			if (!hasPermission){
 				return false;
 			}
-
-			// ToDo
-			// return hasPermission && PlaceholderPermssible
 			
-			String valueAsString = papi(this.placeholder, player);
-
-			if (this.action.equals(PlaceholderAction.BOOLEAN)) {
-
-				try {
-					return Boolean.valueOf(valueAsString);
-				} catch (Exception exception) {
-				}
-
-			} else if (this.action.isString()) {
-
-				switch (this.action) {
-				case EQUALS_STRING:
-					return valueAsString.equals(this.value);
-				case EQUALSIGNORECASE_STRING:
-					return valueAsString.equalsIgnoreCase(this.value);
-				case CONTAINS_STRING:
-					return valueAsString.contains(this.value);
-				default:
-					return hasPermission;
-				}
-
-			} else {
-
-				try {
-
-					double value = Double.valueOf(valueAsString);
-					double currentValue = Double.valueOf(this.value);
-
-					switch (this.action) {
-					case EQUAL_TO:
-						return value == currentValue;
-					case LOWER:
-						return value < currentValue;
-					case LOWER_OR_EQUAL:
-						return value <= currentValue;
-					case SUPERIOR:
-						return value > currentValue;
-					case SUPERIOR_OR_EQUAL:
-						return value >= currentValue;
-					default:
-						return super.checkPermission(player, inventory);
-					}
-
-				} catch (Exception exception) {
-					return hasPermission;
-				}
-
-			}
-			return hasPermission;
+			PlaceholderPermissible permissible = new ZPlaceholderPermissible(this.action, this.placeholder, this.value);
+			return permissible.hasPermission(player);	
 		}
 	}
 

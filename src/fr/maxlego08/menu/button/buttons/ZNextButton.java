@@ -8,10 +8,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
-import fr.maxlego08.menu.button.ZPlaceholderButton;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 
-public class ZNextButton extends ZPlaceholderButton implements HomeButton {
+public class ZNextButton extends ZButton implements HomeButton {
 
 	private final InventoryManager inventoryManager;
 
@@ -27,7 +27,7 @@ public class ZNextButton extends ZPlaceholderButton implements HomeButton {
 	@Override
 	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 		if (inventory.getPage() != inventory.getMaxPage()) {
-			Inventory toInventory = inventory.getInventory();
+			Inventory toInventory = inventory.getMenuInventory();
 			this.inventoryManager.openInventory(player, toInventory, inventory.getPage() + 1,
 					new ArrayList<Inventory>());
 		}

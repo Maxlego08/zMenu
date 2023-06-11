@@ -8,8 +8,6 @@ public class MenuEvent extends Event {
 
 	private final static HandlerList handlers = new HandlerList();
 
-	 
-	
 	/**
 	 * 
 	 */
@@ -37,7 +35,7 @@ public class MenuEvent extends Event {
 		return handlers;
 	}
 	
-	public void callEvent(){
+	public void call(){
 		Bukkit.getPluginManager().callEvent(this);
 	}
 

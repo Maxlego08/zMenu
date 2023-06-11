@@ -32,10 +32,11 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
 		if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 
 			try {
-				return Boolean.valueOf(valueAsString);
+				return Boolean.valueOf(valueAsString) == Boolean.valueOf(this.value);
 			} catch (Exception exception) {
+				return true;
 			}
-
+			
 		} else if (this.action.isString()) {
 
 			switch (this.action) {
@@ -76,8 +77,6 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
 			}
 
 		}
-
-		return true;
 	}
 
 	@Override

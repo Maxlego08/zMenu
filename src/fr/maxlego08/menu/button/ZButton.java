@@ -9,18 +9,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.maxlego08.menu.MenuItemStack;
+import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 
-public abstract class ZButton extends ZUtils implements Button {
+public abstract class ZButton extends ZPlaceholderButton implements Button{
 
+	private MenuPlugin plugin;
 	private String buttonName;
 	private MenuItemStack itemStack;
 	private int slot = 0;
@@ -32,6 +34,7 @@ public abstract class ZButton extends ZUtils implements Button {
 	private OpenLink openLink = new ZOpenLink();
 	private boolean isUpdated = false;
 	private boolean refreshOnClick = false;
+	private List<ActionPlayerData> datas = new ArrayList<>();
 
 	@Override
 	public String getName() {
@@ -69,7 +72,7 @@ public abstract class ZButton extends ZUtils implements Button {
 
 		}
 
-		return super.papi(itemStack, player);
+		return itemStack;
 	}
 
 	@Override
@@ -93,11 +96,6 @@ public abstract class ZButton extends ZUtils implements Button {
 	}
 
 	@Override
-	public <T extends Button> T toButton(Class<T> classz) {
-		return (T) this;
-	}
-
-	@Override
 	public int getRealSlot(int inventorySize, int page) {
 		return this.isPermanent ? this.slot : this.slot - ((page - 1) * inventorySize);
 	}
@@ -109,7 +107,7 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	@Override
 	public boolean hasSpecialRender() {
-		return false;
+		return this.getSlots().size() > 0;
 	}
 
 	@Override
@@ -119,6 +117,9 @@ public abstract class ZButton extends ZUtils implements Button {
 
 	@Override
 	public void onRender(Player player, InventoryDefault inventory) {
+		if (hasSpecialRender()) {
+			inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
+		}
 	}
 
 	@Override
@@ -145,43 +146,23 @@ public abstract class ZButton extends ZUtils implements Button {
 			player.closeInventory();
 		}
 
+		if (!this.datas.isEmpty()) {
+
+			DataManager dataManager = this.plugin.getDataManager();
+			for (ActionPlayerData actionPlayerData : this.datas) {
+				actionPlayerData.execute(player, dataManager);
+			}
+
+		}
+		
 		if (this.messages.size() > 0) {
 
 			if (this.openLink != null) {
 
-				this.messages.forEach(message -> {
-
-					String finalMessage = this.papi(message, player);
-
-					if (finalMessage.contains(this.openLink.getReplace())) {
-
-						String[] splitMessages = finalMessage.split(this.openLink.getReplace());
-
-						TextComponent component = buildTextComponent(splitMessages[0]);
-
-						TextComponent clickComponant = buildTextComponent(color(this.openLink.getMessage()));
-						setClickAction(clickComponant, Action.OPEN_URL, this.openLink.getLink());
-						setHoverMessage(clickComponant, color(this.openLink.getHover()));
-
-						component.addExtra(clickComponant);
-						if (splitMessages.length == 2) {
-							component.addExtra(buildTextComponent(splitMessages[1]));
-						}
-
-						player.spigot().sendMessage(component);
-
-					} else {
-
-						player.sendMessage(finalMessage);
-
-					}
-
-				});
-
+				this.openLink.send(player, this.messages);
 			} else {
 
-				this.messages.forEach(message -> player.sendMessage(this.papi(message, player)));
-
+				this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
 			}
 		}
 
@@ -189,6 +170,7 @@ public abstract class ZButton extends ZUtils implements Button {
 			this.soundOption.play(player);
 		}
 
+		this.execute(player, event.getClick());
 	}
 
 	@Override
@@ -291,9 +273,22 @@ public abstract class ZButton extends ZUtils implements Button {
 	public boolean isRefreshOnClick() {
 		return this.refreshOnClick;
 	}
-	
+
 	public void setRefreshOnClick(boolean refreshOnClick) {
 		this.refreshOnClick = refreshOnClick;
+	}
+
+	@Override
+	public List<ActionPlayerData> getData() {
+		return this.datas;
+	}
+
+	public void setDatas(List<ActionPlayerData> datas) {
+		this.datas = datas;
+	}
+
+	public void setPlugin(MenuPlugin plugin) {
+		this.plugin = plugin;
 	}
 	
 }
