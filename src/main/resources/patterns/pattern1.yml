@@ -1,0 +1,13 @@
+name: "example1"
+size: 54
+items:
+  example1:
+    isPermanent: true
+    item:
+      material: STONE
+      name: "&fExample of pattern"
+    slots:
+      - 10
+      - 16
+      - 37
+      - 43

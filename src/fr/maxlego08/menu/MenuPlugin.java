@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.scheduler.BukkitScheduler;
 import fr.maxlego08.menu.scheduler.FoliaScheduler;
@@ -55,6 +57,7 @@ public class MenuPlugin extends ZPlugin {
 	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
 	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
 	private ZScheduler scheduler;
+	private final PatternManager patternManager = new ZPatternManager(this);
 
 	private static MenuPlugin instance;
 
@@ -109,6 +112,8 @@ public class MenuPlugin extends ZPlugin {
 		this.getServer().getServicesManager().register(DataManager.class, this.dataManager, this,
 				ServicePriority.Highest);
 		this.getServer().getServicesManager().register(InventoriesPlayer.class, this.inventoriesPlayer, this,
+				ServicePriority.Highest);
+		this.getServer().getServicesManager().register(PatternManager.class, this.patternManager, this,
 				ServicePriority.Highest);
 
 		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -251,5 +256,9 @@ public class MenuPlugin extends ZPlugin {
 
 	public static MenuPlugin getInstance() {
 		return instance;
+	}
+
+	public PatternManager getPatternManager() {
+		return patternManager;
 	}
 }
