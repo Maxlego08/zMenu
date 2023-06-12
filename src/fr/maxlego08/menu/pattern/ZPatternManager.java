@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.PatternLoader;
+import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -90,7 +92,12 @@ public class ZPatternManager implements PatternManager {
 
         if (pattern != null) {
             this.patterns.put(pattern.getName(), pattern);
+
+            if (Config.enableInformationMessage) {
+                Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
+            }
         }
+
 
         return pattern;
     }

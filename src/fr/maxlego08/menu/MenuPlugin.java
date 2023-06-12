@@ -83,6 +83,8 @@ public class MenuPlugin extends ZPlugin {
 		files.add("commands/example/example.yml");
 		files.add("commands/punish/punish.yml");
 
+		files.add("patterns/pattern1.yml");
+
 		File folder = new File(this.getDataFolder(), "inventories");
 
 		if (!folder.exists()) {
@@ -130,6 +132,7 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(this.inventoryManager);
 		this.addSave(this.commandManager);
 		this.addSave(this.dataManager);
+		this.addSave(this.patternManager);
 
 		if (this.isEnable(Plugins.HEADDATABASE)) {
 
