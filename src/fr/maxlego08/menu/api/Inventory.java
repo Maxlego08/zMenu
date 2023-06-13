@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
@@ -40,6 +41,13 @@ public interface Inventory {
      * @return buttons
      */
     Collection<Button> getButtons();
+
+    /**
+     * Returns inventory patterns
+     *
+     * @return patterns
+     */
+    Collection<Pattern> getPatterns();
 
     /**
      * Returns the list of buttons according to a type
