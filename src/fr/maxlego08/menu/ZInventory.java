@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -25,6 +26,7 @@ public class ZInventory implements Inventory {
     private final String fileName;
     private final int size;
     private final List<Button> buttons;
+    private List<Pattern> patterns;
     private MenuItemStack fillItemStack;
     private int updateInterval;
     private File file;
@@ -175,5 +177,14 @@ public class ZInventory implements Inventory {
 
     public void setClearInventory(boolean clearInventory) {
         this.clearInventory = clearInventory;
+    }
+
+    @Override
+    public List<Pattern> getPatterns() {
+        return patterns;
+    }
+
+    public void setPatterns(List<Pattern> patterns) {
+        this.patterns = patterns;
     }
 }

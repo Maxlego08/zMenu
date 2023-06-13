@@ -66,6 +66,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 	public void load(Persist persist) {
 
 		this.loadButtons();
+		this.plugin.getPatternManager().loadPatterns();
 		this.loadInventories();
 
 	}
