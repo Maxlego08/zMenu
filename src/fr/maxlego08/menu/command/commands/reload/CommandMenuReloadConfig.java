@@ -21,7 +21,7 @@ public class CommandMenuReloadConfig extends VCommand {
 		plugin.getMessageLoader().load(plugin.getPersist());
 		Config.getInstance().load(plugin.getPersist());
 
-		plugin.getPatternManager().load(null);
+		plugin.getPatternManager().loadPatterns();
 
 		message(this.sender, Message.RELOAD_FILES);
 

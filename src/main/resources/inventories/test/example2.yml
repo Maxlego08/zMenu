@@ -39,6 +39,11 @@ name: "&7Example &32"
 size: 54
 # Allows you to set the time for the redisplay of the name and the lore for the items that have the update option active.
 updateInterval: 1
+
+# Add a pattern list to your inventory
+patterns:
+  - "pattern1"
+
 items:
   # Will display an item that has no action on the different slots
   slots:

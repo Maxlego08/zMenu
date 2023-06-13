@@ -5,6 +5,8 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -71,6 +74,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
         }
 
+        PatternManager patternManager = this.plugin.getPatternManager();
+        List<Pattern> patterns = configuration.getStringList("patterns").stream().filter(pName -> patternManager.getPattern(pName).isPresent()).map(pName -> patternManager.getPattern(pName).get()).collect(Collectors.toList());
+
         String fileName = this.getFileNameWithoutExtension(file);
 
         ZInventory inventory;
@@ -92,6 +98,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setUpdateInterval(configuration.getInt(path + "updateInterval", 1));
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
         inventory.setFile(file);
+        inventory.setPatterns(patterns);
+
         return inventory;
     }
 

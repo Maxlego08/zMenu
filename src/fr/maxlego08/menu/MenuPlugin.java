@@ -132,7 +132,6 @@ public class MenuPlugin extends ZPlugin {
 		this.addSave(this.inventoryManager);
 		this.addSave(this.commandManager);
 		this.addSave(this.dataManager);
-		this.addSave(this.patternManager);
 
 		if (this.isEnable(Plugins.HEADDATABASE)) {
 

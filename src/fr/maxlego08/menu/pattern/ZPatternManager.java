@@ -51,12 +51,26 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
-    public void save(Persist persist) {
+    public Pattern loadPattern(File file) throws InventoryException {
 
+        Loader<Pattern> loader = new PatternLoader(this.plugin);
+
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        Pattern pattern = loader.load(yamlConfiguration, "", file);
+
+        if (pattern != null) {
+            this.patterns.put(pattern.getName(), pattern);
+
+            if (Config.enableInformationMessage) {
+                Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
+            }
+        }
+
+        return pattern;
     }
 
     @Override
-    public void load(Persist persist) {
+    public void loadPatterns() {
 
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "patterns");
@@ -81,24 +95,5 @@ public class ZPatternManager implements PatternManager {
         }
 
     }
-
-    @Override
-    public Pattern loadPattern(File file) throws InventoryException {
-
-        Loader<Pattern> loader = new PatternLoader(this.plugin);
-
-        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        Pattern pattern = loader.load(yamlConfiguration, "", file);
-
-        if (pattern != null) {
-            this.patterns.put(pattern.getName(), pattern);
-
-            if (Config.enableInformationMessage) {
-                Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
-            }
-        }
-
-
-        return pattern;
-    }
 }
+
