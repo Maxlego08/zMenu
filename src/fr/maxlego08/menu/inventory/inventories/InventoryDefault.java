@@ -4,6 +4,7 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -15,19 +16,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
+import java.util.*;
 
 public class InventoryDefault extends VInventory {
 
+    private final Map<Integer, TimerTask> timers = new HashMap<>();
     private Inventory inventory;
     private List<Inventory> oldInventories;
     private List<Button> buttons;
     private int maxPage = 1;
-
-    private final Map<Integer, TimerTask> timers = new HashMap<>();
 
     @Override
     public InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args)
@@ -51,6 +48,11 @@ public class InventoryDefault extends VInventory {
             for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
                 this.addItem(a, this.inventory.getFillItemStack().build(player));
             }
+        }
+
+        Collection<Pattern> patterns = this.inventory.getPatterns();
+        if (!patterns.isEmpty()) {
+            patterns.forEach(pattern -> pattern.getButtons().forEach(this::buildButton));
         }
 
         this.buttons = this.inventory.sortButtons(page, args);
