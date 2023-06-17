@@ -44,7 +44,7 @@ public class DownloadFile extends ZUtils {
 			fileOutputStream.close();
 			downloadTime.endDisplay(true);
 
-			sender.sendMessage("§fTéléchargement terminé. Unzip en cours.");
+			sender.sendMessage("Â§fTÃ©lÃ©chargement terminÃ©. Unzip en cours.");
 
 			ElapsedTime unzipFile = new ElapsedTime("unzip");
 			unzipFile.start();
@@ -55,7 +55,7 @@ public class DownloadFile extends ZUtils {
 
 			unzipFile.endDisplay(true);
 
-			sender.sendMessage("§fUnzip terminé.");
+			sender.sendMessage("Â§fUnzip terminÃ©.");
 
 		} catch (Exception e) {
 			e.printStackTrace();

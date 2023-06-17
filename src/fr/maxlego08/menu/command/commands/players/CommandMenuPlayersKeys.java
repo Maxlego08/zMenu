@@ -45,7 +45,7 @@ public class CommandMenuPlayersKeys extends VCommand {
             return CommandType.SUCCESS;
         }
 
-        String keys = toList(collection.stream().map(Data::getKey).collect(Collectors.toList()), "ง8", "ง7");
+        String keys = toList(collection.stream().map(Data::getKey).collect(Collectors.toList()), "ยง8", "ยง7");
         message(this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
 
         return CommandType.SUCCESS;

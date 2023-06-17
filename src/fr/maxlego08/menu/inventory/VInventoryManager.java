@@ -182,7 +182,7 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            message(player, "§aLe serveur utilise §2zMenu v" + this.plugin.getDescription().getVersion());
+            message(player, "Â§aLe serveur utilise Â§2zMenu v" + this.plugin.getDescription().getVersion());
         }
     }
 }
