@@ -16,11 +16,11 @@ public class CommandMenuVersion extends VCommand{
 	@Override
 	protected CommandType perform(MenuPlugin plugin) {
 
-		message(sender, "§aVersion du plugin§7: §2" + plugin.getDescription().getVersion());
-		message(sender, "§aAuteur§7: §2Maxlego08");
-		message(sender, "§aDiscord§7: §2http://discord.groupez.dev/");
-		message(sender, "§aDownload here§7: §2https://groupez.dev/resources/253");
-		message(sender, "§aSponsor§7: §chttps://serveur-minecraft-vote.fr/?ref=345");
+		message(sender, "Â§aVersion du pluginÂ§7: Â§2" + plugin.getDescription().getVersion());
+		message(sender, "Â§aAuteurÂ§7: Â§2Maxlego08");
+		message(sender, "Â§aDiscordÂ§7: Â§2http://discord.groupez.dev/");
+		message(sender, "Â§aDownload hereÂ§7: Â§2https://groupez.dev/resources/253");
+		message(sender, "Â§aSponsorÂ§7: Â§chttps://serveur-minecraft-vote.fr/?ref=345");
 		
 		return CommandType.SUCCESS;
 	}

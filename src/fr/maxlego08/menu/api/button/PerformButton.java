@@ -55,7 +55,7 @@ public interface PerformButton {
 	public String getConsolePermission();
 
 	/**
-	 * Permet d'exécuter les commandes
+	 * Permet d'exÃ©cuter les commandes
 	 * 
 	 * @param player
 	 * @param type

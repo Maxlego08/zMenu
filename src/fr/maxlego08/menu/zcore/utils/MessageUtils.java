@@ -228,7 +228,7 @@ public abstract class MessageUtils extends LocationUtils {
         boolean isBold = false;
 
         for (char c : message.toCharArray()) {
-            if (c == 'ง') {
+            if (c == 'ยง') {
                 previousCode = true;
                 continue;
             } else if (previousCode) {

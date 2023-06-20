@@ -252,7 +252,7 @@ public class ItemStackCompound {
 	}
 
 	/**
-	 * Permet de vérifier si une clé est contenu dans le nbttag
+	 * Permet de vÃ©rifier si une clÃ© est contenu dans le nbttag
 	 * 
 	 * @param itemStack
 	 * @param key

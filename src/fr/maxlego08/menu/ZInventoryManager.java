@@ -114,9 +114,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
 	@Override
 	public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
-		return Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().filter(e -> {
-			return pluginName != null && e.getName().equalsIgnoreCase(pluginName);
-		}).findFirst();
+		return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(e -> pluginName != null && e.getName().equalsIgnoreCase(pluginName)).findFirst();
 	}
 
 	@Override
