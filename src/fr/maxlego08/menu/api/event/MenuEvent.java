@@ -6,37 +6,37 @@ import org.bukkit.event.HandlerList;
 
 public class MenuEvent extends Event {
 
-	private final static HandlerList handlers = new HandlerList();
+    private final static HandlerList handlers = new HandlerList();
 
-	/**
-	 * 
-	 */
-	public MenuEvent() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     *
+     */
+    public MenuEvent() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @param isAsync
-	 */
-	public MenuEvent(boolean isAsync) {
-		super(isAsync);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @param isAsync
+     */
+    public MenuEvent(boolean isAsync) {
+        super(isAsync);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @return the handlers
-	 */
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
-	
-	public void call(){
-		Bukkit.getPluginManager().callEvent(this);
-	}
+    /**
+     * @return the handlers
+     */
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public void call() {
+        Bukkit.getPluginManager().callEvent(this);
+    }
 
 }

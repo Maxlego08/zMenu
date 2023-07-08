@@ -13,7 +13,7 @@ public interface ZScheduler {
     /**
      * Run the task.
      *
-     * @param task task...
+     * @param task     task...
      * @param location required for Folia, in Bukkit can be null
      * @return The created {@link ZScheduler}.
      */
@@ -31,8 +31,8 @@ public interface ZScheduler {
      * Run the task after a specified number of ticks.
      *
      * @param location required for Folia, in Bukkit can be null
-     * @param task task...
-     * @param delay The number of ticks to wait.
+     * @param task     task...
+     * @param delay    The number of ticks to wait.
      * @return The created {@link ZScheduler}
      */
     @NotNull ZScheduler runTaskLater(@Nullable Location location, long delay, Runnable task);
@@ -40,7 +40,7 @@ public interface ZScheduler {
     /**
      * Run the task asynchronously after a specified number of ticks.
      *
-     * @param task task...
+     * @param task  task...
      * @param delay The number of ticks to wait.
      * @return The created {@link ZScheduler}
      */
@@ -50,9 +50,9 @@ public interface ZScheduler {
      * Run the task repeatedly on a timer.
      *
      * @param location required for Folia, in Bukkit can be null
-     * @param task task...
-     * @param delay  The delay before the task is first run (in ticks).
-     * @param period The ticks elapsed before the task is run again.
+     * @param task     task...
+     * @param delay    The delay before the task is first run (in ticks).
+     * @param period   The ticks elapsed before the task is run again.
      * @return The created {@link ZScheduler}
      */
     @NotNull ZScheduler runTaskTimer(@Nullable Location location, long delay, long period, Runnable task);
@@ -60,7 +60,7 @@ public interface ZScheduler {
     /**
      * Run the task repeatedly on a timer asynchronously.
      *
-     * @param task task...
+     * @param task   task...
      * @param delay  The delay before the task is first run (in ticks).
      * @param period The ticks elapsed before the task is run again.
      * @return The created {@link ZScheduler}

@@ -1,17 +1,16 @@
 package fr.maxlego08.menu.button.buttons;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Message;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ZInventoryButton extends ZButton implements InventoryButton {
 

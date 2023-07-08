@@ -4,12 +4,12 @@ import org.bukkit.entity.Player;
 
 public interface Permissible {
 
-	/**
-	 * Check if player has permission
-	 * 
-	 * @param player
-	 * @return boolean
-	 */
-	boolean hasPermission(Player player);
+    /**
+     * Check if player has permission
+     *
+     * @param player
+     * @return boolean
+     */
+    boolean hasPermission(Player player);
 
 }

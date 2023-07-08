@@ -34,20 +34,21 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 public abstract class ZPlugin extends JavaPlugin {
 
+    public static final ExecutorService service = Executors.newFixedThreadPool(5);
     private final Logger log = new Logger(this.getDescription().getFullName());
     private final List<Saveable> savers = new ArrayList<>();
     private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
-
+    protected VCommandManager zCommandManager;
+    protected VInventoryManager vinventoryManager;
     private Gson gson;
     private Persist persist;
     private long enableTime;
-
-    protected VCommandManager zcommandManager;
-    protected VInventoryManager vinventoryManager;
 
     protected void preEnable() {
 
@@ -68,8 +69,8 @@ public abstract class ZPlugin extends JavaPlugin {
 
     protected void postEnable() {
 
-        if (this.zcommandManager != null) {
-            this.zcommandManager.validCommands();
+        if (this.zCommandManager != null) {
+            this.zCommandManager.validCommands();
         }
 
         this.log.log(
@@ -189,7 +190,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @return the commandManager
      */
     public VCommandManager getVCommandManager() {
-        return this.zcommandManager;
+        return this.zCommandManager;
     }
 
     /**
@@ -228,7 +229,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param aliases
      */
     protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-        this.zcommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
+        this.zCommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
     }
 
     /**

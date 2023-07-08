@@ -1,13 +1,5 @@
 package fr.maxlego08.menu.button;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
@@ -19,276 +11,276 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
-public abstract class ZButton extends ZPlaceholderButton implements Button{
+import java.util.ArrayList;
+import java.util.List;
 
-	private MenuPlugin plugin;
-	private String buttonName;
-	private MenuItemStack itemStack;
-	private int slot = 0;
-	private boolean isPermanent = false;
-	private boolean closeInventory = false;
-	private List<String> messages = new ArrayList<String>();
-	private SoundOption soundOption;
-	private String playerHead;
-	private OpenLink openLink = new ZOpenLink();
-	private boolean isUpdated = false;
-	private boolean refreshOnClick = false;
-	private List<ActionPlayerData> datas = new ArrayList<>();
+public abstract class ZButton extends ZPlaceholderButton implements Button {
 
-	@Override
-	public String getName() {
-		return this.buttonName;
-	}
+    private MenuPlugin plugin;
+    private String buttonName;
+    private MenuItemStack itemStack;
+    private int slot = 0;
+    private boolean isPermanent = false;
+    private boolean closeInventory = false;
+    private List<String> messages = new ArrayList<String>();
+    private SoundOption soundOption;
+    private String playerHead;
+    private OpenLink openLink = new ZOpenLink();
+    private boolean isUpdated = false;
+    private boolean refreshOnClick = false;
+    private List<ActionPlayerData> datas = new ArrayList<>();
 
-	@Override
-	public MenuItemStack getItemStack() {
-		return this.itemStack;
-	}
+    @Override
+    public String getName() {
+        return this.buttonName;
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public ItemStack getCustomItemStack(Player player) {
-		if (this.itemStack == null) {
-			return null;
-		}
-		ItemStack itemStack = this.itemStack.build(player);
+    @Override
+    public MenuItemStack getItemStack() {
+        return this.itemStack;
+    }
 
-		if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
+    /**
+     * @param itemStack the itemStack to set
+     */
+    public ZButton setItemStack(MenuItemStack itemStack) {
+        this.itemStack = itemStack;
+        return this;
+    }
 
-			String name = papi(this.playerHead.replace("%player%", player.getName()), player);
-			String texture = PlayerSkin.getTexture(name);
-			if (texture == null) {
+    @SuppressWarnings("deprecation")
+    @Override
+    public ItemStack getCustomItemStack(Player player) {
+        if (this.itemStack == null) {
+            return null;
+        }
+        ItemStack itemStack = this.itemStack.build(player);
 
-				SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-				skullMeta.setOwner(name);
-				itemStack.setItemMeta(skullMeta);
+        if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
-			} else {
+            String name = papi(this.playerHead.replace("%player%", player.getName()), player);
+            String texture = PlayerSkin.getTexture(name);
+            if (texture == null) {
 
-				this.applyTexture(itemStack, texture);
+                SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+                skullMeta.setOwner(name);
+                itemStack.setItemMeta(skullMeta);
 
-			}
+            } else {
 
-		}
+                this.applyTexture(itemStack, texture);
 
-		return itemStack;
-	}
+            }
 
-	@Override
-	public int getSlot() {
-		return this.slot;
-	}
+        }
 
-	@Override
-	public boolean isClickable() {
-		return true;
-	}
+        return itemStack;
+    }
 
-	@Override
-	public boolean isPermament() {
-		return this.isPermanent;
-	}
+    @Override
+    public int getSlot() {
+        return this.slot;
+    }
 
-	@Override
-	public List<String> getMessages() {
-		return this.messages;
-	}
+    /**
+     * @param slot the slot to set
+     */
+    public ZButton setSlot(int slot) {
+        this.slot = slot;
+        return this;
+    }
 
-	@Override
-	public int getRealSlot(int inventorySize, int page) {
-		return this.isPermanent ? this.slot : this.slot - ((page - 1) * inventorySize);
-	}
+    @Override
+    public boolean isClickable() {
+        return true;
+    }
 
-	@Override
-	public SoundOption getSound() {
-		return this.soundOption;
-	}
+    @Override
+    public boolean isPermament() {
+        return this.isPermanent;
+    }
 
-	@Override
-	public boolean hasSpecialRender() {
-		return this.getSlots().size() > 0;
-	}
+    @Override
+    public List<String> getMessages() {
+        return this.messages;
+    }
 
-	@Override
-	public String getPlayerHead() {
-		return this.playerHead;
-	}
+    /**
+     * @param messages
+     */
+    public ZButton setMessages(List<String> messages) {
+        this.messages = color(messages);
+        return this;
+    }
 
-	@Override
-	public void onRender(Player player, InventoryDefault inventory) {
-		if (hasSpecialRender()) {
-			inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
-		}
-	}
+    @Override
+    public int getRealSlot(int inventorySize, int page) {
+        return this.isPermanent ? this.slot : this.slot - ((page - 1) * inventorySize);
+    }
 
-	@Override
-	public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-	}
+    @Override
+    public SoundOption getSound() {
+        return this.soundOption;
+    }
 
-	@Override
-	public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-	}
+    @Override
+    public boolean hasSpecialRender() {
+        return this.getSlots().size() > 0;
+    }
 
-	@Override
-	public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-	}
+    @Override
+    public String getPlayerHead() {
+        return this.playerHead;
+    }
 
-	@Override
-	public void onInventoryClose(Player player, InventoryDefault inventory) {
+    public ZButton setPlayerHead(String playerHead) {
+        this.playerHead = playerHead;
+        return this;
+    }
 
-	}
+    @Override
+    public void onRender(Player player, InventoryDefault inventory) {
+        if (hasSpecialRender()) {
+            inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
+        }
+    }
 
-	@Override
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    @Override
+    public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    }
 
-		if (this.closeInventory()) {
-			player.closeInventory();
-		}
+    @Override
+    public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    }
 
-		if (!this.datas.isEmpty()) {
+    @Override
+    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    }
 
-			DataManager dataManager = this.plugin.getDataManager();
-			for (ActionPlayerData actionPlayerData : this.datas) {
-				actionPlayerData.execute(player, dataManager);
-			}
+    @Override
+    public void onInventoryClose(Player player, InventoryDefault inventory) {
 
-		}
-		
-		if (this.messages.size() > 0) {
+    }
 
-			if (this.openLink != null) {
+    @Override
+    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 
-				this.openLink.send(player, this.messages);
-			} else {
+        if (this.closeInventory()) {
+            player.closeInventory();
+        }
 
-				this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
-			}
-		}
+        if (!this.datas.isEmpty()) {
 
-		if (this.soundOption != null) {
-			this.soundOption.play(player);
-		}
+            DataManager dataManager = this.plugin.getDataManager();
+            for (ActionPlayerData actionPlayerData : this.datas) {
+                actionPlayerData.execute(player, dataManager);
+            }
 
-		this.execute(player, event.getClick());
-	}
+        }
 
-	@Override
-	public void onInventoryOpen(Player player, InventoryDefault inventory) {
+        if (this.messages.size() > 0) {
 
-	}
+            if (this.openLink != null) {
 
-	@Override
-	public boolean closeInventory() {
-		return this.closeInventory;
-	}
+                this.openLink.send(player, this.messages);
+            } else {
 
-	/**
-	 * @param buttonName
-	 *            the buttonName to set
-	 */
-	public ZButton setButtonName(String buttonName) {
-		this.buttonName = buttonName;
-		return this;
-	}
+                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
+            }
+        }
 
-	/**
-	 * @param itemStack
-	 *            the itemStack to set
-	 */
-	public ZButton setItemStack(MenuItemStack itemStack) {
-		this.itemStack = itemStack;
-		return this;
-	}
+        if (this.soundOption != null) {
+            this.soundOption.play(player);
+        }
 
-	/**
-	 * @param slot
-	 *            the slot to set
-	 */
-	public ZButton setSlot(int slot) {
-		this.slot = slot;
-		return this;
-	}
+        this.execute(player, event.getClick());
+    }
 
-	/**
-	 * @param isPermanent
-	 *            the isPermanent to set
-	 */
-	public ZButton setPermanent(boolean isPermanent) {
-		this.isPermanent = isPermanent;
-		return this;
-	}
+    @Override
+    public void onInventoryOpen(Player player, InventoryDefault inventory) {
 
-	/**
-	 * 
-	 * @param closeInventory
-	 */
-	public ZButton setCloseInventory(boolean closeInventory) {
-		this.closeInventory = closeInventory;
-		return this;
-	}
+    }
 
-	/**
-	 * 
-	 * @param messages
-	 */
-	public ZButton setMessages(List<String> messages) {
-		this.messages = color(messages);
-		return this;
-	}
+    @Override
+    public boolean closeInventory() {
+        return this.closeInventory;
+    }
 
-	/**
-	 * 
-	 * @param soundOption
-	 */
-	public ZButton setSoundOption(SoundOption soundOption) {
-		this.soundOption = soundOption;
-		return this;
-	}
+    /**
+     * @param buttonName the buttonName to set
+     */
+    public ZButton setButtonName(String buttonName) {
+        this.buttonName = buttonName;
+        return this;
+    }
 
-	public ZButton setPlayerHead(String playerHead) {
-		this.playerHead = playerHead;
-		return this;
-	}
+    /**
+     * @param isPermanent the isPermanent to set
+     */
+    public ZButton setPermanent(boolean isPermanent) {
+        this.isPermanent = isPermanent;
+        return this;
+    }
 
-	@Override
-	public OpenLink getOpenLink() {
-		return this.openLink;
-	}
+    /**
+     * @param closeInventory
+     */
+    public ZButton setCloseInventory(boolean closeInventory) {
+        this.closeInventory = closeInventory;
+        return this;
+    }
 
-	public void setOpenLink(OpenLink openLink) {
-		this.openLink = openLink;
-	}
+    /**
+     * @param soundOption
+     */
+    public ZButton setSoundOption(SoundOption soundOption) {
+        this.soundOption = soundOption;
+        return this;
+    }
 
-	@Override
-	public boolean isUpdated() {
-		return this.isUpdated;
-	}
+    @Override
+    public OpenLink getOpenLink() {
+        return this.openLink;
+    }
 
-	public void setUpdated(boolean isUpdated) {
-		this.isUpdated = isUpdated;
-	}
+    public void setOpenLink(OpenLink openLink) {
+        this.openLink = openLink;
+    }
 
-	@Override
-	public boolean isRefreshOnClick() {
-		return this.refreshOnClick;
-	}
+    @Override
+    public boolean isUpdated() {
+        return this.isUpdated;
+    }
 
-	public void setRefreshOnClick(boolean refreshOnClick) {
-		this.refreshOnClick = refreshOnClick;
-	}
+    public void setUpdated(boolean isUpdated) {
+        this.isUpdated = isUpdated;
+    }
 
-	@Override
-	public List<ActionPlayerData> getData() {
-		return this.datas;
-	}
+    @Override
+    public boolean isRefreshOnClick() {
+        return this.refreshOnClick;
+    }
 
-	public void setDatas(List<ActionPlayerData> datas) {
-		this.datas = datas;
-	}
+    public void setRefreshOnClick(boolean refreshOnClick) {
+        this.refreshOnClick = refreshOnClick;
+    }
 
-	public void setPlugin(MenuPlugin plugin) {
-		this.plugin = plugin;
-	}
-	
+    @Override
+    public List<ActionPlayerData> getData() {
+        return this.datas;
+    }
+
+    public void setDatas(List<ActionPlayerData> datas) {
+        this.datas = datas;
+    }
+
+    public void setPlugin(MenuPlugin plugin) {
+        this.plugin = plugin;
+    }
+
 }

@@ -5,6 +5,6 @@ import java.util.Collection;
 @FunctionalInterface
 public interface CollectionConsumer<T> {
 
-	Collection<String> accept(T t);
-	
+    Collection<String> accept(T t);
+
 }

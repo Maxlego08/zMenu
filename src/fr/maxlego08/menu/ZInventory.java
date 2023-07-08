@@ -7,7 +7,6 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
@@ -46,14 +45,6 @@ public class ZInventory implements Inventory {
         this.fileName = fileName;
         this.size = size;
         this.buttons = buttons;
-    }
-
-    public void setFillItemStack(MenuItemStack fillItemStack) {
-        this.fillItemStack = fillItemStack;
-    }
-
-    public void setUpdateInterval(int updateInterval) {
-        this.updateInterval = updateInterval;
     }
 
     @Override
@@ -147,9 +138,17 @@ public class ZInventory implements Inventory {
         return this.fillItemStack;
     }
 
+    public void setFillItemStack(MenuItemStack fillItemStack) {
+        this.fillItemStack = fillItemStack;
+    }
+
     @Override
     public int getUpdateInterval() {
         return this.updateInterval;
+    }
+
+    public void setUpdateInterval(int updateInterval) {
+        this.updateInterval = updateInterval;
     }
 
     /**
@@ -166,13 +165,13 @@ public class ZInventory implements Inventory {
         return file;
     }
 
+    public void setFile(File file) {
+        this.file = file;
+    }
+
     @Override
     public boolean cleanInventory() {
         return clearInventory;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
     }
 
     public void setClearInventory(boolean clearInventory) {

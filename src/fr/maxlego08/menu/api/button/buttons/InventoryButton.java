@@ -4,11 +4,11 @@ import fr.maxlego08.menu.api.button.Button;
 
 public interface InventoryButton extends Button {
 
-	/**
-	 * Returns the inventory that will be used
-	 * 
-	 * @return inventory
-	 */
-	public String getInventory();
-	
+    /**
+     * Returns the inventory that will be used
+     *
+     * @return inventory
+     */
+	String getInventory();
+
 }

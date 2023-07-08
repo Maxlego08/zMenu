@@ -37,6 +37,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return isClose;
     }
 
+    public int getId() {
+        return id;
+    }
+
     /**
      * Inventory Id
      *
@@ -46,10 +50,6 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     public VInventory setId(int id) {
         this.id = id;
         return this;
-    }
-
-    public int getId() {
-        return id;
     }
 
     /**

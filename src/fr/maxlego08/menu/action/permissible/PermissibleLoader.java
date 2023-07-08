@@ -1,68 +1,67 @@
 package fr.maxlego08.menu.action.permissible;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PermissibleLoader implements Loader<List<Permissible>> {
 
-	@Override
-	public List<Permissible> load(YamlConfiguration configuration, String path, Object... objects)
-			throws InventoryException {
+    @Override
+    public List<Permissible> load(YamlConfiguration configuration, String path, Object... objects)
+            throws InventoryException {
 
-		List<Permissible> permissibles = new ArrayList<Permissible>();
+        List<Permissible> permissibles = new ArrayList<Permissible>();
 
-		if (configuration.isConfigurationSection(path + "permissions.")) {
+        if (configuration.isConfigurationSection(path + "permissions.")) {
 
-			for (String key : configuration.getConfigurationSection(path + "permissions.").getKeys(false)) {
+            for (String key : configuration.getConfigurationSection(path + "permissions.").getKeys(false)) {
 
-				String currentPath = path + "permissions." + key + ".";
-				if (configuration.contains(currentPath + "permission")) {
+                String currentPath = path + "permissions." + key + ".";
+                if (configuration.contains(currentPath + "permission")) {
 
-					String permission = configuration.getString(currentPath + "permission");
-					boolean isReverse = permission != null && permission.startsWith("!");
-					if (isReverse) {
-						permission = permission.substring(1, permission.length());
-					}
+                    String permission = configuration.getString(currentPath + "permission");
+                    boolean isReverse = permission != null && permission.startsWith("!");
+                    if (isReverse) {
+                        permission = permission.substring(1);
+                    }
 
-					permissibles.add(new ZPermissionPermissible(permission, isReverse));
+                    permissibles.add(new ZPermissionPermissible(permission, isReverse));
 
-				} else if (configuration.contains(currentPath + "placeHolder")) {
+                } else if (configuration.contains(currentPath + "placeHolder")) {
 
-					String placeholder = configuration.getString(currentPath + "placeHolder", null);
-					PlaceholderAction action = PlaceholderAction
-							.from(configuration.getString(currentPath + "action", null));
-					String value = configuration.getString(currentPath + "value", null);
+                    String placeholder = configuration.getString(currentPath + "placeHolder", null);
+                    PlaceholderAction action = PlaceholderAction
+                            .from(configuration.getString(currentPath + "action", null));
+                    String value = configuration.getString(currentPath + "value", null);
 
-					permissibles.add(new ZPlaceholderPermissible(action, placeholder, value));
+                    permissibles.add(new ZPlaceholderPermissible(action, placeholder, value));
 
-				} else if (configuration.contains(currentPath + "material")) {
+                } else if (configuration.contains(currentPath + "material")) {
 
-					Material material = Material.valueOf(configuration.getString(currentPath + "material"));
-					int amount = configuration.getInt(currentPath+"amount", 0);
-					
-					permissibles.add(new ZItemPermissible(material, amount));
-					
-				}
+                    Material material = Material.valueOf(configuration.getString(currentPath + "material"));
+                    int amount = configuration.getInt(currentPath + "amount", 0);
 
-			}
+                    permissibles.add(new ZItemPermissible(material, amount));
 
-		}
+                }
 
-		return permissibles;
-	}
+            }
 
-	@Override
-	public void save(List<Permissible> object, YamlConfiguration configuration, String path, Object... objects) {
-		// TODO Auto-generated method stub
+        }
 
-	}
+        return permissibles;
+    }
+
+    @Override
+    public void save(List<Permissible> object, YamlConfiguration configuration, String path, Object... objects) {
+        // TODO Auto-generated method stub
+
+    }
 
 }

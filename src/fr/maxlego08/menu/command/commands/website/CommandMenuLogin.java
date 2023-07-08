@@ -9,23 +9,23 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuLogin extends VCommand {
 
-	public CommandMenuLogin(MenuPlugin plugin) {
-		super(plugin);
-		this.setDescription(Message.DESCRIPTION_LOGIN);
-		this.addSubCommand("login");
-		this.setPermission(Permission.ZMENU_LOGIN);
-		this.addRequireArg("token");
-	}
+    public CommandMenuLogin(MenuPlugin plugin) {
+        super(plugin);
+        this.setDescription(Message.DESCRIPTION_LOGIN);
+        this.addSubCommand("login");
+        this.setPermission(Permission.ZMENU_LOGIN);
+        this.addRequireArg("token");
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
 
-		String token = this.argAsString(0);
-		
-		WebsiteManager manager = plugin.getWebsiteManager();
-		manager.login(this.sender, token);
+        String token = this.argAsString(0);
 
-		return CommandType.SUCCESS;
-	}
+        WebsiteManager manager = plugin.getWebsiteManager();
+        manager.login(this.sender, token);
+
+        return CommandType.SUCCESS;
+    }
 
 }

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.action.ZActionClick;
 import fr.maxlego08.menu.api.action.ActiondClick;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
-import fr.maxlego08.menu.api.enums.XSound;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.exceptions.InventoryException;

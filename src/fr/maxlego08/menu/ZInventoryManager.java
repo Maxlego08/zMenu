@@ -1,36 +1,12 @@
 package fr.maxlego08.menu;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.BackLoader;
-import fr.maxlego08.menu.button.loader.HomeLoader;
-import fr.maxlego08.menu.button.loader.NextLoader;
-import fr.maxlego08.menu.button.loader.NoneLoader;
-import fr.maxlego08.menu.button.loader.PreviousLoader;
+import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -42,312 +18,322 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
 
-	private final Map<String, List<Inventory>> inventories = new HashMap<String, List<Inventory>>();
-	private final List<MaterialLoader> loaders = new ArrayList<>();
-	private final MenuPlugin plugin;
+    private final Map<String, List<Inventory>> inventories = new HashMap<String, List<Inventory>>();
+    private final List<MaterialLoader> loaders = new ArrayList<>();
+    private final MenuPlugin plugin;
 
-	/**
-	 * @param plugin
-	 */
-	public ZInventoryManager(MenuPlugin plugin) {
-		super();
-		this.plugin = plugin;
-	}
+    /**
+     * @param plugin
+     */
+    public ZInventoryManager(MenuPlugin plugin) {
+        super();
+        this.plugin = plugin;
+    }
 
-	@Override
-	public void save(Persist persist) {
-		// TODO
-	}
+    @Override
+    public void save(Persist persist) {
+        // TODO
+    }
 
-	@Override
-	public void load(Persist persist) {
+    @Override
+    public void load(Persist persist) {
 
-		this.loadButtons();
-		this.plugin.getPatternManager().loadPatterns();
-		this.loadInventories();
+        this.loadButtons();
+        this.plugin.getPatternManager().loadPatterns();
+        this.loadInventories();
 
-	}
+    }
 
-	@Override
-	public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
-		return this.loadInventory(plugin, file, ZInventory.class);
-	}
+    @Override
+    public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
+        return this.loadInventory(plugin, file, ZInventory.class);
+    }
 
-	@Override
-	public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
-		return this.loadInventory(plugin, fileName, ZInventory.class);
-	}
+    @Override
+    public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
+        return this.loadInventory(plugin, fileName, ZInventory.class);
+    }
 
-	@Override
-	public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
-			throws InventoryException {
-		
-		File file = new File(plugin.getDataFolder(), fileName);
-		if (!file.exists()) {
-			throw new InventoryFileNotFound("Cannot find " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
-		}
+    @Override
+    public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
+            throws InventoryException {
 
-		return this.loadInventory(plugin, file, classz);
-	}
+        File file = new File(plugin.getDataFolder(), fileName);
+        if (!file.exists()) {
+            throw new InventoryFileNotFound("Cannot find " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
+        }
 
-	@Override
-	public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz)
-			throws InventoryException {
+        return this.loadInventory(plugin, file, classz);
+    }
 
-		Loader<Inventory> loader = new InventoryLoader(this.plugin);
-		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-		Inventory inventory = loader.load(configuration, "", file, classz, plugin);
+    @Override
+    public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz)
+            throws InventoryException {
 
-		List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
-		inventories.add(inventory);
-		this.inventories.put(plugin.getName(), inventories);
+        Loader<Inventory> loader = new InventoryLoader(this.plugin);
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
-		if (Config.enableInformationMessage) {
-			Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
-		}
+        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+        inventories.add(inventory);
+        this.inventories.put(plugin.getName(), inventories);
 
-		return inventory;
-	}
+        if (Config.enableInformationMessage) {
+            Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
+        }
 
-	@Override
-	public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
-		return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(e -> pluginName != null && e.getName().equalsIgnoreCase(pluginName)).findFirst();
-	}
+        return inventory;
+    }
 
-	@Override
-	public Optional<Inventory> getInventory(String name) {
-		return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
-				.findFirst();
-	}
+    @Override
+    public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
+        return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(e -> pluginName != null && e.getName().equalsIgnoreCase(pluginName)).findFirst();
+    }
 
-	@Override
-	public Optional<Inventory> getInventory(Plugin plugin, String name) {
-		return this.getInventories(plugin).stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
-				.findFirst();
-	}
+    @Override
+    public Optional<Inventory> getInventory(String name) {
+        return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
+                .findFirst();
+    }
 
-	@Override
-	public Optional<Inventory> getInventory(String pluginName, String name) {
-		Optional<Plugin> optional = this.getPluginIgnoreCase(pluginName);
-		return !optional.isPresent() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
-	}
+    @Override
+    public Optional<Inventory> getInventory(Plugin plugin, String name) {
+        return this.getInventories(plugin).stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
+                .findFirst();
+    }
 
-	@Override
-	public Collection<Inventory> getInventories() {
-		return this.inventories.values().stream().flatMap(List::stream).collect(Collectors.toList());
-	}
+    @Override
+    public Optional<Inventory> getInventory(String pluginName, String name) {
+        Optional<Plugin> optional = this.getPluginIgnoreCase(pluginName);
+        return !optional.isPresent() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
+    }
 
-	@Override
-	public Collection<Inventory> getInventories(Plugin plugin) {
-		return plugin == null ? new ArrayList<>()
-				: this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
-	}
+    @Override
+    public Collection<Inventory> getInventories() {
+        return this.inventories.values().stream().flatMap(List::stream).collect(Collectors.toList());
+    }
 
-	@Override
-	public void deleteInventory(Inventory inventory) {
-		String pluginName = inventory.getPlugin().getName();
-		List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<Inventory>());
-		inventories.remove(inventory);
-		this.inventories.put(pluginName, inventories);
-	}
+    @Override
+    public Collection<Inventory> getInventories(Plugin plugin) {
+        return plugin == null ? new ArrayList<>()
+                : this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+    }
 
-	@Override
-	public boolean deleteInventory(String name) {
-		Optional<Inventory> optional = this.getInventory(name);
-		if (optional.isPresent()) {
-			this.deleteInventory(optional.get());
-			return false;
-		}
-		return false;
-	}
+    @Override
+    public void deleteInventory(Inventory inventory) {
+        String pluginName = inventory.getPlugin().getName();
+        List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<Inventory>());
+        inventories.remove(inventory);
+        this.inventories.put(pluginName, inventories);
+    }
 
-	@Override
-	public void deleteInventories(Plugin plugin) {
-		this.inventories.remove(plugin.getName());
-	}
+    @Override
+    public boolean deleteInventory(String name) {
+        Optional<Inventory> optional = this.getInventory(name);
+        if (optional.isPresent()) {
+            this.deleteInventory(optional.get());
+            return false;
+        }
+        return false;
+    }
 
-	@Override
-	public void openInventory(Player player, Inventory inventory) {
-		this.openInventory(player, inventory, 1, new ArrayList<>());
-	}
+    @Override
+    public void deleteInventories(Plugin plugin) {
+        this.inventories.remove(plugin.getName());
+    }
 
-	@Override
-	public void openInventory(Player player, Inventory inventory, int page) {
-		this.openInventory(player, inventory, page, new ArrayList<>());
-	}
+    @Override
+    public void openInventory(Player player, Inventory inventory) {
+        this.openInventory(player, inventory, 1, new ArrayList<>());
+    }
 
-	@Override
-	public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
-		this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
-	}
+    @Override
+    public void openInventory(Player player, Inventory inventory, int page) {
+        this.openInventory(player, inventory, page, new ArrayList<>());
+    }
 
-	@Override
-	public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
-		List<Inventory> oldInventories = new ArrayList<>();
-		for (Inventory i : inventories) {
-			oldInventories.add(i);
-		}
-		this.openInventory(player, inventory, page, oldInventories);
-	}
+    @Override
+    public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
+        this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
+    }
 
-	@Override
-	public void loadButtons() {
+    @Override
+    public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
+        List<Inventory> oldInventories = new ArrayList<>();
+		Collections.addAll(oldInventories, inventories);
+        this.openInventory(player, inventory, page, oldInventories);
+    }
 
-		// Loading ButtonLoader
-		// The first step will be to load the buttons in the plugin, so each
-		// inventory will have the same list of buttons
+    @Override
+    public void loadButtons() {
 
-		ButtonManager buttonManager = this.plugin.getButtonManager();
+        // Loading ButtonLoader
+        // The first step will be to load the buttons in the plugin, so each
+        // inventory will have the same list of buttons
 
-		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
-		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
-		buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
-		buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));
-		buttonManager.register(new BackLoader(this.plugin, this));
-		buttonManager.register(new HomeLoader(this.plugin, this));
-		buttonManager.register(new NextLoader(this.plugin, this));
-		buttonManager.register(new PreviousLoader(this.plugin, this));
+        ButtonManager buttonManager = this.plugin.getButtonManager();
 
-		ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
-		event.call();
-	}
+        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
+        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
+        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
+        buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this));
+        buttonManager.register(new BackLoader(this.plugin, this));
+        buttonManager.register(new HomeLoader(this.plugin, this));
+        buttonManager.register(new NextLoader(this.plugin, this));
+        buttonManager.register(new PreviousLoader(this.plugin, this));
 
-	@Override
-	public void loadInventories() {
+        ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
+        event.call();
+    }
 
-		// Check if file exist
-		File folder = new File(this.plugin.getDataFolder(), "inventories");
-		if (!folder.exists()) {
-			folder.mkdir();
-		}
+    @Override
+    public void loadInventories() {
 
-		// Load inventories
-		try {
-			Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
-					.filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-						try {
-							this.loadInventory(this.plugin, file);
-						} catch (InventoryException e1) {
-							e1.printStackTrace();
-						}
-					});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        // Check if file exist
+        File folder = new File(this.plugin.getDataFolder(), "inventories");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
 
-	@Override
-	public boolean registerMaterialLoader(MaterialLoader materialLoader) {
+        // Load inventories
+        try {
+            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
+                    .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
+                        try {
+                            this.loadInventory(this.plugin, file);
+                        } catch (InventoryException e1) {
+                            e1.printStackTrace();
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-		Optional<MaterialLoader> optional = this.getMaterialLoader(materialLoader.getKey());
-		if (optional.isPresent()) {
-			return false;
-		}
+    @Override
+    public boolean registerMaterialLoader(MaterialLoader materialLoader) {
 
-		this.loaders.add(materialLoader);
-		return true;
-	}
+        Optional<MaterialLoader> optional = this.getMaterialLoader(materialLoader.getKey());
+        if (optional.isPresent()) {
+            return false;
+        }
 
-	@Override
-	public Optional<MaterialLoader> getMaterialLoader(String key) {
-		return this.loaders.stream().filter(e -> e.getKey().equalsIgnoreCase(key)).findFirst();
-	}
+        this.loaders.add(materialLoader);
+        return true;
+    }
 
-	@Override
-	public Collection<MaterialLoader> getMaterialLoader() {
-		return Collections.unmodifiableCollection(this.loaders);
-	}
+    @Override
+    public Optional<MaterialLoader> getMaterialLoader(String key) {
+        return this.loaders.stream().filter(e -> e.getKey().equalsIgnoreCase(key)).findFirst();
+    }
 
-	@Override
-	public void openInventory(Player player, Plugin plugin, String inventoryName) {
+    @Override
+    public Collection<MaterialLoader> getMaterialLoader() {
+        return Collections.unmodifiableCollection(this.loaders);
+    }
 
-		Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
+    @Override
+    public void openInventory(Player player, Plugin plugin, String inventoryName) {
 
-		if (!optional.isPresent()) {
-			player.closeInventory();
-			message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
-					plugin.getName());
-			return;
-		}
+        Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
 
-		this.openInventory(player, optional.get());
-	}
+        if (!optional.isPresent()) {
+            player.closeInventory();
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
+                    plugin.getName());
+            return;
+        }
 
-	@Override
-	public void openInventory(Player player, String pluginName, String inventoryName) {
+        this.openInventory(player, optional.get());
+    }
 
-		Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
+    @Override
+    public void openInventory(Player player, String pluginName, String inventoryName) {
 
-		if (!optional.isPresent()) {
-			player.closeInventory();
-			message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
-					pluginName);
-			return;
-		}
+        Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
 
-		this.openInventory(player, optional.get());
-	}
+        if (!optional.isPresent()) {
+            player.closeInventory();
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
+                    pluginName);
+            return;
+        }
 
-	@Override
-	public void openInventory(Player player, String inventoryName) {
+        this.openInventory(player, optional.get());
+    }
 
-		Optional<Inventory> optional = this.getInventory(inventoryName);
+    @Override
+    public void openInventory(Player player, String inventoryName) {
 
-		if (!optional.isPresent()) {
-			player.closeInventory();
-			message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
-					this.plugin.getName());
-			return;
-		}
+        Optional<Inventory> optional = this.getInventory(inventoryName);
 
-		this.openInventory(player, optional.get());
-	}
+        if (!optional.isPresent()) {
+            player.closeInventory();
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
+                    this.plugin.getName());
+            return;
+        }
 
-	@Override
-	public void reloadInventory(Inventory inventory) {
+        this.openInventory(player, optional.get());
+    }
 
-		this.deleteInventory(inventory);
+    @Override
+    public void reloadInventory(Inventory inventory) {
 
-		/*
-		 * CommandManager commandManager = this.plugin.getCommandManager();
-		 * Optional<Command> optional = commandManager.getCommand(inventory); if
-		 * (optional.isPresent()) { Command command = optional.get();
-		 * commandManager.unregistetCommands(command); }
-		 */
+        this.deleteInventory(inventory);
 
-		try {
-			this.loadInventory(inventory.getPlugin(), inventory.getFile());
-		} catch (InventoryException e) {
-			e.printStackTrace();
-		}
+        /*
+         * CommandManager commandManager = this.plugin.getCommandManager();
+         * Optional<Command> optional = commandManager.getCommand(inventory); if
+         * (optional.isPresent()) { Command command = optional.get();
+         * commandManager.unregistetCommands(command); }
+         */
 
-	}
+        try {
+            this.loadInventory(inventory.getPlugin(), inventory.getFile());
+        } catch (InventoryException e) {
+            e.printStackTrace();
+        }
 
-	@Override
-	public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException {
-		
-		File file = new File(plugin.getDataFolder(), resourceName);
-		if (!file.exists()) {
-			plugin.saveResource(resourceName, false);
-		}
-		
-		return this.loadInventory(plugin, file);
-	}
-	
-	@Override
-	public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz)
-			throws InventoryException {
+    }
 
-		File file = new File(plugin.getDataFolder(), resourceName);
-		if (!file.exists()) {
-			plugin.saveResource(resourceName, false);
-		}
-		
-		return this.loadInventory(plugin, file, classz);
-		
-	}
+    @Override
+    public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException {
+
+        File file = new File(plugin.getDataFolder(), resourceName);
+        if (!file.exists()) {
+            plugin.saveResource(resourceName, false);
+        }
+
+        return this.loadInventory(plugin, file);
+    }
+
+    @Override
+    public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz)
+            throws InventoryException {
+
+        File file = new File(plugin.getDataFolder(), resourceName);
+        if (!file.exists()) {
+            plugin.saveResource(resourceName, false);
+        }
+
+        return this.loadInventory(plugin, file, classz);
+
+    }
 
 }

@@ -8,19 +8,19 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuConvert extends VCommand {
 
-	public CommandMenuConvert(MenuPlugin plugin) {
-		super(plugin);
-		this.setPermission(Permission.ZMENU_CONVERT);
-		this.addSubCommand("convert");
-		this.setDescription(Message.DESCRIPTION_CONVERT);
-	}
+    public CommandMenuConvert(MenuPlugin plugin) {
+        super(plugin);
+        this.setPermission(Permission.ZMENU_CONVERT);
+        this.addSubCommand("convert");
+        this.setDescription(Message.DESCRIPTION_CONVERT);
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
-		
-		message(this.sender, Message.CONVERT_INFO);
-		
-		return CommandType.SUCCESS;
-	}
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
+
+        message(this.sender, Message.CONVERT_INFO);
+
+        return CommandType.SUCCESS;
+    }
 
 }

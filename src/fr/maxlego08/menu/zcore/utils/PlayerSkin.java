@@ -1,5 +1,12 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
@@ -10,14 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-
 /**
  * Based on
  * https://www.spigotmc.org/threads/how-to-get-a-players-texture.244966/
@@ -25,7 +24,7 @@ import com.mojang.authlib.properties.Property;
 public class PlayerSkin {
 
     private static final Map<String, String> textures = new HashMap<String, String>();
-    private static ExecutorService pool = Executors.newCachedThreadPool();
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
     private static String gameProfileMethodName;
 
     public static String getTexture(Player player) {
@@ -66,14 +65,14 @@ public class PlayerSkin {
 
     public static String[] getFromPlayer(Player playerBukkit) {
         GameProfile profile = getProfile(playerBukkit);
-            if (profile.getProperties().get("textures").iterator().hasNext()) {
-                Property property = profile.getProperties().get("textures").iterator().next();
-                String texture = property.getValue();
-                String signature = property.getSignature();
-                return new String[]{texture, signature};
-            } else {
-                return getFromName(playerBukkit.getName());
-            }
+        if (profile.getProperties().get("textures").iterator().hasNext()) {
+            Property property = profile.getProperties().get("textures").iterator().next();
+            String texture = property.getValue();
+            String signature = property.getSignature();
+            return new String[]{texture, signature};
+        } else {
+            return getFromName(playerBukkit.getName());
+        }
     }
 
     @SuppressWarnings("deprecation")
