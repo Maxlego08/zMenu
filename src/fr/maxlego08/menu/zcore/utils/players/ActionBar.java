@@ -15,9 +15,6 @@ public class ActionBar {
     private static final double nmsVersion = NMSUtils.getNMSVersion();
     private static Class<?> craftPlayerClass;
     private static Class<?> packetClass;
-    private static Class<?> packetPlayOutChatClass;
-    private static Class<?> chatComponentTextClass;
-    private static Class<?> iChatBaseComponentClass;
     private static Method getHandleMethod;
     private static Field playerConnectionField;
     private static Constructor<?> constructorPacket;
@@ -29,14 +26,14 @@ public class ActionBar {
 
         try {
             craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + nmsVersionAsString + ".entity.CraftPlayer");
-            packetPlayOutChatClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".PacketPlayOutChat");
+            Class<?> packetPlayOutChatClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".PacketPlayOutChat");
             packetClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".Packet");
-            iChatBaseComponentClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".IChatBaseComponent");
+            Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".IChatBaseComponent");
 
             getHandleMethod = craftPlayerClass.getMethod("getHandle");
             playerConnectionField = getHandleMethod.getReturnType().getField("playerConnection");
 
-            chatComponentTextClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".ChatComponentText");
+            Class<?> chatComponentTextClass = Class.forName("net.minecraft.server." + nmsVersionAsString + ".ChatComponentText");
 
             constructorComponent = chatComponentTextClass.getConstructor(String.class);
             constructorPacket = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, Byte.TYPE);
