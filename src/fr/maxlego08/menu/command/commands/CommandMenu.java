@@ -6,6 +6,7 @@ import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
 
 public class CommandMenu extends VCommand {
@@ -31,6 +32,9 @@ public class CommandMenu extends VCommand {
 
     @Override
     protected CommandType perform(MenuPlugin plugin) {
+
+        ActionBar.sendActionBar(player, "§cTest §ede §bmessage");
+
         sendSyntax();
         return CommandType.SUCCESS;
     }

@@ -115,7 +115,8 @@ public class ZButtonLoader implements Loader<Button> {
 
         }
 
-        Optional<XSound> optionalXSound = XSound.matchXSound(configuration.getString(path + "sound", null));
+        String sound = configuration.getString(path + "sound", null);
+        Optional<XSound> optionalXSound = sound == null || sound.isEmpty() ? Optional.empty() : XSound.matchXSound(sound);
 
         if (optionalXSound.isPresent()) {
             XSound xSound = optionalXSound.get();

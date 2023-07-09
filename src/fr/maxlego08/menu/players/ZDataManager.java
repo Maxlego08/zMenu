@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class ZDataManager implements DataManager {
 
-    private static final Map<UUID, ZPlayerData> players = new HashMap<>();
+    private static Map<UUID, ZPlayerData> players = new HashMap<>();
     private final transient MenuPlugin plugin;
     private transient long lastSave;
 
