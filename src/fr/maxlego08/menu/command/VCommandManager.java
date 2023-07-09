@@ -21,8 +21,22 @@ import java.util.Optional;
 
 public class VCommandManager extends ZUtils implements CommandExecutor, TabCompleter {
 
+    private static CommandMap commandMap;
+    private static Constructor<? extends PluginCommand> constructor;
+
+    static {
+        try {
+            Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            bukkitCommandMap.setAccessible(true);
+            commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+            constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+            constructor.setAccessible(true);
+        } catch (Exception ignored) {
+        }
+    }
+
     private final MenuPlugin plugin;
-    private final List<VCommand> commands = new ArrayList<VCommand>();
+    private final List<VCommand> commands = new ArrayList<>();
 
     /**
      * F
@@ -209,13 +223,13 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
 
             if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
                 if (args.length == 1 && command.getParent() == null) {
-                    return proccessTab(sender, command, args);
+                    return processTab(sender, command, args);
                 }
             } else {
                 String[] newArgs = Arrays.copyOf(args, args.length - 1);
                 if (newArgs.length >= 1 && command.getParent() != null
                         && canExecute(newArgs, cmd.getName().toLowerCase(), command)) {
-                    return proccessTab(sender, command, args);
+                    return processTab(sender, command, args);
                 }
             }
         }
@@ -229,9 +243,9 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
      * @param sender
      * @param command
      * @param args
-     * @return
+     * @return list of arguments
      */
-    private List<String> proccessTab(CommandSender sender, VCommand command, String[] args) {
+    private List<String> processTab(CommandSender sender, VCommand command, String[] args) {
 
         CommandType type = command.getTabCompleter();
         if (type.equals(CommandType.DEFAULT)) {
@@ -259,7 +273,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     /**
-     * Enregistrer la commande whitout plugin.yml This method will allow to
+     * Enregistrer la commande without plugin.yml This method will allow to
      * register a command in the spigot without using the plugin.yml This saves
      * time and understanding, the plugin.yml file is clearer
      *
@@ -269,16 +283,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
      */
     public void registerCommand(Plugin plugin, String string, VCommand vCommand, List<String> aliases) {
         try {
-            Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-            bukkitCommandMap.setAccessible(true);
-
-            CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-
-            Class<? extends PluginCommand> class1 = PluginCommand.class;
-            Constructor<? extends PluginCommand> constructor = class1.getDeclaredConstructor(String.class,
-                    Plugin.class);
-            constructor.setAccessible(true);
-
             PluginCommand command = constructor.newInstance(string, this.plugin);
             command.setExecutor(this);
             command.setTabCompleter(this);
@@ -290,9 +294,8 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             if (!commandMap.register(command.getName(), plugin.getDescription().getName(), command)) {
                 Logger.info("Unable to add the command " + vCommand.getSyntax());
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -306,14 +309,10 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         Optional<VCommand> optional = this.commands.stream().filter(e -> {
             return e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command);
         }).findFirst();
-
         if (optional.isPresent()) {
-
             VCommand vCommand = optional.get();
             this.commands.remove(vCommand);
-
         }
-
     }
 
 }
