@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
@@ -91,7 +92,11 @@ public class ZActionClick extends ZUtils implements ActiondClick {
 
             this.playerCommands.forEach(command -> {
                 String commandLine = papi(command.replace("%player%", player.getName()), player);
-                Bukkit.dispatchCommand(player, commandLine);
+                if (Config.enablePlayerCommandInChat) {
+                    player.chat("/" + commandLine);
+                } else {
+                    Bukkit.dispatchCommand(player, commandLine);
+                }
             });
 
         });

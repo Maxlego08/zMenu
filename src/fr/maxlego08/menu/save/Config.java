@@ -11,9 +11,11 @@ public class Config implements Saveable {
     public static boolean enableLogStorageFile = false;
     public static boolean enableOpenMessage = true;
     public static boolean enableMiniMessageFormat = true;
+    public static boolean enablePlayerCommandInChat = false;
     public static int secondsSavePlayerData = 600;
     public static int secondsSavePlayerInventories = 600;
     public static boolean autoSaveFileInventoryOnUpdate = true;
+
 
     /**
      * static Singleton instance.

@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button;
 
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.button.PerformButton;
+import fr.maxlego08.menu.save.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -125,7 +126,11 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
         strings.forEach(command -> {
             command = command.replace("%player%", player.getName());
             try {
-                Bukkit.dispatchCommand(executor, papi(command, player));
+                if (executor instanceof Player && Config.enablePlayerCommandInChat) {
+                    player.chat("/" + papi(command, player));
+                } else {
+                    Bukkit.dispatchCommand(executor, papi(command, player));
+                }
             } catch (Exception ignored) {
                 // Ignore Async dispatch Exception on Folia
             }
