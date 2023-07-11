@@ -309,7 +309,7 @@ public abstract class VCommand extends Arguments {
     /**
      * Adds sub orders
      *
-     * @param subCommand
+     * @param command
      * @return this
      */
     public VCommand addSubCommand(VCommand command) {

@@ -61,8 +61,8 @@ public class LocalPlaceholder {
 	/**
 	 * 
 	 * @param player
-	 * @param displayName
-	 * @return
+	 * @param placeholder
+	 * @return replaced string
 	 */
 	public String setPlaceholders(Player player, String placeholder) {
 

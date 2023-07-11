@@ -31,7 +31,7 @@ public abstract class YamlUtils extends ZUtils {
     /**
      * Get config
      *
-     * @param path
+     * @param file
      * @return {@link YamlConfiguration}
      */
     protected YamlConfiguration getConfig(File file) {
@@ -45,7 +45,6 @@ public abstract class YamlUtils extends ZUtils {
      *
      * @param path
      * @return {@link YamlConfiguration}
-     * @throws InventoryFileNotFoundException
      */
     protected YamlConfiguration getConfig(String path) {
         File file = new File(plugin.getDataFolder() + "/" + path);

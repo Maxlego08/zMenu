@@ -17,7 +17,6 @@ public class ZBackButton extends ZButton implements BackButton {
 
     /**
      * @param inventoryManager
-     * @param inventory
      */
     public ZBackButton(InventoryManager inventoryManager) {
         super();

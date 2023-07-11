@@ -68,15 +68,9 @@ public interface ButtonLoader {
     /**
      * Allows you to load a button
      *
-     * @param buttonName
-     * @param itemStack
-     * @param slot
-     * @param isPermanent
-     * @param permission
-     * @param elseButton
-     * @param action
-     * @param placeholder
-     * @param value
+     * @param configuration
+     * @param path
+     * @return Button
      */
 	Button load(YamlConfiguration configuration, String path);
 

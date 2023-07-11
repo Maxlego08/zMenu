@@ -13,10 +13,6 @@ public class CooldownBuilder implements Saveable {
     public static Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
     private static final CooldownBuilder i = new CooldownBuilder();
 
-    /**
-     * @param
-     * @return
-     */
     public static Map<UUID, Long> getCooldownMap(String key) {
         return cooldowns.getOrDefault(key, null);
     }
@@ -37,7 +33,7 @@ public class CooldownBuilder implements Saveable {
 
     /**
      * @param key
-     * @param joueur
+     * @param uuid
      */
     public static void removeCooldown(String key, UUID uuid) {
 
@@ -56,7 +52,7 @@ public class CooldownBuilder implements Saveable {
 
     /**
      * @param key
-     * @param joueur
+     * @param uuid
      * @param seconds
      */
     public static void addCooldown(String key, UUID uuid, int seconds) {

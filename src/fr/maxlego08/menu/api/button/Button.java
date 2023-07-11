@@ -79,7 +79,8 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      *
      * @param player           Player who will perform the click
      * @param event            Event that will be called
-     * @param inventoryDefault Inventory where the button comes from
+     * @param inventory Inventory where the button comes from
+     * @param slot
      */
     void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 

@@ -165,8 +165,6 @@ public class ItemBuilder extends ZUtils implements Cloneable {
 
     /**
      * @param format
-     * @param args
-     * @return
      */
     public ItemBuilder addLine(String format) {
         if (lore == null)

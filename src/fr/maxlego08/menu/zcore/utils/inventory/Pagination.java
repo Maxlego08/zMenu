@@ -53,8 +53,8 @@ public class Pagination<T> {
      * The pagination will be done on the values of the map
      *
      * @param map  of element
+     * @param size map size
      * @param page current page
-     * @parma size
      */
     public List<T> paginateReverse(Map<?, T> map, int size, int page) {
         return paginateReverse(new ArrayList<>(map.values()), size, page);
@@ -64,7 +64,7 @@ public class Pagination<T> {
      * The pagination will be done on the values of the map
      *
      * @param map  of element
-     * @parma inventorySize need size
+     * @param inventorySize need size
      * @param page current page
      */
     public List<T> paginate(Map<?, T> map, int inventorySize, int page) {
