@@ -12,12 +12,16 @@ import java.util.Optional;
 public interface CommandManager extends Saveable {
 
     /**
-     * @param command
+     * Register a new {@link Command}
+     *
+     * @param command New command
      */
 	void registerCommand(Command command);
 
     /**
-     * @param plugin
+     * Returns the list of commands of a plugin
+     *
+     * @param plugin Current plugin
      * @return commands
      */
 	Collection<Command> getCommands(Plugin plugin);
@@ -28,12 +32,12 @@ public interface CommandManager extends Saveable {
 	Collection<Command> getCommands();
 
     /**
-     * @param plugin
+     * @param plugin Current plugin
      */
 	void unregisterCommands(Plugin plugin);
 
     /**
-     * @param command
+     * @param command Current plugin
      */
 	void unregisterCommands(Command command);
 
@@ -43,15 +47,15 @@ public interface CommandManager extends Saveable {
 	void loadCommands();
 
     /**
-     * @param plugin
-     * @param file
+     * @param plugin Current plugin
+     * @param file Current file
      */
 	void loadCommand(Plugin plugin, File file);
 
     /**
-     * Return command
+     * Return command by an inventory
      *
-     * @param inventory
+     * @param inventory Current inventory
      * @return optional
      */
 	Optional<Command> getCommand(Inventory inventory);
@@ -59,16 +63,17 @@ public interface CommandManager extends Saveable {
     /**
      * Allows to register a key and a value for the arguments of a command.
      *
-     * @param player
-     * @param value
+     * @param player Current Player
+     * @param key Argument key
+     * @param value Argument value
      */
 	void setPlayerArgument(Player player, String key, String value);
 
     /**
      * Returns an optional of the argument with the key
      *
-     * @param player
-     * @param key
+     * @param player Current player
+     * @param key Argument value
      * @return optional
      */
 	Optional<String> getPlayerArgument(Player player, String key);
@@ -76,7 +81,7 @@ public interface CommandManager extends Saveable {
     /**
      * Get command by name
      *
-     * @param commandName
+     * @param commandName The command name
      * @return optional
      */
 	Optional<Command> getCommand(String commandName);
@@ -84,7 +89,7 @@ public interface CommandManager extends Saveable {
     /**
      * Reload command
      *
-     * @param command
+     * @param command Command
      */
 	boolean reload(Command command);
 

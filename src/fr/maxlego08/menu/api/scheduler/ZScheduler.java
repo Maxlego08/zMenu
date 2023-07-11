@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Timer;
 
+/**
+ * <p>Task management, allows the plugin to work with <a href="https://papermc.io/software/folia">Folia</a></p>
+ */
 public interface ZScheduler {
 
     Timer TIMER = new Timer();

@@ -8,7 +8,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Documentation: <a href="https://docs.zmenu.dev/api/create-button#3.-register-button-1">https://docs.zmenu.dev/api/create-button#3.-register-button-1</a>
+ * Documentation: <a href="https://docs.zmenu.dev/api/create-button#3.-register-button-1">https://docs.zmenu.dev/api/create-button</a>
+ *
+ * <p>Managing buttons. To create a {@link Button} you must use a {@link ButtonLoader}.</p>
+ * <p>You can then register your {@link ButtonLoader} and the plugin can use it</p>
  */
 public interface ButtonManager {
 

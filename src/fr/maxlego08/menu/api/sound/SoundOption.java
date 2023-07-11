@@ -3,6 +3,9 @@ package fr.maxlego08.menu.api.sound;
 import com.cryptomorin.xseries.XSound;
 import org.bukkit.entity.Entity;
 
+/**
+ * Allows you to manage a sound
+ */
 public interface SoundOption {
 
     /**

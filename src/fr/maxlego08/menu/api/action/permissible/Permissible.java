@@ -7,7 +7,7 @@ public interface Permissible {
     /**
      * Check if player has permission
      *
-     * @param player
+     * @param player Current player
      * @return boolean
      */
     boolean hasPermission(Player player);

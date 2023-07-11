@@ -5,30 +5,33 @@ import fr.maxlego08.menu.zcore.utils.storage.Saveable;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * <p>Player Data Management</p>
+ */
 public interface DataManager extends Saveable {
 
     /**
-     * @param uniqueId
-     * @return
+     * @param uniqueId Player {@link UUID}
+     * @return optional
      */
     Optional<PlayerData> getPlayer(UUID uniqueId);
 
     /**
-     * @param uniqueId
-     * @return
+     * @param uniqueId Player {@link UUID}
+     * @return PlayerData
      */
     PlayerData getOrCreate(UUID uniqueId);
 
     /**
-     * @param uniqueId
-     * @param data
+     * @param uniqueId Player {@link UUID}
+     * @param data New data
      */
     void addData(UUID uniqueId, Data data);
 
     /**
-     * @param uniqueId
-     * @param key
-     * @return
+     * @param uniqueId Player {@link UUID}
+     * @param key Data key
+     * @return Optional
      */
     Optional<Data> getData(UUID uniqueId, String key);
 
@@ -45,7 +48,7 @@ public interface DataManager extends Saveable {
     /**
      * Clear player's data
      *
-     * @param uniqueId
+     * @param uniqueId Player {@link UUID}
      */
     void clearPlayer(UUID uniqueId);
 

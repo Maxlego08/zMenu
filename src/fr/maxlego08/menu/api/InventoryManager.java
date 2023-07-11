@@ -13,15 +13,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Maxlego08
- * <p>
- * Inventories management:
- * - Loading
- * - Delete
- * - Opening
- * - etc...
- * <p>
- * Api example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a>
+ * <p>Inventories management:</p>
+ * <ul>
+ *     <li>Loading</li>
+ *     <li>Delete</li>
+ *     <li>Opening</li>
+ *     <li>Etc...</li>
+ * </ul>
+ * <p>Api example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a></p>
  */
 public interface InventoryManager extends Saveable {
 

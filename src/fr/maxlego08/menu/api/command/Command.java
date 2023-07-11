@@ -5,6 +5,9 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.List;
 
+/**
+ * <p>A command opens an {@link fr.maxlego08.menu.api.Inventory}</p>
+ */
 public interface Command {
 
     /**

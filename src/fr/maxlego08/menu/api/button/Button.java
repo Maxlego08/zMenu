@@ -11,6 +11,11 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
+/**
+ * <p>One of the great features of zMenu is its {@link Button} customization. You will be able to create buttons for your plugins, which will allow users to have only one inventory plugin for the whole server. The goal of zMenu is to make as many plugins as possible use its API, so that users have only one type of inventory configuration for their entire server.</p>
+ * <p>To create a {@link Button} you will need at least two classes. A first one for the button and a second one to change the button. You can also create an interface to implement your button, but this is not mandatory.</p>
+ * <p>More information <a href="https://docs.zmenu.dev/api/create-button">here</a></p>
+ */
 public interface Button extends PermissibleButton, PlaceholderButton, SlotButton, PerformButton {
 
     /**
@@ -77,8 +82,8 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     /**
      * This method is called when the player makes a click
      *
-     * @param player           Player who will perform the click
-     * @param event            Event that will be called
+     * @param player    Player who will perform the click
+     * @param event     Event that will be called
      * @param inventory Inventory where the button comes from
      * @param slot
      */

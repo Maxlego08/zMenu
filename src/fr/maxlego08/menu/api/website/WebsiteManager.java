@@ -2,6 +2,10 @@ package fr.maxlego08.menu.api.website;
 
 import org.bukkit.command.CommandSender;
 
+/**
+ * ToDO
+ * In dev, dont use that
+ */
 public interface WebsiteManager {
 
     /**

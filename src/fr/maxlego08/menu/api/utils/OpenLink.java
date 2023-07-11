@@ -5,6 +5,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * <p>Sends a message and opens a link.</p>
+ * <p>For servers that are in 1.17+ it is advisable to use the <a href="https://docs.advntr.dev/minimessage/index.html">MiniMessage</a> format</p>
+ */
 public interface OpenLink {
 
     /**
@@ -36,15 +40,15 @@ public interface OpenLink {
     String getReplace();
 
     /**
-     * @return
+     * @return list of string
      */
     List<String> getHover();
 
     /**
      * Allows you to send messages to a player
      *
-     * @param player
-     * @param strings
+     * @param player The players
+     * @param strings list of messages
      */
     void send(Player player, List<String> strings);
 

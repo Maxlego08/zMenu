@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public interface ActiondClick {
+public interface ActionClick {
 
     /**
      * Returns the messages that will be sent to the player
@@ -54,7 +54,7 @@ public interface ActiondClick {
     /**
      * Allows to execute the actions of the click
      *
-     * @param player
+     * @param player Who execute the action
      */
     void execute(Player player);
 }

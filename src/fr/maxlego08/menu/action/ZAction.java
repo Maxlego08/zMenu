@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.action;
 
 import fr.maxlego08.menu.api.action.Action;
-import fr.maxlego08.menu.api.action.ActiondClick;
+import fr.maxlego08.menu.api.action.ActionClick;
 import fr.maxlego08.menu.api.action.permissible.Permissible;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -11,8 +11,8 @@ import java.util.List;
 public class ZAction implements Action {
 
     private final List<ClickType> clickTypes;
-    private final ActiondClick allowAction;
-    private final ActiondClick denyAction;
+    private final ActionClick allowAction;
+    private final ActionClick denyAction;
     private final List<Permissible> permissibles;
 
     /**
@@ -21,7 +21,7 @@ public class ZAction implements Action {
      * @param denyAction
      * @param permissibles
      */
-    public ZAction(List<ClickType> clickTypes, ActiondClick allowAction, ActiondClick denyAction,
+    public ZAction(List<ClickType> clickTypes, ActionClick allowAction, ActionClick denyAction,
                    List<Permissible> permissibles) {
         super();
         this.clickTypes = clickTypes;
@@ -36,12 +36,12 @@ public class ZAction implements Action {
     }
 
     @Override
-    public ActiondClick getAllowAction() {
+    public ActionClick getAllowAction() {
         return this.allowAction;
     }
 
     @Override
-    public ActiondClick getDenyAction() {
+    public ActionClick getDenyAction() {
         return this.denyAction;
     }
 

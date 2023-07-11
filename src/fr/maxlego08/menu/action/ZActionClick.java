@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.action;
 
 import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.api.action.ActiondClick;
+import fr.maxlego08.menu.api.action.ActionClick;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.sound.SoundOption;
@@ -15,7 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-public class ZActionClick extends ZUtils implements ActiondClick {
+public class ZActionClick extends ZUtils implements ActionClick {
 
     private final MenuPlugin plugin;
     private final List<String> messages;

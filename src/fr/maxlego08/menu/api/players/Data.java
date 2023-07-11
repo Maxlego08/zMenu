@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.players;
 
+/**
+ * <p>A data is composed of a key, a string, and a value, an object</p>
+ */
 public interface Data {
 
     /**

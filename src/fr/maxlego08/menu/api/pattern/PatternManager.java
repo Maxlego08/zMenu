@@ -6,6 +6,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * <p>Pattern management</p>
+ */
 public interface PatternManager {
 
     /**

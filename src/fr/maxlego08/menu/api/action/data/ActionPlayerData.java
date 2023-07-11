@@ -44,7 +44,8 @@ public interface ActionPlayerData {
     /**
      * When player click
      *
-     * @param player
+     * @param player Who execute
+     * @param dataManager {@link DataManager}
      */
     void execute(Player player, DataManager dataManager);
 

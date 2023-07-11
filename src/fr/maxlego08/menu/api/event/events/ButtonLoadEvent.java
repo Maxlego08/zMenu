@@ -4,6 +4,9 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.event.MenuEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 
+/**
+ * <p>The event is called when the defaults buttons will be registered</p>
+ */
 public class ButtonLoadEvent extends MenuEvent {
 
     private final ButtonManager buttonManager;

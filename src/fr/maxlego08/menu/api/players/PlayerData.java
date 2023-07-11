@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * <p>Player's {@link Data}</p>
+ */
 public interface PlayerData {
 
     /**
@@ -14,7 +17,7 @@ public interface PlayerData {
     UUID getUniqueId();
 
     /**
-     * Allows to return a data, attention you cannot modify the values directly from this collection.
+     * Allows to return list of player {@link Data}. Attention you cannot modify the values directly from this collection.
      *
      * @return collections
      */
@@ -23,28 +26,28 @@ public interface PlayerData {
     /**
      * Allows you to add a data
      *
-     * @param data
+     * @param data New {@link Data}
      */
     void addData(Data data);
 
     /**
      * Allows you to delete a data
      *
-     * @param data
+     * @param data Old {@link Data}
      */
     void removeData(Data data);
 
     /**
-     * Allows you to delete a data
+     * Allows you to delete a {@link Data}
      *
-     * @param key
+     * @param key Data key
      */
     void removeData(String key);
 
     /**
      * Check if data exist
      *
-     * @param key
+     * @param key Data key
      * @return boolean
      */
     boolean containsKey(String key);
@@ -52,7 +55,7 @@ public interface PlayerData {
     /**
      * Get data
      *
-     * @param key
+     * @param key Data key
      * @return optional
      */
     Optional<Data> getData(String key);

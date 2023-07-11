@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.action.ZActionClick;
-import fr.maxlego08.menu.api.action.ActiondClick;
+import fr.maxlego08.menu.api.action.ActionClick;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -19,7 +19,7 @@ import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 
-public class ActionClickLoader implements Loader<ActiondClick> {
+public class ActionClickLoader implements Loader<ActionClick> {
 
 	private final MenuPlugin plugin;
 
@@ -32,7 +32,7 @@ public class ActionClickLoader implements Loader<ActiondClick> {
 	}
 
 	@Override
-	public ActiondClick load(YamlConfiguration configuration, String path, Object... objects)
+	public ActionClick load(YamlConfiguration configuration, String path, Object... objects)
 			throws InventoryException {
 
 		Loader<ActionPlayerData> loader = new ActionPlayerDataLoader();
@@ -76,7 +76,7 @@ public class ActionClickLoader implements Loader<ActiondClick> {
 	}
 
 	@Override
-	public void save(ActiondClick object, YamlConfiguration configuration, String path, Object... objects) {
+	public void save(ActionClick object, YamlConfiguration configuration, String path, Object... objects) {
 		// TODO Auto-generated method stub
 
 	}

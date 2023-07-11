@@ -6,6 +6,9 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
 
+/**
+ * <p>Performs actions for a {@link Button}. Its actions are simplistic, for complex actions you can use the {@link Action}</p>
+ */
 public interface PerformButton {
 
     /**
@@ -54,10 +57,10 @@ public interface PerformButton {
 	String getConsolePermission();
 
     /**
-     * Permet d'exécuter les commandes
+     * Executes commands
      *
-     * @param player
-     * @param type
+     * @param player Who execute the commands
+     * @param type The click type
      */
 	void execute(Player player, ClickType type);
 

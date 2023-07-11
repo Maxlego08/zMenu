@@ -12,6 +12,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a>
+ * <p>This class will contain all the inventory information.</p>
+ */
 public interface Inventory {
 
     /**

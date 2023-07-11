@@ -3,6 +3,9 @@ package fr.maxlego08.menu.api.button;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
+/**
+ * <p>Manage permissions</p>
+ */
 public interface PermissibleButton {
 
     /**
