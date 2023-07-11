@@ -33,7 +33,7 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
             try {
                 return Boolean.valueOf(valueAsString) == Boolean.valueOf(this.value);
             } catch (Exception exception) {
-                return true;
+                return false;
             }
 
         } else if (this.action.isString()) {
@@ -46,15 +46,15 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
                 case CONTAINS_STRING:
                     return valueAsString.contains(this.value);
                 default:
-                    return true;
+                    return false;
             }
 
         } else {
 
             try {
 
-                double value = Double.valueOf(valueAsString);
-                double currentValue = Double.valueOf(this.value);
+                double value = Double.parseDouble(valueAsString);
+                double currentValue = Double.parseDouble(this.value);
 
                 switch (this.action) {
                     case EQUAL_TO:
@@ -72,7 +72,7 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
                 }
 
             } catch (Exception exception) {
-                return true;
+                return false;
             }
 
         }
