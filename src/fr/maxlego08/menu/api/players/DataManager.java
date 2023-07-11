@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.players;
 
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * <p>Player Data Management</p>
  */
-public interface DataManager extends Saveable {
+public interface DataManager extends Savable {
 
     /**
      * @param uniqueId Player {@link UUID}

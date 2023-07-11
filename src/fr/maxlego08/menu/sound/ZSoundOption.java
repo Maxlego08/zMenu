@@ -10,11 +10,6 @@ public class ZSoundOption implements SoundOption {
     private final float pitch;
     private final float volume;
 
-    /**
-     * @param sound
-     * @param pitch
-     * @param volume
-     */
     public ZSoundOption(XSound sound, float pitch, float volume) {
         super();
         this.sound = sound;

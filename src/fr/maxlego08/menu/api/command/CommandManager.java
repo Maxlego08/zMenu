@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.command;
 
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface CommandManager extends Saveable {
+public interface CommandManager extends Savable {
 
     /**
      * Register a new {@link Command}

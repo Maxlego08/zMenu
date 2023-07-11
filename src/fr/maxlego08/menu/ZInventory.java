@@ -32,11 +32,11 @@ public class ZInventory implements Inventory {
     private boolean clearInventory;
 
     /**
-     * @param plugin
-     * @param name
-     * @param fileName
-     * @param size
-     * @param buttons
+     * @param plugin The plugin where the inventory comes from
+     * @param name Inventory name
+     * @param fileName Inventory file name
+     * @param size Inventory size
+     * @param buttons List of {@link Button}
      */
     public ZInventory(Plugin plugin, String name, String fileName, int size, List<Button> buttons) {
         super();

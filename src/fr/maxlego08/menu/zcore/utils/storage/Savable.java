@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.storage;
 
-public interface Saveable {
+public interface Savable {
 
     /**
      * @param persist

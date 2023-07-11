@@ -32,9 +32,6 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     private final Map<UUID, Map<String, String>> playerArguments = new HashMap<>();
     private final MenuPlugin plugin;
 
-    /**
-     * @param plugin
-     */
     public ZCommandManager(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
@@ -69,7 +66,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     @Override
     public void unregisterCommands(Plugin plugin) {
 
-        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
+        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<>());
         Iterator<Command> iterator = commands.iterator();
         while (iterator.hasNext()) {
 
@@ -110,7 +107,10 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "commands");
         if (!folder.exists()) {
-            folder.mkdir();
+            if (!folder.mkdir()) {
+                Logger.info("Impossible to create the commands folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
+                return;
+            }
         }
 
         try {

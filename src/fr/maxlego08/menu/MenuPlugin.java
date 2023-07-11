@@ -37,10 +37,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * System to create your plugins very simply Projet:
- * https://github.com/Maxlego08/TemplatePlugin
+ * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
+ * Documentation: <a href="https://docs.zmenu.dev/">https://docs.zmenu.dev/</a>
+ * <p>
+ * zMenus is a complete inventory plugin.
+ * You can create your inventories and link them to custom commands. With the button system you will be able to push to the maximum the customization of your inventories.
+ * You need to create an inventory per file, and you can sort your files into folders.
+ * The plugin has an advanced API to allow other developers to use the same inventory configuration system. You can link inventories of several plugins together without any worries! The goal of this API is to have a uniform configuration for a better user experience.
+ * </p>
  *
  * @author Maxlego08
+ *
  */
 public class MenuPlugin extends ZPlugin {
 

@@ -1,14 +1,14 @@
 package fr.maxlego08.menu.zcore.utils.builder;
 
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CooldownBuilder implements Saveable {
+public class CooldownBuilder implements Savable {
 
     public static Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
     private static final CooldownBuilder i = new CooldownBuilder();

@@ -20,8 +20,10 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         Optional<ButtonLoader> optional = this.getLoader(button.getButton());
         if (optional.isPresent()) {
             ButtonLoader loader = optional.get();
-            throw new ButtonAlreadyRegisterException("Button " + button.getButton().getName()
-                    + " was already register in the " + loader.getPlugin().getName());
+            if (loader.getName().equals(button.getName())) {
+                throw new ButtonAlreadyRegisterException("Button " + button.getButton().getName()
+                        + " was already register in the " + loader.getPlugin().getName());
+            }
         }
 
         Plugin plugin = button.getPlugin();
@@ -40,7 +42,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void unregisters(Plugin plugin) {
-        this.loaders.remove(plugin);
+        this.loaders.remove(plugin.getName());
     }
 
     @Override
@@ -55,7 +57,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public Optional<ButtonLoader> getLoader(Class<? extends Button> classz) {
-        return this.getLoaders().stream().filter(e -> e.getButton().getClass().isAssignableFrom(classz)).findFirst();
+        return this.getLoaders().stream().filter(e -> e.getButton().isAssignableFrom(classz)).findFirst();
     }
 
     @Override

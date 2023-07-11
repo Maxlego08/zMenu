@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.website;
 
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 
-public class Token implements Saveable {
+public class Token implements Savable {
 
     public static String token;
 

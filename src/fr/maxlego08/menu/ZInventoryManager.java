@@ -37,9 +37,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
 
-    /**
-     * @param plugin
-     */
     public ZInventoryManager(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
@@ -175,7 +172,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
         List<Inventory> oldInventories = new ArrayList<>();
-		Collections.addAll(oldInventories, inventories);
+        Collections.addAll(oldInventories, inventories);
         this.openInventory(player, inventory, page, oldInventories);
     }
 
@@ -207,7 +204,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {
-            folder.mkdir();
+            if (!folder.mkdir()) {
+                Logger.info("Impossible to create the inventories folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
+                return;
+            }
         }
 
         // Load inventories
@@ -220,8 +220,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                             e1.printStackTrace();
                         }
                     });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 

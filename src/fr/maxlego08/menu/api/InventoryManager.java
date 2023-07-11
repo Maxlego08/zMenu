@@ -3,7 +3,7 @@ package fr.maxlego08.menu.api;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -22,7 +22,7 @@ import java.util.Optional;
  * </ul>
  * <p>Api example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a></p>
  */
-public interface InventoryManager extends Saveable {
+public interface InventoryManager extends Savable {
 
     /**
      * Allows to load an inventory, the plugin will retrieve the resource of

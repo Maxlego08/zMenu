@@ -20,14 +20,14 @@ public class ZCommand implements Command {
 
 
     /**
-     * @param plugin
-     * @param command
-     * @param aliases
-     * @param permission
-     * @param inventory
-     * @param arguments
-     * @param path
-     * @param file
+     * @param plugin The plugin where the command comes from
+     * @param command Main command
+     * @param aliases List of aliases
+     * @param permission Command Permission
+     * @param inventory Inventory name
+     * @param arguments List of arguments
+     * @param path file path
+     * @param file File
      */
     public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
                     List<String> arguments, String path, File file) {

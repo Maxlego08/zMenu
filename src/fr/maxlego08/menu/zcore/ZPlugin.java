@@ -20,7 +20,7 @@ import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
@@ -31,18 +31,16 @@ import org.bukkit.potion.PotionEffect;
 
 import java.io.*;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 public abstract class ZPlugin extends JavaPlugin {
 
-    public static final ExecutorService service = Executors.newFixedThreadPool(5);
     private final Logger log = new Logger(this.getDescription().getFullName());
-    private final List<Saveable> savers = new ArrayList<>();
+    private final List<Savable> savers = new ArrayList<>();
     private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
     protected VCommandManager zCommandManager;
     protected VInventoryManager vinventoryManager;
@@ -59,7 +57,9 @@ public abstract class ZPlugin extends JavaPlugin {
         this.log.log("=== ENABLE START ===");
         this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
 
-        this.getDataFolder().mkdirs();
+        if (!this.getDataFolder().mkdirs()){
+            this.log.log("Impossible to create the default folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
+        }
 
         this.gson = getGsonBuilder().create();
         this.persist = new Persist(this);
@@ -92,7 +92,7 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * Build gson
      *
-     * @return
+     * @return gsonBuilder
      */
     public GsonBuilder getGsonBuilder() {
         return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
@@ -105,33 +105,33 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * Add a listener
      *
-     * @param listener
+     * @param listener New Listener
      */
     public void addListener(Listener listener) {
-        if (listener instanceof Saveable)
-            this.addSave((Saveable) listener);
+        if (listener instanceof Savable)
+            this.addSave((Savable) listener);
         Bukkit.getPluginManager().registerEvents(listener, this);
     }
 
     /**
      * Add a listener from ListenerAdapter
      *
-     * @param adapter
+     * @param adapter New {@link ListenerAdapter}
      */
     public void addListener(ListenerAdapter adapter) {
         if (adapter == null)
             throw new ListenerNullException("Warning, your listener is null");
-        if (adapter instanceof Saveable)
-            this.addSave((Saveable) adapter);
+        if (adapter instanceof Savable)
+            this.addSave((Savable) adapter);
         this.listenerAdapters.add(adapter);
     }
 
     /**
-     * Add a Saveable
+     * Add a Savable
      *
-     * @param saver
+     * @param saver New savable
      */
-    public void addSave(Saveable saver) {
+    public void addSave(Savable saver) {
         this.savers.add(saver);
     }
 
@@ -162,13 +162,13 @@ public abstract class ZPlugin extends JavaPlugin {
      *
      * @return savers
      */
-    public List<Saveable> getSavers() {
+    public List<Savable> getSavers() {
         return savers;
     }
 
     /**
-     * @param classz
-     * @return
+     * @param classz Class provider
+     * @return nes provider
      */
     protected <T> T getProvider(Class<T> classz) {
         RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classz);
@@ -176,7 +176,7 @@ public abstract class ZPlugin extends JavaPlugin {
             log.log("Unable to retrieve the provider " + classz, LogType.WARNING);
             return null;
         }
-        return provider.getProvider() != null ? provider.getProvider() : null;
+        return provider.getProvider();
     }
 
     /**
@@ -201,21 +201,21 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     /**
-     * Check if plugin is enable
+     * Check if plugin is enabled
      *
-     * @param pl
-     * @return
+     * @param pluginName Plugin name
+     * @return true is its enable
      */
-    protected boolean isEnable(Plugins pl) {
-        Plugin plugin = getPlugin(pl);
+    protected boolean isEnable(Plugins pluginName) {
+        Plugin plugin = getPlugin(pluginName);
         return plugin != null && plugin.isEnabled();
     }
 
     /**
      * Get plugin for plugins enum
      *
-     * @param plugin
-     * @return
+     * @param plugin Plugin name
+     * @return Plugin
      */
     protected Plugin getPlugin(Plugins plugin) {
         return Bukkit.getPluginManager().getPlugin(plugin.getName());
@@ -224,9 +224,9 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * Register command
      *
-     * @param command
-     * @param vCommand
-     * @param aliases
+     * @param command Main command
+     * @param vCommand VCommand
+     * @param aliases list of aliases
      */
     protected void registerCommand(String command, VCommand vCommand, String... aliases) {
         this.zCommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
@@ -235,8 +235,8 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * Register Inventory
      *
-     * @param inventory
-     * @param vInventory
+     * @param inventory Inventory key
+     * @param vInventory VInventory
      */
     protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
         this.vinventoryManager.registerInventory(inventory, vInventory);
@@ -245,9 +245,9 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * For 1.13+
      *
-     * @param resourcePath
-     * @param toPath
-     * @param replace
+     * @param resourcePath Resource path
+     * @param toPath new path
+     * @param replace replace boolean
      */
     public void saveResource(String resourcePath, String toPath, boolean replace) {
         if (resourcePath != null && !resourcePath.equals("")) {
@@ -259,7 +259,7 @@ public abstract class ZPlugin extends JavaPlugin {
             } else {
                 File outFile = new File(getDataFolder(), toPath);
                 int lastIndex = toPath.lastIndexOf(47);
-                File outDir = new File(getDataFolder(), toPath.substring(0, lastIndex >= 0 ? lastIndex : 0));
+                File outDir = new File(getDataFolder(), toPath.substring(0, Math.max(lastIndex, 0)));
                 if (!outDir.exists()) {
                     outDir.mkdirs();
                 }
@@ -269,7 +269,7 @@ public abstract class ZPlugin extends JavaPlugin {
                         getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile
                                 + " because " + outFile.getName() + " already exists.");
                     } else {
-                        OutputStream out = new FileOutputStream(outFile);
+                        OutputStream out = Files.newOutputStream(outFile.toPath());
                         byte[] buf = new byte[1024];
 
                         int len;
