@@ -9,22 +9,22 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuPlayersClearAll extends VCommand {
 
-	public CommandMenuPlayersClearAll(MenuPlugin plugin) {
-		super(plugin);
-		this.setPermission(Permission.ZMENU_PLAYERS);
-		this.setDescription(Message.DESCRIPTION_PLAYERS_CLEAR_ALL);
-		this.addSubCommand("clearall");
-	}
+    public CommandMenuPlayersClearAll(MenuPlugin plugin) {
+        super(plugin);
+        this.setPermission(Permission.ZMENU_PLAYERS);
+        this.setDescription(Message.DESCRIPTION_PLAYERS_CLEAR_ALL);
+        this.addSubCommand("clearall");
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
 
-		DataManager dataManager = plugin.getDataManager();
-		dataManager.clearAll();
-		
-		message(this.sender, Message.PLAYERS_DATA_CLEAR_ALL);
-		
-		return CommandType.SUCCESS;
-	}
+        DataManager dataManager = plugin.getDataManager();
+        dataManager.clearAll();
+
+        message(this.sender, Message.PLAYERS_DATA_CLEAR_ALL);
+
+        return CommandType.SUCCESS;
+    }
 
 }

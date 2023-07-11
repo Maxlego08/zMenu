@@ -12,6 +12,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a>
+ * <p>This class will contain all the inventory information.</p>
+ */
 public interface Inventory {
 
     /**
@@ -52,9 +56,9 @@ public interface Inventory {
     /**
      * Returns the list of buttons according to a type
      *
-     * @param type
+     * @param type Class type
+     * @param <T> Button type
      * @return list of button with this type
-     * @param <T>
      */
     <T extends Button> List<T> getButtons(Class<T> type);
 
@@ -68,7 +72,7 @@ public interface Inventory {
     /**
      * Returns the maximum number of pages
      *
-     * @param objects
+     * @param objects elements
      * @return page
      */
     int getMaxPage(Player player, Object... objects);
@@ -76,8 +80,8 @@ public interface Inventory {
     /**
      * Allows you to sort the buttons according to a page
      *
-     * @param page
-     * @param objects
+     * @param page    current page
+     * @param objects elements
      * @return buttons
      */
     List<Button> sortButtons(int page, Object... objects);
@@ -85,23 +89,22 @@ public interface Inventory {
     /**
      * When an inventory is open
      *
-     * @param player The player who will open the inventory
+     * @param player           The player who will open the inventory
      * @param inventoryDefault The inventory that will be opened
      * @return the result of the opening of the inventory
      */
     InventoryResult openInventory(Player player, VInventory inventoryDefault);
 
     /**
-     *
-     * @param player
-     * @param inventoryDefault
+     * @param player           Plugin
+     * @param inventoryDefault default inventory object
      */
     void postOpenInventory(Player player, VInventory inventoryDefault);
 
     /**
      * When an inventory is close
      *
-     * @param player The player who will close the inventory
+     * @param player           The player who will close the inventory
      * @param inventoryDefault The inventory that will be closed
      */
     void closeInventory(Player player, VInventory inventoryDefault);

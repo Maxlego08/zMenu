@@ -9,23 +9,23 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuReloadConfig extends VCommand {
 
-	public CommandMenuReloadConfig(MenuPlugin plugin) {
-		super(plugin);
-		this.addSubCommand("config");
-		this.setPermission(Permission.ZMENU_RELOAD);
-	}
+    public CommandMenuReloadConfig(MenuPlugin plugin) {
+        super(plugin);
+        this.addSubCommand("config");
+        this.setPermission(Permission.ZMENU_RELOAD);
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
 
-		plugin.getMessageLoader().load(plugin.getPersist());
-		Config.getInstance().load(plugin.getPersist());
+        plugin.getMessageLoader().load(plugin.getPersist());
+        Config.getInstance().load(plugin.getPersist());
 
-		plugin.getPatternManager().loadPatterns();
+        plugin.getPatternManager().loadPatterns();
 
-		message(this.sender, Message.RELOAD_FILES);
+        message(this.sender, Message.RELOAD_FILES);
 
-		return CommandType.SUCCESS;
-	}
+        return CommandType.SUCCESS;
+    }
 
 }

@@ -9,22 +9,22 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuDownload extends VCommand {
 
-	public CommandMenuDownload(MenuPlugin plugin) {
-		super(plugin);
-		this.setDescription(Message.DESCRIPTION_DOWNLOAD);
-		this.addSubCommand("download", "dl");
-		this.setPermission(Permission.ZMENU_DOWNLOAD);
-		this.addRequireArg("link");
-	}
+    public CommandMenuDownload(MenuPlugin plugin) {
+        super(plugin);
+        this.setDescription(Message.DESCRIPTION_DOWNLOAD);
+        this.addSubCommand("download", "dl");
+        this.setPermission(Permission.ZMENU_DOWNLOAD);
+        this.addRequireArg("link");
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
 
-		DownloadFile downloadFile = new DownloadFile();
-		String link = this.argAsString(0);
-		runAsync(plugin, () -> downloadFile.download(plugin, this.sender, link));
+        DownloadFile downloadFile = new DownloadFile();
+        String link = this.argAsString(0);
+        runAsync(plugin, () -> downloadFile.download(plugin, this.sender, link));
 
-		return CommandType.SUCCESS;
-	}
+        return CommandType.SUCCESS;
+    }
 
 }

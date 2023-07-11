@@ -62,7 +62,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
         List<Component> components = lore.stream().map(text -> this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)))
                 .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE) // We will force the italics in false, otherwise it will activate for no reason
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
         itemMeta.lore(components);
     }
 
@@ -70,16 +70,16 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
         String newMessage = message;
 
-		if (NMSUtils.isHexColor()) {
-			Pattern pattern = Pattern.compile("(?<!<)#[a-fA-F0-9]{6}");
-			Matcher matcher = pattern.matcher(message);
-			while (matcher.find()) {
-				String color = message.substring(matcher.start(), matcher.end());
-				newMessage = newMessage.replace(color, "<" + color + ">");
-				message = message.replace(color, "");
-				matcher = pattern.matcher(message);
-			}
-		}
+        if (NMSUtils.isHexColor()) {
+            Pattern pattern = Pattern.compile("(?<!<)#[a-fA-F0-9]{6}");
+            Matcher matcher = pattern.matcher(message);
+            while (matcher.find()) {
+                String color = message.substring(matcher.start(), matcher.end());
+                newMessage = newMessage.replace(color, "<" + color + ">");
+                message = message.replace(color, "");
+                matcher = pattern.matcher(message);
+            }
+        }
 
         for (Entry<String, String> entry : this.COLORS_MAPPINGS.entrySet()) {
             String key = entry.getKey();

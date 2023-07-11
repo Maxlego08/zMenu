@@ -1,64 +1,58 @@
 package fr.maxlego08.menu.api.command;
 
+import org.bukkit.plugin.Plugin;
+
 import java.io.File;
 import java.util.List;
 
-import org.bukkit.plugin.Plugin;
-
+/**
+ * <p>A command opens an {@link fr.maxlego08.menu.api.Inventory}</p>
+ */
 public interface Command {
 
-	/**
-	 * 
-	 * @return command
-	 */
-	public String getCommand();
-	
-	/**
-	 * 
-	 * @return aliases
-	 */
-	public List<String> getAliases();
-	
-	/**
-	 * 
-	 * @return permissions
-	 */
-	public String getPermission();
-	
-	/**
-	 * 
-	 * @return inventory
-	 */
-	public String getInventory();
-	
-	/**
-	 * 
-	 * @return plugin
-	 */
-	public Plugin getPlugin();
-	
-	/**
-	 * 
-	 * @return argument
-	 */
-	public List<String> getArguments();
+    /**
+     * @return command
+     */
+	String getCommand();
 
-	/**
-	 * 
-	 * @return boolean
-	 */
-	public boolean hasArgument();
-	
-	/**
-	 * 
-	 * @return file
-	 */
-	public File getFile();
-	
-	/**
-	 * 
-	 * @return path
-	 */
-	public String getPath();
-	
+    /**
+     * @return aliases
+     */
+	List<String> getAliases();
+
+    /**
+     * @return permissions
+     */
+	String getPermission();
+
+    /**
+     * @return inventory
+     */
+	String getInventory();
+
+    /**
+     * @return plugin
+     */
+	Plugin getPlugin();
+
+    /**
+     * @return argument
+     */
+	List<String> getArguments();
+
+    /**
+     * @return boolean
+     */
+	boolean hasArgument();
+
+    /**
+     * @return file
+     */
+	File getFile();
+
+    /**
+     * @return path
+     */
+	String getPath();
+
 }

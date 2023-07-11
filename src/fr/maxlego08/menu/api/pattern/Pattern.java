@@ -4,6 +4,10 @@ import fr.maxlego08.menu.api.button.Button;
 
 import java.util.Collection;
 
+/**
+ * <p>A pattern is a list of buttons that will always be used, you can add several patterns to an inventory</p>
+ * <p>For example to put decoration, you just have to create a pattern and use it everywhere. You avoid having to copy and paste the same thing</p>
+ */
 public interface Pattern {
 
     /**

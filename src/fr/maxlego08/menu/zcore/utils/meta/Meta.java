@@ -6,21 +6,21 @@ import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 
 public class Meta {
 
-	public static MetaUpdater meta;
+    public static MetaUpdater meta;
 
-	static {
+    static {
 
-		if (!Config.enableMiniMessageFormat || !NMSUtils.isHexColor()) {
-			meta = new ClassicMeta();
-		} else {
-			try {
-				Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
-				meta = new ComponentMeta();
-			} catch (Exception e) {
-				meta = new ClassicMeta();
-			}
-		}
+        if (!Config.enableMiniMessageFormat || !NMSUtils.isHexColor()) {
+            meta = new ClassicMeta();
+        } else {
+            try {
+                Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+                meta = new ComponentMeta();
+            } catch (Exception e) {
+                meta = new ClassicMeta();
+            }
+        }
 
-	}
+    }
 
 }

@@ -1,24 +1,12 @@
 package fr.maxlego08.menu;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import fr.maxlego08.menu.api.pattern.PatternManager;
-import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
-import fr.maxlego08.menu.pattern.ZPatternManager;
-import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
-import fr.maxlego08.menu.scheduler.BukkitScheduler;
-import fr.maxlego08.menu.scheduler.FoliaScheduler;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
-import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
-import org.bukkit.plugin.ServicePriority;
-
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
+import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
@@ -26,10 +14,14 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
+import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
+import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.save.MessageLoader;
+import fr.maxlego08.menu.scheduler.BukkitScheduler;
+import fr.maxlego08.menu.scheduler.FoliaScheduler;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
@@ -37,230 +29,240 @@ import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
+import org.bukkit.plugin.ServicePriority;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * System to create your plugins very simply Projet:
- * https://github.com/Maxlego08/TemplatePlugin
- * 
+ * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
+ * Documentation: <a href="https://docs.zmenu.dev/">https://docs.zmenu.dev/</a>
+ * <p>
+ * zMenus is a complete inventory plugin.
+ * You can create your inventories and link them to custom commands. With the button system you will be able to push to the maximum the customization of your inventories.
+ * You need to create an inventory per file, and you can sort your files into folders.
+ * The plugin has an advanced API to allow other developers to use the same inventory configuration system. You can link inventories of several plugins together without any worries! The goal of this API is to have a uniform configuration for a better user experience.
+ * </p>
+ *
  * @author Maxlego08
  *
  */
 public class MenuPlugin extends ZPlugin {
 
-	private final ButtonManager buttonManager = new ZButtonManager();
-	private final InventoryManager inventoryManager = new ZInventoryManager(this);
-	private final CommandManager commandManager = new ZCommandManager(this);
-	private final MessageLoader messageLoader = new MessageLoader(this);
-	private final DataManager dataManager = new ZDataManager(this);
-	private CommandMenu commandMenu;
+    private static MenuPlugin instance;
+    private final ButtonManager buttonManager = new ZButtonManager();
+    private final InventoryManager inventoryManager = new ZInventoryManager(this);
+    private final CommandManager commandManager = new ZCommandManager(this);
+    private final MessageLoader messageLoader = new MessageLoader(this);
+    private final DataManager dataManager = new ZDataManager(this);
+    private final WebsiteManager websiteManager = new ZWebsiteManager(this);
+    private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
+    private final PatternManager patternManager = new ZPatternManager(this);
+    private CommandMenu commandMenu;
+    private ZScheduler scheduler;
 
-	private final WebsiteManager websiteManager = new ZWebsiteManager(this);
-	private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
-	private ZScheduler scheduler;
-	private final PatternManager patternManager = new ZPatternManager(this);
+    public static boolean isFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 
-	private static MenuPlugin instance;
+    public static MenuPlugin getInstance() {
+        return instance;
+    }
 
-	@Override
-	public void onEnable() {
+    @Override
+    public void onEnable() {
 
-		instance = this;
+        instance = this;
 
-		this.scheduler = isFolia()
-				? new FoliaScheduler(this)
-				: new BukkitScheduler(this);
+        this.scheduler = isFolia()
+                ? new FoliaScheduler(this)
+                : new BukkitScheduler(this);
 
-		this.preEnable();
+        this.preEnable();
 
-		List<String> files = new ArrayList<String>();
-		files.add("inventories/example.yml");
-		files.add("inventories/example_shop.yml");
-		files.add("inventories/example_punish.yml");
-		files.add("inventories/test/example2.yml");
-		files.add("inventories/test/test3/example3.yml");
+        List<String> files = new ArrayList<String>();
+        files.add("inventories/example.yml");
+        files.add("inventories/example_shop.yml");
+        files.add("inventories/example_punish.yml");
+        files.add("inventories/test/example2.yml");
+        files.add("inventories/test/test3/example3.yml");
 
-		files.add("commands/commands.yml");
-		files.add("commands/example/example.yml");
-		files.add("commands/punish/punish.yml");
+        files.add("commands/commands.yml");
+        files.add("commands/example/example.yml");
+        files.add("commands/punish/punish.yml");
 
-		files.add("patterns/pattern1.yml");
+        files.add("patterns/pattern1.yml");
 
-		File folder = new File(this.getDataFolder(), "inventories");
+        File folder = new File(this.getDataFolder(), "inventories");
 
-		if (!folder.exists()) {
-			files.forEach(e -> {
-				if (!new File(this.getDataFolder(), e).exists()) {
+        if (!folder.exists()) {
+            files.forEach(e -> {
+                if (!new File(this.getDataFolder(), e).exists()) {
 
-					if (NMSUtils.isNewVersion()) {
-						saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
-					} else {
-						saveResource(e, false);
-					}
-				}
-			});
-		}
+                    if (NMSUtils.isNewVersion()) {
+                        saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
+                    } else {
+                        saveResource(e, false);
+                    }
+                }
+            });
+        }
 
-		this.zcommandManager = new VCommandManager(this);
-		this.vinventoryManager = new VInventoryManager(this);
+        this.zCommandManager = new VCommandManager(this);
+        this.vinventoryManager = new VInventoryManager(this);
 
-		this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this,
-				ServicePriority.Highest);
-		this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this,
-				ServicePriority.Highest);
-		this.getServer().getServicesManager().register(CommandManager.class, this.commandManager, this,
-				ServicePriority.Highest);
-		this.getServer().getServicesManager().register(WebsiteManager.class, this.websiteManager, this,
-				ServicePriority.Highest);
-		this.getServer().getServicesManager().register(DataManager.class, this.dataManager, this,
-				ServicePriority.Highest);
-		this.getServer().getServicesManager().register(InventoriesPlayer.class, this.inventoriesPlayer, this,
-				ServicePriority.Highest);
-		this.getServer().getServicesManager().register(PatternManager.class, this.patternManager, this,
-				ServicePriority.Highest);
+        this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this,
+                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this,
+                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(CommandManager.class, this.commandManager, this,
+                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(WebsiteManager.class, this.websiteManager, this,
+                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(DataManager.class, this.dataManager, this,
+                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(InventoriesPlayer.class, this.inventoriesPlayer, this,
+                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(PatternManager.class, this.patternManager, this,
+                ServicePriority.Highest);
 
-		this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
-		this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
+        this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
+        this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
-		/* Add Listener */
-		this.addListener(new AdapterListener(this));
-		this.addListener(this.vinventoryManager);
-		this.addListener(this.inventoriesPlayer);
+        /* Add Listener */
+        this.addListener(new AdapterListener(this));
+        this.addListener(this.vinventoryManager);
+        this.addListener(this.inventoriesPlayer);
 
-		/* Add Saver */
-		this.addSave(Config.getInstance());
-		this.addSave(this.messageLoader);
-		this.addSave(this.inventoryManager);
-		this.addSave(this.commandManager);
-		this.addSave(this.dataManager);
+        /* Add Saver */
+        this.addSave(Config.getInstance());
+        this.addSave(this.messageLoader);
+        this.addSave(this.inventoryManager);
+        this.addSave(this.commandManager);
+        this.addSave(this.dataManager);
 
-		if (this.isEnable(Plugins.HEADDATABASE)) {
+        if (this.isEnable(Plugins.HEADDATABASE)) {
 
-			this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
+            this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
 
-		}
-		this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+        }
+        this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 
-		LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
-		localPlaceholder.register("argument_", (player, value) -> {
-			Optional<String> optional = this.commandManager.getPlayerArgument(player, value);
-			return optional.orElse(null);
-		});
+        LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
+        localPlaceholder.register("argument_", (player, value) -> {
+            Optional<String> optional = this.commandManager.getPlayerArgument(player, value);
+            return optional.orElse(null);
+        });
 
-		((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
+        ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
-		new Metrics(this, 14951);
+        new Metrics(this, 14951);
 
-		File tokenFile = new File(this.getDataFolder(), "token.json");
-		if (tokenFile.exists()) {
-			Token.getInstance().load(this.getPersist());
-		}
+        File tokenFile = new File(this.getDataFolder(), "token.json");
+        if (tokenFile.exists()) {
+            Token.getInstance().load(this.getPersist());
+        }
 
-		// new VersionChecker(this, 253).useLastVersion();
+        // new VersionChecker(this, 253).useLastVersion();
 
-		this.postEnable();
-	}
+        this.postEnable();
+    }
 
-	@Override
-	public void onDisable() {
+    @Override
+    public void onDisable() {
 
-		this.preDisable();
+        this.preDisable();
 
-		this.vinventoryManager.close();
+        this.vinventoryManager.close();
 
-		this.getSavers().forEach(saver -> saver.save(this.getPersist()));
-		if (Token.token != null) {
-			Token.getInstance().save(this.getPersist());
-		}
+        this.getSavers().forEach(saver -> saver.save(this.getPersist()));
+        if (Token.token != null) {
+            Token.getInstance().save(this.getPersist());
+        }
 
-		this.postDisable();
+        this.postDisable();
 
-	}
+    }
 
-	/**
-	 * Returns the class that will manage the loading of the buttons
-	 * 
-	 * @return {@link ButtonManager}
-	 */
-	public ButtonManager getButtonManager() {
-		return this.buttonManager;
-	}
+    /**
+     * Returns the class that will manage the loading of the buttons
+     *
+     * @return {@link ButtonManager}
+     */
+    public ButtonManager getButtonManager() {
+        return this.buttonManager;
+    }
 
-	/**
-	 * Return the class that will manage the inventories
-	 * 
-	 * @return the inventoryManager
-	 */
-	public InventoryManager getInventoryManager() {
-		return this.inventoryManager;
-	}
+    /**
+     * Return the class that will manage the inventories
+     *
+     * @return the inventoryManager
+     */
+    public InventoryManager getInventoryManager() {
+        return this.inventoryManager;
+    }
 
-	/**
-	 * Returns the class that will load the message file
-	 * 
-	 * @return the messageLoader
-	 */
-	public MessageLoader getMessageLoader() {
-		return this.messageLoader;
-	}
+    /**
+     * Returns the class that will load the message file
+     *
+     * @return the messageLoader
+     */
+    public MessageLoader getMessageLoader() {
+        return this.messageLoader;
+    }
 
-	/**
-	 * Returns the class that will manager the commands
-	 * 
-	 * @return the commandManager
-	 */
-	public CommandManager getCommandManager() {
-		return commandManager;
-	}
+    /**
+     * Returns the class that will manager the commands
+     *
+     * @return the commandManager
+     */
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
 
-	/**
-	 * Returns the class that will manage the website
-	 * 
-	 * @return the websitemanager
-	 */
-	public WebsiteManager getWebsiteManager() {
-		return websiteManager;
-	}
+    /**
+     * Returns the class that will manage the website
+     *
+     * @return the websitemanager
+     */
+    public WebsiteManager getWebsiteManager() {
+        return websiteManager;
+    }
 
-	/**
-	 * Returns the main command
-	 * 
-	 * @return the commandMenu
-	 */
-	public CommandMenu getCommandMenu() {
-		return commandMenu;
-	}
+    /**
+     * Returns the main command
+     *
+     * @return the commandMenu
+     */
+    public CommandMenu getCommandMenu() {
+        return commandMenu;
+    }
 
-	/**
-	 * Return the class that will manage data
-	 * 
-	 * @return the dataManager
-	 */
-	public DataManager getDataManager() {
-		return dataManager;
-	}
+    /**
+     * Return the class that will manage data
+     *
+     * @return the dataManager
+     */
+    public DataManager getDataManager() {
+        return dataManager;
+    }
 
-	public ZScheduler getScheduler() {
-		return scheduler;
-	}
+    public ZScheduler getScheduler() {
+        return scheduler;
+    }
 
-	public InventoriesPlayer getInventoriesPlayer() {
-		return inventoriesPlayer;
-	}
+    public InventoriesPlayer getInventoriesPlayer() {
+        return inventoriesPlayer;
+    }
 
-	public static boolean isFolia() {
-		try {
-			Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
-	}
-
-	public static MenuPlugin getInstance() {
-		return instance;
-	}
-
-	public PatternManager getPatternManager() {
-		return patternManager;
-	}
+    public PatternManager getPatternManager() {
+        return patternManager;
+    }
 }

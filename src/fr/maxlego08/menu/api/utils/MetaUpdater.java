@@ -5,7 +5,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public interface MetaUpdater extends MessageSender{
+/**
+ * <p>Changes the color and name of a {@link ItemMeta}</p>
+ * <p>Adds the support of <a href="https://docs.advntr.dev/minimessage/index.html">MiniMessage</a> for ItemStack and messages</p>
+ */
+public interface MetaUpdater extends MessageSender {
 
     /**
      * Allows you to change the display name

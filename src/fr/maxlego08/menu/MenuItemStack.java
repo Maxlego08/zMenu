@@ -38,9 +38,6 @@ public class MenuItemStack extends ZUtils {
 	private int modelID;
 	private Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
 
-	/**
-	 * @param inventoryManager
-	 */
 	public MenuItemStack(InventoryManager inventoryManager) {
 		super();
 		this.inventoryManager = inventoryManager;
@@ -103,6 +100,11 @@ public class MenuItemStack extends ZUtils {
 					}
 				}
 			}
+		}
+
+		// Final check
+		if (material == null) {
+			material = Material.STONE;
 		}
 
 		if (itemStack == null) {

@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.api.enums;
 
 /**
- * 
+ *
  * @author Maxence
- *	
- * Action used for the Placeholder button
+ *
+ * Action used for the Placeholder button, more information <a href="https://docs.zmenu.dev/configurations/buttons#placeholder">here</a>
  */
 public enum PlaceholderAction {
 
@@ -21,7 +21,7 @@ public enum PlaceholderAction {
 	/**
 	 * Allows you to retrieve the action based on a string without triggering an error
 	 * 
-	 * @param string
+	 * @param string Current string
 	 * @return boolean
 	 */
 	public static PlaceholderAction from(String string) {

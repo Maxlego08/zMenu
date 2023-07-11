@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 
 public class Persist extends ZUtils {
 
-    private ZPlugin p;
+    private final ZPlugin p;
 
     public Persist(ZPlugin p) {
         this.p = p;
@@ -164,7 +164,7 @@ public class Persist extends ZUtils {
     // LOAD BY TYPE
     @SuppressWarnings("unchecked")
     public <T> T load(Type typeOfT, String name) {
-        return (T) load(typeOfT, getFile(name));
+        return load(typeOfT, getFile(name));
     }
 
     @SuppressWarnings("unchecked")
@@ -175,7 +175,7 @@ public class Persist extends ZUtils {
         }
 
         try {
-            return (T) p.getGson().fromJson(content, typeOfT);
+            return p.getGson().fromJson(content, typeOfT);
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely

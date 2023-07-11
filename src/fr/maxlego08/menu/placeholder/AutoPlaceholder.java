@@ -1,40 +1,39 @@
 package fr.maxlego08.menu.placeholder;
 
-import org.bukkit.entity.Player;
-
 import fr.maxlego08.menu.zcore.utils.interfaces.ReturnBiConsumer;
+import org.bukkit.entity.Player;
 
 public class AutoPlaceholder {
 
-	private final String startWith;
-	private final ReturnBiConsumer<Player, String, String> biConsumer;
+    private final String startWith;
+    private final ReturnBiConsumer<Player, String, String> biConsumer;
 
-	/**
-	 * @param startWith
-	 * @param biConsumer
-	 */
-	public AutoPlaceholder(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
-		super();
-		this.startWith = startWith;
-		this.biConsumer = biConsumer;
-	}
+    /**
+     * @param startWith
+     * @param biConsumer
+     */
+    public AutoPlaceholder(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
+        super();
+        this.startWith = startWith;
+        this.biConsumer = biConsumer;
+    }
 
-	/**
-	 * @return the startWith
-	 */
-	public String getStartWith() {
-		return startWith;
-	}
+    /**
+     * @return the startWith
+     */
+    public String getStartWith() {
+        return startWith;
+    }
 
-	/**
-	 * @return the biConsumer
-	 */
-	public ReturnBiConsumer<Player, String, String> getBiConsumer() {
-		return biConsumer;
-	}
+    /**
+     * @return the biConsumer
+     */
+    public ReturnBiConsumer<Player, String, String> getBiConsumer() {
+        return biConsumer;
+    }
 
-	public String accept(Player player, String value) {
-		return this.biConsumer.accept(player, value);
-	}
+    public String accept(Player player, String value) {
+        return this.biConsumer.accept(player, value);
+    }
 
 }

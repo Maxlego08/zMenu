@@ -332,13 +332,6 @@ public abstract class ZUtils extends MessageUtils {
         return total * (percent / 100);
     }
 
-    /**
-     * Schedule task with timer
-     *
-     * @param delay
-     * @param count
-     * @param runnable
-     */
     protected void schedule(Plugin plugin, long delay, int count, Runnable runnable) {
         ZScheduler.TIMER.scheduleAtFixedRate(new TimerTask() {
             int tmpCount = 0;
@@ -364,6 +357,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
+     * @param plugin
      * @param player
      * @param inventory
      */

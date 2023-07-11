@@ -1,43 +1,42 @@
 package fr.maxlego08.menu.button.buttons;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ZHomeButton extends ZBackButton implements HomeButton {
 
-	public ZHomeButton(InventoryManager inventoryManager) {
-		super(inventoryManager);
-	}
+    public ZHomeButton(InventoryManager inventoryManager) {
+        super(inventoryManager);
+    }
 
-	@Override
-	public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    @Override
+    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
 
-		if (this.inventory == null) {
-			return;
-		}
+        if (this.inventory == null) {
+            return;
+        }
 
-		Inventory toInventory = this.inventory;
-		this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<Inventory>());
+        Inventory toInventory = this.inventory;
+        this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<Inventory>());
 
-		super.onClick(player, event, inventory, slot);
-	}
+        super.onClick(player, event, inventory, slot);
+    }
 
-	@Override
-	public void onInventoryOpen(Player player, InventoryDefault inventory) {
+    @Override
+    public void onInventoryOpen(Player player, InventoryDefault inventory) {
 
-		List<Inventory> oldInventories = inventory.getOldInventories();
-		if (oldInventories.size() >= 1) {
-			this.inventory = oldInventories.get(0);
-		}
+        List<Inventory> oldInventories = inventory.getOldInventories();
+        if (oldInventories.size() >= 1) {
+            this.inventory = oldInventories.get(0);
+        }
 
-	}
+    }
 
 }

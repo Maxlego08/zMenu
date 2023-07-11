@@ -3,7 +3,7 @@ package fr.maxlego08.menu.save;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.MessageType;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import fr.maxlego08.menu.zcore.utils.yaml.YamlUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MessageLoader extends YamlUtils implements Saveable {
+public class MessageLoader extends YamlUtils implements Savable {
 
     public MessageLoader(JavaPlugin plugin) {
         super(plugin);

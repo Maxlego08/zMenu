@@ -11,35 +11,35 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuReload extends VCommand {
 
-	public CommandMenuReload(MenuPlugin plugin) {
-		super(plugin);
-		this.addSubCommand("reload", "rl");
-		this.setDescription(Message.DESCRIPTION_RELOAD);
-		this.setPermission(Permission.ZMENU_RELOAD);
-		this.addSubCommand(new CommandMenuReloadCommand(plugin));
-		this.addSubCommand(new CommandMenuReloadInventory(plugin));
-		this.addSubCommand(new CommandMenuReloadConfig(plugin));
-	}
+    public CommandMenuReload(MenuPlugin plugin) {
+        super(plugin);
+        this.addSubCommand("reload", "rl");
+        this.setDescription(Message.DESCRIPTION_RELOAD);
+        this.setPermission(Permission.ZMENU_RELOAD);
+        this.addSubCommand(new CommandMenuReloadCommand(plugin));
+        this.addSubCommand(new CommandMenuReloadInventory(plugin));
+        this.addSubCommand(new CommandMenuReloadConfig(plugin));
+    }
 
-	@Override
-	protected CommandType perform(MenuPlugin plugin) {
+    @Override
+    protected CommandType perform(MenuPlugin plugin) {
 
-		InventoryManager inventoryManager = plugin.getInventoryManager();
+        InventoryManager inventoryManager = plugin.getInventoryManager();
 
-		plugin.getMessageLoader().load(plugin.getPersist());
-		Config.getInstance().load(plugin.getPersist());
+        plugin.getMessageLoader().load(plugin.getPersist());
+        Config.getInstance().load(plugin.getPersist());
 
-		plugin.getVInventoryManager().close();
-		
-		inventoryManager.deleteInventories(plugin);
-		inventoryManager.loadInventories();
+        plugin.getVInventoryManager().close();
 
-		CommandManager commandManager = plugin.getCommandManager();
-		commandManager.loadCommands();
+        inventoryManager.deleteInventories(plugin);
+        inventoryManager.loadInventories();
 
-		message(this.sender, Message.RELOAD);
+        CommandManager commandManager = plugin.getCommandManager();
+        commandManager.loadCommands();
 
-		return CommandType.SUCCESS;
-	}
+        message(this.sender, Message.RELOAD);
+
+        return CommandType.SUCCESS;
+    }
 
 }

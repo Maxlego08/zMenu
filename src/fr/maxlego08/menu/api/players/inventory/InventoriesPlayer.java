@@ -1,32 +1,35 @@
 package fr.maxlego08.menu.api.players.inventory;
 
-import fr.maxlego08.menu.zcore.utils.storage.Saveable;
+import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface InventoriesPlayer extends Listener, Saveable {
+/**
+ * <p>Management of player inventories</p>
+ */
+public interface InventoriesPlayer extends Listener, Savable {
 
     /**
      * Saves the player's inventory to be stored
      *
-     * @param player
+     * @param player Player
      */
     void storeInventory(Player player);
 
     /**
      * Allows to give the inventory back to the player
      *
-     * @param player
+     * @param player Player
      */
     void giveInventory(Player player);
 
     /**
      * Check if the player has an inventory saved
      *
-     * @param uniqueId
+     * @param uniqueId Player {@link UUID}
      * @return boolean
      */
     boolean hasSavedInventory(UUID uniqueId);
@@ -34,7 +37,7 @@ public interface InventoriesPlayer extends Listener, Saveable {
     /**
      * Retrieve the player's inventory if it exists
      *
-     * @param uniqueId
+     * @param uniqueId Player {@link UUID}
      * @return optional
      */
     Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId);

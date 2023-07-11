@@ -8,7 +8,6 @@ import fr.maxlego08.menu.loader.PatternLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
-import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
