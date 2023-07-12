@@ -7,14 +7,15 @@ import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class ZPermissibleButton extends ZPerformButton implements PermissibleButton {
 
     private PermissionPermissible permission;
-    private List<PermissionPermissible> permissions;
-    private List<PermissionPermissible> orPermissions;
+    private List<PermissionPermissible> permissions = new ArrayList<>();
+    private List<PermissionPermissible> orPermissions = new ArrayList<>();
     private Button elseButton;
     private Button parentButton;
 

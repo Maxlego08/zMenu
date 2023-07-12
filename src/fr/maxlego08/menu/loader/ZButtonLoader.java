@@ -135,7 +135,7 @@ public class ZButtonLoader implements Loader<Button> {
 
         button.setPermission(configuration.getString(path + "permission", null));
         button.setPermissions(configuration.getStringList(path + "permission"));
-        button.setPermissions(configuration.getStringList(path + "orPermission"));
+        button.setOrPermissions(configuration.getStringList(path + "orPermission"));
 
         if (configuration.contains(path + "else")) {
 

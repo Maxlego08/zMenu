@@ -24,7 +24,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder()
             .tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
-    private final Map<String, String> COLORS_MAPPINGS = new HashMap<String, String>();
+    private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
 
     public ComponentMeta() {
         this.COLORS_MAPPINGS.put("0", "black");
