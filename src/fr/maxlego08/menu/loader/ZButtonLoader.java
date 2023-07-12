@@ -9,7 +9,6 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -33,11 +32,6 @@ public class ZButtonLoader implements Loader<Button> {
     private final File file;
     private final int inventorySize;
 
-    /**
-     * @param plugin
-     * @param file
-     * @param inventorySize
-     */
     public ZButtonLoader(MenuPlugin plugin, File file, int inventorySize) {
         super();
         this.plugin = plugin;
@@ -71,7 +65,7 @@ public class ZButtonLoader implements Loader<Button> {
         try {
 
             String slotString = configuration.getString(path + "slot", "0");
-            if (slotString != null && slotString.contains("-")) {
+            if (slotString.contains("-")) {
 
                 String[] strings = slotString.split("-");
                 page = Integer.parseInt(strings[0]);
@@ -127,7 +121,7 @@ public class ZButtonLoader implements Loader<Button> {
 
         Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader();
 
-        List<ActionPlayerData> actionPlayerDatas = new ArrayList<ActionPlayerData>();
+        List<ActionPlayerData> actionPlayerDatas = new ArrayList<>();
         if (configuration.isConfigurationSection(path + "datas")) {
             for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
 
@@ -138,14 +132,17 @@ public class ZButtonLoader implements Loader<Button> {
         }
 
         button.setDatas(actionPlayerDatas);
+
         button.setPermission(configuration.getString(path + "permission", null));
+        button.setPermissions(configuration.getStringList(path + "permission"));
+        button.setPermissions(configuration.getStringList(path + "orPermission"));
 
         if (configuration.contains(path + "else")) {
 
             Button elseButton = this.load(configuration, path + "else.", buttonName + ".else");
             button.setElseButton(elseButton);
 
-            if (elseButton instanceof PermissibleButton) {
+            if (elseButton != null) {
                 ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
                 elsePermissibleButton.setParentButton(button);
             }
@@ -170,12 +167,14 @@ public class ZButtonLoader implements Loader<Button> {
 
         if (configuration.isConfigurationSection(path + "actions.")) {
             ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "actions.");
-            for (String key : configurationSection.getKeys(false)) {
+            if (configurationSection != null) {
+                for (String key : configurationSection.getKeys(false)) {
 
-                try {
-                    actions.add(actiuonLoader.load(configuration, path + "actions." + key + "."));
-                } catch (InventoryException e) {
-                    e.printStackTrace();
+                    try {
+                        actions.add(actiuonLoader.load(configuration, path + "actions." + key + "."));
+                    } catch (InventoryException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
