@@ -9,8 +9,8 @@ public class ZPermissionPermissible implements PermissionPermissible {
     private final boolean isReverse;
 
     /**
-     * @param permission
-     * @param isReverse
+     * @param permission Permission
+     * @param isReverse is reverse
      */
     public ZPermissionPermissible(String permission, boolean isReverse) {
         super();
