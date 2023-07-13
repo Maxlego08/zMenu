@@ -47,7 +47,7 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
 
     @Override
     public boolean hasPermission() {
-        return this.permission != null;
+        return this.permission.getPermission() != null || !this.permissions.isEmpty() || !this.orPermissions.isEmpty();
     }
 
     @Override
@@ -58,12 +58,12 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
 
-        if (this.orPermissions.stream().anyMatch(p -> p.hasPermission(player))) {
-            return true;
+        if (!this.orPermissions.isEmpty()) {
+            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player));
         }
 
-        if (this.permissions.stream().allMatch(p -> p.hasPermission(player))) {
-            return true;
+        if (!this.permissions.isEmpty()) {
+            return this.permissions.stream().allMatch(p -> p.hasPermission(player) == true);
         }
 
         return permission != null && permission.hasPermission(player);
