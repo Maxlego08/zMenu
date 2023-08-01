@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.0.4</version>
+  <version>1.0.0.5</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -113,6 +113,34 @@
       <artifactId>hdb-api</artifactId>
       <version>1.0</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.oraxen</groupId>
+      <artifactId>oraxen</artifactId>
+      <version>1.159.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>mclogs</artifactId>
+          <groupId>gs.mclo</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>PlayerAnimator</artifactId>
+          <groupId>com.ticxo</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>actions-spigot</artifactId>
+          <groupId>me.gabytm.util</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>net.kyori</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>com.jeff_media</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <properties>

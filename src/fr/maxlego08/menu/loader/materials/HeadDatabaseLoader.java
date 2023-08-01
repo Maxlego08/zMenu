@@ -20,8 +20,8 @@ public class HeadDatabaseLoader implements MaterialLoader {
             HeadDatabaseAPI api = new HeadDatabaseAPI();
             return api.getItemHead(materialString);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
 
         return null;
