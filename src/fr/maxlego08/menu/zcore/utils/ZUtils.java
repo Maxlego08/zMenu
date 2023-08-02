@@ -57,12 +57,10 @@ public abstract class ZUtils extends MessageUtils {
         if (!NMSUtils.isNewVersion()) {
             byId = new Material[0];
             for (Material material : Material.values()) {
-                if (byId.length > material.getId()) {
-                    byId[material.getId()] = material;
-                } else {
+                if (byId.length <= material.getId()) {
                     byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
-                    byId[material.getId()] = material;
                 }
+                byId[material.getId()] = material;
             }
         }
     }

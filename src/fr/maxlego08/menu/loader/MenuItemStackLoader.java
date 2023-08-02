@@ -3,13 +3,15 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.Potion;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.*;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import org.bukkit.Color;
 import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -68,8 +70,49 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (split.length != 2) continue;
                 patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
             }
-
             menuItemStack.setBanner(new Banner(dyeColor, patterns));
+
+        }
+
+        if (configuration.contains(path + "firework")) {
+
+            ConfigurationSection section = configuration.getConfigurationSection(path + "firework");
+            if (section != null) {
+                boolean isStar = section.getBoolean("star", false);
+                FireworkEffect.Builder builder = FireworkEffect.builder();
+                builder.flicker(section.getBoolean("flicker"));
+                builder.trail(section.getBoolean("trail"));
+                builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
+                builder.withColor(getColors(section, "colors"));
+                builder.withFade(getColors(section, "fakeColors"));
+                menuItemStack.setFirework(new Firework(isStar, builder.build()));
+            }
+
+        }
+
+        // I don't know how to write here
+        if (configuration.contains(path + "color")) {
+
+            String color = configuration.getString(path + "color", "");
+            Material material = Material.valueOf(configuration.getString("material", null));
+            String name = material.toString();
+            Color c;
+
+            String[] split = color.split(",");
+
+            if (split.length == 3) {
+                c = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+            } else if (split.length == 4) {
+                c = Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+            } else {
+                //default armor color
+                c = Color.fromRGB(160,101,64);
+            }
+
+            if (name.startsWith("LEATHER_")) {
+                String type = name.replace("LEATHER_","");
+                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type),c));
+            }
 
         }
 
@@ -117,6 +160,22 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setFlags(flags);
 
         return menuItemStack;
+    }
+
+    private List<Color> getColors(ConfigurationSection section, String key) {
+        List<Color> colors = new ArrayList<>();
+
+        for (String color : section.getStringList(key)) {
+            String[] split = color.split(",");
+
+            if (split.length == 3) {
+                colors.add(Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+            } else if (split.length == 4) {
+                colors.add(Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3])));
+            }
+        }
+
+        return colors;
     }
 
     /**
