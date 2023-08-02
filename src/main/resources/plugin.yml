@@ -10,5 +10,6 @@ softdepend:
 - HeadDatabase
 - PlaceholderAPI
 - zTranslator
-
+- ItemsAdder
+- Slimefun
 folia-supported: true
