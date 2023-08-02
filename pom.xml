@@ -96,6 +96,18 @@
 	</repositories>
 	<dependencies>
 		<dependency>
+			<groupId>com.github.Slimefun</groupId>
+			<artifactId>Slimefun4</artifactId>
+			<version>RC-34</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.LoneDev6</groupId>
+			<artifactId>api-itemsadder</artifactId>
+			<version>3.5.0b</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.Maxlego08</groupId>
 			<artifactId>zTranslator</artifactId>
 			<version>1.0.0.0</version>

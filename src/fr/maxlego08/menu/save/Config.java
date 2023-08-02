@@ -15,6 +15,9 @@ public class Config implements Savable {
     public static int secondsSavePlayerData = 600;
     public static int secondsSavePlayerInventories = 600;
     public static boolean autoSaveFileInventoryOnUpdate = true;
+    public static String mainMenu = "example";
+    public static boolean useFKeyToOpenMainMenu = false;
+    public static boolean useFKeyToOpenMainMenuNeedsShift = false;
 
 
     /**

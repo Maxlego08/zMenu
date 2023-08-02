@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import fr.maxlego08.menu.zcore.utils.*;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -17,8 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.zcore.utils.Potion;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 
 public class MenuItemStack extends ZUtils {
@@ -37,6 +36,9 @@ public class MenuItemStack extends ZUtils {
 	private boolean isGlowing;
 	private int modelID;
 	private Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
+	private Banner banner;
+	private Firework firework;
+	private LeatherArmor leatherArmor;
 
 	public MenuItemStack(InventoryManager inventoryManager) {
 		super();
@@ -117,6 +119,18 @@ public class MenuItemStack extends ZUtils {
 
 		if (this.potion != null) {
 			itemStack = potion.toItemStack(amount);
+		}
+
+		if (this.banner != null) {
+			itemStack = banner.toItemStack(amount);
+		}
+
+		if (this.firework != null) {
+			itemStack = firework.toItemStack(amount);
+		}
+
+		if (this.leatherArmor != null) {
+			itemStack = leatherArmor.toItemStack(amount);
 		}
 
 		if (itemStack == null) {
@@ -247,6 +261,27 @@ public class MenuItemStack extends ZUtils {
 	}
 
 	/**
+	 * @return the banner
+	 */
+	public Banner getBanner(){
+		return banner;
+	}
+
+	/**
+	 * @return the firework
+	 */
+	public Firework getFirework(){
+		return firework;
+	}
+
+	/**
+	 * @return the leather armor
+	 */
+	public LeatherArmor getLeatherArmor(){
+		return leatherArmor;
+	}
+
+	/**
 	 * @param material
 	 *            the material to set
 	 */
@@ -342,4 +377,27 @@ public class MenuItemStack extends ZUtils {
 		this.enchantments = enchantments;
 	}
 
+	/**
+	 * @param banner
+	 *            the banner to set
+	 */
+	public void setBanner(Banner banner){
+		this.banner = banner;
+	}
+
+	/**
+	 * @param firework
+	 *            the firework to set
+	 */
+	public void setFirework(Firework firework) {
+		this.firework = firework;
+	}
+
+	/**
+	 * @param leatherArmor
+	 *            the leather armor to set
+	 */
+	public void setLeatherArmor(LeatherArmor leatherArmor) {
+		this.leatherArmor = leatherArmor;
+	}
 }

@@ -137,7 +137,7 @@ public class Potion {
                 type = PotionType.WATER;
         }
         Potion potion;
-        if (type == null || type == PotionType.WATER) {
+        if (type == PotionType.WATER) {
             potion = new Potion(PotionType.WATER);
         } else {
             int level = (damage & TIER_BIT) >> TIER_SHIFT;

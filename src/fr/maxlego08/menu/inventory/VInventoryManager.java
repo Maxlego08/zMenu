@@ -119,7 +119,7 @@ public class VInventoryManager extends ListenerAdapter {
         }
 
         InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
-        if (holder != null && holder instanceof VInventory) {
+        if (holder instanceof VInventory) {
 
             VInventory inventory = (VInventory) holder;
             if (inventory.getPlayer().equals(player) && event.getView().getTitle().equals(inventory.getGuiName())) {
