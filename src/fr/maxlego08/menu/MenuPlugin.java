@@ -14,7 +14,9 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
+import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
 import fr.maxlego08.menu.loader.materials.OraxenLoader;
+import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -154,6 +156,12 @@ public class MenuPlugin extends ZPlugin {
         }
         if (this.isEnable(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
+        }
+        if (this.isEnable(Plugins.ITEMSADDER)) {
+            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader());
+        }
+        if (this.isEnable(Plugins.SLIMEFUN)) {
+            this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
         }
 
         this.getSavers().forEach(saver -> saver.load(this.getPersist()));

@@ -3,14 +3,19 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
+import fr.maxlego08.menu.zcore.utils.Banner;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import org.bukkit.DyeColor;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +27,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     private final InventoryManager manager;
 
     /**
-     * @param manager
+     * @param manager the inventory manager
      */
     public MenuItemStackLoader(InventoryManager manager) {
         super();
@@ -53,6 +58,21 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         }
 
+        if (configuration.contains(path + "banner")) {
+
+            DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase());
+            List<String> stringPattern = configuration.getStringList(path + "patterns");
+            List<Pattern> patterns = new ArrayList<>();
+            for (String string : stringPattern) {
+                String[] split = string.split(":");
+                if (split.length != 2) continue;
+                patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
+            }
+
+            menuItemStack.setBanner(new Banner(dyeColor, patterns));
+
+        }
+
         menuItemStack.setLore(configuration.getStringList(path + "lore"));
         menuItemStack.setDisplayName(configuration.getString(path + "name", null));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
@@ -70,10 +90,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (splitEnchant.length == 1)
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
 
-                int level = 0;
+                int level;
                 String enchant = splitEnchant[0];
                 try {
-                    level = Integer.valueOf(splitEnchant[1]);
+                    level = Integer.parseInt(splitEnchant[1]);
                 } catch (NumberFormatException e) {
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
                 }
