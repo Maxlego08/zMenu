@@ -13,6 +13,7 @@ import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
+import fr.maxlego08.menu.listener.FKeyListener;
 import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
 import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
 import fr.maxlego08.menu.loader.materials.OraxenLoader;
@@ -181,6 +182,8 @@ public class MenuPlugin extends ZPlugin {
             Token.getInstance().load(this.getPersist());
         }
 
+        // Must register after config loads
+        this.addListener(new FKeyListener());
         // new VersionChecker(this, 253).useLastVersion();
 
         this.postEnable();
