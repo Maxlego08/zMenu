@@ -3,14 +3,21 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.Potion;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.*;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +29,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     private final InventoryManager manager;
 
     /**
-     * @param manager
+     * @param manager the inventory manager
      */
     public MenuItemStackLoader(InventoryManager manager) {
         super();
@@ -53,6 +60,62 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         }
 
+        if (configuration.contains(path + "banner")) {
+
+            DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase());
+            List<String> stringPattern = configuration.getStringList(path + "patterns");
+            List<Pattern> patterns = new ArrayList<>();
+            for (String string : stringPattern) {
+                String[] split = string.split(":");
+                if (split.length != 2) continue;
+                patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
+            }
+            menuItemStack.setBanner(new Banner(dyeColor, patterns));
+
+        }
+
+        if (configuration.contains(path + "firework")) {
+
+            ConfigurationSection section = configuration.getConfigurationSection(path + "firework");
+            if (section != null) {
+                boolean isStar = section.getBoolean("star", false);
+                FireworkEffect.Builder builder = FireworkEffect.builder();
+                builder.flicker(section.getBoolean("flicker"));
+                builder.trail(section.getBoolean("trail"));
+                builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
+                builder.withColor(getColors(section, "colors"));
+                builder.withFade(getColors(section, "fakeColors"));
+                menuItemStack.setFirework(new Firework(isStar, builder.build()));
+            }
+
+        }
+
+        // I don't know how to write here
+        if (configuration.contains(path + "color")) {
+
+            Material material = Material.valueOf(configuration.getString(path + "type", null));
+            String materialName = material.toString();
+
+            if (materialName.startsWith("LEATHER_")) {
+                String color = configuration.getString(path + "color", "");
+                Color armorColor;
+
+                String[] split = color.split(",");
+
+                if (split.length == 3) {
+                    armorColor = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                } else if (split.length == 4) {
+                    armorColor = Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+                } else {
+                    armorColor = Color.fromRGB(160, 101, 64);
+                }
+
+                String type = materialName.replace("LEATHER_", "");
+                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
+            }
+
+        }
+
         menuItemStack.setLore(configuration.getStringList(path + "lore"));
         menuItemStack.setDisplayName(configuration.getString(path + "name", null));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
@@ -70,10 +133,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (splitEnchant.length == 1)
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
 
-                int level = 0;
+                int level;
                 String enchant = splitEnchant[0];
                 try {
-                    level = Integer.valueOf(splitEnchant[1]);
+                    level = Integer.parseInt(splitEnchant[1]);
                 } catch (NumberFormatException e) {
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
                 }
@@ -97,6 +160,22 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setFlags(flags);
 
         return menuItemStack;
+    }
+
+    private List<Color> getColors(ConfigurationSection section, String key) {
+        List<Color> colors = new ArrayList<>();
+
+        for (String color : section.getStringList(key)) {
+            String[] split = color.split(",");
+
+            if (split.length == 3) {
+                colors.add(Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+            } else if (split.length == 4) {
+                colors.add(Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3])));
+            }
+        }
+
+        return colors;
     }
 
     /**

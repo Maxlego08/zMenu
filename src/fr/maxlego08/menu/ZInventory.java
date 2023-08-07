@@ -69,7 +69,7 @@ public class ZInventory implements Inventory {
 
     @Override
     public <T extends Button> List<T> getButtons(Class<T> type) {
-        return this.getButtons().stream().filter(e -> type.isAssignableFrom(e.getClass())).map(e -> (T) e)
+        return this.getButtons().stream().filter(e -> type.isAssignableFrom(e.getClass())).map(type::cast)
                 .collect(Collectors.toList());
     }
 

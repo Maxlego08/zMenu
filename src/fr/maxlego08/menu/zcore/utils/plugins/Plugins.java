@@ -9,12 +9,15 @@ public enum Plugins {
 	CITIZENS("Citizens"),
 	TRANSLATIONAPI("TranslationAPI"),
 	ZTRANSLATOR("zTranslator"),
-	
+	ORAXEN("Oraxen"),
+	ITEMSADDER("ItemsAdder"),
+	SLIMEFUN("Slimefun"),
+
 	;
 
 	private final String name;
 
-	private Plugins(String name) {
+	Plugins(String name) {
 		this.name = name;
 	}
 

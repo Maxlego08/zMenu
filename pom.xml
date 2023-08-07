@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.maxlego08</groupId>
 	<artifactId>zmenu</artifactId>
-	<version>1.0.0.4</version>
+	<version>1.0.0.6</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -26,10 +26,6 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.4.1</version>
 				<configuration>
-					<!-- Here you can remove the classes you don't use. -->
-					<!-- These are some examples. -->
-					<!-- The "unused" package and SkullCacheListener are excluded by default. -->
-					<!-- Some utilities such a XItemStack depend on more than 3 other classes, so watch out. -->
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>
@@ -96,6 +92,18 @@
 	</repositories>
 	<dependencies>
 		<dependency>
+			<groupId>com.github.Slimefun</groupId>
+			<artifactId>Slimefun4</artifactId>
+			<version>RC-34</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.LoneDev6</groupId>
+			<artifactId>api-itemsadder</artifactId>
+			<version>3.5.0b</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.Maxlego08</groupId>
 			<artifactId>zTranslator</artifactId>
 			<version>1.0.0.0</version>
@@ -129,6 +137,34 @@
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>9.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.oraxen</groupId>
+			<artifactId>oraxen</artifactId>
+			<version>1.159.0</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>gs.mclo</groupId>
+					<artifactId>mclogs</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.ticxo</groupId>
+					<artifactId>PlayerAnimator</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>me.gabytm.util</groupId>
+					<artifactId>actions-spigot</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.kyori</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.jeff_media</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

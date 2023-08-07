@@ -57,12 +57,10 @@ public abstract class ZUtils extends MessageUtils {
         if (!NMSUtils.isNewVersion()) {
             byId = new Material[0];
             for (Material material : Material.values()) {
-                if (byId.length > material.getId()) {
-                    byId[material.getId()] = material;
-                } else {
+                if (byId.length < material.getId()) {
                     byId = Arrays.copyOfRange(byId, 0, material.getId() + 2);
-                    byId[material.getId()] = material;
                 }
+                byId[material.getId()] = material;
             }
         }
     }
@@ -549,8 +547,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String generateRandomString(int length) {
-        RandomString randomString = new RandomString(length);
-        return randomString.nextString();
+        return new RandomString(length).nextString();
     }
 
     /**
@@ -604,7 +601,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param value
      * @return
      */
-    protected String getDisplayBalence(double value) {
+    protected String getDisplayBalance(double value) {
         if (value < 10000)
             return format(value, "#.#");
         else if (value < 1000000)
@@ -621,7 +618,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param value
      * @return
      */
-    protected String getDisplayBalence(long value) {
+    protected String getDisplayBalance(long value) {
         if (value < 10000)
             return format(value, "#.#");
         else if (value < 1000000)
@@ -702,10 +699,10 @@ public abstract class ZUtils extends MessageUtils {
         for (int a = splitPrice.length - 1; a > -1; a--) {
             current++;
             if (current > 3) {
-                betterPrice += ".";
+                betterPrice = betterPrice.concat(".");
                 current = 1;
             }
-            betterPrice += splitPrice[a];
+            betterPrice = betterPrice.concat(splitPrice[a]);
         }
         StringBuilder builder = new StringBuilder().append(betterPrice);
         builder.reverse();
@@ -787,11 +784,11 @@ public abstract class ZUtils extends MessageUtils {
             return list.get(0);
         String str = "";
         for (int a = 0; a != list.size(); a++) {
-            if (a == list.size() - 1 && a != 0)
-                str += color + " et " + color2;
+            if (a == list.size() - 1)
+                str = str.concat(color + " et " + color2);
             else if (a != 0)
-                str += color + ", " + color2;
-            str += list.get(a);
+                str = str.concat(color + ", " + color2);
+            str = str.concat(list.get(a));
         }
         return str;
     }
@@ -890,7 +887,7 @@ public abstract class ZUtils extends MessageUtils {
         RegisteredServiceProvider<T> provider = plugin.getServer().getServicesManager().getRegistration(classz);
         if (provider == null)
             return null;
-        return provider.getProvider() != null ? provider.getProvider() : null;
+        return provider.getProvider();
     }
 
     /**
