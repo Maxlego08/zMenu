@@ -26,10 +26,6 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.4.1</version>
 				<configuration>
-					<!-- Here you can remove the classes you don't use. -->
-					<!-- These are some examples. -->
-					<!-- The "unused" package and SkullCacheListener are excluded by default. -->
-					<!-- Some utilities such a XItemStack depend on more than 3 other classes, so watch out. -->
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>

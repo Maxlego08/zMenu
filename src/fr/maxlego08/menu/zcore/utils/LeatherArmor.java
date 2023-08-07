@@ -47,6 +47,9 @@ public class LeatherArmor {
             case BOOTS:
                 material = Material.LEATHER_BOOTS;
                 break;
+            case HORSE_ARMOR:
+                material = Material.LEATHER_HORSE_ARMOR;
+                break;
         }
         ItemStack stack = new ItemStack(material, amount);
         LeatherArmorMeta lam = (LeatherArmorMeta) stack.getItemMeta();
@@ -59,6 +62,7 @@ public class LeatherArmor {
         HELMET,
         CHESTPLATE,
         LEGGINGS,
-        BOOTS
+        BOOTS,
+        HORSE_ARMOR
     }
 }
