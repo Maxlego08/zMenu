@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,7 @@ public class Potion {
     private boolean splash = false;
     private int level = 1;
     private PotionType type;
+    private Color color;
 
     /**
      * Construct a new potion of the given type. Unless the type is
@@ -283,6 +285,24 @@ public class Potion {
     }
 
     /**
+     * Returns the {@link Color} of this potion.
+     *
+     * @return The color of this potion
+     */
+    public Color getColor(){
+        return color;
+    }
+
+    /**
+     * Set the {@link Color} of this potion
+     *
+     * @param color The new color of this potion.
+     */
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    /**
      * Returns whether this potion has an extended duration.
      *
      * @return Whether this potion has extended duration
@@ -359,6 +379,7 @@ public class Potion {
         ItemStack itemStack = new ItemStack(material, amount);
         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
         meta.setBasePotionData(new PotionData(type, level == 2, extended));
+        if (color != null) meta.setColor(color);
         itemStack.setItemMeta(meta);
         return itemStack;
     }

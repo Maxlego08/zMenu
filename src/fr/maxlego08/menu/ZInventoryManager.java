@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
 
-    private final Map<String, List<Inventory>> inventories = new HashMap<String, List<Inventory>>();
+    private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
 
@@ -86,7 +86,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
-        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
 
@@ -128,13 +128,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Collection<Inventory> getInventories(Plugin plugin) {
         return plugin == null ? new ArrayList<>()
-                : this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+                : this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
     }
 
     @Override
     public void deleteInventory(Inventory inventory) {
         String pluginName = inventory.getPlugin().getName();
-        List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<Inventory>());
+        List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
     }
