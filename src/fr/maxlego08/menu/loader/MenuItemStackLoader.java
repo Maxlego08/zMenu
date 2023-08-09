@@ -17,6 +17,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,16 +49,25 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setMaterial(configuration.getString(path + "material", null));
         menuItemStack.setUrl(configuration.getString(path + "url", null));
 
-        if (configuration.contains(path + "potion")) {
+        Color potionColor = getColor(configuration, path + "color", null);
+        Material material = Material.valueOf(configuration.getString(path + "type", null));
+        String materialName = material.toString();
 
+        if (configuration.contains(path + "potion")) {
             PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
             int level = configuration.getInt(path + "level", 1);
             boolean splash = configuration.getBoolean(path + "splash", false);
             boolean extended = configuration.getBoolean(path + "extended", false);
 
             Potion potion = new Potion(type, level, splash, extended);
+            potion.setColor(potionColor);
             menuItemStack.setPotion(potion);
+        }
 
+        if (materialName.startsWith("LEATHER_")) {
+            Color armorColor = getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
+            String type = materialName.replace("LEATHER_", "");
+            menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
         }
 
         if (configuration.contains(path + "banner")) {
@@ -90,39 +100,13 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         }
 
-        // I don't know how to write here
-        if (configuration.contains(path + "color")) {
-
-            Material material = Material.valueOf(configuration.getString(path + "type", null));
-            String materialName = material.toString();
-
-            if (materialName.startsWith("LEATHER_")) {
-                String color = configuration.getString(path + "color", "");
-                Color armorColor;
-
-                String[] split = color.split(",");
-
-                if (split.length == 3) {
-                    armorColor = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-                } else if (split.length == 4) {
-                    armorColor = Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
-                } else {
-                    armorColor = Color.fromRGB(160, 101, 64);
-                }
-
-                String type = materialName.replace("LEATHER_", "");
-                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
-            }
-
-        }
-
         menuItemStack.setLore(configuration.getStringList(path + "lore"));
         menuItemStack.setDisplayName(configuration.getString(path + "name", null));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
         menuItemStack.setModelID(configuration.getInt(path + "modelID", 0));
 
         List<String> enchants = configuration.getStringList(path + "enchants");
-        Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
 
         for (String enchantString : enchants) {
 
@@ -162,6 +146,18 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         return menuItemStack;
     }
 
+    private Color getColor(YamlConfiguration configuration, String key, Color def) {
+        String[] split = configuration.getString(key,"").split(",");
+
+        if (split.length == 3) {
+            return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+        } else if (split.length == 4) {
+            return Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+        }
+
+        return def;
+    }
+
     private List<Color> getColors(ConfigurationSection section, String key) {
         List<Color> colors = new ArrayList<>();
 
@@ -181,7 +177,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      *
      */
-    public void save(MenuItemStack item, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
 
     }
 
