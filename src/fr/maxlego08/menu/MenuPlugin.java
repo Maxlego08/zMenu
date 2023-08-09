@@ -88,7 +88,7 @@ public class MenuPlugin extends ZPlugin {
 
         this.preEnable();
 
-        List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
         files.add("inventories/example.yml");
         files.add("inventories/example_shop.yml");
         files.add("inventories/example_punish.yml");

@@ -225,6 +225,21 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+
+        // Load specify path inventories
+        List<String> list = Config.specifyPathMenus;
+        for (String s : list) {
+            File file = new File(s);
+            if (file.isFile()) {
+                if (file.getName().endsWith(".yml")) {
+                    try {
+                        this.loadInventory(this.plugin, file);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     @Override
