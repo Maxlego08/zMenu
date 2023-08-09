@@ -20,6 +20,8 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 
+import javax.annotation.Nullable;
+
 public class MenuItemStack extends ZUtils {
 
 	private final InventoryManager inventoryManager;
@@ -30,8 +32,8 @@ public class MenuItemStack extends ZUtils {
 	private int data;
 	private int durability;
 	private Potion potion;
-	private List<String> lore = new ArrayList<String>();
-	private List<ItemFlag> flags = new ArrayList<ItemFlag>();
+	private List<String> lore = new ArrayList<>();
+	private List<ItemFlag> flags = new ArrayList<>();
 	private String displayName;
 	private boolean isGlowing;
 	private int modelID;
@@ -193,6 +195,7 @@ public class MenuItemStack extends ZUtils {
 	/**
 	 * @return the url
 	 */
+	@Nullable
 	public String getUrl() {
 		return url;
 	}
