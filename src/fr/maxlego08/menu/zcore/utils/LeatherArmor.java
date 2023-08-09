@@ -33,21 +33,13 @@ public class LeatherArmor {
 
     @NotNull
     public ItemStack toItemStack(int amount){
-        Material material = null;
-        switch (type) {
-            case HELMET:
-                material = Material.LEATHER_HELMET;
-                break;
-            case CHESTPLATE:
-                material = Material.LEATHER_CHESTPLATE;
-                break;
-            case LEGGINGS:
-                material = Material.LEATHER_LEGGINGS;
-                break;
-            case BOOTS:
-                material = Material.LEATHER_BOOTS;
-                break;
-        }
+        Material material = switch (type) {
+            case HELMET -> Material.LEATHER_HELMET;
+            case CHESTPLATE -> Material.LEATHER_CHESTPLATE;
+            case LEGGINGS -> Material.LEATHER_LEGGINGS;
+            case BOOTS ->Material.LEATHER_BOOTS;
+            case HORSE_ARMOR -> Material.LEATHER_HORSE_ARMOR;
+        };
         ItemStack stack = new ItemStack(material, amount);
         LeatherArmorMeta lam = (LeatherArmorMeta) stack.getItemMeta();
         lam.setColor(color);
@@ -59,6 +51,7 @@ public class LeatherArmor {
         HELMET,
         CHESTPLATE,
         LEGGINGS,
-        BOOTS
+        BOOTS,
+        HORSE_ARMOR;
     }
 }

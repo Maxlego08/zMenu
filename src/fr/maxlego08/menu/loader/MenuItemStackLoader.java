@@ -111,28 +111,27 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         if (configuration.contains(path + "color")) {
 
-            String color = configuration.getString(path + "color", "");
-            Material material = Material.valueOf(configuration.getString("material", null));
-            String name = material.toString();
-            Color c;
+            Material material = Material.valueOf(configuration.getString(path + "type", null));
+            String materialName = material.toString();
 
-            String[] split = color.split(",");
+            if (materialName.startsWith("LEATHER_")) {
+                String color = configuration.getString(path + "color", "");
+                Color armorColor;
 
-            //RGB(Red, Green, Blue) or ARGB(Alpha, Red, Green, Blue)
-            if (split.length == 3) {
-                c = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-            } else if (split.length == 4) {
-                c = Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
-            } else {
-                //default armor color
-                c = Color.fromRGB(160,101,64);
+                String[] split = color.split(",");
+
+                //RGB(Red, Green, Blue) or ARGB(Alpha, Red, Green, Blue)
+                if (split.length == 3) {
+                    armorColor = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                } else if (split.length == 4) {
+                    armorColor = Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+                } else {
+                    armorColor = Color.fromRGB(160, 101, 64);
+                }
+
+                String type = materialName.replace("LEATHER_", "");
+                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
             }
-
-            if (name.startsWith("LEATHER_")) {
-                String type = name.replace("LEATHER_","");
-                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type),c));
-            }
-
         }
 
         menuItemStack.setLore(configuration.getStringList(path + "lore"));

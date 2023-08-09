@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.maxlego08</groupId>
 	<artifactId>zmenu</artifactId>
-	<version>1.0.0.5</version>
+	<version>1.0.0.6</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -26,10 +26,6 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.4.1</version>
 				<configuration>
-					<!-- Here you can remove the classes you don't use. -->
-					<!-- These are some examples. -->
-					<!-- The "unused" package and SkullCacheListener are excluded by default. -->
-					<!-- Some utilities such a XItemStack depend on more than 3 other classes, so watch out. -->
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>
@@ -70,7 +66,15 @@
 					</execution>
 				</executions>
 			</plugin>
-        </plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>14</source>
+					<target>14</target>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 	<repositories>
 		<repository>
