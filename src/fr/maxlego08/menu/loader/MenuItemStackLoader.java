@@ -17,7 +17,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionType;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,30 +50,12 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         if (configuration.contains(path + "potion")) {
 
-            Color c = null;
-
-            if (configuration.contains(path + "color")) {
-
-                String color = configuration.getString(path + "color", "");
-
-                String[] split = color.split(",");
-
-                //RGB(Red, Green, Blue) or ARGB(Alpha, Red, Green, Blue)
-                if (split.length == 3) {
-                    c = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-                } else if (split.length == 4) {
-                    c = Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
-                }
-            }
-
             PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
             int level = configuration.getInt(path + "level", 1);
             boolean splash = configuration.getBoolean(path + "splash", false);
             boolean extended = configuration.getBoolean(path + "extended", false);
 
             Potion potion = new Potion(type, level, splash, extended);
-            potion.setColor(c);
-
             menuItemStack.setPotion(potion);
 
         }
@@ -89,7 +70,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (split.length != 2) continue;
                 patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
             }
-            menuItemStack.setBanner(patterns.isEmpty() ? new Banner(dyeColor) : new Banner(dyeColor, patterns));
+            menuItemStack.setBanner(new Banner(dyeColor, patterns));
 
         }
 
@@ -103,12 +84,13 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 builder.trail(section.getBoolean("trail"));
                 builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
                 builder.withColor(getColors(section, "colors"));
-                builder.withFade(getColors(section, "fadeColors"));
+                builder.withFade(getColors(section, "fakeColors"));
                 menuItemStack.setFirework(new Firework(isStar, builder.build()));
             }
 
         }
 
+        // I don't know how to write here
         if (configuration.contains(path + "color")) {
 
             Material material = Material.valueOf(configuration.getString(path + "type", null));
@@ -120,7 +102,6 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
                 String[] split = color.split(",");
 
-                //RGB(Red, Green, Blue) or ARGB(Alpha, Red, Green, Blue)
                 if (split.length == 3) {
                     armorColor = Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
                 } else if (split.length == 4) {
@@ -132,6 +113,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 String type = materialName.replace("LEATHER_", "");
                 menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
             }
+
         }
 
         menuItemStack.setLore(configuration.getStringList(path + "lore"));
@@ -140,7 +122,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setModelID(configuration.getInt(path + "modelID", 0));
 
         List<String> enchants = configuration.getStringList(path + "enchants");
-        Map<Enchantment, Integer> enchantments = new HashMap<>();
+        Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
 
         for (String enchantString : enchants) {
 
@@ -199,7 +181,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      *
      */
-    public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(MenuItemStack item, YamlConfiguration configuration, String path, Object... objects) {
 
     }
 
