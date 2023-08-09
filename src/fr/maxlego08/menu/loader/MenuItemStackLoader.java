@@ -17,6 +17,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -199,7 +200,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      *
      */
-    public void save(MenuItemStack item, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
 
     }
 

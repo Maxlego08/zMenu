@@ -6,6 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.MaterialData;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
@@ -25,7 +27,7 @@ public class ButtonLoader extends ZUtils implements Loader<Button> {
     }
 
     @Override
-    public void save(Button object, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
 
         configuration.set(path + "name", object.getName() != null ? colorReverse(object.getName()) : null);
         configuration.set(path + "slot", object.getSlot());
@@ -34,6 +36,11 @@ public class ButtonLoader extends ZUtils implements Loader<Button> {
         configuration.set(path + "material", materialData == null ? null : materialData.getItemType());
         configuration.set(path + "data", materialData == null ? null : materialData.getData());
 
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

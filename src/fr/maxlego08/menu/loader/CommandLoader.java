@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class CommandLoader implements Loader<Command> {
@@ -15,7 +16,7 @@ public class CommandLoader implements Loader<Command> {
     private final Plugin plugin;
 
     /**
-     * @param plugin
+     * @param plugin the plugin
      */
     public CommandLoader(Plugin plugin) {
         super();
@@ -37,7 +38,19 @@ public class CommandLoader implements Loader<Command> {
     }
 
     @Override
-    public void save(Command object, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(Command object, YamlConfiguration configuration, String path, File file, Object... objects) {
+
+        configuration.set(path + "command", object.getCommand());
+        configuration.set(path + "permission", object.getPermission());
+        configuration.set(path + "inventory", object.getInventory());
+        configuration.set(path + "aliases", object.getAliases());
+        configuration.set(path + "arguments", object.getArguments());
+
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
-    private final Map<String, List<ButtonLoader>> loaders = new HashMap<String, List<ButtonLoader>>();
+    private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
 
     @Override
     public void register(ButtonLoader button) {
@@ -27,7 +27,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         }
 
         Plugin plugin = button.getPlugin();
-        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(plugin.getName(), new ArrayList<ButtonLoader>());
+        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
         buttonLoaders.add(button);
         this.loaders.put(plugin.getName(), buttonLoaders);
     }
@@ -35,7 +35,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public void unregister(ButtonLoader button) {
         String pluginName = button.getPlugin().getName();
-        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(pluginName, new ArrayList<ButtonLoader>());
+        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(pluginName, new ArrayList<>());
         buttonLoaders.add(button);
         this.loaders.put(pluginName, buttonLoaders);
     }
@@ -52,7 +52,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public Collection<ButtonLoader> getLoaders(Plugin plugin) {
-        return this.loaders.getOrDefault(plugin.getName(), new ArrayList<ButtonLoader>());
+        return this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
     }
 
     @Override

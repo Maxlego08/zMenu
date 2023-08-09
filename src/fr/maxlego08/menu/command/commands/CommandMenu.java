@@ -18,6 +18,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuReload(plugin));
         this.addSubCommand(new CommandMenuVersion(plugin));
         this.addSubCommand(new CommandMenuPlayers(plugin));
+        this.addSubCommand(new CommandMenuOpenMainMenu(plugin));
 
 		/* Disable website connexion for beta
 		this.addSubCommand(new CommandMenuDownload(plugin));

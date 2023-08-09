@@ -1,7 +1,5 @@
 package fr.maxlego08.menu;
 
-import fr.maxlego08.menu.MenuItemStack;
-import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;

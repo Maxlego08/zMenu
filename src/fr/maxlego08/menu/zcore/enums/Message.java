@@ -67,6 +67,7 @@ public enum Message {
     DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player"),
     DESCRIPTION_PLAYERS_CLEAR_ALL("Clear all player's data"),
     DESCRIPTION_PLAYERS_CLEAR_PLAYER("Clear player's data"),
+	DESCRIPTION_OPEN_MAIN_MENU("Open the main menu"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),

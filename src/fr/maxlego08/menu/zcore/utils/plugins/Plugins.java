@@ -12,6 +12,7 @@ public enum Plugins {
 	ORAXEN("Oraxen"),
 	ITEMSADDER("ItemsAdder"),
 	SLIMEFUN("Slimefun"),
+	NOVA("Nova"),
 
 	;
 
