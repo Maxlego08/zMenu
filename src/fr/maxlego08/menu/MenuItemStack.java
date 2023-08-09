@@ -35,7 +35,7 @@ public class MenuItemStack extends ZUtils {
 	private String displayName;
 	private boolean isGlowing;
 	private int modelID;
-	private Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
+	private Map<Enchantment, Integer> enchantments = new HashMap<>();
 	private Banner banner;
 	private Firework firework;
 	private LeatherArmor leatherArmor;

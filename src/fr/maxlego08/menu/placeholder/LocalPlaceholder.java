@@ -17,7 +17,7 @@ public class LocalPlaceholder {
 	private MenuPlugin plugin;
 	private final String prefix = "zmenu";
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
-	private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<AutoPlaceholder>();
+	private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<>();
 
 	/**
 	 * Set plugin instance

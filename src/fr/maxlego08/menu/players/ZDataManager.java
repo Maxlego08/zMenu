@@ -82,21 +82,21 @@ public class ZDataManager implements DataManager {
 
     public List<String> getKeys(String[] args) {
         if (args.length != 4) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         try {
             String playerName = args[2];
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
-                return new ArrayList<String>();
+                return new ArrayList<>();
             }
 
             PlayerData playerData = optional.get();
             return playerData.getDatas().stream().map(Data::getKey).collect(Collectors.toList());
 
         } catch (Exception e) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 

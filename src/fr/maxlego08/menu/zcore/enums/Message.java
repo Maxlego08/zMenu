@@ -1,9 +1,6 @@
 package fr.maxlego08.menu.zcore.enums;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -115,7 +112,7 @@ public enum Message {
 	private List<String> messages;
 	private String message;
 	private Map<String, Object> titles = new HashMap<>();
-	private boolean use = true;
+	private boolean use;
 	private MessageType type = MessageType.TCHAT;
 
 	private ItemStack itemStack;
@@ -124,7 +121,7 @@ public enum Message {
 	 * 
 	 * @param message
 	 */
-	private Message(String message) {
+    Message(String message) {
 		this.message = message;
 		this.use = true;
 	}
@@ -137,7 +134,7 @@ public enum Message {
 	 * @param b
 	 * @param c
 	 */
-	private Message(String title, String subTitle, int a, int b, int c) {
+    Message(String title, String subTitle, int a, int b, int c) {
 		this.use = true;
 		this.titles.put("title", title);
 		this.titles.put("subtitle", subTitle);
@@ -152,7 +149,7 @@ public enum Message {
 	 * 
 	 * @param message
 	 */
-	private Message(String... message) {
+    Message(String... message) {
 		this.messages = Arrays.asList(message);
 		this.use = true;
 	}
@@ -161,7 +158,7 @@ public enum Message {
 	 * 
 	 * @param message
 	 */
-	private Message(MessageType type, String... message) {
+    Message(MessageType type, String... message) {
 		this.messages = Arrays.asList(message);
 		this.use = true;
 		this.type = type;
@@ -171,7 +168,7 @@ public enum Message {
 	 * 
 	 * @param message
 	 */
-	private Message(MessageType type, String message) {
+    Message(MessageType type, String message) {
 		this.message = message;
 		this.use = true;
 		this.type = type;
@@ -182,7 +179,7 @@ public enum Message {
 	 * @param message
 	 * @param use
 	 */
-	private Message(String message, boolean use) {
+    Message(String message, boolean use) {
 		this.message = message;
 		this.use = use;
 	}
@@ -208,7 +205,7 @@ public enum Message {
 	}
 
 	public List<String> getMessages() {
-		return messages == null ? Arrays.asList(message) : messages;
+		return messages == null ? Collections.singletonList(message) : messages;
 	}
 
 	public void setMessages(List<String> messages) {

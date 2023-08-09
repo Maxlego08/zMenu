@@ -115,7 +115,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("worldName", this.worldName);
         map.put("x1", this.x1);
         map.put("y1", this.y1);
@@ -153,7 +153,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
      */
     public List<Block> getBlocks(Material material) {
         Iterator<Block> blockI = this.iterator();
-        List<Block> copy = new ArrayList<Block>();
+        List<Block> copy = new ArrayList<>();
         while (blockI.hasNext()) {
             Block block = blockI.next();
             if (block.getType().equals(material)) copy.add(block);
@@ -168,14 +168,14 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
      */
     public List<Block> getBlocks() {
         Iterator<Block> blockI = this.iterator();
-        List<Block> copy = new ArrayList<Block>();
+        List<Block> copy = new ArrayList<>();
         while (blockI.hasNext())
             copy.add(blockI.next());
         return copy;
     }
 
     /**
-     * Get the the centre of the Cuboid.
+     * Get the centre of the Cuboid.
      *
      * @return Location at the centre of the Cuboid
      */
@@ -594,7 +594,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
      * @return A list of Chunk objects
      */
     public List<Chunk> getChunks() {
-        List<Chunk> res = new ArrayList<Chunk>();
+        List<Chunk> res = new ArrayList<>();
 
         World w = this.getWorld();
         int x1 = this.getLowerX() & ~0xf;

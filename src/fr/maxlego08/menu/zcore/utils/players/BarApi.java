@@ -114,13 +114,13 @@ public class BarApi {
         else {
             BossBar bar = Bukkit.createBossBar(message, color, style, flags);
             if (addAll)
-                Bukkit.getOnlinePlayers().forEach(tmpPlayer -> bar.addPlayer(tmpPlayer));
+                Bukkit.getOnlinePlayers().forEach(bar::addPlayer);
             barTask(bar, null);
         }
     }
 
     private void startPersonnal() {
-        Bukkit.getOnlinePlayers().forEach(tmpPlayer -> startPersonnal(tmpPlayer));
+        Bukkit.getOnlinePlayers().forEach(this::startPersonnal);
     }
 
     private void startPersonnal(Player player) {

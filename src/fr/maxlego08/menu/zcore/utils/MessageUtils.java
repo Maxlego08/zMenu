@@ -228,7 +228,7 @@ public abstract class MessageUtils extends LocationUtils {
         boolean isBold = false;
 
         for (char c : message.toCharArray()) {
-            if (c == '\u00a7') {
+            if (c == '§') {
                 previousCode = true;
             } else if (previousCode) {
                 previousCode = false;

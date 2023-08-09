@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
 
@@ -193,6 +194,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new HomeLoader(this.plugin, this));
         buttonManager.register(new NextLoader(this.plugin, this));
         buttonManager.register(new PreviousLoader(this.plugin, this));
+        buttonManager.register(new MainMenuLoader(this.plugin, this));
 
         ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
         event.call();
@@ -211,8 +213,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load inventories
-        try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
+        try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))) {
+            s.skip(1).map(Path::toFile).filter(File::isFile)
                     .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
                         try {
                             this.loadInventory(this.plugin, file);

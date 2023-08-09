@@ -89,7 +89,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (split.length != 2) continue;
                 patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
             }
-            menuItemStack.setBanner(new Banner(dyeColor, patterns));
+            menuItemStack.setBanner(patterns.isEmpty() ? new Banner(dyeColor) : new Banner(dyeColor, patterns));
 
         }
 
