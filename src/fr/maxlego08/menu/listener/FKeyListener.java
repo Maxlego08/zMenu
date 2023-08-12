@@ -6,11 +6,11 @@ import fr.maxlego08.menu.save.Config;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class FKeyListener implements Listener {
     @EventHandler
-    public void onPressFKey(PlayerItemHeldEvent e) {
+    public void onPressFKey(PlayerSwapHandItemsEvent e) {
         if (Config.useFKeyToOpenMainMenu) {
             InventoryManager im = MenuPlugin.getInstance().getInventoryManager();
             Player player = e.getPlayer();
