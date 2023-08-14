@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.action.loader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.cryptomorin.xseries.XSound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import fr.maxlego08.menu.MenuPlugin;
@@ -24,7 +27,7 @@ public class ActionClickLoader implements Loader<ActionClick> {
 	private final MenuPlugin plugin;
 
 	/**
-	 * @param plugin
+	 * @param plugin the plugin
 	 */
 	public ActionClickLoader(MenuPlugin plugin) {
 		super();
@@ -49,8 +52,8 @@ public class ActionClickLoader implements Loader<ActionClick> {
 
 		if (optionalXSound.isPresent()) {
 			XSound xSound = optionalXSound.get();
-			float pitch = Float.valueOf(configuration.getString(path + "pitch", "1.0f"));
-			float volume = Float.valueOf(configuration.getString(path + "volume", "1.0f"));
+			float pitch = Float.parseFloat(configuration.getString(path + "pitch", "1.0f"));
+			float volume = Float.parseFloat(configuration.getString(path + "volume", "1.0f"));
 			soundOption = new ZSoundOption(xSound, pitch, volume);
 		}
 
@@ -61,7 +64,7 @@ public class ActionClickLoader implements Loader<ActionClick> {
 
 		}
 
-		List<ActionPlayerData> actionPlayerDatas = new ArrayList<ActionPlayerData>();
+		List<ActionPlayerData> actionPlayerDatas = new ArrayList<>();
 		if (configuration.isConfigurationSection(path + "datas")) {
 			for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
 
@@ -76,9 +79,36 @@ public class ActionClickLoader implements Loader<ActionClick> {
 	}
 
 	@Override
-	public void save(ActionClick object, YamlConfiguration configuration, String path, Object... objects) {
-		// TODO Auto-generated method stub
+	public void save(ActionClick object, YamlConfiguration configuration, String path, File file, Object... objects) {
 
+		configuration.set(path + "messages", object.getMessages());
+		configuration.set(path + "consoleCommands", object.getConsoleCommands());
+		configuration.set(path + "playerCommands", object.getPlayerCommands());
+
+		if (object.getSound() != null) {
+			configuration.set(path + "sound", object.getSound().getSound().toString());
+			configuration.set(path + "pitch", object.getSound().getPitch());
+			configuration.set(path + "volume", object.getSound().getVolume());
+		}
+
+		if (object.getOpenLink() != null) {
+			OpenLinkLoader loader = new OpenLinkLoader();
+			loader.save(object.getOpenLink(), configuration, path + "openLink.", file);
+		}
+
+		if (!object.getPlayerDatas().isEmpty()) {
+			ActionPlayerDataLoader loader2 = new ActionPlayerDataLoader();
+
+			for (ActionPlayerData playerData : object.getPlayerDatas()) {
+				loader2.save(playerData, configuration, path + "datas." + playerData.getKey() + ".", file);
+			}
+		}
+
+		try {
+			configuration.save(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

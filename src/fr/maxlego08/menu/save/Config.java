@@ -3,6 +3,9 @@ package fr.maxlego08.menu.save;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
 
+import java.util.List;
+import java.util.Map;
+
 public class Config implements Savable {
 
     public static boolean enableDebug = true;
@@ -18,6 +21,7 @@ public class Config implements Savable {
     public static String mainMenu = "example";
     public static boolean useFKeyToOpenMainMenu = false;
     public static boolean useFKeyToOpenMainMenuNeedsShift = false;
+    public static List<String> specifyPathMenus;
 
 
     /**

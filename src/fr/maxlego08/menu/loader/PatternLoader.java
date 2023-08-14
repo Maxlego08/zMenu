@@ -3,16 +3,19 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.pattern.ZPattern;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.loader.ButtonLoader;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +64,20 @@ public class PatternLoader implements Loader<Pattern> {
     }
 
     @Override
-    public void save(Pattern object, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(Pattern object, YamlConfiguration configuration, String path, File file, Object... objects) {
+        ZButtonLoader loader = new ZButtonLoader(this.plugin, file, object.getInventorySize());
+
+        configuration.set("name", object.getName());
+        configuration.set("size", object.getInventorySize());
+
+        for (Button button : object.getButtons()) {
+            //TODO: SAVE BUTTONS
+        }
+
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

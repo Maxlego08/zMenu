@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ZPatternManager implements PatternManager {
 
@@ -80,8 +81,8 @@ public class ZPatternManager implements PatternManager {
         this.patterns.clear();
 
         // Load inventories
-        try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
+        try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))){
+           s.skip(1).map(Path::toFile).filter(File::isFile)
                     .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
                         try {
                             this.loadPattern(file);

@@ -68,7 +68,7 @@ public class DownloadFile extends ZUtils {
 
     public void unzipFolder(Path source, Path target) throws IOException {
 
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(source.toFile().toPath()))) {
 
             ZipEntry zipEntry = zis.getNextEntry();
 

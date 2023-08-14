@@ -50,7 +50,7 @@ public class DataAdapter extends TypeAdapter<Data> {
     }
 
     private String getRaw(Data data) {
-        Map<String, Object> serial = new HashMap<String, Object>();
+        Map<String, Object> serial = new HashMap<>();
 
         serial.put(KEY, data.getKey());
         serial.put(VALUE, data.getValue());

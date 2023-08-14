@@ -211,7 +211,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             if (command.sameSubCommands()) {
                 Logger.info(command + " command to an argument similar to its parent command !",
                         LogType.ERROR);
-                this.plugin.getPluginLoader().disablePlugin(this.plugin);
+                this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
         });
     }

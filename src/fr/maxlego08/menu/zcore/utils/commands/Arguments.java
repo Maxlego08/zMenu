@@ -45,7 +45,7 @@ public abstract class Arguments extends ZUtils {
      * @return
      */
     protected boolean argAsBoolean(int index) {
-        return Boolean.valueOf(argAsString(index));
+        return Boolean.parseBoolean(argAsString(index));
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class Arguments extends ZUtils {
      * @return
      */
     protected int argAsInteger(int index) {
-        return Integer.valueOf(argAsString(index));
+        return Integer.parseInt(argAsString(index));
     }
 
     /**
@@ -87,7 +87,7 @@ public abstract class Arguments extends ZUtils {
      * @return
      */
     protected long argAsLong(int index) {
-        return Long.valueOf(argAsString(index));
+        return Long.parseLong(argAsString(index));
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class Arguments extends ZUtils {
      */
     protected long argAsLong(int index, long defaultValue) {
         try {
-            return Long.valueOf(argAsString(index));
+            return Long.parseLong(argAsString(index));
         } catch (Exception e) {
             return defaultValue;
         }
@@ -110,7 +110,7 @@ public abstract class Arguments extends ZUtils {
      */
     protected double argAsDouble(int index, double defaultValue) {
         try {
-            return Double.valueOf(argAsString(index).replace(",", "."));
+            return Double.parseDouble(argAsString(index).replace(",", "."));
         } catch (Exception e) {
             return defaultValue;
         }
@@ -121,7 +121,7 @@ public abstract class Arguments extends ZUtils {
      * @return
      */
     protected double argAsDouble(int index) {
-        return Double.valueOf(argAsString(index).replace(",", "."));
+        return Double.parseDouble(argAsString(index).replace(",", "."));
     }
 
     /**

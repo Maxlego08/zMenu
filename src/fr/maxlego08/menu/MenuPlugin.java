@@ -14,10 +14,7 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.FKeyListener;
-import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
-import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
-import fr.maxlego08.menu.loader.materials.OraxenLoader;
-import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
+import fr.maxlego08.menu.loader.materials.*;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -91,7 +88,7 @@ public class MenuPlugin extends ZPlugin {
 
         this.preEnable();
 
-        List<String> files = new ArrayList<String>();
+        List<String> files = new ArrayList<>();
         files.add("inventories/example.yml");
         files.add("inventories/example_shop.yml");
         files.add("inventories/example_punish.yml");
@@ -163,6 +160,9 @@ public class MenuPlugin extends ZPlugin {
         }
         if (this.isEnable(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
+        }
+        if (this.isEnable(Plugins.NOVA)) {
+            this.inventoryManager.registerMaterialLoader(new NovaLoader());
         }
 
         this.getSavers().forEach(saver -> saver.load(this.getPersist()));

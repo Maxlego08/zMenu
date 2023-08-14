@@ -17,7 +17,9 @@ public class NMSUtils {
         String var2 = arrayOfString[0].replace("v", "");
         String var3 = arrayOfString[1];
         return version = Double.parseDouble(var2 + "." + var3);
-    }    public static double version = getNMSVersion();
+    }
+
+    public static double version = getNMSVersion();
 
     /**
      * Check if minecraft version has shulker
