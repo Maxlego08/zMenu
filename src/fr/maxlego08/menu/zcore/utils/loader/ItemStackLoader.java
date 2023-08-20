@@ -16,6 +16,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -176,7 +178,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
     /**
      *
      */
-    public void save(ItemStack item, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(ItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
 
         if (item == null) {
             Logger.info("Impossible de sauvegarder l'item car il est null ! Le path: " + path, LogType.ERROR);
@@ -210,6 +212,12 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         }
         if (NMSUtils.hasBarrel() && meta.hasCustomModelData()) {
             configuration.set(path + "modelID", meta.getCustomModelData());
+        }
+
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }

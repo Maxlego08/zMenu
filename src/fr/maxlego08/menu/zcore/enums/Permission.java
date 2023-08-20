@@ -15,7 +15,7 @@ public enum Permission {
 
 	private String permission;
 
-	private Permission() {
+	Permission() {
 		this.permission = this.name().toLowerCase().replace("_", ".");
 	}
 

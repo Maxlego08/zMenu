@@ -42,9 +42,8 @@ public abstract class LocationUtils extends PapiUtils {
      * @return location as string
      */
     protected String changeLocationToString(Location location) {
-        String ret = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + ","
+        return location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + ","
                 + location.getBlockZ();
-        return ret;
     }
 
     /**
@@ -52,9 +51,8 @@ public abstract class LocationUtils extends PapiUtils {
      * @return location as String
      */
     protected String changeLocationToStringEye(Location location) {
-        String ret = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + ","
+        return location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + ","
                 + location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
-        return ret;
     }
 
     /**
@@ -64,7 +62,7 @@ public abstract class LocationUtils extends PapiUtils {
     protected Chunk changeStringChuncToChunk(String chunk) {
         String[] a = chunk.split(",");
         World w = Bukkit.getServer().getWorld(a[0]);
-        return w.getChunkAt(Integer.valueOf(a[1]), Integer.valueOf(a[2]));
+        return w.getChunkAt(Integer.parseInt(a[1]), Integer.parseInt(a[2]));
     }
 
     /**
@@ -96,14 +94,14 @@ public abstract class LocationUtils extends PapiUtils {
         String[] parsedSecondLoc = parsedCuboid[1].split(",");
 
         String firstWorldName = parsedFirstLoc[0];
-        double firstX = Double.valueOf(parsedFirstLoc[1]);
-        double firstY = Double.valueOf(parsedFirstLoc[2]);
-        double firstZ = Double.valueOf(parsedFirstLoc[3]);
+        double firstX = Double.parseDouble(parsedFirstLoc[1]);
+        double firstY = Double.parseDouble(parsedFirstLoc[2]);
+        double firstZ = Double.parseDouble(parsedFirstLoc[3]);
 
         String secondWorldName = parsedSecondLoc[0];
-        double secondX = Double.valueOf(parsedSecondLoc[1]);
-        double secondY = Double.valueOf(parsedSecondLoc[2]);
-        double secondZ = Double.valueOf(parsedSecondLoc[3]);
+        double secondX = Double.parseDouble(parsedSecondLoc[1]);
+        double secondY = Double.parseDouble(parsedSecondLoc[2]);
+        double secondZ = Double.parseDouble(parsedSecondLoc[3]);
 
         Location l1 = new Location(Bukkit.getWorld(firstWorldName), firstX, firstY, firstZ);
 

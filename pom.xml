@@ -3,24 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.maxlego08</groupId>
 	<artifactId>zmenu</artifactId>
-	<version>1.0.0.6</version>
+	<version>1.0.0.7</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>8</maven.compiler.source>
-		<maven.compiler.target>8</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
-
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -66,9 +57,21 @@
 					</execution>
 				</executions>
 			</plugin>
-        </plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>16</source>
+					<target>16</target>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 	<repositories>
+		<repository>
+			<id>xenondevs</id>
+			<url>https://repo.xenondevs.xyz/releases</url>
+		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
@@ -91,6 +94,12 @@
 		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+			<groupId>xyz.xenondevs.nova</groupId>
+			<artifactId>nova-api</artifactId>
+			<version>0.14.10</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.github.Slimefun</groupId>
 			<artifactId>Slimefun4</artifactId>

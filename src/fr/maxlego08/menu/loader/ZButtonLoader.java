@@ -91,7 +91,7 @@ public class ZButtonLoader implements Loader<Button> {
         button.setSlot(slot);
         button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
-        button.setItemStack(itemStackLoader.load(configuration, path + "item."));
+        button.setItemStack(itemStackLoader.load(configuration, path + "item.", file));
         button.setButtonName(buttonName);
         button.setMessages(configuration.getStringList(path + "messages"));
 
@@ -162,7 +162,7 @@ public class ZButtonLoader implements Loader<Button> {
         List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
         String consolePermission = configuration.getString(path + "consolePermission");
 
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         Loader<Action> actiuonLoader = new ActionLoader(this.plugin);
 
         if (configuration.isConfigurationSection(path + "actions.")) {
@@ -191,8 +191,8 @@ public class ZButtonLoader implements Loader<Button> {
     }
 
     @Override
-    public void save(Button object, YamlConfiguration configuration, String path, Object... objects) {
-
+    public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
+        //TODO: FINISH THE SAVE METHOD
     }
 
 }

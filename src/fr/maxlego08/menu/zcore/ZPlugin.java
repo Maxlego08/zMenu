@@ -55,11 +55,9 @@ public abstract class ZPlugin extends JavaPlugin {
         this.enableTime = System.currentTimeMillis();
 
         this.log.log("=== ENABLE START ===");
-        this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
+        this.log.log("Plugin Version V<&>c" + getPluginMeta().getVersion(), LogType.INFO);
 
-        if (!this.getDataFolder().mkdirs()){
-            this.log.log("Impossible to create the default folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
-        }
+        this.getDataFolder().mkdirs();
 
         this.gson = getGsonBuilder().create();
         this.persist = new Persist(this);

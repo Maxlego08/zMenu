@@ -7,6 +7,7 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
     public List<Permissible> load(YamlConfiguration configuration, String path, Object... objects)
             throws InventoryException {
 
-        List<Permissible> permissibles = new ArrayList<Permissible>();
+        List<Permissible> permissibles = new ArrayList<>();
 
         if (configuration.isConfigurationSection(path + "permissions.")) {
 
@@ -59,7 +60,7 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
     }
 
     @Override
-    public void save(List<Permissible> object, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(List<Permissible> object, YamlConfiguration configuration, String path, File file, Object... objects) {
         // TODO Auto-generated method stub
 
     }

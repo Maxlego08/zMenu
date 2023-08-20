@@ -7,6 +7,8 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class OpenLinkLoader implements Loader<OpenLink> {
@@ -24,9 +26,19 @@ public class OpenLinkLoader implements Loader<OpenLink> {
     }
 
     @Override
-    public void save(OpenLink object, YamlConfiguration configuration, String path, Object... objects) {
-        // TODO Auto-generated method stub
+    public void save(OpenLink object, YamlConfiguration configuration, String path, File file, Object... objects) {
 
+        configuration.set(path + "action", "OPEN_URL");
+        configuration.set(path + "link", object.getLink());
+        configuration.set(path + "message", object.getMessage());
+        configuration.set(path + "replace", object.getReplace());
+        configuration.set(path + "hover", object.getHover());
+
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

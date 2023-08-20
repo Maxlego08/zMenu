@@ -18,6 +18,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuReload(plugin));
         this.addSubCommand(new CommandMenuVersion(plugin));
         this.addSubCommand(new CommandMenuPlayers(plugin));
+        this.addSubCommand(new CommandMenuOpenMainMenu(plugin));
 
 		/* Disable website connexion for beta
 		this.addSubCommand(new CommandMenuDownload(plugin));
@@ -32,9 +33,6 @@ public class CommandMenu extends VCommand {
 
     @Override
     protected CommandType perform(MenuPlugin plugin) {
-
-        ActionBar.sendActionBar(player, "§cTest §ede §bmessage");
-
         sendSyntax();
         return CommandType.SUCCESS;
     }

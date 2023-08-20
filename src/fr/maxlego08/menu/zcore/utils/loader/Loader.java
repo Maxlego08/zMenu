@@ -3,6 +3,8 @@ package fr.maxlego08.menu.zcore.utils.loader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+
 public interface Loader<T> {
 
     /**
@@ -21,6 +23,6 @@ public interface Loader<T> {
      * @param configuration
      * @param path
      */
-    void save(T object, YamlConfiguration configuration, String path, Object... objects);
+    void save(T object, YamlConfiguration configuration, String path, File file, Object... objects);
 
 }

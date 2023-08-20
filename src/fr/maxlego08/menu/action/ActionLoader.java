@@ -11,6 +11,7 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class ActionLoader implements Loader<Action> {
     }
 
     @Override
-    public void save(Action object, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(Action object, YamlConfiguration configuration, String path, File file, Object... objects) {
         // TODO Auto-generated method stub
 
     }

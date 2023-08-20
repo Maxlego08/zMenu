@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import java.util.Arrays;
+
 public final class Base64 {
 
     static private final int BASELENGTH = 128;
@@ -16,9 +18,7 @@ public final class Base64 {
 
     static {
 
-        for (int i = 0; i < BASELENGTH; ++i) {
-            base64Alphabet[i] = -1;
-        }
+        Arrays.fill(base64Alphabet, (byte) -1);
         for (int i = 'Z'; i >= 'A'; i--) {
             base64Alphabet[i] = (byte) (i - 'A');
         }

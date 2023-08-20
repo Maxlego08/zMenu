@@ -23,7 +23,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ZCommandManager extends ZUtils implements CommandManager {
@@ -107,10 +115,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "commands");
         if (!folder.exists()) {
-            if (!folder.mkdir()) {
-                Logger.info("Impossible to create the commands folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
-                return;
-            }
+            folder.mkdir();
         }
 
         try {

@@ -21,7 +21,7 @@ public enum InventorySize {
 	 * @param previousSlot
 	 * @param defaultSlot
 	 */
-	private InventorySize(int size, int paginationSize, int nextSlot, int previousSlot, int defaultSlot) {
+    InventorySize(int size, int paginationSize, int nextSlot, int previousSlot, int defaultSlot) {
 		this.size = size;
 		this.paginationSize = paginationSize;
 		this.nextSlot = nextSlot;

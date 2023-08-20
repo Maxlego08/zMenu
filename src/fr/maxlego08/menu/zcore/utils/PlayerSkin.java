@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 public class PlayerSkin {
 
-    private static final Map<String, String> textures = new HashMap<String, String>();
+    private static final Map<String, String> textures = new HashMap<>();
     private static final ExecutorService pool = Executors.newCachedThreadPool();
     private static String gameProfileMethodName;
 

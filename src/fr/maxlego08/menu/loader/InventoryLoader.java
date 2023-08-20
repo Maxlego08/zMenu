@@ -59,7 +59,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         MenuItemStack itemStack = null;
         try {
             if (configuration.contains("fillItem")) {
-                itemStack = itemStackLoader.load(configuration, "fillItem.");
+                itemStack = itemStackLoader.load(configuration, "fillItem.", file);
             }
         } catch (Exception ignored) {
         }
@@ -104,7 +104,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public void save(Inventory object, YamlConfiguration configuration, String path, Object... objects) {
+    public void save(Inventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
+        ZButtonLoader buttonLoader = new ZButtonLoader(this.plugin, file, object.size());
+        MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+
+        configuration.set("name", object.getName());
+        configuration.set("size", object.size());
+
+        if (object.getFillItemStack() != null) {
+            itemStackLoader.save(object.getFillItemStack(), configuration, "fillItem.", file);
+        }
+
+        //TODO: FINISH THE SAVE METHOD
     }
 
 }

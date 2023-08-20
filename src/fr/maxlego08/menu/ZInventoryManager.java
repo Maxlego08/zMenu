@@ -30,10 +30,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
 
-    private final Map<String, List<Inventory>> inventories = new HashMap<String, List<Inventory>>();
+    private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
 
@@ -86,7 +87,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
-        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
 
@@ -128,13 +129,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Collection<Inventory> getInventories(Plugin plugin) {
         return plugin == null ? new ArrayList<>()
-                : this.inventories.getOrDefault(plugin.getName(), new ArrayList<Inventory>());
+                : this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
     }
 
     @Override
     public void deleteInventory(Inventory inventory) {
         String pluginName = inventory.getPlugin().getName();
-        List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<Inventory>());
+        List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
     }
@@ -193,6 +194,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new HomeLoader(this.plugin, this));
         buttonManager.register(new NextLoader(this.plugin, this));
         buttonManager.register(new PreviousLoader(this.plugin, this));
+        buttonManager.register(new MainMenuLoader(this.plugin, this));
 
         ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
         event.call();
@@ -204,15 +206,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {
-            if (!folder.mkdir()) {
-                Logger.info("Impossible to create the inventories folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
-                return;
-            }
+            folder.mkdir();
         }
 
         // Load inventories
-        try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
+        try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))) {
+            s.skip(1).map(Path::toFile).filter(File::isFile)
                     .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
                         try {
                             this.loadInventory(this.plugin, file);
@@ -222,6 +221,21 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                     });
         } catch (IOException exception) {
             exception.printStackTrace();
+        }
+
+        // Load specify path inventories
+        List<String> list = Config.specifyPathMenus;
+        for (String s : list) {
+            File file = new File(s);
+            if (file.isFile()) {
+                if (file.getName().endsWith(".yml")) {
+                    try {
+                        this.loadInventory(this.plugin, file);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 
