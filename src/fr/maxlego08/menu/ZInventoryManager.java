@@ -206,10 +206,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {
-            if (!folder.mkdir()) {
-                Logger.info("Impossible to create the inventories folder ! Check if spigot have permission to write and file and folder.", LogType.ERROR);
-                return;
-            }
+            folder.mkdir();
         }
 
         // Load inventories
