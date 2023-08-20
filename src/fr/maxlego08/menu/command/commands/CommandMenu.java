@@ -33,9 +33,6 @@ public class CommandMenu extends VCommand {
 
     @Override
     protected CommandType perform(MenuPlugin plugin) {
-
-        ActionBar.sendActionBar(player, "§cTest §ede §bmessage");
-
         sendSyntax();
         return CommandType.SUCCESS;
     }

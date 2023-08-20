@@ -14,7 +14,11 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
-import fr.maxlego08.menu.loader.materials.*;
+import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
+import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
+import fr.maxlego08.menu.loader.materials.NovaLoader;
+import fr.maxlego08.menu.loader.materials.OraxenLoader;
+import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -48,7 +52,6 @@ import java.util.Optional;
  * </p>
  *
  * @author Maxlego08
- *
  */
 public class MenuPlugin extends ZPlugin {
 
@@ -88,32 +91,39 @@ public class MenuPlugin extends ZPlugin {
 
         this.preEnable();
 
+        Config.getInstance().load(getPersist());
+
         List<String> files = new ArrayList<>();
         files.add("inventories/example.yml");
         files.add("inventories/example_shop.yml");
         files.add("inventories/example_punish.yml");
         files.add("inventories/test/example2.yml");
-        files.add("inventories/test/test3/example3.yml");
+        files.add("inventories/test/example3.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/example/example.yml");
         files.add("commands/punish/punish.yml");
 
         files.add("patterns/pattern1.yml");
+        files.add("readme.txt");
 
         File folder = new File(this.getDataFolder(), "inventories");
 
         if (!folder.exists()) {
-            files.forEach(e -> {
-                if (!new File(this.getDataFolder(), e).exists()) {
+            folder.mkdirs();
 
-                    if (NMSUtils.isNewVersion()) {
-                        saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
-                    } else {
-                        saveResource(e, false);
+            if (Config.generateDefaultFile) {
+                files.forEach(e -> {
+                    if (!new File(this.getDataFolder(), e).exists()) {
+
+                        if (NMSUtils.isNewVersion()) {
+                            saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
+                        } else {
+                            saveResource(e, false);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         this.zCommandManager = new VCommandManager(this);
@@ -143,7 +153,6 @@ public class MenuPlugin extends ZPlugin {
         this.addListener(this.inventoriesPlayer);
 
         /* Add Saver */
-        this.addSave(Config.getInstance());
         this.addSave(this.messageLoader);
         this.addSave(this.inventoryManager);
         this.addSave(this.commandManager);
@@ -196,6 +205,7 @@ public class MenuPlugin extends ZPlugin {
 
         this.vinventoryManager.close();
 
+        Config.getInstance().save(getPersist());
         this.getSavers().forEach(saver -> saver.save(this.getPersist()));
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());

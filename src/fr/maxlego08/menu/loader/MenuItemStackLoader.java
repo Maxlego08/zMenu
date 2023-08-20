@@ -3,7 +3,11 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.*;
+import fr.maxlego08.menu.zcore.utils.Banner;
+import fr.maxlego08.menu.zcore.utils.Firework;
+import fr.maxlego08.menu.zcore.utils.LeatherArmor;
+import fr.maxlego08.menu.zcore.utils.Potion;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -43,7 +47,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      */
     public MenuItemStack load(YamlConfiguration configuration, String path, Object... objects) {
 
-        MenuItemStack menuItemStack = new MenuItemStack(this.manager);
+        File file = (File) objects[0];
+
+        MenuItemStack menuItemStack = new MenuItemStack(this.manager, file.getPath(), path);
         menuItemStack.setData(configuration.getInt(path + "data", 0));
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
@@ -51,8 +57,17 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setUrl(configuration.getString(path + "url", null));
 
         Color potionColor = getColor(configuration, path + "color", null);
-        Material material = Material.valueOf(configuration.getString(path + "type", null));
-        String materialName = material.toString();
+
+        try {
+            Material material = Material.valueOf(configuration.getString(path + "material", null));
+            String materialName = material.toString();
+            if (materialName.startsWith("LEATHER_")) {
+                Color armorColor = getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
+                String type = materialName.replace("LEATHER_", "");
+                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
+            }
+        } catch (Exception ignored) {
+        }
 
         if (configuration.contains(path + "potion")) {
             PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
@@ -65,11 +80,6 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             menuItemStack.setPotion(potion);
         }
 
-        if (materialName.startsWith("LEATHER_")) {
-            Color armorColor = getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
-            String type = materialName.replace("LEATHER_", "");
-            menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
-        }
 
         if (configuration.contains(path + "banner")) {
 
@@ -138,8 +148,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        List<ItemFlag> flags = configuration.getStringList(path + "flags").stream().map(this::getFlag)
-                .collect(Collectors.toList());
+        List<ItemFlag> flags = configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList());
 
         menuItemStack.setEnchantments(enchantments);
         menuItemStack.setFlags(flags);
@@ -148,7 +157,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     }
 
     private Color getColor(YamlConfiguration configuration, String key, Color def) {
-        String[] split = configuration.getString(key,"").split(",");
+        String[] split = configuration.getString(key, "").split(",");
 
         if (split.length == 3) {
             return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
@@ -198,22 +207,22 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             configuration.set(path + "splash", potion.isSplash());
             configuration.set(path + "extended", potion.hasExtendedDuration());
 
-            if (c != null) configuration.set("color", c.getAlpha()+","+c.getRed()+","+c.getGreen()+","+c.getBlue());
+            if (c != null)
+                configuration.set("color", c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue());
         }
 
         if (firework != null) {
             ConfigurationSection fireworkSection = configuration.createSection(path + "firework");
             FireworkEffect effect = firework.getEffect();
             List<String> stringColors = new ArrayList<>();
-            effect.getColors().forEach(c -> stringColors.add(c.getAlpha()+","+c.getRed()+","+c.getGreen()+","+c.getBlue()));
+            effect.getColors().forEach(c -> stringColors.add(c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue()));
             List<String> stringFadeColors = new ArrayList<>();
-            effect.getColors().forEach(c -> stringFadeColors.add(c.getAlpha()+","+c.getRed()+","+c.getGreen()+","+c.getBlue()));
+            effect.getColors().forEach(c -> stringFadeColors.add(c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue()));
 
             fireworkSection.set("star", firework.isStar());
             fireworkSection.set("flicker", effect.hasFlicker());
             fireworkSection.set("trail", effect.hasTrail());
             fireworkSection.set("type", effect.getType().toString());
-
 
 
             fireworkSection.set("colors", stringColors);
@@ -222,7 +231,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         if (leatherArmor != null) {
             Color c = leatherArmor.getColor();
-            if (c != null) configuration.set("color", c.getAlpha()+","+c.getRed()+","+c.getGreen()+","+c.getBlue());
+            if (c != null)
+                configuration.set("color", c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue());
         }
 
         if (banner != null) {

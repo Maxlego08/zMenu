@@ -59,7 +59,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         MenuItemStack itemStack = null;
         try {
             if (configuration.contains("fillItem")) {
-                itemStack = itemStackLoader.load(configuration, "fillItem.");
+                itemStack = itemStackLoader.load(configuration, "fillItem.", file);
             }
         } catch (Exception ignored) {
         }

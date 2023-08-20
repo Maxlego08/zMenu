@@ -91,7 +91,7 @@ public class ZButtonLoader implements Loader<Button> {
         button.setSlot(slot);
         button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
-        button.setItemStack(itemStackLoader.load(configuration, path + "item."));
+        button.setItemStack(itemStackLoader.load(configuration, path + "item.", file));
         button.setButtonName(buttonName);
         button.setMessages(configuration.getStringList(path + "messages"));
 
