@@ -12,7 +12,6 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
-
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
@@ -65,14 +64,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>16</source>
-					<target>16</target>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
