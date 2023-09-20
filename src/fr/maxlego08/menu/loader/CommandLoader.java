@@ -40,8 +40,8 @@ public class CommandLoader implements Loader<Command> {
             if (arg.contains(",")) {
                 String[] values = arg.split(",");
                 argument = values[0];
-                isRequired = Boolean.parseBoolean(values[1]);
-                inventoryName = values[2];
+                if (values.length >= 2)isRequired = Boolean.parseBoolean(values[1]);
+                if (values.length == 3) inventoryName = values[2];
             }
             return new ZCommandArgument(argument, inventoryName, isRequired);
         }).collect(Collectors.toList());

@@ -38,5 +38,5 @@ commands:
   example1:
     command: openfiles
     inventory: example3
-    aliases:
-      - name,zmenu:example2
+    arguments: # argument name, true or false, plugin name : inventory name
+      - name,false,zmenu:example2
