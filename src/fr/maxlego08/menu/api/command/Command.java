@@ -38,7 +38,9 @@ public interface Command {
     /**
      * @return argument
      */
-	List<String> getArguments();
+	List<CommandArgument> getArguments();
+
+	List<String> getCommandArguments();
 
     /**
      * @return boolean

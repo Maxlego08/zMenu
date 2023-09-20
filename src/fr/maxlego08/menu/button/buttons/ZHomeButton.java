@@ -18,6 +18,7 @@ public class ZHomeButton extends ZBackButton implements HomeButton {
 
     @Override
     public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+        super.onClick(player, event, inventory, slot);
 
         if (this.inventory == null) {
             return;
@@ -26,7 +27,6 @@ public class ZHomeButton extends ZBackButton implements HomeButton {
         Inventory toInventory = this.inventory;
         this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<Inventory>());
 
-        super.onClick(player, event, inventory, slot);
     }
 
     @Override

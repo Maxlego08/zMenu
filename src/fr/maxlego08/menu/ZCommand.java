@@ -1,10 +1,12 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.command.Command;
+import fr.maxlego08.menu.api.command.CommandArgument;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ZCommand implements Command {
 
@@ -13,7 +15,7 @@ public class ZCommand implements Command {
     private final List<String> aliases;
     private final String permission;
     private final String inventory;
-    private final List<String> arguments;
+    private final List<CommandArgument> arguments;
 
     private final String path;
     private final File file;
@@ -30,7 +32,7 @@ public class ZCommand implements Command {
      * @param file File
      */
     public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
-                    List<String> arguments, String path, File file) {
+                    List<CommandArgument> arguments, String path, File file) {
         super();
         this.plugin = plugin;
         this.command = command;
@@ -79,8 +81,13 @@ public class ZCommand implements Command {
     }
 
     @Override
-    public List<String> getArguments() {
+    public List<CommandArgument> getArguments() {
         return this.arguments;
+    }
+
+    @Override
+    public List<String> getCommandArguments() {
+        return this.arguments.stream().map(CommandArgument::getArgument).collect(Collectors.toList());
     }
 
     @Override

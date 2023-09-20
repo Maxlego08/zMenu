@@ -37,4 +37,6 @@
 commands:
   example1:
     command: openfiles
-    inventory: example3  
+    inventory: example3
+    arguments: # argument name, true or false, plugin name : inventory name
+      - name,false,zmenu:example2

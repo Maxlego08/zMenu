@@ -25,6 +25,7 @@ public class ZBackButton extends ZButton implements BackButton {
 
     @Override
     public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+        super.onClick(player, event, inventory, slot);
 
         if (this.inventory == null) {
             return;
@@ -35,8 +36,6 @@ public class ZBackButton extends ZButton implements BackButton {
 
         Inventory toInventory = this.inventory;
         this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
-
-        super.onClick(player, event, inventory, slot);
     }
 
     @Override

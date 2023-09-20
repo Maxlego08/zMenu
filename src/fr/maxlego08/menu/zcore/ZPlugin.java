@@ -55,7 +55,7 @@ public abstract class ZPlugin extends JavaPlugin {
         this.enableTime = System.currentTimeMillis();
 
         this.log.log("=== ENABLE START ===");
-        this.log.log("Plugin Version V<&>c" + getPluginMeta().getVersion(), LogType.INFO);
+        this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
 
         this.getDataFolder().mkdirs();
 
