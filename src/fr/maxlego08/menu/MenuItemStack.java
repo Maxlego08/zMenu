@@ -39,7 +39,7 @@ public class MenuItemStack extends ZUtils {
     private List<ItemFlag> flags = new ArrayList<>();
     private String displayName;
     private boolean isGlowing;
-    private int modelID;
+    private String modelID;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private Banner banner;
     private Firework firework;
@@ -96,7 +96,7 @@ public class MenuItemStack extends ZUtils {
 
             if (papiMaterial.contains(":")) {
 
-                String[] values = papiMaterial.split(":");
+                String[] values = papiMaterial.split(":", 2);
 
                 if (values.length == 2) {
 
@@ -104,7 +104,6 @@ public class MenuItemStack extends ZUtils {
                     String value = values[1];
 
                     Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
-
                     if (optional.isPresent()) {
                         MaterialLoader loader = optional.get();
                         itemStack = loader.load(null, null, value);
@@ -168,11 +167,12 @@ public class MenuItemStack extends ZUtils {
 
             itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
         }
 
-        if (this.modelID > 0) {
-            itemMeta.setCustomModelData(this.modelID);
+        try {
+            int customModelData = Integer.parseInt(papi(this.modelID, player));
+            if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
+        } catch (NumberFormatException ignored) {
         }
 
         this.enchantments.forEach((enchantment, level) -> {
@@ -264,7 +264,7 @@ public class MenuItemStack extends ZUtils {
     /**
      * @return the modelID
      */
-    public int getModelID() {
+    public String getModelID() {
         return modelID;
     }
 
@@ -369,8 +369,15 @@ public class MenuItemStack extends ZUtils {
     /**
      * @param modelID the modelID to set
      */
-    public void setModelID(int modelID) {
+    public void setModelID(String modelID) {
         this.modelID = modelID;
+    }
+
+    /**
+     * @param modelID the modelID to set
+     */
+    public void setModelID(int modelID) {
+        this.modelID = String.valueOf(modelID);
     }
 
     /**

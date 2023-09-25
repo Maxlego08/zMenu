@@ -190,7 +190,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 this.openLink.send(player, this.messages);
             } else {
 
-                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
+                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message.replace("%player%", player.getName()), player)));
             }
         }
 

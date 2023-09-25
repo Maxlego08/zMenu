@@ -3,6 +3,7 @@ package fr.maxlego08.menu.command.commands;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -26,6 +27,9 @@ public class CommandMenuOpen extends VCommand {
 
         this.addOptionalArg("player");
         this.addOptionalArg("display message", (a, b) -> Arrays.asList("false", "true"));
+        this.addOptionalArg("args");
+        this.setExtendedArgs(true);
+
         this.setDescription(Message.DESCRIPTION_OPEN);
         this.setPermission(Permission.ZMENU_OPEN);
     }
@@ -39,8 +43,7 @@ public class CommandMenuOpen extends VCommand {
         Player player = this.argAsPlayer(1, this.player);
         boolean displayMessage = this.argAsBoolean(2, Config.enableOpenMessage);
         if (player == null) {
-            message(this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
-                    : Message.INVENTORY_OPEN_ERROR_PLAYER);
+            message(this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
 
@@ -65,8 +68,23 @@ public class CommandMenuOpen extends VCommand {
             if (this.sender == player) {
                 message(this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
             } else {
-                message(this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%",
-                        player.getName());
+                message(this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
+            }
+        }
+
+        // Custom arguments
+        if (args.length > 5) {
+            CommandManager commandManager = plugin.getCommandManager();
+
+            for (int i = 4; i < args.length; i++) {
+                String name = String.valueOf(i - 4);
+                String value = args[i];
+                if (value.contains(":")) {
+                    String[] values = value.split(":");
+                    name = values[0];
+                    value = values[1];
+                }
+                commandManager.setPlayerArgument(player, name, value);
             }
         }
 

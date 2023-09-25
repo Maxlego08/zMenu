@@ -35,5 +35,4 @@ public class PapiUtils extends TranslationHelper {
     public List<String> papi(List<String> placeHolders, Player player) {
         return this.use().setPlaceholders(player, placeHolders);
     }
-
 }
