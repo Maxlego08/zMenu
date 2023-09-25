@@ -96,7 +96,7 @@ public class MenuItemStack extends ZUtils {
 
             if (papiMaterial.contains(":")) {
 
-                String[] values = papiMaterial.split(":");
+                String[] values = papiMaterial.split(":", 2);
 
                 if (values.length == 2) {
 
@@ -104,7 +104,6 @@ public class MenuItemStack extends ZUtils {
                     String value = values[1];
 
                     Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
-
                     if (optional.isPresent()) {
                         MaterialLoader loader = optional.get();
                         itemStack = loader.load(null, null, value);
@@ -174,7 +173,7 @@ public class MenuItemStack extends ZUtils {
         try {
             int customModelData = Integer.parseInt(papi(this.modelID, player));
             itemMeta.setCustomModelData(customModelData);
-        }catch (NumberFormatException ignored) {
+        } catch (NumberFormatException ignored) {
         }
 
         this.enchantments.forEach((enchantment, level) -> {
