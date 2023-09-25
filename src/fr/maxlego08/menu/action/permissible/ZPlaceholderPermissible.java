@@ -2,6 +2,7 @@ package fr.maxlego08.menu.action.permissible;
 
 import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
@@ -27,11 +28,12 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
     public boolean hasPermission(Player player) {
 
         String valueAsString = papi(this.placeholder, player);
+        String resultAsString = papi(this.value, player);
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 
             try {
-                return Boolean.valueOf(valueAsString) == Boolean.valueOf(this.value);
+                return Boolean.valueOf(valueAsString) == Boolean.valueOf(resultAsString);
             } catch (Exception exception) {
                 return false;
             }
@@ -40,11 +42,11 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
 
             switch (this.action) {
                 case EQUALS_STRING:
-                    return valueAsString.equals(this.value);
+                    return valueAsString.equals(resultAsString);
                 case EQUALSIGNORECASE_STRING:
-                    return valueAsString.equalsIgnoreCase(this.value);
+                    return valueAsString.equalsIgnoreCase(resultAsString);
                 case CONTAINS_STRING:
-                    return valueAsString.contains(this.value);
+                    return valueAsString.contains(resultAsString);
                 default:
                     return false;
             }
@@ -54,7 +56,7 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
             try {
 
                 double value = Double.parseDouble(valueAsString);
-                double currentValue = Double.parseDouble(this.value);
+                double currentValue = Double.parseDouble(resultAsString);
 
                 switch (this.action) {
                     case EQUAL_TO:
@@ -72,6 +74,9 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
                 }
 
             } catch (Exception exception) {
+                if (Config.enableDebug) {
+                    exception.printStackTrace();
+                }
                 return false;
             }
 

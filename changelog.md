@@ -1,5 +1,7 @@
 # Unreleased
 
+- Fix placeholder verification
+
 # 1.0.0.9
 
 - Add %player% variable for messages on button
