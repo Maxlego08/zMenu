@@ -1,6 +1,7 @@
 # Unreleased
 
 - 
+- Add %player% variable for messages on button
 
 # 1.0.0.8
 
