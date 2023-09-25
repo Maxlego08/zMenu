@@ -1,5 +1,7 @@
 # Unreleased
 
+# 1.0.0.9
+
 - Add %player% variable for messages on button
 - Add PlaceholderAPI support for custom model data (modelID) 
 - Add argument for command /zm open
