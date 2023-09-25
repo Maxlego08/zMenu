@@ -167,12 +167,11 @@ public class MenuItemStack extends ZUtils {
 
             itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
         }
 
         try {
             int customModelData = Integer.parseInt(papi(this.modelID, player));
-            itemMeta.setCustomModelData(customModelData);
+            if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
         } catch (NumberFormatException ignored) {
         }
 
