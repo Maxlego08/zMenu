@@ -2,6 +2,7 @@
 
 - 
 - Add %player% variable for messages on button
+- Add PlaceholderAPI support for custom model data (modelID) 
 
 # 1.0.0.8
 

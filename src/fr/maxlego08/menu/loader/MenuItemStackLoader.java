@@ -114,7 +114,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setLore(configuration.getStringList(path + "lore"));
         menuItemStack.setDisplayName(configuration.getString(path + "name", null));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getInt(path + "modelID", 0));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", "0"));
 
         List<String> enchants = configuration.getStringList(path + "enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -254,13 +254,13 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         configuration.set(path + "modelID", item.getModelID());
 
         if (item.getEnchantments() != null && !item.getEnchantments().isEmpty()) {
-            List<String> stringEnchantments = item.getEnchantments().entrySet().stream().map(e -> e.getKey().toString() + "," + e.getValue().toString()).toList();
+            List<String> stringEnchantments = item.getEnchantments().entrySet().stream().map(e -> e.getKey().toString() + "," + e.getValue().toString()).collect(Collectors.toList());
 
             configuration.set(path + "enchants", stringEnchantments);
         }
 
         if (item.getFlags() != null && !item.getFlags().isEmpty()) {
-            configuration.set(path + "flags", item.getFlags().stream().map(Enum::toString).toList());
+            configuration.set(path + "flags", item.getFlags().stream().map(Enum::toString).collect(Collectors.toList()));
         }
 
         try {

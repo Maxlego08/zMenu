@@ -39,7 +39,7 @@ public class MenuItemStack extends ZUtils {
     private List<ItemFlag> flags = new ArrayList<>();
     private String displayName;
     private boolean isGlowing;
-    private int modelID;
+    private String modelID;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private Banner banner;
     private Firework firework;
@@ -171,8 +171,10 @@ public class MenuItemStack extends ZUtils {
 
         }
 
-        if (this.modelID > 0) {
-            itemMeta.setCustomModelData(this.modelID);
+        try {
+            int customModelData = Integer.parseInt(papi(this.modelID, player));
+            itemMeta.setCustomModelData(customModelData);
+        }catch (NumberFormatException ignored) {
         }
 
         this.enchantments.forEach((enchantment, level) -> {
@@ -264,7 +266,7 @@ public class MenuItemStack extends ZUtils {
     /**
      * @return the modelID
      */
-    public int getModelID() {
+    public String getModelID() {
         return modelID;
     }
 
@@ -369,8 +371,15 @@ public class MenuItemStack extends ZUtils {
     /**
      * @param modelID the modelID to set
      */
-    public void setModelID(int modelID) {
+    public void setModelID(String modelID) {
         this.modelID = modelID;
+    }
+
+    /**
+     * @param modelID the modelID to set
+     */
+    public void setModelID(int modelID) {
+        this.modelID = String.valueOf(modelID);
     }
 
     /**
