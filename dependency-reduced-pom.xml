@@ -26,10 +26,19 @@
             </goals>
             <configuration>
               <artifactSet>
+                <includes>
+                  <include>com.tcoded:FoliaLib</include>
+                </includes>
                 <excludes>
                   <exclude>me.arcaniax:HeadDatabase-API</exclude>
                 </excludes>
               </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>com.tcoded.folialib</pattern>
+                  <shadedPattern>fr.maxlego08.zmenu.folialib</shadedPattern>
+                </relocation>
+              </relocations>
             </configuration>
           </execution>
         </executions>
@@ -86,6 +95,10 @@
       <id>papermc</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>devmart-other</id>
+      <url>https://nexuslite.gcnt.net/repos/other/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -113,12 +126,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>dev.folia</groupId>
-      <artifactId>folia-api</artifactId>
-      <version>1.19.4-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
       <version>2.11.1</version>
@@ -134,6 +141,18 @@
       <groupId>com.github.shynixn.headdatabase</groupId>
       <artifactId>hdb-api</artifactId>
       <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.cryptomorin</groupId>
+      <artifactId>XSeries</artifactId>
+      <version>9.4.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
+      <version>1.20.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

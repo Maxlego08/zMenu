@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils.meta;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -95,6 +96,9 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     @Override
     public void sendMessage(CommandSender sender, String message) {
         Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(message));
-        sender.sendMessage(component);
+        System.out.println(sender + " - " + (sender instanceof Audience));
+        if (sender != null) {
+            ((Audience) sender).sendMessage(component);
+        }
     }
 }
