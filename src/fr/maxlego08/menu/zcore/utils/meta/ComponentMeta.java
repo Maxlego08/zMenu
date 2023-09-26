@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,9 @@ import java.util.stream.Collectors;
 
 public class ComponentMeta extends ZUtils implements MetaUpdater {
 
-    private final MiniMessage MINI_MESSAGE = MiniMessage.builder()
-            .tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
+    private Method loreMethod;
+    private Method nameMethod;
+    private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
 
     public ComponentMeta() {
@@ -50,21 +52,40 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         this.COLORS_MAPPINGS.put("n", "underlined");
         this.COLORS_MAPPINGS.put("o", "italic");
         this.COLORS_MAPPINGS.put("r", "reset");
+
+        try {
+            loreMethod = ItemMeta.class.getDeclaredMethod("lore", List.class);
+            loreMethod.setAccessible(true);
+            nameMethod = ItemMeta.class.getDeclaredMethod("displayName", Component.class);
+            nameMethod.setAccessible(true);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)))
-                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
-        itemMeta.displayName(component);
+        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player))).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
+
+        try {
+            nameMethod.invoke(itemMeta, component);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        // itemMeta.displayName(component);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        List<Component> components = lore.stream().map(text -> this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player)))
-                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE) // We will force the italics in false, otherwise it will activate for no reason
+        List<Component> components = lore.stream().map(text -> this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player))).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE) // We will force the italics in false, otherwise it will activate for no reason
         ).collect(Collectors.toList());
-        itemMeta.lore(components);
+
+        try {
+            loreMethod.invoke(itemMeta, components);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // itemMeta.lore(components);
     }
 
     private String colorMiniMessage(String message) {
@@ -96,8 +117,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     @Override
     public void sendMessage(CommandSender sender, String message) {
         Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(message));
-        System.out.println(sender + " - " + (sender instanceof Audience));
-        if (sender != null) {
+        if (sender instanceof Audience) {
             ((Audience) sender).sendMessage(component);
         }
     }

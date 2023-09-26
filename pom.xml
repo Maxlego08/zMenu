@@ -24,31 +24,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.1</version>
-                <configuration>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>com/cryptomorin/xseries/messages/*</exclude>
-                                <exclude>com/cryptomorin/xseries/particles/*</exclude>
-                                <exclude>com/cryptomorin/xseries/XBiome*</exclude>
-                                <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
-                                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
-                                <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
-                                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
-                                <exclude>com/cryptomorin/xseries/XTag*</exclude>
-                                <exclude>com/cryptomorin/xseries/XPotion*</exclude>
-                                <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
-                                <exclude>com/cryptomorin/xseries/XItemStack*</exclude>
-                                <exclude>com/cryptomorin/xseries/XBlock*</exclude>
-                                <exclude>com/cryptomorin/xseries/XEntity*</exclude>
-                                <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
-                                <exclude>com/cryptomorin/xseries/SkullUtils*</exclude>
-                                <exclude>com/cryptomorin/xseries/ReflectionUtils*</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -56,19 +31,42 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>com/cryptomorin/xseries/messages/*</exclude>
+                                        <exclude>com/cryptomorin/xseries/particles/*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XBiome*</exclude>
+                                        <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
+                                        <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
+                                        <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
+                                        <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XTag*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XPotion*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XItemStack*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XBlock*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XEntity*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
+                                        <exclude>com/cryptomorin/xseries/SkullUtils*</exclude>
+                                        <exclude>com/cryptomorin/xseries/ReflectionUtils*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <artifactSet>
-                                <includes>
-                                    <include>com.tcoded:FoliaLib</include>
-                                </includes>
                                 <excludes>
                                     <exclude>me.arcaniax:HeadDatabase-API</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
+                                    <pattern>com.cryptomorin.xseries</pattern>
+                                    <shadedPattern>fr.maxlego08.menu.zcore.utils.xseries</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.tcoded.folialib</pattern>
-                                    <!-- Don't forget to replace -->
-                                    <shadedPattern>fr.maxlego08.zmenu.folialib</shadedPattern>
+                                    <shadedPattern>fr.maxlego08.menu.zcore.utils.folialib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -108,6 +106,12 @@
         </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>xyz.xenondevs.nova</groupId>
             <artifactId>nova-api</artifactId>
@@ -162,12 +166,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.20.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.oraxen</groupId>
             <artifactId>oraxen</artifactId>
             <version>1.159.0</version>
@@ -194,6 +192,12 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.14.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
