@@ -2,9 +2,11 @@ package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -22,7 +24,7 @@ import java.util.Optional;
  * </ul>
  * <p>Api example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a></p>
  */
-public interface InventoryManager extends Savable {
+public interface InventoryManager extends Savable, Listener {
 
     /**
      * Allows to load an inventory, the plugin will retrieve the resource of
@@ -59,8 +61,7 @@ public interface InventoryManager extends Savable {
      * @return New {@link Inventory}
      * @throws InventoryException Error loading inventory
      */
-    Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
-            throws InventoryException;
+    Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
      * Allows you to load an inventory from a file. You must add the class of
@@ -72,8 +73,7 @@ public interface InventoryManager extends Savable {
      * @return New {@link Inventory}
      * @throws InventoryException Error loading inventory
      */
-    Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz)
-            throws InventoryException;
+    Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
      * Allows you to load an inventory from a file You must add the class of
@@ -275,5 +275,20 @@ public interface InventoryManager extends Savable {
      * @param inventory The inventory that needs to be reloaded
      */
     void reloadInventory(Inventory inventory);
+
+    /**
+     * Set item name and item meta using spigot or adventure api
+     *
+     * @return MetaUpdater
+     */
+    MetaUpdater getMeta();
+
+    /**
+     * Get current open inventory
+     *
+     * @param player inventory
+     * @return optional of inventory
+     */
+    Optional<Inventory> getCurrentPlayerInventory(Player player);
 
 }

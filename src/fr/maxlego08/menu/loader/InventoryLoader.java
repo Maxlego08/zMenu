@@ -47,10 +47,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
         }
 
-        if (!configuration.contains("items") || !configuration.isConfigurationSection("items.")) {
+        /*if (!configuration.contains("items") || !configuration.isConfigurationSection("items.")) {
             throw new InventoryButtonException(
                     "Impossible to find the list of buttons for the " + file.getAbsolutePath() + " inventory!");
-        }
+        }*/
 
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);

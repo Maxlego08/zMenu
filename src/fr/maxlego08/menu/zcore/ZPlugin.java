@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.exceptions.ListenerNullException;
@@ -18,6 +19,7 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.gson.DataAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
@@ -29,7 +31,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -66,6 +71,8 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     protected void postEnable() {
+
+        MetaUpdater updater = Meta.meta;
 
         if (this.zCommandManager != null) {
             this.zCommandManager.validCommands();
@@ -108,6 +115,15 @@ public abstract class ZPlugin extends JavaPlugin {
     public void addListener(Listener listener) {
         if (listener instanceof Savable)
             this.addSave((Savable) listener);
+        Bukkit.getPluginManager().registerEvents(listener, this);
+    }
+
+    /**
+     * Add a listener
+     *
+     * @param listener New Listener
+     */
+    public void addSimpleListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);
     }
 
@@ -222,9 +238,9 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * Register command
      *
-     * @param command Main command
+     * @param command  Main command
      * @param vCommand VCommand
-     * @param aliases list of aliases
+     * @param aliases  list of aliases
      */
     protected void registerCommand(String command, VCommand vCommand, String... aliases) {
         this.zCommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
@@ -233,7 +249,7 @@ public abstract class ZPlugin extends JavaPlugin {
     /**
      * Register Inventory
      *
-     * @param inventory Inventory key
+     * @param inventory  Inventory key
      * @param vInventory VInventory
      */
     protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
@@ -244,8 +260,8 @@ public abstract class ZPlugin extends JavaPlugin {
      * For 1.13+
      *
      * @param resourcePath Resource path
-     * @param toPath new path
-     * @param replace replace boolean
+     * @param toPath       new path
+     * @param replace      replace boolean
      */
     public void saveResource(String resourcePath, String toPath, boolean replace) {
         if (resourcePath != null && !resourcePath.equals("")) {

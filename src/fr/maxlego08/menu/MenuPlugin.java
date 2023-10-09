@@ -34,6 +34,7 @@ import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 
 import java.io.File;
@@ -151,6 +152,7 @@ public class MenuPlugin extends ZPlugin {
         this.addListener(new AdapterListener(this));
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
+        this.addSimpleListener(this.inventoryManager);
 
         /* Add Saver */
         this.addSave(this.messageLoader);

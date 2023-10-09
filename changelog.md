@@ -1,6 +1,16 @@
 # Unreleased
 
+- Allow inventories without items
+- Add %player% with papi utils
+- Add getter for MetaUpdater in InventoryManager
+- Add method getCurrentPlayerInventory in InventoryManager
+- Add method buildDisplayName in Button
+- Add method buildLore in Button
+- Add updateOnClick option, update button if player click on another button
 - Fix placeholder verification
+- Fix patterns interactions
+- Fix itemstack amount with custom material
+- Fix item lore with lore is empty
 
 # 1.0.0.9
 

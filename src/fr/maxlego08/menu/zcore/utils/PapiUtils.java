@@ -4,6 +4,7 @@ import fr.maxlego08.menu.placeholder.Placeholder;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PapiUtils extends TranslationHelper {
 
@@ -22,7 +23,7 @@ public class PapiUtils extends TranslationHelper {
      * @return string
      */
     public String papi(String placeHolder, Player player) {
-        return this.use().setPlaceholders(player, placeHolder);
+        return this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
     }
 
     /**
@@ -33,6 +34,6 @@ public class PapiUtils extends TranslationHelper {
      * @return placeholders
      */
     public List<String> papi(List<String> placeHolders, Player player) {
-        return this.use().setPlaceholders(player, placeHolders);
+        return placeHolders.stream().map(e -> papi(e, player)).collect(Collectors.toList());
     }
 }
