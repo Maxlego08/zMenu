@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,6 +57,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
+    private final Map<Plugin, Consumer<Button>> buttonsListener = new HashMap<>();
 
     public ZInventoryManager(MenuPlugin plugin) {
         super();
@@ -99,7 +102,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        Loader<Inventory> loader = new InventoryLoader(this.plugin);
+        Loader<Inventory> loader = new InventoryLoader(this.plugin, this.buttonsListener);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
@@ -367,6 +370,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Optional<Inventory> getCurrentPlayerInventory(Player player) {
         return Optional.ofNullable(this.currentInventories.getOrDefault(player.getUniqueId(), null));
+    }
+
+    @Override
+    public void registerButtonListener(Plugin plugin, Consumer<Button> consumer) {
+        this.buttonsListener.put(plugin, consumer);
+    }
+
+    @Override
+    public void unregisterButtonListener(Plugin plugin) {
+        this.buttonsListener.remove(plugin);
     }
 
     @EventHandler

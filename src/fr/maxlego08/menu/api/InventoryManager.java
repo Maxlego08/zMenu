@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * <p>Inventories management:</p>
@@ -290,5 +292,20 @@ public interface InventoryManager extends Savable, Listener {
      * @return optional of inventory
      */
     Optional<Inventory> getCurrentPlayerInventory(Player player);
+
+    /**
+     * Add a consumer to retrieve each button that will be saved by the plugin.
+     *
+     * @param plugin the plugin
+     * @param consumer the consumer
+     */
+    void registerButtonListener(Plugin plugin, Consumer<Button> consumer);
+
+    /**
+     * Unregister button listener
+     *
+     * @param plugin the plugin
+     */
+    void unregisterButtonListener(Plugin plugin);
 
 }

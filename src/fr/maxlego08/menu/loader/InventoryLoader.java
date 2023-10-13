@@ -7,7 +7,6 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
-import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -21,18 +20,23 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
     private final MenuPlugin plugin;
+    private final Map<Plugin, Consumer<Button>> buttonsListener;
 
     /**
      * @param plugin
+     * @param buttonsListener
      */
-    public InventoryLoader(MenuPlugin plugin) {
+    public InventoryLoader(MenuPlugin plugin, Map<Plugin, Consumer<Button>> buttonsListener) {
         super();
         this.plugin = plugin;
+        this.buttonsListener = buttonsListener;
     }
 
     @Override
@@ -84,8 +88,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         try {
 
             Class<? extends ZInventory> classz = (Class<? extends ZInventory>) objects[1];
-            Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class,
-                    String.class, int.class, List.class);
+            Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class, String.class, int.class, List.class);
             Plugin plugin = (Plugin) objects[2];
             inventory = constructor.newInstance(plugin, name, fileName, size, buttons);
 
@@ -99,6 +102,11 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
         inventory.setFile(file);
         inventory.setPatterns(patterns);
+
+        /* Button listener register */
+        buttons.forEach(button -> this.buttonsListener.values().forEach(consumer -> consumer.accept(button)));
+        patterns.stream().flatMap(e -> e.getButtons().stream()).forEach(button -> this.buttonsListener.values().forEach(consumer -> consumer.accept(button)));
+        /* END - Button listener register */
 
         return inventory;
     }

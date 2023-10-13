@@ -7,10 +7,14 @@
 - Add method buildDisplayName in Button
 - Add method buildLore in Button
 - Add updateOnClick option, update button if player click on another button
+- Add button listener method in InventoryManager 
+- Add check for new messages value saving
 - Fix placeholder verification
 - Fix patterns interactions
 - Fix itemstack amount with custom material
 - Fix item lore with lore is empty
+- Fix message translation for hex color
+- Fix Component meta regex 
 
 # 1.0.0.9
 
