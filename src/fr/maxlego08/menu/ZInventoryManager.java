@@ -3,10 +3,17 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.*;
+import fr.maxlego08.menu.button.loader.BackLoader;
+import fr.maxlego08.menu.button.loader.HomeLoader;
+import fr.maxlego08.menu.button.loader.MainMenuLoader;
+import fr.maxlego08.menu.button.loader.NextLoader;
+import fr.maxlego08.menu.button.loader.NoneLoader;
+import fr.maxlego08.menu.button.loader.PreviousLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -17,10 +24,13 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -28,7 +38,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +56,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
+    private final Map<UUID, Inventory> currentInventories = new HashMap<>();
+    private final Map<Plugin, Consumer<Button>> buttonsListener = new HashMap<>();
 
     public ZInventoryManager(MenuPlugin plugin) {
         super();
@@ -68,8 +89,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz)
-            throws InventoryException {
+    public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException {
 
         File file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
@@ -80,10 +100,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz)
-            throws InventoryException {
+    public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        Loader<Inventory> loader = new InventoryLoader(this.plugin);
+        Loader<Inventory> loader = new InventoryLoader(this.plugin, this.buttonsListener);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
@@ -105,14 +124,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Inventory> getInventory(String name) {
-        return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
-                .findFirst();
+        return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name)).findFirst();
     }
 
     @Override
     public Optional<Inventory> getInventory(Plugin plugin, String name) {
-        return this.getInventories(plugin).stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name))
-                .findFirst();
+        return this.getInventories(plugin).stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name)).findFirst();
     }
 
     @Override
@@ -128,8 +145,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Collection<Inventory> getInventories(Plugin plugin) {
-        return plugin == null ? new ArrayList<>()
-                : this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
+        return plugin == null ? new ArrayList<>() : this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
     }
 
     @Override
@@ -167,6 +183,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
+        this.currentInventories.put(player.getUniqueId(), inventory);
         this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
     }
 
@@ -211,14 +228,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         // Load inventories
         try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))) {
-            s.skip(1).map(Path::toFile).filter(File::isFile)
-                    .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-                        try {
-                            this.loadInventory(this.plugin, file);
-                        } catch (InventoryException e1) {
-                            e1.printStackTrace();
-                        }
-                    });
+            s.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
+                try {
+                    this.loadInventory(this.plugin, file);
+                } catch (InventoryException e1) {
+                    e1.printStackTrace();
+                }
+            });
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -268,8 +284,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
-                    plugin.getName());
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
             return;
         }
 
@@ -283,8 +298,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
-                    pluginName);
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
             return;
         }
 
@@ -298,8 +312,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%",
-                    this.plugin.getName());
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
             return;
         }
 
@@ -327,6 +340,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public MetaUpdater getMeta() {
+        return Meta.meta;
+    }
+
+    @Override
     public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException {
 
         File file = new File(plugin.getDataFolder(), resourceName);
@@ -338,8 +356,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz)
-            throws InventoryException {
+    public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz) throws InventoryException {
 
         File file = new File(plugin.getDataFolder(), resourceName);
         if (!file.exists()) {
@@ -350,4 +367,23 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     }
 
+    @Override
+    public Optional<Inventory> getCurrentPlayerInventory(Player player) {
+        return Optional.ofNullable(this.currentInventories.getOrDefault(player.getUniqueId(), null));
+    }
+
+    @Override
+    public void registerButtonListener(Plugin plugin, Consumer<Button> consumer) {
+        this.buttonsListener.put(plugin, consumer);
+    }
+
+    @Override
+    public void unregisterButtonListener(Plugin plugin) {
+        this.buttonsListener.remove(plugin);
+    }
+
+    @EventHandler
+    public void onQuid(PlayerQuitEvent event) {
+        this.currentInventories.remove(event.getPlayer().getUniqueId());
+    }
 }

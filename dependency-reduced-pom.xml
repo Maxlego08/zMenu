@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.0.9</version>
+  <version>1.0.1.0</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -25,39 +25,47 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>com/cryptomorin/xseries/messages/*</exclude>
+                    <exclude>com/cryptomorin/xseries/particles/*</exclude>
+                    <exclude>com/cryptomorin/xseries/XBiome*</exclude>
+                    <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
+                    <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
+                    <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
+                    <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
+                    <exclude>com/cryptomorin/xseries/XTag*</exclude>
+                    <exclude>com/cryptomorin/xseries/XPotion*</exclude>
+                    <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
+                    <exclude>com/cryptomorin/xseries/XItemStack*</exclude>
+                    <exclude>com/cryptomorin/xseries/XBlock*</exclude>
+                    <exclude>com/cryptomorin/xseries/XEntity*</exclude>
+                    <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
+                    <exclude>com/cryptomorin/xseries/SkullUtils*</exclude>
+                    <exclude>com/cryptomorin/xseries/ReflectionUtils*</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <artifactSet>
                 <excludes>
                   <exclude>me.arcaniax:HeadDatabase-API</exclude>
                 </excludes>
               </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>com.cryptomorin.xseries</pattern>
+                  <shadedPattern>fr.maxlego08.menu.zcore.utils.xseries</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.tcoded.folialib</pattern>
+                  <shadedPattern>fr.maxlego08.menu.zcore.utils.folialib</shadedPattern>
+                </relocation>
+              </relocations>
             </configuration>
           </execution>
         </executions>
-        <configuration>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>com/cryptomorin/xseries/messages/*</exclude>
-                <exclude>com/cryptomorin/xseries/particles/*</exclude>
-                <exclude>com/cryptomorin/xseries/XBiome*</exclude>
-                <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
-                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
-                <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
-                <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
-                <exclude>com/cryptomorin/xseries/XTag*</exclude>
-                <exclude>com/cryptomorin/xseries/XPotion*</exclude>
-                <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
-                <exclude>com/cryptomorin/xseries/XItemStack*</exclude>
-                <exclude>com/cryptomorin/xseries/XBlock*</exclude>
-                <exclude>com/cryptomorin/xseries/XEntity*</exclude>
-                <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
-                <exclude>com/cryptomorin/xseries/SkullUtils*</exclude>
-                <exclude>com/cryptomorin/xseries/ReflectionUtils*</exclude>
-              </excludes>
-            </filter>
-          </filters>
-        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -86,8 +94,18 @@
       <id>papermc</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>devmart-other</id>
+      <url>https://nexuslite.gcnt.net/repos/other/</url>
+    </repository>
   </repositories>
   <dependencies>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.20.1-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>xyz.xenondevs.nova</groupId>
       <artifactId>nova-api</artifactId>
@@ -113,12 +131,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>dev.folia</groupId>
-      <artifactId>folia-api</artifactId>
-      <version>1.19.4-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
       <version>2.11.1</version>
@@ -127,7 +139,7 @@
     <dependency>
       <groupId>com.mojang</groupId>
       <artifactId>authlib</artifactId>
-      <version>3.11.50</version>
+      <version>1.5.26</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -163,6 +175,12 @@
           <groupId>com.jeff_media</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.kyori</groupId>
+      <artifactId>adventure-text-minimessage</artifactId>
+      <version>4.14.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <properties>

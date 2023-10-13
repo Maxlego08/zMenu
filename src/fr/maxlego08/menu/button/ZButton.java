@@ -34,6 +34,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean isUpdated = false;
     private boolean refreshOnClick = false;
     private List<ActionPlayerData> datas = new ArrayList<>();
+    private boolean updateOnClick = false;
 
     @Override
     public String getName() {
@@ -283,4 +284,22 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.plugin = plugin;
     }
 
+    @Override
+    public boolean updateOnClick() {
+        return this.updateOnClick;
+    }
+
+    public void setUpdateOnClick(boolean updateOnClick) {
+        this.updateOnClick = updateOnClick;
+    }
+
+    @Override
+    public List<String> buildLore(Player player) {
+        return this.itemStack.getLore();
+    }
+
+    @Override
+    public String buildDisplayName(Player player) {
+        return this.itemStack.getDisplayName();
+    }
 }

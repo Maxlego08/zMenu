@@ -28,7 +28,8 @@ import java.util.Optional;
 public class MenuItemStack extends ZUtils {
 
     private final InventoryManager inventoryManager;
-
+    private final String filePath;
+    private final String path;
     private String material;
     private String amount;
     private String url;
@@ -44,8 +45,6 @@ public class MenuItemStack extends ZUtils {
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
-    private final String filePath;
-    private final String path;
 
     public MenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         super();
@@ -74,11 +73,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         String papiMaterial = papi(this.material, player);
-        int amount = 1;
-        try {
-            amount = Integer.parseInt(papi(this.amount, player));
-        } catch (Exception ignored) {
-        }
+        int amount = this.parseAmount(player);
 
         try {
             material = getMaterial(Integer.parseInt(papiMaterial));
@@ -145,6 +140,8 @@ public class MenuItemStack extends ZUtils {
             return null;
         }
 
+        itemStack.setAmount(amount);
+
         if (this.durability != 0) {
             itemStack.setDurability((short) this.durability);
         }
@@ -161,7 +158,9 @@ public class MenuItemStack extends ZUtils {
             }
         }
 
-        Meta.meta.updateLore(itemMeta, this.lore, player);
+        if (!this.lore.isEmpty()) {
+            Meta.meta.updateLore(itemMeta, this.lore, player);
+        }
 
         if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
 
@@ -198,10 +197,24 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @param material the material to set
+     */
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    /**
      * @return the amount
      */
     public String getAmount() {
         return amount;
+    }
+
+    /**
+     * @param amount the amount to set
+     */
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 
     /**
@@ -213,108 +226,17 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
-     * @return the data
-     */
-    public int getData() {
-        return data;
-    }
-
-    /**
-     * @return the durability
-     */
-    public int getDurability() {
-        return durability;
-    }
-
-    /**
-     * @return the potion
-     */
-    public Potion getPotion() {
-        return potion;
-    }
-
-    /**
-     * @return the lore
-     */
-    public List<String> getLore() {
-        return lore;
-    }
-
-    /**
-     * @return the flags
-     */
-    public List<ItemFlag> getFlags() {
-        return flags;
-    }
-
-    /**
-     * @return the displayName
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * @return the isGlowing
-     */
-    public boolean isGlowing() {
-        return isGlowing;
-    }
-
-    /**
-     * @return the modelID
-     */
-    public String getModelID() {
-        return modelID;
-    }
-
-    /**
-     * @return the enchantments
-     */
-    public Map<Enchantment, Integer> getEnchantments() {
-        return enchantments;
-    }
-
-    /**
-     * @return the banner
-     */
-    public Banner getBanner() {
-        return banner;
-    }
-
-    /**
-     * @return the firework
-     */
-    public Firework getFirework() {
-        return firework;
-    }
-
-    /**
-     * @return the leather armor
-     */
-    public LeatherArmor getLeatherArmor() {
-        return leatherArmor;
-    }
-
-    /**
-     * @param material the material to set
-     */
-    public void setMaterial(String material) {
-        this.material = material;
-    }
-
-    /**
-     * @param amount the amount to set
-     */
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
-    /**
      * @param url the url to set
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * @return the data
+     */
+    public int getData() {
+        return data;
     }
 
     /**
@@ -325,10 +247,24 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @return the durability
+     */
+    public int getDurability() {
+        return durability;
+    }
+
+    /**
      * @param durability the durability to set
      */
     public void setDurability(int durability) {
         this.durability = durability;
+    }
+
+    /**
+     * @return the potion
+     */
+    public Potion getPotion() {
+        return potion;
     }
 
     /**
@@ -339,10 +275,24 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @return the lore
+     */
+    public List<String> getLore() {
+        return lore;
+    }
+
+    /**
      * @param lore the lore to set
      */
     public void setLore(List<String> lore) {
         this.lore = lore;
+    }
+
+    /**
+     * @return the flags
+     */
+    public List<ItemFlag> getFlags() {
+        return flags;
     }
 
     /**
@@ -353,6 +303,13 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
      * @param displayName the displayName to set
      */
     public void setDisplayName(String displayName) {
@@ -360,10 +317,24 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @return the isGlowing
+     */
+    public boolean isGlowing() {
+        return isGlowing;
+    }
+
+    /**
      * @param isGlowing the isGlowing to set
      */
     public void setGlowing(boolean isGlowing) {
         this.isGlowing = isGlowing;
+    }
+
+    /**
+     * @return the modelID
+     */
+    public String getModelID() {
+        return modelID;
     }
 
     /**
@@ -381,10 +352,24 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @return the enchantments
+     */
+    public Map<Enchantment, Integer> getEnchantments() {
+        return enchantments;
+    }
+
+    /**
      * @param enchantments the enchantments to set
      */
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
         this.enchantments = enchantments;
+    }
+
+    /**
+     * @return the banner
+     */
+    public Banner getBanner() {
+        return banner;
     }
 
     /**
@@ -395,10 +380,24 @@ public class MenuItemStack extends ZUtils {
     }
 
     /**
+     * @return the firework
+     */
+    public Firework getFirework() {
+        return firework;
+    }
+
+    /**
      * @param firework the firework to set
      */
     public void setFirework(Firework firework) {
         this.firework = firework;
+    }
+
+    /**
+     * @return the leather armor
+     */
+    public LeatherArmor getLeatherArmor() {
+        return leatherArmor;
     }
 
     /**
@@ -414,5 +413,14 @@ public class MenuItemStack extends ZUtils {
 
     public String getPath() {
         return path;
+    }
+
+    public int parseAmount(Player player) {
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(papi(this.amount, player));
+        } catch (Exception ignored) {
+        }
+        return amount;
     }
 }

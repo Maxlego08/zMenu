@@ -2,6 +2,7 @@ package fr.maxlego08.menu.save;
 
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.MessageType;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import fr.maxlego08.menu.zcore.utils.yaml.YamlUtils;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MessageLoader extends YamlUtils implements Savable {
+
+    private final List<Message> loadedMessages = new ArrayList<>();
 
     public MessageLoader(JavaPlugin plugin) {
         super(plugin);
@@ -92,14 +95,27 @@ public class MessageLoader extends YamlUtils implements Savable {
             return;
         }
 
+        this.loadedMessages.clear();
+
         for (String key : configuration.getConfigurationSection("messages.").getKeys(false)) {
-
             loadMessage(configuration, "messages." + key);
-
         }
 
-        // Pour avoir directs les news param�tres
-        this.save(null);
+
+        boolean canSave = false;
+        for (Message message : Message.values()) {
+
+            if (!this.loadedMessages.contains(message)) {
+                canSave = true;
+                break;
+            }
+        }
+
+        // Allows you to save new parameters
+        if (canSave) {
+            Logger.info("Save the message file, add new settings");
+            this.save(null);
+        }
     }
 
     /**
