@@ -21,6 +21,6 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(message);
+        sender.sendMessage(color(message));
     }
 }

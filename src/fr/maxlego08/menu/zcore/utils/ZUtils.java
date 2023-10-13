@@ -467,7 +467,7 @@ public abstract class ZUtils extends MessageUtils {
             Matcher matcher = pattern.matcher(message);
             while (matcher.find()) {
                 String color = message.substring(matcher.start(), matcher.end());
-                message = message.replace(color, net.md_5.bungee.api.ChatColor.of(color) + "");
+                message = message.replace(color, String.valueOf(net.md_5.bungee.api.ChatColor.of(color)));
                 matcher = pattern.matcher(message);
             }
         }

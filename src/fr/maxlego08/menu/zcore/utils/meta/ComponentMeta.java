@@ -93,7 +93,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         String newMessage = message;
 
         if (NMSUtils.isHexColor()) {
-            Pattern pattern = Pattern.compile("(?<!<)#[a-fA-F0-9]{6}");
+            Pattern pattern = Pattern.compile("(?<!<)(?<!:)#[a-fA-F0-9]{6}");
             Matcher matcher = pattern.matcher(message);
             while (matcher.find()) {
                 String color = message.substring(matcher.start(), matcher.end());
