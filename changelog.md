@@ -1,5 +1,7 @@
 # Unreleased
 
+# 1.0.1.0
+
 - Allow inventories without items
 - Add %player% with papi utils
 - Add getter for MetaUpdater in InventoryManager
