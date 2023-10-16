@@ -1,5 +1,7 @@
 # Unreleased
 
+- Fix /zm open argument, you can now set argument like that: `/zm open zmenu:example_punish Maxlego08 false target:Maxlego09 reason:"this is a really long reason"`
+
 # 1.0.1.0
 
 - Allow inventories without items

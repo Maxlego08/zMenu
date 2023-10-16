@@ -78,13 +78,24 @@ public class CommandMenuOpen extends VCommand {
 
             for (int i = 4; i < args.length; i++) {
                 String name = String.valueOf(i - 4);
-                String value = args[i];
-                if (value.contains(":")) {
-                    String[] values = value.split(":");
+                StringBuilder value = new StringBuilder(args[i]);
+                if (value.toString().contains(":")) {
+                    String[] values = value.toString().split(":", 2);
                     name = values[0];
-                    value = values[1];
+                    value = new StringBuilder(values[1]);
+                    if (value.toString().startsWith("\"")) {
+                        value = new StringBuilder(value.substring(value.indexOf("\"") + 1));
+                        i++;
+                        while (i < args.length && !args[i].endsWith("\"")) {
+                            value.append(" ").append(args[i]);
+                            i++;
+                        }
+                        if (i < args.length) {
+                            value.append(" ").append(args[i].substring(0, args[i].lastIndexOf("\"")));
+                        }
+                    }
                 }
-                commandManager.setPlayerArgument(player, name, value);
+                commandManager.setPlayerArgument(player, name, value.toString());
             }
         }
 
