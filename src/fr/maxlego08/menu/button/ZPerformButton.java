@@ -13,7 +13,6 @@ import java.util.List;
 public abstract class ZPerformButton extends ZSlotButton implements PerformButton {
 
     private List<String> commands;
-
     private List<String> consoleCommands;
     private List<String> consoleRightCommands;
     private List<String> consoleLeftCommands;

@@ -155,8 +155,10 @@ public class ZButtonLoader implements Loader<Button> {
         button.setAction(PlaceholderAction.from(configuration.getString(path + "action", null)));
         button.setValue(configuration.getString(path + "value", null));
 
-        // Perform
+        // Perform commands
         List<String> commands = configuration.getStringList(path + "commands");
+        if (commands.isEmpty()) commands = configuration.getStringList(path + "playerCommands");
+
         List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
         List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
         List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");

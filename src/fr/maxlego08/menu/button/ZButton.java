@@ -57,9 +57,8 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @SuppressWarnings("deprecation")
     @Override
     public ItemStack getCustomItemStack(Player player) {
-        if (this.itemStack == null) {
-            return null;
-        }
+        if (this.itemStack == null) return null;
+
         ItemStack itemStack = this.itemStack.build(player);
 
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
@@ -71,13 +70,10 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
                 skullMeta.setOwner(name);
                 itemStack.setItemMeta(skullMeta);
-
             } else {
 
                 this.applyTexture(itemStack, texture);
-
             }
-
         }
 
         return itemStack;
