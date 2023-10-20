@@ -1,8 +1,9 @@
 # Unreleased
 
-- Fix /zm open argument, you can now set argument like that: `/zm open zmenu:example_punish Maxlego08 false target:Maxlego09 reason:"this is a really long reason"`
 - Add ``playerCommands`` as an aliases for ``commands``
 - Removed the requirement to have another button for the NEXT and PREVIOUS button
+- Fix /zm open argument, you can now set argument like that: `/zm open zmenu:example_punish Maxlego08 false target:Maxlego09 reason:"this is a really long reason"`
+- Fix Leather color material case
 
 # 1.0.1.0
 

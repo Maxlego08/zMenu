@@ -59,7 +59,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         Color potionColor = getColor(configuration, path + "color", null);
 
         try {
-            Material material = Material.valueOf(configuration.getString(path + "material", null));
+            Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase());
             String materialName = material.toString();
             if (materialName.startsWith("LEATHER_")) {
                 Color armorColor = getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
