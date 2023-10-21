@@ -941,7 +941,7 @@ public abstract class ZUtils extends MessageUtils {
 
     protected void applyTexture(ItemStack itemStack, String url) {
         SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "zmenu_head");
 
         profile.getProperties().put("textures", new Property("textures", url));
 

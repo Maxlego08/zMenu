@@ -6,16 +6,19 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.action.ActionLoader;
 import fr.maxlego08.menu.action.loader.ActionPlayerDataLoader;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
@@ -189,6 +192,11 @@ public class ZButtonLoader implements Loader<Button> {
         button.setConsolePermissionCommands(consolePermissionCommands);
         button.setConsolePermission(consolePermission);
         button.setActions(actions);
+
+        InventoryManager inventoryManager = this.plugin.getInventoryManager();
+        ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
+        if (Config.enableFastEvent) inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
+        else buttonLoadEvent.call();
 
         return button;
     }
