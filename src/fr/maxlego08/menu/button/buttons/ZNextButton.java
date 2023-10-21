@@ -28,7 +28,7 @@ public class ZNextButton extends ZButton implements HomeButton {
         if (inventory.getPage() != inventory.getMaxPage()) {
             Inventory toInventory = inventory.getMenuInventory();
             this.inventoryManager.openInventory(player, toInventory, inventory.getPage() + 1,
-                    new ArrayList<Inventory>());
+                    new ArrayList<>());
         }
     }
 
@@ -39,7 +39,7 @@ public class ZNextButton extends ZButton implements HomeButton {
 
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
-        return inventory.getPage() < inventory.getMaxPage() && this.hasElseButton();
+        return inventory.getPage() < inventory.getMaxPage();
     }
 
 }

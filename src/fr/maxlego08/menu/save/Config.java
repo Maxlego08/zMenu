@@ -30,6 +30,9 @@ public class Config implements Savable {
     // Enable player command in chat, Allows you to ensure that when a player executes a command, they execute it from the chat and not from the console. If you have "fake" command, which are not saved in spigot you need to enable this option.
     public static boolean enablePlayerCommandInChat = false;
 
+    // Allows you to use the FastEvent interface instead of bukkit events. You gain performance. To use FastEvent, please read the documentation.
+    public static boolean enableFastEvent = true;
+
     // Seconds save player data: The time in seconds for automatic backup of player data.
     public static int secondsSavePlayerData = 600;
 

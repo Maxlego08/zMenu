@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.api.event.FastEvent;
+import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * <p>Inventories management:</p>
@@ -201,7 +200,7 @@ public interface InventoryManager extends Savable, Listener {
     void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
 
     /**
-     * Allows to load the buttons The {@link ButtonLoadEvent} event will be
+     * Allows to load the buttons The {@link ButtonLoaderRegisterEvent} event will be
      * called, so you can add your own buttons using this event
      */
     void loadButtons();
@@ -294,18 +293,25 @@ public interface InventoryManager extends Savable, Listener {
     Optional<Inventory> getCurrentPlayerInventory(Player player);
 
     /**
-     * Add a consumer to retrieve each button that will be saved by the plugin.
+     * Unregister FastEvent listener
      *
      * @param plugin the plugin
-     * @param consumer the consumer
      */
-    void registerButtonListener(Plugin plugin, Consumer<Button> consumer);
+    void unregisterListener(Plugin plugin);
 
     /**
-     * Unregister button listener
+     * Add a FastEvent listener, faster than Bukkit events
      *
-     * @param plugin the plugin
+     * @param plugin    the plugin
+     * @param fastEvent the fastEvent
      */
-    void unregisterButtonListener(Plugin plugin);
+    void registerFastEvent(Plugin plugin, FastEvent fastEvent);
+
+    /**
+     * Get the FastEvents
+     *
+     * @return listeners
+     */
+    Collection<FastEvent> getFastEvents();
 
 }

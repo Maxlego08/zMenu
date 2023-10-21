@@ -39,7 +39,7 @@ public class ZPreviousButton extends ZButton implements HomeButton {
 
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
-        return inventory.getPage() != 1 && this.hasElseButton();
+        return inventory.getPage() != 1;
     }
 
 }

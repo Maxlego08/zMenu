@@ -1,5 +1,19 @@
 # Unreleased
 
+# 1.0.1.1
+
+- Add ``playerCommands`` as an aliases for ``commands``
+- Add ``FastEvent`` interface, allows you to listen to plugin events without going through the Bukkit API, performance gain
+- Add ``InventoryLoadEvent`` event, Event called when an inventory is loaded
+- Add ``ButtonLoadEvent`` event, Event called when a button is loaded
+- Add ``PlayerOpenInventoryEvent`` event, Event called when a player opens an inventory
+- Removed the requirement to have another button for the NEXT and PREVIOUS button
+- Removed registerButtonListener
+- Fix /zm open argument, you can now set argument like that: `/zm open zmenu:example_punish Maxlego08 false target:Maxlego09 reason:"this is a really long reason"`
+- Fix Leather color material case
+- Fix GameProfile with null name
+- Change ButtonLoadEvent to ButtonLoaderRegisterEvent 
+
 # 1.0.1.0
 
 - Allow inventories without items

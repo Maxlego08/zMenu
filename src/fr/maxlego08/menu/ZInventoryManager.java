@@ -3,8 +3,10 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.api.event.FastEvent;
+import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
+import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
+import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -47,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +58,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
-    private final Map<Plugin, Consumer<Button>> buttonsListener = new HashMap<>();
+    private final Map<Plugin, FastEvent> fastEventMap = new HashMap<>();
 
     public ZInventoryManager(MenuPlugin plugin) {
         super();
@@ -102,7 +103,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        Loader<Inventory> loader = new InventoryLoader(this.plugin, this.buttonsListener);
+        Loader<Inventory> loader = new InventoryLoader(this.plugin);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
@@ -113,6 +114,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (Config.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
         }
+
+        InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
+        if (Config.enableFastEvent) getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
+        else inventoryLoadEvent.call();
 
         return inventory;
     }
@@ -183,6 +188,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
+
+        PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);
+        if (Config.enableFastEvent) {
+            getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
+        } else playerOpenInventoryEvent.call();
+
+        if (playerOpenInventoryEvent.isCancelled()) return;
+
+        page = playerOpenInventoryEvent.getPage();
+        oldInventories = playerOpenInventoryEvent.getOldInventories();
+
         this.currentInventories.put(player.getUniqueId(), inventory);
         this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
     }
@@ -213,7 +229,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new PreviousLoader(this.plugin, this));
         buttonManager.register(new MainMenuLoader(this.plugin, this));
 
-        ButtonLoadEvent event = new ButtonLoadEvent(buttonManager);
+        ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager);
         event.call();
     }
 
@@ -373,13 +389,18 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void registerButtonListener(Plugin plugin, Consumer<Button> consumer) {
-        this.buttonsListener.put(plugin, consumer);
+    public void unregisterListener(Plugin plugin) {
+        this.fastEventMap.remove(plugin);
     }
 
     @Override
-    public void unregisterButtonListener(Plugin plugin) {
-        this.buttonsListener.remove(plugin);
+    public void registerFastEvent(Plugin plugin, FastEvent fastEvent) {
+        this.fastEventMap.put(plugin, fastEvent);
+    }
+
+    @Override
+    public Collection<FastEvent> getFastEvents() {
+        return this.fastEventMap.values();
     }
 
     @EventHandler

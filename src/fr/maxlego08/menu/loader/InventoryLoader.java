@@ -27,16 +27,10 @@ import java.util.stream.Collectors;
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
     private final MenuPlugin plugin;
-    private final Map<Plugin, Consumer<Button>> buttonsListener;
 
-    /**
-     * @param plugin
-     * @param buttonsListener
-     */
-    public InventoryLoader(MenuPlugin plugin, Map<Plugin, Consumer<Button>> buttonsListener) {
+    public InventoryLoader(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
-        this.buttonsListener = buttonsListener;
     }
 
     @Override
@@ -102,11 +96,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
         inventory.setFile(file);
         inventory.setPatterns(patterns);
-
-        /* Button listener register */
-        buttons.forEach(button -> this.buttonsListener.values().forEach(consumer -> consumer.accept(button)));
-        patterns.stream().flatMap(e -> e.getButtons().stream()).forEach(button -> this.buttonsListener.values().forEach(consumer -> consumer.accept(button)));
-        /* END - Button listener register */
 
         return inventory;
     }
