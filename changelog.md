@@ -1,5 +1,7 @@
 # Unreleased
 
+# 1.0.1.1
+
 - Add ``playerCommands`` as an aliases for ``commands``
 - Add ``FastEvent`` interface, allows you to listen to plugin events without going through the Bukkit API, performance gain
 - Add ``InventoryLoadEvent`` event, Event called when an inventory is loaded
