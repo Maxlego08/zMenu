@@ -1,5 +1,7 @@
 # Unreleased
 
+- Fix ``ComponentMeta`` with old color tag
+
 # 1.0.1.1
 
 - Add ``playerCommands`` as an aliases for ``commands``
