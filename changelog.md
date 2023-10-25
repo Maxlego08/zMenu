@@ -1,6 +1,7 @@
 # Unreleased
 
 - Fix ``ComponentMeta`` with old color tag
+- Disable double click action
 
 # 1.0.1.1
 

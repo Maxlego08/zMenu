@@ -57,6 +57,9 @@ public class Config implements Savable {
     // Generate default configuration
     public static boolean generateDefaultFile = true;
 
+    // Does not take double click into account
+    public static boolean disableDoubleClickEvent = true;
+
 
     /**
      * static Singleton instance.

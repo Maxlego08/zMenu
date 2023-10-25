@@ -11,6 +11,7 @@ import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -158,6 +159,8 @@ public class InventoryDefault extends VInventory {
             ItemButton itemButton = this.addItem(slot, itemStack);
             if (button.isClickable()) {
                 itemButton.setClick(event -> {
+
+                    if (event.getClick() == ClickType.DOUBLE_CLICK) return;
 
                     button.onClick(this.player, event, this, slot);
                     if (button.isRefreshOnClick()) {
