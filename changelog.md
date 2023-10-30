@@ -1,5 +1,7 @@
 # Unreleased
 
+- Add `/zm list` command
+- Add `/zm create <file name> <inventory size> <inventory name>` command
 - Fix ``ComponentMeta`` with old color tag
 - Disable double click action
 

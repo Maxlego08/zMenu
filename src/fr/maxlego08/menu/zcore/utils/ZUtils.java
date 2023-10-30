@@ -6,6 +6,7 @@ import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
+import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.builder.CooldownBuilder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
@@ -17,7 +18,12 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
@@ -39,7 +45,15 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -785,7 +799,7 @@ public abstract class ZUtils extends MessageUtils {
         String str = "";
         for (int a = 0; a != list.size(); a++) {
             if (a == list.size() - 1)
-                str = str.concat(color + " et " + color2);
+                str = str.concat(color + " " + Message.AND.getMessage() + " " + color2);
             else if (a != 0)
                 str = str.concat(color + ", " + color2);
             str = str.concat(list.get(a));

@@ -15,6 +15,8 @@ public class CommandMenu extends VCommand {
         super(plugin);
         this.setPermission(Permission.ZMENU_USE);
         this.addSubCommand(new CommandMenuOpen(plugin));
+        this.addSubCommand(new CommandMenuList(plugin));
+        this.addSubCommand(new CommandMenuCreate(plugin));
         this.addSubCommand(new CommandMenuReload(plugin));
         this.addSubCommand(new CommandMenuVersion(plugin));
         this.addSubCommand(new CommandMenuPlayers(plugin));
