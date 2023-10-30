@@ -29,6 +29,7 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -401,6 +402,56 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Collection<FastEvent> getFastEvents() {
         return this.fastEventMap.values();
+    }
+
+    @Override
+    public void sendInventories(CommandSender sender) {
+
+        if (this.inventories.isEmpty()) {
+            message(sender, Message.LIST_EMPTY);
+            return;
+        }
+
+        this.inventories.forEach((plugin, inventories) -> {
+            String inventoriesAsString = toList(inventories.stream().map(Inventory::getFileName).collect(Collectors.toList()), "§8", "§7");
+            messageWO(sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
+        });
+    }
+
+    @Override
+    public void createNewInventory(CommandSender sender, String fileName, int inventorySize, String inventoryName) {
+
+        fileName = fileName.replace(".yml", "");
+        File file = new File(this.plugin.getDataFolder(), "inventories/" + fileName + ".yml");
+        if (file.exists()) {
+            message(sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
+            return;
+        }
+        try {
+            file.createNewFile();
+        } catch (IOException exception) {
+            message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+        }
+
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+
+        configuration.set("name", inventoryName);
+        configuration.set("size", inventorySize);
+        configuration.set("items", new ArrayList<>());
+
+        try {
+            configuration.save(file);
+        } catch (IOException exception) {
+            message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+        }
+
+        message(sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
+
+        try {
+            loadInventory(this.plugin, file);
+        } catch (InventoryException exception) {
+            message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+        }
     }
 
     @EventHandler

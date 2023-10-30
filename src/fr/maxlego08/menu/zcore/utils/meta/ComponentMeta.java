@@ -109,6 +109,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
             newMessage = newMessage.replace("&" + key, "<" + value + ">");
             newMessage = newMessage.replace("§" + key, "<" + value + ">");
+            newMessage = newMessage.replace("&" + key.toUpperCase(), "<" + value + ">");
+            newMessage = newMessage.replace("§" + key.toUpperCase(), "<" + value + ">");
         }
 
         return newMessage;

@@ -9,6 +9,7 @@ import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 public enum Message {
 
 	PREFIX("§8(§6zMenu§8) "),
+	AND("and"),
 	
 	VINVENTORY_NULL("§cImpossible to find the inventory with the id §6%id%§c.", false),
 	VINVENTORY_CLONE_NULL("§cThe inventory clone is null!", false),
@@ -53,6 +54,7 @@ public enum Message {
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
 	DESCRIPTION_RELOAD("Allows you to reload configuration files"),
 	DESCRIPTION_VERSION("Show plugin version"),
+	DESCRIPTION_LIST("Inventory list"),
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
 	DESCRIPTION_DISCONNECT("WIP"),
@@ -65,6 +67,7 @@ public enum Message {
     DESCRIPTION_PLAYERS_CLEAR_ALL("Clear all player's data"),
     DESCRIPTION_PLAYERS_CLEAR_PLAYER("Clear player's data"),
 	DESCRIPTION_OPEN_MAIN_MENU("Open the main menu"),
+	DESCRIPTION_CREATE("Create a new config file"),
 	
 	RELOAD("§aYou have just reloaded the configuration files."),
 	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),
@@ -106,7 +109,15 @@ public enum Message {
 	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."), 
 	
 	PLACEHOLDER_NEVER("never"),
-	
+
+	LIST_EMPTY("§cNo inventory of available."),
+	LIST_INFO("§fInventories of §a%plugin% §8(§7%amount%§8): §7%inventories%"),
+
+	INVENTORY_CREATE_ERROR_SIZE("§cThe inventory size should be included in 9 and 54."),
+	INVENTORY_CREATE_ERROR_ALREADY("§cThe file §f%name%§c already exist."),
+	INVENTORY_CREATE_ERROR_EXCEPTION("§cAn error has occurred§8: §f%error%"),
+	INVENTORY_CREATE_SUCCESS("§aYou have just created the inventory §f%name%§a."),
+
 	;
 
 	private List<String> messages;

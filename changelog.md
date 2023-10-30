@@ -1,5 +1,14 @@
 # Unreleased
 
+# 1.0.1.2
+
+- Add `/zm list` command
+- Add `/zm create <file name> <inventory size> <inventory name>` command
+- Add action, closeInventory
+- Add new default inventory, basic_inventory. An inventory with lots of explanation for beginners.
+- Fix ``ComponentMeta`` with old color tag
+- Disable double click action
+
 # 1.0.1.1
 
 - Add ``playerCommands`` as an aliases for ``commands``

@@ -1,0 +1,118 @@
+####################################################
+#
+# A basic zMenu configuration for beginners
+# This configuration includes simple elements to help you take control of the configuration elements of the plugin.
+#
+# The configuration for the command to open this inventory is in the file commands/basic_command.yml
+#
+####################################################
+
+# Size (https://docs.zmenu.dev/configurations/inventories#size)
+#
+# Allows to set the size of the inventory.
+# The inventory size must be a multiple of 9. So you can put 9, 18, 27, 36, 45 and 54
+# If this option is not present in the configuration, then the default will be 54
+#
+size: 18
+
+# Inventory name (https://docs.zmenu.dev/configurations/inventories#name)
+#
+# This is the title of your inventory. You can put anything in it.
+# Color code and placeholders are supported.
+# If you are on Paper, Purpur or PufferFish you have access to the color code of MiniMessage (https://docs.advntr.dev/minimessage/format.html)
+#
+name: "&7Basics Menu"
+
+# Item section. (https://docs.zmenu.dev/configurations/inventories#items)
+#
+# This is where you will add all the items that will be present in your inventory.
+# With zMenu, each item is a Button. A button will allow you to perform specific actions, such as opening a new inventory, changing pages, going back.
+# By default, the button will be of type NONE. All buttons will have the same configuration elements.
+# Only buttons with types like INVENTORY, BACK etc... will have specific configuration elements.
+# All button information here: https://docs.zmenu.dev/configurations/buttons
+#
+items:
+  # Here you will specify a name for your button. No matter what you put, the name will only be present in the configuration.
+  # Attention, the name of your button must be unique. We advise you to choose a name that will describe what the button does.
+  myFirstButton:
+    # As indicated, each button will have a specific type. To specify the type of button you must put this. (https://docs.zmenu.dev/configurations/buttons#type)
+    # By default, the type will be NONE, so you must set this value only if your button is something other than NONE. We will see in more detail the different type of button in another button if below
+    type: NONE
+    # Slots that you want to put the item. Starts from 0 (https://docs.zmenu.dev/configurations/buttons#slot)
+    slot: 4
+    # You will now specify the content of your item. The item will include all configuration items that will be displayed in the inventory, name, lore etc.
+    # https://docs.zmenu.dev/configurations/items
+    item:
+      # Let’s start with a block of grass
+      # To find the list of materials you must go to the spigot documentation: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+      # You can also set a material from another plugin, such as ItemAdder for example. All information here: https://docs.zmenu.dev/configurations/items#material
+      material: GRASS_BLOCK
+      # Here we will name this item (https://docs.zmenu.dev/configurations/items#name)
+      # Color code, mini message and placeholders are supported
+      name: "&aThis is a very nice grass block"
+      # This is the lore. (https://docs.zmenu.dev/configurations/items#lore)
+      # You must put several lines to the lore.
+      # Color code, mini message and placeholders are supported
+      lore:
+        - "" # empty line to put space between name and lore
+        - "&eMy first button with &fzMenu"
+        - "&7Congratulations, you will now discover"
+        - "&7all the possibilities of zMenu."
+
+  # Create a second button, but this time let’s show your head. This will also be a NONE button, so we won’t specify it.
+  mySecondButton:
+    # Slots that you want to put the item. Starts from 0 (https://docs.zmenu.dev/configurations/buttons#slot)
+    slot: 9
+    # We will add an item with the head of the player who will open the inventory.
+    item:
+      # This allows you to specify a nickname to display a player head. To display the head of the player who will open the inventory you must use the placeholder %player%
+      # You do not need to specify the material and/or data, the plugin will automatically do it.
+      playerHead: "%player%"
+      # As for the first button you can specify a name and a lore
+      name: "&2%player%'s head"
+      lore:
+        - "&7Here is your head !"
+        - ""
+        - "&fSo it’s simple, right ?"
+        - "&fLet’s continue the discovery of the plugin."
+
+  # Now let’s create a third button, it will be a head with a cake skin and when we click on it a command will be executed by the console.
+  myThirdButton:
+    # Slots that you want to put the item. Starts from 0 (https://docs.zmenu.dev/configurations/buttons#slot)
+    slot: 17
+    # We will add an item with the cake head
+    item:
+      # To put a head with a specific skin, you can directly put the value of the skin. Here we have a cake skin that was picked up here: https://minecraft-heads.com/custom-heads/food%20&%20drinks/65273-cake
+      # You do not need to specify the material and/or data, the plugin will automatically do it.
+      # More information here: https://docs.zmenu.dev/configurations/items#url
+      url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWJlN2ZmNzkzMTE5OWRjY2U4OGZhNmE4MjdmMjliYjE5MGM5MjUwNGEzNmRmZWY5ODc4NWUxZGQ2MTU2N2NhZCJ9fX0="
+      # As for the first button you can specify a name and a lore
+      name: "&cThe cake is a lie"
+      # Want to make the item shine ? So, just set true to the glow value.
+      # This will add an enchantment to the item as well as the HIDE_ENCHANTS flag.
+      # https://docs.zmenu.dev/configurations/items#glow
+      glow: true
+    # We now want the console to execute the command /say %player% is great !
+    consoleCommands:
+      - "say %player% is great"
+
+#################################################################
+#
+# Other elements of configurations for the inventory
+#
+#################################################################
+
+# You want to directly fill your inventory with an item?
+# Then with the fillItem is for you. (https://docs.zmenu.dev/configurations/inventories#fill-item)
+# In this example, the inventory will be filled with black glass
+#
+#fillItem:
+#  material: BLACK_STAINED_GLASS_PANE
+#  name: "&8"
+
+# You have an inventory with a custom texture, and you do not want the player to see his items in are inventory?
+# Then the clearInventory is for you
+#
+# Here players will have their inventory saved, then it sara deleted when opening the inventory.
+# When they close the inventory their inventory will be returned to them. Does not remove the armor
+#clearInventory: true

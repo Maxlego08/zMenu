@@ -57,4 +57,11 @@ public interface ActionClick {
      * @param player Who execute the action
      */
     void execute(Player player);
+
+    /**
+     * Close inventory on click
+     *
+     * @return boolean
+     */
+    boolean closeInventory();
 }

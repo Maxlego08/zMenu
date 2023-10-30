@@ -20,7 +20,9 @@ import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ZButtonLoader implements Loader<Button> {
+public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
     private final MenuPlugin plugin;
     private final File file;
@@ -95,13 +97,25 @@ public class ZButtonLoader implements Loader<Button> {
         button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", false));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
-        button.setItemStack(itemStackLoader.load(configuration, path + "item.", file));
+
+        MenuItemStack itemStack = itemStackLoader.load(configuration, path + "item.", file);
+        button.setItemStack(itemStack);
+
         button.setButtonName(buttonName);
         button.setMessages(configuration.getStringList(path + "messages"));
 
         String playerHead = configuration.getString(path + "playerHead",
                 configuration.getString(path + "item.playerHead", null));
-        button.setPlayerHead(playerHead);
+
+        if (playerHead != null) {
+            if (NMSUtils.isNewVersion()) {
+                itemStack.setMaterial("PLAYER_HEAD");
+            } else {
+                itemStack.setMaterial("SKULL_ITEM");
+                itemStack.setData(3);
+            }
+            button.setPlayerHead(playerHead);
+        }
 
         button.setUpdated(configuration.getBoolean(path + "update", false));
         button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", false));
@@ -195,7 +209,8 @@ public class ZButtonLoader implements Loader<Button> {
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
-        if (Config.enableFastEvent) inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
+        if (Config.enableFastEvent)
+            inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
         else buttonLoadEvent.call();
 
         return button;
