@@ -11,7 +11,6 @@ import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
@@ -23,18 +22,20 @@ public class ZActionClick extends ZUtils implements ActionClick {
     private final List<String> consoleCommands;
     private final SoundOption soundOption;
     private final List<ActionPlayerData> datas;
+    private final boolean closeInventory;
     private OpenLink openLink = new ZOpenLink();
 
     /**
      * @param messages
      * @param playerCommands
      * @param consoleCommands
+     * @param openLink
      * @param soundOption
      * @param datas
-     * @param openLink
+     * @param closeInventory
      */
     public ZActionClick(MenuPlugin plugin, List<String> messages, List<String> playerCommands,
-                        List<String> consoleCommands, OpenLink openLink, SoundOption soundOption, List<ActionPlayerData> datas) {
+                        List<String> consoleCommands, OpenLink openLink, SoundOption soundOption, List<ActionPlayerData> datas, boolean closeInventory) {
         super();
         this.messages = messages;
         this.playerCommands = playerCommands;
@@ -43,6 +44,7 @@ public class ZActionClick extends ZUtils implements ActionClick {
         this.datas = datas;
         this.openLink = openLink;
         this.plugin = plugin;
+        this.closeInventory = closeInventory;
     }
 
     @Override
@@ -82,7 +84,6 @@ public class ZActionClick extends ZUtils implements ActionClick {
 
         }
 
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("zMenu");
         this.plugin.getScheduler().runTask(player.getLocation(), () -> {
 
             this.consoleCommands.forEach(command -> {
@@ -107,6 +108,14 @@ public class ZActionClick extends ZUtils implements ActionClick {
             this.soundOption.play(player);
         }
 
+        if (this.closeInventory) {
+            player.closeInventory();
+        }
+    }
+
+    @Override
+    public boolean closeInventory() {
+        return this.closeInventory;
     }
 
     @Override
