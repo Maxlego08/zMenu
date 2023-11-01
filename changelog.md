@@ -1,6 +1,7 @@
 # Unreleased
 
 - Added `DefaultButtonValue` in `Button`, Change the default values of the buttons if they are not present in the configuration. To avoid, for example, having to redefine the slot for elses buttons or not having to set isPermanent: true for NEXT or PREVIOUS type buttons
+- Added `advanced_inventory.yml` in default config file
 - Fix `/zm reload` with patterns
 - Previous and Next button are now permanent button by default
 - Else button doesnt need to set slot and page

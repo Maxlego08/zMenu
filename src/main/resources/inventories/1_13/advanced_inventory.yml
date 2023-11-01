@@ -1,0 +1,175 @@
+####################################################
+#
+# An advanced zMenu configuration for beginners
+# This configuration of the elements to better exploit the capabilities of the plugin.
+# This configuration will contain two pages, so we will show you how to navigate between several pages
+#
+# The configuration for the command to open this inventory is in the file commands/basic_command.yml
+#
+#  ███████╗███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗
+#  ╚════██║████╗░████║██╔════╝████╗░██║██║░░░██║
+#  ░░███╔═╝██╔████╔██║█████╗░░██╔██╗██║██║░░░██║
+#  ██╔══╝░░██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║
+#  ███████╗██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝
+#  ╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░
+#
+#   Documentation: https://docs.zmenu.dev
+#   Discord: https://discord.groupez.dev
+#   Plugin page: https://groupez.dev/resources/zmenu.253
+#   Marketplace: https://minecraft-inventory-builder.com
+#   Sponsor: https://serveur-minecraft-vote.fr/
+#
+####################################################
+
+# Size (https://docs.zmenu.dev/configurations/inventories#size)
+#
+# Allows to set the size of the inventory.
+# The inventory size must be a multiple of 9. So you can put 9, 18, 27, 36, 45 and 54
+# If this option is not present in the configuration, then the default will be 54
+#
+size: 54
+
+# Inventory name (https://docs.zmenu.dev/configurations/inventories#name)
+#
+# This is the title of your inventory. You can put anything in it.
+# Color code and placeholders are supported.
+# If you are on Paper, Purpur or PufferFish you have access to the color code of MiniMessage (https://docs.advntr.dev/minimessage/format.html)
+#
+# If your inventory has multiple pages, you can view the current page and the last page with the following placeholders:
+# %page% - Current max
+# %maxPage% - Last page
+#
+name: "&4Advanced &cInventory &7%page%&8/&7%maxPage%"
+
+# Patterns (https://docs.zmenu.dev/configurations/patterns)
+#
+# The fathers allow you to have to create buttons that can be used in several inventories.
+# Thus, you do not need to repeat your configuration but only to specify the name of the father.
+# The patterns are in the patterns folder.
+#
+# To add a father you only need to specify the name you put in the father’s file.
+#
+patterns:
+  - "pattern_example"
+
+# Item section. (https://docs.zmenu.dev/configurations/inventories#items)
+#
+# This is where you will add all the items that will be present in your inventory.
+# With zMenu, each item is a Button. A button will allow you to perform specific actions, such as opening a new inventory, changing pages, going back.
+# By default, the button will be of type NONE. All buttons will have the same configuration elements.
+# Only buttons with types like INVENTORY, BACK etc... will have specific configuration elements.
+# All button information here: https://docs.zmenu.dev/configurations/buttons
+#
+items:
+
+  # Button with multiple slots (https://docs.zmenu.dev/configurations/buttons#slot)
+  #
+  # You can define a button that will be displayed on multiple slots.
+  # To put several slots, you must put as in the example if below. You must write "slots" and not "slot"
+  # You’re going to have to put a slot list, but instead of putting each slot in sequence you can make slot range like this:
+  # <start slot>-<end slot>, in the example below we have 2-6, which represents slots 2, 3, 4, 5, and 6
+  #
+  # So we have red glass that will be displayed on all pages of slot 2 to 6
+  decorations:
+    # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#ispermanent)
+    isPermanent: true
+    item:
+      material: RED_STAINED_GLASS_PANE
+      name: "&e"
+    slots:
+      - 2-6 # From slot 2 to slot 6
+
+  # Page 1 (https://docs.zmenu.dev/configurations/buttons#page)
+  #
+  # Vous pouvez spécifier la page d'un bouton de deux manières différente.
+  # The first one will be as in the example below. If your button is on a single slot, you can do this:
+  # <page>-<slot>, in the example below we have 1-22, witch represent page 1 and slot 22
+  # By default if you do not specify anything, then the page will always be page number 1
+  #
+  itemInFirstPage:
+    slot: 1-22
+    item:
+      material: BOOK
+      name: "&fA book"
+      lore:
+        - "&7Just a book at first page"
+
+  # Page 2 (https://docs.zmenu.dev/configurations/buttons#page)
+  #
+  # Now let’s see how to specify the page in another way. In the example if below we have the page value directly.
+  # So in this example, the button will be on page 2 and slot 22. This way of writing is easier to understand but also longer.
+  # You choose the method you prefer to indicate the page of a button.
+  #
+  # Attention, if your button has several slots, you must indicate the page this way.
+  #
+  # The button also has the INVENTORY type (https://docs.zmenu.dev/configurations/buttons#inventory)
+  # This button type allows you to navigate between different inventory. You will need to specify the name of the inventory, as well as the plugin from where the inventory was created.
+  # It is important to specify the name of the plugin, let’s imagine that inventory several inventories use the same name, its would be impossible to find the right one.
+  # By specifying the plugin name you will not have a problem. By default, the plugin used will be zMenu
+  #
+  # In this example, the button will open the inventory "basic_inventory" of the plugin "zMenu"
+  #
+  itemInSecondPage:
+    type: INVENTORY
+    slot: 22
+    page: 2
+    inventory: "basic_inventory"
+    plugin: "zMenu"
+    item:
+      material: COMPASS
+      name: "&fOpen basic inventory"
+      lore:
+        - "&7Click here for open"
+        - "&7the &fbasic inventory"
+
+  # PREVIOUS (https://docs.zmenu.dev/configurations/buttons#previous)
+  #
+  # The PREVIOUS button returns to the previous page.
+  # With zMenu there is the value "else" which allows to specify an else button. When a check is performed, and it is not completed, then the else button will be used.
+  # if (verification)
+  #   display button
+  # else
+  #   display another button
+  # With this principle, it is possible to display another button if there is no need for a previous page. In the example if below we will change the name, lore and url of the item.
+  # If you do not want to display an item if there is no previous page, just do not put anything
+  #
+  previous:
+    # By default, the PREVIOUS and NEXT type buttons will be displayed on all pages, but if you need, you can disable it.
+    item:
+      url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjllYTFkODYyNDdmNGFmMzUxZWQxODY2YmNhNmEzMDQwYTA2YzY4MTc3Yzc4ZTQyMzE2YTEwOThlNjBmYjdkMyJ9fX0="
+      name: "#18f54c⬅ &fᴘʀᴇᴠɪᴏᴜs ᴘᴀɢᴇ"
+      lore:
+        - ""
+        - "&f➥ &7Click to access the #18f54cprevious page"
+    type: PREVIOUS
+    slot: 48
+    # This is where you should put the else button. It is quite possible to ambush the else buttons in succession.
+    # How you are in an else button, you don’t need to specify the slot, slots, page or isPermanent. The values will be the same if you do not specify them.
+    else:
+      item:
+        url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0="
+        name: "#cf1717✘ &fᴘʀᴇᴠɪᴏᴜs ᴘᴀɢᴇ"
+        lore:
+          - ""
+          - "&f➥ &7Click to access the #cf1717previous page"
+
+  # NEXT (https://docs.zmenu.dev/configurations/buttons#next)
+  #
+  # The NEXT Button allows you to go to the next page
+  # Same principle as for the PREVIOUS button, you have the same operation here.
+  next:
+    item:
+      url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODI3MWE0NzEwNDQ5NWUzNTdjM2U4ZTgwZjUxMWE5ZjEwMmIwNzAwY2E5Yjg4ZTg4Yjc5NWQzM2ZmMjAxMDVlYiJ9fX0="
+      name: "#18f54c➡ &fɴᴇxᴛ ᴘᴀɢᴇ"
+      lore:
+        - ""
+        - "&f➥ &7Click to access the #18f54cnext page"
+    type: NEXT
+    slot: 50
+    else:
+      item:
+        url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0="
+        name: "#cf1717✘ &fɴᴇxᴛ ᴘᴀɢᴇ"
+        lore:
+          - ""
+          - "&f➥ &7Click to access the #cf1717next page"
