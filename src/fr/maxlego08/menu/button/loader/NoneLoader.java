@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.ZButton;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,7 +39,7 @@ public class NoneLoader implements ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         try {
             return this.classz.getConstructor(Plugin.class).newInstance(this.plugin);
         } catch (Exception e) {

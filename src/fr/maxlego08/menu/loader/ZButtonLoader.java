@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
@@ -49,6 +50,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
+        DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue();
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
@@ -61,15 +63,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
-        ZButton button = (ZButton) loader.load(configuration, path);
+        ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
         button.setPlugin(this.plugin);
 
-        int slot = 0;
+        int slot;
         int page;
 
         try {
 
-            String slotString = configuration.getString(path + "slot", "0");
+            String slotString = configuration.getString(path + "slot", String.valueOf(defaultButtonValue.getSlot()));
             if (slotString.contains("-")) {
 
                 String[] strings = slotString.split("-");
@@ -77,13 +79,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 slot = Integer.parseInt(strings[1]);
 
             } else {
-                slot = configuration.getInt(path + "slot", 0);
-                page = configuration.getInt(path + "page", 1);
+                slot = configuration.getInt(path + "slot", defaultButtonValue.getSlot());
+                page = configuration.getInt(path + "page", defaultButtonValue.getPage());
             }
 
         } catch (Exception e) {
-            slot = configuration.getInt(path + "slot", 0);
-            page = configuration.getInt(path + "page", 1);
+            slot = configuration.getInt(path + "slot", defaultButtonValue.getSlot());
+            page = configuration.getInt(path + "page", defaultButtonValue.getPage());
         }
 
         page = Math.max(page, 1);
@@ -91,12 +93,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         List<String> slotsAsString = configuration.getStringList(path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
+        if (slots.isEmpty()) slots = defaultButtonValue.getSlots();
 
         button.setSlots(slots);
         button.setSlot(slot);
-        button.setPermanent(configuration.getBoolean(path + "isPermanent", false));
-        button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", false));
-        button.setCloseInventory(configuration.getBoolean(path + "closeInventory", false));
+        button.setPermanent(configuration.getBoolean(path + "isPermanent", defaultButtonValue.isPermanent()));
+        button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", defaultButtonValue.isUpdateOnClick()));
+        button.setCloseInventory(configuration.getBoolean(path + "closeInventory", defaultButtonValue.isCloseInventory()));
 
         MenuItemStack itemStack = itemStackLoader.load(configuration, path + "item.", file);
         button.setItemStack(itemStack);
@@ -105,7 +108,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setMessages(configuration.getStringList(path + "messages"));
 
         String playerHead = configuration.getString(path + "playerHead",
-                configuration.getString(path + "item.playerHead", null));
+                configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
 
         if (playerHead != null) {
             if (NMSUtils.isNewVersion()) {
@@ -117,8 +120,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             button.setPlayerHead(playerHead);
         }
 
-        button.setUpdated(configuration.getBoolean(path + "update", false));
-        button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", false));
+        button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
+        button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", defaultButtonValue.isRefreshOnClick()));
 
         if (configuration.contains(path + "openLink")) {
 
@@ -157,7 +160,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         if (configuration.contains(path + "else")) {
 
-            Button elseButton = this.load(configuration, path + "else.", buttonName + ".else");
+            DefaultButtonValue elseDefaultButtonValue = new DefaultButtonValue();
+            elseDefaultButtonValue.setSlot(slot);
+            elseDefaultButtonValue.setSlots(slots);
+            elseDefaultButtonValue.setPage(page);
+            elseDefaultButtonValue.setPermanent(button.isPermament());
+
+            Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
             button.setElseButton(elseButton);
 
             if (elseButton != null) {
