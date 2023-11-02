@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.loader;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -34,7 +35,7 @@ public interface ButtonLoader {
      * @return slots
      */
     static List<Integer> loadSlot(List<String> slotsAsString) {
-        List<Integer> slots = new ArrayList<Integer>();
+        List<Integer> slots = new ArrayList<>();
         if (slotsAsString.size() > 0) {
             for (String line : slotsAsString) {
                 if (line.contains("-")) {
@@ -83,8 +84,8 @@ public interface ButtonLoader {
      *
      * @param configuration Current file configuration
      * @param path Current button path
+     * @param defaultButtonValue Default button values
      * @return Button
      */
-    Button load(YamlConfiguration configuration, String path);
-
+    Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue);
 }

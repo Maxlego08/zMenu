@@ -78,20 +78,17 @@ public class ZPatternManager implements PatternManager {
             folder.mkdir();
         }
 
-        this.patterns.clear();
-
         // Load inventories
-        try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))){
-           s.skip(1).map(Path::toFile).filter(File::isFile)
-                    .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-                        try {
-                            this.loadPattern(file);
-                        } catch (InventoryException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
+        try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
+            stream.skip(1).map(Path::toFile).filter(File::isFile).filter(file -> file.getName().endsWith(".yml")).forEach(file -> {
+                try {
+                    this.loadPattern(file);
+                } catch (InventoryException inventoryException) {
+                    inventoryException.printStackTrace();
+                }
+            });
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
     }

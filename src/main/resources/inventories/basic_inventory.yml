@@ -5,6 +5,19 @@
 #
 # The configuration for the command to open this inventory is in the file commands/basic_command.yml
 #
+#  ███████╗███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗
+#  ╚════██║████╗░████║██╔════╝████╗░██║██║░░░██║
+#  ░░███╔═╝██╔████╔██║█████╗░░██╔██╗██║██║░░░██║
+#  ██╔══╝░░██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║
+#  ███████╗██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝
+#  ╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░
+#
+#   Documentation: https://docs.zmenu.dev
+#   Discord: https://discord.groupez.dev
+#   Plugin page: https://groupez.dev/resources/zmenu.253
+#   Marketplace: https://minecraft-inventory-builder.com
+#   Sponsor: https://serveur-minecraft-vote.fr/
+#
 ####################################################
 
 # Size (https://docs.zmenu.dev/configurations/inventories#size)

@@ -651,6 +651,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param inventory
      * @param material
      * @return
+     * @return
      */
     protected int count(org.bukkit.inventory.Inventory inventory, Material material) {
         int count = 0;

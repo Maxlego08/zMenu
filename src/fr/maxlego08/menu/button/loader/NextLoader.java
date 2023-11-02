@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button.loader;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.buttons.NextButton;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZNextButton;
@@ -39,7 +40,8 @@ public class NextLoader implements ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        defaultButtonValue.setPermanent(true);
         return new ZNextButton(this.manager);
     }
 

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.ZButton;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,12 +42,12 @@ public class PluginLoader implements ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         try {
             Constructor<? extends ZButton> constructor = this.classz.getConstructor(Plugin.class);
             return constructor.newInstance(this.plugin);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
-                 | IllegalArgumentException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException |
+                 IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
