@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -25,7 +26,20 @@ public class PlayerSkin {
 
     private static final Map<String, String> textures = new HashMap<>();
     private static final ExecutorService pool = Executors.newCachedThreadPool();
+    private static Field valueField;
+    private static Field signatureField;
     private static String gameProfileMethodName;
+
+    static {
+        try {
+            valueField = Property.class.getDeclaredField("value");
+            signatureField = Property.class.getDeclaredField("signature");
+            valueField.setAccessible(true);
+            signatureField.setAccessible(true);
+        } catch (NoSuchFieldException exception) {
+            exception.printStackTrace();
+        }
+    }
 
     public static String getTexture(Player player) {
         if (textures.containsKey(player.getName())) {
@@ -67,9 +81,15 @@ public class PlayerSkin {
         GameProfile profile = getProfile(playerBukkit);
         if (profile.getProperties().get("textures").iterator().hasNext()) {
             Property property = profile.getProperties().get("textures").iterator().next();
-            String texture = property.getValue();
-            String signature = property.getSignature();
-            return new String[]{texture, signature};
+            try {
+                String texture = (String) valueField.get(property);
+                String signature = (String) signatureField.get(property);
+                return new String[]{texture, signature};
+            } catch (Exception exception) {
+                String texture = property.getValue();
+                String signature = property.getSignature();
+                return new String[]{texture, signature};
+            }
         } else {
             return getFromName(playerBukkit.getName());
         }
@@ -82,11 +102,9 @@ public class PlayerSkin {
             InputStreamReader reader_0 = new InputStreamReader(url_0.openStream());
             String uuid = new JsonParser().parse(reader_0).getAsJsonObject().get("id").getAsString();
 
-            URL url_1 = new URL(
-                    "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+            URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
             InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
-            JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties")
-                    .getAsJsonArray().get(0).getAsJsonObject();
+            JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
             String texture = textureProperty.get("value").getAsString();
             String signature = textureProperty.get("signature").getAsString();
 
@@ -106,8 +124,8 @@ public class PlayerSkin {
         try {
             Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
             return (GameProfile) entityPlayer.getClass().getMethod(getMethodName(entityPlayer)).invoke(entityPlayer);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                 | SecurityException ignored) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException |
+                 SecurityException ignored) {
         }
 
         return null;

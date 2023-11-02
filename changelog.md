@@ -5,6 +5,7 @@
 - Fix `/zm reload` with patterns
 - Previous and Next button are now permanent button by default
 - Else button doesnt need to set slot and page
+- Fix error with 1.20.2 (PlayerSkin#getFromPlayer)
 
 # 1.0.1.2
 
