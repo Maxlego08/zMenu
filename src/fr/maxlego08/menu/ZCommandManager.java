@@ -53,7 +53,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
         List<Command> commands = this.commands.getOrDefault(command.getPlugin().getName(), new ArrayList<Command>());
         commands.add(command);
-        this.commands.put(plugin.getName(), commands);
+        this.commands.put(command.getPlugin().getName(), commands);
 
         if (Config.enableInformationMessage) {
             Logger.info("Command /" + command.getCommand() + " successfully register.", LogType.SUCCESS);
@@ -75,10 +75,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     public void unregisterCommands(Plugin plugin) {
 
         List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<>());
-        Iterator<Command> iterator = commands.iterator();
-        while (iterator.hasNext()) {
-
-            Command command = iterator.next();
+        for (Command command : commands) {
 
             this.plugin.getVCommandManager().unregisterCommand(command);
 
@@ -139,16 +136,13 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         }
 
         for (String key : configuration.getConfigurationSection("commands.").getKeys(false)) {
-
             try {
                 Command command = loader.load(configuration, "commands." + key + ".", file);
                 this.registerCommand(command);
             } catch (InventoryException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 
     @Override

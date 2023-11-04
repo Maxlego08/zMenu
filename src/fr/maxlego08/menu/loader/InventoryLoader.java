@@ -64,12 +64,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
-        if (section != null) {
-            for (String buttonPath : section.getKeys(false)) {
-                buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
+        try {
+            if (section != null) {
+                for (String buttonPath : section.getKeys(false)) {
+                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
+                }
+            } else {
+                Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
-        } else {
-            Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+        }catch (Exception exception) {
+            Logger.info(exception.getMessage(), Logger.LogType.ERROR);
         }
 
         PatternManager patternManager = this.plugin.getPatternManager();

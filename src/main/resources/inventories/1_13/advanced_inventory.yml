@@ -43,7 +43,7 @@ name: "&4Advanced &cInventory &7%page%&8/&7%maxPage%"
 
 # Patterns (https://docs.zmenu.dev/configurations/patterns)
 #
-# The fathers allow you to have to create buttons that can be used in several inventories.
+# Patterns allow you to have to create buttons that can be used in several inventories.
 # Thus, you do not need to repeat your configuration but only to specify the name of the father.
 # The patterns are in the patterns folder.
 #

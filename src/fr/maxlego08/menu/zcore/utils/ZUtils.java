@@ -1023,12 +1023,12 @@ public abstract class ZUtils extends MessageUtils {
             for (String alias : command.getAliases()) {
                 knownCommands.remove(alias);
             }
-            knownCommands.remove(plugin.getName() + ":" + command.getName());
+            knownCommands.remove(plugin.getDescription().getName() + ":" + command.getName());
             for (String alias : command.getAliases()) {
-                knownCommands.remove(plugin.getName() + ":" + alias);
+                knownCommands.remove(plugin.getDescription().getName() + ":" + alias);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 

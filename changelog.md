@@ -1,4 +1,17 @@
+# ToDo
+
+- Improve the firework system to put more option. Being able to put several effects, power etc
+
 # Unreleased
+
+# 1.0.1.4
+
+- Inventory can load with error in button
+- Fix commands register and unregister. The commands are now saved in the plugin that will load the command.
+- Fix Firework meta for firework rocket
+- Improve documentation: https://github.com/Maxlego08/zMenu/issues/15
+
+# 1.0.1.3
 
 - Added `DefaultButtonValue` in `Button`, Change the default values of the buttons if they are not present in the configuration. To avoid, for example, having to redefine the slot for elses buttons or not having to set isPermanent: true for NEXT or PREVIOUS type buttons
 - Added `advanced_inventory.yml` in default config file
