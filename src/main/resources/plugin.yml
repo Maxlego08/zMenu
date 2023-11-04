@@ -3,7 +3,7 @@ authors: [ Maxlego08 ]
 main: fr.maxlego08.menu.MenuPlugin
 description: Inventory management plugin
 website: https://groupez.dev/resources/zmenu.253
-version: BETA-1.0.1.3
+version: 1.0.1.4
 api-version: 1.13
 contributors: [ mani1232, lijinhong11  ]
 softdepend:

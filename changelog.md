@@ -4,6 +4,8 @@
 
 # Unreleased
 
+# 1.0.1.4
+
 - Inventory can load with error in button
 - Fix commands register and unregister. The commands are now saved in the plugin that will load the command.
 - Fix Firework meta for firework rocket
