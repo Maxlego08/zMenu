@@ -283,7 +283,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
      */
     public void registerCommand(Plugin plugin, String string, VCommand vCommand, List<String> aliases) {
         try {
-            PluginCommand command = constructor.newInstance(string, this.plugin);
+            PluginCommand command = constructor.newInstance(string, plugin);
             command.setExecutor(this);
             command.setTabCompleter(this);
             command.setAliases(aliases);
@@ -292,7 +292,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             vCommand.addSubCommand(aliases);
 
             if (!commandMap.register(command.getName(), plugin.getDescription().getName(), command)) {
-                Logger.info("Unable to add the command " + vCommand.getSyntax());
+                Logger.info("Unable to add the command " + vCommand.getSyntax(), LogType.ERROR);
             }
         } catch (Exception exception) {
             exception.printStackTrace();

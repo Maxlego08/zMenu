@@ -1,5 +1,8 @@
 # Unreleased
 
+- Inventory can load with error in button
+- Fix commands register and unregister. The commands are now saved in the plugin that will load the command.
+
 # 1.0.1.3
 
 - Added `DefaultButtonValue` in `Button`, Change the default values of the buttons if they are not present in the configuration. To avoid, for example, having to redefine the slot for elses buttons or not having to set isPermanent: true for NEXT or PREVIOUS type buttons
