@@ -7,6 +7,7 @@
 - Inventory can load with error in button
 - Fix commands register and unregister. The commands are now saved in the plugin that will load the command.
 - Fix Firework meta for firework rocket
+- Improve documentation: https://github.com/Maxlego08/zMenu/issues/15
 
 # 1.0.1.3
 
