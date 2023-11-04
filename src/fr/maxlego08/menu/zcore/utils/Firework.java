@@ -4,6 +4,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class Firework {
@@ -29,21 +30,27 @@ public class Firework {
         isStar = star;
     }
 
-    public void setEffect(FireworkEffect effect) {
-        this.effect = effect;
-    }
-
     public FireworkEffect getEffect() {
         return effect;
     }
 
+    public void setEffect(FireworkEffect effect) {
+        this.effect = effect;
+    }
+
     @NotNull
     public ItemStack toItemStack(int amount) {
-        Material material = isStar ? Material.FIREWORK_STAR : Material.FIREWORK_ROCKET;
+        Material material = this.isStar ? Material.FIREWORK_STAR : Material.FIREWORK_ROCKET;
         ItemStack itemStack = new ItemStack(material, amount);
-        FireworkEffectMeta fem = (FireworkEffectMeta) itemStack.getItemMeta();
-        fem.setEffect(effect);
-        itemStack.setItemMeta(fem);
+        if (this.isStar) {
+            FireworkEffectMeta fireworkEffectMeta = (FireworkEffectMeta) itemStack.getItemMeta();
+            fireworkEffectMeta.setEffect(effect);
+            itemStack.setItemMeta(fireworkEffectMeta);
+        } else {
+            FireworkMeta fireworkMeta = (FireworkMeta) itemStack.getItemMeta();
+            fireworkMeta.addEffect(effect);
+            itemStack.setItemMeta(fireworkMeta);
+        }
         return itemStack;
     }
 }

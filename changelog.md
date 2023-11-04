@@ -1,7 +1,12 @@
+# ToDo
+
+- Improve the firework system to put more option. Being able to put several effects, power etc
+
 # Unreleased
 
 - Inventory can load with error in button
 - Fix commands register and unregister. The commands are now saved in the plugin that will load the command.
+- Fix Firework meta for firework rocket
 
 # 1.0.1.3
 
