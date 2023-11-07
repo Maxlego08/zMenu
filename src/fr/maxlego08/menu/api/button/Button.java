@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.button;
 
 import fr.maxlego08.menu.MenuItemStack;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -221,4 +222,15 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      */
     List<String> buildLore(Player player);
 
+    /**
+     * Perform an action when a back button is clicked
+     *
+     * @param player         The player
+     * @param event          The inventory click event
+     * @param inventory      The current inventory
+     * @param oldInventories Old Inventory list
+     * @param toInventory    Inventory to open
+     * @param slot           Current slot
+     */
+    void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot);
 }

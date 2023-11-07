@@ -33,8 +33,10 @@ public class ZBackButton extends ZButton implements BackButton {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
         oldInventories.remove(this.inventory);
-
         Inventory toInventory = this.inventory;
+
+        inventory.getButtons().forEach(button -> button.onBackClick(player, event, inventory, oldInventories, toInventory, slot));
+
         this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
     }
 

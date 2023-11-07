@@ -4,6 +4,7 @@
 
 # Unreleased
 
+- Add ``onBackClick`` in Button, is called when a player will click a ``BACK`` button just before performing his action.
 # 1.0.1.4
 
 - Inventory can load with error in button
