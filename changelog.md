@@ -5,6 +5,8 @@
 
 # Unreleased
 
+- Start of the translation of the plugin documentation in French. If you want to translate zMenu documentation into your language, please contact me.
+
 # 1.0.1.5
 
 - Fix button load if type doesn't exist
