@@ -18,6 +18,7 @@ import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
@@ -34,6 +35,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -451,6 +453,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             loadInventory(this.plugin, file);
         } catch (InventoryException exception) {
             message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+        }
+    }
+
+    @Override
+    public void updateInventory(Player player) {
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder instanceof InventoryDefault) {
+            InventoryDefault inventoryDefault = (InventoryDefault) holder;
+            this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
         }
     }
 

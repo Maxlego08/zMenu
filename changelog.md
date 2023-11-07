@@ -1,10 +1,15 @@
 # ToDo
 
-- Improve the firework system to put more option. Being able to put several effects, power etc
+- [ ] Improve the firework system to put more option. Being able to put several effects, power etc
+- [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 
 # Unreleased
 
+- Fix button load if type doesn't exist
 - Add ``onBackClick`` in Button, is called when a player will click a ``BACK`` button just before performing his action.
+- Add method ``setMaxPage`` in InventoryDefault class
+- Add event cancel before use the button. It is now possible to activate the click of items in the inventory from the api
+
 # 1.0.1.4
 
 - Inventory can load with error in button

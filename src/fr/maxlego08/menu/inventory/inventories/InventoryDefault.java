@@ -49,15 +49,6 @@ public class InventoryDefault extends VInventory {
 
         this.maxPage = this.inventory.getMaxPage(player, args);
 
-        String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
-        super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
-
-        if (this.inventory.getFillItemStack() != null) {
-            for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
-                this.addItem(a, this.inventory.getFillItemStack().build(player));
-            }
-        }
-
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
         this.buttons = this.inventory.sortButtons(page, args);
@@ -66,6 +57,18 @@ public class InventoryDefault extends VInventory {
 
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
 
+        // Create inventory
+        String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
+        super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
+
+        // Display fill items
+        if (this.inventory.getFillItemStack() != null) {
+            for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
+                this.addItem(a, this.inventory.getFillItemStack().build(player));
+            }
+        }
+
+        // Display buttons
         this.buttons.forEach(this::buildButton);
 
         return InventoryResult.SUCCESS;
@@ -162,6 +165,7 @@ public class InventoryDefault extends VInventory {
 
                     if (event.getClick() == ClickType.DOUBLE_CLICK) return;
 
+                    event.setCancelled(true);
                     button.onClick(this.player, event, this, slot);
                     if (button.isRefreshOnClick()) {
                         this.cancel(slot);
@@ -246,6 +250,10 @@ public class InventoryDefault extends VInventory {
      */
     public int getMaxPage() {
         return maxPage;
+    }
+
+    public void setMaxPage(int maxPage) {
+        this.maxPage = maxPage;
     }
 
     public List<Button> getButtons() {

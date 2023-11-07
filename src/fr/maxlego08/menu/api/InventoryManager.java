@@ -331,4 +331,11 @@ public interface InventoryManager extends Savable, Listener {
      * @param inventoryName inventory name
      */
     void createNewInventory(CommandSender sender, String fileName, int inventorySize, String inventoryName);
+
+    /**
+     * Opens the player’s current inventory again
+     *
+     * @param player the player
+     */
+    void updateInventory(Player player);
 }
