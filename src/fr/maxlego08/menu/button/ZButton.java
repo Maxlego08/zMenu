@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.players.DataManager;
@@ -142,9 +143,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public void onRender(Player player, InventoryDefault inventory) {
-        if (hasSpecialRender()) {
-            inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
-        }
+        inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
@@ -297,5 +296,9 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @Override
     public String buildDisplayName(Player player) {
         return this.itemStack.getDisplayName();
+    }
+
+    @Override
+    public void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot) {
     }
 }

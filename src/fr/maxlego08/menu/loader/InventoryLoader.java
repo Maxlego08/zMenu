@@ -20,8 +20,6 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
@@ -64,16 +62,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
-        try {
-            if (section != null) {
-                for (String buttonPath : section.getKeys(false)) {
+        if (section != null) {
+            for (String buttonPath : section.getKeys(false)) {
+                try {
                     buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
+                } catch (Exception exception) {
+                    Logger.info(exception.getMessage(), Logger.LogType.ERROR);
                 }
-            } else {
-                Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
-        }catch (Exception exception) {
-            Logger.info(exception.getMessage(), Logger.LogType.ERROR);
+        } else {
+            Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
         }
 
         PatternManager patternManager = this.plugin.getPatternManager();
@@ -90,8 +88,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             Plugin plugin = (Plugin) objects[2];
             inventory = constructor.newInstance(plugin, name, fileName, size, buttons);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
             inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
         }
 
