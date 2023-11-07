@@ -5,6 +5,8 @@
 
 # Unreleased
 
+# 1.0.1.5
+
 - Fix button load if type doesn't exist
 - Add ``onBackClick`` in Button, is called when a player will click a ``BACK`` button just before performing his action.
 - Add method ``setMaxPage`` in InventoryDefault class
