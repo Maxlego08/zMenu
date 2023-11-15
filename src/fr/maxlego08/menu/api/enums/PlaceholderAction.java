@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.enums;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 /**
  *
  * @author Maxence
@@ -33,6 +35,7 @@ public enum PlaceholderAction {
 				return action;
 			}
 		}
+		Logger.info("Impossible to find the " + string + " action for placeholder", Logger.LogType.ERROR);
 		return null;
 	}
 

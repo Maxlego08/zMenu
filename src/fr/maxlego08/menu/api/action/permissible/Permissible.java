@@ -12,4 +12,10 @@ public interface Permissible {
      */
     boolean hasPermission(Player player);
 
+    /**
+     * Check if permissible is valid
+     *
+     * @return boolean
+     */
+    boolean isValid();
 }

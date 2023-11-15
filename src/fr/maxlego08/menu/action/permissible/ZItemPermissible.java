@@ -32,16 +32,17 @@ public class ZItemPermissible implements ItemPermissible {
         PlayerInventory inventory = player.getInventory();
         ItemStack itemStack = inventory.getItemInHand();
 
-        if (itemStack == null) {
-            return false;
-        }
-
-        if (itemStack.getType() != this.material) {
+        if (itemStack == null || itemStack.getType() != this.material) {
             return false;
         }
 
 		return this.amount <= 0 || itemStack.getAmount() >= this.amount;
 	}
+
+    @Override
+    public boolean isValid() {
+        return this.material != null;
+    }
 
     @Override
     public Material getMaterial() {

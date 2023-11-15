@@ -10,7 +10,7 @@ public class ZPermissionPermissible implements PermissionPermissible {
 
     /**
      * @param permission Permission
-     * @param isReverse is reverse
+     * @param isReverse  is reverse
      */
     public ZPermissionPermissible(String permission, boolean isReverse) {
         super();
@@ -20,8 +20,12 @@ public class ZPermissionPermissible implements PermissionPermissible {
 
     @Override
     public boolean hasPermission(Player player) {
-        return this.permission == null
-                || (this.isReverse != player.hasPermission(this.permission));
+        return this.permission == null || (this.isReverse != player.hasPermission(this.permission));
+    }
+
+    @Override
+    public boolean isValid() {
+        return this.permission != null;
     }
 
     @Override

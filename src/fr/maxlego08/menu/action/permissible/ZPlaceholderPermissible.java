@@ -6,6 +6,8 @@ import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermissible {
 
     private final PlaceholderAction action;
@@ -22,6 +24,10 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
         this.action = action;
         this.placeholder = placeholder;
         this.value = value;
+    }
+
+    public ZPlaceholderPermissible(Map<String, Object> map) {
+        this(PlaceholderAction.from((String) map.get("action")), (String) map.getOrDefault("placeholder", map.get("placeHolder")), (String) map.get("value"));
     }
 
     @Override
@@ -98,4 +104,8 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
         return this.value;
     }
 
+    @Override
+    public boolean isValid() {
+        return this.value != null && this.action != null && this.placeholder != null;
+    }
 }
