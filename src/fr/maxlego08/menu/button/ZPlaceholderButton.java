@@ -1,57 +1,34 @@
 package fr.maxlego08.menu.button;
 
-import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
-import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class ZPlaceholderButton extends ZPermissibleButton implements PlaceholderButton {
 
-    private PlaceholderAction action;
-    private String placeholder;
-    private String value;
+    private List<PlaceholderPermissible> placeholders = new ArrayList<>();
 
     @Override
-    public String getPlaceHolder() {
-        return this.placeholder;
+    public List<PlaceholderPermissible> getPlaceholders() {
+        return this.placeholders;
     }
 
-    @Override
-    public PlaceholderAction getAction() {
-        return this.action;
-    }
-
-    /**
-     * @param action the action to set
-     */
-    public ZPlaceholderButton setAction(PlaceholderAction action) {
-        this.action = action;
-        return this;
+    public void setPlaceholders(List<PlaceholderPermissible> placeholders) {
+        this.placeholders = placeholders;
     }
 
     @Override
     public boolean hasPlaceHolder() {
-        return this.placeholder != null && this.action != null;
+        return this.placeholders != null && !this.placeholders.isEmpty();
     }
 
     @Override
     public boolean hasPermission() {
         return super.hasPermission() || this.hasPlaceHolder();
-    }
-
-    @Override
-    public String getValue() {
-        return this.value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public ZPlaceholderButton setValue(String value) {
-        this.value = value;
-        return this;
     }
 
     @Override
@@ -63,22 +40,11 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
         } else {
 
             // First check if player has permission
-            boolean hasPermission = super.checkPermission(player, inventory);
-            if (!hasPermission) {
+            if (!super.checkPermission(player, inventory)) {
                 return false;
             }
 
-            PlaceholderPermissible permissible = new ZPlaceholderPermissible(this.action, this.placeholder, this.value);
-            return permissible.hasPermission(player);
+            return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player));
         }
     }
-
-    /**
-     * @param placeholder the placeholder to set
-     */
-    public ZPlaceholderButton setPlaceholder(String placeholder) {
-        this.placeholder = placeholder;
-        return this;
-    }
-
 }

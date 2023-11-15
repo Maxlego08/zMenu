@@ -6,6 +6,18 @@
 # Unreleased
 
 - Start of the translation of the plugin documentation in French. If you want to translate zMenu documentation into your language, please contact me.
+- You can use multiple placeholders now, do like this:
+```yml
+placeholders:
+  - placeholder: <your placeholder>
+    value: <your value>
+    action: <your action>
+  - placeholder: <your placeholder>
+    value: <your value>
+    action: <your action>
+``` 
+Be careful, you must put an ``s`` to **placeholder**, otherwise it will not work.
+- You can use now the text ``placeholder`` instanceof ``placeHolder``
 
 # 1.0.1.5
 

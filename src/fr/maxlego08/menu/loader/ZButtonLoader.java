@@ -5,10 +5,12 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.action.ActionLoader;
 import fr.maxlego08.menu.action.loader.ActionPlayerDataLoader;
+import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
+import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
@@ -21,6 +23,7 @@ import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -30,7 +33,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
@@ -173,13 +178,24 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
                 elsePermissibleButton.setParentButton(button);
             }
-
         }
 
-        // Placeholder
-        button.setPlaceholder(configuration.getString(path + "placeHolder", null));
-        button.setAction(PlaceholderAction.from(configuration.getString(path + "action", null)));
-        button.setValue(configuration.getString(path + "value", null));
+        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path+"placeholders", new ArrayList<>())).stream().map(ZPlaceholderPermissible::new).filter(permissible -> {
+            if (!permissible.isValid()){
+                Logger.info("A placeholder is invalid in the placeholder list of the button " + path, Logger.LogType.ERROR);
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        String placeholder = configuration.getString(path + "placeHolder", configuration.getString(path + "placeholder", null));
+        PlaceholderAction placeholderAction = PlaceholderAction.from(configuration.getString(path + "action", null));
+        String placeholderValue = configuration.getString(path + "value", null);
+        if (placeholderAction != null && placeholderValue != null && placeholder != null) {
+            placeholders.add(new ZPlaceholderPermissible(placeholderAction, placeholder, placeholderValue));
+        }
+
+        button.setPlaceholders(placeholders);
 
         // Perform commands
         List<String> commands = configuration.getStringList(path + "commands");

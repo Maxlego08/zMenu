@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.button;
 
-import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
+
+import java.util.List;
 
 /**
  * @author Maxence
@@ -12,31 +14,17 @@ import fr.maxlego08.menu.api.enums.PlaceholderAction;
 public interface PlaceholderButton {
 
     /**
-     * Returns the placeholder used
+     * Returns the list of placeholders
      *
-     * @return placeholder
+     * @return placeholders
      */
-	String getPlaceHolder();
-
-    /**
-     * Returns the action to perform with the placeholder
-     *
-     * @return action
-     */
-	PlaceholderAction getAction();
+    List<PlaceholderPermissible> getPlaceholders();
 
     /**
      * Allows to check if the placeholder is valid
      *
      * @return boolean
      */
-	boolean hasPlaceHolder();
-
-    /**
-     * Returns the value to be checked
-     *
-     * @return value
-     */
-	String getValue();
+    boolean hasPlaceHolder();
 
 }
