@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import org.bukkit.plugin.Plugin;
 
@@ -76,6 +77,8 @@ public interface ButtonManager {
 
     Optional<Class<? extends Permissible>> getPermission(String key);
 
-    List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path);
+    void registerAction(ActionLoader actionLoader);
+
+    Optional<ActionLoader> getActionLoader(String key);
 
 }

@@ -23,6 +23,16 @@ import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.loader.InventoryLoader;
+import fr.maxlego08.menu.loader.actions.BroadcastLoader;
+import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
+import fr.maxlego08.menu.loader.actions.ChatLoader;
+import fr.maxlego08.menu.loader.actions.CloseLoader;
+import fr.maxlego08.menu.loader.actions.ConnectLoader;
+import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
+import fr.maxlego08.menu.loader.actions.DataLoader;
+import fr.maxlego08.menu.loader.actions.MessageLoader;
+import fr.maxlego08.menu.loader.actions.MessageSoundLoader;
+import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -225,6 +235,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible("or_permission", ZPermissionPermissible.class);
         buttonManager.registerPermissible("placeholder", ZPlaceholderPermissible.class);
         buttonManager.registerPermissible("item", ZItemPermissible.class);
+
+        // Load actions
+        buttonManager.registerAction(new BroadcastLoader());
+        buttonManager.registerAction(new MessageLoader());
+        buttonManager.registerAction(new MessageSoundLoader());
+        buttonManager.registerAction(new BroadcastSoundLoader());
+        buttonManager.registerAction(new CloseLoader());
+        buttonManager.registerAction(new ConnectLoader(this.plugin));
+        buttonManager.registerAction(new DataLoader(this.plugin));
+        buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
+        buttonManager.registerAction(new ChatLoader());
+        buttonManager.registerAction(new PlayerCommandLoader());
+        buttonManager.registerAction(new ConsoleCommandLoader());
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each
