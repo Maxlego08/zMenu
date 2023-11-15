@@ -2,6 +2,10 @@ package fr.maxlego08.menu.api.enums;
 
 import fr.maxlego08.menu.zcore.logger.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author Maxence
@@ -10,15 +14,27 @@ import fr.maxlego08.menu.zcore.logger.Logger;
  */
 public enum PlaceholderAction {
 
-	BOOLEAN,
+	BOOLEAN("b="),
 
-	EQUALS_STRING, EQUALSIGNORECASE_STRING, CONTAINS_STRING,
+	EQUALS_STRING("s="), EQUALSIGNORECASE_STRING("s=="), CONTAINS_STRING("sc"),
 
-	EQUAL_TO,
+	EQUAL_TO("=="),
 	
-	SUPERIOR, SUPERIOR_OR_EQUAL,
+	SUPERIOR(">"), SUPERIOR_OR_EQUAL(">="),
 
-	LOWER, LOWER_OR_EQUAL,;
+	LOWER("<"), LOWER_OR_EQUAL("<="),
+
+	;
+
+	private final List<String> aliases;
+
+	PlaceholderAction() {
+		this.aliases = new ArrayList<>();
+	}
+
+	PlaceholderAction(String... aliases) {
+		this.aliases = Arrays.asList(aliases);
+	}
 
 	/**
 	 * Allows you to retrieve the action based on a string without triggering an error

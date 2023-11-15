@@ -18,6 +18,29 @@ placeholders:
 ``` 
 Be careful, you must put an ``s`` to **placeholder**, otherwise it will not work.
 - You can use now the text ``placeholder`` instanceof ``placeHolder``
+- Start new way to configure the plugin, you have now ``view_requirement``:
+```yml
+view_requirement:
+  - type: permission
+    permission: "admin.use"
+  - type: or_permission
+    permission: "use.pro.config"
+  - type: placeholder
+    placeholder: "%player_gamemode%"
+    value: "CREATIVE"
+    action: equals_string
+```
+You have the following type, ``permission``, ``or_permission`` and ``placeholder``
+- Add alias for placeholder action:
+1. BOOLEAN: `b=`
+2. EQUALS_STRING: `s=`
+3. EQUALSIGNORECASE_STRING: `s==`
+4. CONTAINS_STRING: `sc`
+5. EQUAL_TO: `==`
+6. SUPERIOR: `>`
+7. SUPERIOR_OR_EQUAL: `>=`
+8. LOWER: `<`
+9. LOWER_OR_EQUAL: <`=`
 
 # 1.0.1.5
 
