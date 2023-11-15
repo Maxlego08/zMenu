@@ -3,6 +3,8 @@ package fr.maxlego08.menu.action.permissible;
 import fr.maxlego08.menu.api.action.permissible.PermissionPermissible;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class ZPermissionPermissible implements PermissionPermissible {
 
     private final String permission;
@@ -18,9 +20,17 @@ public class ZPermissionPermissible implements PermissionPermissible {
         this.isReverse = isReverse;
     }
 
+    public ZPermissionPermissible(Map<String, Object> map) {
+        String permission = (String) map.getOrDefault("permission", null);
+        boolean isReverse = permission != null && permission.startsWith("!");
+        if (isReverse) permission = permission.substring(1);
+        this.permission = permission;
+        this.isReverse = isReverse;
+    }
+
     @Override
     public boolean hasPermission(Player player) {
-        return this.permission == null || (this.isReverse != player.hasPermission(this.permission));
+        return this.isReverse != player.hasPermission(this.permission);
     }
 
     @Override

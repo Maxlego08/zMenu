@@ -63,7 +63,7 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
         }
 
         if (!this.permissions.isEmpty()) {
-            return this.permissions.stream().allMatch(p -> p.hasPermission(player) == true);
+            return this.permissions.stream().allMatch(p -> p.hasPermission(player));
         }
 
         return permission != null && permission.hasPermission(player);

@@ -28,10 +28,7 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
 
                     String permission = configuration.getString(currentPath + "permission");
                     boolean isReverse = permission != null && permission.startsWith("!");
-                    if (isReverse) {
-                        permission = permission.substring(1);
-                    }
-
+                    if (isReverse) permission = permission.substring(1);
                     permissibles.add(new ZPermissionPermissible(permission, isReverse));
 
                 } else if (configuration.contains(currentPath + "placeHolder")) {
@@ -51,9 +48,7 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
                     permissibles.add(new ZItemPermissible(material, amount));
 
                 }
-
             }
-
         }
 
         return permissibles;
