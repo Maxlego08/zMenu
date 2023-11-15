@@ -26,10 +26,7 @@ public class PermissibleLoader implements Loader<List<Permissible>> {
                 String currentPath = path + "permissions." + key + ".";
                 if (configuration.contains(currentPath + "permission")) {
 
-                    String permission = configuration.getString(currentPath + "permission");
-                    boolean isReverse = permission != null && permission.startsWith("!");
-                    if (isReverse) permission = permission.substring(1);
-                    permissibles.add(new ZPermissionPermissible(permission, isReverse));
+                    permissibles.add(new ZPermissionPermissible(configuration.getString(currentPath + "permission")));
 
                 } else if (configuration.contains(currentPath + "placeHolder")) {
 

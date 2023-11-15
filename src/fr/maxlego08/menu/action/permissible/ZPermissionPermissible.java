@@ -12,20 +12,17 @@ public class ZPermissionPermissible implements PermissionPermissible {
 
     /**
      * @param permission Permission
-     * @param isReverse  is reverse
      */
-    public ZPermissionPermissible(String permission, boolean isReverse) {
+    public ZPermissionPermissible(String permission) {
         super();
+        boolean isReverse = permission != null && permission.startsWith("!");
+        if (isReverse) permission = permission.substring(1);
         this.permission = permission;
         this.isReverse = isReverse;
     }
 
     public ZPermissionPermissible(Map<String, Object> map) {
-        String permission = (String) map.getOrDefault("permission", null);
-        boolean isReverse = permission != null && permission.startsWith("!");
-        if (isReverse) permission = permission.substring(1);
-        this.permission = permission;
-        this.isReverse = isReverse;
+        this((String) map.getOrDefault("permission", null));
     }
 
     @Override

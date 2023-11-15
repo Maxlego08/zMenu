@@ -1,18 +1,27 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.exceptions.ButtonAlreadyRegisterException;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
     private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
+    private final Map<String, Class<? extends Permissible>> permissibles = new HashMap<>();
 
     @Override
     public void register(ButtonLoader button) {
@@ -65,4 +74,41 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return this.getLoaders().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
     }
 
+    @Override
+    public void registerPermissible(String key, Class<? extends Permissible> pClass) {
+        this.permissibles.put(key.toLowerCase(), pClass);
+    }
+
+    @Override
+    public Map<String, Class<? extends Permissible>> getPermissibles() {
+        return this.permissibles;
+    }
+
+    @Override
+    public Optional<Class<? extends Permissible>> getPermission(String key) {
+        return Optional.ofNullable(this.permissibles.getOrDefault(key.toLowerCase(), null));
+    }
+
+    @Override
+    public List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path) {
+        return elements.stream().map(map -> {
+            String type = (String) map.getOrDefault("type", null);
+            if (type == null) return null;
+            Optional<Class<? extends Permissible>> optional = getPermission(type);
+            if (optional.isPresent()) {
+                Class<? extends Permissible> aClass = optional.get();
+                try {
+                    return aClass.getConstructor(Map.class).newInstance(map);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException exception) {
+                    exception.printStackTrace();
+                }
+            }
+            return null;
+        }).filter(element -> {
+            if (element != null && element.isValid()) return true;
+            Logger.info("Error, an element is invalid in " + path);
+            return false;
+        }).collect(Collectors.toList());
+    }
 }

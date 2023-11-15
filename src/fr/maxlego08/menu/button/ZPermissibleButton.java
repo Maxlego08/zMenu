@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 public abstract class ZPermissibleButton extends ZPerformButton implements PermissibleButton {
 
-    private PermissionPermissible permission;
     private List<PermissionPermissible> permissions = new ArrayList<>();
     private List<PermissionPermissible> orPermissions = new ArrayList<>();
     private Button elseButton;
@@ -33,21 +32,8 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
     }
 
     @Override
-    public PermissionPermissible getPermission() {
-        return this.permission;
-    }
-
-    /**
-     * @param permission the permission to set
-     */
-    public ZPermissibleButton setPermission(String permission) {
-        this.permission = new ZPermissionPermissible(permission, permission != null && permission.startsWith("!"));
-        return this;
-    }
-
-    @Override
     public boolean hasPermission() {
-        return this.permission.getPermission() != null || !this.permissions.isEmpty() || !this.orPermissions.isEmpty();
+        return !this.permissions.isEmpty() || !this.orPermissions.isEmpty();
     }
 
     @Override
@@ -66,7 +52,7 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
             return this.permissions.stream().allMatch(p -> p.hasPermission(player));
         }
 
-        return permission != null && permission.hasPermission(player);
+        return true;
     }
 
     @Override
@@ -99,11 +85,20 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
         return this.permissions;
     }
 
-    public void setPermissions(List<String> permissions) {
-        this.permissions = permissions.stream().map(permission -> new ZPermissionPermissible(permission, permission != null && permission.startsWith("!"))).collect(Collectors.toList());
+    public void setPermissions(List<String> permissions, String permission) {
+        this.permissions = permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList());
+        if (permission != null) this.permissions.add(new ZPermissionPermissible(permission));
     }
 
-    public void setOrPermissions(List<String> orPermissions) {
-        this.orPermissions = orPermissions.stream().map(permission -> new ZPermissionPermissible(permission, permission != null && permission.startsWith("!"))).collect(Collectors.toList());
+    public void setOrPermissionsString(List<String> orPermissions) {
+        this.orPermissions = orPermissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList());
+    }
+
+    public void setPermissions(List<PermissionPermissible> permissions) {
+        this.permissions = permissions;
+    }
+
+    public void setOrPermissions(List<PermissionPermissible> orPermissions) {
+        this.orPermissions = orPermissions;
     }
 }

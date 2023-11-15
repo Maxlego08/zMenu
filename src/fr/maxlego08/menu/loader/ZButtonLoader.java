@@ -10,6 +10,8 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
+import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.action.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
@@ -31,6 +33,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +64,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
 
         if (!optional.isPresent()) {
-            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path
-                    + " in inventory " + this.file.getAbsolutePath());
+            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
@@ -112,8 +114,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setButtonName(buttonName);
         button.setMessages(configuration.getStringList(path + "messages"));
 
-        String playerHead = configuration.getString(path + "playerHead",
-                configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
+        String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
 
         if (playerHead != null) {
             if (NMSUtils.isNewVersion()) {
@@ -159,9 +160,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         button.setDatas(actionPlayerDatas);
 
-        button.setPermission(configuration.getString(path + "permission", null));
-        button.setPermissions(configuration.getStringList(path + "permission"));
-        button.setOrPermissions(configuration.getStringList(path + "orPermission"));
+        List<String> permissions = configuration.getStringList(path + "permission");
+        button.setPermissions(permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions, configuration.getString(path + "permission", null));
+        List<String> orPermissions = configuration.getStringList(path + "orPermission");
+        button.setOrPermissionsString(orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions);
 
         if (configuration.contains(path + "else")) {
 
@@ -180,8 +182,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             }
         }
 
-        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path+"placeholders", new ArrayList<>())).stream().map(ZPlaceholderPermissible::new).filter(permissible -> {
-            if (!permissible.isValid()){
+        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(ZPlaceholderPermissible::new).filter(permissible -> {
+            if (!permissible.isValid()) {
                 Logger.info("A placeholder is invalid in the placeholder list of the button " + path, Logger.LogType.ERROR);
                 return false;
             }
@@ -238,7 +240,64 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
         else buttonLoadEvent.call();
 
+        // Load view requirements
+        loadViewRequirements(button, configuration, buttonManager, path);
+
         return button;
+    }
+
+    /**
+     * Allows to load permissions and placeholders that will have to be checked when opening the button
+     *
+     * @param button        The button
+     * @param configuration the configuration
+     * @param buttonManager the button manager
+     * @param path          current path in configuration
+     */
+    private void loadViewRequirements(ZButton button, YamlConfiguration configuration, ButtonManager buttonManager, String path) {
+
+        List<Map<String, Object>> viewRequirements = (List<Map<String, Object>>) configuration.getList(path + "view_requirement", new ArrayList<>());
+        if (!viewRequirements.isEmpty()) {
+
+            List<PermissionPermissible> permissionPermissibles = new ArrayList<>();
+            List<PermissionPermissible> orPermissionPermissibles = new ArrayList<>();
+            List<PlaceholderPermissible> placeholderPermissibles = new ArrayList<>();
+
+            viewRequirements.forEach(map -> {
+
+                String type = (String) map.getOrDefault("type", null);
+                if (type == null) return;
+
+                Optional<Class<? extends Permissible>> optional = buttonManager.getPermission(type);
+                if (optional.isPresent()) {
+                    Class<? extends Permissible> aClass = optional.get();
+                    try {
+                        Permissible permissible = aClass.getConstructor(Map.class).newInstance(map);
+
+                        // ToDo, improve the whole system to ultimately have only one list of Permission and not several list as currently
+                        switch (type.toLowerCase()) {
+                            case "permission":
+                                permissionPermissibles.add((PermissionPermissible) permissible);
+                                break;
+                            case "or_permission":
+                                orPermissionPermissibles.add((PermissionPermissible) permissible);
+                                break;
+                            case "placeholder":
+                                placeholderPermissibles.add((PlaceholderPermissible) permissible);
+                                break;
+                        }
+
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException exception) {
+                        exception.printStackTrace();
+                    }
+                }
+            });
+
+            if (!permissionPermissibles.isEmpty()) button.setPermissions(permissionPermissibles);
+            if (!orPermissionPermissibles.isEmpty()) button.setOrPermissions(orPermissionPermissibles);
+            if (!placeholderPermissibles.isEmpty()) button.setPlaceholders(placeholderPermissibles);
+        }
     }
 
     @Override

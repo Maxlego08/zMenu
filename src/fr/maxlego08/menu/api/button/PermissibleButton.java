@@ -33,13 +33,6 @@ public interface PermissibleButton {
 	Button getMasterParentButton();
 
     /**
-     * The permission that the player must have
-     *
-     * @return permission
-     */
-    PermissionPermissible getPermission();
-
-    /**
      * List of permissions that the player must have
      *
      * @return permissions

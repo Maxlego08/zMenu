@@ -1,5 +1,8 @@
 package fr.maxlego08.menu;
 
+import fr.maxlego08.menu.action.permissible.ZItemPermissible;
+import fr.maxlego08.menu.action.permissible.ZPermissionPermissible;
+import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -216,11 +219,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void loadButtons() {
 
+        ButtonManager buttonManager = this.plugin.getButtonManager();
+        // Load Permissible before
+        buttonManager.registerPermissible("permission", ZPermissionPermissible.class);
+        buttonManager.registerPermissible("or_permission", ZPermissionPermissible.class);
+        buttonManager.registerPermissible("placeholder", ZPlaceholderPermissible.class);
+        buttonManager.registerPermissible("item", ZItemPermissible.class);
+
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each
         // inventory will have the same list of buttons
-
-        ButtonManager buttonManager = this.plugin.getButtonManager();
 
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
