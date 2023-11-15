@@ -41,6 +41,7 @@ You have the following type, ``permission``, ``or_permission`` and ``placeholder
 7. SUPERIOR_OR_EQUAL: `>=`
 8. LOWER: `<`
 9. LOWER_OR_EQUAL: <`=`
+- Enable version checker
 
 # 1.0.1.5
 
