@@ -103,6 +103,11 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 9. LOWER_OR_EQUAL: <`=`
 - Enable version checker
 - Improve javadocs
+- Remove example.yml, example2.yml and example3.yml in inventories folder
+- Remove example.yml in commands folder
+- Rename pattern1.yml to pattern_example.yml
+- Edit commands.yml file with new default config
+- Add pro_inventory.yml in inventory folder
 
 # 1.0.1.5
 

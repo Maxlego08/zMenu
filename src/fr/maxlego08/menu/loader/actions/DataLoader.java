@@ -28,7 +28,7 @@ public class DataLoader implements ActionLoader {
         ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("type", "SET").toUpperCase());
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
-        long seconds = accessor.getLong("seconds", 1L);
+        long seconds = accessor.getLong("seconds", 0L);
         return new DataAction(new ZActionPlayerData(key, type, object, seconds), plugin);
     }
 }

@@ -98,17 +98,13 @@ public class MenuPlugin extends ZPlugin {
         List<String> files = new ArrayList<>();
         files.add("inventories/basic_inventory.yml");
         files.add("inventories/advanced_inventory.yml");
-        files.add("inventories/example.yml");
-        files.add("inventories/example_shop.yml");
+        files.add("inventories/pro_inventory.yml");
         files.add("inventories/example_punish.yml");
-        files.add("inventories/test/example2.yml");
-        files.add("inventories/test/example3.yml");
 
         files.add("commands/commands.yml");
-        files.add("commands/example/example.yml");
         files.add("commands/punish/punish.yml");
 
-        files.add("patterns/pattern1.yml");
+        files.add("patterns/pattern_example.yml");
         files.add("readme.txt");
 
         File folder = new File(this.getDataFolder(), "inventories");

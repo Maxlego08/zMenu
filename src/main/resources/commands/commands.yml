@@ -35,15 +35,15 @@
 #########################################################################################################################################
 
 commands:
-  example1:
-    command: examplea
-    aliases:
-      - exampleb
-    inventory: example
-  example2:
-    command: exampled
+  basic_command:
+    command: basic_command
+    inventory: basic_inventory
+  advanced_command:
+    command: advanced_command
     permission: "admin.use"
     aliases:
-      - examplec
-      - examplee
-    inventory: example2    
+      - zai
+    inventory: advanced_inventory
+  pro_command:
+    command: pro_command
+    inventory: pro_inventory
