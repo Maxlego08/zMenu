@@ -1,8 +1,8 @@
 package fr.maxlego08.menu;
 
-import fr.maxlego08.menu.action.permissible.ZItemPermissible;
-import fr.maxlego08.menu.action.permissible.ZPermissionPermissible;
-import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
+import fr.maxlego08.menu.requirement.permissible.ZItemPermissible;
+import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
+import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;

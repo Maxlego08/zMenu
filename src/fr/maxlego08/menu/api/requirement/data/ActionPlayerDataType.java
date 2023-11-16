@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.action.data;
+package fr.maxlego08.menu.api.requirement.data;
 
 public enum ActionPlayerDataType {
 

@@ -1,7 +1,7 @@
-package fr.maxlego08.menu.action;
+package fr.maxlego08.menu.requirement;
 
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
-import fr.maxlego08.menu.api.action.data.ActionPlayerDataType;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;

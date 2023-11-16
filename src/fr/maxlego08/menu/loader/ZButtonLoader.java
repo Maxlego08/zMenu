@@ -3,25 +3,22 @@ package fr.maxlego08.menu.loader;
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.action.ActionLoader;
-import fr.maxlego08.menu.action.loader.ActionPlayerDataLoader;
-import fr.maxlego08.menu.action.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.action.Action;
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -149,10 +146,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<ActionPlayerData> actionPlayerDatas = new ArrayList<>();
         if (configuration.isConfigurationSection(path + "datas")) {
             for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
-
                 ActionPlayerData actionPlayerData = loaderActions.load(configuration, path + "datas." + key + ".");
                 actionPlayerDatas.add(actionPlayerData);
-
             }
         }
 
@@ -207,45 +202,35 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
         String consolePermission = configuration.getString(path + "consolePermission");
 
-        List<Action> actions = new ArrayList<>();
-        Loader<Action> actiuonLoader = new ActionLoader(this.plugin);
-
-        if (configuration.isConfigurationSection(path + "actions.")) {
-            ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "actions.");
-            if (configurationSection != null) {
-                for (String key : configurationSection.getKeys(false)) {
-
-                    try {
-                        actions.add(actiuonLoader.load(configuration, path + "actions." + key + "."));
-                    } catch (InventoryException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
         button.setCommands(commands);
         button.setConsoleCommands(consoleCommands);
         button.setConsoleRightCommands(consoleRightCommands);
         button.setConsoleLeftCommands(consoleLeftCommands);
         button.setConsolePermissionCommands(consolePermissionCommands);
         button.setConsolePermission(consolePermission);
-        button.setActions(actions);
-
-        InventoryManager inventoryManager = this.plugin.getInventoryManager();
-        ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
-        if (Config.enableFastEvent)
-            inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
-        else buttonLoadEvent.call();
 
         // Load view requirements
         loadViewRequirements(button, configuration, path, file);
         // Load clicks requirements
         loadClickRequirements(button, configuration, path, file);
 
+        InventoryManager inventoryManager = this.plugin.getInventoryManager();
+        ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
+        if (Config.enableFastEvent) {
+            inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
+        } else buttonLoadEvent.call();
+
         return button;
     }
 
+    /**
+     * Allows to load clicks requirements
+     *
+     * @param button        The button
+     * @param configuration the configuration
+     * @param file          the file
+     * @param path          current path in configuration
+     */
     private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement.");
         if (section == null) return;
@@ -259,7 +244,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     }
 
     /**
-     * Allows to load permissions and placeholders that will have to be checked when opening the button
+     * Allows to load view requirements
      *
      * @param button        The button
      * @param configuration the configuration

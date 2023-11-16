@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.action.permissible;
+package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import org.bukkit.entity.Player;

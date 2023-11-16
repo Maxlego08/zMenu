@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.action.ZActionPlayerData;
-import fr.maxlego08.menu.api.action.data.ActionPlayerDataType;
+import fr.maxlego08.menu.requirement.ZActionPlayerData;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.requirement.actions.DataAction;

@@ -1,9 +1,9 @@
-package fr.maxlego08.menu.action.loader;
+package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.action.ZActionPlayerData;
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
-import fr.maxlego08.menu.api.action.data.ActionPlayerDataType;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 

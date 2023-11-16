@@ -3,7 +3,7 @@ package fr.maxlego08.menu.button;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Requirement;

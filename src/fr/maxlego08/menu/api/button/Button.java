@@ -2,7 +2,7 @@ package fr.maxlego08.menu.api.button;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;

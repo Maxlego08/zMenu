@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.action.data;
+package fr.maxlego08.menu.api.requirement.data;
 
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;

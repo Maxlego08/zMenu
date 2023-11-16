@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.Action;
 import org.bukkit.entity.Player;
 
