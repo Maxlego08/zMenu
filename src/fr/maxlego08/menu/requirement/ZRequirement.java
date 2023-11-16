@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
 
@@ -13,12 +14,14 @@ public class ZRequirement implements Requirement {
     private final List<Permissible> permissibles;
     private final List<Action> denyActions;
     private final List<Action> successActions;
+    private final List<ClickType> clickTypes;
 
-    public ZRequirement(int miniumRequirement, List<Permissible> permissibles, List<Action> denyActions, List<Action> successActions) {
+    public ZRequirement(int miniumRequirement, List<Permissible> permissibles, List<Action> denyActions, List<Action> successActions, List<ClickType> clickTypes) {
         this.miniumRequirement = miniumRequirement;
         this.permissibles = permissibles;
         this.denyActions = denyActions;
         this.successActions = successActions;
+        this.clickTypes = clickTypes;
     }
 
     @Override
@@ -50,5 +53,10 @@ public class ZRequirement implements Requirement {
         else this.denyActions.forEach(action -> action.execute(player));
 
         return isSuccess;
+    }
+
+    @Override
+    public List<ClickType> getClickTypes() {
+        return this.clickTypes;
     }
 }
