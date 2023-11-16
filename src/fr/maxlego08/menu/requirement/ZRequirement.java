@@ -51,8 +51,8 @@ public class ZRequirement implements Requirement {
         long requirementSuccess = this.permissibles.stream().filter(permissible -> permissible.hasPermission(player, button, inventory)).count();
         boolean isSuccess = requirementSuccess >= this.miniumRequirement;
 
-        if (isSuccess) this.successActions.forEach(action -> action.execute(player, button, inventory));
-        else this.denyActions.forEach(action -> action.execute(player, button, inventory));
+        if (isSuccess) this.successActions.forEach(action -> action.preExecute(player, button, inventory));
+        else this.denyActions.forEach(action -> action.preExecute(player, button, inventory));
 
         return isSuccess;
     }

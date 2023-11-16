@@ -7,7 +7,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class BroadcastSoundAction implements Action {
+public class BroadcastSoundAction extends Action {
 
     private final SoundOption soundOption;
 
@@ -16,7 +16,7 @@ public class BroadcastSoundAction implements Action {
     }
 
     @Override
-    public void execute(Player player, Button button, InventoryDefault inventory) {
+    protected void execute(Player player, Button button, InventoryDefault inventory) {
         Bukkit.getOnlinePlayers().forEach(this.soundOption::play);
     }
 }

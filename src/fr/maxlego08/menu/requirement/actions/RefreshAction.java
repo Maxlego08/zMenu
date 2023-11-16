@@ -5,10 +5,10 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
-public class RefreshAction implements Action {
+public class RefreshAction extends Action {
 
     @Override
-    public void execute(Player player, Button button, InventoryDefault inventory) {
+    protected void execute(Player player, Button button, InventoryDefault inventory) {
         if (button != null) {
             inventory.buildButton(button.getMasterParentButton());
         }

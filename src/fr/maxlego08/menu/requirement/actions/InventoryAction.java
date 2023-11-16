@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class InventoryAction implements Action {
+public class InventoryAction extends Action {
 
     private final InventoryManager inventoryManager;
     private final String inventory;
@@ -25,7 +25,7 @@ public class InventoryAction implements Action {
     }
 
     @Override
-    public void execute(Player player, Button button, InventoryDefault inventory) {
+    protected void execute(Player player, Button button, InventoryDefault inventory) {
         Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.inventory);
         if (optional.isPresent()) {
             this.inventoryManager.openInventory(player, optional.get(), page);
