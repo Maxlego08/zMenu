@@ -28,7 +28,7 @@ public class TypedMapAccessor {
      * @return The string value associated with the key or null if the key is not present.
      */
     public String getString(String key) {
-        return (String) map.get(key);
+        return String.valueOf(map.get(key));
     }
 
     /**
@@ -40,7 +40,7 @@ public class TypedMapAccessor {
      * @return The string value associated with the key or the default value.
      */
     public String getString(String key, String defaultValue) {
-        return (String) map.getOrDefault(key, defaultValue);
+        return String.valueOf(map.getOrDefault(key, defaultValue));
     }
 
     /**
@@ -50,7 +50,7 @@ public class TypedMapAccessor {
      * @return The integer value associated with the key or 0 if the key is not present.
      */
     public int getInt(String key) {
-        return (int) map.getOrDefault(key, 0);
+        return Integer.parseInt(getString(key, "0"));
     }
 
     /**
@@ -62,7 +62,7 @@ public class TypedMapAccessor {
      * @return The integer value associated with the key or the default value.
      */
     public int getInt(String key, int defaultValue) {
-        return (int) map.getOrDefault(key, defaultValue);
+        return Integer.parseInt(getString(key, String.valueOf(defaultValue)));
     }
 
     /**
@@ -72,7 +72,7 @@ public class TypedMapAccessor {
      * @return The long value associated with the key or 0L if the key is not present.
      */
     public long getLong(String key) {
-        return (long) map.getOrDefault(key, 0L);
+        return Long.parseLong(getString(key, "0"));
     }
 
     /**
@@ -84,7 +84,7 @@ public class TypedMapAccessor {
      * @return The long value associated with the key or the default value.
      */
     public long getLong(String key, long defaultValue) {
-        return (long) map.getOrDefault(key, defaultValue);
+        return Long.parseLong(getString(key, String.valueOf(defaultValue)));
     }
 
     /**
@@ -203,7 +203,7 @@ public class TypedMapAccessor {
      * @return The float value associated with the key or 0.0f if the key is not present.
      */
     public float getFloat(String key) {
-        return (float) map.getOrDefault(key, 0.0f);
+        return Float.parseFloat(getString(key, "1.0f"));
     }
 
     /**
@@ -215,6 +215,6 @@ public class TypedMapAccessor {
      * @return The float value associated with the key or the default value.
      */
     public float getFloat(String key, float defaultValue) {
-        return (float) map.getOrDefault(key, defaultValue);
+        return Float.parseFloat(getString(key, String.valueOf(defaultValue)));
     }
 }

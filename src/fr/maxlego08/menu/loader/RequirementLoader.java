@@ -30,7 +30,7 @@ public class RequirementLoader implements Loader<Requirement> {
 
         File file = (File) objects[0];
         ButtonManager buttonManager = this.plugin.getButtonManager();
-        List<Permissible> permissibles = buttonManager.loadPermissible((List<Map<String, Object>>) configuration.getList(path + "requirements", new ArrayList<>()), path, file);
+        List<Permissible> permissibles = buttonManager.loadPermissible((List<Map<String, Object>>) configuration.getList(path + "requirements", configuration.getList(path + "requirement", new ArrayList<>())), path, file);
         List<Action> successActions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "success", new ArrayList<>()), path, file);
         List<Action> denyActions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "deny", new ArrayList<>()), path, file);
         List<ClickType> clickTypes = configuration.getStringList(path + "clicks").stream().map(String::toUpperCase)
