@@ -113,13 +113,13 @@ public class MenuPlugin extends ZPlugin {
             folder.mkdirs();
 
             if (Config.generateDefaultFile) {
-                files.forEach(e -> {
-                    if (!new File(this.getDataFolder(), e).exists()) {
+                files.forEach(filePath -> {
+                    if (!new File(this.getDataFolder(), filePath).exists()) {
 
                         if (NMSUtils.isNewVersion()) {
-                            saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
+                            saveResource(filePath.replace("inventories/", "inventories/1_13/"), filePath, false);
                         } else {
-                            saveResource(e, false);
+                            saveResource(filePath, false);
                         }
                     }
                 });
