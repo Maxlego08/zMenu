@@ -25,7 +25,7 @@ public class DataLoader implements ActionLoader {
 
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file) {
-        ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("type", "SET").toUpperCase());
+        ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("action", "SET").toUpperCase());
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
         long seconds = accessor.getLong("seconds", 0L);
