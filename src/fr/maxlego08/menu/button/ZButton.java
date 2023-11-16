@@ -102,7 +102,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public boolean isPermament() {
+    public boolean isPermanent() {
         return this.isPermanent;
     }
 

@@ -167,7 +167,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             elseDefaultButtonValue.setSlot(slot);
             elseDefaultButtonValue.setSlots(slots);
             elseDefaultButtonValue.setPage(page);
-            elseDefaultButtonValue.setPermanent(button.isPermament());
+            elseDefaultButtonValue.setPermanent(button.isPermanent());
 
             Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
             button.setElseButton(elseButton);
