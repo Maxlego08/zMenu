@@ -2,7 +2,9 @@ package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
@@ -23,7 +25,7 @@ public class InventoryAction implements Action {
     }
 
     @Override
-    public void execute(Player player) {
+    public void execute(Player player, Button button, InventoryDefault inventory) {
         Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.inventory);
         if (optional.isPresent()) {
             this.inventoryManager.openInventory(player, optional.get(), page);

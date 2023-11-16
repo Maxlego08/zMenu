@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.requirement.actions;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
@@ -19,7 +21,7 @@ public class BroadcastAction extends ZUtils implements Action {
     }
 
     @Override
-    public void execute(Player ignored) {
+    public void execute(Player ignored, Button button, InventoryDefault inventory) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             papi(this.messages, player).forEach(message -> {
                 if (miniMessage) {

@@ -199,7 +199,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
         this.clickRequirements.forEach(requirement -> {
             if (requirement.getClickTypes().contains(event.getClick())) {
-                requirement.execute(player);
+                requirement.execute(player, this, inventory);
             }
         });
 
@@ -338,7 +338,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     public boolean checkPermission(Player player, InventoryDefault inventory) {
 
         if (this.viewRequirement != null) {
-            return this.viewRequirement.execute(player);
+            return this.viewRequirement.execute(player, this, inventory);
         }
 
         return super.checkPermission(player, inventory);

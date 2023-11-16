@@ -1,7 +1,9 @@
 package fr.maxlego08.menu.requirement.permissible;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
@@ -38,7 +40,7 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
      * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
      */
     @Override
-    public boolean hasPermission(Player player) {
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
 
         String valueAsString = papi(this.placeholder, player);
         String resultAsString = papi(this.value, player);

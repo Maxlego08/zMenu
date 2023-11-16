@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.requirement.actions;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,7 +20,7 @@ public class PlayerCommandAction extends ZUtils implements Action {
     }
 
     @Override
-    public void execute(Player player) {
+    public void execute(Player player, Button button, InventoryDefault inventory) {
         papi(this.commands, player).forEach(command -> {
             command = command.replace("%player%", player.getName());
             if (this.inChat) {

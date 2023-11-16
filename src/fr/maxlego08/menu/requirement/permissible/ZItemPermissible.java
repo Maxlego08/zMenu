@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.requirement.permissible;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.permissible.ItemPermissible;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +25,7 @@ public class ZItemPermissible implements ItemPermissible {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean hasPermission(Player player) {
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventoryDefault) {
 
         if (this.material == null) {
             return true;

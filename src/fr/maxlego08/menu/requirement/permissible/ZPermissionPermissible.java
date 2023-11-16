@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.requirement.permissible;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
@@ -35,7 +37,7 @@ public class ZPermissionPermissible implements PermissionPermissible {
      * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
      */
     @Override
-    public boolean hasPermission(Player player) {
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
         return this.isReverse != player.hasPermission(this.permission);
     }
 

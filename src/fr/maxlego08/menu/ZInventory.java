@@ -99,9 +99,9 @@ public class ZInventory implements Inventory {
     }
 
     @Override
-    public InventoryResult openInventory(Player player, VInventory inventoryDefault) {
+    public InventoryResult openInventory(Player player, InventoryDefault inventoryDefault) {
 
-        if (openRequirement != null && !openRequirement.execute(player)) {
+        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault)) {
             return InventoryResult.PERMISSION;
         }
 
@@ -109,7 +109,7 @@ public class ZInventory implements Inventory {
     }
 
     @Override
-    public void postOpenInventory(Player player, VInventory inventoryDefault) {
+    public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
         InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
         if (holder != null) {
             if (holder instanceof InventoryDefault) {
@@ -128,7 +128,7 @@ public class ZInventory implements Inventory {
     }
 
     @Override
-    public void closeInventory(Player player, VInventory inventoryDefault) {
+    public void closeInventory(Player player, InventoryDefault inventoryDefault) {
         if (this.clearInventory) {
             MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
                 InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();

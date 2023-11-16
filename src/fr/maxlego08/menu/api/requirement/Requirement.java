@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.requirement;
 
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
@@ -43,10 +45,12 @@ public interface Requirement {
      * Executes the requirement. If the player has permission, the method will return true,
      * and the success actions will be executed. Otherwise, the deny actions will be executed.
      *
-     * @param player The player.
+     * @param player    The player.
+     * @param button    The Button, can be nullable
+     * @param inventory The Inventory.
      * @return True if the player has permission.
      */
-    boolean execute(Player player);
+    boolean execute(Player player, Button button, InventoryDefault inventory);
 
     /**
      * Gets the list of clicks that will be used for the requirement.

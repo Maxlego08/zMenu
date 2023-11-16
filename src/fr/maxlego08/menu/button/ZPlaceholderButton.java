@@ -44,7 +44,7 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
                 return false;
             }
 
-            return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player));
+            return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player, null, inventory));
         }
     }
 }

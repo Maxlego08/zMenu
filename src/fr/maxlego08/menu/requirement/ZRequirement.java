@@ -1,8 +1,10 @@
 package fr.maxlego08.menu.requirement;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
@@ -45,12 +47,12 @@ public class ZRequirement implements Requirement {
     }
 
     @Override
-    public boolean execute(Player player) {
-        long requirementSuccess = this.permissibles.stream().filter(permissible -> permissible.hasPermission(player)).count();
+    public boolean execute(Player player, Button button, InventoryDefault inventory) {
+        long requirementSuccess = this.permissibles.stream().filter(permissible -> permissible.hasPermission(player, button, inventory)).count();
         boolean isSuccess = requirementSuccess >= this.miniumRequirement;
 
-        if (isSuccess) this.successActions.forEach(action -> action.execute(player));
-        else this.denyActions.forEach(action -> action.execute(player));
+        if (isSuccess) this.successActions.forEach(action -> action.execute(player, button, inventory));
+        else this.denyActions.forEach(action -> action.execute(player, button, inventory));
 
         return isSuccess;
     }

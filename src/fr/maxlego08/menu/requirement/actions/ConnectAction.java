@@ -2,7 +2,9 @@ package fr.maxlego08.menu.requirement.actions;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -18,7 +20,7 @@ public class ConnectAction extends ZUtils implements Action {
     }
 
     @Override
-    public void execute(Player player) {
+    public void execute(Player player, Button button, InventoryDefault inventory) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Connect");
         out.writeUTF(server);

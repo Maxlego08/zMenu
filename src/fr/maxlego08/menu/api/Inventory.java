@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -98,7 +99,7 @@ public interface Inventory {
      * @param inventoryDefault The inventory to be opened.
      * @return The result of the inventory opening.
      */
-    InventoryResult openInventory(Player player, VInventory inventoryDefault);
+    InventoryResult openInventory(Player player, InventoryDefault inventoryDefault);
 
     /**
      * Performs post-opening actions for the inventory.
@@ -106,7 +107,7 @@ public interface Inventory {
      * @param player           The player for whom post-opening actions are performed.
      * @param inventoryDefault The default inventory object.
      */
-    void postOpenInventory(Player player, VInventory inventoryDefault);
+    void postOpenInventory(Player player, InventoryDefault inventoryDefault);
 
     /**
      * Closes the inventory for a player.
@@ -114,7 +115,7 @@ public interface Inventory {
      * @param player           The player closing the inventory.
      * @param inventoryDefault The inventory to be closed.
      */
-    void closeInventory(Player player, VInventory inventoryDefault);
+    void closeInventory(Player player, InventoryDefault inventoryDefault);
 
     /**
      * Returns the item stack used to fill empty slots in the inventory.

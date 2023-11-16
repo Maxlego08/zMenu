@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.requirement.permissible;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import jdk.jpackage.internal.Log;
@@ -19,7 +21,7 @@ public class ZRegexPermissible extends ZUtils implements Permissible {
     }
 
     @Override
-    public boolean hasPermission(Player player) {
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
         return pattern.matcher(papi(this.placeholder, player)).find();
     }
 

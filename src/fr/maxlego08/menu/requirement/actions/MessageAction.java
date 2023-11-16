@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.requirement.actions;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
@@ -18,7 +20,7 @@ public class MessageAction extends ZUtils implements Action {
     }
 
     @Override
-    public void execute(Player player) {
+    public void execute(Player player, Button button, InventoryDefault inventory) {
         papi(this.messages, player).forEach(message -> {
             if (miniMessage) {
                 Meta.meta.sendMessage(player, message);

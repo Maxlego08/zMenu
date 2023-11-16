@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.requirement;
 
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
 /**
@@ -12,5 +14,5 @@ public interface Action {
      *
      * @param player The player who triggers the action.
      */
-    void execute(Player player);
+    void execute(Player player, Button button, InventoryDefault inventory);
 }
