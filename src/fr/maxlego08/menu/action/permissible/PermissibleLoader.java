@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.action.permissible;
 
-import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;

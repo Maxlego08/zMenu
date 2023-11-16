@@ -2,7 +2,7 @@ package fr.maxlego08.menu.action;
 
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.ActionClick;
-import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 

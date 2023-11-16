@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.action.permissible;
 
-import fr.maxlego08.menu.api.action.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import org.bukkit.entity.Player;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.requirement;
 
-import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
-import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;

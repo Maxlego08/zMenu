@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.button;
 
-import fr.maxlego08.menu.api.action.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.action.permissible;
 
-import fr.maxlego08.menu.api.action.permissible.ItemPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.ItemPermissible;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

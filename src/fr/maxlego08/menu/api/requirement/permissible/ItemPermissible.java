@@ -1,5 +1,6 @@
-package fr.maxlego08.menu.api.action.permissible;
+package fr.maxlego08.menu.api.requirement.permissible;
 
+import fr.maxlego08.menu.api.requirement.Permissible;
 import org.bukkit.Material;
 
 public interface ItemPermissible extends Permissible {

@@ -5,7 +5,7 @@ import fr.maxlego08.menu.action.loader.ActionClickLoader;
 import fr.maxlego08.menu.action.permissible.PermissibleLoader;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.ActionClick;
-import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;

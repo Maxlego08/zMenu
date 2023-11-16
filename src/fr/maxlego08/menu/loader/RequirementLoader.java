@@ -2,7 +2,7 @@ package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
-import fr.maxlego08.menu.api.action.permissible.Permissible;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.exceptions.InventoryException;
