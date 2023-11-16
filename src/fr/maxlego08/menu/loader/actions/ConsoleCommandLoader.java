@@ -14,7 +14,7 @@ public class ConsoleCommandLoader implements ActionLoader {
 
     @Override
     public String getKey() {
-        return "console_command";
+        return "console_command,console_commands";
     }
 
     @Override

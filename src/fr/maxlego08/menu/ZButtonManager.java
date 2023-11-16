@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -96,7 +97,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void registerAction(ActionLoader actionLoader) {
-        this.actionsLoader.put(actionLoader.getKey().toLowerCase(), actionLoader);
+        String key = actionLoader.getKey().toLowerCase();
+        if (key.contains(",")) {
+            for (String value : key.split(",")) {
+                this.actionsLoader.put(value, actionLoader);
+            }
+        } else this.actionsLoader.put(key, actionLoader);
     }
 
     @Override
@@ -126,17 +132,17 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file) {
         return elements.stream().map(map -> {
             String type = (String) map.getOrDefault("type", null);
-            if (type == null) return null;
+            if (type == null) {
+                Logger.info("Error, an element is invalid in " + path + ", type is invalid", Logger.LogType.ERROR);
+                return null;
+            }
             Optional<ActionLoader> optional = getActionLoader(type);
             if (optional.isPresent()) {
                 ActionLoader actionLoader = optional.get();
                 return actionLoader.load(path, new TypedMapAccessor(map), file);
             }
+            Logger.info("Error, an element is invalid in " + path + " with type " + type, Logger.LogType.ERROR);
             return null;
-        }).filter(element -> {
-            if (element != null) return true;
-            Logger.info("Error, an element is invalid in " + path + " for a success or deny", Logger.LogType.ERROR);
-            return false;
-        }).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

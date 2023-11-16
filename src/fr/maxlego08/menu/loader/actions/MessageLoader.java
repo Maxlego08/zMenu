@@ -15,7 +15,7 @@ public class MessageLoader implements ActionLoader {
 
     @Override
     public String getKey() {
-        return "message";
+        return "message,messages";
     }
 
     @Override

@@ -14,7 +14,7 @@ public class PlayerCommandLoader implements ActionLoader {
 
     @Override
     public String getKey() {
-        return "player_command";
+        return "player_command,player_commands";
     }
 
     @Override

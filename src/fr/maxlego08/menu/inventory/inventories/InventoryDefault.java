@@ -108,23 +108,18 @@ public class InventoryDefault extends VInventory {
 
                     Button elseButton = button.getElseButton();
                     this.buildButton(elseButton);
-
                 }
-
             } else {
 
                 // If the player has the permission, the button
                 this.displayButton(button);
-
             }
 
         } else {
 
             // If there is no permission, then the button
             this.displayButton(button);
-
         }
-
     }
 
     /**
@@ -141,9 +136,7 @@ public class InventoryDefault extends VInventory {
         } else {
 
             this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
-
         }
-
     }
 
     /**
