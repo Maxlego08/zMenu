@@ -1,8 +1,5 @@
 package fr.maxlego08.menu;
 
-import fr.maxlego08.menu.requirement.permissible.ZItemPermissible;
-import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
-import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -31,8 +28,12 @@ import fr.maxlego08.menu.loader.actions.ConnectLoader;
 import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
-import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
+import fr.maxlego08.menu.loader.actions.SoundLoader;
+import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -231,10 +232,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         // Load Permissible before
-        buttonManager.registerPermissible("permission", ZPermissionPermissible.class);
-        buttonManager.registerPermissible("or_permission", ZPermissionPermissible.class);
-        buttonManager.registerPermissible("placeholder", ZPlaceholderPermissible.class);
-        buttonManager.registerPermissible("item", ZItemPermissible.class);
+        buttonManager.registerPermissible(new PlaceholderPermissibleLoader());
+        buttonManager.registerPermissible(new PermissionPermissibleLoader());
+        buttonManager.registerPermissible(new ItemPermissibleLoader());
+        buttonManager.registerPermissible(new RegexPermissibleLoader());
 
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());

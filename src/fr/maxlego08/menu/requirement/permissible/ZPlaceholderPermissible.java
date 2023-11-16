@@ -1,13 +1,15 @@
 package fr.maxlego08.menu.requirement.permissible;
 
-import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
-
+/**
+ * Implementation of the {@link PlaceholderPermissible} interface that checks player permissions
+ * based on specified placeholder values and actions.
+ */
 public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermissible {
 
     private final PlaceholderAction action;
@@ -15,9 +17,11 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
     private final String value;
 
     /**
-     * @param action
-     * @param placeholder
-     * @param value
+     * Constructs a ZPlaceholderPermissible with the specified placeholder action, placeholder key, and value.
+     *
+     * @param action      The {@link PlaceholderAction} to perform.
+     * @param placeholder The placeholder key to evaluate.
+     * @param value       The value associated with the placeholder.
      */
     public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value) {
         super();
@@ -26,10 +30,12 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
         this.value = value;
     }
 
-    public ZPlaceholderPermissible(Map<String, Object> map) {
-        this(PlaceholderAction.from((String) map.get("action")), (String) map.getOrDefault("placeholder", map.get("placeHolder")), (String) map.get("value"));
-    }
-
+    /**
+     * Checks whether the player has the necessary permission based on the specified placeholder values and actions.
+     *
+     * @param player The player whose permission is being checked.
+     * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
+     */
     @Override
     public boolean hasPermission(Player player) {
 
@@ -89,24 +95,44 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
         }
     }
 
+    /**
+     * Gets the {@link PlaceholderAction} associated with this permissible.
+     *
+     * @return The {@link PlaceholderAction}.
+     */
     @Override
     public PlaceholderAction getPlaceholderAction() {
         return this.action;
     }
 
+    /**
+     * Gets the placeholder key associated with this permissible.
+     *
+     * @return The placeholder key.
+     */
     @Override
     public String getPlaceholder() {
         return this.placeholder;
     }
 
+    /**
+     * Gets the value associated with this permissible.
+     *
+     * @return The value.
+     */
     @Override
     public String getValue() {
         return this.value;
     }
 
+    /**
+     * Checks whether the ZPlaceholderPermissible instance is valid.
+     *
+     * @return {@code true} if the instance is valid, otherwise {@code false}.
+     */
     @Override
     public boolean isValid() {
-        // ToDo, add more information about what is invalid
+        // ToDo: Add more information about what is invalid
         return this.value != null && this.action != null && this.placeholder != null;
     }
 }

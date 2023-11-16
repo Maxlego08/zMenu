@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ActionLoader;
@@ -75,23 +76,22 @@ public interface ButtonManager {
 
     /**
      *
-     * @param key permissible key
-     * @param pClass class of permissible
+     * @param permissibleLoader Loader
      */
-    void registerPermissible(String key, Class<? extends Permissible> pClass);
+    void registerPermissible(PermissibleLoader permissibleLoader);
 
     /**
      *
      * @return map of key and permissible class
      */
-    Map<String, Class<? extends Permissible>> getPermissibles();
+    Map<String, PermissibleLoader> getPermissibles();
 
     /**
      *
      * @param key permissible key
      * @return optional of permissible class
      */
-    Optional<Class<? extends Permissible>> getPermission(String key);
+    Optional<PermissibleLoader> getPermission(String key);
 
     /**
      * Register a new Action loader
@@ -115,7 +115,7 @@ public interface ButtonManager {
      * @param path the path to or from the list of permissibles
      * @return list of {@link Permissible}
      */
-    List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path);
+    List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path, File file);
 
     /**
      * Transform a map list, which comes from a configuration file into an action list<br>
