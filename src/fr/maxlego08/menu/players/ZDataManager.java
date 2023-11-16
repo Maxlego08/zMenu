@@ -62,10 +62,8 @@ public class ZDataManager implements DataManager {
 
     @Override
     public void addData(UUID uniqueId, Data data) {
-
         PlayerData playerData = this.getOrCreate(uniqueId);
         playerData.addData(data);
-
     }
 
     @Override

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.button;
 
-import fr.maxlego08.menu.action.permissible.ZPermissionPermissible;
-import fr.maxlego08.menu.api.action.permissible.PermissionPermissible;
+import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;

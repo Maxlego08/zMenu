@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+/**
+ * @author Maxlego08
+ */
 public class InventoryDefault extends VInventory {
 
     private final Map<Integer, TimerTask> timers = new HashMap<>();

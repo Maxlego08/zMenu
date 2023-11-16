@@ -18,19 +18,79 @@ placeholders:
 ``` 
 Be careful, you must put an ``s`` to **placeholder**, otherwise it will not work.
 - You can use now the text ``placeholder`` instanceof ``placeHolder``
-- Start new way to configure the plugin, you have now ``view_requirement``:
+- Start new way to configure the plugin, you have now ``requirement`` and ``actions``:
+A requirement consists of a permission list to check (placeholder, permission, regex and item), an action list on success and an action list on deny.
+You have 11 actions available:
+1. broadcast 
+2. broadcast_sound
+3. close
+4. connect
+5. console_command
+6. data
+7. inventory
+8. message
+9. chat
+10. player_command
+11. sound
+
+Example for ``view_requirement``:
 ```yml
 view_requirement:
-  - type: permission
-    permission: "admin.use"
-  - type: or_permission
-    permission: "use.pro.config"
-  - type: placeholder
-    placeholder: "%player_gamemode%"
-    value: "CREATIVE"
-    action: equals_string
+  deny:
+    - type: chat
+      messages:
+        - "msg Maxlego08 test"
+  success:
+    - type: sound
+      sound: ENTITY_PLAYER_LEVELUP
+  requirements:
+    - type: permission
+      permission: "admin.use"
+    - type: permission
+      permission: "use.pro.config"
+    - type: placeholder
+      placeholder: "%player_gamemode%"
+      value: "CREATIVE"
+      action: equals_string
+    - type: placeholder
+      placeholder: "%player_is_flying%"
+      value: "yes"
+      action: equals_string
 ```
-You have the following type, ``permission``, ``or_permission`` and ``placeholder``
+Example for ``open_requirement``:
+```yml
+open_requirement:
+  requirements:
+    - type: regex
+      input: "%player_item_in_hand%"
+      regex: "(NETHERITE_|DIAMOND_|IRON_|GOLDEN_|STONE_|WOODEN_|LEATHER_|BOW|CROSSBOW|FISHING_ROD|SHEARS|SHIELD|TRIDENT|TURTLE_HELMET|ELYTRA|FLINT_AND_STEEL)"
+  deny:
+    - type: message
+      messages:
+        - "&cYou doesn't have an item in your hand."
+```
+Example for ``click_requirement``:
+```yml
+click_requirement:
+  left_click:
+    clicks:
+      - LEFT
+      - SHIFT_LEFT
+    requirements:
+      - type: placeholder
+        placeholder: "%player_gamemode%"
+        value: "CREATIVE"
+        action: equals_string
+    deny:
+      - type: inventory
+        inventory: "example"
+        plugin: "zMenu"
+    success:
+      - type: message
+        messages:
+          - "well <red>done <green>you did it"
+```
+More information on the plugin documentation: https://docs.zmenu.dev/
 - Add alias for placeholder action:
 1. BOOLEAN: `b=`
 2. EQUALS_STRING: `s=`
@@ -41,6 +101,8 @@ You have the following type, ``permission``, ``or_permission`` and ``placeholder
 7. SUPERIOR_OR_EQUAL: `>=`
 8. LOWER: `<`
 9. LOWER_OR_EQUAL: <`=`
+- Enable version checker
+- Improve javadocs
 
 # 1.0.1.5
 

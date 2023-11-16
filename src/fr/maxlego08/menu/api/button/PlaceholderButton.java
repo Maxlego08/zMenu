@@ -1,29 +1,26 @@
 package fr.maxlego08.menu.api.button;
 
-import fr.maxlego08.menu.api.action.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 
 import java.util.List;
 
 /**
- * @author Maxence
- * <p>
- * The button allows you to make checks using placeholders.
- * You must use the PlaceholderAPI plugin (<a href="https://www.spigotmc.org/resources/placeholderapi.6245/">PlaceholderAPI</a>)
- * </p>
+ * The `PlaceholderButton` interface allows you to perform checks using placeholders. It requires the PlaceholderAPI plugin
+ * (available at: <a href="https://www.spigotmc.org/resources/placeholderapi.6245/">PlaceholderAPI</a>).
  */
 public interface PlaceholderButton {
 
     /**
-     * Returns the list of placeholders
+     * Returns the list of placeholders used in the button.
      *
-     * @return placeholders
+     * @return The list of placeholder permissions.
      */
     List<PlaceholderPermissible> getPlaceholders();
 
     /**
-     * Allows to check if the placeholder is valid
+     * Checks if the button uses any placeholders.
      *
-     * @return boolean
+     * @return `true` if placeholders are used, otherwise `false`.
      */
     boolean hasPlaceHolder();
 
