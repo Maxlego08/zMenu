@@ -5,11 +5,13 @@ import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,4 +103,44 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return Optional.ofNullable(this.actionsLoader.getOrDefault(key.toLowerCase(), null));
     }
 
+    @Override
+    public List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path) {
+        return elements.stream().map(map -> {
+            String type = (String) map.getOrDefault("type", null);
+            if (type == null) return null;
+            Optional<Class<? extends Permissible>> optional = getPermission(type);
+            if (optional.isPresent()) {
+                Class<? extends Permissible> aClass = optional.get();
+                try {
+                    return aClass.getConstructor(Map.class).newInstance(map);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException exception) {
+                    exception.printStackTrace();
+                }
+            }
+            return null;
+        }).filter(element -> {
+            if (element != null && element.isValid()) return true;
+            Logger.info("Error, an element is invalid in " + path +" for permissible");
+            return false;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file) {
+        return elements.stream().map(map -> {
+            String type = (String) map.getOrDefault("type", null);
+            if (type == null) return null;
+            Optional<ActionLoader> optional = getActionLoader(type);
+            if (optional.isPresent()) {
+                ActionLoader actionLoader = optional.get();
+                return actionLoader.load(path, map, file);
+            }
+            return null;
+        }).filter(element -> {
+            if (element != null) return true;
+            Logger.info("Error, an element is invalid in " + path +" for a success or deny");
+            return false;
+        }).collect(Collectors.toList());
+    }
 }

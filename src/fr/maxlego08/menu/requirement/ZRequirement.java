@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement;
 import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -38,5 +39,16 @@ public class ZRequirement implements Requirement {
     @Override
     public List<Action> getSuccessActions() {
         return this.successActions;
+    }
+
+    @Override
+    public boolean execute(Player player) {
+        long requirementSuccess = this.permissibles.stream().filter(permissible -> permissible.hasPermission(player)).count();
+        boolean isSuccess = requirementSuccess >= this.miniumRequirement;
+
+        if (isSuccess) this.successActions.forEach(action -> action.execute(player));
+        else this.denyActions.forEach(action -> action.execute(player));
+
+        return isSuccess;
     }
 }

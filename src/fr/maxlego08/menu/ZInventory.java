@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -30,13 +31,14 @@ public class ZInventory implements Inventory {
     private int updateInterval;
     private File file;
     private boolean clearInventory;
+    private Requirement openRequirement;
 
     /**
-     * @param plugin The plugin where the inventory comes from
-     * @param name Inventory name
+     * @param plugin   The plugin where the inventory comes from
+     * @param name     Inventory name
      * @param fileName Inventory file name
-     * @param size Inventory size
-     * @param buttons List of {@link Button}
+     * @param size     Inventory size
+     * @param buttons  List of {@link Button}
      */
     public ZInventory(Plugin plugin, String name, String fileName, int size, List<Button> buttons) {
         super();
@@ -98,6 +100,11 @@ public class ZInventory implements Inventory {
 
     @Override
     public InventoryResult openInventory(Player player, VInventory inventoryDefault) {
+
+        if (openRequirement != null && !openRequirement.execute(player)) {
+            return InventoryResult.PERMISSION;
+        }
+
         return InventoryResult.SUCCESS;
     }
 
@@ -172,6 +179,15 @@ public class ZInventory implements Inventory {
     @Override
     public boolean cleanInventory() {
         return clearInventory;
+    }
+
+    @Override
+    public Requirement getOpenRequirement() {
+        return this.openRequirement;
+    }
+
+    public void setOpenRequirement(Requirement openRequirement) {
+        this.openRequirement = openRequirement;
     }
 
     public void setClearInventory(boolean clearInventory) {

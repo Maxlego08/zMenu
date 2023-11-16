@@ -4,8 +4,10 @@ import fr.maxlego08.menu.api.action.permissible.Permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.requirement.Action;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -81,4 +83,7 @@ public interface ButtonManager {
 
     Optional<ActionLoader> getActionLoader(String key);
 
+    List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path);
+
+    List<Action> loadActions(List<Map<String, Object>> elements, String path, File file);
 }

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
@@ -136,5 +137,12 @@ public interface Inventory {
      * @return boolean
      */
     boolean cleanInventory();
+
+    /**
+     * Element carried out when opening the inventory
+     *
+     * @return Requirement
+     */
+    Requirement getOpenRequirement();
 
 }
