@@ -16,7 +16,7 @@ public class RegexPermissibleLoader implements PermissibleLoader {
 
     @Override
     public Permissible load(String path, TypedMapAccessor accessor, File file) {
-        String placeholder = accessor.getString("placeholder", accessor.getString("placeHolder"));
+        String placeholder = accessor.getString("input");
         String regex = accessor.getString("regex");
         return new ZRegexPermissible(regex, placeholder);
     }

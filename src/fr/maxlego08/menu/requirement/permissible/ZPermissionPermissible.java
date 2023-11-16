@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -45,6 +46,7 @@ public class ZPermissionPermissible implements PermissionPermissible {
      */
     @Override
     public boolean isValid() {
+        if (this.permission == null) Logger.info("Permission is null !", Logger.LogType.WARNING);
         return this.permission != null;
     }
 

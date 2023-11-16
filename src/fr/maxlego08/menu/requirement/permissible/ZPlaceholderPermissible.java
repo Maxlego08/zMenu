@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement.permissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
@@ -132,7 +133,9 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
      */
     @Override
     public boolean isValid() {
-        // ToDo: Add more information about what is invalid
+        if (this.value == null) Logger.info("Value is null !", Logger.LogType.WARNING);
+        if (this.action == null) Logger.info("Action is null !", Logger.LogType.WARNING);
+        if (this.placeholder == null) Logger.info("Placeholder is null !", Logger.LogType.WARNING);
         return this.value != null && this.action != null && this.placeholder != null;
     }
 }

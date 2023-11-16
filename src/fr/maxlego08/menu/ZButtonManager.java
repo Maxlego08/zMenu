@@ -117,7 +117,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
             return null;
         }).filter(element -> {
             if (element != null && element.isValid()) return true;
-            Logger.info("Error, an element is invalid in " + path + " for permissible");
+            Logger.info("Error, an element is invalid in " + path + " for permissible", Logger.LogType.ERROR);
             return false;
         }).collect(Collectors.toList());
     }
@@ -135,7 +135,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
             return null;
         }).filter(element -> {
             if (element != null) return true;
-            Logger.info("Error, an element is invalid in " + path + " for a success or deny");
+            Logger.info("Error, an element is invalid in " + path + " for a success or deny", Logger.LogType.ERROR);
             return false;
         }).collect(Collectors.toList());
     }
