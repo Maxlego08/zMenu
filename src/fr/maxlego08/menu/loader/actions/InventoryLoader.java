@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.actions;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.InventoryAction;
 
 import java.io.File;
@@ -22,10 +23,10 @@ public class InventoryLoader implements ActionLoader {
     }
 
     @Override
-    public Action load(String path, Map<String, Object> map, File file) {
-        String inventory = (String) map.getOrDefault("inventory", null);
-        String plugin = (String) map.getOrDefault("plugin", null);
-        int page = Integer.parseInt((String) map.getOrDefault("page", "1"));
+    public Action load(String path, TypedMapAccessor accessor, File file) {
+        String inventory = accessor.getString("inventory");
+        String plugin = accessor.getString("plugin");
+        int page = accessor.getInt("page", 1);
         return new InventoryAction(this.plugin.getInventoryManager(), inventory, plugin, page);
     }
 }

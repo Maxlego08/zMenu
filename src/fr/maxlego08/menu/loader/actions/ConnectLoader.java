@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.actions;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.ConnectAction;
 
 import java.io.File;
@@ -22,8 +23,8 @@ public class ConnectLoader implements ActionLoader {
     }
 
     @Override
-    public Action load(String path, Map<String, Object> map, File file) {
-        String server = (String) map.getOrDefault("server", "hub");
+    public Action load(String path, TypedMapAccessor accessor, File file) {
+        String server = accessor.getString("server", "hub");
         return new ConnectAction(server, plugin);
     }
 }

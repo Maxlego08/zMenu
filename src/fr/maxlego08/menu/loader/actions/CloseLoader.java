@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.CloseAction;
 import fr.maxlego08.menu.requirement.actions.MessageAction;
 
@@ -18,7 +19,7 @@ public class CloseLoader implements ActionLoader {
     }
 
     @Override
-    public Action load(String path, Map<String, Object> map, File file) {
+    public Action load(String path, TypedMapAccessor accessor, File file) {
         return new CloseAction();
     }
 }

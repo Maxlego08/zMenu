@@ -31,7 +31,7 @@ import fr.maxlego08.menu.loader.actions.ConnectLoader;
 import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
-import fr.maxlego08.menu.loader.actions.MessageSoundLoader;
+import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
@@ -239,7 +239,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());
         buttonManager.registerAction(new MessageLoader());
-        buttonManager.registerAction(new MessageSoundLoader());
+        buttonManager.registerAction(new SoundLoader());
         buttonManager.registerAction(new BroadcastSoundLoader());
         buttonManager.registerAction(new CloseLoader());
         buttonManager.registerAction(new ConnectLoader(this.plugin));

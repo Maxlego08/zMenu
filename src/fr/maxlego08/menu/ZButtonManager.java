@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
@@ -134,7 +135,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
             Optional<ActionLoader> optional = getActionLoader(type);
             if (optional.isPresent()) {
                 ActionLoader actionLoader = optional.get();
-                return actionLoader.load(path, map, file);
+                return actionLoader.load(path, new TypedMapAccessor(map), file);
             }
             return null;
         }).filter(element -> {

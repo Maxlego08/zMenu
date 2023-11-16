@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.actions;
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.BroadcastSoundAction;
 import fr.maxlego08.menu.requirement.actions.SoundAction;
 import fr.maxlego08.menu.sound.ZSoundOption;
@@ -18,11 +19,11 @@ public class BroadcastSoundLoader implements ActionLoader {
     }
 
     @Override
-    public Action load(String path, Map<String, Object> map, File file) {
+    public Action load(String path, TypedMapAccessor accessor, File file) {
 
-        String sound = (String) map.getOrDefault("sound", "");
-        float pitch = Float.parseFloat((String) map.getOrDefault("pitch", "1.0f"));
-        float volume = Float.parseFloat((String) map.getOrDefault("volume", "1.0f"));
+        String sound = accessor.getString("sound");
+        float pitch = accessor.getFloat("pitch", 1f);
+        float volume = accessor.getFloat("volume", 1f);
         XSound xSound = sound == null || sound.isEmpty() ? null : XSound.matchXSound(sound).orElse(null);
         return new BroadcastSoundAction(new ZSoundOption(xSound, pitch, volume));
     }
