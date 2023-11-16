@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.button;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -75,8 +76,8 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     /**
      * Allows you to make the buttons special
      *
-     * @param player
-     * @param inventory
+     * @param player    The player
+     * @param inventory The inventory, object that will contain all the information of the current inventory
      */
     void onRender(Player player, InventoryDefault inventory);
 
@@ -86,7 +87,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param player    Player who will perform the click
      * @param event     Event that will be called
      * @param inventory Inventory where the button comes from
-     * @param slot
+     * @param slot      current slot
      */
     void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
@@ -233,4 +234,18 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param slot           Current slot
      */
     void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot);
+
+    /**
+     * List of requirements made when clicking
+     *
+     * @return list of {@link Requirement}
+     */
+    List<Requirement> getClickRequirements();
+
+    /**
+     * Returns the requirement that will be used to display the button
+     *
+     * @return Requirement
+     */
+    Requirement getViewRequirement();
 }

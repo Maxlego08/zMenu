@@ -10,14 +10,13 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.action.Action;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
-import fr.maxlego08.menu.api.requirement.Permissible;
-import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
-import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
@@ -33,7 +32,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -241,9 +239,23 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         else buttonLoadEvent.call();
 
         // Load view requirements
-        loadViewRequirements(button, configuration, buttonManager, path);
+        loadViewRequirements(button, configuration, path, file);
+        // Load clicks requirements
+        loadClickRequirements(button, configuration, path, file);
 
         return button;
+    }
+
+    private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+        ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement.");
+        if (section == null) return;
+
+        Loader<Requirement> loader = new RequirementLoader(this.plugin);
+        List<Requirement> requirements = new ArrayList<>();
+        for (String key : section.getKeys(false)) {
+            requirements.add(loader.load(configuration, path + "click_requirement." + key + ".", file));
+        }
+        button.setClickRequirements(requirements);
     }
 
     /**
@@ -251,53 +263,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      *
      * @param button        The button
      * @param configuration the configuration
-     * @param buttonManager the button manager
+     * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadViewRequirements(ZButton button, YamlConfiguration configuration, ButtonManager buttonManager, String path) {
-
-        List<Map<String, Object>> viewRequirements = (List<Map<String, Object>>) configuration.getList(path + "view_requirement", new ArrayList<>());
-        if (!viewRequirements.isEmpty()) {
-
-            List<PermissionPermissible> permissionPermissibles = new ArrayList<>();
-            List<PermissionPermissible> orPermissionPermissibles = new ArrayList<>();
-            List<PlaceholderPermissible> placeholderPermissibles = new ArrayList<>();
-
-            viewRequirements.forEach(map -> {
-
-                String type = (String) map.getOrDefault("type", null);
-                if (type == null) return;
-
-                Optional<Class<? extends Permissible>> optional = buttonManager.getPermission(type);
-                if (optional.isPresent()) {
-                    Class<? extends Permissible> aClass = optional.get();
-                    try {
-                        Permissible permissible = aClass.getConstructor(Map.class).newInstance(map);
-
-                        // ToDo, improve the whole system to ultimately have only one list of Permission and not several list as currently
-                        switch (type.toLowerCase()) {
-                            case "permission":
-                                permissionPermissibles.add((PermissionPermissible) permissible);
-                                break;
-                            case "or_permission":
-                                orPermissionPermissibles.add((PermissionPermissible) permissible);
-                                break;
-                            case "placeholder":
-                                placeholderPermissibles.add((PlaceholderPermissible) permissible);
-                                break;
-                        }
-
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException exception) {
-                        exception.printStackTrace();
-                    }
-                }
-            });
-
-            if (!permissionPermissibles.isEmpty()) button.setPermissions(permissionPermissibles);
-            if (!orPermissionPermissibles.isEmpty()) button.setOrPermissions(orPermissionPermissibles);
-            if (!placeholderPermissibles.isEmpty()) button.setPlaceholders(placeholderPermissibles);
-        }
+    private void loadViewRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+        Loader<Requirement> loader = new RequirementLoader(this.plugin);
+        button.setViewRequirement(loader.load(configuration, path + "view_requirement.", file));
     }
 
     @Override

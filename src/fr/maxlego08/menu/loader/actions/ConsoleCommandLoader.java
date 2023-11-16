@@ -13,7 +13,7 @@ public class ConsoleCommandLoader implements ActionLoader {
 
     @Override
     public String getKey() {
-        return "chat";
+        return "console_command";
     }
 
     @Override

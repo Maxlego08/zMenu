@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.players.DataManager;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -36,6 +37,8 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean refreshOnClick = false;
     private List<ActionPlayerData> datas = new ArrayList<>();
     private boolean updateOnClick = false;
+    private List<Requirement> clickRequirements = new ArrayList<>();
+    private Requirement viewRequirement;
 
     @Override
     public String getName() {
@@ -194,6 +197,12 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
             this.soundOption.play(player);
         }
 
+        this.clickRequirements.forEach(requirement -> {
+            if (requirement.getClickTypes().contains(event.getClick())) {
+                requirement.execute(player);
+            }
+        });
+
         this.execute(player, event.getClick());
     }
 
@@ -300,5 +309,38 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot) {
+    }
+
+    @Override
+    public List<Requirement> getClickRequirements() {
+        return this.clickRequirements;
+    }
+
+    public void setClickRequirements(List<Requirement> clickRequirements) {
+        this.clickRequirements = clickRequirements;
+    }
+
+    @Override
+    public Requirement getViewRequirement() {
+        return this.viewRequirement;
+    }
+
+    public void setViewRequirement(Requirement viewRequirement) {
+        this.viewRequirement = viewRequirement;
+    }
+
+    @Override
+    public boolean hasPermission() {
+        return this.viewRequirement != null || super.hasPermission();
+    }
+
+    @Override
+    public boolean checkPermission(Player player, InventoryDefault inventory) {
+
+        if (this.viewRequirement != null) {
+            return this.viewRequirement.execute(player);
+        }
+
+        return super.checkPermission(player, inventory);
     }
 }

@@ -19,7 +19,7 @@ public class ChatLoader implements ActionLoader {
 
     @Override
     public Action load(String path, Map<String, Object> map, File file) {
-        List<String> commands = (List<String>) map.getOrDefault("commands", new ArrayList<>());
+        List<String> commands = (List<String>) map.getOrDefault("messages", new ArrayList<>());
         return new PlayerChatAction(commands);
     }
 }
