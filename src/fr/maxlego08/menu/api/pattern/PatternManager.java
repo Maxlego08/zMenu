@@ -7,45 +7,50 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * <p>Pattern management</p>
+ * <p>The PatternManager interface provides methods for managing patterns used in inventories.</p>
  */
 public interface PatternManager {
 
     /**
-     * Get patterns list
+     * Retrieves the list of registered patterns.
      *
-     * @return patterns
+     * @return The collection of registered patterns.
      */
     Collection<Pattern> getPatterns();
 
     /**
-     * @param name Pattern name
-     * @return optional
+     * Retrieves a pattern by its name.
+     *
+     * @param name The name of the pattern to retrieve.
+     * @return An optional containing the pattern, if it exists.
      */
     Optional<Pattern> getPattern(String name);
 
     /**
-     * Register a pattern
+     * Registers a new pattern.
      *
-     * @param pattern New pattern
+     * @param pattern The pattern to be registered.
      */
     void registerPattern(Pattern pattern);
 
     /**
-     * Unregister a pattern
+     * Unregisters a pattern.
      *
-     * @param pattern old pattern
+     * @param pattern The pattern to be unregistered.
      */
     void unregisterPattern(Pattern pattern);
 
     /**
-     * @param file load a pattern
-     * @return pattern
+     * Loads a pattern from a file.
+     *
+     * @param file The file from which to load the pattern.
+     * @return The loaded {@link Pattern}.
+     * @throws InventoryException If an error occurs while loading the pattern.
      */
     Pattern loadPattern(File file) throws InventoryException;
 
     /**
-     * Load patterns
+     * Loads all registered patterns.
      */
     void loadPatterns();
 

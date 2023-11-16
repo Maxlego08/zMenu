@@ -6,60 +6,57 @@ import org.bukkit.event.inventory.ClickType;
 import java.util.List;
 
 /**
- * <p>Performs actions for a {@link Button}.</p>
+ * The PerformButton interface performs actions for a {@link Button}.
  */
 public interface PerformButton {
 
     /**
-     * Returns the list of commands that the player will execute
+     * Returns the list of commands that the player will execute.
      *
-     * @return commands list
+     * @return The list of commands to be executed.
      */
     List<String> getCommands();
 
     /**
-     * Returns the list of console that the player will execute
+     * Returns the list of console commands that will be executed.
      *
-     * @return console commands
+     * @return The list of console commands to be executed.
      */
     List<String> getConsoleCommands();
 
     /**
-     * Returns the list of commands that the console will execute if click is
-     * right
+     * Returns the list of console commands that will be executed if the click is a right-click.
      *
-     * @return console commands
+     * @return The list of console commands to be executed on right-click.
      */
     List<String> getConsoleRightCommands();
 
     /**
-     * Returns the list of commands that the console will execute if click is
-     * left
+     * Returns the list of console commands that will be executed if the click is a left-click.
      *
-     * @return console commands
+     * @return The list of console commands to be executed on left-click.
      */
     List<String> getConsoleLeftCommands();
 
     /**
-     * Returns the list of commands that the console will execute if player has
-     * permission
+     * Returns the list of console commands that will be executed if the player has the required permission.
      *
-     * @return console commands
+     * @return The list of console commands to be executed on permission.
      */
     List<String> getConsolePermissionCommands();
 
     /**
-     * Returns the permission the player must have to use the console permission
+     * Returns the permission the player must have to use the console permission commands.
      *
-     * @return permissions
+     * @return The required permission for console permission commands.
      */
     String getConsolePermission();
 
     /**
-     * Executes commands
+     * Executes commands based on the player and click type.
      *
-     * @param player Who execute the commands
-     * @param type   The click type
+     * @param player The player who will execute the commands.
+     * @param type   The click type.
      */
     void execute(Player player, ClickType type);
 

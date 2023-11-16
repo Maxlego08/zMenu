@@ -3,27 +3,29 @@ package fr.maxlego08.menu.api.requirement.permissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Permissible;
 
+/**
+ * Represents a condition based on placeholders for permissions.
+ */
 public interface PlaceholderPermissible extends Permissible {
 
     /**
-     * Returns the action to be performed
+     * Gets the action to be performed for the placeholder.
      *
-     * @return {@link PlaceholderAction}
+     * @return The {@link PlaceholderAction}.
      */
     PlaceholderAction getPlaceholderAction();
 
     /**
-     * The placeholder that will be used
+     * Gets the placeholder that will be used for the condition.
      *
-     * @return string
+     * @return The placeholder string.
      */
     String getPlaceholder();
 
     /**
-     * The value that will be used for the action
+     * Gets the value that will be used for the specified action.
      *
-     * @return string
+     * @return The value string.
      */
     String getValue();
-
 }

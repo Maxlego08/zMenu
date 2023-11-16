@@ -4,24 +4,26 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 
 import java.io.File;
-import java.util.Map;
 
+/**
+ * A loader for creating instances of {@link Action} based on configuration.
+ */
 public interface ActionLoader {
 
     /**
-     * The key that will define the type of action
+     * Gets the key that defines the type of action.
      *
-     * @return key
+     * @return The key.
      */
     String getKey();
 
     /**
-     * Allows you to create an action
+     * Creates an instance of {@link Action} based on the provided configuration.
      *
-     * @param path the path in the configuration file
-     * @param accessor  the map accessor that contains the configuration elements
-     * @param file the file where the configuration is located
-     * @return Action
+     * @param path      The path in the configuration file.
+     * @param accessor  The map accessor containing the configuration elements.
+     * @param file      The file where the configuration is located.
+     * @return The created {@link Action}.
      */
     Action load(String path, TypedMapAccessor accessor, File file);
 }

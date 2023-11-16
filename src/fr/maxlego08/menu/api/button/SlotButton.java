@@ -3,15 +3,15 @@ package fr.maxlego08.menu.api.button;
 import java.util.Collection;
 
 /**
- * <p>Allows to have multiple slots for a single button</p>
+ * <p>The SlotButton interface allows a single button to occupy multiple slots in an inventory.</p>
  */
 public interface SlotButton {
 
     /**
-     * Return the list of slots
+     * Returns the list of slots where the button will be placed.
      *
-     * @return slots
+     * @return The collection of slots.
      */
-	Collection<Integer> getSlots();
+    Collection<Integer> getSlots();
 
 }

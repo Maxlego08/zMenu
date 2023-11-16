@@ -9,88 +9,99 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * Manages the registration, loading, and execution of commands associated with inventories.
+ */
 public interface CommandManager extends Savable {
 
     /**
-     * Register a new {@link Command}
+     * Registers a new {@link Command}.
      *
-     * @param command New command
+     * @param command The new command to register.
      */
-	void registerCommand(Command command);
+    void registerCommand(Command command);
 
     /**
-     * Returns the list of commands of a plugin
+     * Returns the list of commands associated with a specific plugin.
      *
-     * @param plugin Current plugin
-     * @return commands
+     * @param plugin The plugin for which to retrieve commands.
+     * @return A collection of commands associated with the plugin.
      */
-	Collection<Command> getCommands(Plugin plugin);
+    Collection<Command> getCommands(Plugin plugin);
 
     /**
-     * @return commands
-     */
-	Collection<Command> getCommands();
-
-    /**
-     * @param plugin Current plugin
-     */
-	void unregisterCommands(Plugin plugin);
-
-    /**
-     * @param command Current plugin
-     */
-	void unregisterCommands(Command command);
-
-    /**
+     * Returns all registered commands.
      *
+     * @return A collection of all registered commands.
      */
-	void loadCommands();
+    Collection<Command> getCommands();
 
     /**
-     * @param plugin Current plugin
-     * @param file Current file
-     */
-	void loadCommand(Plugin plugin, File file);
-
-    /**
-     * Return command by an inventory
+     * Unregisters all commands associated with a specific plugin.
      *
-     * @param inventory Current inventory
-     * @return optional
+     * @param plugin The plugin for which to unregister commands.
      */
-	Optional<Command> getCommand(Inventory inventory);
+    void unregisterCommands(Plugin plugin);
 
     /**
-     * Allows to register a key and a value for the arguments of a command.
+     * Unregisters a specific command.
      *
-     * @param player Current Player
-     * @param key Argument key
-     * @param value Argument value
+     * @param command The command to unregister.
      */
-	void setPlayerArgument(Player player, String key, String value);
+    void unregisterCommands(Command command);
 
     /**
-     * Returns an optional of the argument with the key
-     *
-     * @param player Current player
-     * @param key Argument value
-     * @return optional
+     * Loads commands from the configuration files.
      */
-	Optional<String> getPlayerArgument(Player player, String key);
+    void loadCommands();
 
     /**
-     * Get command by name
+     * Loads a specific command from a plugin's configuration file.
      *
-     * @param commandName The command name
-     * @return optional
+     * @param plugin The plugin to which the command belongs.
+     * @param file   The configuration file of the command.
      */
-	Optional<Command> getCommand(String commandName);
+    void loadCommand(Plugin plugin, File file);
 
     /**
-     * Reload command
+     * Retrieves the command associated with a specific inventory.
      *
-     * @param command Command
+     * @param inventory The inventory for which to retrieve the command.
+     * @return An optional containing the associated command, or empty if not found.
      */
-	boolean reload(Command command);
+    Optional<Command> getCommand(Inventory inventory);
 
+    /**
+     * Registers a key-value pair for the arguments of a command associated with a player.
+     *
+     * @param player The player for whom to register the arguments.
+     * @param key    The argument key.
+     * @param value  The argument value.
+     */
+    void setPlayerArgument(Player player, String key, String value);
+
+    /**
+     * Retrieves the value of an argument associated with a player and key.
+     *
+     * @param player The player for whom to retrieve the argument.
+     * @param key    The argument key.
+     * @return An optional containing the argument value, or empty if not found.
+     */
+    Optional<String> getPlayerArgument(Player player, String key);
+
+    /**
+     * Retrieves the command associated with a specific name.
+     *
+     * @param commandName The name of the command.
+     * @return An optional containing the associated command, or empty if not found.
+     */
+    Optional<Command> getCommand(String commandName);
+
+    /**
+     * Reloads a specific command.
+     *
+     * @param command The command to reload.
+     * @return {@code true} if the reload was successful, otherwise {@code false}.
+     */
+    boolean reload(Command command);
 }

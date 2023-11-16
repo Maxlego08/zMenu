@@ -2,20 +2,22 @@ package fr.maxlego08.menu.api.requirement.permissible;
 
 import fr.maxlego08.menu.api.requirement.Permissible;
 
+/**
+ * Represents a condition where a player is required to have a specific permission.
+ */
 public interface PermissionPermissible extends Permissible {
 
     /**
-     * The permission that the player will have to have
+     * Gets the permission that the player must have.
      *
-     * @return permission
+     * @return The required permission.
      */
-	String getPermission();
+    String getPermission();
 
     /**
-     * Allows to check if the player does not have the permissions
+     * Checks if the condition is reversed, meaning the player should not have the specified permission.
      *
-     * @return boolean
+     * @return True if the condition is reversed; otherwise, false.
      */
-	boolean isReverse();
-
+    boolean isReverse();
 }

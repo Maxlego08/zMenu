@@ -3,20 +3,22 @@ package fr.maxlego08.menu.api.requirement.permissible;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import org.bukkit.Material;
 
+/**
+ * Represents a condition where a player is required to have a specific item.
+ */
 public interface ItemPermissible extends Permissible {
 
     /**
-     * The material that the player must have
+     * Gets the material that the player must have.
      *
-     * @return material
+     * @return The required material.
      */
     Material getMaterial();
 
     /**
-     * The number of items that the player must have at least, put 0 to not check
+     * Gets the number of items that the player must have at least. Put 0 to not check the amount.
      *
-     * @return amount
+     * @return The required amount.
      */
     int getAmount();
-
 }

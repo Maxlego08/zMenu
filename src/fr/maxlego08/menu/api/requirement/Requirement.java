@@ -5,49 +5,53 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
 
+/**
+ * Represents a set of requirements that a player must meet to perform a certain action.
+ */
 public interface Requirement {
 
     /**
-     * The minimum number of requirements that the player must validate for permission, by default the value will be the same as the number of requirements
+     * Gets the minimum number of requirements that the player must fulfill for permission.
+     * By default, the value will be the same as the total number of requirements.
      *
-     * @return minimum requirement
+     * @return Minimum requirement.
      */
     int getMinimumRequirements();
 
     /**
-     * List of permissibles that the player will have to check
+     * Gets the list of permissibles that the player must check.
      *
-     * @return permissibles
+     * @return List of permissibles.
      */
     List<Permissible> getRequirements();
 
     /**
-     * List of actions performed if the player doesn't have permission
+     * Gets the list of actions performed if the player doesn't have permission.
      *
-     * @return actions
+     * @return List of deny actions.
      */
     List<Action> getDenyActions();
 
     /**
-     * List of actions performed if the player have permission
+     * Gets the list of actions performed if the player has permission.
      *
-     * @return actions
+     * @return List of success actions.
      */
     List<Action> getSuccessActions();
 
     /**
-     * Allows to execute the requirement, if the player to the permission then the method will return true, and the success actions will be executed, otherwise its will be denied actions
+     * Executes the requirement. If the player has permission, the method will return true,
+     * and the success actions will be executed. Otherwise, the deny actions will be executed.
      *
-     * @param player The player
-     * @return true if player has permission
+     * @param player The player.
+     * @return True if the player has permission.
      */
     boolean execute(Player player);
 
     /**
-     * List of clicks that will be used for the requirement
+     * Gets the list of clicks that will be used for the requirement.
      *
-     * @return clicks
+     * @return List of ClickTypes.
      */
     List<ClickType> getClickTypes();
-
 }

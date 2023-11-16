@@ -4,49 +4,51 @@ import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents an action associated with player data.
+ */
 public interface ActionPlayerData {
 
     /**
-     * The key, be careful to have only unique keys
+     * Gets the unique key for the action. Ensure keys are unique.
      *
-     * @return key
+     * @return The key.
      */
     String getKey();
 
     /**
-     * Action type
+     * Gets the type of action.
      *
-     * @return type
+     * @return The {@link ActionPlayerDataType}.
      */
     ActionPlayerDataType getType();
 
     /**
-     * The value that should be used
+     * Gets the value associated with the action.
      *
-     * @return value
+     * @return The value.
      */
     Object getValue();
 
     /**
-     * The number of seconds to expire the data, put 0 to have no expiration
+     * Gets the number of seconds until the data expires. Use 0 for no expiration.
      *
-     * @return seconds
+     * @return The expiration time in seconds.
      */
     long getSeconds();
 
     /**
-     * Create new data
+     * Converts the action into player data.
      *
-     * @return data
+     * @return The {@link Data}.
      */
     Data toData();
 
     /**
-     * When player click
+     * Executes the action when the player clicks.
      *
-     * @param player Who execute
-     * @param dataManager {@link DataManager}
+     * @param player       The player who executes the action.
+     * @param dataManager  The {@link DataManager}.
      */
     void execute(Player player, DataManager dataManager);
-
 }

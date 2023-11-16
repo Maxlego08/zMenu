@@ -17,325 +17,322 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * <p>Inventories management:</p>
+ * <p>Inventory Management:</p>
  * <ul>
  *     <li>Loading</li>
- *     <li>Delete</li>
+ *     <li>Deletion</li>
  *     <li>Opening</li>
- *     <li>Etc...</li>
+ *     <li>etc...</li>
  * </ul>
- * <p>Api example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a></p>
+ * <p>API example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a></p>
  */
 public interface InventoryManager extends Savable, Listener {
 
     /**
-     * Allows to load an inventory, the plugin will retrieve the resource of
+     * Loads an inventory. The plugin will retrieve the resource of
      * your plugin to save it if it does not exist.
      *
-     * @param plugin   The plugin that will load the inventory
-     * @param fileName Name of the file where the inventory is located
-     * @return New {@link Inventory}
-     * @throws InventoryException Error loading inventory
+     * @param plugin   The plugin loading the inventory.
+     * @param fileName Name of the file where the inventory is located.
+     * @return New {@link Inventory}.
+     * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventoryOrSaveResource(Plugin plugin, String fileName) throws InventoryException;
 
-
     /**
-     * Allows to load an inventory, the plugin will retrieve the resource of
+     * Loads an inventory. The plugin will retrieve the resource of
      * your plugin to save it if it does not exist. You must add the class of
      * your plugin as a parameter. More information about custom class <a href="https://docs.zmenu.dev/api/create-inventory#load-custom-inventory">here</a>
      *
-     * @param plugin   The plugin that will load the inventory
-     * @param fileName Name of the file where the inventory is located
-     * @param classz   Class that will be used for inventory, by default it's will be ZInventory
-     * @return New {@link Inventory}
-     * @throws InventoryException Error loading inventory
+     * @param plugin   The plugin loading the inventory.
+     * @param fileName Name of the file where the inventory is located.
+     * @param classz   Class that will be used for the inventory; by default, it will be ZInventory.
+     * @return New {@link Inventory}.
+     * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventoryOrSaveResource(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
-     * Allows you to load an inventory from a file. You must add the class of
+     * Loads an inventory from a file. You must add the class of
      * your plugin as a parameter. More information about custom class <a href="https://docs.zmenu.dev/api/create-inventory#load-custom-inventory">here</a>
      *
-     * @param plugin   The plugin that will load the inventory
-     * @param fileName Name of the file where the inventory is located
-     * @param classz   Class that will be used for inventory, by default it's will be ZInventory
-     * @return New {@link Inventory}
-     * @throws InventoryException Error loading inventory
+     * @param plugin   The plugin loading the inventory.
+     * @param fileName Name of the file where the inventory is located.
+     * @param classz   Class that will be used for the inventory; by default, it will be ZInventory.
+     * @return New {@link Inventory}.
+     * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
-     * Allows you to load an inventory from a file. You must add the class of
-     * your plugin as a parameter. More information about custom class <a href="https://docs.zmenu.dev/api/create-inventory#load-custom-inventory">here</a>
+     * Loads an inventory from a file. You must add the class of
+     * your plugin as a parameter.
      *
-     * @param plugin The plugin that will load the inventory
-     * @param file   file where the inventory is located
-     * @param classz - Class that will be used for inventory, by default it's will be ZInventory
-     * @return New {@link Inventory}
-     * @throws InventoryException Error loading inventory
+     * @param plugin The plugin loading the inventory.
+     * @param file   File where the inventory is located.
+     * @param classz Class that will be used for the inventory; by default, it will be ZInventory.
+     * @return New {@link Inventory}.
+     * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
-     * Allows you to load an inventory from a file You must add the class of
-     * your plugin as a parameter
+     * Loads an inventory from a file. You must add the class of
+     * your plugin as a parameter.
      *
-     * @param plugin   The plugin that will load the inventory
-     * @param fileName Name of the file where the inventory is located
-     * @return New {@link Inventory}
-     * @throws InventoryException Error loading inventory
+     * @param plugin   The plugin loading the inventory.
+     * @param fileName Name of the file where the inventory is located.
+     * @return New {@link Inventory}.
+     * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException;
 
     /**
-     * Allows you to load an inventory from a file You must add the class of
-     * your plugin as a parameter
+     * Loads an inventory from a file. You must add the class of
+     * your plugin as a parameter.
      *
-     * @param plugin The plugin that will load the inventory
-     * @param file   file where the inventory is located
-     * @return New {@link Inventory}
-     * @throws InventoryException Error loading inventory
+     * @param plugin The plugin loading the inventory.
+     * @param file   File where the inventory is located.
+     * @return New {@link Inventory}.
+     * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventory(Plugin plugin, File file) throws InventoryException;
 
     /**
-     * Allows you to return an inventory according to its name
+     * Returns an optional of {@link Inventory} based on its name.
      *
-     * @param name Inventory name
-     * @return optional of {@link Inventory}
+     * @param name Inventory name.
+     * @return Optional of {@link Inventory}.
      */
     Optional<Inventory> getInventory(String name);
 
     /**
-     * Allows you to return an inventory according to its name and the plugin
+     * Returns an optional of {@link Inventory} based on its name and the plugin.
      *
-     * @param plugin The plugin of where was generated the inventory
-     * @param name   Inventory name
-     * @return optional of {@link Inventory}
+     * @param plugin The plugin where the inventory comes from.
+     * @param name   Inventory name.
+     * @return Optional of {@link Inventory}.
      */
     Optional<Inventory> getInventory(Plugin plugin, String name);
 
     /**
-     * Allows you to return an inventory according to its name and the plugin
-     * name
+     * Returns an optional of {@link Inventory} based on its name and the plugin name.
      *
-     * @param pluginName The plugin name of where was generated the inventory
-     * @param name       Inventory name
-     * @return optional of {@link Inventory}
+     * @param pluginName The plugin name where the inventory comes from.
+     * @param name       Inventory name.
+     * @return Optional of {@link Inventory}.
      */
     Optional<Inventory> getInventory(String pluginName, String name);
 
     /**
-     * Allows you to return the list of inventories
+     * Returns a collection of all loaded inventories.
      *
-     * @return collection of {@link Inventory}
+     * @return Collection of {@link Inventory}.
      */
     Collection<Inventory> getInventories();
 
     /**
-     * Allows you to return the list of inventories from a plugin
+     * Returns a collection of inventories loaded from a specific plugin.
      *
-     * @return inventories
+     * @param plugin The plugin.
+     * @return Inventories.
      */
     Collection<Inventory> getInventories(Plugin plugin);
 
     /**
-     * Allows you to delete an inventory
+     * Deletes an inventory.
      *
-     * @param inventory {@link Inventory} who will be deleted
+     * @param inventory {@link Inventory} to be deleted.
      */
     void deleteInventory(Inventory inventory);
 
     /**
-     * Allows you to delete an inventory, returns true if the inventory has been
-     * deleted
+     * Deletes an inventory based on its name.
      *
-     * @param name Inventory name
-     * @return boolean
+     * @param name Inventory name.
+     * @return True if the inventory has been deleted.
      */
     boolean deleteInventory(String name);
 
     /**
-     * Allows you to delete the list of inventories of a plugin
+     * Deletes all inventories loaded from a plugin.
      *
-     * @param plugin The plugin
+     * @param plugin The plugin.
      */
     void deleteInventories(Plugin plugin);
 
     /**
-     * Open an inventory to a player
+     * Opens an inventory for a player.
      *
-     * @param player    Player to whom the inventory must be opened
-     * @param inventory The inventory to be opened
+     * @param player    Player to whom the inventory must be opened.
+     * @param inventory The inventory to be opened.
      */
     void openInventory(Player player, Inventory inventory);
 
     /**
-     * Open an inventory to a player
+     * Opens an inventory for a player on a specific page.
      *
-     * @param player    Player to whom the inventory must be opened
-     * @param inventory The inventory to be opened
-     * @param page      inventory page
+     * @param player    Player to whom the inventory must be opened.
+     * @param inventory The inventory to be opened.
+     * @param page      Inventory page.
      */
     void openInventory(Player player, Inventory inventory, int page);
 
     /**
-     * Open an inventory to a player
+     * Opens an inventory for a player on a specific page with old inventories.
      *
-     * @param player         Player to whom the inventory must be opened
-     * @param inventory      The inventory to be opened
-     * @param page           inventory page
-     * @param oldInventories List of old inventories
+     * @param player         Player to whom the inventory must be opened.
+     * @param inventory      The inventory to be opened.
+     * @param page           Inventory page.
+     * @param oldInventories List of old inventories.
      */
     void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
 
     /**
-     * Open an inventory to a player
+     * Opens an inventory for a player on a specific page with old inventories.
      *
-     * @param player      Player to whom the inventory must be opened
-     * @param inventory   The inventory to be opened
-     * @param page        inventory page
-     * @param inventories List of old inventories
+     * @param player      Player to whom the inventory must be opened.
+     * @param inventory   The inventory to be opened.
+     * @param page        Inventory page.
+     * @param inventories List of old inventories.
      */
     void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
 
     /**
-     * Allows to load the buttons The {@link ButtonLoaderRegisterEvent} event will be
-     * called, so you can add your own buttons using this event
+     * Loads buttons. The {@link ButtonLoaderRegisterEvent} event will be
+     * called, allowing you to add your own buttons using this event.
      */
     void loadButtons();
 
     /**
-     * Allows to load the inventories of the plugin
+     * Loads inventories of the plugin.
      */
     void loadInventories();
 
     /**
-     * Allows you to register a material loader
-     * More information <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
+     * Registers a material loader.
      *
-     * @param materialLoader New material loader
-     * @return boolean True if registered
+     * @param materialLoader New material loader.
+     * @return True if registered.
      */
     boolean registerMaterialLoader(MaterialLoader materialLoader);
 
     /**
-     * Returns a material loader based on a key
+     * Returns a material loader based on a key.
      *
-     * @param key The key to identify the material loader
-     * @return optional of {@link MaterialLoader}
+     * @param key The key to identify the material loader.
+     * @return Optional of {@link MaterialLoader}.
      */
     Optional<MaterialLoader> getMaterialLoader(String key);
 
     /**
-     * Return the list of material loader
+     * Returns a list of material loaders.
      *
-     * @return materials List of {@link MaterialLoader}
+     * @return List of {@link MaterialLoader}.
      */
     Collection<MaterialLoader> getMaterialLoader();
 
     /**
-     * Allows to open an inventory according to the name and the plugin
+     * Opens an inventory based on its name and the plugin.
      *
-     * @param player        Player who will open the inventory
-     * @param plugin        The plugin where the inventory comes from
-     * @param inventoryName Name of the inventory to be opened
+     * @param player        Player who will open the inventory.
+     * @param plugin        The plugin where the inventory comes from.
+     * @param inventoryName Name of the inventory to be opened.
      */
     void openInventory(Player player, Plugin plugin, String inventoryName);
 
     /**
-     * Allows to open an inventory according to the name and the plugin name
+     * Opens an inventory based on its name and the plugin name.
      *
-     * @param player        Player who will open the inventory
-     * @param pluginName    The plugin where the inventory comes from
-     * @param inventoryName Name of the inventory to be opened
+     * @param player        Player who will open the inventory.
+     * @param pluginName    The plugin where the inventory comes from.
+     * @param inventoryName Name of the inventory to be opened.
      */
     void openInventory(Player player, String pluginName, String inventoryName);
 
     /**
-     * Allows you to open an inventory according to the name Attention, here the
-     * plugin will search in all inventories, it is more appropriate to use the
-     * method {@link #openInventory(Player, Plugin, String)}
+     * Opens an inventory based on its name. Note that
+     * this method searches in all inventories; it is more appropriate to use
+     * the method {@link #openInventory(Player, Plugin, String)}.
      *
-     * @param player        Player who will open the inventory
-     * @param inventoryName Name of the inventory to be opened
+     * @param player        Player who will open the inventory.
+     * @param inventoryName Name of the inventory to be opened.
      */
     void openInventory(Player player, String inventoryName);
 
     /**
-     * Returns a plugin optional based on its name.
+     * Returns an optional of a plugin based on its name.
      *
-     * @param pluginName The name of the plugin to be found
-     * @return optional An optional that can contain the plugin if it exists.
+     * @param pluginName The name of the plugin to be found.
+     * @return Optional of a plugin that can contain the plugin if it exists.
      */
     Optional<Plugin> getPluginIgnoreCase(String pluginName);
 
     /**
-     * Allows you to reload the configuration of an inventory
+     * Reloads the configuration of an inventory.
      *
-     * @param inventory The inventory that needs to be reloaded
+     * @param inventory The inventory that needs to be reloaded.
      */
     void reloadInventory(Inventory inventory);
 
     /**
-     * Set item name and item meta using spigot or adventure api
+     * Sets item name and item meta using Spigot or Adventure API.
      *
-     * @return MetaUpdater
+     * @return MetaUpdater.
      */
     MetaUpdater getMeta();
 
     /**
-     * Get current open inventory
+     * Gets the current open inventory of a player.
      *
-     * @param player inventory
-     * @return optional of inventory
+     * @param player Player whose inventory is checked.
+     * @return Optional of inventory.
      */
     Optional<Inventory> getCurrentPlayerInventory(Player player);
 
     /**
-     * Unregister FastEvent listener
+     * Unregisters a FastEvent listener.
      *
-     * @param plugin the plugin
+     * @param plugin The plugin.
      */
     void unregisterListener(Plugin plugin);
 
     /**
-     * Add a FastEvent listener, faster than Bukkit events
+     * Adds a FastEvent listener, which is faster than Bukkit events.
      *
-     * @param plugin    the plugin
-     * @param fastEvent the fastEvent
+     * @param plugin    The plugin.
+     * @param fastEvent The fastEvent.
      */
     void registerFastEvent(Plugin plugin, FastEvent fastEvent);
 
     /**
-     * Get the FastEvents
+     * Gets the FastEvents.
      *
-     * @return listeners
+     * @return Listeners.
      */
     Collection<FastEvent> getFastEvents();
 
     /**
-     * Displays the list of available inventories
+     * Displays the list of available inventories.
      *
-     * @param sender Command sender
+     * @param sender Command sender.
      */
     void sendInventories(CommandSender sender);
 
     /**
-     * Create a new inventory file
+     * Creates a new inventory file.
      *
-     * @param sender Command sender
-     * @param fileName inventory file name
-     * @param inventorySize inventory size
-     * @param inventoryName inventory name
+     * @param sender       Command sender.
+     * @param fileName     Inventory file name.
+     * @param inventorySize Inventory size.
+     * @param inventoryName Inventory name.
      */
     void createNewInventory(CommandSender sender, String fileName, int inventorySize, String inventoryName);
 
     /**
-     * Opens the player’s current inventory again
+     * Opens the player’s current inventory again.
      *
-     * @param player the player
+     * @param player The player.
      */
     void updateInventory(Player player);
 }

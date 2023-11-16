@@ -7,71 +7,74 @@ import javax.annotation.Nullable;
 import java.util.Timer;
 
 /**
- * <p>Task management, allows the plugin to work with <a href="https://papermc.io/software/folia">Folia</a></p>
+ * <p>The ZScheduler interface provides methods for managing tasks and working with <a href="https://papermc.io/software/folia">Folia</a>.</p>
  */
 public interface ZScheduler {
 
+    /**
+     * The default timer used for scheduling tasks.
+     */
     Timer TIMER = new Timer();
 
     /**
-     * Run the task.
+     * Runs the task.
      *
-     * @param task     task...
-     * @param location required for Folia, in Bukkit can be null
+     * @param location Required for Folia, in Bukkit can be null.
+     * @param task     The task to run.
      * @return The created {@link ZScheduler}.
      */
     @NotNull ZScheduler runTask(@Nullable Location location, Runnable task);
 
     /**
-     * Run the task asynchronously.
+     * Runs the task asynchronously.
      *
-     * @param task task...
-     * @return The created {@link ZScheduler}
+     * @param task The task to run.
+     * @return The created {@link ZScheduler}.
      */
     @NotNull ZScheduler runTaskAsynchronously(Runnable task);
 
     /**
-     * Run the task after a specified number of ticks.
+     * Runs the task after a specified number of ticks.
      *
-     * @param location required for Folia, in Bukkit can be null
-     * @param task     task...
+     * @param location Required for Folia, in Bukkit can be null.
+     * @param task     The task to run.
      * @param delay    The number of ticks to wait.
-     * @return The created {@link ZScheduler}
+     * @return The created {@link ZScheduler}.
      */
     @NotNull ZScheduler runTaskLater(@Nullable Location location, long delay, Runnable task);
 
     /**
-     * Run the task asynchronously after a specified number of ticks.
+     * Runs the task asynchronously after a specified number of ticks.
      *
-     * @param task  task...
+     * @param task  The task to run.
      * @param delay The number of ticks to wait.
-     * @return The created {@link ZScheduler}
+     * @return The created {@link ZScheduler}.
      */
     @NotNull ZScheduler runTaskLaterAsynchronously(long delay, Runnable task);
 
     /**
-     * Run the task repeatedly on a timer.
+     * Runs the task repeatedly on a timer.
      *
-     * @param location required for Folia, in Bukkit can be null
-     * @param task     task...
+     * @param location Required for Folia, in Bukkit can be null.
+     * @param task     The task to run.
      * @param delay    The delay before the task is first run (in ticks).
      * @param period   The ticks elapsed before the task is run again.
-     * @return The created {@link ZScheduler}
+     * @return The created {@link ZScheduler}.
      */
     @NotNull ZScheduler runTaskTimer(@Nullable Location location, long delay, long period, Runnable task);
 
     /**
-     * Run the task repeatedly on a timer asynchronously.
+     * Runs the task repeatedly on a timer asynchronously.
      *
-     * @param task   task...
+     * @param task   The task to run.
      * @param delay  The delay before the task is first run (in ticks).
      * @param period The ticks elapsed before the task is run again.
-     * @return The created {@link ZScheduler}
+     * @return The created {@link ZScheduler}.
      */
     @NotNull ZScheduler runTaskTimerAsynchronously(long delay, long period, Runnable task);
 
     /**
-     * Cancel the task.
+     * Cancels the task.
      */
     void cancel();
 }

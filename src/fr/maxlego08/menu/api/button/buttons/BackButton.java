@@ -3,7 +3,8 @@ package fr.maxlego08.menu.api.button.buttons;
 import fr.maxlego08.menu.api.button.Button;
 
 /**
- * <p>Return to the previous inventory.</p>
+ * Represents a button that allows the user to return to the previous inventory.
+ * This button typically facilitates navigation within multi-level inventories.
  */
 public interface BackButton extends Button {
 

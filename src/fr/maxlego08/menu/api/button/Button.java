@@ -14,238 +14,233 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 /**
- * <p>One of the great features of zMenu is its {@link Button} customization. You will be able to create buttons for your plugins, which will allow users to have only one inventory plugin for the whole server. The goal of zMenu is to make as many plugins as possible use its API, so that users have only one type of inventory configuration for their entire server.</p>
- * <p>To create a {@link Button} you will need at least two classes. A first one for the button and a second one to change the button. You can also create an interface to implement your button, but this is not mandatory.</p>
- * <p>More information <a href="https://docs.zmenu.dev/api/create-button">here</a></p>
+ * <p>The Button interface defines methods for creating customizable buttons in zMenu. Buttons are a key feature of zMenu, providing a unified way for plugins to create inventory buttons with shared configurations across the server.</p>
+ * <p>For detailed information on creating a button, refer to the <a href="https://docs.zmenu.dev/api/create-button">zMenu documentation</a>.</p>
  */
 public interface Button extends PermissibleButton, PlaceholderButton, SlotButton, PerformButton {
 
     /**
-     * Returns the name of the button
+     * Returns the name of the button.
      *
-     * @return name
+     * @return The name of the button.
      */
     String getName();
 
     /**
-     * Returns the itemstack that will be displayed
+     * Returns the ItemStack that will be displayed.
      *
-     * @return {@link MenuItemStack}
+     * @return The {@link MenuItemStack}.
      */
     MenuItemStack getItemStack();
 
     /**
-     * This method will return the itemstack that will be used in the inventory
-     * with a player in parameter
+     * Returns the ItemStack that will be used in the inventory with a player in parameter.
      *
-     * @param player Player who opens the inventory
-     * @return {@link ItemStack}
+     * @param player The player who opens the inventory.
+     * @return The {@link ItemStack}.
      */
     ItemStack getCustomItemStack(Player player);
 
     /**
-     * Returns the slot used by the button
+     * Returns the slot used by the button.
      *
-     * @return slot
+     * @return The slot.
      */
     int getSlot();
 
     /**
-     * Allows to know if the button can be clicked
+     * Checks if the button can be clicked.
      *
-     * @return boolean
+     * @return True if the button is clickable, false otherwise.
      */
     boolean isClickable();
 
     /**
-     * Allows to know if the button is permanent A permanent button will always
-     * be present in the inventory no matter the page
+     * Checks if the button is permanent. A permanent button will always be present in the inventory, regardless of the page.
      *
-     * @return boolean
+     * @return True if the button is permanent, false otherwise.
      */
-    boolean isPermament();
+    boolean isPermanent();
 
     /**
-     * Allows buttons that are going to be rendered in multiple slots to be
-     * rendered correctly
+     * Checks if the button has special rendering requirements.
      *
-     * @return boolean
+     * @return True if the button has special rendering, false otherwise.
      */
     boolean hasSpecialRender();
 
     /**
-     * Allows you to make the buttons special
+     * Allows buttons that are going to be rendered in multiple slots to be rendered correctly.
      *
-     * @param player    The player
-     * @param inventory The inventory, object that will contain all the information of the current inventory
+     * @param player    The player.
+     * @param inventory The inventory object containing all the information of the current inventory.
      */
     void onRender(Player player, InventoryDefault inventory);
 
     /**
-     * This method is called when the player makes a click
+     * Called when the player makes a click.
      *
-     * @param player    Player who will perform the click
-     * @param event     Event that will be called
-     * @param inventory Inventory where the button comes from
-     * @param slot      current slot
+     * @param player    The player who performs the click.
+     * @param event     The event that will be called.
+     * @param inventory The inventory where the button comes from.
+     * @param slot      The current slot.
      */
     void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
     /**
-     * This method is called when the player makes a right click
+     * Called when the player makes a right click.
      *
-     * @param player    Player who will perform the click
-     * @param event     Event that will be called
-     * @param inventory Inventory where the button comes from
+     * @param player    The player who performs the click.
+     * @param event     The event that will be called.
+     * @param inventory The inventory where the button comes from.
      */
     void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
     /**
-     * This method is called when the player makes a left click
+     * Called when the player makes a left click.
      *
-     * @param player    Player who will perform the click
-     * @param event     Event that will be called
-     * @param inventory Inventory where the button comes from
+     * @param player    The player who performs the click.
+     * @param event     The event that will be called.
+     * @param inventory The inventory where the button comes from.
      */
     void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
     /**
-     * This method is called when the player makes a middle click or a drop key
-     * click
+     * Called when the player makes a middle click or a drop key click.
      *
-     * @param player    Player who will perform the click
-     * @param event     Event that will be called
-     * @param inventory Inventory where the button comes from
+     * @param player    The player who performs the click.
+     * @param event     The event that will be called.
+     * @param inventory The inventory where the button comes from.
      */
     void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
 
     /**
-     * This method is called when the player open the inventory
+     * Called when the player opens the inventory.
      *
-     * @param player
-     * @param inventory
+     * @param player    The player.
+     * @param inventory The inventory.
      */
     void onInventoryOpen(Player player, InventoryDefault inventory);
 
     /**
-     * This method is called when the player close the inventory
+     * Called when the player closes the inventory.
      *
-     * @param player
-     * @param inventory
+     * @param player    The player.
+     * @param inventory The inventory.
      */
     void onInventoryClose(Player player, InventoryDefault inventory);
 
     /**
-     * Allows to get the real slot of the button
+     * Allows to get the real slot of the button.
      *
-     * @param inventorySize
-     * @param page
-     * @return slot
+     * @param inventorySize The size of the inventory.
+     * @param page          The current page.
+     * @return The real slot.
      */
     int getRealSlot(int inventorySize, int page);
 
     /**
-     * Allows you to know if you have to close the inventory when clicking
+     * Checks if the inventory should be closed when clicking.
      *
-     * @return boolean
+     * @return True if the inventory should be closed, false otherwise.
      */
     boolean closeInventory();
 
     /**
-     * Messages that the player will receive by clicking
+     * Gets the messages that the player will receive by clicking.
      *
-     * @return messages
+     * @return The list of messages.
      */
     List<String> getMessages();
 
     /**
-     * Sound that will be played when the player clicks
+     * Gets the sound that will be played when the player clicks.
      *
-     * @return sound
+     * @return The {@link SoundOption}.
      */
     SoundOption getSound();
 
     /**
-     * Return the player name
+     * Gets the player name.
      *
-     * @return name
+     * @return The player name.
      */
     String getPlayerHead();
 
     /**
-     * Allows you to open a link in a message
+     * Allows to open a link in a message.
      *
-     * @return openLink
+     * @return The {@link OpenLink}.
      */
     OpenLink getOpenLink();
 
     /**
-     * Lets you know if the button needs to be updated
+     * Checks if the button needs to be updated.
      *
-     * @return boolean
+     * @return True if the button needs to be updated, false otherwise.
      */
     boolean isUpdated();
 
     /**
-     * Update
+     * Checks if the button should be refreshed on click.
      *
-     * @return boolean
+     * @return True if the button should be refreshed on click, false otherwise.
      */
     boolean isRefreshOnClick();
 
     /**
-     * Return action player data
+     * Gets the action player data.
      *
-     * @return datas
+     * @return The list of {@link ActionPlayerData}.
      */
     List<ActionPlayerData> getData();
 
     /**
-     * Updates the button when someone clicks on the inventory
+     * Checks if the button should be updated when someone clicks on the inventory.
      *
-     * @return boolean
+     * @return True if the button should be updated, false otherwise.
      */
     boolean updateOnClick();
 
     /**
-     * Display name use with auto update
+     * Builds the display name for auto-update.
      *
-     * @param player
-     * @return display name
+     * @param player The player.
+     * @return The display name.
      */
     String buildDisplayName(Player player);
 
     /**
-     * Lore use with auto update
+     * Builds the lore for auto-update.
      *
-     * @param player
-     * @return lore
+     * @param player The player.
+     * @return The lore.
      */
     List<String> buildLore(Player player);
 
     /**
-     * Perform an action when a back button is clicked
+     * Performs an action when a back button is clicked.
      *
-     * @param player         The player
-     * @param event          The inventory click event
-     * @param inventory      The current inventory
-     * @param oldInventories Old Inventory list
-     * @param toInventory    Inventory to open
-     * @param slot           Current slot
+     * @param player          The player.
+     * @param event           The inventory click event.
+     * @param inventory       The current inventory.
+     * @param oldInventories  The list of old inventories.
+     * @param toInventory     The inventory to open.
+     * @param slot            The current slot.
      */
     void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot);
 
     /**
-     * List of requirements made when clicking
+     * Gets the list of requirements made when clicking.
      *
-     * @return list of {@link Requirement}
+     * @return The list of {@link Requirement}.
      */
     List<Requirement> getClickRequirements();
 
     /**
-     * Returns the requirement that will be used to display the button
+     * Gets the requirement that will be used to display the button.
      *
-     * @return Requirement
+     * @return The {@link Requirement}.
      */
     Requirement getViewRequirement();
 }

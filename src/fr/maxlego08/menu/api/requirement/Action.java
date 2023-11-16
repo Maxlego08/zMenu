@@ -2,13 +2,15 @@ package fr.maxlego08.menu.api.requirement;
 
 import org.bukkit.entity.Player;
 
+/**
+ * Represents an action that can be executed based on certain conditions.
+ */
 public interface Action {
 
     /**
-     * Allows to execute the action
+     * Executes the action for the specified player.
      *
-     * @param player Who execute the action
+     * @param player The player who triggers the action.
      */
     void execute(Player player);
-
 }
