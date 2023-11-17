@@ -7,6 +7,10 @@
 - [ ] Add a ``/zm command <command> <inventory>`` command to create an order file for an inventory. 
 - [ ] Add a system to translate plugin messages.
 - [ ] Update developer doc
+- [ ] Add a chance system for actions
+- [ ] Add has experience / level for requirement
+- [ ] Add is near for requirement
+- [ ] Add delay support for zMenuConvert
 
 # Unreleased
 
