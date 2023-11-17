@@ -1,7 +1,11 @@
 # ToDo
 
-- [ ] Improve the firework system to put more option. Being able to put several effects, power etc
+- [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
+- [ ] Add an order to display the list of official addons.
+- [ ] Add a ``/zm help`` command to send to documentation.
+- [ ] Add a ``/zm command <command> <inventory>`` command to create an order file for an inventory. 
+- [ ] Add a system to translate plugin messages.
 
 # Unreleased
 
