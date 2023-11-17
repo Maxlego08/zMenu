@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.zcore.utils.meta;
 
 import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.zcore.utils.ElapsedTime;
+import fr.maxlego08.menu.zcore.utils.SimpleCache;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import net.kyori.adventure.audience.Audience;
@@ -9,10 +11,14 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +30,12 @@ import java.util.stream.Collectors;
 
 public class ComponentMeta extends ZUtils implements MetaUpdater {
 
-    private Method loreMethod;
-    private Method nameMethod;
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
+    private final SimpleCache<String, Component> cache = new SimpleCache<>();
+    private Method loreMethod;
+    private Method nameMethod;
+    private Method inventoryMethod;
 
     public ComponentMeta() {
         this.COLORS_MAPPINGS.put("0", "black");
@@ -58,6 +66,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             loreMethod.setAccessible(true);
             nameMethod = ItemMeta.class.getDeclaredMethod("displayName", Component.class);
             nameMethod.setAccessible(true);
+            inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
+            inventoryMethod.setAccessible(true);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -65,27 +75,42 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player))).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
-
+        String result = papi(text, player);
+        Component component = this.cache.get(result, () -> {
+            return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
+        });
         try {
             nameMethod.invoke(itemMeta, component);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        // itemMeta.displayName(component);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        List<Component> components = lore.stream().map(text -> this.MINI_MESSAGE.deserialize(colorMiniMessage(papi(text, player))).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE) // We will force the italics in false, otherwise it will activate for no reason
-        ).collect(Collectors.toList());
+        List<Component> components = lore.stream().map(text -> {
+            String result = papi(text, player);
+            return this.cache.get(result, () -> {
+                return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
+            });
+        }).collect(Collectors.toList());
 
         try {
             loreMethod.invoke(itemMeta, components);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
-        // itemMeta.lore(components);
+    }
+
+    @Override
+    public Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder) {
+        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
+        try {
+            return (Inventory) inventoryMethod.invoke(null, inventoryHolder, size, component);
+        } catch (IllegalAccessException | InvocationTargetException exception) {
+            exception.printStackTrace();
+        }
+        return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
     }
 
     private String colorMiniMessage(String message) {
@@ -118,8 +143,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void sendMessage(CommandSender sender, String message) {
-        Component component = this.MINI_MESSAGE.deserialize(colorMiniMessage(message));
         if (sender instanceof Audience) {
+            Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
             ((Audience) sender).sendMessage(component);
         }
     }

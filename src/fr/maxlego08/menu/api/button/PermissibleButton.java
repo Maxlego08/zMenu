@@ -1,79 +1,72 @@
 package fr.maxlego08.menu.api.button;
 
-import fr.maxlego08.menu.api.action.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 /**
- * <p>Manage permissions</p>
+ * The PermissibleButton interface manages permissions for buttons.
  */
 public interface PermissibleButton {
 
     /**
-     * Returns the button that will be used if the condition does not pass
+     * Returns the button that will be used if the permission condition does not pass.
      *
-     * @return else button
+     * @return The button to be used if the permission condition fails.
      */
-	Button getElseButton();
+    Button getElseButton();
 
     /**
-     * Returns the parent button
+     * Returns the parent button.
      *
-     * @return button
+     * @return The parent button.
      */
-	Button getParentButton();
+    Button getParentButton();
 
     /**
-     * Return the real parent
+     * Returns the real parent button.
      *
-     * @return button
+     * @return The real parent button.
      */
-	Button getMasterParentButton();
+    Button getMasterParentButton();
 
     /**
-     * The permission that the player must have
+     * Returns a list of permissions that the player must have.
      *
-     * @return permission
-     */
-    PermissionPermissible getPermission();
-
-    /**
-     * List of permissions that the player must have
-     *
-     * @return permissions
+     * @return The list of required permissions.
      */
     List<PermissionPermissible> getPermissions();
 
     /**
-     * List of permissions, the player must have at least one permission
+     * Returns a list of permissions. The player must have at least one permission from the list.
      *
-     * @return permissions
+     * @return The list of optional permissions.
      */
     List<PermissionPermissible> getOrPermission();
 
     /**
-     * Allow to check if the permission is valid
+     * Checks if the player has the required permissions.
      *
-     * @return true
+     * @return `true` if the player has the required permissions, otherwise `false`.
      */
-	boolean hasPermission();
+    boolean hasPermission();
 
     /**
-     * Allows to know if there is a button to display
+     * Checks if there is an alternative button to display when the permission condition fails.
      *
-     * @return boolean
+     * @return `true` if there is an alternative button, otherwise `false`.
      */
-	boolean hasElseButton();
+    boolean hasElseButton();
 
     /**
-     * Allows to check if the player has the permission
+     * Checks if the player has the required permission to interact with the button.
      *
-     * @param player Player who will check the permission
-     * @param inventory Inventory
-     * @return boolean
+     * @param player    The player who will be checked for permission.
+     * @param inventory The inventory associated with the button.
+     * @return `true` if the player has the required permission, otherwise `false`.
      */
-	boolean checkPermission(Player player, InventoryDefault inventory);
+    boolean checkPermission(Player player, InventoryDefault inventory);
 
 }

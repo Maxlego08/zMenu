@@ -1,48 +1,65 @@
 package fr.maxlego08.menu.api.enums;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- *
  * @author Maxence
- *
+ * <p>
  * Action used for the Placeholder button, more information <a href="https://docs.zmenu.dev/configurations/buttons#placeholder">here</a>
  */
 public enum PlaceholderAction {
 
-	BOOLEAN,
+    BOOLEAN("b="),
 
-	EQUALS_STRING, EQUALSIGNORECASE_STRING, CONTAINS_STRING,
+    EQUALS_STRING("s="), EQUALSIGNORECASE_STRING("s=="), CONTAINS_STRING("sc"),
 
-	EQUAL_TO,
-	
-	SUPERIOR, SUPERIOR_OR_EQUAL,
+    EQUAL_TO("=="),
 
-	LOWER, LOWER_OR_EQUAL,;
+    SUPERIOR(">"), SUPERIOR_OR_EQUAL(">="),
 
-	/**
-	 * Allows you to retrieve the action based on a string without triggering an error
-	 * 
-	 * @param string Current string
-	 * @return boolean
-	 */
-	public static PlaceholderAction from(String string) {
-		if (string == null) {
-			return null;
-		}
-		for (PlaceholderAction action : values()) {
-			if (action.name().equalsIgnoreCase(string)) {
-				return action;
-			}
-		}
-		return null;
-	}
+    LOWER("<"), LOWER_OR_EQUAL("<="),
 
-	/**
-	 * Allows to check if the condition must be on a string
-	 * 
-	 * @return boolean
-	 */
-	public boolean isString() {
-		return this == EQUALS_STRING || this == EQUALSIGNORECASE_STRING;
-	}
+    ;
+
+    private final List<String> aliases;
+
+    PlaceholderAction() {
+        this.aliases = new ArrayList<>();
+    }
+
+    PlaceholderAction(String... aliases) {
+        this.aliases = Arrays.asList(aliases);
+    }
+
+    /**
+     * Allows you to retrieve the action based on a string without triggering an error
+     *
+     * @param string Current string
+     * @return boolean
+     */
+    public static PlaceholderAction from(String string) {
+        if (string == null) return null;
+
+        for (PlaceholderAction action : values()) {
+            if (action.name().equalsIgnoreCase(string) || action.aliases.stream().anyMatch(e -> e.equalsIgnoreCase(string))) {
+                return action;
+            }
+        }
+        Logger.info("Impossible to find the " + string + " action for placeholder", Logger.LogType.ERROR);
+        return null;
+    }
+
+    /**
+     * Allows to check if the condition must be on a string
+     *
+     * @return boolean
+     */
+    public boolean isString() {
+        return this == EQUALS_STRING || this == EQUALSIGNORECASE_STRING;
+    }
 
 }

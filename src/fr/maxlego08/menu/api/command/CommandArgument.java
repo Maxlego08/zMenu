@@ -2,27 +2,29 @@ package fr.maxlego08.menu.api.command;
 
 import java.util.Optional;
 
+/**
+ * Represents an argument for a command.
+ */
 public interface CommandArgument {
 
     /**
-     * Get command argument
+     * Gets the command argument.
      *
-     * @return argument
+     * @return The command argument.
      */
     String getArgument();
 
     /**
-     * Get the inventory that will be opened with the argument
+     * Gets the name of the inventory to open with the argument.
      *
-     * @return inventory
+     * @return The optional name of the inventory associated with the argument.
      */
     Optional<String> getInventory();
 
     /**
-     * Check if argument is required
+     * Checks if the argument is required.
      *
-     * @return boolean
+     * @return {@code true} if the argument is required, otherwise {@code false}.
      */
     boolean isRequired();
-
 }

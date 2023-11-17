@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -98,6 +99,12 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
         inventory.setFile(file);
         inventory.setPatterns(patterns);
+
+        // Open requirement
+        if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement.")) {
+            Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
+            inventory.setOpenRequirement(requirementLoader.load(configuration, "open_requirement.", file));
+        }
 
         return inventory;
     }

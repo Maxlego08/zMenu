@@ -3,7 +3,9 @@ package fr.maxlego08.menu.api;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -13,128 +15,140 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a>
- * <p>This class will contain all the inventory information.</p>
+ * The `Inventory` interface defines the structure and behavior of inventory-related operations.
+ * <p>
+ * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">Inventory documentation</a>
+ * <p>This class encapsulates information about an inventory, including its size, buttons, patterns, and associated requirements.</p>
+ * </p>
  */
 public interface Inventory {
 
     /**
-     * Returns the size of the inventory
+     * Returns the size of the inventory.
      *
-     * @return size
+     * @return The size of the inventory.
      */
     int size();
 
     /**
-     * Returns the name of the inventory
+     * Returns the name of the inventory.
      *
-     * @return name
+     * @return The name of the inventory.
      */
     String getName();
 
     /**
-     * Returns the name of the file
+     * Returns the name of the file associated with the inventory.
      *
-     * @return fileName
+     * @return The file name.
      */
     String getFileName();
 
     /**
-     * Return the list of buttons
+     * Returns a collection of buttons present in the inventory.
      *
-     * @return buttons
+     * @return A collection of buttons.
      */
     Collection<Button> getButtons();
 
     /**
-     * Returns inventory patterns
+     * Returns a collection of patterns associated with the inventory.
      *
-     * @return patterns
+     * @return A collection of patterns.
      */
     Collection<Pattern> getPatterns();
 
     /**
-     * Returns the list of buttons according to a type
+     * Returns a list of buttons of a specific type.
      *
-     * @param type Class type
-     * @param <T> Button type
-     * @return list of button with this type
+     * @param type The class type of the button.
+     * @param <T>  The button type.
+     * @return A list of buttons with the specified type.
      */
     <T extends Button> List<T> getButtons(Class<T> type);
 
     /**
-     * Returns the plugin where the inventory comes from
+     * Returns the plugin from which the inventory originates.
      *
-     * @return plugin
+     * @return The plugin.
      */
     Plugin getPlugin();
 
     /**
-     * Returns the maximum number of pages
+     * Returns the maximum number of pages for the inventory.
      *
-     * @param objects elements
-     * @return page
+     * @param player  The player for whom the page count is determined.
+     * @param objects Additional elements.
+     * @return The maximum number of pages.
      */
     int getMaxPage(Player player, Object... objects);
 
     /**
-     * Allows you to sort the buttons according to a page
+     * Sorts the buttons based on the current page and additional elements.
      *
-     * @param page    current page
-     * @param objects elements
-     * @return buttons
+     * @param page    The current page.
+     * @param objects Additional elements.
+     * @return A list of sorted buttons.
      */
     List<Button> sortButtons(int page, Object... objects);
 
     /**
-     * When an inventory is open
+     * Opens the inventory for a player and returns the result of the operation.
      *
-     * @param player           The player who will open the inventory
-     * @param inventoryDefault The inventory that will be opened
-     * @return the result of the opening of the inventory
+     * @param player           The player opening the inventory.
+     * @param inventoryDefault The inventory to be opened.
+     * @return The result of the inventory opening.
      */
-    InventoryResult openInventory(Player player, VInventory inventoryDefault);
+    InventoryResult openInventory(Player player, InventoryDefault inventoryDefault);
 
     /**
-     * @param player           Plugin
-     * @param inventoryDefault default inventory object
+     * Performs post-opening actions for the inventory.
+     *
+     * @param player           The player for whom post-opening actions are performed.
+     * @param inventoryDefault The default inventory object.
      */
-    void postOpenInventory(Player player, VInventory inventoryDefault);
+    void postOpenInventory(Player player, InventoryDefault inventoryDefault);
 
     /**
-     * When an inventory is close
+     * Closes the inventory for a player.
      *
-     * @param player           The player who will close the inventory
-     * @param inventoryDefault The inventory that will be closed
+     * @param player           The player closing the inventory.
+     * @param inventoryDefault The inventory to be closed.
      */
-    void closeInventory(Player player, VInventory inventoryDefault);
+    void closeInventory(Player player, InventoryDefault inventoryDefault);
 
     /**
-     * Returns the itemstack that will be used to fill the inventory
+     * Returns the item stack used to fill empty slots in the inventory.
      *
-     * @return itemstack
+     * @return The fill item stack.
      */
     MenuItemStack getFillItemStack();
 
     /**
-     * Returns the interval for updating the buttons
+     * Returns the interval for updating buttons in the inventory.
      *
-     * @return interval
+     * @return The update interval.
      */
     int getUpdateInterval();
 
     /**
-     * Returns the configuration file.
+     * Returns the configuration file associated with the inventory.
      *
-     * @return file
+     * @return The configuration file.
      */
     File getFile();
 
     /**
-     * Delete the player's inventory and give it back to him when he closes the inventory
+     * Determines whether the player's inventory should be cleared upon closing the inventory.
      *
-     * @return boolean
+     * @return True if the player's inventory should be cleaned, false otherwise.
      */
     boolean cleanInventory();
 
+    /**
+     * Returns the requirement for opening the inventory.
+     *
+     * @return The opening requirement.
+     */
+    Requirement getOpenRequirement();
 }

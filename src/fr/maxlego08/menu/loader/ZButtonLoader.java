@@ -3,24 +3,28 @@ package fr.maxlego08.menu.loader;
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.action.ActionLoader;
-import fr.maxlego08.menu.action.loader.ActionPlayerDataLoader;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.action.Action;
-import fr.maxlego08.menu.api.action.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
+import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -30,7 +34,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
@@ -56,8 +62,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
 
         if (!optional.isPresent()) {
-            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path
-                    + " in inventory " + this.file.getAbsolutePath());
+            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
@@ -107,8 +112,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setButtonName(buttonName);
         button.setMessages(configuration.getStringList(path + "messages"));
 
-        String playerHead = configuration.getString(path + "playerHead",
-                configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
+        String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
 
         if (playerHead != null) {
             if (NMSUtils.isNewVersion()) {
@@ -145,18 +149,17 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<ActionPlayerData> actionPlayerDatas = new ArrayList<>();
         if (configuration.isConfigurationSection(path + "datas")) {
             for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
-
                 ActionPlayerData actionPlayerData = loaderActions.load(configuration, path + "datas." + key + ".");
                 actionPlayerDatas.add(actionPlayerData);
-
             }
         }
 
         button.setDatas(actionPlayerDatas);
 
-        button.setPermission(configuration.getString(path + "permission", null));
-        button.setPermissions(configuration.getStringList(path + "permission"));
-        button.setOrPermissions(configuration.getStringList(path + "orPermission"));
+        List<String> permissions = configuration.getStringList(path + "permission");
+        button.setPermissions(permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions, configuration.getString(path + "permission", null));
+        List<String> orPermissions = configuration.getStringList(path + "orPermission");
+        button.setOrPermissionsString(orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions);
 
         if (configuration.contains(path + "else")) {
 
@@ -164,7 +167,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             elseDefaultButtonValue.setSlot(slot);
             elseDefaultButtonValue.setSlots(slots);
             elseDefaultButtonValue.setPage(page);
-            elseDefaultButtonValue.setPermanent(button.isPermament());
+            elseDefaultButtonValue.setPermanent(button.isPermanent());
 
             Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
             button.setElseButton(elseButton);
@@ -173,13 +176,27 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
                 elsePermissibleButton.setParentButton(button);
             }
-
         }
 
-        // Placeholder
-        button.setPlaceholder(configuration.getString(path + "placeHolder", null));
-        button.setAction(PlaceholderAction.from(configuration.getString(path + "action", null)));
-        button.setValue(configuration.getString(path + "value", null));
+        PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader();
+        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(map -> {
+            return (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
+        }).filter(permissible -> {
+            if (!permissible.isValid()) {
+                Logger.info("A placeholder is invalid in the placeholder list of the button " + path +" in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+
+        String placeholder = configuration.getString(path + "placeHolder", configuration.getString(path + "placeholder", null));
+        PlaceholderAction placeholderAction = PlaceholderAction.from(configuration.getString(path + "action", null));
+        String placeholderValue = configuration.getString(path + "value", null);
+        if (placeholderAction != null && placeholderValue != null && placeholder != null) {
+            placeholders.add(new ZPlaceholderPermissible(placeholderAction, placeholder, placeholderValue));
+        }
+
+        button.setPlaceholders(placeholders);
 
         // Perform commands
         List<String> commands = configuration.getStringList(path + "commands");
@@ -191,38 +208,58 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
         String consolePermission = configuration.getString(path + "consolePermission");
 
-        List<Action> actions = new ArrayList<>();
-        Loader<Action> actiuonLoader = new ActionLoader(this.plugin);
-
-        if (configuration.isConfigurationSection(path + "actions.")) {
-            ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "actions.");
-            if (configurationSection != null) {
-                for (String key : configurationSection.getKeys(false)) {
-
-                    try {
-                        actions.add(actiuonLoader.load(configuration, path + "actions." + key + "."));
-                    } catch (InventoryException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
         button.setCommands(commands);
         button.setConsoleCommands(consoleCommands);
         button.setConsoleRightCommands(consoleRightCommands);
         button.setConsoleLeftCommands(consoleLeftCommands);
         button.setConsolePermissionCommands(consolePermissionCommands);
         button.setConsolePermission(consolePermission);
-        button.setActions(actions);
+
+        // Load view requirements
+        loadViewRequirements(button, configuration, path, file);
+        // Load clicks requirements
+        loadClickRequirements(button, configuration, path, file);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
-        if (Config.enableFastEvent)
+        if (Config.enableFastEvent) {
             inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
-        else buttonLoadEvent.call();
+        } else buttonLoadEvent.call();
 
         return button;
+    }
+
+    /**
+     * Allows to load clicks requirements
+     *
+     * @param button        The button
+     * @param configuration the configuration
+     * @param file          the file
+     * @param path          current path in configuration
+     */
+    private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+        ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement.");
+        if (section == null) return;
+
+        Loader<Requirement> loader = new RequirementLoader(this.plugin);
+        List<Requirement> requirements = new ArrayList<>();
+        for (String key : section.getKeys(false)) {
+            requirements.add(loader.load(configuration, path + "click_requirement." + key + ".", file));
+        }
+        button.setClickRequirements(requirements);
+    }
+
+    /**
+     * Allows to load view requirements
+     *
+     * @param button        The button
+     * @param configuration the configuration
+     * @param file          the file
+     * @param path          current path in configuration
+     */
+    private void loadViewRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+        Loader<Requirement> loader = new RequirementLoader(this.plugin);
+        button.setViewRequirement(loader.load(configuration, path + "view_requirement.", file));
     }
 
     @Override

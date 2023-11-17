@@ -1,0 +1,153 @@
+####################################################
+#
+# A pro zMenu configuration for professional
+# This configuration includes more complex items, the requirements
+#
+# The configuration for the command to open this inventory is in the file commands/basic_command.yml
+#
+#  ███████╗███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗
+#  ╚════██║████╗░████║██╔════╝████╗░██║██║░░░██║
+#  ░░███╔═╝██╔████╔██║█████╗░░██╔██╗██║██║░░░██║
+#  ██╔══╝░░██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║
+#  ███████╗██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝
+#  ╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░
+#
+#   Documentation: https://docs.zmenu.dev
+#   Discord: https://discord.groupez.dev
+#   Plugin page: https://groupez.dev/resources/zmenu.253
+#   Marketplace: https://minecraft-inventory-builder.com
+#   Sponsor: https://serveur-minecraft-vote.fr/
+#
+####################################################
+
+# Size (https://docs.zmenu.dev/configurations/inventories#size)
+#
+# Allows to set the size of the inventory.
+# The inventory size must be a multiple of 9. So you can put 9, 18, 27, 36, 45 and 54
+# If this option is not present in the configuration, then the default will be 54
+#
+size: 45
+
+# Inventory name (https://docs.zmenu.dev/configurations/inventories#name)
+#
+# This is the title of your inventory. You can put anything in it.
+# Color code and placeholders are supported.
+# If you are on Paper, Purpur or PufferFish you have access to the color code of MiniMessage (https://docs.advntr.dev/minimessage/format.html)
+#
+name: "#454545sʜᴏᴘ"
+
+# View Requirement (https://docs.zmenu.dev/configurations/requirements#view-requirement)
+#
+# Allows verification of different permissions when opening inventory. You can specify a list of requirements, details of requirements available on the plugin documentation.
+# You will then be able to define actions to be performed on success or deny.
+#
+# In the example if below, if the player to the permission "zmenu.shop.show" then the inventory will open, otherwise a message will be sent
+#
+open_requirement:
+  requirements:
+    - type: permission
+      permission: "zmenu.shop.show"
+  deny:
+    - type: message
+      messages:
+        - "&cYou do not have permission to access the shop."
+
+# Item section. (https://docs.zmenu.dev/configurations/inventories#items)
+#
+# This is where you will add all the items that will be present in your inventory.
+# With zMenu, each item is a Button. A button will allow you to perform specific actions, such as opening a new inventory, changing pages, going back.
+# By default, the button will be of type NONE. All buttons will have the same configuration elements.
+# Only buttons with types like INVENTORY, BACK etc... will have specific configuration elements.
+# All button information here: https://docs.zmenu.dev/configurations/buttons
+#
+items:
+
+  # Button with multiple slots (https://docs.zmenu.dev/configurations/buttons#slot)
+  #
+  # You can define a button that will be displayed on multiple slots.
+  # To put several slots, you must put as in the example if below. You must write "slots" and not "slot"
+  # You’re going to have to put a slot list, but instead of putting each slot in sequence you can make slot range like this:
+  # <start slot>-<end slot>, in the example below we have 2-6, which represents slots 2, 3, 4, 5, and 6
+  #
+  # So we have red glass that will be displayed on all pages of slot 2 to 6
+  slots:
+    # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#ispermanent)
+    isPermanent: true
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: "&e"
+    slots:
+      - 0-9 # slot 0 to 9
+      - 18
+      - 17
+      - 26
+      - 27
+      - 35-44 # slot 35 to 44
+
+  #
+  # The item if below will use the click_requirement and view_requirement.
+  # You will have the same configuration items as for the open_requirement.
+  # Attention, for the click_requirement you will have to define several requirements according to your need.
+  # You also need to specify clicks. So you can create multiple requirements for each click.
+  #
+  # In the example if below, if the player has enough money, and he has the zmenu.shop.use permission then the item will be displayed, otherwise another item will be displayed.
+  # And when clicking we will check again the money and the permission of the player before giving him the diamonds.
+  #
+  # You want to make a shop with zMenu ? Use zShop https://www.spigotmc.org/resources/zshop-1-8-1-20-advanced-inventory-plugin.74073/
+  shop1:
+    slot: 22
+    view_requirement:
+      requirements:
+        - type: placeholder
+          placeholder: "%vault_eco_balance%"
+          value: 500
+          action: SUPERIOR_OR_EQUAL
+        - type: permission
+          permission: "zmenu.shop.use"
+    click_requirement:
+      purchase:
+        clicks:
+          - RIGHT
+          - LEFT
+          - SHIFT_LEFT
+          - SHIFT_RIGHT
+        requirements:
+          - type: placeholder
+            placeholder: "%vault_eco_balance%"
+            value: 500
+            action: SUPERIOR_OR_EQUAL
+          - type: permission
+            permission: "zmenu.shop.use"
+        deny:
+          - type: sound
+            sound: VILLAGER_NO
+            pitch: 1.5f
+            volume: 0.5f
+        success:
+          - type: sound
+            sound: ENTITY_COW_HURT
+            pitch: 1.5f
+            volume: 0.5f
+          - type: console_command
+            commands:
+              - "eco take %player% 500"
+              - "give %player% diamond 64"
+    # Allows to refresh the entire button when clicking, the button is dynamic
+    refreshOnClick: true
+    item:
+      material: DIAMOND
+      name: "&aClick to buy !"
+      lore:
+        - "&fYou have enough money to buy this."
+    else:
+      # Use classic configuration for click, send message and sound
+      sound: VILLAGER_NO
+      pitch: 1.5f
+      volume: 0.5f
+      messages:
+        - "&cYou dont have enough money to buy this."
+      item:
+        material: BARRIER
+        name: "&cYou can't do that :'("
+        lore:
+          - "&cYou dont have enough money to buy this."

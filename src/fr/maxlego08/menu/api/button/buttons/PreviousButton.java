@@ -3,7 +3,8 @@ package fr.maxlego08.menu.api.button.buttons;
 import fr.maxlego08.menu.api.button.Button;
 
 /**
- * Allows you to go to the previous page if it exists. You can use the else element to display another button if there is no previous page.
+ * Represents a button that allows the player to navigate to the previous page of an inventory.
+ * If there is no previous page, an alternative button can be displayed using the "else" element.
  */
 public interface PreviousButton extends Button {
 

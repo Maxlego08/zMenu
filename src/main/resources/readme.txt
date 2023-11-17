@@ -11,8 +11,8 @@
 
 - Français :
 Bienvenue dans la configuration du plugin zMenu. Le plugin a automatiquement généré une configuration par défaut, cette configuration comprend :
- - 5 fichiers d'exemple pour les inventaires
- - 3 fichiers d'exemple pour les commandes
+ - 4 fichiers d'exemple pour les inventaires
+ - 2 fichiers d'exemple pour les commandes
  - 1 fichiers d'exemple pour les paternes
 
 Vous pouvez désactiver la génération des fichiers par défaut dans le fichier config.json avec generateDefaultFile.
@@ -26,8 +26,8 @@ Site du plugin: https://minecraft-inventory-builder.com/
 
 - English :
 Welcome to the zMenu plugin configuration. The plugin automatically generated a default configuration, this configuration includes:
- - 5 sample files for inventories
- - 3 sample files for commands
+ - 4 sample files for inventories
+ - 2 sample files for commands
  - 1 example files for patterns
 
 You can disable default file generation in the config.json file with generateDefaultFile.

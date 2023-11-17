@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+/**
+ * @author Maxlego08
+ */
 public class InventoryDefault extends VInventory {
 
     private final Map<Integer, TimerTask> timers = new HashMap<>();
@@ -59,7 +62,7 @@ public class InventoryDefault extends VInventory {
 
         // Create inventory
         String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
-        super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
+        super.createMetaInventory(super.papi(inventoryName, player), this.inventory.size());
 
         // Display fill items
         if (this.inventory.getFillItemStack() != null) {
@@ -105,23 +108,18 @@ public class InventoryDefault extends VInventory {
 
                     Button elseButton = button.getElseButton();
                     this.buildButton(elseButton);
-
                 }
-
             } else {
 
                 // If the player has the permission, the button
                 this.displayButton(button);
-
             }
 
         } else {
 
             // If there is no permission, then the button
             this.displayButton(button);
-
         }
-
     }
 
     /**
@@ -138,9 +136,7 @@ public class InventoryDefault extends VInventory {
         } else {
 
             this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
-
         }
-
     }
 
     /**

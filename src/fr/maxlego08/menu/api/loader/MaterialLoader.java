@@ -4,26 +4,26 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Documentation <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
- * <p>A material loader will allow you to create an ItemStack from the configuration.</p>
+ * Documentation: <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
+ * <p>The MaterialLoader interface defines methods for loading an {@link ItemStack} from a configuration.</p>
  */
 public interface MaterialLoader {
 
     /**
-     * Return the key to load the itemStack
+     * Returns the key used to load the ItemStack.
      *
-     * @return key
+     * @return The key.
      */
-	String getKey();
+    String getKey();
 
     /**
-     * Allows to load an itemStack according to a plugin
+     * Loads an ItemStack based on the provided configuration.
      *
-     * @param configuration Current configuration
-     * @param path Current path
-     * @param materialString the material as String
-     * @return ItemStack
+     * @param configuration   The current configuration.
+     * @param path            The current path.
+     * @param materialString  The material as a String.
+     * @return The loaded ItemStack.
      */
-	ItemStack load(YamlConfiguration configuration, String path, String materialString);
+    ItemStack load(YamlConfiguration configuration, String path, String materialString);
 
 }

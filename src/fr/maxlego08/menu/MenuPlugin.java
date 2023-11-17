@@ -34,6 +34,8 @@ import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
+import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 
 import java.io.File;
@@ -96,17 +98,13 @@ public class MenuPlugin extends ZPlugin {
         List<String> files = new ArrayList<>();
         files.add("inventories/basic_inventory.yml");
         files.add("inventories/advanced_inventory.yml");
-        files.add("inventories/example.yml");
-        files.add("inventories/example_shop.yml");
+        files.add("inventories/pro_inventory.yml");
         files.add("inventories/example_punish.yml");
-        files.add("inventories/test/example2.yml");
-        files.add("inventories/test/example3.yml");
 
         files.add("commands/commands.yml");
-        files.add("commands/example/example.yml");
         files.add("commands/punish/punish.yml");
 
-        files.add("patterns/pattern1.yml");
+        files.add("patterns/pattern_example.yml");
         files.add("readme.txt");
 
         File folder = new File(this.getDataFolder(), "inventories");
@@ -115,13 +113,13 @@ public class MenuPlugin extends ZPlugin {
             folder.mkdirs();
 
             if (Config.generateDefaultFile) {
-                files.forEach(e -> {
-                    if (!new File(this.getDataFolder(), e).exists()) {
+                files.forEach(filePath -> {
+                    if (!new File(this.getDataFolder(), filePath).exists()) {
 
                         if (NMSUtils.isNewVersion()) {
-                            saveResource(e.replace("inventories/", "inventories/1_13/"), e, false);
+                            saveResource(filePath.replace("inventories/", "inventories/1_13/"), filePath, false);
                         } else {
-                            saveResource(e, false);
+                            saveResource(filePath, false);
                         }
                     }
                 });
@@ -196,7 +194,9 @@ public class MenuPlugin extends ZPlugin {
 
         // Must register after config loads
         this.addListener(new SwapKeyListener());
-        // new VersionChecker(this, 253).useLastVersion();
+        new VersionChecker(this, 253).useLastVersion();
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         this.postEnable();
     }
