@@ -119,21 +119,20 @@ public class VInventoryManager extends ListenerAdapter {
         }
 
         InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+
         if (holder instanceof VInventory) {
 
             VInventory inventory = (VInventory) holder;
-            if (inventory.getPlayer().equals(player) && event.getView().getTitle().equals(inventory.getGuiName())) {
 
-                event.setCancelled(inventory.isDisableClick());
+            event.setCancelled(inventory.isDisableClick());
 
-                if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
-                    return;
-                }
+            if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+                return;
+            }
 
-                ItemButton button = inventory.getItems().getOrDefault(event.getSlot(), null);
-                if (button != null) {
-                    button.onClick(event);
-                }
+            ItemButton button = inventory.getItems().getOrDefault(event.getSlot(), null);
+            if (button != null) {
+                button.onClick(event);
             }
         }
     }
