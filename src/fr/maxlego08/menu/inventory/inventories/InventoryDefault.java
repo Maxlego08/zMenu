@@ -62,7 +62,7 @@ public class InventoryDefault extends VInventory {
 
         // Create inventory
         String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
-        super.createInventory(super.papi(super.color(inventoryName), player), this.inventory.size());
+        super.createMetaInventory(super.papi(inventoryName, player), this.inventory.size());
 
         // Display fill items
         if (this.inventory.getFillItemStack() != null) {

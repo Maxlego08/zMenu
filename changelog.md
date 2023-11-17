@@ -108,6 +108,8 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Rename pattern1.yml to pattern_example.yml
 - Edit commands.yml file with new default config
 - Add pro_inventory.yml in inventory folder
+- Fix component for inventory name
+- Add cache system for ComponentMeta (optimizes code and makes it more efficient)
 
 # 1.0.1.5
 

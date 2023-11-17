@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.utils;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
@@ -28,5 +30,15 @@ public interface MetaUpdater extends MessageSender {
      * @param player   The player for whom MiniMessage will be applied.
      */
     void updateLore(ItemMeta itemMeta, List<String> lore, Player player);
+
+    /**
+     * Create an {@link Inventory}
+     *
+     * @param inventoryName   Inventory Name.
+     * @param size            Inventory size.
+     * @param inventoryHolder Inventory Holder.
+     * @return Inventory with colored name
+     */
+    Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder);
 
 }

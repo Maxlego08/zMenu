@@ -6,6 +6,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -70,6 +71,17 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     protected void createInventory(String name, int size) {
         this.guiName = name;
         this.inventory = Bukkit.createInventory(this, size, name);
+    }
+
+    /**
+     * Allows you to create the spigot inventory object
+     *
+     * @param name - Inventory name
+     * @param size - Inventory Size
+     */
+    protected void createMetaInventory(String name, int size) {
+        this.guiName = name;
+        this.inventory = Meta.meta.createInventory(name, size, this);
     }
 
     /**
