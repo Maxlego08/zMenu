@@ -6,8 +6,15 @@
 - [ ] Add a ``/zm help`` command to send to documentation.
 - [ ] Add a ``/zm command <command> <inventory>`` command to create an order file for an inventory. 
 - [ ] Add a system to translate plugin messages.
+- [ ] Update developer doc
+- [ ] Add a chance system for actions
+- [ ] Add has experience / level for requirement
+- [ ] Add is near for requirement
+- [ ] Add delay support for zMenuConvert
 
 # Unreleased
+
+# 1.0.1.6
 
 - Start of the translation of the plugin documentation in French. If you want to translate zMenu documentation into your language, please contact me.
 - You can use multiple placeholders now, do like this:
