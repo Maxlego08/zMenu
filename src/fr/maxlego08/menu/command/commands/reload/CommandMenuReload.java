@@ -39,7 +39,7 @@ public class CommandMenuReload extends VCommand {
         CommandManager commandManager = plugin.getCommandManager();
         commandManager.loadCommands();
 
-        message(this.sender, Message.RELOAD);
+        message(this.sender, Message.RELOAD, "%inventories%", inventoryManager.getInventories(plugin).size());
 
         return CommandType.SUCCESS;
     }

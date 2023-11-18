@@ -69,8 +69,8 @@ public enum Message {
 	DESCRIPTION_OPEN_MAIN_MENU("Open the main menu"),
 	DESCRIPTION_CREATE("Create a new config file"),
 	
-	RELOAD("§aYou have just reloaded the configuration files."),
-	RELOAD_INVENTORY("§aYou have just reloaded the inventories files."),
+	RELOAD("§aYou have just reloaded the configuration files. §8(§7%inventories% inventories§8)"),
+	RELOAD_INVENTORY("§aYou have just reloaded the inventories files. §8(§7%inventories% inventories§8)"),
 	RELOAD_INVENTORY_FILE("§aVous have just reloaded the inventory §f%name%§a."),
 	RELOAD_COMMAND("§aYou have just reloaded the commands files."),
 	RELOAD_COMMAND_FILE("§aVous have just reloaded the command §f%name%§a."),

@@ -19,8 +19,6 @@ public class NMSUtils {
         return version = Double.parseDouble(var2 + "." + var3);
     }
 
-    public static double version = getNMSVersion();
-
     /**
      * Check if minecraft version has shulker
      *
@@ -28,7 +26,7 @@ public class NMSUtils {
      */
     public static boolean hasShulker() {
         return !isOneHand();
-    }
+    }    public static double version = getNMSVersion();
 
     /**
      * Check if minecraft version has barrel
@@ -118,6 +116,18 @@ public class NMSUtils {
         return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
                 || version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15 || version == 1.16
                 || version == 1.17);
+    }
+
+    /**
+     * Check if server version is new version
+     *
+     * @return boolean
+     */
+    public static boolean isNewHeadApi() {
+        final double version = getNMSVersion();
+        return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
+                || version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15 || version == 1.16
+                || version == 1.17 || version == 1.18 || version == 1.19);
     }
 
 

@@ -13,10 +13,13 @@
 - [ ] Add delay support for zMenuConvert
 - [ ] Add anti dupe system with NMS Tag 
 - [ ] Add boolean for enable or disable inventory to load
+- [ ] Add nbt support
 
 # Unreleased
 
 - Fix model id value in config, you can now you modelId, customModelId or customModelData
+- Fix player head for 1.20+ (https://blog.jeff-media.com/creating-custom-heads-in-spigot-1-18-1/) https://github.com/Maxlego08/zMenu/issues/16
+- Added number of inventory loaded with order/zm reload
 
 # 1.0.1.6
 

@@ -61,7 +61,7 @@ public class CommandMenuReloadInventory extends VCommand {
         inventoryManager.deleteInventories(plugin);
         inventoryManager.loadInventories();
 
-        message(this.sender, Message.RELOAD_INVENTORY);
+        message(this.sender, Message.RELOAD_INVENTORY, "%inventories%", inventoryManager.getInventories(plugin).size());
 
         return CommandType.SUCCESS;
     }

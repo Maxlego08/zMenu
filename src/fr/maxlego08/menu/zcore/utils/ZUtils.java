@@ -39,14 +39,19 @@ import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +69,8 @@ import java.util.stream.Stream;
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
 
+    private static final UUID RANDOM_UUID = UUID.fromString("92864445-51c5-4c3b-9039-517c9927d1b4"); // We reuse the same "random" UUID all the time
+    private static final SimpleCache<String, Object> cache = new SimpleCache<>();
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
 
@@ -121,8 +128,7 @@ public abstract class ZUtils extends MessageUtils {
         PlayerInventory inventory = player.getInventory();
         for (int a = 0; a != 36; a++) {
             ItemStack itemStack = inventory.getContents()[a];
-            if (itemStack == null)
-                slot++;
+            if (itemStack == null) slot++;
         }
         return slot == 0;
     }
@@ -135,10 +141,8 @@ public abstract class ZUtils extends MessageUtils {
      * @param item
      */
     protected void give(Player player, ItemStack item) {
-        if (hasInventoryFull(player))
-            player.getWorld().dropItem(player.getLocation(), item);
-        else
-            player.getInventory().addItem(item);
+        if (hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
+        else player.getInventory().addItem(item);
     }
 
     /**
@@ -201,8 +205,7 @@ public abstract class ZUtils extends MessageUtils {
     protected void removeItemInHand(Player player, int how) {
         if (player.getItemInHand().getAmount() > how)
             player.getItemInHand().setAmount(player.getItemInHand().getAmount() - how);
-        else
-            player.setItemInHand(new ItemStack(Material.AIR));
+        else player.setItemInHand(new ItemStack(Material.AIR));
         player.updateInventory();
     }
 
@@ -214,8 +217,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return true if both rentals are the same
      */
     protected boolean same(Location l, Location l2) {
-        return (l.getBlockX() == l2.getBlockX()) && (l.getBlockY() == l2.getBlockY())
-                && (l.getBlockZ() == l2.getBlockZ()) && l.getWorld().getName().equals(l2.getWorld().getName());
+        return (l.getBlockX() == l2.getBlockX()) && (l.getBlockY() == l2.getBlockY()) && (l.getBlockZ() == l2.getBlockZ()) && l.getWorld().getName().equals(l2.getWorld().getName());
     }
 
     /**
@@ -277,8 +279,7 @@ public abstract class ZUtils extends MessageUtils {
 
             @Override
             public void run() {
-                if (runnable != null)
-                    runnable.run();
+                if (runnable != null) runnable.run();
             }
         }, delay);
     }
@@ -393,8 +394,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param page
      * @param objects
      */
-    protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page,
-                                   Object... objects) {
+    protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page, Object... objects) {
         plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
     }
 
@@ -461,10 +461,8 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected <T> T randomElement(List<T> element) {
-        if (element.size() == 0)
-            return null;
-        if (element.size() == 1)
-            return element.get(0);
+        if (element.size() == 0) return null;
+        if (element.size() == 1) return element.get(0);
         Random random = new Random();
         return element.get(random.nextInt(element.size() - 1));
     }
@@ -474,8 +472,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String color(String message) {
-        if (message == null)
-            return null;
+        if (message == null) return null;
         if (NMSUtils.isHexColor()) {
             Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
             Matcher matcher = pattern.matcher(message);
@@ -493,8 +490,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String colorReverse(String message) {
-        Pattern pattern = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-"
-                + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
+        Pattern pattern = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
         Matcher matcher = pattern.matcher(message);
         while (matcher.find()) {
             String color = message.substring(matcher.start(), matcher.end());
@@ -529,8 +525,7 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected ItemFlag getFlag(String flagString) {
         for (ItemFlag flag : ItemFlag.values()) {
-            if (flag.name().equalsIgnoreCase(flagString))
-                return flag;
+            if (flag.name().equalsIgnoreCase(flagString)) return flag;
         }
         return null;
     }
@@ -605,8 +600,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param command
      * @return
      */
-    protected TextComponent setClickAction(TextComponent component, net.md_5.bungee.api.chat.ClickEvent.Action action,
-                                           String command) {
+    protected TextComponent setClickAction(TextComponent component, net.md_5.bungee.api.chat.ClickEvent.Action action, String command) {
         component.setClickEvent(new ClickEvent(action, command));
         return component;
     }
@@ -616,16 +610,11 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String getDisplayBalance(double value) {
-        if (value < 10000)
-            return format(value, "#.#");
-        else if (value < 1000000)
-            return Integer.valueOf((int) (value / 1000)) + "k ";
-        else if (value < 1000000000)
-            return format((value / 1000) / 1000, "#.#") + "m ";
-        else if (value < 1000000000000L)
-            return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
-        else
-            return "to much";
+        if (value < 10000) return format(value, "#.#");
+        else if (value < 1000000) return Integer.valueOf((int) (value / 1000)) + "k ";
+        else if (value < 1000000000) return format((value / 1000) / 1000, "#.#") + "m ";
+        else if (value < 1000000000000L) return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
+        else return "to much";
     }
 
     /**
@@ -633,16 +622,11 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String getDisplayBalance(long value) {
-        if (value < 10000)
-            return format(value, "#.#");
-        else if (value < 1000000)
-            return Integer.valueOf((int) (value / 1000)) + "k ";
-        else if (value < 1000000000)
-            return format((value / 1000) / 1000, "#.#") + "m ";
-        else if (value < 1000000000000L)
-            return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
-        else
-            return "to much";
+        if (value < 10000) return format(value, "#.#");
+        else if (value < 1000000) return Integer.valueOf((int) (value / 1000)) + "k ";
+        else if (value < 1000000000) return format((value / 1000) / 1000, "#.#") + "m ";
+        else if (value < 1000000000000L) return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
+        else return "to much";
     }
 
     /**
@@ -656,15 +640,13 @@ public abstract class ZUtils extends MessageUtils {
     protected int count(org.bukkit.inventory.Inventory inventory, Material material) {
         int count = 0;
         for (ItemStack itemStack : inventory.getContents())
-            if (itemStack != null && itemStack.getType().equals(material))
-                count += itemStack.getAmount();
+            if (itemStack != null && itemStack.getType().equals(material)) count += itemStack.getAmount();
         return count;
     }
 
     protected Enchantment enchantFromString(String str) {
         for (Enchantment enchantment : Enchantment.values())
-            if (enchantment.getName().equalsIgnoreCase(str))
-                return enchantment;
+            if (enchantment.getName().equalsIgnoreCase(str)) return enchantment;
         return null;
     }
 
@@ -676,8 +658,7 @@ public abstract class ZUtils extends MessageUtils {
 
         direction = direction % 360;
 
-        if (direction < 0)
-            direction += 360;
+        if (direction < 0) direction += 360;
 
         direction = Math.round(direction / 45);
 
@@ -730,8 +711,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected boolean hasEnchant(Enchantment enchantment, ItemStack itemStack) {
-        return itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
-                && itemStack.getItemMeta().hasEnchant(enchantment);
+        return itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants() && itemStack.getItemMeta().hasEnchant(enchantment);
     }
 
     /**
@@ -760,13 +740,10 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected boolean isCooldown(Player player, String cooldown, int timer) {
         if (CooldownBuilder.isCooldown(cooldown, player)) {
-            ActionBar.sendActionBar(player,
-                    String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.",
-                            timerFormat(player, cooldown)));
+            ActionBar.sendActionBar(player, String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.", timerFormat(player, cooldown)));
             return true;
         }
-        if (timer > 0)
-            CooldownBuilder.addCooldown(cooldown, player, timer);
+        if (timer > 0) CooldownBuilder.addCooldown(cooldown, player, timer);
         return false;
     }
 
@@ -793,16 +770,12 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected String toList(List<String> list, String color, String color2) {
-        if (list == null || list.size() == 0)
-            return null;
-        if (list.size() == 1)
-            return list.get(0);
+        if (list == null || list.size() == 0) return null;
+        if (list.size() == 1) return list.get(0);
         String str = "";
         for (int a = 0; a != list.size(); a++) {
-            if (a == list.size() - 1)
-                str = str.concat(color + " " + Message.AND.getMessage() + " " + color2);
-            else if (a != 0)
-                str = str.concat(color + ", " + color2);
+            if (a == list.size() - 1) str = str.concat(color + " " + Message.AND.getMessage() + " " + color2);
+            else if (a != 0) str = str.concat(color + ", " + color2);
             str = str.concat(list.get(a));
         }
         return str;
@@ -849,8 +822,7 @@ public abstract class ZUtils extends MessageUtils {
      */
     public ItemStack playerHead(ItemStack itemStack, OfflinePlayer player) {
 
-        String name = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
-                ? itemStack.getItemMeta().getDisplayName() : null;
+        String name = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : null;
 
         if (NMSUtils.isNewVersion()) {
             if (itemStack.getType().equals(Material.PLAYER_HEAD) && name != null && name.startsWith("HEAD")) {
@@ -865,8 +837,7 @@ public abstract class ZUtils extends MessageUtils {
                 itemStack.setItemMeta(meta);
             }
         } else {
-            if (itemStack.getType().equals(getMaterial(397)) && itemStack.getData().getData() == 3 && name != null
-                    && name.startsWith("HEAD")) {
+            if (itemStack.getType().equals(getMaterial(397)) && itemStack.getData().getData() == 3 && name != null && name.startsWith("HEAD")) {
                 SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
                 name = name.replace("HEAD", "");
                 if (name.length() == 0) {
@@ -887,8 +858,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return itemstack
      */
     protected ItemStack playerHead() {
-        return NMSUtils.isNewVersion() ? new ItemStack(Material.PLAYER_HEAD)
-                : new ItemStack(getMaterial(397), 1, (byte) 3);
+        return NMSUtils.isNewVersion() ? new ItemStack(Material.PLAYER_HEAD) : new ItemStack(getMaterial(397), 1, (byte) 3);
     }
 
     /**
@@ -900,8 +870,7 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected <T> T getProvider(Plugin plugin, Class<T> classz) {
         RegisteredServiceProvider<T> provider = plugin.getServer().getServicesManager().getRegistration(classz);
-        if (provider == null)
-            return null;
+        if (provider == null) return null;
         return provider.getProvider();
     }
 
@@ -937,6 +906,8 @@ public abstract class ZUtils extends MessageUtils {
         return TimerBuilder.getStringTime(second);
     }
 
+    // Source: https://blog.jeff-media.com/creating-custom-heads-in-spigot-1-18-1/
+
     /**
      * Allows you to create a head from a URL
      *
@@ -950,8 +921,43 @@ public abstract class ZUtils extends MessageUtils {
             return head;
         }
 
-        this.applyTexture(head, url);
+        if (NMSUtils.isNewHeadApi()) {
+            this.applyTextureUrl(head, url);
+        } else {
+            this.applyTexture(head, url);
+        }
+
         return head;
+    }
+
+    private void applyTextureUrl(ItemStack itemStack, String url) {
+        SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
+        if (headMeta != null) {
+            headMeta.setOwnerProfile((PlayerProfile) cache.get(url, () -> getProfile(url)));
+        }
+        itemStack.setItemMeta(headMeta);
+    }
+
+    private PlayerProfile getProfile(String url) {
+        PlayerProfile profile = Bukkit.createPlayerProfile(RANDOM_UUID); // Get a new player profile
+        PlayerTextures textures = profile.getTextures();
+        URL urlObject;
+        try {
+            // urlObject = new URL(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
+            urlObject = getUrlFromBase64(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException("Invalid URL", exception);
+        }
+        textures.setSkin(urlObject); // Set the skin of the player profile to the URL
+        profile.setTextures(textures); // Set the textures back to the profile
+        return profile;
+    }
+
+    public URL getUrlFromBase64(String base64) throws MalformedURLException {
+        String decoded = new String(Base64.getDecoder().decode(base64));
+        // We simply remove the "beginning" and "ending" part of the JSON, so we're left with only the URL. You could use a proper
+        // JSON parser for this, but that's not worth it. The String will always start exactly with this stuff anyway
+        return new URL(decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length()));
     }
 
     protected void applyTexture(ItemStack itemStack, String url) {
@@ -979,8 +985,7 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected boolean isPlayerHead(ItemStack itemStack) {
         Material material = itemStack.getType();
-        if (NMSUtils.isNewVersion())
-            return material.equals(Material.PLAYER_HEAD);
+        if (NMSUtils.isNewVersion()) return material.equals(Material.PLAYER_HEAD);
         return (material.equals(getMaterial(397))) && (itemStack.getDurability() == 3);
     }
 
@@ -993,12 +998,9 @@ public abstract class ZUtils extends MessageUtils {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    protected Object getPrivateField(Object object, String field)
-            throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    protected Object getPrivateField(Object object, String field) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class<?> clazz = object.getClass();
-        Field objectField = field.equals("commandMap") ? clazz.getDeclaredField(field)
-                : field.equals("knownCommands") ? NMSUtils.isNewVersion()
-                ? clazz.getSuperclass().getDeclaredField(field) : clazz.getDeclaredField(field) : null;
+        Field objectField = field.equals("commandMap") ? clazz.getDeclaredField(field) : field.equals("knownCommands") ? NMSUtils.isNewVersion() ? clazz.getSuperclass().getDeclaredField(field) : clazz.getDeclaredField(field) : null;
         objectField.setAccessible(true);
         Object result = objectField.get(object);
         objectField.setAccessible(false);
@@ -1017,8 +1019,7 @@ public abstract class ZUtils extends MessageUtils {
             SimpleCommandMap commandMap = (SimpleCommandMap) result;
 
             Object map = getPrivateField(commandMap, "knownCommands");
-            @SuppressWarnings("unchecked")
-            HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
+            @SuppressWarnings("unchecked") HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
             knownCommands.remove(command.getName());
             for (String alias : command.getAliases()) {
                 knownCommands.remove(alias);
@@ -1040,8 +1041,7 @@ public abstract class ZUtils extends MessageUtils {
     public void glow(ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-        if (NMSUtils.getNMSVersion() != 1.7)
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        if (NMSUtils.getNMSVersion() != 1.7) itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);
     }
 
@@ -1078,13 +1078,11 @@ public abstract class ZUtils extends MessageUtils {
      * @param notCompletedColor
      * @return string
      */
-    public String getProgressBar(int current, int max, int totalBars, char symbol, String completedColor,
-                                 String notCompletedColor) {
+    public String getProgressBar(int current, int max, int totalBars, char symbol, String completedColor, String notCompletedColor) {
         float percent = (float) current / max;
         int progressBars = (int) (totalBars * percent);
 
-        return Strings.repeat(completedColor + symbol, progressBars)
-                + Strings.repeat(notCompletedColor + symbol, totalBars - progressBars);
+        return Strings.repeat(completedColor + symbol, progressBars) + Strings.repeat(notCompletedColor + symbol, totalBars - progressBars);
     }
 
     /**
@@ -1096,8 +1094,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return string
      */
     public String getProgressBar(int current, int max, ProgressBar progressBar) {
-        return this.getProgressBar(current, max, progressBar.getLenght(), progressBar.getSymbol(),
-                progressBar.getCompletedColor(), progressBar.getNotCompletedColor());
+        return this.getProgressBar(current, max, progressBar.getLenght(), progressBar.getSymbol(), progressBar.getCompletedColor(), progressBar.getNotCompletedColor());
     }
 
     /**
