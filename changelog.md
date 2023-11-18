@@ -11,6 +11,8 @@
 - [ ] Add has experience / level for requirement
 - [ ] Add is near for requirement
 - [ ] Add delay support for zMenuConvert
+- [ ] Add anti dupe system with NMS Tag 
+- [ ] Add boolean for enable or disable inventory to load
 
 # Unreleased
 
