@@ -16,6 +16,8 @@
 
 # Unreleased
 
+- Fix model id value in config, you can now you modelId, customModelId or customModelData
+
 # 1.0.1.6
 
 - Start of the translation of the plugin documentation in French. If you want to translate zMenu documentation into your language, please contact me.
