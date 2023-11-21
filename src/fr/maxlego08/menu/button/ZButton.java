@@ -3,16 +3,19 @@ package fr.maxlego08.menu.button;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -68,15 +71,25 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
             String name = papi(this.playerHead.replace("%player%", player.getName()), player);
-            String texture = PlayerSkin.getTexture(name);
-            if (texture == null) {
 
-                SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                skullMeta.setOwner(name);
-                itemStack.setItemMeta(skullMeta);
+            if (NMSUtils.isNewHeadApi()) {
+
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                if (offlinePlayer != null) {
+                    SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+                    skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());
+                    itemStack.setItemMeta(skullMeta);
+                }
             } else {
+                String texture = PlayerSkin.getTexture(name);
+                if (texture == null) {
 
-                this.applyTexture(itemStack, texture);
+                    SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+                    skullMeta.setOwner(name);
+                    itemStack.setItemMeta(skullMeta);
+                } else {
+                    this.applyTexture(itemStack, texture);
+                }
             }
         }
 
@@ -104,6 +117,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @Override
     public boolean isPermanent() {
         return this.isPermanent;
+    }
+
+    /**
+     * @param isPermanent the isPermanent to set
+     */
+    public ZButton setPermanent(boolean isPermanent) {
+        this.isPermanent = isPermanent;
+        return this;
     }
 
     @Override
@@ -221,14 +242,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
      */
     public ZButton setButtonName(String buttonName) {
         this.buttonName = buttonName;
-        return this;
-    }
-
-    /**
-     * @param isPermanent the isPermanent to set
-     */
-    public ZButton setPermanent(boolean isPermanent) {
-        this.isPermanent = isPermanent;
         return this;
     }
 

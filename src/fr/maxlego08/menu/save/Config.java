@@ -60,6 +60,12 @@ public class Config implements Savable {
     // Does not take double click into account
     public static boolean disableDoubleClickEvent = true;
 
+    // Enable anti dupe
+    public static boolean enableAntiDupe = true;
+    public static boolean enableAntiDupeDiscordNotification = true;
+    public static String antiDupeDiscordWebhookUrl = "https://discord.com/api/webhooks/<your discord webhook url>";
+    public static String antiDupeMessage = "**%player%** use %amount% %itemname% which comes from zMenu. Removing it !";
+
 
     /**
      * static Singleton instance.

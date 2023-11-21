@@ -2,6 +2,7 @@ package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -117,24 +118,29 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     }
 
     /**
-     * Adding an item to the inventory
+     * Adding an itemStack to the inventory
      * Creates the default inventory if it does not exist
      *
-     * @param slot - Inventory slot
-     * @param item - ItemStack
+     * @param slot      - Inventory slot
+     * @param itemStack - ItemStack
      * @return ItemButton
      */
-    public ItemButton addItem(int slot, ItemStack item) {
+    public ItemButton addItem(int slot, ItemStack itemStack) {
 
         createDefaultInventory();
 
-        ItemButton button = new ItemButton(item, slot);
+        if (Config.enableAntiDupe) {
+            itemStack = this.plugin.getDupeManager().protectItem(itemStack);
+        }
+
+        ItemButton button = new ItemButton(itemStack, slot);
         this.items.put(slot, button);
 
         if (this.openAsync) {
-            runAsync(this.plugin, () -> this.inventory.setItem(slot, item));
+            ItemStack finalItem = itemStack;
+            runAsync(this.plugin, () -> this.inventory.setItem(slot, finalItem));
         } else {
-            this.inventory.setItem(slot, item);
+            this.inventory.setItem(slot, itemStack);
         }
         return button;
     }
@@ -222,8 +228,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return guiName;
     }
 
-    protected InventoryResult preOpenInventory(MenuPlugin main, Player player, int page, Object... args)
-            throws InventoryOpenException {
+    protected InventoryResult preOpenInventory(MenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
 
         this.page = page;
         this.args = args;
@@ -233,8 +238,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return openInventory(main, player, page, args);
     }
 
-    public abstract InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args)
-            throws InventoryOpenException;
+    public abstract InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException;
 
     protected void onPreClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
         this.isClose = true;

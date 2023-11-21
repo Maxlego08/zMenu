@@ -8,6 +8,8 @@ import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class CommandMenu extends VCommand {
 
@@ -21,6 +23,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuVersion(plugin));
         this.addSubCommand(new CommandMenuPlayers(plugin));
         this.addSubCommand(new CommandMenuOpenMainMenu(plugin));
+        this.addSubCommand(new CommandMenuTestDupe(plugin));
 
 		/* Disable website connexion for beta
 		this.addSubCommand(new CommandMenuDownload(plugin));

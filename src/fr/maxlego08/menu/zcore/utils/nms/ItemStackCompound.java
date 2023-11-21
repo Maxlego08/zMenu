@@ -5,6 +5,21 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemStackCompound {
 
+    public static ItemStackCompound itemStackCompound;
+
+    static {
+        NmsVersion nmsVersion = NmsVersion.nmsVersion;
+        if (nmsVersion == NmsVersion.V_1_18_2) {
+            itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_18_2);
+        } else if (nmsVersion.getVersion() >= 1200) {
+            itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_12);
+        } else if (nmsVersion.getVersion() >= 1190) {
+            itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_19);
+        } else if (nmsVersion.getVersion() >= 1170) {
+            itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_17);
+        } else itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_8_8);
+    }
+
     private final EnumReflectionCompound reflection;
 
     public ItemStackCompound(EnumReflectionCompound reflection) {
@@ -44,7 +59,7 @@ public class ItemStackCompound {
 
         localItemStackObject.getClass()
                 .getMethod(this.reflection.getMethodSetTag(),
-						EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz())
+                        EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz())
                 .invoke(localItemStackObject, compoundObject);
 
         return (ItemStack) EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
@@ -281,7 +296,9 @@ public class ItemStackCompound {
         V1_8_8("getTag", "setTag", "hasKey", "getBoolean", "getFloat", "getDouble", "getLong", "getInt", "getString",
                 "setBoolean", "setFloat", "setDouble", "setLong", "setInt", "setString"),
         V1_18_2("t", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
-        // V1_8_8("", "", "", "", "", "", "", "", "", "", "", "", "", "", ""),
+        V1_17("s", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
+        V1_12("v", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
+        V1_19("u", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
 
         ;
 
@@ -305,9 +322,9 @@ public class ItemStackCompound {
         private final String methodSetString;
 
         EnumReflectionCompound(String methodGetTag, String methodSetTag, String methodHaskey,
-                                       String methodGetBoolean, String methodGetFloat, String methodGetDouble, String methodGetLong,
-                                       String methodGetInt, String methodGetString, String methodSetBoolean, String methodSetFloat,
-                                       String methodSetDouble, String methodSetLong, String methodSetInt, String methodSetString) {
+                               String methodGetBoolean, String methodGetFloat, String methodGetDouble, String methodGetLong,
+                               String methodGetInt, String methodGetString, String methodSetBoolean, String methodSetFloat,
+                               String methodSetDouble, String methodSetLong, String methodSetInt, String methodSetString) {
             this.methodGetTag = methodGetTag;
             this.methodSetTag = methodSetTag;
             this.methodHaskey = methodHaskey;
