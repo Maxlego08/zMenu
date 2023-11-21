@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
@@ -10,6 +11,9 @@ import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.dupe.DupeListener;
+import fr.maxlego08.menu.dupe.NMSDupeManager;
+import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -32,6 +36,7 @@ import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
@@ -68,6 +73,7 @@ public class MenuPlugin extends ZPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private CommandMenu commandMenu;
     private ZScheduler scheduler;
+    private DupeManager dupeManager;
 
     public static boolean isFolia() {
         try {
@@ -90,6 +96,8 @@ public class MenuPlugin extends ZPlugin {
         this.scheduler = isFolia()
                 ? new FoliaScheduler(this)
                 : new BukkitScheduler(this);
+
+        this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
 
         this.preEnable();
 
@@ -141,8 +149,8 @@ public class MenuPlugin extends ZPlugin {
                 ServicePriority.Highest);
         this.getServer().getServicesManager().register(InventoriesPlayer.class, this.inventoriesPlayer, this,
                 ServicePriority.Highest);
-        this.getServer().getServicesManager().register(PatternManager.class, this.patternManager, this,
-                ServicePriority.Highest);
+        this.getServer().getServicesManager().register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
+        this.getServer().getServicesManager().register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -197,6 +205,10 @@ public class MenuPlugin extends ZPlugin {
         new VersionChecker(this, 253).useLastVersion();
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        if (Config.enableAntiDupe) {
+            this.addListener(new DupeListener(this.scheduler, this.dupeManager));
+        }
 
         this.postEnable();
     }
@@ -291,5 +303,9 @@ public class MenuPlugin extends ZPlugin {
 
     public PatternManager getPatternManager() {
         return patternManager;
+    }
+
+    public DupeManager getDupeManager() {
+        return dupeManager;
     }
 }
