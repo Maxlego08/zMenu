@@ -15,8 +15,11 @@
 - [ ] Add boolean for enable or disable inventory to load
 - [ ] Add nbt support
 - [ ] Upgrade potion support for multiple effect, main effect and color
+- [ ] Remove config.json and setup a config.yml
 
 # Unreleased
+
+# 1.0.1.7
 
 - Added number of inventory loaded with command /zm reload
 - Added anti dupe system with NMS Tag
