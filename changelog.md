@@ -1,5 +1,6 @@
 # ToDo
 
+- [x] Add anti dupe system with NMS Tag 
 - [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 - [ ] Add an order to display the list of official addons.
@@ -11,7 +12,6 @@
 - [ ] Add has experience / level for requirement
 - [ ] Add is near for requirement
 - [ ] Add delay support for zMenuConvert
-- [ ] Add anti dupe system with NMS Tag 
 - [ ] Add boolean for enable or disable inventory to load
 - [ ] Add nbt support
 - [ ] Upgrade potion support for multiple effect, main effect and color
@@ -19,6 +19,7 @@
 # Unreleased
 
 - Added number of inventory loaded with command /zm reload
+- Added anti dupe system with NMS Tag
 - Fix model id value in config, you can now you modelId, customModelId or customModelData
 - Fix player head for 1.20+ (https://blog.jeff-media.com/creating-custom-heads-in-spigot-1-18-1/) https://github.com/Maxlego08/zMenu/issues/16
 - Fix docs for potion

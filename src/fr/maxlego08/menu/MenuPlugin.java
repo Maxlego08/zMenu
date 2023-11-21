@@ -35,6 +35,7 @@ import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
@@ -208,6 +209,11 @@ public class MenuPlugin extends ZPlugin {
 
         if (Config.enableAntiDupe) {
             this.addListener(new DupeListener(this.scheduler, this.dupeManager));
+        }
+
+        if (Config.enableDebug){
+            Logger.info("Scheduler: " + this.scheduler);
+            Logger.info("DupeManager: " + this.dupeManager);
         }
 
         this.postEnable();

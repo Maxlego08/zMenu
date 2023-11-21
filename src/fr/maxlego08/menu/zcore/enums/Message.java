@@ -55,6 +55,7 @@ public enum Message {
 	DESCRIPTION_RELOAD("Allows you to reload configuration files"),
 	DESCRIPTION_VERSION("Show plugin version"),
 	DESCRIPTION_LIST("Inventory list"),
+	DESCRIPTION_TEST_DUPE("Test dupe"),
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
 	DESCRIPTION_DISCONNECT("WIP"),
