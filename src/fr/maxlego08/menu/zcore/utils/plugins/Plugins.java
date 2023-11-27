@@ -13,7 +13,7 @@ public enum Plugins {
 	ITEMSADDER("ItemsAdder"),
 	SLIMEFUN("Slimefun"),
 	NOVA("Nova"),
-
+	ECO("eco")
 	;
 
 	private final String name;
