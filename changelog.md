@@ -16,6 +16,7 @@
 - [ ] Add nbt support
 - [ ] Upgrade potion support for multiple effect, main effect and color
 - [ ] Remove config.json and setup a config.yml
+- [ ] Create an extension for vscode, notepadd++ to configure the plugin faster
 
 # Unreleased
 
