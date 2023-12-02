@@ -62,6 +62,10 @@
                   <pattern>com.tcoded.folialib</pattern>
                   <shadedPattern>fr.maxlego08.menu.zcore.utils.folialib</shadedPattern>
                 </relocation>
+                <relocation>
+                  <pattern>de.tr7zw.changeme.nbtapi</pattern>
+                  <shadedPattern>fr.maxlego08.menu.zcore.utils.nbtapi</shadedPattern>
+                </relocation>
               </relocations>
             </configuration>
           </execution>
@@ -101,6 +105,10 @@
     <repository>
       <id>auxilor-repo</id>
       <url>https://repo.auxilor.io/repository/maven-public/</url>
+    </repository>
+    <repository>
+      <id>codemc-repo</id>
+      <url>https://repo.codemc.org/repository/maven-public/</url>
     </repository>
   </repositories>
   <dependencies>

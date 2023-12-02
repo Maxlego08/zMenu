@@ -15,7 +15,7 @@ public class EcoLoader implements MaterialLoader {
     public ItemStack load(YamlConfiguration yamlConfiguration, String path, String materialString) {
         try {
             //eco item lookup system:
-            //https://plugins.auxilor.io/all-plugins/the-item-lookup-system
+            // https://plugins.auxilor.io/all-plugins/the-item-lookup-system
             return Items.lookup(materialString).getItem();
         } catch (Exception ignored) {
             return null;

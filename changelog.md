@@ -20,6 +20,10 @@
 
 # Unreleased
 
+- Add NbtAPI (de.tr7zw.item-nbt-api)
+- Add material loader for [eco](https://plugins.auxilor.io/all-plugins/the-item-lookup-system) [#19](https://github.com/Maxlego08/zMenu/pull/19)
+- Set ``enableAntiDupeDiscordNotification`` to false by default
+
 # 1.0.1.7
 
 - Added number of inventory loaded with command /zm reload
