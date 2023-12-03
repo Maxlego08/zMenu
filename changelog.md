@@ -17,12 +17,15 @@
 - [ ] Upgrade potion support for multiple effect, main effect and color
 - [ ] Remove config.json and setup a config.yml
 - [ ] Create an extension for vscode, notepadd++ to configure the plugin faster
+- [ ] Upgrade `/zmenu save <name>` to add support for heads, fireworks and banner etc   
 
 # Unreleased
 
-- Add NbtAPI (de.tr7zw.item-nbt-api)
+- Add command ``/zmenu save <name>``. Allows to save the item in your hand in format for plugin configuration.
 - Add material loader for [eco](https://plugins.auxilor.io/all-plugins/the-item-lookup-system) [#19](https://github.com/Maxlego08/zMenu/pull/19)
 - Set ``enableAntiDupeDiscordNotification`` to false by default
+- Fix ItemStackCompound
+- Fix PDC dupe, replace BOOLEAN by INT
 
 # 1.0.1.7
 

@@ -86,11 +86,11 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
                     TextComponent component = buildTextComponent(splitMessages[0]);
 
-                    TextComponent clickComponant = buildTextComponent(color(this.message));
-                    setClickAction(clickComponant, Action.OPEN_URL, this.link);
-                    setHoverMessage(clickComponant, color(this.hover));
+                    TextComponent clickComponent = buildTextComponent(color(this.message));
+                    setClickAction(clickComponent, Action.OPEN_URL, this.link);
+                    setHoverMessage(clickComponent, color(this.hover));
 
-                    component.addExtra(clickComponant);
+                    component.addExtra(clickComponent);
                     if (splitMessages.length == 2) {
                         component.addExtra(buildTextComponent(splitMessages[1]));
                     }

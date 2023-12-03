@@ -114,10 +114,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setLore(configuration.getStringList(path + "lore"));
         menuItemStack.setDisplayName(configuration.getString(path + "name", null));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID",
-                configuration.getString(path + "modelId",
-                        configuration.getString(path + "customModelId",
-                                configuration.getString(path + "customModelData", "0")))));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", "0")))));
 
         List<String> enchants = configuration.getStringList(path + "enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -191,11 +188,26 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      *
      */
     public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
-        configuration.set(path + "data", item.getData());
-        configuration.set(path + "durability", item.getDurability());
-        configuration.set(path + "amount", item.getAmount());
+
         configuration.set(path + "material", item.getMaterial());
-        configuration.set(path + "url", item.getUrl());
+
+        if (item.getDisplayName() != null) configuration.set(path + "name", item.getDisplayName());
+        if (!item.getLore().isEmpty()) configuration.set(path + "lore", item.getLore());
+        if (item.isGlowing()) configuration.set(path + "glow", item.isGlowing());
+        if (item.getModelID() != null) configuration.set(path + "modelID", item.getModelID());
+        if (item.getData() > 0) configuration.set(path + "data", item.getData());
+        if (item.getDurability() > 0) configuration.set(path + "durability", item.getDurability());
+        if (item.getAmount() != null) {
+            try {
+                int value = Integer.parseInt(item.getAmount());
+                if (value > 1) {
+                    configuration.set(path + "amount", value);
+                }
+            } catch (Exception exception) {
+                configuration.set(path + "amount", item.getAmount());
+            }
+        }
+        if (item.getUrl() != null) configuration.set(path + "url", item.getUrl());
 
         Potion potion = item.getPotion();
         Firework firework = item.getFirework();
@@ -203,15 +215,16 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         Banner banner = item.getBanner();
 
         if (potion != null) {
-            Color c = potion.getColor();
+            Color potionColor = potion.getColor();
 
             configuration.set(path + "potion", potion.getType().toString());
             configuration.set(path + "level", potion.getLevel());
             configuration.set(path + "splash", potion.isSplash());
             configuration.set(path + "extended", potion.hasExtendedDuration());
 
-            if (c != null)
-                configuration.set("color", c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue());
+            if (potionColor != null) {
+                configuration.set("color", potionColor.getAlpha() + "," + potionColor.getRed() + "," + potionColor.getGreen() + "," + potionColor.getBlue());
+            }
         }
 
         if (firework != null) {
@@ -233,9 +246,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
         if (leatherArmor != null) {
-            Color c = leatherArmor.getColor();
-            if (c != null)
-                configuration.set("color", c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue());
+            Color leatherArmorColor = leatherArmor.getColor();
+            if (leatherArmorColor != null) {
+                configuration.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
+            }
         }
 
         if (banner != null) {
@@ -251,11 +265,6 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        configuration.set(path + "lore", item.getLore());
-        configuration.set(path + "name", item.getDisplayName());
-        configuration.set(path + "glow", item.isGlowing());
-        configuration.set(path + "modelID", item.getModelID());
-
         if (item.getEnchantments() != null && !item.getEnchantments().isEmpty()) {
             List<String> stringEnchantments = item.getEnchantments().entrySet().stream().map(e -> e.getKey().toString() + "," + e.getValue().toString()).collect(Collectors.toList());
 
@@ -268,8 +277,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         try {
             configuration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 

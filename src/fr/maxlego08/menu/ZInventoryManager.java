@@ -20,6 +20,7 @@ import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.loader.InventoryLoader;
+import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
 import fr.maxlego08.menu.loader.actions.ChatLoader;
@@ -45,11 +46,13 @@ import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -65,6 +68,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -495,6 +499,36 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             InventoryDefault inventoryDefault = (InventoryDefault) holder;
             this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
         }
+    }
+
+    @Override
+    public void saveItem(CommandSender sender, ItemStack itemStack, String name) {
+
+        File file = new File(this.plugin.getDataFolder(), "save_items.yml");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+
+        ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("items.");
+        if (configurationSection != null) {
+            Set<String> names = configurationSection.getKeys(false);
+            if (names.contains(name)) {
+                message(sender, Message.SAVE_ERROR_NAME);
+                return;
+            }
+        }
+
+        Loader<MenuItemStack> loader = new MenuItemStackLoader(this);
+        MenuItemStack menuItemStack = MenuItemStack.fromItemStack(this, itemStack);
+        loader.save(menuItemStack, yamlConfiguration, "items." + name + ".", file);
+
+        message(sender, Message.SAVE_SUCCESS, "%name%", name);
     }
 
     @EventHandler

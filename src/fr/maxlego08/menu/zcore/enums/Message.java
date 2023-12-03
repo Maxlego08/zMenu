@@ -52,6 +52,7 @@ public enum Message {
 	INVENTORY_OPEN_ERROR_CONSOLE("§cOnly one player can open an inventory."),
 	
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
+	DESCRIPTION_SAVE("Allows you to save the item in your hand"),
 	DESCRIPTION_RELOAD("Allows you to reload configuration files"),
 	DESCRIPTION_VERSION("Show plugin version"),
 	DESCRIPTION_LIST("Inventory list"),
@@ -118,6 +119,10 @@ public enum Message {
 	INVENTORY_CREATE_ERROR_ALREADY("§cThe file §f%name%§c already exist."),
 	INVENTORY_CREATE_ERROR_EXCEPTION("§cAn error has occurred§8: §f%error%"),
 	INVENTORY_CREATE_SUCCESS("§aYou have just created the inventory §f%name%§a."),
+
+	SAVE_ERROR_EMPTY("§cYou must have an item in hand to save this item."),
+	SAVE_ERROR_NAME("§cThe name already exists for this item, please select another one."),
+	SAVE_SUCCESS("§aYou just saved the item §f%name%§a."),
 
 	;
 
