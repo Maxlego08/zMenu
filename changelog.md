@@ -21,6 +21,8 @@
 
 # Unreleased
 
+# 1.0.1.8
+
 - Add command ``/zmenu save <name>``. Allows to save the item in your hand in format for plugin configuration.
 - Add material loader for [eco](https://plugins.auxilor.io/all-plugins/the-item-lookup-system) [#19](https://github.com/Maxlego08/zMenu/pull/19)
 - Set ``enableAntiDupeDiscordNotification`` to false by default
