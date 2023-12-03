@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.dupe;
 
+import dev.triumphteam.gui.components.util.ItemNbt;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackCompound;
 import org.bukkit.inventory.ItemStack;

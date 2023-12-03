@@ -485,10 +485,6 @@ public abstract class ZUtils extends MessageUtils {
         return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    /**
-     * @param message
-     * @return
-     */
     protected String colorReverse(String message) {
         Pattern pattern = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
         Matcher matcher = pattern.matcher(message);

@@ -5,8 +5,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemStackCompound {
 
+    /**
+     * Singleton instance of ItemStackCompound based on the current NmsVersion.
+     */
     public static ItemStackCompound itemStackCompound;
 
+    // Static block to initialize the itemStackCompound based on the NmsVersion
     static {
         NmsVersion nmsVersion = NmsVersion.nmsVersion;
         if (nmsVersion == NmsVersion.V_1_18_2) {
@@ -22,386 +26,296 @@ public class ItemStackCompound {
 
     private final EnumReflectionCompound reflection;
 
+    /**
+     * Constructs an ItemStackCompound instance based on the given EnumReflectionCompound.
+     *
+     * @param reflection The EnumReflectionCompound representing the NBT tag reflection version.
+     */
     public ItemStackCompound(EnumReflectionCompound reflection) {
         super();
         this.reflection = reflection;
     }
 
     /**
-     * Permet de retourner le nbttag
+     * Retrieves the NBT tag compound from the given ItemStack.
      *
-     * @param itemStack
-     * @return object
-     * @throws Exception
+     * @param itemStack The ItemStack to retrieve the NBT tag from.
+     * @return The NBT tag compound object.
+     * @throws Exception If an error occurs during the process.
      */
     public Object getCompound(ItemStack itemStack) throws Exception {
-        Object localItemStackObject = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
-                .getMethod("asNMSCopy", ItemStack.class).invoke(null, itemStack);
-        Object localCompoundObject = localItemStackObject.getClass().getMethod(this.reflection.getMethodGetTag())
-                .invoke(localItemStackObject);
+        if (itemStack == null) return null;
+        Object localItemStackObject = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz().getMethod("asNMSCopy", ItemStack.class).invoke(null, itemStack);
+        Object localCompoundObject = localItemStackObject.getClass().getMethod(this.reflection.getMethodGetTag()).invoke(localItemStackObject);
         if (localCompoundObject != null) {
             return localCompoundObject;
         }
         return EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz().newInstance();
     }
 
+
     /**
-     * Permet d'appliquer le nbttag sur l'itemstack
+     * Applies the given NBT tag compound to the ItemStack.
      *
-     * @param itemStack
-     * @param compoundObject
-     * @return itemstack
-     * @throws Exception
+     * @param itemStack      The ItemStack to apply the NBT tag to.
+     * @param compoundObject The NBT tag compound to apply.
+     * @return The modified ItemStack.
+     * @throws Exception If an error occurs during the process.
      */
     public ItemStack applyCompound(ItemStack itemStack, Object compoundObject) throws Exception {
-        Object localItemStackObject = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
-                .getMethod("asNMSCopy", ItemStack.class).invoke(null, itemStack);
-
-        localItemStackObject.getClass()
-                .getMethod(this.reflection.getMethodSetTag(),
-                        EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz())
-                .invoke(localItemStackObject, compoundObject);
-
-        return (ItemStack) EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
-                .getMethod("asBukkitCopy", EnumReflectionItemStack.ITEMSTACK.getClassz())
-                .invoke(null, new Object[]{localItemStackObject});
+        Object localItemStackObject = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz().getMethod("asNMSCopy", ItemStack.class).invoke(null, itemStack);
+        localItemStackObject.getClass().getMethod(this.reflection.getMethodSetTag(), EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz()).invoke(localItemStackObject, compoundObject);
+        return (ItemStack) EnumReflectionItemStack.CRAFTITEMSTACK.getClassz().getMethod("asBukkitCopy", EnumReflectionItemStack.ITEMSTACK.getClassz()).invoke(null, new Object[]{localItemStackObject});
     }
 
+    /**
+     * Sets a string value in the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to set the value in.
+     * @param key       The key of the value.
+     * @param value     The string value to set.
+     * @return The modified ItemStack.
+     */
     public ItemStack setString(ItemStack itemStack, String key, String value) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodSetString(), String.class, String.class)
-                    .invoke(compoundObject, key, value);
-
+            if (compoundObject == null) return null;
+            compoundObject.getClass().getMethod(this.reflection.getMethodSetString(), String.class, String.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
 
     }
 
+    /**
+     * Retrieves a string value from the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to retrieve the value from.
+     * @param key       The key of the value.
+     * @return The string value.
+     */
     public String getString(ItemStack itemStack, String key) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            return (String) compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodGetString(), String.class)
-                    .invoke(compoundObject, new Object[]{key});
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (compoundObject == null) return null;
+            return (String) compoundObject.getClass().getMethod(this.reflection.getMethodGetString(), String.class).invoke(compoundObject, new Object[]{key});
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
 
     }
 
+
+    /**
+     * Retrieves a double value from the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to retrieve the value from.
+     * @param key       The key of the value.
+     * @return The double value.
+     */
     public double getDouble(ItemStack itemStack, String key) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            return (double) compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodGetDouble(), String.class)
-                    .invoke(compoundObject, new Object[]{key});
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (compoundObject == null) return 0;
+            return (double) compoundObject.getClass().getMethod(this.reflection.getMethodGetDouble(), String.class).invoke(compoundObject, new Object[]{key});
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return 0;
 
     }
 
+    /**
+     * Retrieves a long value from the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to retrieve the value from.
+     * @param key       The key of the value.
+     * @return The long value.
+     */
     public long getLong(ItemStack itemStack, String key) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            return (long) compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodGetLong(), String.class)
-                    .invoke(compoundObject, new Object[]{key});
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (compoundObject == null) return 0;
+            return (long) compoundObject.getClass().getMethod(this.reflection.getMethodGetLong(), String.class).invoke(compoundObject, new Object[]{key});
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return 0;
-
     }
 
+    /**
+     * Retrieves an integer value from the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to retrieve the value from.
+     * @param key       The key of the value.
+     * @return The integer value.
+     */
     public int getInt(ItemStack itemStack, String key) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            return (int) compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodGetInt(), String.class)
-                    .invoke(compoundObject, new Object[]{key});
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (compoundObject == null) return 0;
+            return (int) compoundObject.getClass().getMethod(this.reflection.getMethodGetInt(), String.class).invoke(compoundObject, new Object[]{key});
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return 0;
 
     }
 
+    /**
+     * Retrieves a float value from the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to retrieve the value from.
+     * @param key       The key of the value.
+     * @return The float value.
+     */
     public float getFloat(ItemStack itemStack, String key) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            return (float) compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodGetFloat(), String.class)
-                    .invoke(compoundObject, new Object[]{key});
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            return (float) compoundObject.getClass().getMethod(this.reflection.getMethodGetFloat(), String.class).invoke(compoundObject, new Object[]{key});
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return 0;
 
     }
 
+    /**
+     * Retrieves a boolean value from the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to retrieve the value from.
+     * @param key       The key of the value.
+     * @return The boolean value.
+     */
     public boolean getBoolean(ItemStack itemStack, String key) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            return (boolean) compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodGetBoolean(), String.class)
-                    .invoke(compoundObject, new Object[]{key});
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            return (boolean) compoundObject.getClass().getMethod(this.reflection.getMethodGetBoolean(), String.class).invoke(compoundObject, new Object[]{key});
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return false;
 
     }
 
+    /**
+     * Sets an integer value in the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to set the value in.
+     * @param key       The key of the value.
+     * @param value     The integer value to set.
+     * @return The modified ItemStack.
+     */
     public ItemStack setInt(ItemStack itemStack, String key, int value) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodSetInt(), String.class, int.class)
-                    .invoke(compoundObject, key, value);
-
+            compoundObject.getClass().getMethod(this.reflection.getMethodSetInt(), String.class, int.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
 
     }
 
+    /**
+     * Sets a long value in the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to set the value in.
+     * @param key       The key of the value.
+     * @param value     The long value to set.
+     * @return The modified ItemStack.
+     */
     public ItemStack setLong(ItemStack itemStack, String key, long value) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodSetLong(), String.class, long.class)
-                    .invoke(compoundObject, key, value);
-
+            compoundObject.getClass().getMethod(this.reflection.getMethodSetLong(), String.class, long.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
 
     }
 
+    /**
+     * Sets a float value in the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to set the value in.
+     * @param key       The key of the value.
+     * @param value     The float value to set.
+     * @return The modified ItemStack.
+     */
     public ItemStack setFloat(ItemStack itemStack, String key, float value) {
-
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodSetFloat(), String.class, float.class)
-                    .invoke(compoundObject, key, value);
-
+            compoundObject.getClass().getMethod(this.reflection.getMethodSetFloat(), String.class, float.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
 
     }
 
+    /**
+     * Sets a boolean value in the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to set the value in.
+     * @param key       The key of the value.
+     * @param value     The boolean value to set.
+     * @return The modified ItemStack.
+     */
     public ItemStack setBoolean(ItemStack itemStack, String key, boolean value) {
 
         try {
             Object compoundObject = this.getCompound(itemStack);
-
-            compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodSetBoolean(), String.class, boolean.class)
-                    .invoke(compoundObject, key, value);
-
+            compoundObject.getClass().getMethod(this.reflection.getMethodSetBoolean(), String.class, boolean.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-
-    }
-
-    public ItemStack setDouble(ItemStack itemStack, String key, double value) {
-
-        try {
-            Object compoundObject = this.getCompound(itemStack);
-
-            compoundObject.getClass()
-                    .getMethod(this.reflection.getMethodSetDouble(), String.class, double.class)
-                    .invoke(compoundObject, key, value);
-
-            return this.applyCompound(itemStack, compoundObject);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
 
     }
 
     /**
-     * Permet de vérifier si une clé est contenu dans le nbttag
+     * Sets a double value in the NBT tag compound.
      *
-     * @param itemStack
-     * @param key
-     * @return
+     * @param itemStack The ItemStack to set the value in.
+     * @param key       The key of the value.
+     * @param value     The double value to set.
+     * @return The modified ItemStack.
+     */
+    public ItemStack setDouble(ItemStack itemStack, String key, double value) {
+        try {
+            Object compoundObject = this.getCompound(itemStack);
+            compoundObject.getClass().getMethod(this.reflection.getMethodSetDouble(), String.class, double.class).invoke(compoundObject, key, value);
+            return this.applyCompound(itemStack, compoundObject);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+
+    }
+
+    /**
+     * Checks if a specified key is present in the NBT tag compound.
+     *
+     * @param itemStack The ItemStack to check.
+     * @param key       The key to check for.
+     * @return True if the key is present, false otherwise.
      */
     public boolean isKey(ItemStack itemStack, String key) {
-
         try {
-
             Object nbttagCompound = this.getCompound(itemStack);
-            if (nbttagCompound == null) {
-                return false;
-            }
-
-            return (boolean) nbttagCompound.getClass()
-                    .getMethod(this.reflection.getMethodHaskey(), String.class)
-                    .invoke(nbttagCompound, new Object[]{key});
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (nbttagCompound == null) return false;
+            return (boolean) nbttagCompound.getClass().getMethod(this.reflection.getMethodHasKey(), String.class).invoke(nbttagCompound, new Object[]{key});
+        } catch (Exception ignored) {
         }
         return false;
-
     }
-
-    public enum EnumReflectionCompound {
-
-        V1_8_8("getTag", "setTag", "hasKey", "getBoolean", "getFloat", "getDouble", "getLong", "getInt", "getString",
-                "setBoolean", "setFloat", "setDouble", "setLong", "setInt", "setString"),
-        V1_18_2("t", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
-        V1_17("s", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
-        V1_12("v", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
-        V1_19("u", "c", "e", "q", "j", "k", "i", "h", "l", "a", "a", "a", "a", "a", "a"),
-
-        ;
-
-        private final String methodGetTag;
-        private final String methodSetTag;
-
-        private final String methodHaskey;
-
-        private final String methodGetBoolean;
-        private final String methodGetFloat;
-        private final String methodGetDouble;
-        private final String methodGetLong;
-        private final String methodGetInt;
-        private final String methodGetString;
-
-        private final String methodSetBoolean;
-        private final String methodSetFloat;
-        private final String methodSetDouble;
-        private final String methodSetLong;
-        private final String methodSetInt;
-        private final String methodSetString;
-
-        EnumReflectionCompound(String methodGetTag, String methodSetTag, String methodHaskey,
-                               String methodGetBoolean, String methodGetFloat, String methodGetDouble, String methodGetLong,
-                               String methodGetInt, String methodGetString, String methodSetBoolean, String methodSetFloat,
-                               String methodSetDouble, String methodSetLong, String methodSetInt, String methodSetString) {
-            this.methodGetTag = methodGetTag;
-            this.methodSetTag = methodSetTag;
-            this.methodHaskey = methodHaskey;
-            this.methodGetBoolean = methodGetBoolean;
-            this.methodGetFloat = methodGetFloat;
-            this.methodGetDouble = methodGetDouble;
-            this.methodGetLong = methodGetLong;
-            this.methodGetInt = methodGetInt;
-            this.methodGetString = methodGetString;
-            this.methodSetBoolean = methodSetBoolean;
-            this.methodSetFloat = methodSetFloat;
-            this.methodSetDouble = methodSetDouble;
-            this.methodSetLong = methodSetLong;
-            this.methodSetInt = methodSetInt;
-            this.methodSetString = methodSetString;
-        }
-
-        public String getMethodGetTag() {
-            return methodGetTag;
-        }
-
-        public String getMethodSetTag() {
-            return methodSetTag;
-        }
-
-        public String getMethodHaskey() {
-            return methodHaskey;
-        }
-
-        public String getMethodGetBoolean() {
-            return methodGetBoolean;
-        }
-
-        public String getMethodGetFloat() {
-            return methodGetFloat;
-        }
-
-        public String getMethodGetDouble() {
-            return methodGetDouble;
-        }
-
-        public String getMethodGetLong() {
-            return methodGetLong;
-        }
-
-        public String getMethodGetInt() {
-            return methodGetInt;
-        }
-
-        public String getMethodGetString() {
-            return methodGetString;
-        }
-
-        public String getMethodSetBoolean() {
-            return methodSetBoolean;
-        }
-
-        public String getMethodSetFloat() {
-            return methodSetFloat;
-        }
-
-        public String getMethodSetDouble() {
-            return methodSetDouble;
-        }
-
-        public String getMethodSetLong() {
-            return methodSetLong;
-        }
-
-        public String getMethodSetInt() {
-            return methodSetInt;
-        }
-
-        public String getMethodSetString() {
-            return methodSetString;
-        }
-
-    }
-
 }

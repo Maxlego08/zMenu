@@ -4,6 +4,7 @@ public enum Permission {
 	
 	ZMENU_RELOAD,
 	ZMENU_OPEN, 
+	ZMENU_SAVE,
 	ZMENU_USE,
 	ZMENU_PLAYERS,
 	ZMENU_CONVERT,

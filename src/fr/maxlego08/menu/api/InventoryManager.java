@@ -9,6 +9,7 @@ import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -322,8 +323,8 @@ public interface InventoryManager extends Savable, Listener {
     /**
      * Creates a new inventory file.
      *
-     * @param sender       Command sender.
-     * @param fileName     Inventory file name.
+     * @param sender        Command sender.
+     * @param fileName      Inventory file name.
      * @param inventorySize Inventory size.
      * @param inventoryName Inventory name.
      */
@@ -335,4 +336,13 @@ public interface InventoryManager extends Savable, Listener {
      * @param player The player.
      */
     void updateInventory(Player player);
+
+    /**
+     * Save item in config file
+     *
+     * @param sender    Command Sender
+     * @param itemStack The itemStack
+     * @param name      The item name
+     */
+    void saveItem(CommandSender sender, ItemStack itemStack, String name);
 }

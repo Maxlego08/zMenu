@@ -10,6 +10,7 @@ import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -17,12 +18,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class MenuItemStack extends ZUtils {
@@ -51,6 +54,54 @@ public class MenuItemStack extends ZUtils {
         this.inventoryManager = inventoryManager;
         this.filePath = filePath;
         this.path = path;
+    }
+
+    public static MenuItemStack fromItemStack(InventoryManager manager, ItemStack itemStack) {
+
+        MenuItemStack menuItemStack = new MenuItemStack(manager, "", "");
+
+        menuItemStack.setMaterial(itemStack.getType().name());
+        int amount = itemStack.getAmount();
+        if (amount > 1) menuItemStack.setAmount(String.valueOf(itemStack.getAmount()));
+        if (NmsVersion.getCurrentVersion().isItemLegacy()) {
+            int durability = itemStack.getDurability();
+            if (durability > 0) menuItemStack.setDurability(durability);
+            int data = itemStack.getData().getData();
+            if (data > 0) menuItemStack.setData(data);
+        }
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        if (itemMeta != null) {
+            if (itemMeta.hasDisplayName()) {
+                menuItemStack.setDisplayName(menuItemStack.colorReverse(itemMeta.getDisplayName()));
+            }
+
+            if (itemMeta.hasLore()) {
+                menuItemStack.setLore(menuItemStack.colorReverse(Objects.requireNonNull(itemMeta.getLore())));
+            }
+
+            menuItemStack.setFlags(new ArrayList<>(itemMeta.getItemFlags()));
+            menuItemStack.setEnchantments(itemMeta.getEnchants());
+
+            if (NmsVersion.getCurrentVersion().isCustomModelData() && itemMeta.hasCustomModelData()) {
+                menuItemStack.setModelID(itemMeta.getCustomModelData());
+            }
+
+            if (itemMeta instanceof SkullMeta) {
+                SkullMeta skullMeta = (SkullMeta) itemMeta;
+                // ToDo, upgrade ItemMeta
+            }
+
+            if (itemMeta instanceof EnchantmentStorageMeta) {
+                EnchantmentStorageMeta enchantmentStorageMeta = (EnchantmentStorageMeta) itemMeta;
+                if (enchantmentStorageMeta.hasStoredEnchants()) {
+                    menuItemStack.setEnchantments(enchantmentStorageMeta.getEnchants());
+                }
+            }
+        }
+
+        return menuItemStack;
     }
 
     /**
@@ -423,4 +474,5 @@ public class MenuItemStack extends ZUtils {
         }
         return amount;
     }
+
 }
