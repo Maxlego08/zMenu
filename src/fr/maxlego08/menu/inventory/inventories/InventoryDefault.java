@@ -55,7 +55,7 @@ public class InventoryDefault extends VInventory {
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
         this.buttons = this.inventory.sortButtons(page, args);
-        this.buttons.addAll(patterns.stream().flatMap(e -> e.getButtons().stream()).collect(Collectors.toList()));
+        this.buttons.addAll(patterns.stream().flatMap(pattern -> pattern.getButtons().stream()).collect(Collectors.toList()));
         this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
