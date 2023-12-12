@@ -27,6 +27,7 @@
 # Unreleased
 
 - Improved ItemStackLoader. This class is used for converting inventories from GuiPlus.
+- Fixed loaded messages
 
 # 1.0.1.8
 
