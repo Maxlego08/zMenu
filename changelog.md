@@ -26,6 +26,8 @@
 
 # Unreleased
 
+# 1.0.1.9
+
 - Added back type for action requirements
 - Improved ItemStackLoader. This class is used for converting inventories from GuiPlus.
 - Fixed loaded messages
