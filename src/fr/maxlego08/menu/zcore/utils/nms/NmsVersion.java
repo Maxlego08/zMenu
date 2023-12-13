@@ -140,6 +140,15 @@ public enum NmsVersion {
     }
 
     /**
+     * Checks if the current version is an Attribute version.
+     *
+     * @return True if the version is Attribute, else False.
+     */
+    public boolean isAttributeVersion() {
+        return version != 1880;
+    }
+
+    /**
      * Gets the version number associated with the enumeration.
      *
      * @return The version number.

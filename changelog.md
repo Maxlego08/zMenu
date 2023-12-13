@@ -1,6 +1,7 @@
 # ToDo
 
 - [x] Add anti dupe system with NMS Tag 
+- [x] Add the BACK action, to return to the previous inventory when clicking   
 - [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 - [ ] Add an order to display the list of official addons.
@@ -18,8 +19,18 @@
 - [ ] Remove config.json and setup a config.yml
 - [ ] Create an extension for vscode, notepadd++ to configure the plugin faster
 - [ ] Upgrade `/zmenu save <name>` to add support for heads, fireworks and banner etc   
+- [ ] When loading inventories, check the name, or the color of the item or the name of the inventory will contain a placeholders, so do not call placeholder API if it is not useful. The same can be done on messages, commands or any other action that uses placeholder API   
+- [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
+- [ ] Add a way to display the list of online players in a button list
+- [ ] Add Citizen support to open an inventory by clicking on an NPC
 
 # Unreleased
+
+# 1.0.1.9
+
+- Added back type for action requirements
+- Improved ItemStackLoader. This class is used for converting inventories from GuiPlus.
+- Fixed loaded messages
 
 # 1.0.1.8
 
