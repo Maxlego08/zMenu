@@ -59,6 +59,8 @@ public class MessageLoader extends YamlUtils implements Savable {
 
             String path = "messages." + message.name().toLowerCase().replace("_", ".");
 
+            if (configuration.contains(path)) continue;
+
             if (message.getType() != MessageType.TCHAT) {
                 configuration.set(path + ".type", message.getType().name());
             }
@@ -144,7 +146,6 @@ public class MessageLoader extends YamlUtils implements Savable {
             Message enumMessage = Message.valueOf(keys.toUpperCase().replace(".", "_"));
             enumMessage.setType(messageType);
 
-            System.out.println("Loaded: " + enumMessage);
             this.loadedMessages.add(enumMessage);
 
             switch (messageType) {
