@@ -26,6 +26,9 @@
 
 # Unreleased
 
+- Fix error with 1.20.4
+- Fix error with Meta
+
 # 1.0.1.9
 
 - Added back type for action requirements
