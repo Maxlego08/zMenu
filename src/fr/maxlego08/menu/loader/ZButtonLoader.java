@@ -94,7 +94,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         page = Math.max(page, 1);
-        slot = slot + ((page - 1) * this.inventorySize);
+        if (slot != defaultButtonValue.getSlot() || slot == 0) {
+            slot = slot + ((page - 1) * this.inventorySize);
+        }
 
         List<String> slotsAsString = configuration.getStringList(path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
@@ -183,7 +185,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             return (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
         }).filter(permissible -> {
             if (!permissible.isValid()) {
-                Logger.info("A placeholder is invalid in the placeholder list of the button " + path +" in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
+                Logger.info("A placeholder is invalid in the placeholder list of the button " + path + " in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
                 return false;
             }
             return true;

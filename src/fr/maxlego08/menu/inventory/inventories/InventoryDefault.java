@@ -155,6 +155,11 @@ public class InventoryDefault extends VInventory {
                 continue;
             }
 
+            if (slot >= this.inventory.size()) {
+                Logger.info("slot is out of range ! (" + slot + ") Button: " + button.getName() + " in inventory " + this.inventory.getFileName(), Logger.LogType.ERROR);
+                continue;
+            }
+
             ItemButton itemButton = this.addItem(slot, itemStack);
             if (button.isClickable()) {
                 itemButton.setClick(event -> {
