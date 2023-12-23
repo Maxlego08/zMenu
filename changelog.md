@@ -30,6 +30,7 @@
 - Fix error with 1.20.4
 - Fix error with Meta
 - Fix error with slot page and else button
+- Fix checkPermission with view requirement who made it check placeholders and permissions impossible
 
 # 1.0.1.9
 

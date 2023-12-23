@@ -349,11 +349,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
-
-        if (this.viewRequirement != null) {
-            return this.viewRequirement.execute(player, this, inventory);
-        }
-
-        return super.checkPermission(player, inventory);
+        return super.checkPermission(player, inventory) && this.viewRequirement.execute(player, this, inventory);
     }
 }
