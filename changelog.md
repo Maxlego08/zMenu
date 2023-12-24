@@ -26,10 +26,11 @@
 
 # Unreleased
 
+- Added ANY and ALL support for click requirements https://github.com/Maxlego08/zMenu/issues/24 
 - Added a check when displaying the item to prevent that if the slot is outside the slots this triggers an error but just a message in the console
 - Fix error with 1.20.4
 - Fix error with Meta
-- Fix error with slot page and else button
+- Fix error with slot page and else button 
 - Fix checkPermission with view requirement who made it check placeholders and permissions impossible
 
 # 1.0.1.9
