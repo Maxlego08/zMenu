@@ -26,6 +26,8 @@
 
 # Unreleased
 
+# 1.0.2.0
+
 - Added ANY and ALL support for click requirements https://github.com/Maxlego08/zMenu/issues/24 
 - Added a check when displaying the item to prevent that if the slot is outside the slots this triggers an error but just a message in the console
 - Fix error with 1.20.4
