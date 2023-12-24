@@ -50,6 +50,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -535,5 +536,23 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @EventHandler
     public void onQuid(PlayerQuitEvent event) {
         this.currentInventories.remove(event.getPlayer().getUniqueId());
+    }
+
+    @Override
+    public List<ClickType> loadClicks(List<String> loadClicks) {
+        List<ClickType> clickTypes = new ArrayList<>();
+        loadClicks.forEach(clickType -> {
+            if (clickType == null) return;
+            if (clickType.equalsIgnoreCase("all") || clickType.equalsIgnoreCase("any")) {
+                clickTypes.addAll(Config.allClicksType);
+            } else {
+                try {
+                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase()));
+                } catch (Exception ignored) {
+                    Logger.info(clickType + " click type was not found.", LogType.ERROR);
+                }
+            }
+        });
+        return clickTypes;
     }
 }

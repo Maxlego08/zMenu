@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.meta;
 
 import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.zcore.utils.ElapsedTime;
 import fr.maxlego08.menu.zcore.utils.SimpleCache;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -33,11 +32,11 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
     private final SimpleCache<String, Component> cache = new SimpleCache<>();
-    private Method loreMethod;
-    private Method nameMethod;
-    private Method inventoryMethod;
+    private final Method loreMethod;
+    private final Method nameMethod;
+    private final Method inventoryMethod;
 
-    public ComponentMeta() {
+    public ComponentMeta() throws Exception {
         this.COLORS_MAPPINGS.put("0", "black");
         this.COLORS_MAPPINGS.put("1", "dark_blue");
         this.COLORS_MAPPINGS.put("2", "dark_green");
@@ -61,16 +60,12 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         this.COLORS_MAPPINGS.put("o", "italic");
         this.COLORS_MAPPINGS.put("r", "reset");
 
-        try {
-            loreMethod = ItemMeta.class.getDeclaredMethod("lore", List.class);
-            loreMethod.setAccessible(true);
-            nameMethod = ItemMeta.class.getDeclaredMethod("displayName", Component.class);
-            nameMethod.setAccessible(true);
-            inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
-            inventoryMethod.setAccessible(true);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        loreMethod = ItemMeta.class.getDeclaredMethod("lore", List.class);
+        loreMethod.setAccessible(true);
+        nameMethod = ItemMeta.class.getDeclaredMethod("displayName", Component.class);
+        nameMethod.setAccessible(true);
+        inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
+        inventoryMethod.setAccessible(true);
     }
 
     @Override

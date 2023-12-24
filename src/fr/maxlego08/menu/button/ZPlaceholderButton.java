@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.button;
 
-import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
+import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
@@ -33,18 +33,12 @@ public abstract class ZPlaceholderButton extends ZPermissibleButton implements P
 
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
-        if (!this.hasPlaceHolder()) {
-
-            return super.checkPermission(player, inventory);
-
-        } else {
-
-            // First check if player has permission
-            if (!super.checkPermission(player, inventory)) {
-                return false;
-            }
-
-            return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player, null, inventory));
+        // First check if player has permission
+        if (!super.checkPermission(player, inventory)) {
+            return false;
         }
+
+        // Then we will check if the player to all valid placeholders
+        return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player, null, inventory));
     }
 }

@@ -9,6 +9,7 @@ import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -345,4 +346,13 @@ public interface InventoryManager extends Savable, Listener {
      * @param name      The item name
      */
     void saveItem(CommandSender sender, ItemStack itemStack, String name);
+
+    /**
+     * Transforms a string list into a click list type.
+     * If the list contains ANY or ALL then the ClickType present in the plugin configuration will be added to the list.
+     *
+     * @param loadClicks - Click type as string
+     * @return Loaded click type
+     */
+    List<ClickType> loadClicks(List<String> loadClicks);
 }
