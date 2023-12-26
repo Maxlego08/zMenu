@@ -1,7 +1,8 @@
 # ToDo
 
-- [x] Add anti dupe system with NMS Tag 
+- [x] Add anti dupe system with NMS Tag
 - [x] Add the BACK action, to return to the previous inventory when clicking   
+- [x] Add the ability to perform actions when clicking
 - [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 - [ ] Add an order to display the list of official addons.
@@ -23,10 +24,10 @@
 - [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
 - [ ] Add a way to display the list of online players in a button list
 - [ ] Add Citizen support to open an inventory by clicking on an NPC
-- [ ] Add the ability to perform actions when clicking.
 
 # Unreleased
 
+- Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
 - Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for action. [#27](https://github.com/Maxlego08/zMenu/issues/27) 
 - Added deny and success action for each requirement. In addition to its global actions, you can add them for each requirement. Perfect to set the error message for the player.
 

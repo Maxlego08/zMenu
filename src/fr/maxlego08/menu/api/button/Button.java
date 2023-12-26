@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.button;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
@@ -243,4 +244,11 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @return The {@link Requirement}.
      */
     Requirement getViewRequirement();
+
+    /**
+     * Returns the list of actions performed on click
+     *
+     * @return actions
+     */
+    List<Action> getActions();
 }

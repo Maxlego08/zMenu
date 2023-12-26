@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
@@ -221,6 +222,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         loadViewRequirements(button, configuration, path, file);
         // Load clicks requirements
         loadClickRequirements(button, configuration, path, file);
+        // Load actions
+        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file);
+        button.setActions(actions);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
