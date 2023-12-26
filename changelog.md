@@ -30,6 +30,8 @@
 - Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
 - Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for action. [#27](https://github.com/Maxlego08/zMenu/issues/27) 
 - Added deny and success action for each requirement. In addition to its global actions, you can add them for each requirement. Perfect to set the error message for the player.
+- When creating ItemStacks, the plugin will no longer use PlaceholderAPI if the item contains no placeholders.
+- Added cache system for ItemStack. If ItemStack does not use placeholder API, then it will be created once and cached. All inventories will therefore use the same ItemStack. This allows to improve performance (from a few thousand nano seconds per item, so if you have a lot of items in your inventory the gain can be very important).
 
 # 1.0.2.0
 
