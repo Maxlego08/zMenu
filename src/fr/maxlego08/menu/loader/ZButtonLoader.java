@@ -180,7 +180,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             }
         }
 
-        PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader();
+        PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader(this.plugin.getButtonManager());
         List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(map -> {
             return (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
         }).filter(permissible -> {
@@ -195,7 +195,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         PlaceholderAction placeholderAction = PlaceholderAction.from(configuration.getString(path + "action", null));
         String placeholderValue = configuration.getString(path + "value", null);
         if (placeholderAction != null && placeholderValue != null && placeholder != null) {
-            placeholders.add(new ZPlaceholderPermissible(placeholderAction, placeholder, placeholderValue));
+            placeholders.add(new ZPlaceholderPermissible(placeholderAction, placeholder, placeholderValue, new ArrayList<>(), new ArrayList<>()));
         }
 
         button.setPlaceholders(placeholders);

@@ -4,6 +4,8 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Represents a condition that can be checked to determine if a player has permission.
  */
@@ -24,4 +26,18 @@ public interface Permissible {
      * @return True if the permissible is valid; otherwise, false.
      */
     boolean isValid();
+
+    /**
+     * Gets the list of actions performed if the player doesn't have permission.
+     *
+     * @return List of deny actions.
+     */
+    List<Action> getDenyActions();
+
+    /**
+     * Gets the list of actions performed if the player has permission.
+     *
+     * @return List of success actions.
+     */
+    List<Action> getSuccessActions();
 }

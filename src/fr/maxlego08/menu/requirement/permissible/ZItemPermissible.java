@@ -1,14 +1,18 @@
 package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.ItemPermissible;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.requirement.ZPermissible;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-public class ZItemPermissible implements ItemPermissible {
+import java.util.List;
+
+public class ZItemPermissible extends ZPermissible implements ItemPermissible {
 
     private final Material material;
     private final int amount;
@@ -17,8 +21,8 @@ public class ZItemPermissible implements ItemPermissible {
      * @param material
      * @param amount
      */
-    public ZItemPermissible(Material material, int amount) {
-        super();
+    public ZItemPermissible(Material material, int amount, List<Action> denyActions, List<Action> successActions) {
+        super(denyActions, successActions);
         this.material = material;
         this.amount = amount;
     }

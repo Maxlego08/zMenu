@@ -237,10 +237,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         // Load Permissible before
-        buttonManager.registerPermissible(new PlaceholderPermissibleLoader());
-        buttonManager.registerPermissible(new PermissionPermissibleLoader());
-        buttonManager.registerPermissible(new ItemPermissibleLoader());
-        buttonManager.registerPermissible(new RegexPermissibleLoader());
+        buttonManager.registerPermissible(new PlaceholderPermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new PermissionPermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new ItemPermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
 
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());

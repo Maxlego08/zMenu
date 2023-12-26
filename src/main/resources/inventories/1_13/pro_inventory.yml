@@ -107,10 +107,7 @@ items:
     click_requirement:
       purchase:
         clicks:
-          - RIGHT
-          - LEFT
-          - SHIFT_LEFT
-          - SHIFT_RIGHT
+          - ANY # or ALL for all clicks type
         requirements:
           - type: placeholder
             placeholder: "%vault_eco_balance%"

@@ -2,18 +2,22 @@ package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Implementation of the {@link PlaceholderPermissible} interface that checks player permissions
  * based on specified placeholder values and actions.
  */
-public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermissible {
+public class ZPlaceholderPermissible extends ZPermissible implements PlaceholderPermissible {
 
     private final PlaceholderAction action;
     private final String placeholder;
@@ -26,8 +30,8 @@ public class ZPlaceholderPermissible extends ZUtils implements PlaceholderPermis
      * @param placeholder The placeholder key to evaluate.
      * @param value       The value associated with the placeholder.
      */
-    public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value) {
-        super();
+    public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value, List<Action> denyActions, List<Action> successActions) {
+        super(denyActions, successActions);
         this.action = action;
         this.placeholder = placeholder;
         this.value = value;
