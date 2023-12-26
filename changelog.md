@@ -23,12 +23,16 @@
 - [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
 - [ ] Add a way to display the list of online players in a button list
 - [ ] Add Citizen support to open an inventory by clicking on an NPC
+- [ ] Add the ability to perform actions when clicking.
 
 # Unreleased
 
+- Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for action. [#27](https://github.com/Maxlego08/zMenu/issues/27) 
+- Added deny and success action for each requirement. In addition to its global actions, you can add them for each requirement. Perfect to set the error message for the player.
+
 # 1.0.2.0
 
-- Added ANY and ALL support for click requirements https://github.com/Maxlego08/zMenu/issues/24 
+- Added ANY and ALL support for click requirements [#24](https://github.com/Maxlego08/zMenu/issues/24) 
 - Added a check when displaying the item to prevent that if the slot is outside the slots this triggers an error but just a message in the console
 - Fix error with 1.20.4
 - Fix error with Meta
