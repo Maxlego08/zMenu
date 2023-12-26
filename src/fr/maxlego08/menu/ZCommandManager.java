@@ -12,6 +12,7 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -124,6 +125,23 @@ public class ZCommandManager extends ZUtils implements CommandManager {
             e.printStackTrace();
         }
 
+
+        executeCraftServerSyncCommands();
+    }
+
+    public void executeCraftServerSyncCommands() {
+        try {
+            Object craftServer = getCraftServerInstance();
+            Method syncCommandsMethod = craftServer.getClass().getDeclaredMethod("syncCommands");
+            syncCommandsMethod.setAccessible(true);
+            syncCommandsMethod.invoke(craftServer);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private Object getCraftServerInstance() throws ClassNotFoundException, IllegalAccessException {
+        Class<?> craftServerClass = Class.forName(Bukkit.getServer().getClass().getCanonicalName());
+        return craftServerClass.cast(Bukkit.getServer());
     }
 
     @Override
@@ -205,5 +223,4 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
         return true;
     }
-
 }

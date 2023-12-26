@@ -49,9 +49,6 @@ public class CommandMenuReloadCommand extends VCommand {
             return CommandType.SUCCESS;
         }
 
-        plugin.getMessageLoader().load(plugin.getPersist());
-        Config.getInstance().load(plugin.getPersist());
-
         plugin.getVInventoryManager().close();
 
         commandManager.loadCommands();

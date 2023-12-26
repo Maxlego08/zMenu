@@ -73,7 +73,7 @@ public class CommandMenuOpen extends VCommand {
         }
 
         // Custom arguments
-        if (args.length > 5) {
+        if (args.length >= 5) {
             CommandManager commandManager = plugin.getCommandManager();
 
             for (int i = 4; i < args.length; i++) {
@@ -91,7 +91,7 @@ public class CommandMenuOpen extends VCommand {
                             i++;
                         }
                         if (i < args.length) {
-                            value.append(" ").append(args[i].substring(0, args[i].lastIndexOf("\"")));
+                            value.append(" ").append(args[i], 0, args[i].lastIndexOf("\""));
                         }
                     }
                 }
