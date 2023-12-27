@@ -27,6 +27,8 @@
 
 # Unreleased
 
+# 1.0.2.1
+
 - Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
 - Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for action. [#27](https://github.com/Maxlego08/zMenu/issues/27) 
 - Added deny and success action for each requirement. In addition to its global actions, you can add them for each requirement. Perfect to set the error message for the player.
