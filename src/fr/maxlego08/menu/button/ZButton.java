@@ -5,6 +5,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.players.DataManager;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
@@ -42,6 +43,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean updateOnClick = false;
     private List<Requirement> clickRequirements = new ArrayList<>();
     private Requirement viewRequirement;
+    private List<Action> actions = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -224,6 +226,8 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
             }
         });
 
+        this.actions.forEach(action -> action.preExecute(player, this, inventory));
+
         this.execute(player, event.getClick());
     }
 
@@ -350,5 +354,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
         return super.checkPermission(player, inventory) && this.viewRequirement.execute(player, this, inventory);
+    }
+
+    @Override
+    public List<Action> getActions() {
+        return this.actions;
+    }
+
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
     }
 }

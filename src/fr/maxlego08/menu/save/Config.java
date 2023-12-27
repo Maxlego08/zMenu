@@ -69,6 +69,7 @@ public class Config implements Savable {
     public static String antiDupeMessage = "**%player%** use %amount% %itemname% which comes from zMenu. Removing it !";
 
     public static List<ClickType> allClicksType = Arrays.asList(ClickType.MIDDLE, ClickType.RIGHT, ClickType.LEFT, ClickType.SHIFT_RIGHT, ClickType.SHIFT_LEFT);
+    public static boolean enableCacheItemStack = true;
 
 
     /**

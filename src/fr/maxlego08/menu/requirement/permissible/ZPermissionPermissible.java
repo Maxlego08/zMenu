@@ -1,21 +1,31 @@
 package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the {@link PermissionPermissible} interface that checks player permissions
  * based on a specific permission node and an optional reverse flag.
  */
-public class ZPermissionPermissible implements PermissionPermissible {
+public class ZPermissionPermissible extends ZPermissible implements PermissionPermissible {
 
     private final String permission;
     private final boolean isReverse;
+
+    public ZPermissionPermissible(String permission, List<Action> denyActions, List<Action> successActions) {
+        super(denyActions, successActions);
+        String[] processedPermission = processPermission(permission);
+        this.permission = processedPermission[0];
+        this.isReverse = Boolean.parseBoolean(processedPermission[1]);
+    }
 
     /**
      * Constructs a ZPermissionPermissible with the specified permission node.
@@ -23,11 +33,16 @@ public class ZPermissionPermissible implements PermissionPermissible {
      * @param permission The permission node to check.
      */
     public ZPermissionPermissible(String permission) {
-        super();
+        super(new ArrayList<>(), new ArrayList<>());
+        String[] processedPermission = processPermission(permission);
+        this.permission = processedPermission[0];
+        this.isReverse = Boolean.parseBoolean(processedPermission[1]);
+    }
+
+    private String[] processPermission(String permission) {
         boolean isReverse = permission != null && permission.startsWith("!");
         if (isReverse) permission = permission.substring(1);
-        this.permission = permission;
-        this.isReverse = isReverse;
+        return new String[]{permission, String.valueOf(isReverse)};
     }
 
     /**

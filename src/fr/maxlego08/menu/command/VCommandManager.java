@@ -8,7 +8,12 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -306,9 +311,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
 
     public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {
 
-        Optional<VCommand> optional = this.commands.stream().filter(e -> {
-            return e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command);
-        }).findFirst();
+        Optional<VCommand> optional = this.commands.stream().filter(e -> e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command)).findFirst();
         if (optional.isPresent()) {
             VCommand vCommand = optional.get();
             this.commands.remove(vCommand);

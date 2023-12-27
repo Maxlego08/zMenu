@@ -1,14 +1,15 @@
 package fr.maxlego08.menu.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ZRequirement implements Requirement {
 
@@ -48,11 +49,37 @@ public class ZRequirement implements Requirement {
 
     @Override
     public boolean execute(Player player, Button button, InventoryDefault inventory) {
-        long requirementSuccess = this.permissibles.stream().filter(permissible -> permissible.hasPermission(player, button, inventory)).count();
+
+        AtomicBoolean earlyExit = new AtomicBoolean(false);
+        long requirementSuccess = this.permissibles.stream().filter(permissible -> {
+
+            if (earlyExit.get()) {
+                return false;
+            }
+
+            boolean result = permissible.hasPermission(player, button, inventory);
+            // Execution of actions in case of success permissible
+            if (result) {
+                permissible.getSuccessActions().forEach(action -> action.preExecute(player, button, inventory));
+            } else { // Execution of actions in case of deny permissible
+                permissible.getDenyActions().forEach(action -> action.preExecute(player, button, inventory));
+            }
+
+            if (this.permissibles.size() == this.miniumRequirement && !result) {
+                earlyExit.set(true);
+            }
+
+            return result;
+        }).count();
+
         boolean isSuccess = requirementSuccess >= this.miniumRequirement;
 
-        if (isSuccess) this.successActions.forEach(action -> action.preExecute(player, button, inventory));
-        else this.denyActions.forEach(action -> action.preExecute(player, button, inventory));
+        // Execution of actions in case of success permissible
+        if (isSuccess) {
+            this.successActions.forEach(action -> action.preExecute(player, button, inventory));
+        } else { // Execution of actions in case of deny permissible
+            this.denyActions.forEach(action -> action.preExecute(player, button, inventory));
+        }
 
         return isSuccess;
     }

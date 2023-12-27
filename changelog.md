@@ -1,7 +1,8 @@
 # ToDo
 
-- [x] Add anti dupe system with NMS Tag 
+- [x] Add anti dupe system with NMS Tag
 - [x] Add the BACK action, to return to the previous inventory when clicking   
+- [x] Add the ability to perform actions when clicking
 - [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 - [ ] Add an order to display the list of official addons.
@@ -22,13 +23,23 @@
 - [ ] When loading inventories, check the name, or the color of the item or the name of the inventory will contain a placeholders, so do not call placeholder API if it is not useful. The same can be done on messages, commands or any other action that uses placeholder API   
 - [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
 - [ ] Add a way to display the list of online players in a button list
-- [ ] Add Citizen support to open an inventory by clicking on an NPC
+- [ ] Add Citizen and [ZNPCsPlus](https://www.spigotmc.org/resources/znpcsplus.109380/) support to open an inventory by clicking on an NPC
 
 # Unreleased
 
+# 1.0.2.1
+
+- Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
+- Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for action. [#27](https://github.com/Maxlego08/zMenu/issues/27) 
+- Added deny and success action for each requirement. In addition to its global actions, you can add them for each requirement. Perfect to set the error message for the player.
+- When creating ItemStacks, the plugin will no longer use PlaceholderAPI if the item contains no placeholders.
+- Added cache system for ItemStack. If ItemStack does not use placeholder API, then it will be created once and cached. All inventories will therefore use the same ItemStack. This allows to improve performance (from a few thousand nano seconds per item, so if you have a lot of items in your inventory the gain can be very important).
+- Fixed command /zm open. The opening arguments were only taken into account if the command had more than 5 arguments instead of starting from 5.
+- Fixed command /zm reload with commands.
+
 # 1.0.2.0
 
-- Added ANY and ALL support for click requirements https://github.com/Maxlego08/zMenu/issues/24 
+- Added ANY and ALL support for click requirements [#24](https://github.com/Maxlego08/zMenu/issues/24) 
 - Added a check when displaying the item to prevent that if the slot is outside the slots this triggers an error but just a message in the console
 - Fix error with 1.20.4
 - Fix error with Meta

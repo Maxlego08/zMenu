@@ -2,8 +2,10 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.Banner;
+import fr.maxlego08.menu.zcore.utils.ElapsedTime;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
@@ -48,6 +50,8 @@ public class MenuItemStack extends ZUtils {
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
+    private boolean needPlaceholderAPI = false;
+    private ItemStack cacheItemStack;
 
     public MenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         super();
@@ -113,6 +117,11 @@ public class MenuItemStack extends ZUtils {
 
     @SuppressWarnings("deprecation")
     public ItemStack build(Player player) {
+
+        // If we don’t need PlaceHolderApi, then we use the cache
+        if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack) {
+            return this.cacheItemStack;
+        }
 
         ItemStack itemStack = null;
         Material material = null;
@@ -237,6 +246,7 @@ public class MenuItemStack extends ZUtils {
 
         itemStack.setItemMeta(itemMeta);
 
+        if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
         return itemStack;
     }
 
@@ -252,6 +262,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setMaterial(String material) {
         this.material = material;
+        this.updatePlaceholder(amount);
     }
 
     /**
@@ -266,6 +277,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setAmount(String amount) {
         this.amount = amount;
+        this.updatePlaceholder(amount);
     }
 
     /**
@@ -337,6 +349,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setLore(List<String> lore) {
         this.lore = lore;
+        lore.forEach(this::updatePlaceholder);
     }
 
     /**
@@ -365,6 +378,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+        this.updatePlaceholder(displayName);
     }
 
     /**
@@ -393,6 +407,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setModelID(String modelID) {
         this.modelID = modelID;
+        this.updatePlaceholder(modelID);
     }
 
     /**
@@ -475,4 +490,17 @@ public class MenuItemStack extends ZUtils {
         return amount;
     }
 
+    /**
+     * Let's know if the ItemStack needs a placeholder, if not then the ItemStack will be cached
+     *
+     * @param string - Current string
+     */
+    private void updatePlaceholder(String string) {
+        if (string == null || needPlaceholderAPI) return;
+        needPlaceholderAPI = string.contains("%");
+    }
+
+    public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
+        this.needPlaceholderAPI = needPlaceholderAPI;
+    }
 }
