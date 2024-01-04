@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 
 /**
- * <p>The OpenWithItem class represents the item that can be interacted with to open a menu.</p>
+ * <p>Represents the item that can be interacted with to open a menu.</p>
  */
 public class OpenWithItem {
 	private final ItemStack itemStack;

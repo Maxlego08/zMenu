@@ -131,7 +131,6 @@ items:
 #clearInventory: true
 
 # Open this menu by left/right clicking a specific item
-# If the clock has specific metadata
 #
 #open-with-item:
 #  item:
