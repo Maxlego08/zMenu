@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.inventory.OpenWithItem;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -31,6 +32,7 @@ public class ZInventory implements Inventory {
     private File file;
     private boolean clearInventory;
     private Requirement openRequirement;
+    private OpenWithItem openWithItem;
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -183,6 +185,15 @@ public class ZInventory implements Inventory {
     @Override
     public Requirement getOpenRequirement() {
         return this.openRequirement;
+    }
+
+    @Override
+    public OpenWithItem getOpenWithItem() {
+        return this.openWithItem;
+    }
+
+    public void setOpenWithItem(OpenWithItem openWithItem) {
+        this.openWithItem = openWithItem;
     }
 
     public void setOpenRequirement(Requirement openRequirement) {

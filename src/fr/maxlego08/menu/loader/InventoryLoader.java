@@ -5,6 +5,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.inventory.OpenWithItem;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -12,9 +13,11 @@ import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.loader.ItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -52,11 +55,11 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);
 
-        Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
         MenuItemStack itemStack = null;
         try {
             if (configuration.contains("fillItem")) {
-                itemStack = itemStackLoader.load(configuration, "fillItem.", file);
+                itemStack = menuItemStackLoader.load(configuration, "fillItem.", file);
             }
         } catch (Exception ignored) {
         }
@@ -80,6 +83,19 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         String fileName = this.getFileNameWithoutExtension(file);
 
+        Loader<ItemStack> itemStackLoader = new ItemStackLoader();
+        OpenWithItem openWithItem = null;
+        try {
+            if (configuration.contains("open-with-item")) {
+                ItemStack loadedItem = itemStackLoader.load(configuration, "open-with-item.item.", file);
+
+                boolean leftClick = configuration.getBoolean("open-with-item.left-click");
+                boolean rightClick = configuration.getBoolean("open-with-item.right-click");
+                openWithItem = new OpenWithItem(loadedItem, leftClick, rightClick);
+            }
+        } catch (Exception ignored) {
+        }
+
         ZInventory inventory;
 
         try {
@@ -99,6 +115,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
         inventory.setFile(file);
         inventory.setPatterns(patterns);
+        inventory.setOpenWithItem(openWithItem);
 
         // Open requirement
         if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement.")) {

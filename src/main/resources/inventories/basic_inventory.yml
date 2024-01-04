@@ -129,3 +129,12 @@ items:
 # Here players will have their inventory saved, then it sara deleted when opening the inventory.
 # When they close the inventory their inventory will be returned to them. Does not remove the armor
 #clearInventory: true
+
+# Open this menu by left/right clicking a specific item
+# If the clock has specific metadata
+#
+#open-with-item:
+#  item:
+#    material: clock
+#  left-click: false
+#  right-click: true

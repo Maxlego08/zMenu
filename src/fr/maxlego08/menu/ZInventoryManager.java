@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.inventory.OpenWithItem;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
@@ -52,6 +53,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -538,6 +540,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @EventHandler
     public void onQuid(PlayerQuitEvent event) {
         this.currentInventories.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        for (Inventory inventory : getInventories()) {
+            OpenWithItem openWithItem = inventory.getOpenWithItem();
+            if (openWithItem != null && openWithItem.shouldTrigger(event)) {
+                openInventory(event.getPlayer(), inventory);
+            }
+        }
     }
 
     @Override
