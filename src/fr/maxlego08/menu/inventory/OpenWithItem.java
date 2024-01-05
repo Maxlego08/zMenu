@@ -1,7 +1,8 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.MenuItemStack;
-import org.bukkit.event.block.Action;
+import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.itemstack.FullSimilar;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,9 +38,7 @@ public class OpenWithItem {
             return false;
         }
         ItemStack itemStack = this.menuItemStack.build(event.getPlayer());
-        boolean isSimilarItemStack = itemStack.getType() == event.getItem().getType();
-        return isSimilarItemStack
-                && (isLeftClick() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-                || isRightClick() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK));
+        ItemStackSimilar similar = new FullSimilar();
+        return similar.isSimilar(itemStack, event.getItem());
     }
 }
