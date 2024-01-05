@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.enums;
+package fr.maxlego08.menu.itemstack;
 
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;

@@ -132,8 +132,8 @@ items:
 
 # Open this menu by left/right clicking a specific item
 #
-#open-with-item:
+#openWithItem:
 #  item:
 #    material: clock
-#  left-click: false
-#  right-click: true
+#  leftClick: false
+#  rightClick: true

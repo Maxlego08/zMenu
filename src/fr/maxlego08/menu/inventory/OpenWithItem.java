@@ -1,15 +1,12 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.MenuItemStack;
-import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
-import fr.maxlego08.menu.itemstack.FullSimilar;
-import fr.maxlego08.menu.zcore.enums.ItemStackVerification;
+import fr.maxlego08.menu.itemstack.ItemStackVerification;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumSet;
-import java.util.Objects;
 
 
 /**
