@@ -83,11 +83,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         String fileName = this.getFileNameWithoutExtension(file);
 
-        Loader<ItemStack> itemStackLoader = new ItemStackLoader();
         OpenWithItem openWithItem = null;
         try {
             if (configuration.contains("open-with-item")) {
-                ItemStack loadedItem = itemStackLoader.load(configuration, "open-with-item.item.", file);
+                MenuItemStack loadedItem = menuItemStackLoader.load(configuration, "open-with-item.item.", file);
 
                 boolean leftClick = configuration.getBoolean("open-with-item.left-click");
                 boolean rightClick = configuration.getBoolean("open-with-item.right-click");
