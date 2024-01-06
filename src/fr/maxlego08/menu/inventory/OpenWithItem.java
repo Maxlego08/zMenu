@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.MenuItemStack;
-import fr.maxlego08.menu.itemstack.ItemStackVerification;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
