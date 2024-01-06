@@ -19,7 +19,7 @@ import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
-import fr.maxlego08.menu.inventory.OpenWithItem;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -58,13 +58,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import sun.java2d.loops.FillSpans;
 
 import java.io.File;
 import java.io.IOException;
@@ -557,8 +557,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.currentInventories.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
+
+        if (event.isCancelled()) return;
+
         for (Inventory inventory : getInventories()) {
             OpenWithItem openWithItem = inventory.getOpenWithItem();
             if (openWithItem != null && openWithItem.shouldTrigger(event)) {
@@ -587,12 +590,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
-        this.itemStackSimilarMap.put(itemStackSimilar.getName(), itemStackSimilar);
+        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(), itemStackSimilar);
     }
 
     @Override
     public Optional<ItemStackSimilar> getItemStackVerification(String name) {
-        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name, null));
+        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(), null));
     }
 
     @Override

@@ -2,7 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.inventory.OpenWithItem;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;

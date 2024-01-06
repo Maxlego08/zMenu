@@ -5,25 +5,27 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.inventory.OpenWithItem;
+import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.ItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.block.Action;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
@@ -88,9 +90,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             if (configuration.contains("openWithItem")) {
                 MenuItemStack loadedItem = menuItemStackLoader.load(configuration, "openWithItem.item.", file);
 
-                boolean leftClick = configuration.getBoolean("openWithItem.leftClick");
-                boolean rightClick = configuration.getBoolean("openWithItem.rightClick");
-                openWithItem = new OpenWithItem(loadedItem, leftClick, rightClick);
+                List<Action> actions = configuration.getStringList("openWithItem.actions").stream().map(string -> {
+                    try {
+                        return Action.valueOf(string.toUpperCase());
+                    } catch (Exception exception) {
+                        return null;
+                    }
+                }).filter(Objects::nonNull).collect(Collectors.toList());
+
+                String type = configuration.getString("openWithItem.type", "full");
+                ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
+
+                openWithItem = new OpenWithItem(loadedItem, actions, itemStackSimilar);
             }
         } catch (Exception ignored) {
         }
