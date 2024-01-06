@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.command;
 
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -563,6 +565,21 @@ public abstract class VCommand extends Arguments {
                         command.getDescription());
             }
         });
+    }
+
+    protected Optional<Inventory> findInventory(String inventoryName, InventoryManager inventoryManager){
+        Optional<Inventory> optional;
+        if (inventoryName.contains(":")) {
+            String[] values = inventoryName.split(":");
+            if (values.length == 2) {
+                optional = inventoryManager.getInventory(values[0], values[1]);
+            } else {
+                optional = inventoryManager.getInventory(inventoryName);
+            }
+        } else {
+            optional = inventoryManager.getInventory(inventoryName);
+        }
+        return optional;
     }
 
 }
