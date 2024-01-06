@@ -28,6 +28,8 @@
 
 # Unreleased
 
+- Added open menu with item interaction [#29](https://github.com/Maxlego08/zMenu/pull/29) by EnzoShoes
+
 # 1.0.2.1
 
 - Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
