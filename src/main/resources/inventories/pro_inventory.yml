@@ -149,3 +149,22 @@ items:
         name: "&cYou can't do that :'("
         lore:
           - "&cYou dont have enough money to buy this."
+
+# Open this menu by clicking a specific item
+#
+#openWithItem:
+#  # Define the item that will be clicked
+#  item:
+#    material: clock
+#  # Look at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/Action.html
+#  actions:
+#    - LEFT_CLICK_BLOCK
+#    - LEFT_CLICK_AIR
+#  # Définissez ensuite le type de vérification.
+#  # Depending on your configuration and need you will define a certain type of verification. Here are all the types that exist:
+#  # - full -> Allows to check the itemStack in full, will use the ItemStack#isSimilar method.
+#  # - material -> Allows to check only the material
+#  # - name -> Allows to check only the display name
+#  # - lore -> Allows to check only the lore
+#  # - modelid -> Allows to check only the Custom Model Id
+#  type: material

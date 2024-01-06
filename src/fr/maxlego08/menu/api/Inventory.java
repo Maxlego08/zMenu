@@ -4,7 +4,7 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
@@ -151,4 +151,11 @@ public interface Inventory {
      * @return The opening requirement.
      */
     Requirement getOpenRequirement();
+
+    /**
+     * Returns the item that can be used to open the inventory. (Left or rick click)
+     *
+     * @return The OpenWithItem
+     */
+    OpenWithItem getOpenWithItem();
 }

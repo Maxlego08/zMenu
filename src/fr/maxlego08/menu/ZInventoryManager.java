@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -18,7 +19,13 @@ import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.itemstack.FullSimilar;
+import fr.maxlego08.menu.itemstack.LoreSimilar;
+import fr.maxlego08.menu.itemstack.MaterialSimilar;
+import fr.maxlego08.menu.itemstack.ModelIdSimilar;
+import fr.maxlego08.menu.itemstack.NameSimilar;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastLoader;
@@ -51,7 +58,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -82,6 +91,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new HashMap<>();
+    private final Map<String, ItemStackSimilar> itemStackSimilarMap = new HashMap<>();
 
     public ZInventoryManager(MenuPlugin plugin) {
         super();
@@ -271,6 +281,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new NextLoader(this.plugin, this));
         buttonManager.register(new PreviousLoader(this.plugin, this));
         buttonManager.register(new MainMenuLoader(this.plugin, this));
+
+        // Register ItemStackSimilar
+        registerItemStackVerification(new FullSimilar());
+        registerItemStackVerification(new LoreSimilar());
+        registerItemStackVerification(new MaterialSimilar());
+        registerItemStackVerification(new ModelIdSimilar());
+        registerItemStackVerification(new NameSimilar());
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager);
         event.call();
@@ -540,6 +557,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.currentInventories.remove(event.getPlayer().getUniqueId());
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
+        if (event.isCancelled()) return;
+
+        for (Inventory inventory : getInventories()) {
+            OpenWithItem openWithItem = inventory.getOpenWithItem();
+            if (openWithItem != null && openWithItem.shouldTrigger(event)) {
+                openInventory(event.getPlayer(), inventory);
+            }
+        }
+    }
+
     @Override
     public List<ClickType> loadClicks(List<String> loadClicks) {
         List<ClickType> clickTypes = new ArrayList<>();
@@ -556,5 +586,20 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
         });
         return clickTypes;
+    }
+
+    @Override
+    public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
+        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(), itemStackSimilar);
+    }
+
+    @Override
+    public Optional<ItemStackSimilar> getItemStackVerification(String name) {
+        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(), null));
+    }
+
+    @Override
+    public Collection<ItemStackSimilar> getItemStackVerifications() {
+        return this.itemStackSimilarMap.values();
     }
 }
