@@ -5,7 +5,7 @@ description: Inventory management plugin
 website: https://groupez.dev/resources/zmenu.253
 version: 1.0.2.1
 api-version: 1.13
-contributors: [ mani1232, lijinhong11, Adreez  ]
+contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes ]
 softdepend:
 - HeadDatabase
 - PlaceholderAPI
