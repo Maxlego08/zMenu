@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
+import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
@@ -355,4 +356,31 @@ public interface InventoryManager extends Savable, Listener {
      * @return Loaded click type
      */
     List<ClickType> loadClicks(List<String> loadClicks);
+
+    /**
+     * Registers an ItemStackSimilar instance for verifying ItemStacks.
+     * This method allows for adding a new ItemStack verification strategy to the system.
+     *
+     * @param itemStackSimilar The ItemStackSimilar instance to be registered.
+     */
+    void registerItemStackVerification(ItemStackSimilar itemStackSimilar);
+
+    /**
+     * Retrieves an Optional ItemStackSimilar instance based on its name.
+     * This method is used to get a specific ItemStack verification strategy by its unique name.
+     * If no verification strategy is found with the given name, an empty Optional is returned.
+     *
+     * @param name The name of the ItemStack verification strategy to retrieve.
+     * @return An Optional containing the ItemStackSimilar instance if found, or an empty Optional otherwise.
+     */
+    Optional<ItemStackSimilar> getItemStackVerification(String name);
+
+    /**
+     * Returns a collection of all registered ItemStackSimilar instances.
+     * This method is used to get all the available ItemStack verification strategies currently registered.
+     * The collection contains instances of ItemStackSimilar, each representing a different verification strategy.
+     *
+     * @return A Collection of ItemStackSimilar instances representing all registered verification strategies.
+     */
+    Collection<ItemStackSimilar> getItemStackVerifications();
 }

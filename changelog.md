@@ -24,8 +24,14 @@
 - [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
 - [ ] Add a way to display the list of online players in a button list
 - [ ] Add Citizen and [ZNPCsPlus](https://www.spigotmc.org/resources/znpcsplus.109380/) support to open an inventory by clicking on an NPC
+- [ ] Add a tool to transform ItemStack to base64 and vice versa. This tool can be used to all my plugins.
 
 # Unreleased
+
+# 1.0.2.2
+
+- Added open menu with item interaction [#29](https://github.com/Maxlego08/zMenu/pull/29) by EnzoShoes
+- Added ``/zm giveopenitem <inventory> [<player>]``
 
 # 1.0.2.1
 

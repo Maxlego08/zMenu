@@ -174,3 +174,26 @@ items:
         lore:
           - ""
           - "&f➥ &7Click to access the #cf1717next page"
+
+# Open this menu by clicking a specific item
+# You can use /zm giveopenitem <inventory> <player> to retrieve the item to use
+#
+#openWithItem:
+#  # Define the item that will be clicked
+#  item:
+#    material: compass
+#    name: "&eOpen Basic Inventory"
+#    lore:
+#      - "&7Click on me !"
+#  # Look at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/Action.html
+#  actions:
+#    - LEFT_CLICK_BLOCK
+#    - LEFT_CLICK_AIR
+#  # Define the type of verification.
+#  # Depending on your configuration and need you will define a certain type of verification. Here are all the types that exist:
+#  # - full -> Allows to check the itemStack in full, will use the ItemStack#isSimilar method.
+#  # - material -> Allows to check only the material
+#  # - name -> Allows to check only the display name
+#  # - lore -> Allows to check only the lore
+#  # - modelid -> Allows to check only the Custom Model Id
+#  type: full
