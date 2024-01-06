@@ -31,6 +31,7 @@
 # 1.0.2.2
 
 - Added open menu with item interaction [#29](https://github.com/Maxlego08/zMenu/pull/29) by EnzoShoes
+- Added ``/zm giveopenitem <inventory> [<player>]``
 
 # 1.0.2.1
 
