@@ -185,7 +185,7 @@ items:
 #  actions:
 #    - LEFT_CLICK_BLOCK
 #    - LEFT_CLICK_AIR
-#  # Définissez ensuite le type de vérification.
+#  # Define the type of verification.
 #  # Depending on your configuration and need you will define a certain type of verification. Here are all the types that exist:
 #  # - full -> Allows to check the itemStack in full, will use the ItemStack#isSimilar method.
 #  # - material -> Allows to check only the material
