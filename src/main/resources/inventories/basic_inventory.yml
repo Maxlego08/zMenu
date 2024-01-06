@@ -131,11 +131,15 @@ items:
 #clearInventory: true
 
 # Open this menu by clicking a specific item
+# You can use /zm giveopenitem <inventory> <player> to retrieve the item to use
 #
 #openWithItem:
 #  # Define the item that will be clicked
 #  item:
-#    material: clock
+#    material: compass
+#    name: "&eOpen Basic Inventory"
+#    lore:
+#      - "&7Click on me !"
 #  # Look at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/Action.html
 #  actions:
 #    - LEFT_CLICK_BLOCK
@@ -147,4 +151,4 @@ items:
 #  # - name -> Allows to check only the display name
 #  # - lore -> Allows to check only the lore
 #  # - modelid -> Allows to check only the Custom Model Id
-#  type: material
+#  type: full
