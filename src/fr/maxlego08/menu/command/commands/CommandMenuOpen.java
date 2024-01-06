@@ -47,17 +47,7 @@ public class CommandMenuOpen extends VCommand {
             return CommandType.DEFAULT;
         }
 
-        Optional<Inventory> optional;
-        if (inventoryName.contains(":")) {
-            String[] values = inventoryName.split(":");
-            if (values.length == 2) {
-                optional = inventoryManager.getInventory(values[0], values[1]);
-            } else {
-                optional = inventoryManager.getInventory(inventoryName);
-            }
-        } else {
-            optional = inventoryManager.getInventory(inventoryName);
-        }
+        Optional<Inventory> optional = findInventory(inventoryName, inventoryManager);
 
         if (!optional.isPresent()) {
             message(this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);

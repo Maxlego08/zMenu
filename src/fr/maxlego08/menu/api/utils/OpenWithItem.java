@@ -32,20 +32,15 @@ public class OpenWithItem {
     }
 
     public boolean shouldTrigger(PlayerInteractEvent event) {
-        System.out.println(">> A " + event.getItem());
         if (event.getItem() == null) {
             return false;
         }
 
-        System.out.println(">> B " + this.actions.contains(event.getAction()) + " -> " + event.getAction() + " == " + this.actions);
         if (!this.actions.contains(event.getAction())) {
             return false;
         }
 
         ItemStack itemStack = this.menuItemStack.build(event.getPlayer());
-
-        System.out.println(">> C " + this.itemStackSimilar + " -> " + itemStack + " -> " + (this.itemStackSimilar.isSimilar(itemStack, event.getItem())));
-
         return this.itemStackSimilar.isSimilar(itemStack, event.getItem());
     }
 }

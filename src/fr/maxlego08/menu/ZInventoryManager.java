@@ -559,9 +559,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-
-        if (event.isCancelled()) return;
-
         for (Inventory inventory : getInventories()) {
             OpenWithItem openWithItem = inventory.getOpenWithItem();
             if (openWithItem != null && openWithItem.shouldTrigger(event)) {

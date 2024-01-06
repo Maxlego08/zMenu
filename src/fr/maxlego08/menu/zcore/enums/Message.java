@@ -50,13 +50,16 @@ public enum Message {
 	INVENTORY_OPEN_ERROR_COMMAND("§cImpossible to find the command §f%name%§c."),
 	INVENTORY_OPEN_ERROR_PLAYER("§cUnable to find the player, please specify."),
 	INVENTORY_OPEN_ERROR_CONSOLE("§cOnly one player can open an inventory."),
-	
+	INVENTORY_OPEN_ITEM_ERROR("§cInventory §f%name%§c doesn't have open item."),
+	INVENTORY_OPEN_ITEM_SUCCESS("§aYou have just given the open item to the player §f%name%§a."),
+
 	DESCRIPTION_OPEN("Allows you to open an inventory"),
 	DESCRIPTION_SAVE("Allows you to save the item in your hand"),
 	DESCRIPTION_RELOAD("Allows you to reload configuration files"),
 	DESCRIPTION_VERSION("Show plugin version"),
 	DESCRIPTION_LIST("Inventory list"),
 	DESCRIPTION_TEST_DUPE("Test dupe"),
+	DESCRIPTION_OPEN_ITEM("Give open item"),
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
 	DESCRIPTION_DISCONNECT("WIP"),
