@@ -13,6 +13,8 @@ import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,10 +25,7 @@ import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -150,8 +149,24 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         List<ItemFlag> flags = configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList());
 
+        Map<Attribute, AttributeModifier> attributeModifiers = new HashMap<>();
+
+        if (configuration.contains(path + "attributes")) {
+            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList(path + "attributes");
+            if (attributesFromConfig != null) {
+                for (Map<String, Object> attributeJson : attributesFromConfig) {
+                    attributeJson.putIfAbsent("uuid", UUID.randomUUID().toString());
+                    attributeJson.putIfAbsent("name", "zmenu:modifier");
+                    AttributeModifier attributeModifier = AttributeModifier.deserialize(attributeJson);
+                    Attribute attribute = Attribute.valueOf((String) attributeJson.get("attribute"));
+                    attributeModifiers.put(attribute, attributeModifier);
+                }
+            }
+        }
+
         menuItemStack.setEnchantments(enchantments);
         menuItemStack.setFlags(flags);
+        menuItemStack.setAttributes(attributeModifiers);
 
         return menuItemStack;
     }

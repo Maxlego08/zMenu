@@ -14,6 +14,8 @@ import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -23,12 +25,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class MenuItemStack extends ZUtils {
 
@@ -47,6 +44,7 @@ public class MenuItemStack extends ZUtils {
     private boolean isGlowing;
     private String modelID;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
+    private Map<Attribute, AttributeModifier> attributes = new HashMap<>();
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
@@ -242,6 +240,8 @@ public class MenuItemStack extends ZUtils {
             }
         });
 
+        this.attributes.forEach(itemMeta::addAttributeModifier);
+
         this.flags.forEach(itemMeta::addItemFlags);
 
         itemStack.setItemMeta(itemMeta);
@@ -429,6 +429,20 @@ public class MenuItemStack extends ZUtils {
      */
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
         this.enchantments = enchantments;
+    }
+
+    /**
+     * @return the attributes
+     */
+    public Map<Attribute, AttributeModifier> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attributes the attributes to set
+     */
+    public void setAttributes(Map<Attribute, AttributeModifier> attributes) {
+        this.attributes = attributes;
     }
 
     /**
