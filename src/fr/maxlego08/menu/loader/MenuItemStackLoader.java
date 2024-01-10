@@ -3,18 +3,14 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.Firework;
-import fr.maxlego08.menu.zcore.utils.LeatherArmor;
-import fr.maxlego08.menu.zcore.utils.Potion;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.*;
+import fr.maxlego08.menu.zcore.utils.attribute.Attribute;
+import fr.maxlego08.menu.zcore.utils.attribute.IAttribute;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
@@ -149,17 +145,13 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         List<ItemFlag> flags = configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList());
 
-        Map<Attribute, AttributeModifier> attributeModifiers = new HashMap<>();
+        List<IAttribute> attributeModifiers = new ArrayList<>();
 
         if (configuration.contains(path + "attributes")) {
             List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList(path + "attributes");
             if (attributesFromConfig != null) {
-                for (Map<String, Object> attributeJson : attributesFromConfig) {
-                    attributeJson.putIfAbsent("uuid", UUID.randomUUID().toString());
-                    attributeJson.putIfAbsent("name", "zmenu:modifier");
-                    AttributeModifier attributeModifier = AttributeModifier.deserialize(attributeJson);
-                    Attribute attribute = Attribute.valueOf((String) attributeJson.get("attribute"));
-                    attributeModifiers.put(attribute, attributeModifier);
+                for (Map<String, Object> attributeMap : attributesFromConfig) {
+                    attributeModifiers.add(Attribute.deserialize(attributeMap));
                 }
             }
         }

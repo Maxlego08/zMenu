@@ -5,17 +5,16 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.ElapsedTime;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
+import fr.maxlego08.menu.zcore.utils.attribute.IAttribute;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -44,7 +43,7 @@ public class MenuItemStack extends ZUtils {
     private boolean isGlowing;
     private String modelID;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
-    private Map<Attribute, AttributeModifier> attributes = new HashMap<>();
+    private List<IAttribute> attributes = new ArrayList<>();
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
@@ -240,11 +239,12 @@ public class MenuItemStack extends ZUtils {
             }
         });
 
-        this.attributes.forEach(itemMeta::addAttributeModifier);
-
-        this.flags.forEach(itemMeta::addItemFlags);
+		this.flags.forEach(itemMeta::addItemFlags);
 
         itemStack.setItemMeta(itemMeta);
+
+        AttributeApplier attributeApplier = new AttributeApplier(attributes);
+        attributeApplier.apply(itemStack);
 
         if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
         return itemStack;
@@ -434,14 +434,14 @@ public class MenuItemStack extends ZUtils {
     /**
      * @return the attributes
      */
-    public Map<Attribute, AttributeModifier> getAttributes() {
+    public List<IAttribute> getAttributes() {
         return attributes;
     }
 
     /**
-     * @param attributes the attributes to set
+     * @param attributes the attributes to set.
      */
-    public void setAttributes(Map<Attribute, AttributeModifier> attributes) {
+    public void setAttributes(List<IAttribute> attributes) {
         this.attributes = attributes;
     }
 
