@@ -107,12 +107,10 @@ items:
       glow: true
       attributes:
         # attribute: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
-        # operation: 0 for ADD_NUMBER, 1 for ADD_SCALAR, 2 for MULTIPLY_SCALAR_1
         # slot: HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
         - attribute: GENERIC_ARMOR
           amount: 2.5
-          operation: 0
-          slot: HEAD
+          slot: HEAD # Optional
     # We now want the console to execute the command /say %player% is great !
     consoleCommands:
       - "say %player% is great"
