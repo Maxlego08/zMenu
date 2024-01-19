@@ -3,11 +3,9 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.Firework;
-import fr.maxlego08.menu.zcore.utils.LeatherArmor;
-import fr.maxlego08.menu.zcore.utils.Potion;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.*;
+import fr.maxlego08.menu.zcore.utils.attribute.Attribute;
+import fr.maxlego08.menu.zcore.utils.attribute.IAttribute;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -23,10 +21,7 @@ import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -150,8 +145,20 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         List<ItemFlag> flags = configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList());
 
+        List<IAttribute> attributeModifiers = new ArrayList<>();
+
+        if (configuration.contains(path + "attributes")) {
+            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList(path + "attributes");
+            if (attributesFromConfig != null) {
+                for (Map<String, Object> attributeMap : attributesFromConfig) {
+                    attributeModifiers.add(Attribute.deserialize(attributeMap));
+                }
+            }
+        }
+
         menuItemStack.setEnchantments(enchantments);
         menuItemStack.setFlags(flags);
+        menuItemStack.setAttributes(attributeModifiers);
 
         return menuItemStack;
     }
