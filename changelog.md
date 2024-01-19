@@ -30,6 +30,9 @@
 
 # Unreleased
 
+- Fixed the pattern display, they will now appear first and let the more important buttons pass over
+- Fixed MenuItemStack build method, add boolean for use cache or not
+
 # 1.0.2.2
 
 - Added open menu with item interaction [#29](https://github.com/Maxlego08/zMenu/pull/29) by EnzoShoes

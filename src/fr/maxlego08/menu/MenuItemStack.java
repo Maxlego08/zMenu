@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.ElapsedTime;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
@@ -115,11 +114,14 @@ public class MenuItemStack extends ZUtils {
         return inventoryManager;
     }
 
-    @SuppressWarnings("deprecation")
     public ItemStack build(Player player) {
+        return build(player, true);
+    }
+
+    public ItemStack build(Player player, boolean useCache) {
 
         // If we don’t need PlaceHolderApi, then we use the cache
-        if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack) {
+        if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack && useCache) {
             return this.cacheItemStack;
         }
 
