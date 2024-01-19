@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.attribute;
+package fr.maxlego08.menu.api.attribute;
 
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.NumberConversions;

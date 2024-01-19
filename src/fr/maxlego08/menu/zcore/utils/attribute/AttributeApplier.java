@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils.attribute;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBTCompoundList;
+import fr.maxlego08.menu.api.attribute.IAttribute;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;

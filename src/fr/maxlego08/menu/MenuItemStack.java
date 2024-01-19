@@ -10,7 +10,7 @@ import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
-import fr.maxlego08.menu.zcore.utils.attribute.IAttribute;
+import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
