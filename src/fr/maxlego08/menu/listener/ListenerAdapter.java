@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.listener;
 
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;

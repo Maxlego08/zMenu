@@ -11,12 +11,7 @@ import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.BackLoader;
-import fr.maxlego08.menu.button.loader.HomeLoader;
-import fr.maxlego08.menu.button.loader.MainMenuLoader;
-import fr.maxlego08.menu.button.loader.NextLoader;
-import fr.maxlego08.menu.button.loader.NoneLoader;
-import fr.maxlego08.menu.button.loader.PreviousLoader;
+import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
@@ -281,6 +276,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new NextLoader(this.plugin, this));
         buttonManager.register(new PreviousLoader(this.plugin, this));
         buttonManager.register(new MainMenuLoader(this.plugin, this));
+        buttonManager.register(new JumpLoader(this.plugin, this));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());
