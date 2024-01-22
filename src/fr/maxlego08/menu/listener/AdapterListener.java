@@ -2,8 +2,6 @@ package fr.maxlego08.menu.listener;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
