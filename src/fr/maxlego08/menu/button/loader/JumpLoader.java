@@ -10,8 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 public class JumpLoader implements ButtonLoader {
-    private Plugin plugin;
-    private InventoryManager inventoryManager;
+    private final Plugin plugin;
+    private final InventoryManager inventoryManager;
 
     public JumpLoader(Plugin plugin, InventoryManager inventoryManager) {
         this.plugin = plugin;
