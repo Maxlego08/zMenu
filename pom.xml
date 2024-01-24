@@ -132,6 +132,8 @@
             <version>1.20.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- hooks -->
         <dependency>
             <groupId>xyz.xenondevs.nova</groupId>
             <artifactId>nova-api</artifactId>

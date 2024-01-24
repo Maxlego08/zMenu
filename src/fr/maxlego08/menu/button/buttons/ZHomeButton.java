@@ -25,7 +25,7 @@ public class ZHomeButton extends ZBackButton implements HomeButton {
         }
 
         Inventory toInventory = this.inventory;
-        this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<Inventory>());
+        this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<>());
 
     }
 
@@ -33,7 +33,7 @@ public class ZHomeButton extends ZBackButton implements HomeButton {
     public void onInventoryOpen(Player player, InventoryDefault inventory) {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
-        if (oldInventories.size() >= 1) {
+        if (!oldInventories.isEmpty()) {
             this.inventory = oldInventories.get(0);
         }
 
