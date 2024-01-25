@@ -23,6 +23,7 @@ public class PapiUtils extends TranslationHelper {
      * @return string
      */
     public String papi(String placeHolder, Player player) {
+        if (player == null) return placeHolder;
         // If the text does not contain a placeholder, then nothing is done
         if (!placeHolder.contains("%")) return placeHolder;
         return this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
@@ -36,6 +37,7 @@ public class PapiUtils extends TranslationHelper {
      * @return placeholders
      */
     public List<String> papi(List<String> placeHolders, Player player) {
+        if (player == null) return placeHolders;
         return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
     }
 }
