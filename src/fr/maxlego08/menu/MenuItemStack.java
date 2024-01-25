@@ -5,11 +5,12 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.ElapsedTime;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
+import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -23,12 +24,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class MenuItemStack extends ZUtils {
 
@@ -47,6 +43,7 @@ public class MenuItemStack extends ZUtils {
     private boolean isGlowing;
     private String modelID;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
+    private List<IAttribute> attributes = new ArrayList<>();
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
@@ -115,11 +112,14 @@ public class MenuItemStack extends ZUtils {
         return inventoryManager;
     }
 
-    @SuppressWarnings("deprecation")
     public ItemStack build(Player player) {
+        return build(player, true);
+    }
+
+    public ItemStack build(Player player, boolean useCache) {
 
         // If we don’t need PlaceHolderApi, then we use the cache
-        if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack) {
+        if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack && useCache) {
             return this.cacheItemStack;
         }
 
@@ -242,9 +242,12 @@ public class MenuItemStack extends ZUtils {
             }
         });
 
-        this.flags.forEach(itemMeta::addItemFlags);
+		this.flags.forEach(itemMeta::addItemFlags);
 
         itemStack.setItemMeta(itemMeta);
+
+        AttributeApplier attributeApplier = new AttributeApplier(attributes);
+        attributeApplier.apply(itemStack);
 
         if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
         return itemStack;
@@ -429,6 +432,20 @@ public class MenuItemStack extends ZUtils {
      */
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
         this.enchantments = enchantments;
+    }
+
+    /**
+     * @return the attributes
+     */
+    public List<IAttribute> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attributes the attributes to set.
+     */
+    public void setAttributes(List<IAttribute> attributes) {
+        this.attributes = attributes;
     }
 
     /**

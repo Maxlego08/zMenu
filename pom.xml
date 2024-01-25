@@ -3,11 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.maxlego08</groupId>
     <artifactId>zmenu</artifactId>
-    <version>1.0.2.2</version>
+    <version>1.0.2.3</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <xseries.version>9.4.0</xseries.version>
+        <folialib.version>0.2.5</folialib.version>
+        <item-nbt-api.version>2.12.2</item-nbt-api.version>
     </properties>
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -68,6 +71,10 @@
                                     <pattern>com.tcoded.folialib</pattern>
                                     <shadedPattern>fr.maxlego08.menu.zcore.utils.folialib</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>de.tr7zw.changeme.nbtapi</pattern>
+                                    <shadedPattern>fr.maxlego08.menu.zcore.utils.nbtapi</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -76,6 +83,11 @@
         </plugins>
     </build>
     <repositories>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+            <layout>default</layout>
+        </repository>
         <repository>
             <id>xenondevs</id>
             <url>https://repo.xenondevs.xyz/releases</url>
@@ -120,6 +132,8 @@
             <version>1.20.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- hooks -->
         <dependency>
             <groupId>xyz.xenondevs.nova</groupId>
             <artifactId>nova-api</artifactId>
@@ -165,13 +179,18 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.4.0</version>
+            <version>${xseries.version}</version>
         </dependency>
         <dependency>
             <groupId>com.tcoded</groupId>
             <artifactId>FoliaLib</artifactId>
-            <version>0.2.5</version>
+            <version>${folialib.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api</artifactId>
+            <version>${item-nbt-api.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.oraxen</groupId>
