@@ -27,8 +27,11 @@
 - [ ] Add a tool to transform ItemStack to base64 and vice versa. This tool can be used to all my plugins.
 - [ ] Fix the bug about the `clearInventory: true`. It does not restore inventory when the menu is closed.
 - [ ] Add the support for the `http://textures.minecraft.net/texture/e34969c2684e4f62d5f87875460441a9f849d296c01e4c621636bb6acda696f7` in the URL of a custom head.
+- [ ] Update pom.xml for add {projet.version} in plugin.yml
 
 # Unreleased
+
+# 1.0.2.3
 
 - Fixed the pattern display, they will now appear first and let the more important buttons pass over
 - Fixed MenuItemStack build method, add boolean for use cache or not
