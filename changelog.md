@@ -33,6 +33,7 @@
 - Fixed the pattern display, they will now appear first and let the more important buttons pass over
 - Fixed MenuItemStack build method, add boolean for use cache or not
 - Fixed PAPI use if player is null
+- Create new button type: JUMP [#34](https://github.com/Maxlego08/zMenu/pull/34)
 
 # 1.0.2.2
 
