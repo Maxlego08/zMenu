@@ -31,6 +31,9 @@
 
 # Unreleased
 
+- Added replacement of , by . for  placeholders requirements. If your placeholder returns a number with a comma instead of a period, the plugin can handle that.
+- Fix Folia with VersionChecker
+
 # 1.0.2.3
 
 - Fixed the pattern display, they will now appear first and let the more important buttons pass over

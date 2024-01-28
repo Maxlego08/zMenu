@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.plugins;
 
+import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
@@ -7,8 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,7 +23,7 @@ public class VersionChecker implements Listener {
 
     private final String URL_API = "https://groupez.dev/api/v1/resource/version/%s";
     private final String URL_RESOURCE = "https://groupez.dev/resources/%s";
-    private final Plugin plugin;
+    private final MenuPlugin plugin;
     private final int pluginID;
     private boolean useLastVersion = false;
 
@@ -34,7 +33,7 @@ public class VersionChecker implements Listener {
      * @param plugin
      * @param pluginID
      */
-    public VersionChecker(Plugin plugin, int pluginID) {
+    public VersionChecker(MenuPlugin plugin, int pluginID) {
         super();
         this.plugin = plugin;
         this.pluginID = pluginID;
@@ -56,8 +55,7 @@ public class VersionChecker implements Listener {
             long plVersion = Long.parseLong(pluginVersion.replace(".", ""));
             atomicBoolean.set(plVersion >= ver);
             this.useLastVersion = atomicBoolean.get();
-            if (atomicBoolean.get())
-                Logger.info("No update available.");
+            if (atomicBoolean.get()) Logger.info("No update available.");
             else {
                 Logger.info("New update available. Your version: " + pluginVersion + ", latest version: " + version);
                 Logger.info("Download plugin here: " + String.format(URL_RESOURCE, this.pluginID));
@@ -70,15 +68,11 @@ public class VersionChecker implements Listener {
     public void onConnect(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (!useLastVersion && event.getPlayer().hasPermission("zplugin.notifs")) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    String prefix = Message.PREFIX.getMessage();
-                    player.sendMessage(prefix
-                            + "§cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
-                    player.sendMessage(prefix + "§fDownload plugin here: §a" + String.format(URL_RESOURCE, pluginID));
-                }
-            }.runTaskLater(plugin, 20 * 2);
+            plugin.getScheduler().runTaskLater(player.getLocation(), 20 * 2, () -> {
+                String prefix = Message.PREFIX.getMessage();
+                player.sendMessage(prefix + "§cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
+                player.sendMessage(prefix + "§fDownload plugin here: §a" + String.format(URL_RESOURCE, pluginID));
+            });
         }
     }
 
@@ -88,16 +82,14 @@ public class VersionChecker implements Listener {
      * @param consumer - Do something after
      */
     public void getVersion(Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        plugin.getScheduler().runTaskAsynchronously(() -> {
             final String apiURL = String.format(URL_API, this.pluginID);
             try {
                 URL url = new URL(apiURL);
                 URLConnection hc = url.openConnection();
-                hc.setRequestProperty("User-Agent",
-                        "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+                hc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
                 Scanner scanner = new Scanner(hc.getInputStream());
-                if (scanner.hasNext())
-                    consumer.accept(scanner.next());
+                if (scanner.hasNext()) consumer.accept(scanner.next());
                 scanner.close();
 
             } catch (IOException exception) {
@@ -105,5 +97,4 @@ public class VersionChecker implements Listener {
             }
         });
     }
-
 }
