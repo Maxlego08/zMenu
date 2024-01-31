@@ -11,7 +11,7 @@ public class Meta {
 
     static {
 
-        if (!Config.enableMiniMessageFormat || !NMSUtils.isHexColor()) {
+        if (!Config.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             meta = new ClassicMeta();
         } else {
             try {

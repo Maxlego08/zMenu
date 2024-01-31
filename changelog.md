@@ -28,11 +28,14 @@
 - [ ] Fix the bug about the `clearInventory: true`. It does not restore inventory when the menu is closed.
 - [ ] Add the support for the `http://textures.minecraft.net/texture/e34969c2684e4f62d5f87875460441a9f849d296c01e4c621636bb6acda696f7` in the URL of a custom head.
 - [ ] Update pom.xml for add {projet.version} in plugin.yml
+- [ ] Add matrix support for slot (like this: https://abstractmenus.github.io/docs/general/item_format.html#way-4-matrix)
+- [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 
 # Unreleased
 
 - Added replacement of , by . for  placeholders requirements. If your placeholder returns a number with a comma instead of a period, the plugin can handle that.
-- Fix Folia with VersionChecker
+- Fix Folia with VersionChecker [#35](https://github.com/Maxlego08/zMenu/issues/35)
+- Fix error with mini message format in 1.16
 
 # 1.0.2.3
 

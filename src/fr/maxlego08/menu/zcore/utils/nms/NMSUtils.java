@@ -26,7 +26,7 @@ public class NMSUtils {
      */
     public static boolean hasShulker() {
         return !isOneHand();
-    }    public static double version = getNMSVersion();
+    }
 
     /**
      * Check if minecraft version has barrel
@@ -37,7 +37,7 @@ public class NMSUtils {
         final double version = getNMSVersion();
         return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
                 || version == 1.12 || version == 1.13);
-    }
+    }    public static double version = getNMSVersion();
 
     /**
      * check if version is granther than 1.13
@@ -107,6 +107,16 @@ public class NMSUtils {
     }
 
     /**
+     * Allows to check if the version has the colors in hex
+     *
+     * @return boolean
+     */
+    public static boolean isComponentColor() {
+        return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11
+                || version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15 || version == 1.16);
+    }
+
+    /**
      * Check if server version is new version
      *
      * @return boolean
@@ -129,6 +139,7 @@ public class NMSUtils {
                 || version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15 || version == 1.16
                 || version == 1.17 || version == 1.18 || version == 1.19);
     }
+
 
 
 
