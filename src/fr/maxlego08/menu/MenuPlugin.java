@@ -164,6 +164,7 @@ public class MenuPlugin extends ZPlugin {
         this.addSave(this.commandManager);
         this.addSave(this.dataManager);
 
+        this.inventoryManager.registerMaterialLoader(new Base64Loader());
         if (this.isEnable(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
         }

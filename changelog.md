@@ -36,6 +36,8 @@
 - Added replacement of , by . for  placeholders requirements. If your placeholder returns a number with a comma instead of a period, the plugin can handle that.
 - Fix Folia with VersionChecker [#35](https://github.com/Maxlego08/zMenu/issues/35)
 - Fix error with mini message format in 1.16
+- Added base64 MaterialLoader. Allows to load itemstacks with all the data it can contain.
+- Change `/zm save <item name> <base64/yml>`, saves an element in YML or base64 format. The base64 format will save the itemStack with all its data.
 
 # 1.0.2.3
 

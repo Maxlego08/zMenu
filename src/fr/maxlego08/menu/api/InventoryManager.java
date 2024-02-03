@@ -345,8 +345,9 @@ public interface InventoryManager extends Savable, Listener {
      * @param sender    Command Sender
      * @param itemStack The itemStack
      * @param name      The item name
+     * @param type
      */
-    void saveItem(CommandSender sender, ItemStack itemStack, String name);
+    void saveItem(CommandSender sender, ItemStack itemStack, String name, String type);
 
     /**
      * Transforms a string list into a click list type.

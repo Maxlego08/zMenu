@@ -9,12 +9,15 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+
 public class CommandMenuSave extends VCommand {
 
     public CommandMenuSave(MenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("save");
         this.addRequireArg("item name");
+        this.addRequireArg("type", (a, b) -> Arrays.asList("yml", "base64"));
         this.setDescription(Message.DESCRIPTION_SAVE);
         this.setPermission(Permission.ZMENU_SAVE);
         this.setConsoleCanUse(false);
@@ -25,13 +28,15 @@ public class CommandMenuSave extends VCommand {
 
         InventoryManager inventoryManager = plugin.getInventoryManager();
         String name = this.argAsString(0);
+        String type = this.argAsString(1);
+
         ItemStack itemStack = this.player.getItemInHand();
         if (itemStack == null || itemStack.getType() == Material.AIR) {
             message(this.sender, Message.SAVE_ERROR_EMPTY);
             return CommandType.DEFAULT;
         }
 
-        inventoryManager.saveItem(sender, itemStack, name);
+        inventoryManager.saveItem(sender, itemStack, name, type);
 
         return CommandType.SUCCESS;
     }
