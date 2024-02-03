@@ -38,6 +38,8 @@
 - Fix error with mini message format in 1.16
 - Added base64 MaterialLoader. Allows to load itemstacks with all the data it can contain.
 - Change `/zm save <item name> <base64/yml>`, saves an element in YML or base64 format. The base64 format will save the itemStack with all its data.
+- Fix JUMP Button
+- Change `page` from JUMP Button to `toPage` 
 
 # 1.0.2.3
 

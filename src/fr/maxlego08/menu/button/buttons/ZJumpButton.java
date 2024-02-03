@@ -13,7 +13,7 @@ public class ZJumpButton extends ZNextButton {
     private final InventoryManager inventoryManager;
 
     /**
-     * @param page the real page(start from 0)
+     * @param page             the real page(start from 0)
      * @param inventoryManager the inventory manager
      */
     public ZJumpButton(InventoryManager inventoryManager, int page) {
@@ -32,6 +32,6 @@ public class ZJumpButton extends ZNextButton {
 
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory) {
-        return page >= 0 && page <= inventory.getMaxPage();
+        return this.page != inventory.getPage();
     }
 }
