@@ -33,6 +33,8 @@
 
 # Unreleased
 
+# 1.0.2.4
+
 - Added replacement of , by . for  placeholders requirements. If your placeholder returns a number with a comma instead of a period, the plugin can handle that.
 - Added base64 MaterialLoader. Allows to load ItemStack with all the data it can contain.
 - Added cooldown on button click. The default cooldown will be 350ms.
