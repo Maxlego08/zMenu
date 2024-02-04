@@ -10,11 +10,17 @@ import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.*;
+import fr.maxlego08.menu.button.loader.BackLoader;
+import fr.maxlego08.menu.button.loader.HomeLoader;
+import fr.maxlego08.menu.button.loader.JumpLoader;
+import fr.maxlego08.menu.button.loader.MainMenuLoader;
+import fr.maxlego08.menu.button.loader.NextLoader;
+import fr.maxlego08.menu.button.loader.NoneLoader;
+import fr.maxlego08.menu.button.loader.PreviousLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -46,6 +52,7 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
+import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -519,7 +526,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void saveItem(CommandSender sender, ItemStack itemStack, String name) {
+    public void saveItem(CommandSender sender, ItemStack itemStack, String name, String type) {
 
         File file = new File(this.plugin.getDataFolder(), "save_items.yml");
         if (!file.exists()) {
@@ -530,9 +537,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
         }
 
-        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("items.");
+        ConfigurationSection configurationSection = configuration.getConfigurationSection("items.");
         if (configurationSection != null) {
             Set<String> names = configurationSection.getKeys(false);
             if (names.contains(name)) {
@@ -543,9 +550,25 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         Loader<MenuItemStack> loader = new MenuItemStackLoader(this);
         MenuItemStack menuItemStack = MenuItemStack.fromItemStack(this, itemStack);
-        loader.save(menuItemStack, yamlConfiguration, "items." + name + ".", file);
+        if (type.equalsIgnoreCase("yml")) {
+            loader.save(menuItemStack, configuration, "items." + name + ".", file);
+        } else if (type.equalsIgnoreCase("base64")) {
+
+            String base64 = ItemStackUtils.serializeItemStack(itemStack);
+            configuration.set("items." + name + ".material", "base64:" + base64);
+            try {
+                configuration.save(file);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+
+        } else {
+            message(sender, Message.SAVE_ERROR_TYPE, "%name%", name);
+            return;
+        }
 
         message(sender, Message.SAVE_SUCCESS, "%name%", name);
+
     }
 
     @EventHandler

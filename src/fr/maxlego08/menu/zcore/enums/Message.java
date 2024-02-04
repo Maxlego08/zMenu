@@ -125,7 +125,9 @@ public enum Message {
 
 	SAVE_ERROR_EMPTY("§cYou must have an item in hand to save this item."),
 	SAVE_ERROR_NAME("§cThe name already exists for this item, please select another one."),
+	SAVE_ERROR_TYPE("§cCannot find save type."),
 	SAVE_SUCCESS("§aYou just saved the item §f%name%§a."),
+	CLICK_COOLDOWN(MessageType.ACTION, "§cPlease wait a little between two clicks."),
 
 	;
 

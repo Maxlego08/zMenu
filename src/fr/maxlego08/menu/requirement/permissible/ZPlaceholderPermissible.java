@@ -74,8 +74,8 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
 
             try {
 
-                double value = Double.parseDouble(valueAsString);
-                double currentValue = Double.parseDouble(resultAsString);
+                double value = Double.parseDouble(valueAsString.replace(",", "."));
+                double currentValue = Double.parseDouble(resultAsString.replace(",", "."));
 
                 switch (this.action) {
                     case EQUAL_TO:

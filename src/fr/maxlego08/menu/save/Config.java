@@ -71,6 +71,8 @@ public class Config implements Savable {
     public static List<ClickType> allClicksType = Arrays.asList(ClickType.MIDDLE, ClickType.RIGHT, ClickType.LEFT, ClickType.SHIFT_RIGHT, ClickType.SHIFT_LEFT);
     public static boolean enableCacheItemStack = true;
 
+    public static boolean enableCooldownClick = true;
+    public static long cooldownClickMilliseconds = 350;
 
     /**
      * static Singleton instance.

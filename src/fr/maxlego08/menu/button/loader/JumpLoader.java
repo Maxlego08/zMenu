@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.button.loader;
 
-import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
@@ -35,7 +34,7 @@ public class JumpLoader implements ButtonLoader {
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
-        int page = configuration.getInt(path + "page");
+        int page = configuration.getInt(path + "toPage");
         return new ZJumpButton(this.inventoryManager, page);
     }
 }
