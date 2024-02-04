@@ -4,6 +4,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.listener.ListenerAdapter;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -15,22 +16,23 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class VInventoryManager extends ListenerAdapter {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
     private final MenuPlugin plugin;
+    private Map<UUID, Long> cooldownClick = new HashMap<>();
 
-    /**
-     * @param plugin
-     */
+
     public VInventoryManager(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
@@ -38,7 +40,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     /**
      * Allows you to record an inventory If the inventory ID already exists then
-     * an exception will be throw
+     * an exception will be thrown
      *
      * @param enumInventory
      * @param inventory
@@ -130,6 +132,14 @@ public class VInventoryManager extends ListenerAdapter {
                 return;
             }
 
+            if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
+                message(player, Message.CLICK_COOLDOWN);
+                return;
+            }
+
+            this.cooldownClick.put(player.getUniqueId(),
+                    System.currentTimeMillis() + Config.cooldownClickMilliseconds);
+
             ItemButton button = inventory.getItems().getOrDefault(event.getSlot(), null);
             if (button != null) {
                 button.onClick(event);
@@ -181,7 +191,12 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            message(player, "§aLe serveur utilise §2zMenu v" + this.plugin.getDescription().getVersion());
+            plugin.getScheduler().runTaskLater(player.getLocation(), 20, () -> message(player, "§aLe serveur utilise §2zMenu v" + this.plugin.getDescription().getVersion()));
         }
+    }
+
+    @Override
+    protected void onQuit(PlayerQuitEvent event, Player player) {
+        this.cooldownClick.remove(player.getUniqueId());
     }
 }

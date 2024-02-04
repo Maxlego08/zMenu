@@ -43,88 +43,39 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return id;
     }
 
-    /**
-     * Inventory Id
-     *
-     * @param id
-     * @return
-     */
     public VInventory setId(int id) {
         this.id = id;
         return this;
     }
 
-    /**
-     * Allows you to create the spigot inventory object
-     *
-     * @param name
-     */
     protected void createInventory(String name) {
         createInventory(name, 54);
     }
 
-    /**
-     * Allows you to create the spigot inventory object
-     *
-     * @param name - Inventory name
-     * @param size - Inventory Size
-     */
     protected void createInventory(String name, int size) {
         this.guiName = name;
         this.inventory = Bukkit.createInventory(this, size, name);
     }
 
-    /**
-     * Allows you to create the spigot inventory object
-     *
-     * @param name - Inventory name
-     * @param size - Inventory Size
-     */
     protected void createMetaInventory(String name, int size) {
         this.guiName = name;
         this.inventory = Meta.meta.createInventory(name, size, this);
     }
 
-    /**
-     * Create default inventory with default size and name
-     */
     private void createDefaultInventory() {
         if (this.inventory == null) {
             this.inventory = Bukkit.createInventory(this, 54, "§cDefault Inventory");
         }
     }
 
-    /**
-     * Adding an item to the inventory
-     *
-     * @param slot     - Inventory slot
-     * @param material - ItemStack material
-     * @param name     - ItemStack name
-     * @return ItemButton
-     */
     public ItemButton addItem(int slot, Material material, String name) {
         return addItem(slot, new ItemBuilder(material, name).build());
     }
 
-    /**
-     * Adding an item to the inventory
-     *
-     * @param slot - Inventory slot
-     * @param item - ItemBuild
-     * @return ItemButton
-     */
     public ItemButton addItem(int slot, ItemBuilder item) {
         return addItem(slot, item.build());
     }
 
-    /**
-     * Adding an itemStack to the inventory
-     * Creates the default inventory if it does not exist
-     *
-     * @param slot      - Inventory slot
-     * @param itemStack - ItemStack
-     * @return ItemButton
-     */
     public ItemButton addItem(int slot, ItemStack itemStack) {
 
         createDefaultInventory();
@@ -145,85 +96,42 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return button;
     }
 
-    /**
-     * Allows you to remove an item from the list of items
-     *
-     * @param slot
-     */
     public void removeItem(int slot) {
         this.items.remove(slot);
     }
 
-    /**
-     * Allows you to delete all items
-     */
     public void clearItem() {
         this.items.clear();
     }
 
-    /**
-     * Allows you to retrieve all items
-     *
-     * @return
-     */
     public Map<Integer, ItemButton> getItems() {
         return items;
     }
 
-    /**
-     * If the click in the inventory is disabled (which is the default)
-     * then it will return true
-     *
-     * @return vrai ou faux
-     */
     public boolean isDisableClick() {
         return disableClick;
     }
 
-    /**
-     * Change the ability to click in the inventory
-     *
-     * @param disableClick
-     */
     public void setDisableClick(boolean disableClick) {
         this.disableClick = disableClick;
     }
 
-    /**
-     * Allows to recover the player
-     *
-     * @return player
-     */
     public Player getPlayer() {
         return player;
     }
 
-    /**
-     * Allows you to retrieve the page
-     *
-     * @return the page
-     */
     public int getPage() {
         return page;
     }
 
-    /**
-     * @return the args
-     */
     public Object[] getArgs() {
         return args;
     }
 
-    /**
-     * @return the inventory
-     */
     public Inventory getSpigotInventory() {
         return inventory;
     }
 
-    /**
-     * @return the guiName
-     */
     public String getGuiName() {
         return guiName;
     }
@@ -245,19 +153,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         this.onClose(event, plugin, player);
     }
 
-    /**
-     * @param event
-     * @param plugin
-     * @param player
-     */
+
     protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
     }
 
-    /**
-     * @param event
-     * @param plugin
-     * @param player
-     */
     protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
     }
 
