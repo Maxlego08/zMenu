@@ -30,7 +30,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
     private final MenuPlugin plugin;
-    private Map<UUID, Long> cooldownClick = new HashMap<>();
+    private final Map<UUID, Long> cooldownClick = new HashMap<>();
 
 
     public VInventoryManager(MenuPlugin plugin) {
