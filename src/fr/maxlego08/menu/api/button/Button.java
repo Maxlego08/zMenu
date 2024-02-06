@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -251,4 +252,8 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @return actions
      */
     List<Action> getActions();
+
+    void onDrag(InventoryDragEvent event, Player player, InventoryDefault inventoryDefault);
+
+    void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault);
 }

@@ -72,7 +72,7 @@ public class Config implements Savable {
     public static boolean enableCacheItemStack = true;
 
     public static boolean enableCooldownClick = true;
-    public static long cooldownClickMilliseconds = 350;
+    public static long cooldownClickMilliseconds = 100;
 
     /**
      * static Singleton instance.

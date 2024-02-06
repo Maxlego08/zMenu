@@ -129,8 +129,12 @@ public class VInventoryManager extends ListenerAdapter {
             event.setCancelled(inventory.isDisableClick());
 
             if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+                event.setCancelled(inventory.isDisablePlayerInventoryClick());
+                inventory.onInventoryClick(event, this.plugin, player);
                 return;
             }
+
+            inventory.onInventoryClick(event, this.plugin, player);
 
             if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
                 message(player, Message.CLICK_COOLDOWN);

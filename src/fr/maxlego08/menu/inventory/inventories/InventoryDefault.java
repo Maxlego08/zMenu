@@ -12,7 +12,9 @@ import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -88,6 +90,16 @@ public class InventoryDefault extends VInventory {
 
         this.inventory.closeInventory(player, this);
         this.buttons.forEach(button -> button.onInventoryClose(player, this));
+    }
+
+    @Override
+    protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
+        this.buttons.forEach(button -> button.onDrag(event, player, this));
+    }
+
+    @Override
+    public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
+        this.buttons.forEach(button -> button.onInventoryClick(event, player, this));
     }
 
     /**
