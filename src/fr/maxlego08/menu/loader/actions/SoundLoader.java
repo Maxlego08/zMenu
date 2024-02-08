@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.requirement.actions.BroadcastSoundAction;
 import fr.maxlego08.menu.requirement.actions.SoundAction;
 import fr.maxlego08.menu.sound.ZSoundOption;
 
@@ -23,6 +24,6 @@ public class SoundLoader implements ActionLoader {
         float pitch = accessor.getFloat("pitch", 1f);
         float volume = accessor.getFloat("volume", 1f);
         XSound xSound = sound == null || sound.isEmpty() ? null : XSound.matchXSound(sound).orElse(null);
-        return new SoundAction(new ZSoundOption(xSound, pitch, volume));
+        return new BroadcastSoundAction(new ZSoundOption(xSound, sound, volume, pitch, xSound == null));
     }
 }
