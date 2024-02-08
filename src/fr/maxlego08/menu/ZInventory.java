@@ -2,10 +2,10 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
@@ -13,6 +13,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -82,6 +83,7 @@ public class ZInventory implements Inventory {
     }
 
     @Override
+    @Deprecated
     public int getMaxPage(Player player, Object... objects) {
         Optional<Integer> optional = this.buttons.stream().map(Button::getSlot).max(Integer::compare);
         if (optional.isPresent()) {
@@ -92,8 +94,31 @@ public class ZInventory implements Inventory {
     }
 
     @Override
+    public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
+        List<Button> buttons = new ArrayList<>();
+        buttons.addAll(this.buttons);
+        buttons.addAll(patterns.stream().flatMap(pattern -> pattern.getButtons().stream()).collect(Collectors.toList()));
+
+        Optional<Integer> optional = buttons.stream().map(Button::getSlot).max(Integer::compare);
+        if (optional.isPresent()) {
+            int maxSlot = optional.get();
+            return (maxSlot / this.size) + 1;
+        }
+        return 1;
+    }
+
+    @Override
     public List<Button> sortButtons(int page, Object... objects) {
         return this.buttons.stream().filter(button -> {
+            int slot = button.getRealSlot(this.size, page);
+            return slot >= 0 && slot < this.size;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Button> sortPatterns(Pattern pattern, int page, Object... objects) {
+        if (!pattern.enableMultiPage()) return new ArrayList<>(pattern.getButtons());
+        return pattern.getButtons().stream().filter(button -> {
             int slot = button.getRealSlot(this.size, page);
             return slot >= 0 && slot < this.size;
         }).collect(Collectors.toList());
@@ -187,6 +212,10 @@ public class ZInventory implements Inventory {
         return this.openRequirement;
     }
 
+    public void setOpenRequirement(Requirement openRequirement) {
+        this.openRequirement = openRequirement;
+    }
+
     @Override
     public OpenWithItem getOpenWithItem() {
         return this.openWithItem;
@@ -194,10 +223,6 @@ public class ZInventory implements Inventory {
 
     public void setOpenWithItem(OpenWithItem openWithItem) {
         this.openWithItem = openWithItem;
-    }
-
-    public void setOpenRequirement(Requirement openRequirement) {
-        this.openRequirement = openRequirement;
     }
 
     public void setClearInventory(boolean clearInventory) {

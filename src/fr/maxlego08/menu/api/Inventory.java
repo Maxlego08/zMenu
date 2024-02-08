@@ -81,7 +81,18 @@ public interface Inventory {
      * @param objects Additional elements.
      * @return The maximum number of pages.
      */
+    @Deprecated
     int getMaxPage(Player player, Object... objects);
+
+    /**
+     * Returns the maximum number of pages for the inventory.
+     *
+     * @param patterns Pattern list
+     * @param player  The player for whom the page count is determined.
+     * @param objects Additional elements.
+     * @return The maximum number of pages.
+     */
+    int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects);
 
     /**
      * Sorts the buttons based on the current page and additional elements.
@@ -91,6 +102,16 @@ public interface Inventory {
      * @return A list of sorted buttons.
      */
     List<Button> sortButtons(int page, Object... objects);
+
+    /**
+     * Sorts the pattern buttons based on the current page and additional elements.
+     *
+     * @param pattern The pattern
+     * @param page    The current page.
+     * @param objects Additional elements.
+     * @return A list of sorted buttons.
+     */
+    List<Button> sortPatterns(Pattern pattern, int page, Object... objects);
 
     /**
      * Opens the inventory for a player and returns the result of the operation.

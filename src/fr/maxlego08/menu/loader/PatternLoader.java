@@ -3,13 +3,11 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
-import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.pattern.ZPattern;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.loader.ButtonLoader;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,6 +30,7 @@ public class PatternLoader implements Loader<Pattern> {
 
         File file = (File) objects[0];
         String name = configuration.getString("name");
+        boolean enableMultiPage = configuration.getBoolean("enableMultiPage", false);
 
         if (name == null) {
             Logger.info("name is null for pattern " + file.getAbsolutePath(), Logger.LogType.ERROR);
@@ -60,7 +59,7 @@ public class PatternLoader implements Loader<Pattern> {
             Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
         }
 
-        return new ZPattern(name, buttons, size);
+        return new ZPattern(name, buttons, size, enableMultiPage);
     }
 
     @Override

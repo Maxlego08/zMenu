@@ -52,13 +52,15 @@ public class InventoryDefault extends VInventory {
 
         this.oldInventories = (List<Inventory>) args[1];
 
-        this.maxPage = this.inventory.getMaxPage(player, args);
-
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
+        this.maxPage = this.inventory.getMaxPage(patterns, player, args);
+
         this.buttons = new ArrayList<>();
-        this.buttons.addAll(patterns.stream().flatMap(pattern -> pattern.getButtons().stream()).collect(Collectors.toList()));
+        this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).collect(Collectors.toList()));
         this.buttons.addAll(this.inventory.sortButtons(page, args));
+
+
         this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
