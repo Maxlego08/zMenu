@@ -24,7 +24,7 @@
 - [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
 - [ ] Add a way to display the list of online players in a button list
 - [ ] Add Citizen and [ZNPCsPlus](https://www.spigotmc.org/resources/znpcsplus.109380/) support to open an inventory by clicking on an NPC
-- [ ] Add a tool to transform ItemStack to base64 and vice versa. This tool can be used to all my plugins.
+- [x] Add a tool to transform ItemStack to base64 and vice versa. This tool can be used to all my plugins.
 - [ ] Fix the bug about the `clearInventory: true`. It does not restore inventory when the menu is closed.
 - [ ] Add the support for the `http://textures.minecraft.net/texture/e34969c2684e4f62d5f87875460441a9f849d296c01e4c621636bb6acda696f7` in the URL of a custom head.
 - [ ] Update pom.xml for add {projet.version} in plugin.yml

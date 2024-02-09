@@ -28,6 +28,11 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
+    public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
+        player.sendTitle(color(title), color(subtitle), (int) start, (int) duration, (int) end);
+    }
+
+    @Override
     public void sendMessage(CommandSender sender, String message) {
         sender.sendMessage(color(message));
     }
