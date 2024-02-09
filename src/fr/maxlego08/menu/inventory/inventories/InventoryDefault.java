@@ -198,7 +198,7 @@ public class InventoryDefault extends VInventory {
 
             if (button.isUpdated()) {
 
-                TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000L, (task, canRun) -> {
+                TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval(), (task, canRun) -> {
 
                     if (!canRun) {
                         return;

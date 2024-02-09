@@ -38,6 +38,7 @@
 - Patterns can now be on multiple pages
 - Add custom sound to SoundOption
 - Added ability to add arguments and select page for INVENTORY button [#45](https://github.com/Maxlego08/zMenu/issues/45)
+- Change update interval to milliseconds [#37](https://github.com/Maxlego08/zMenu/issues/37)
 
 # 1.0.2.4
 

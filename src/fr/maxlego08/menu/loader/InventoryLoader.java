@@ -121,7 +121,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
 
         inventory.setFillItemStack(itemStack);
-        inventory.setUpdateInterval(configuration.getInt(path + "updateInterval", 1));
+        inventory.setUpdateInterval(configuration.getInt(path + "updateInterval", 1000));
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
         inventory.setFile(file);
         inventory.setPatterns(patterns);
