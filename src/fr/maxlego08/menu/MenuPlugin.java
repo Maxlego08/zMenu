@@ -216,6 +216,11 @@ public class MenuPlugin extends ZPlugin {
             Logger.info("DupeManager: " + this.dupeManager);
         }
 
+        Logger.info("");
+        Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
+        Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
+        Logger.info("");
+
         this.postEnable();
     }
 
