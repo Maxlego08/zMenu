@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -16,19 +17,17 @@ import java.util.Optional;
 public class ZInventoryButton extends ZButton implements InventoryButton {
 
     private final InventoryManager inventoryManager;
-    private final CommandManager commandManager;
     private final String inventoryName;
     private final String pluginName;
-    private final List<String> arguments;
+    private final InventoryArgument inventoryArgument;
     private final int toPage;
 
     public ZInventoryButton(InventoryManager inventoryManager, CommandManager commandManager, String inventoryName, String pluginName, List<String> arguments, int toPage) {
         super();
         this.inventoryManager = inventoryManager;
-        this.commandManager = commandManager;
         this.inventoryName = inventoryName;
         this.pluginName = pluginName;
-        this.arguments = arguments;
+        this.inventoryArgument = new InventoryArgument(commandManager, arguments);
         this.toPage = toPage;
     }
 
@@ -39,12 +38,12 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
 
     @Override
     public List<String> getArguments() {
-        return null;
+        return this.inventoryArgument.getArguments();
     }
 
     @Override
     public int getToPage() {
-        return 0;
+        return this.toPage;
     }
 
     @Override
@@ -63,22 +62,7 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
             return;
         }
 
-        if (!this.arguments.isEmpty()) {
-
-            for (int i = 0; i < this.arguments.size(); i++) {
-                String name = String.valueOf(i - 4);
-                String argument = this.arguments.get(i);
-
-                if (argument.contains(":")) {
-                    String[] values = argument.split(":", 2);
-                    name = values[0];
-                    argument = values[1];
-                }
-
-                this.commandManager.setPlayerArgument(player, name, argument);
-            }
-
-        }
+        this.inventoryArgument.process(player);
 
         Inventory toInventory = optional.get();
         this.inventoryManager.openInventory(player, toInventory, this.toPage, oldInventories);

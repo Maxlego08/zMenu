@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -15,40 +16,23 @@ import java.util.Optional;
 public class InventoryAction extends Action {
 
     private final InventoryManager inventoryManager;
-    private final CommandManager commandManager;
     private final String inventory;
     private final String plugin;
     private final int page;
-    private final List<String> arguments;
+    private final InventoryArgument inventoryArgument;
 
     public InventoryAction(InventoryManager inventoryManager, CommandManager commandManager, String inventory, String plugin, int page, List<String> arguments) {
         this.inventoryManager = inventoryManager;
-        this.commandManager = commandManager;
         this.inventory = inventory;
         this.plugin = plugin;
         this.page = page;
-        this.arguments = arguments;
+        this.inventoryArgument = new InventoryArgument(commandManager, arguments);
     }
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory) {
 
-        if (!this.arguments.isEmpty()) {
-
-            for (int i = 0; i < this.arguments.size(); i++) {
-                String name = String.valueOf(i - 4);
-                String argument = this.arguments.get(i);
-
-                if (argument.contains(":")) {
-                    String[] values = argument.split(":", 2);
-                    name = values[0];
-                    argument = values[1];
-                }
-
-                this.commandManager.setPlayerArgument(player, name, argument);
-            }
-
-        }
+        this.inventoryArgument.process(player);
 
         Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.inventory);
         if (optional.isPresent()) {
