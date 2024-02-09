@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.InventoryAction;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class InventoryLoader implements ActionLoader {
@@ -27,6 +28,7 @@ public class InventoryLoader implements ActionLoader {
         String inventory = accessor.getString("inventory");
         String plugin = accessor.getString("plugin");
         int page = accessor.getInt("page", 1);
-        return new InventoryAction(this.plugin.getInventoryManager(), inventory, plugin, page);
+        List<String> arguments = accessor.getStringList("arguments");
+        return new InventoryAction(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), inventory, plugin, page, arguments);
     }
 }
