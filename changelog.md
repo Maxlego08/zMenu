@@ -37,6 +37,7 @@
 - Improved API, added many new methods to make API more permissive.
 - Patterns can now be on multiple pages
 - Add custom sound to SoundOption
+- Added ability to add arguments and select page for INVENTORY button [#45](https://github.com/Maxlego08/zMenu/issues/45)
 
 # 1.0.2.4
 

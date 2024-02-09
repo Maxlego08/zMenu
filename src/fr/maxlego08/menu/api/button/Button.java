@@ -253,7 +253,33 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      */
     List<Action> getActions();
 
+    /**
+     * Called when the player drags items within the inventory or from their player inventory into the zMenu inventory.
+     * This method allows for custom drag behavior to be implemented, providing flexibility in how items can be moved
+     * around within an inventory and how these actions interact with the overall functionality of the menu.
+     *
+     * Implementations can use this method to prevent unwanted item movements, to trigger specific actions when
+     * certain items are dragged to specific slots, or to manage the addition or removal of items in custom ways
+     * that align with the menu's logic and requirements.
+     *
+     * @param event            The inventory drag event that occurred, containing details about the drag action.
+     * @param player           The player who performed the drag action.
+     * @param inventoryDefault The zMenu inventory where the drag action occurred, providing context for the action
+     *                         and allowing for inventory-specific handling.
+     */
     void onDrag(InventoryDragEvent event, Player player, InventoryDefault inventoryDefault);
 
+    /**
+     * Called when the player clicks an item within the zMenu inventory. This method is a general handler for all
+     * inventory click events, offering a centralized way to manage interactions within the inventory. It can be used
+     * to implement custom click behavior on a global scale, regardless of the specific button or slot clicked.
+     *
+     * @param event            The inventory click event that occurred, including details such as the click type
+     *                         and the slot that was clicked.
+     * @param player           The player who performed the click action.
+     * @param inventoryDefault The zMenu inventory where the click action occurred, providing the context needed
+     *                         to appropriately respond to the interaction.
+     */
     void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault);
+
 }
