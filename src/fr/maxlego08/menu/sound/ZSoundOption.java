@@ -52,7 +52,7 @@ public class ZSoundOption implements SoundOption {
 
     @Override
     public void play(Entity entity) {
-        if (this.soundAsString != null){
+        if (this.soundAsString != null && this.isCustom()){
             Location location = entity.getLocation();
             location.getWorld().playSound(location, soundAsString, this.volume, this.pitch);
         }
