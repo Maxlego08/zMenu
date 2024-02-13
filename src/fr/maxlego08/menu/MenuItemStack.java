@@ -200,7 +200,7 @@ public class MenuItemStack extends ZUtils {
             return null;
         }
 
-        itemStack.setAmount(amount);
+        itemStack.setAmount(amount <= 0 ? 1 : amount);
 
         if (this.durability != 0) {
             itemStack.setDurability((short) this.durability);
