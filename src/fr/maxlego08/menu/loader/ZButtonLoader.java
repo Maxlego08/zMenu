@@ -139,12 +139,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         String sound = configuration.getString(path + "sound", null);
         Optional<XSound> optionalXSound = sound == null || sound.isEmpty() ? Optional.empty() : XSound.matchXSound(sound);
+        float pitch = Float.parseFloat(configuration.getString(path + "pitch", "1.0f"));
+        float volume = Float.parseFloat(configuration.getString(path + "volume", "1.0f"));
 
         if (optionalXSound.isPresent()) {
             XSound xSound = optionalXSound.get();
-            float pitch = Float.parseFloat(configuration.getString(path + "pitch", "1.0f"));
-            float volume = Float.parseFloat(configuration.getString(path + "volume", "1.0f"));
-            button.setSoundOption(new ZSoundOption(xSound, pitch, volume));
+            button.setSoundOption(new ZSoundOption(xSound, null, pitch, volume, false));
+        } else {
+            button.setSoundOption(new ZSoundOption(null, sound, pitch, volume, true));
         }
 
         Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader();

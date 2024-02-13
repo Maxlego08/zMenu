@@ -30,7 +30,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
     private final MenuPlugin plugin;
-    private Map<UUID, Long> cooldownClick = new HashMap<>();
+    private final Map<UUID, Long> cooldownClick = new HashMap<>();
 
 
     public VInventoryManager(MenuPlugin plugin) {
@@ -129,8 +129,12 @@ public class VInventoryManager extends ListenerAdapter {
             event.setCancelled(inventory.isDisableClick());
 
             if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+                event.setCancelled(inventory.isDisablePlayerInventoryClick());
+                inventory.onInventoryClick(event, this.plugin, player);
                 return;
             }
+
+            inventory.onInventoryClick(event, this.plugin, player);
 
             if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
                 message(player, Message.CLICK_COOLDOWN);

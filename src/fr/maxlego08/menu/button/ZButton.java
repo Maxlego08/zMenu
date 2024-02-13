@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -363,5 +364,15 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     public void setActions(List<Action> actions) {
         this.actions = actions;
+    }
+
+    @Override
+    public void onDrag(InventoryDragEvent event, Player player, InventoryDefault inventoryDefault) {
+
+    }
+
+    @Override
+    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault) {
+
     }
 }

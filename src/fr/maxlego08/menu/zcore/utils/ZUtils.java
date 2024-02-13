@@ -1132,7 +1132,7 @@ public abstract class ZUtils extends MessageUtils {
 
     public String getFileNameWithoutExtension(File file) {
         Pattern pattern = Pattern.compile("(?<=.)\\.[^.]+$");
-        return pattern.matcher(file.getName()).replaceAll("");
+        return pattern.matcher(file.getName()).replaceAll("").replace(" ", "_");
     }
 
 }

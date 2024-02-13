@@ -12,7 +12,9 @@ import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -50,13 +52,15 @@ public class InventoryDefault extends VInventory {
 
         this.oldInventories = (List<Inventory>) args[1];
 
-        this.maxPage = this.inventory.getMaxPage(player, args);
-
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
+        this.maxPage = this.inventory.getMaxPage(patterns, player, args);
+
         this.buttons = new ArrayList<>();
-        this.buttons.addAll(patterns.stream().flatMap(pattern -> pattern.getButtons().stream()).collect(Collectors.toList()));
+        this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).collect(Collectors.toList()));
         this.buttons.addAll(this.inventory.sortButtons(page, args));
+
+
         this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
@@ -88,6 +92,16 @@ public class InventoryDefault extends VInventory {
 
         this.inventory.closeInventory(player, this);
         this.buttons.forEach(button -> button.onInventoryClose(player, this));
+    }
+
+    @Override
+    protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
+        this.buttons.forEach(button -> button.onDrag(event, player, this));
+    }
+
+    @Override
+    public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
+        this.buttons.forEach(button -> button.onInventoryClick(event, player, this));
     }
 
     /**
@@ -184,7 +198,7 @@ public class InventoryDefault extends VInventory {
 
             if (button.isUpdated()) {
 
-                TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval() * 1000L, (task, canRun) -> {
+                TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval(), (task, canRun) -> {
 
                     if (!canRun) {
                         return;

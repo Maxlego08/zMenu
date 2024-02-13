@@ -11,6 +11,7 @@ import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,6 +32,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     protected Inventory inventory;
     protected String guiName;
     protected boolean disableClick = true;
+    protected boolean disablePlayerInventoryClick = true;
     protected boolean openAsync = false;
 
     private boolean isClose = false;
@@ -77,10 +79,14 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     }
 
     public ItemButton addItem(int slot, ItemStack itemStack) {
+        return addItem(slot, itemStack, true);
+    }
+
+    public ItemButton addItem(int slot, ItemStack itemStack, Boolean enableAntiDupe) {
 
         createDefaultInventory();
 
-        if (Config.enableAntiDupe) {
+        if (Config.enableAntiDupe && enableAntiDupe) {
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
 
@@ -180,5 +186,17 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     @Override
     public Inventory getInventory() {
         return this.inventory;
+    }
+
+    public boolean isDisablePlayerInventoryClick() {
+        return this.disablePlayerInventoryClick;
+    }
+
+    public void setDisablePlayerInventoryClick(boolean disablePlayerInventoryClick) {
+        this.disablePlayerInventoryClick = disablePlayerInventoryClick;
+    }
+
+    public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
+
     }
 }

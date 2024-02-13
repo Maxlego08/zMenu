@@ -9,7 +9,9 @@ public class RefreshAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory) {
+        System.out.println("Try refresh " + button);
         if (button != null) {
+            System.out.println("Build button in inventory " + inventory + " - " + button.getMasterParentButton());
             inventory.buildButton(button.getMasterParentButton());
         }
     }

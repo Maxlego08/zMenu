@@ -3,9 +3,11 @@ package fr.maxlego08.menu.button.buttons;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
+import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -17,22 +19,31 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
     private final InventoryManager inventoryManager;
     private final String inventoryName;
     private final String pluginName;
+    private final InventoryArgument inventoryArgument;
+    private final int toPage;
 
-    /**
-     * @param inventoryManager
-     * @param inventoryName
-     * @param pluginName
-     */
-    public ZInventoryButton(InventoryManager inventoryManager, String inventoryName, String pluginName) {
+    public ZInventoryButton(InventoryManager inventoryManager, CommandManager commandManager, String inventoryName, String pluginName, List<String> arguments, int toPage) {
         super();
         this.inventoryManager = inventoryManager;
         this.inventoryName = inventoryName;
         this.pluginName = pluginName;
+        this.inventoryArgument = new InventoryArgument(commandManager, arguments);
+        this.toPage = toPage;
     }
 
     @Override
     public String getInventory() {
         return this.inventoryName;
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return this.inventoryArgument.getArguments();
+    }
+
+    @Override
+    public int getToPage() {
+        return this.toPage;
     }
 
     @Override
@@ -51,8 +62,10 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
             return;
         }
 
+        this.inventoryArgument.process(player);
+
         Inventory toInventory = optional.get();
-        this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
+        this.inventoryManager.openInventory(player, toInventory, this.toPage, oldInventories);
     }
 
 }

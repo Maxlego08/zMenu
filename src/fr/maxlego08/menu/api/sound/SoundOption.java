@@ -28,4 +28,6 @@ public interface SoundOption {
      */
     void play(Entity entity);
 
+    boolean isCustom();
+
 }

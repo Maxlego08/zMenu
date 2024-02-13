@@ -40,6 +40,7 @@ public class CommandMenu extends VCommand {
 
     @Override
     protected CommandType perform(MenuPlugin plugin) {
+        this.sender.sendMessage("§fInventory Builder/Marketplace§8: §ahttps://minecraft-inventory-builder.com/");
         sendSyntax();
         return CommandType.SUCCESS;
     }
