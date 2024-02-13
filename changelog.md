@@ -34,6 +34,8 @@
 
 # Unreleased
 
+# 1.0.2.5
+
 - Add new lore as string support
 - Fix itemstack amount of 0
 - Support file with space
