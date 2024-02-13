@@ -2,10 +2,14 @@ package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.*;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.exceptions.ItemEnchantException;
+import fr.maxlego08.menu.zcore.utils.Banner;
+import fr.maxlego08.menu.zcore.utils.Firework;
+import fr.maxlego08.menu.zcore.utils.LeatherArmor;
+import fr.maxlego08.menu.zcore.utils.Potion;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -21,7 +25,11 @@ import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -106,7 +114,15 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         }
 
-        menuItemStack.setLore(configuration.getStringList(path + "lore"));
+        List<String> lore = configuration.getStringList(path + "lore");
+        if (lore.isEmpty()) {
+            Object object = configuration.get(path + "lore", null);
+            if (object instanceof String) {
+                String loreString = (String) object;
+                lore = Arrays.asList(loreString.split("\n"));
+            }
+        }
+        menuItemStack.setLore(lore);
         menuItemStack.setDisplayName(configuration.getString(path + "name", null));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
         menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", "0")))));

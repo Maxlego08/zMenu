@@ -34,6 +34,9 @@
 
 # Unreleased
 
+- Add new lore as string support
+- Fix itemstack amount of 0
+- Support file with space
 - Improved API, added many new methods to make API more permissive.
 - Patterns can now be on multiple pages
 - Add custom sound to SoundOption
