@@ -528,6 +528,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public void updateInventory(Player player, Plugin plugin) {
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder instanceof InventoryDefault) {
+            InventoryDefault inventoryDefault = (InventoryDefault) holder;
+            if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
+                this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+            }
+        }
+    }
+
+    @Override
     public void saveItem(CommandSender sender, ItemStack itemStack, String name, String type) {
 
         File file = new File(this.plugin.getDataFolder(), "save_items.yml");
