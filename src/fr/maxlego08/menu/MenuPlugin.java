@@ -192,6 +192,8 @@ public class MenuPlugin extends ZPlugin {
             return optional.orElse(null);
         });
 
+        localPlaceholder.register("test", (a,b) -> "&ctest");
+
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
         new Metrics(this, 14951);

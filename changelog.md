@@ -34,6 +34,10 @@
 
 # Unreleased
 
+- Add BlockPlaceEvent for Anti Dupe
+- Add placeholder %zmenu_test% for testing
+- Fix sound action, pitch and volume was reversed
+
 # 1.0.2.5
 
 - Add new lore as string support
