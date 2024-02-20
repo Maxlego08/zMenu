@@ -18,7 +18,13 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
-import fr.maxlego08.menu.loader.materials.*;
+import fr.maxlego08.menu.loader.materials.Base64Loader;
+import fr.maxlego08.menu.loader.materials.EcoLoader;
+import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
+import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
+import fr.maxlego08.menu.loader.materials.NovaLoader;
+import fr.maxlego08.menu.loader.materials.OraxenLoader;
+import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -65,7 +71,7 @@ public class MenuPlugin extends ZPlugin {
     private final CommandManager commandManager = new ZCommandManager(this);
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
-    private final WebsiteManager websiteManager = new ZWebsiteManager(this);
+    private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
     private CommandMenu commandMenu;
@@ -106,6 +112,8 @@ public class MenuPlugin extends ZPlugin {
         files.add("inventories/pro_inventory.yml");
         files.add("inventories/example_punish.yml");
 
+        // files.add("website/marketplace.yml");
+
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");
 
@@ -114,21 +122,19 @@ public class MenuPlugin extends ZPlugin {
 
         File folder = new File(this.getDataFolder(), "inventories");
 
-        if (!folder.exists()) {
-            folder.mkdirs();
+        if (!folder.exists()) folder.mkdirs();
 
-            if (Config.generateDefaultFile) {
-                files.forEach(filePath -> {
-                    if (!new File(this.getDataFolder(), filePath).exists()) {
+        if (Config.generateDefaultFile) {
+            files.forEach(filePath -> {
+                if (!new File(this.getDataFolder(), filePath).exists()) {
 
-                        if (NMSUtils.isNewVersion()) {
-                            saveResource(filePath.replace("inventories/", "inventories/1_13/"), filePath, false);
-                        } else {
-                            saveResource(filePath, false);
-                        }
+                    if (NMSUtils.isNewVersion()) {
+                        saveResource(filePath.replace("inventories/", "inventories/1_13/").replace("website/", "website/1_13/"), filePath, false);
+                    } else {
+                        saveResource(filePath, false);
                     }
-                });
-            }
+                }
+            });
         }
 
         this.zCommandManager = new VCommandManager(this);
@@ -192,7 +198,8 @@ public class MenuPlugin extends ZPlugin {
             return optional.orElse(null);
         });
 
-        localPlaceholder.register("test", (a,b) -> "&ctest");
+        this.websiteManager.registerPlaceholders();
+        localPlaceholder.register("test", (a, b) -> "&ctest");
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
@@ -213,7 +220,7 @@ public class MenuPlugin extends ZPlugin {
             this.addListener(new DupeListener(this.scheduler, this.dupeManager));
         }
 
-        if (Config.enableDebug){
+        if (Config.enableDebug) {
             Logger.info("Scheduler: " + this.scheduler);
             Logger.info("DupeManager: " + this.dupeManager);
         }
@@ -222,6 +229,7 @@ public class MenuPlugin extends ZPlugin {
         Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
         Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
         Logger.info("");
+
 
         this.postEnable();
     }
@@ -284,7 +292,7 @@ public class MenuPlugin extends ZPlugin {
      *
      * @return the websitemanager
      */
-    public WebsiteManager getWebsiteManager() {
+    public ZWebsiteManager getWebsiteManager() {
         return websiteManager;
     }
 

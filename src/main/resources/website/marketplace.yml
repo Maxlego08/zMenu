@@ -1,0 +1,22 @@
+name: "&8Marketplace"
+size: 54
+items:
+  informations:
+    slot: 49
+    item:
+      material: CHEST
+      name: '&fInformations'
+      lore:
+        - '&f◾️ &fResources&8: &a%zmenu_marketplace_resources%'
+        - ''
+        - '&f◾️ &fClick to open the marketplace'
+  resources:
+    type: ZMENU_MARKETPLACE_RESOURCES
+    item:
+      material: BOOK
+      name: '&f%resource_name%'
+      lore:
+        - '&7◾ &fAuthor&8: #b6c7e3%resource_author%'
+        - ''
+        - '&f◾️ &7Left click &fto access the resource'
+        - '&f◾️ &7Right click &fto download the resource'

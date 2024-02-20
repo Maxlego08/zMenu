@@ -1,0 +1,37 @@
+name: "&8Marketplace"
+size: 54
+items:
+  informations:
+    slot: 49
+    closeInventory: true
+    messages:
+      - '&7Open marketplace %link%'
+    openLink:
+      link: 'https://minecraft-inventory-builder.com/resources'
+      message: 'https://m.zmenu.dev/'
+      replace: '%link%'
+      hover:
+        - '&fClick here !'
+    item:
+      material: CHEST
+      name: '&fInformations'
+      lore:
+        - '&7• &fResources&8: &a%zmenu_marketplace_resources%'
+        - ''
+        - '&7• &fClick to open the marketplace'
+  resources:
+    type: ZMENU_MARKETPLACE_RESOURCES
+    item:
+      material: BOOK
+      name: '#94e6eb%resource_name%'
+      lore:
+        - ''
+        - '&7• &fAuthor&8: #b6c7e3%resource_author%'
+        - '&7• &fCategory&8: #b6c7e3%resource_category%'
+        - '&7• &fDownload&8: #b6c7e3%resource_download%'
+        - '&7• &fVersion&8: #b6c7e3%resource_version%'
+        - ''
+        - '&7• &fTag&8: #b6c7e3%resource_tag%'
+        - ''
+        - '&7• #e7aeebLeft click &fto access the resource'
+        - '&7• #e7aeebRight click &fto download the resource'

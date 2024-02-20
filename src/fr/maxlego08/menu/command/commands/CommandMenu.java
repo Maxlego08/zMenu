@@ -4,6 +4,10 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
+import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
+import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
+import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
+import fr.maxlego08.menu.command.commands.website.CommandMenuMarketplace;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
@@ -27,11 +31,12 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuSave(plugin));
         this.addSubCommand(new CommandMenuGiveOpenItem(plugin));
 
-		/* Disable website connexion for beta
-		this.addSubCommand(new CommandMenuDownload(plugin));
+		// Disable website connexion for beta
+		/*this.addSubCommand(new CommandMenuDownload(plugin));
 		this.addSubCommand(new CommandMenuLogin(plugin));
 		this.addSubCommand(new CommandMenuDisconnect(plugin));
-		 */
+		this.addSubCommand(new CommandMenuMarketplace(plugin));*/
+
 
         if (Bukkit.getPluginManager().getPlugin("zMenuConvert") == null) {
             this.addSubCommand(new CommandMenuConvert(plugin));

@@ -2,9 +2,8 @@ package fr.maxlego08.menu.website.request;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.save.Config;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -23,77 +22,69 @@ public class HttpRequest {
     private final JsonObject data;
     private String bearer;
 
-    /**
-     * @param url
-     * @param data
-     */
+    private String method = "POST";
+
     public HttpRequest(String url, JsonObject data) {
-        super();
         this.url = url;
         this.data = data;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 
     public void setBearer(String bearer) {
         this.bearer = bearer;
     }
 
-    public void submit(Plugin plugin, Consumer<Response> consumer) {
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-
+    public void submit(MenuPlugin plugin, Consumer<Response> consumer) {
+        plugin.getScheduler().runTaskAsynchronously(() -> {
             Map<String, Object> map = new HashMap<>();
-            HttpURLConnection connection = null;
+            HttpURLConnection connection;
             int responseCode = -1;
 
             try {
-
                 URL url = new URL(this.url);
                 connection = (HttpURLConnection) url.openConnection();
 
-                connection.setRequestMethod("POST");
+                connection.setRequestMethod(this.method);
                 connection.addRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("Content-Type", "application/json");
-                connection.setDoOutput(true);
 
                 if (this.bearer != null) {
-                    connection.setRequestProperty("Authorization", "Bearer " + bearer);
+                    connection.setRequestProperty("Authorization", "Bearer " + this.bearer);
                 }
 
-                DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+                if ("POST".equals(this.method) || "PUT".equals(this.method)) {
+                    connection.setDoOutput(true);
+                    try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
+                        String jsonInputString = this.data.toString();
+                        byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                        outputStream.write(input, 0, input.length);
+                    }
+                }
 
                 responseCode = connection.getResponseCode();
 
-                String jsonInputString = this.data.toString();
-                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-                outputStream.write(input, 0, input.length);
-                outputStream.flush();
-                outputStream.close();
-
-                InputStream inputStream = connection.getInputStream();
-
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-                StringBuilder builder = new StringBuilder();
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    builder.append(line);
+                try (InputStream inputStream = connection.getInputStream();
+                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    StringBuilder builder = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        builder.append(line);
+                    }
+                    Gson gson = new Gson();
+                    map = gson.fromJson(builder.toString(), Map.class);
                 }
-                bufferedReader.close();
 
-                Gson gson = new Gson();
-                map = gson.fromJson(builder.toString(), Map.class);
-
-            } catch (Exception e) {
+            } catch (Exception exception) {
                 if (Config.enableDebug) {
-                    e.printStackTrace();
+                    exception.printStackTrace();
                 }
-
             }
 
             Response response = new Response(responseCode, map);
             consumer.accept(response);
         });
-
     }
-
 }

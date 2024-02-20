@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ZInventory implements Inventory {
+public class ZInventory extends ZUtils implements Inventory {
 
     private final Plugin plugin;
     private final String name;
