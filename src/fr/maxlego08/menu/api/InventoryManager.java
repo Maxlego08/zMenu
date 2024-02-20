@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
@@ -392,4 +393,6 @@ public interface InventoryManager extends Savable, Listener {
      * @return A Collection of ItemStackSimilar instances representing all registered verification strategies.
      */
     Collection<ItemStackSimilar> getItemStackVerifications();
+
+    ZScheduler getScheduler();
 }

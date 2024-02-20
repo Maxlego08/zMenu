@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -630,5 +631,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Collection<ItemStackSimilar> getItemStackVerifications() {
         return this.itemStackSimilarMap.values();
+    }
+
+    @Override
+    public ZScheduler getScheduler() {
+        return this.plugin.getScheduler();
     }
 }
