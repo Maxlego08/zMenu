@@ -1,14 +1,17 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.placeholder.Placeholder;
+import fr.maxlego08.menu.save.Config;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class PapiUtils extends TranslationHelper {
 
     private static volatile Placeholder placeholder;
+    private final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     private Placeholder use() {
         if (placeholder == null) {
@@ -17,28 +20,41 @@ public class PapiUtils extends TranslationHelper {
         return placeholder;
     }
 
-    /**
-     * @param placeHolder string
-     * @param player      The player
-     * @return string
-     */
     public String papi(String placeHolder, Player player) {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
-        // If the text does not contain a placeholder, then nothing is done
         if (!placeHolder.contains("%")) return placeHolder;
-        return this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
+
+        String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
+        CacheEntry cachedResult = cache.get(cacheKey);
+
+        if (cachedResult != null && cachedResult.isValid()) {
+            return cachedResult.value;
+        }
+
+        String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
+
+        cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
+        return result;
     }
 
-    /**
-     * Transforms a list into a list with placeholder API
-     *
-     * @param placeHolders list of string
-     * @param player       The player
-     * @return placeholders
-     */
     public List<String> papi(List<String> placeHolders, Player player) {
         if (player == null) return placeHolders;
         return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
+    }
+
+    private static class CacheEntry {
+        String value;
+        long timeStamp; // Time when the cache entry was created
+
+        public CacheEntry(String value, long timeStamp) {
+            this.value = value;
+            this.timeStamp = timeStamp;
+        }
+
+        public boolean isValid() {
+            // Check if the cache entry is still valid (not older than 1000 milliseconds)
+            return System.currentTimeMillis() - timeStamp < Config.cachePlaceholderAPI;
+        }
     }
 }

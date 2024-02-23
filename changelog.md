@@ -38,6 +38,7 @@
 - Add placeholder %zmenu_test% for testing
 - Fix sound action, pitch and volume was reversed
 - Add ``job`` requirement. Check if the player has a job with JobsReborn plugins
+- Added a cache on placeholders. By default, the cache is 500ms. That corresponds to opening a menu. So if you have several times the same placeholder used, it will only be called once.
 
 # 1.0.2.5
 

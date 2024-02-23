@@ -156,10 +156,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     public void loadInventories(InventoryManager inventoryManager) {
-        try {
+        /*try {
             inventoryManager.loadInventory(this.plugin, "website/marketplace.yml", InventoryMarketplace.class);
         } catch (InventoryException exception) {
             exception.printStackTrace();
-        }
+        }*/
     }
 }
