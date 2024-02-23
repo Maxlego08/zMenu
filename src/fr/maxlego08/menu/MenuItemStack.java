@@ -1,7 +1,9 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.Banner;
@@ -10,7 +12,6 @@ import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
-import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -24,7 +25,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class MenuItemStack extends ZUtils {
 
@@ -117,6 +123,10 @@ public class MenuItemStack extends ZUtils {
     }
 
     public ItemStack build(Player player, boolean useCache) {
+        return build(player, useCache, new Placeholders());
+    }
+
+    public ItemStack build(Player player, boolean useCache, Placeholders placeholders) {
 
         // If we don’t need PlaceHolderApi, then we use the cache
         if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack && useCache) {
@@ -211,7 +221,7 @@ public class MenuItemStack extends ZUtils {
 
         if (this.displayName != null) {
             try {
-                Meta.meta.updateDisplayName(itemMeta, this.displayName, player);
+                Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), player);
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -219,7 +229,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (!this.lore.isEmpty()) {
-            Meta.meta.updateLore(itemMeta, this.lore, player);
+            Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), player);
         }
 
         if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
@@ -242,7 +252,7 @@ public class MenuItemStack extends ZUtils {
             }
         });
 
-		this.flags.forEach(itemMeta::addItemFlags);
+        this.flags.forEach(itemMeta::addItemFlags);
 
         itemStack.setItemMeta(itemMeta);
 

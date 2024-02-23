@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.website;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * ToDO
@@ -23,4 +24,5 @@ public interface WebsiteManager {
      */
     void disconnect(CommandSender sender);
 
+    void openMarketplace(Player player);
 }

@@ -62,6 +62,7 @@ public enum Message {
 	DESCRIPTION_OPEN_ITEM("Give open item"),
 	DESCRIPTION_DOWNLOAD("WIP"),
 	DESCRIPTION_LOGIN("WIP"),
+	DESCRIPTION_MARKETPLACE("Open marketplace inventory"),
 	DESCRIPTION_DISCONNECT("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
@@ -109,6 +110,8 @@ public enum Message {
 	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again."),
 	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
 	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
+	WEBSITE_NOT_CONNECT("§cYou need to log into the site before you can do that."),
+	WEBSITE_MARKETPLACE_WAIT("§7Download resources, please wait before opening inventory."),
 	
 	WEBSITE_DISCONNECT_SUCCESS("§cYou have just deleted the link to the site."), 
 	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."), 

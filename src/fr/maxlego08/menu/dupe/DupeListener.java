@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -39,6 +40,23 @@ public class DupeListener implements Listener {
         if (this.dupeManager.isDupeItem(itemStack)) {
             item.remove();
             sendInformation(new DupeItem(itemStack, event.getPlayer()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDrop(BlockPlaceEvent event) {
+
+        if (event.isCancelled()) return;
+
+        try {
+            ItemStack itemStack = event.getItemInHand();
+            if (this.dupeManager.isDupeItem(itemStack)) {
+                event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
+                event.setCancelled(true);
+                sendInformation(new DupeItem(itemStack, event.getPlayer()));
+            }
+        } catch (Exception ignored) {
+
         }
     }
 

@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -42,6 +43,7 @@ import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
@@ -54,6 +56,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -255,6 +258,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new PermissionPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new ItemPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
+        if (this.plugin.isEnable(Plugins.JOBS)) {
+            buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
+        }
 
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());
@@ -296,6 +302,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager);
         event.call();
+
+        plugin.getWebsiteManager().loadButtons(buttonManager);
     }
 
     @Override
@@ -334,6 +342,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         }
+
+        this.plugin.getWebsiteManager().loadInventories(this);
     }
 
     @Override
@@ -528,6 +538,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public void updateInventory(Player player, Plugin plugin) {
+        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        if (holder instanceof InventoryDefault) {
+            InventoryDefault inventoryDefault = (InventoryDefault) holder;
+            if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
+                this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+            }
+        }
+    }
+
+    @Override
     public void saveItem(CommandSender sender, ItemStack itemStack, String name, String type) {
 
         File file = new File(this.plugin.getDataFolder(), "save_items.yml");
@@ -619,5 +640,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Collection<ItemStackSimilar> getItemStackVerifications() {
         return this.itemStackSimilarMap.values();
+    }
+
+    @Override
+    public ZScheduler getScheduler() {
+        return this.plugin.getScheduler();
     }
 }

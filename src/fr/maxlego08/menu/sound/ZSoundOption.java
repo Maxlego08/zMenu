@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 public class ZSoundOption implements SoundOption {
 
@@ -21,7 +22,6 @@ public class ZSoundOption implements SoundOption {
         this.volume = volume;
         this.isCustom = isCustom;
     }
-
 
 
     /**
@@ -52,10 +52,14 @@ public class ZSoundOption implements SoundOption {
 
     @Override
     public void play(Entity entity) {
-        if (this.soundAsString != null && this.isCustom()){
+
+        if (this.soundAsString != null && this.isCustom()) {
             Location location = entity.getLocation();
-            location.getWorld().playSound(location, soundAsString, this.volume, this.pitch);
+            if (entity instanceof Player) {
+                ((Player) entity).playSound(location, soundAsString, this.volume, this.pitch);
+            } else location.getWorld().playSound(location, soundAsString, this.volume, this.pitch);
         }
+
         if (this.sound != null) {
             this.sound.play(entity, this.volume, this.pitch);
         }

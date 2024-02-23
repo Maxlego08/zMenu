@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
@@ -340,6 +341,14 @@ public interface InventoryManager extends Savable, Listener {
     void updateInventory(Player player);
 
     /**
+     * Opens the player’s current inventory again if the plugin is the same.
+     *
+     * @param player The player.
+     * @param plugin The plugin.
+     */
+    void updateInventory(Player player, Plugin plugin);
+
+    /**
      * Save item in config file
      *
      * @param sender    Command Sender
@@ -384,4 +393,6 @@ public interface InventoryManager extends Savable, Listener {
      * @return A Collection of ItemStackSimilar instances representing all registered verification strategies.
      */
     Collection<ItemStackSimilar> getItemStackVerifications();
+
+    ZScheduler getScheduler();
 }
