@@ -13,7 +13,9 @@ public enum Plugins {
 	ITEMSADDER("ItemsAdder"),
 	SLIMEFUN("Slimefun"),
 	NOVA("Nova"),
-	ECO("eco")
+	ECO("eco"),
+
+	JOBS("Jobs"),
 	;
 
 	private final String name;

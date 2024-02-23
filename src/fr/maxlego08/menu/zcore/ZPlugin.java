@@ -220,7 +220,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param pluginName Plugin name
      * @return true is its enable
      */
-    protected boolean isEnable(Plugins pluginName) {
+    public boolean isEnable(Plugins pluginName) {
         Plugin plugin = getPlugin(pluginName);
         return plugin != null && plugin.isEnabled();
     }

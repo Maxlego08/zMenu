@@ -37,6 +37,7 @@
 - Add BlockPlaceEvent for Anti Dupe
 - Add placeholder %zmenu_test% for testing
 - Fix sound action, pitch and volume was reversed
+- Add ``job`` requirement. Check if the player has a job with JobsReborn plugins
 
 # 1.0.2.5
 

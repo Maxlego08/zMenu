@@ -43,6 +43,7 @@ import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
@@ -55,6 +56,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -256,6 +258,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new PermissionPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new ItemPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
+        if (this.plugin.isEnable(Plugins.JOBS)) {
+            buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
+        }
 
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());

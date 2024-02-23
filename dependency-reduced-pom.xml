@@ -210,6 +210,13 @@
       <version>2.19.0</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.Zrips</groupId>
+      <artifactId>Jobs</artifactId>
+      <version>5.2.2.3</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/libs/Jobs5.2.2.3.jar</systemPath>
+    </dependency>
   </dependencies>
   <properties>
     <xseries.version>9.4.0</xseries.version>
