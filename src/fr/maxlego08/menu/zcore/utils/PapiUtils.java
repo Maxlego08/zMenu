@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class PapiUtils extends TranslationHelper {
 
     private static volatile Placeholder placeholder;
-    private final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
+    private transient final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     private Placeholder use() {
         if (placeholder == null) {
