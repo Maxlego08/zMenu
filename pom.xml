@@ -16,11 +16,18 @@
         <sourceDirectory>src</sourceDirectory>
         <resources>
             <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
                 <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
                 <includes>
                     <include>*.yml</include>
+                    <include>readme.txt</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
                 </includes>
             </resource>
         </resources>
