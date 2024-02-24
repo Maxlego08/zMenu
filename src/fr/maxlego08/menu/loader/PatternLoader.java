@@ -8,6 +8,7 @@ import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.pattern.ZPattern;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,8 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class PatternLoader implements Loader<Pattern> {
+public class PatternLoader extends ZUtils implements Loader<Pattern> {
 
     private final MenuPlugin plugin;
 
@@ -47,7 +49,9 @@ public class PatternLoader implements Loader<Pattern> {
                     "Impossible to find the list of buttons for the " + file.getAbsolutePath() + " pattern !");
         }
 
-        Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);
+        Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
+
+        Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
         List<Button> buttons = new ArrayList<>();
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
@@ -64,7 +68,6 @@ public class PatternLoader implements Loader<Pattern> {
 
     @Override
     public void save(Pattern object, YamlConfiguration configuration, String path, File file, Object... objects) {
-        ZButtonLoader loader = new ZButtonLoader(this.plugin, file, object.getInventorySize());
 
         configuration.set("name", object.getName());
         configuration.set("size", object.getInventorySize());

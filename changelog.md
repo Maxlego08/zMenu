@@ -36,6 +36,7 @@
 
 - Fix MenuItemStack loader with placeholder check
 - Fix CONTAINS_STRING action for placeholder
+- Add matrix support for button slots
 
 # 1.0.2.6
 

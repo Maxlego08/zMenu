@@ -44,12 +44,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     private final MenuPlugin plugin;
     private final File file;
     private final int inventorySize;
+    private final Map<Character, List<Integer>> matrix;
 
-    public ZButtonLoader(MenuPlugin plugin, File file, int inventorySize) {
+    public ZButtonLoader(MenuPlugin plugin, File file, int inventorySize, Map<Character, List<Integer>> matrix) {
         super();
         this.plugin = plugin;
         this.file = file;
         this.inventorySize = inventorySize;
+        this.matrix = matrix;
     }
 
     @Override
@@ -102,6 +104,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> slotsAsString = configuration.getStringList(path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
         if (slots.isEmpty()) slots = defaultButtonValue.getSlots();
+
+        char currentChar = buttonName.charAt(0);
+        if (this.matrix.containsKey(currentChar)) {
+            slots = this.matrix.get(currentChar);
+            if (slots.size() == 1) {
+                slot = slots.get(0);
+                slots = new ArrayList<>();
+            }
+        }
 
         button.setSlots(slots);
         button.setSlot(slot);
@@ -186,9 +197,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader(this.plugin.getButtonManager());
-        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(map -> {
-            return (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
-        }).filter(permissible -> {
+        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(map -> (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file)).filter(permissible -> {
             if (!permissible.isValid()) {
                 Logger.info("A placeholder is invalid in the placeholder list of the button " + path + " in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
                 return false;

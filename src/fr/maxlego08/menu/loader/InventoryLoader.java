@@ -9,9 +9,9 @@ import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
@@ -24,7 +24,9 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -49,13 +51,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
         }
 
-        /*if (!configuration.contains("items") || !configuration.isConfigurationSection("items.")) {
-            throw new InventoryButtonException(
-                    "Impossible to find the list of buttons for the " + file.getAbsolutePath() + " inventory!");
-        }*/
+        Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
 
         List<Button> buttons = new ArrayList<>();
-        Loader<Button> loader = new ZButtonLoader(this.plugin, file, size);
+        Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
 
         Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
         MenuItemStack itemStack = null;
@@ -138,7 +137,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
     @Override
     public void save(Inventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
-        ZButtonLoader buttonLoader = new ZButtonLoader(this.plugin, file, object.size());
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", object.getName());
@@ -150,5 +148,4 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         //TODO: FINISH THE SAVE METHOD
     }
-
 }
