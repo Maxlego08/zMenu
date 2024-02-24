@@ -36,6 +36,18 @@ size: 18
 #
 name: "&7Basics Menu"
 
+# Matrix https://docs.zmenu.dev/configurations/inventories#matrix
+#
+# This method enhances clarity and design efficiency, as each character in the matrix corresponds to an item defined under the items section, allowing for easy customization of inventory layouts.
+# The use of a matrix simplifies the creation of complex inventory designs by visually mapping out item placements.
+#matrix:
+#  - "AAAAAAAAA"
+#  - "A       A"
+#  - "A       A"
+#  - "A       A"
+#  - "A       A"
+#  - "AAAAAAAAA"
+
 # Item section. (https://docs.zmenu.dev/configurations/inventories#items)
 #
 # This is where you will add all the items that will be present in your inventory.
