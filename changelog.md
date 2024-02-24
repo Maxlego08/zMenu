@@ -36,7 +36,7 @@
 
 - Fix MenuItemStack loader with placeholder check
 - Fix CONTAINS_STRING action for placeholder
-- Add matrix support for button slots
+- Add matrix support for button slots [#39](https://github.com/Maxlego08/zMenu/issues/39)
 
 # 1.0.2.6
 
