@@ -35,6 +35,7 @@
 # Unreleased
 
 - Fix MenuItemStack loader with placeholder check
+- Fix CONTAINS_STRING action for placeholder
 
 # 1.0.2.6
 

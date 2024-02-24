@@ -59,7 +59,7 @@ public enum PlaceholderAction {
      * @return boolean
      */
     public boolean isString() {
-        return this == EQUALS_STRING || this == EQUALSIGNORECASE_STRING;
+        return this == EQUALS_STRING || this == EQUALSIGNORECASE_STRING || this == CONTAINS_STRING;
     }
 
 }
