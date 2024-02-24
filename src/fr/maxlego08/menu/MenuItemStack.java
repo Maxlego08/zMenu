@@ -275,7 +275,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setMaterial(String material) {
         this.material = material;
-        this.updatePlaceholder(amount);
+        this.updatePlaceholder(material);
     }
 
     /**

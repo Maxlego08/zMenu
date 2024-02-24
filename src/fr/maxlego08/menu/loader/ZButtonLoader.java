@@ -129,6 +129,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
         button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", defaultButtonValue.isRefreshOnClick()));
+        button.setUseCache(configuration.getBoolean(path + "useCache", defaultButtonValue.isUseCache()));
 
         if (configuration.contains(path + "openLink")) {
 
@@ -173,6 +174,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             elseDefaultButtonValue.setSlots(slots);
             elseDefaultButtonValue.setPage(page);
             elseDefaultButtonValue.setPermanent(button.isPermanent());
+            elseDefaultButtonValue.setUseCache(button.isUseCache());
 
             Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
             button.setElseButton(elseButton);

@@ -34,6 +34,8 @@
 
 # Unreleased
 
+- Fix MenuItemStack loader with placeholder check
+
 # 1.0.2.6
 
 - Add BlockPlaceEvent for Anti Dupe

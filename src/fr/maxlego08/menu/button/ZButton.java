@@ -34,6 +34,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private int slot = 0;
     private boolean isPermanent = false;
     private boolean closeInventory = false;
+    private boolean useCache = true;
     private List<String> messages = new ArrayList<String>();
     private SoundOption soundOption;
     private String playerHead;
@@ -69,7 +70,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     public ItemStack getCustomItemStack(Player player) {
         if (this.itemStack == null) return null;
 
-        ItemStack itemStack = this.itemStack.build(player);
+        ItemStack itemStack = this.itemStack.build(player, this.useCache);
 
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
@@ -374,5 +375,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @Override
     public void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault) {
 
+    }
+
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
+    }
+
+    @Override
+    public boolean isUseCache() {
+        return this.useCache;
     }
 }

@@ -282,4 +282,6 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      */
     void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault);
 
+    boolean isUseCache();
+
 }
