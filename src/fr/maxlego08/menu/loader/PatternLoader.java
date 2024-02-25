@@ -50,6 +50,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
         }
 
         Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
+        if (!matrix.isEmpty()) size = getInventorySizeByMatrix(configuration.getStringList("matrix"));
 
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
         List<Button> buttons = new ArrayList<>();

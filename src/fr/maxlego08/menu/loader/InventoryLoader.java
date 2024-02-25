@@ -52,6 +52,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
 
         Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
+        if (!matrix.isEmpty()) size = getInventorySizeByMatrix(configuration.getStringList("matrix"));
 
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);

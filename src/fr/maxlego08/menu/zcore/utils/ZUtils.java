@@ -88,6 +88,10 @@ public abstract class ZUtils extends MessageUtils {
         }
     }
 
+    protected int getInventorySizeByMatrix(List<String> matrix) {
+        return Math.min(matrix.size() * 9, 54);
+    }
+
     protected Map<Character, List<Integer>> generateMatrix(List<String> matrix) {
         Map<Character, List<Integer>> charMap = new HashMap<>();
 
