@@ -96,14 +96,14 @@ public abstract class ZUtils extends MessageUtils {
             return new HashMap<>();
         }
         for (String line : matrix) {
-            if (line.length() != 9) {
+            if (line.length() > 9) {
                 Logger.info("Each line of the matrix must have exactly 9 characters.", Logger.LogType.ERROR);
                 return new HashMap<>();
             }
         }
 
         for (int i = 0; i < matrix.size(); i++) {
-            for (int j = 0; j < matrix.get(i).length(); j++) {
+            for (int j = 0; j < Math.min(matrix.get(i).length(), 9); j++) {
                 char c = matrix.get(i).charAt(j);
                 if (c != ' ') {
                     int slot = i * 9 + j;
