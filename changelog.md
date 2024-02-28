@@ -34,6 +34,7 @@
 
 # Unreleased
 
+- Fix error with InventoryPlayer
 - Fix NmsVersion with 1.8 and 1.9
 - Fix anti-dupe for old version
 - Fix MenuItemStack loader with placeholder check
