@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 public enum NmsVersion {
 
-    V_1_8_8(1880),
-    V_1_9(1900),
+    V_1_8_8(188),
+    V_1_9(190),
     V_1_10(1100),
     V_1_11(1110),
     V_1_12(1120),
