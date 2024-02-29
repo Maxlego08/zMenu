@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -395,4 +397,12 @@ public interface InventoryManager extends Savable, Listener {
     Collection<ItemStackSimilar> getItemStackVerifications();
 
     ZScheduler getScheduler();
+
+    void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption);
+
+    void unregisterOptions(Plugin plugin);
+
+    Map<Plugin, List<Class<? extends ButtonOption>>> getOptions();
+
+    Optional<Class<? extends ButtonOption>> getOption(String name);
 }

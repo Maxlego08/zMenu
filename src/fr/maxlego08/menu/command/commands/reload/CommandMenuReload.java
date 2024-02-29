@@ -31,10 +31,10 @@ public class CommandMenuReload extends VCommand {
 
         plugin.getVInventoryManager().close();
 
+        plugin.getPatternManager().loadPatterns();
+
         inventoryManager.deleteInventories(plugin);
         inventoryManager.loadInventories();
-
-        plugin.getPatternManager().loadPatterns();
 
         CommandManager commandManager = plugin.getCommandManager();
         commandManager.loadCommands();

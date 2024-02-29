@@ -3,7 +3,7 @@
 - [x] Add anti dupe system with NMS Tag
 - [x] Add the BACK action, to return to the previous inventory when clicking   
 - [x] Add the ability to perform actions when clicking
-- [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
+- [ ] Improve the firework system to put more buttonOption. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 - [ ] Add an order to display the list of official addons.
 - [ ] Add a ``/zm help`` command to send to documentation.
@@ -34,6 +34,8 @@
 
 # Unreleased
 
+- Fix reload command with pattern. The pattern were reload after the inventories 
+- Add /zm editor, at the moment this command redirects to the online editor
 - Fix error with InventoryPlayer
 - Fix NmsVersion with 1.8 and 1.9
 - Fix anti-dupe for old version
@@ -291,7 +293,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Add method getCurrentPlayerInventory in InventoryManager
 - Add method buildDisplayName in Button
 - Add method buildLore in Button
-- Add updateOnClick option, update button if player click on another button
+- Add updateOnClick buttonOption, update button if player click on another button
 - Add button listener method in InventoryManager 
 - Add check for new messages value saving
 - Fix placeholder verification

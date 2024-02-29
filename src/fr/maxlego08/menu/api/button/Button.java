@@ -284,4 +284,6 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
 
     boolean isUseCache();
 
+    List<ButtonOption> getOptions();
+
 }

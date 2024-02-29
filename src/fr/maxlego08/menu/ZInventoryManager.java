@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
@@ -93,6 +94,7 @@ import java.util.stream.Stream;
 public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
+    private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
@@ -300,7 +302,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         registerItemStackVerification(new ModelIdSimilar());
         registerItemStackVerification(new NameSimilar());
 
-        ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager);
+        ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
         plugin.getWebsiteManager().loadButtons(buttonManager);
@@ -645,5 +647,28 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public ZScheduler getScheduler() {
         return this.plugin.getScheduler();
+    }
+
+    @Override
+    public Optional<Class<? extends ButtonOption>> getOption(String name) {
+        return this.buttonOptions.values().stream().flatMap(List::stream).filter(buttonOption -> buttonOption.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    @Override
+    public void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption) {
+
+        if (getOption(buttonOption.getName()).isPresent()) return;
+
+        this.buttonOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(buttonOption);
+    }
+
+    @Override
+    public void unregisterOptions(Plugin plugin) {
+        this.buttonOptions.remove(plugin);
+    }
+
+    @Override
+    public Map<Plugin, List<Class<? extends ButtonOption>>> getOptions() {
+        return this.buttonOptions;
     }
 }

@@ -4,6 +4,7 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -25,6 +26,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ZButton extends ZPlaceholderButton implements Button {
 
@@ -46,6 +48,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private List<Requirement> clickRequirements = new ArrayList<>();
     private Requirement viewRequirement;
     private List<Action> actions = new ArrayList<>();
+    private List<ButtonOption> options = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -222,13 +225,17 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
             this.soundOption.play(player);
         }
 
+        AtomicBoolean isSuccess = new AtomicBoolean(true);
+
         this.clickRequirements.forEach(requirement -> {
+            System.out.println(requirement +" - " + requirement.getClickTypes().contains(event.getClick()));
             if (requirement.getClickTypes().contains(event.getClick())) {
-                requirement.execute(player, this, inventory);
+                isSuccess.set(requirement.execute(player, this, inventory));
             }
         });
 
         this.actions.forEach(action -> action.preExecute(player, this, inventory));
+        this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
         this.execute(player, event.getClick());
     }
@@ -384,5 +391,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @Override
     public boolean isUseCache() {
         return this.useCache;
+    }
+
+    @Override
+    public List<ButtonOption> getOptions() {
+        return this.options;
+    }
+
+    public void setOptions(List<ButtonOption> options) {
+        this.options = options;
     }
 }

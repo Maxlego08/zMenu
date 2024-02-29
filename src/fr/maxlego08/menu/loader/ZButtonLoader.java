@@ -6,6 +6,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
@@ -31,8 +32,10 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -240,6 +243,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setActions(actions);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
+
+        List<ButtonOption> buttonOptions = inventoryManager.getOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(option -> createInstance(entry.getKey(), option))).collect(Collectors.toList());
+        buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, file));
+        button.setOptions(buttonOptions);
+
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
         if (Config.enableFastEvent) {
             inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
@@ -258,6 +266,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      */
     private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement.");
+        if (section == null) section = configuration.getConfigurationSection(path + "click_requirements.");
+        if (section == null) section = configuration.getConfigurationSection(path + "clicks_requirements.");
+        if (section == null) section = configuration.getConfigurationSection(path + "clicks_requirement.");
         if (section == null) return;
 
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
@@ -284,6 +295,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     @Override
     public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
         //TODO: FINISH THE SAVE METHOD
+    }
+
+    private ButtonOption createInstance(Plugin plugin, Class<? extends ButtonOption> aClass) {
+        try {
+            Constructor<? extends ButtonOption> constructor = aClass.getConstructor(Plugin.class);
+            return constructor.newInstance(plugin);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
 }
