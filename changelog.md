@@ -47,6 +47,7 @@
 - Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will manage the number of pages in the inventory.
 - Start of development of the zMenu+ paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
 - Fix NMS with 1.20.4
+- Huge API Change. This change introduces zMenu+
 
 # 1.0.2.6
 

@@ -396,13 +396,40 @@ public interface InventoryManager extends Savable, Listener {
      */
     Collection<ItemStackSimilar> getItemStackVerifications();
 
+    /**
+     * Gets the scheduler associated with this button option.
+     *
+     * @return The ZScheduler associated with this button option.
+     */
     ZScheduler getScheduler();
 
+    /**
+     * Registers a new button option class with the plugin.
+     *
+     * @param plugin The plugin with which the button option is to be registered.
+     * @param buttonOption The class of the button option to register.
+     */
     void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption);
 
+    /**
+     * Unregisters all button options associated with the given plugin.
+     *
+     * @param plugin The plugin whose button options are to be unregistered.
+     */
     void unregisterOptions(Plugin plugin);
 
+    /**
+     * Retrieves a map of all registered button options grouped by plugin.
+     *
+     * @return A Map where each key is a Plugin and each value is a List of button option classes associated with that plugin.
+     */
     Map<Plugin, List<Class<? extends ButtonOption>>> getOptions();
 
+    /**
+     * Retrieves an Optional containing the class of the button option with the given name.
+     *
+     * @param name The name of the button option to retrieve.
+     * @return An Optional containing the button option class if found, or an empty Optional if not found.
+     */
     Optional<Class<? extends ButtonOption>> getOption(String name);
 }
