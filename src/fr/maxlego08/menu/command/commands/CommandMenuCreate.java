@@ -40,8 +40,6 @@ public class CommandMenuCreate extends VCommand {
             if (i != args.length - 1) inventoryName.append(" ");
         }
 
-        System.out.println(fileName + " - " + inventorySize + " - " + inventoryName);
-
         this.plugin.getInventoryManager().createNewInventory(this.sender, fileName, inventorySize, inventoryName.toString());
 
         return CommandType.SUCCESS;

@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.players.inventory;
 
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.entity.Player;
@@ -13,7 +12,7 @@ import java.util.Map;
 
 public class ZInventoryPlayer implements InventoryPlayer {
 
-    private Map<Integer, String> inventories = new HashMap<>();
+    private final Map<Integer, String> inventories = new HashMap<>();
 
     @Override
     public void storeInventory(Player player) {

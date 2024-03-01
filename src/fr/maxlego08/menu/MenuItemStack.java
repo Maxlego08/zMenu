@@ -142,8 +142,8 @@ public class MenuItemStack extends ZUtils {
             this.material = "STONE";
         }
 
-        String papiMaterial = papi(this.material, player);
-        int amount = this.parseAmount(player);
+        String papiMaterial = papi(placeholders.parse(this.material), player);
+        int amount = this.parseAmount(player, placeholders);
 
         try {
             material = getMaterial(Integer.parseInt(papiMaterial));
@@ -512,6 +512,15 @@ public class MenuItemStack extends ZUtils {
         int amount = 1;
         try {
             amount = Integer.parseInt(papi(this.amount, player));
+        } catch (Exception ignored) {
+        }
+        return amount;
+    }
+
+    public int parseAmount(Player player, Placeholders placeholders) {
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(papi(placeholders.parse(this.amount), player));
         } catch (Exception ignored) {
         }
         return amount;

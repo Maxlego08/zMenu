@@ -228,7 +228,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         AtomicBoolean isSuccess = new AtomicBoolean(true);
 
         this.clickRequirements.forEach(requirement -> {
-            System.out.println(requirement +" - " + requirement.getClickTypes().contains(event.getClick()));
             if (requirement.getClickTypes().contains(event.getClick())) {
                 isSuccess.set(requirement.execute(player, this, inventory));
             }

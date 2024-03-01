@@ -42,6 +42,10 @@
 - Fix MenuItemStack loader with placeholder check
 - Fix CONTAINS_STRING action for placeholder
 - Add matrix support for button slots [#39](https://github.com/Maxlego08/zMenu/issues/39)
+- Create ButtonOption, allows any developer to add options that will be available for all types of buttons.
+- Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will manage the number of pages in the inventory.
+- Start of development of the zMenu+ paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
+- Fix NMS with 1.20.4
 
 # 1.0.2.6
 
