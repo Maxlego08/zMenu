@@ -239,7 +239,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         try {
-            int customModelData = Integer.parseInt(papi(this.modelID, player));
+            int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), player));
             if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
         } catch (NumberFormatException ignored) {
         }

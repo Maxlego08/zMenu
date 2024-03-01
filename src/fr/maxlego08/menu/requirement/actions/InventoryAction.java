@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
@@ -30,11 +31,11 @@ public class InventoryAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory) {
+    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
 
         this.inventoryArgument.process(player);
 
-        Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.inventory);
+        Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.papi(placeholders.parse(this.inventory), player));
         if (optional.isPresent()) {
             this.inventoryManager.openInventory(player, optional.get(), page);
         } else Logger.info("Unable to find the inventory " + inventory, Logger.LogType.WARNING);

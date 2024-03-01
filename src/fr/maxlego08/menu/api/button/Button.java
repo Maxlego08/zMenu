@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -87,7 +88,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param inventory The inventory where the button comes from.
      * @param slot      The current slot.
      */
-    void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
+    void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders);
 
     /**
      * Called when the player makes a right click.
@@ -286,4 +287,5 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
 
     List<ButtonOption> getOptions();
 
+    boolean hasCustomRender();
 }

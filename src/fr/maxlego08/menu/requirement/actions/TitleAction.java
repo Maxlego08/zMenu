@@ -2,6 +2,7 @@ package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
@@ -23,8 +24,8 @@ public class TitleAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory) {
-        Meta.meta.sendTitle(player, title, subtitle, start, duration, end);
+    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+        Meta.meta.sendTitle(player, this.papi(placeholders.parse(title), player), this.papi(placeholders.parse(subtitle), player), start, duration, end);
     }
 
 }

@@ -4,11 +4,11 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -40,14 +40,15 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
     /**
      * Checks whether the player has the necessary permission based on the specified placeholder values and actions.
      *
-     * @param player The player whose permission is being checked.
+     * @param player       The player whose permission is being checked.
+     * @param placeholders
      * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
      */
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
 
-        String valueAsString = papi(this.placeholder, player);
-        String resultAsString = papi(this.value, player);
+        String valueAsString = papi(placeholders.parse(this.placeholder), player);
+        String resultAsString = papi(placeholders.parse(this.value), player);
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 

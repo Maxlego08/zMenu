@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement.permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.ItemPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.requirement.ZPermissible;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ public class ZItemPermissible extends ZPermissible implements ItemPermissible {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventoryDefault) {
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventoryDefault, Placeholders placeholders) {
 
         if (this.material == null) {
             return true;

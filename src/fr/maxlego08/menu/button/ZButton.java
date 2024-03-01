@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
@@ -195,7 +196,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
 
         if (this.closeInventory()) {
             player.closeInventory();
@@ -229,11 +230,11 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
         this.clickRequirements.forEach(requirement -> {
             if (requirement.getClickTypes().contains(event.getClick())) {
-                isSuccess.set(requirement.execute(player, this, inventory));
+                isSuccess.set(requirement.execute(player, this, inventory, placeholders));
             }
         });
 
-        this.actions.forEach(action -> action.preExecute(player, this, inventory));
+        this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
         this.execute(player, event.getClick());
@@ -360,8 +361,8 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryDefault inventory) {
-        return super.checkPermission(player, inventory) && this.viewRequirement.execute(player, this, inventory);
+    public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
+        return super.checkPermission(player, inventory, placeholders) && this.viewRequirement.execute(player, this, inventory, placeholders);
     }
 
     @Override
@@ -383,13 +384,13 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     }
 
-    public void setUseCache(boolean useCache) {
-        this.useCache = useCache;
-    }
-
     @Override
     public boolean isUseCache() {
         return this.useCache;
+    }
+
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
     }
 
     @Override
@@ -399,5 +400,10 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     public void setOptions(List<ButtonOption> options) {
         this.options = options;
+    }
+
+    @Override
+    public boolean hasCustomRender() {
+        return false;
     }
 }

@@ -31,6 +31,7 @@
 - [ ] Add matrix support for slot (like this: https://abstractmenus.github.io/docs/general/item_format.html#way-4-matrix)
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
+- [ ] Can split a file into several and thus avoid having too large files
 
 # Unreleased
 

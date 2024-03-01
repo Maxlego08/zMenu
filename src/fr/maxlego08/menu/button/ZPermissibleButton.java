@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.button;
 
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.button.Button;
@@ -42,14 +43,14 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryDefault inventory) {
+    public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
 
         if (!this.orPermissions.isEmpty()) {
-            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player, null, inventory));
+            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player, null, inventory, placeholders));
         }
 
         if (!this.permissions.isEmpty()) {
-            return this.permissions.stream().allMatch(p -> p.hasPermission(player, null, inventory));
+            return this.permissions.stream().allMatch(p -> p.hasPermission(player, null, inventory, placeholders));
         }
 
         return true;

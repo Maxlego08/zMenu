@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
@@ -18,7 +19,7 @@ public class BackAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory) {
+    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
         List<Inventory> oldInventories = inventory.getOldInventories();
 
         if (oldInventories.size() >= 1) {

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
@@ -15,14 +16,15 @@ public abstract class Action extends ZUtils {
     /**
      * Executes the action for the specified player.
      *
-     * @param player The player who triggers the action.
+     * @param player       The player who triggers the action.
+     * @param placeholders Placeholders
      */
-    protected abstract void execute(Player player, Button button, InventoryDefault inventory);
+    protected abstract void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);
 
-    public void preExecute(Player player, Button button, InventoryDefault inventory) {
-        if (delay == 0) execute(player, button, inventory);
+    public void preExecute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+        if (delay == 0) execute(player, button, inventory, placeholders);
         else inventory.getPlugin().getScheduler().runTaskLater(player.getLocation(), this.delay, () -> {
-            execute(player, button, inventory);
+            execute(player, button, inventory, placeholders);
         });
     }
 

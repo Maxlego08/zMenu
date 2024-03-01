@@ -4,6 +4,7 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -111,12 +112,17 @@ public class InventoryDefault extends VInventory {
      */
     public void buildButton(Button button) {
 
+        if (button.hasCustomRender()) {
+            button.onRender(player, this);
+            return;
+        }
+
         // If the button has a permission or a placeholder to check
         if (button.hasPermission()) {
 
             // We will check if the player has the permission to display the
             // button
-            if (!button.checkPermission(this.player, this)) {
+            if (!button.checkPermission(this.player, this, new Placeholders())) {
 
                 // If there is an ElseButton we will display it
                 if (button.hasElseButton()) {
@@ -182,7 +188,7 @@ public class InventoryDefault extends VInventory {
                     if (event.getClick() == ClickType.DOUBLE_CLICK) return;
 
                     event.setCancelled(true);
-                    button.onClick(this.player, event, this, slot);
+                    button.onClick(this.player, event, this, slot, new Placeholders());
                     if (button.isRefreshOnClick()) {
                         this.cancel(slot);
                         this.buildButton(button.getMasterParentButton());
@@ -216,7 +222,7 @@ public class InventoryDefault extends VInventory {
                     }
 
                     Button masterButton = button.getMasterParentButton();
-                    if (!masterButton.checkPermission(this.player, this)) {
+                    if (!masterButton.checkPermission(this.player, this, new Placeholders())) {
                         this.cancel(slot);
                         this.buildButton(masterButton);
                         return;

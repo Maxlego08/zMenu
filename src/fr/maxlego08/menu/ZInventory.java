@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -139,7 +140,7 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public InventoryResult openInventory(Player player, InventoryDefault inventoryDefault) {
 
-        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault)) {
+        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
             return InventoryResult.PERMISSION;
         }
 
