@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.save.Config;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -20,6 +21,23 @@ public class PapiUtils extends TranslationHelper {
         return placeholder;
     }
 
+    public String papi(String placeHolder, OfflinePlayer player) {
+        if (placeHolder == null) return null;
+        if (player == null) return placeHolder;
+        if (!placeHolder.contains("%")) return placeHolder;
+
+        String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
+        CacheEntry cachedResult = cache.get(cacheKey);
+
+        if (cachedResult != null && cachedResult.isValid()) {
+            return cachedResult.value;
+        }
+
+        String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
+
+        cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
+        return result;
+    }
     public String papi(String placeHolder, Player player) {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
@@ -39,6 +57,10 @@ public class PapiUtils extends TranslationHelper {
     }
 
     public List<String> papi(List<String> placeHolders, Player player) {
+        if (player == null) return placeHolders;
+        return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
+    }
+    public List<String> papi(List<String> placeHolders, OfflinePlayer player) {
         if (player == null) return placeHolders;
         return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
     }

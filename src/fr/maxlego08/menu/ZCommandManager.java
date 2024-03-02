@@ -189,8 +189,8 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     }
 
     @Override
-    public Optional<String> getPlayerArgument(Player player, String key) {
-        Map<String, String> arguments = this.playerArguments.getOrDefault(player.getUniqueId(), new HashMap<>());
+    public Optional<String> getPlayerArgument(UUID uuid, String key) {
+        Map<String, String> arguments = this.playerArguments.getOrDefault(uuid, new HashMap<>());
         return Optional.ofNullable(arguments.getOrDefault(key, null));
     }
 

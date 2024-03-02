@@ -3,6 +3,7 @@ package fr.maxlego08.menu.placeholder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -54,17 +55,17 @@ public class LocalPlaceholder {
 		return instance;
 	}
 
-	public void register(String startWith, ReturnBiConsumer<Player, String, String> biConsumer) {
+	public void register(String startWith, ReturnBiConsumer<UUID, String, String> biConsumer) {
 		this.autoPlaceholders.add(new AutoPlaceholder(startWith, biConsumer));
 	}
 
 	/**
 	 * 
-	 * @param player
+	 * @param uuid
 	 * @param placeholder
 	 * @return replaced string
 	 */
-	public String setPlaceholders(Player player, String placeholder) {
+	public String setPlaceholders(UUID uuid, String placeholder) {
 
 		if (placeholder == null || !placeholder.contains("%")) {
 			return placeholder;
@@ -76,7 +77,7 @@ public class LocalPlaceholder {
 		while (matcher.find()) {
 			String stringPlaceholder = matcher.group(0);
 			String regex = matcher.group(1).replace(realPrefix, "");
-			String replace = this.onRequest(player, regex);
+			String replace = this.onRequest(uuid, regex);
 			if (replace != null) {
 				placeholder = placeholder.replace(stringPlaceholder, replace);
 			}
@@ -93,17 +94,27 @@ public class LocalPlaceholder {
 	 */
 	public List<String> setPlaceholders(Player player, List<String> lore) {
 		return lore == null ? null
-				: lore.stream().map(e -> e = setPlaceholders(player, e)).collect(Collectors.toList());
+				: lore.stream().map(e -> e = setPlaceholders(player.getUniqueId(), e)).collect(Collectors.toList());
+	}
+	/**
+	 *
+	 * @param uuid
+	 * @param lore
+	 * @return
+	 */
+	public List<String> setPlaceholders(UUID uuid, List<String> lore) {
+		return lore == null ? null
+				: lore.stream().map(e -> e = setPlaceholders(uuid, e)).collect(Collectors.toList());
 	}
 
 	/**
 	 * Custom placeholder
 	 * 
-	 * @param player
+	 * @param uuid
 	 * @param string
 	 * @return
 	 */
-	public String onRequest(Player player, String string) {
+	public String onRequest(UUID uuid, String string) {
 
 		Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream()
 				.filter(e -> string.startsWith(e.getStartWith())).findFirst();
@@ -111,7 +122,7 @@ public class LocalPlaceholder {
 
 			AutoPlaceholder autoPlaceholder = optional.get();
 			String value = string.replace(autoPlaceholder.getStartWith(), "");
-			return autoPlaceholder.accept(player, value);
+			return autoPlaceholder.accept(uuid, value);
 
 		}
 
