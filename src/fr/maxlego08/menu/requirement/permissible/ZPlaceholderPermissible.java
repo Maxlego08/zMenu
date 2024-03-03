@@ -45,17 +45,26 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
      * Checks whether the player has the necessary permission based on the specified placeholder values and actions.
      *
      * @param player       The player whose permission is being checked.
-     * @param placeholders
+     * @param placeholders Placeholders
      * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
      */
 
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
 
-        String valueAsString = ((!"null".equals(this.targetPlayer) && Bukkit.getOfflinePlayer(papi(this.targetPlayer, player)).hasPlayedBefore())
-                ? papi(this.placeholder, Bukkit.getOfflinePlayer(papi(this.targetPlayer, player)))
-                : papi(this.placeholder, player));
-        String resultAsString = (valueAsString != null) ? papi(this.value, Bukkit.getOfflinePlayer(valueAsString)) : papi(this.value, player);
+        String valueAsString;
+        String resultAsString;
+
+        if (this.targetPlayer == null || this.targetPlayer.equalsIgnoreCase("null")) {
+
+            valueAsString = papi(placeholders.parse(this.placeholder), player);
+            resultAsString = papi(placeholders.parse(this.value), player);
+
+        } else {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player));
+            valueAsString = papi(placeholders.parse(this.placeholder), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
+            resultAsString = papi(placeholders.parse(this.value), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
+        }
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 

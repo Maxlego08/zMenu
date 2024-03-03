@@ -109,7 +109,6 @@ public class ZInventory extends ZUtils implements Inventory {
         if (optional.isPresent()) {
             int maxSlot = optional.get();
             maxPage = (maxSlot / this.size) + 1;
-            maxPage = (int) Math.ceil((double) maxPage / this.size);
         }
 
         Optional<PaginateButton> optionalPaginate = this.buttons.stream().filter(button -> button instanceof PaginateButton).map(e -> (PaginateButton) e).sorted(Comparator.comparingInt(e -> ((PaginateButton) e).getPaginationSize(player)).reversed()).findFirst();
