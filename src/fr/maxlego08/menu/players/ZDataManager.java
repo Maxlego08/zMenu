@@ -127,13 +127,11 @@ public class ZDataManager implements DataManager {
         localPlaceholder.register("player_key_exist_", (uuid, key) -> {
 
             Optional<PlayerData> optional = this.getPlayer(uuid);
-            getLogger().log("optional " + String.valueOf(optional));
             if (!optional.isPresent()) {
                 return "false";
             }
 
             PlayerData playerData = optional.get();
-            getLogger().log("playerData"+ playerData.toString());
             return String.valueOf(playerData.containsKey(key));
 
         });

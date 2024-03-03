@@ -32,7 +32,6 @@ public interface Placeholder {
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
-            getLogger().log("string"+string);
             return PlaceholderAPI.setPlaceholders(player, string);
         }
 

@@ -27,7 +27,6 @@ public class PapiUtils extends TranslationHelper {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
         if (!placeHolder.contains("%")) return placeHolder;
-        getLogger().log("placeHolder "+placeHolder);
         String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
         CacheEntry cachedResult = cache.get(cacheKey);
 
@@ -37,7 +36,6 @@ public class PapiUtils extends TranslationHelper {
 
         String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
 
-        getLogger().log("result "+result);
         cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
         return result;
     }

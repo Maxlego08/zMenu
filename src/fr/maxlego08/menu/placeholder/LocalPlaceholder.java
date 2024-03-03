@@ -58,7 +58,6 @@ public class LocalPlaceholder {
 	}
 
 	public void register(String startWith, ReturnBiConsumer<UUID, String, String> biConsumer) {
-		getLogger().log("register"+biConsumer);
 		this.autoPlaceholders.add(new AutoPlaceholder(startWith, biConsumer));
 	}
 
