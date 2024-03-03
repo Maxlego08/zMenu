@@ -57,6 +57,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
         menuItemStack.setMaterial(configuration.getString(path + "material", null));
+        menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
         menuItemStack.setUrl(configuration.getString(path + "url", null));
 
         Color potionColor = getColor(configuration, path + "color", null);

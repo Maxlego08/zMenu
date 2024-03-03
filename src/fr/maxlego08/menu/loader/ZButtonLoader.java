@@ -211,8 +211,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String placeholder = configuration.getString(path + "placeHolder", configuration.getString(path + "placeholder", null));
         PlaceholderAction placeholderAction = PlaceholderAction.from(configuration.getString(path + "action", null));
         String placeholderValue = configuration.getString(path + "value", null);
+        String targetPlayer = configuration.getString(path + "target", null);
         if (placeholderAction != null && placeholderValue != null && placeholder != null) {
-            placeholders.add(new ZPlaceholderPermissible(placeholderAction, placeholder, placeholderValue, new ArrayList<>(), new ArrayList<>()));
+            placeholders.add(new ZPlaceholderPermissible(placeholderAction, placeholder, placeholderValue, targetPlayer, new ArrayList<>(), new ArrayList<>()));
         }
 
         button.setPlaceholders(placeholders);

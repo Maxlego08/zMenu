@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.utils;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -23,6 +24,14 @@ public interface MetaUpdater extends MessageSender {
     void updateDisplayName(ItemMeta itemMeta, String text, Player player);
 
     /**
+     * Updates the display name of the {@link ItemMeta}.
+     *
+     * @param itemMeta        The ItemMeta to be updated.
+     * @param text            The text to set as the display name.
+     * @param offlineplayer   The player for whom MiniMessage will be applied.
+     */
+    void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer);
+    /**
      * Updates the lore of the {@link ItemMeta}.
      *
      * @param itemMeta The ItemMeta to be updated.
@@ -30,6 +39,14 @@ public interface MetaUpdater extends MessageSender {
      * @param player   The player for whom MiniMessage will be applied.
      */
     void updateLore(ItemMeta itemMeta, List<String> lore, Player player);
+    /**
+     * Updates the lore of the {@link ItemMeta}.
+     *
+     * @param itemMeta        The ItemMeta to be updated.
+     * @param lore            The lore to set.
+     * @param offlineplayer   The player for whom MiniMessage will be applied.
+     */
+    void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer);
 
     /**
      * Create an {@link Inventory}
