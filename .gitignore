@@ -1,1 +1,8 @@
-/target
+# Don't track content of these folders
+target/
+bin/
+.settings/
+.classpath
+.project
+.idea
+zmenu.iml
