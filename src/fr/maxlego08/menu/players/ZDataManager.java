@@ -15,6 +15,8 @@ import org.bukkit.OfflinePlayer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
+
 public class ZDataManager implements DataManager {
 
     private static Map<UUID, ZPlayerData> players = new HashMap<>();
@@ -125,11 +127,13 @@ public class ZDataManager implements DataManager {
         localPlaceholder.register("player_key_exist_", (uuid, key) -> {
 
             Optional<PlayerData> optional = this.getPlayer(uuid);
+            getLogger().log("optional " + String.valueOf(optional));
             if (!optional.isPresent()) {
                 return "false";
             }
 
             PlayerData playerData = optional.get();
+            getLogger().log("playerData"+ playerData.toString());
             return String.valueOf(playerData.containsKey(key));
 
         });

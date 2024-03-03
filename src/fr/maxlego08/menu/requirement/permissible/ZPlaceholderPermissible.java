@@ -51,19 +51,11 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
 
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        String valueAsString = null;
-        String resultAsString = null;
-        if (this.targetPlayer != "null"){
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(this.targetPlayer, player));
-            if (offlinePlayer.hasPlayedBefore()) {
-                valueAsString = papi(this.placeholder, offlinePlayer);
-                resultAsString = papi(this.value, offlinePlayer);
-            }
-            ////Modifier ici
-        } else {
-            valueAsString = papi(this.placeholder, player);
-            resultAsString = papi(this.value, player);
-        }
+
+        String valueAsString = ((!"null".equals(this.targetPlayer) && Bukkit.getOfflinePlayer(papi(this.targetPlayer, player)).hasPlayedBefore())
+                ? papi(this.placeholder, Bukkit.getOfflinePlayer(papi(this.targetPlayer, player)))
+                : papi(this.placeholder, player));
+        String resultAsString = (valueAsString != null) ? papi(this.value, Bukkit.getOfflinePlayer(valueAsString)) : papi(this.value, player);
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 

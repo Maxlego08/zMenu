@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
+
 public interface Placeholder {
 
     String setPlaceholders(Player player, String string);
@@ -30,6 +32,7 @@ public interface Placeholder {
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
+            getLogger().log("string"+string);
             return PlaceholderAPI.setPlaceholders(player, string);
         }
 

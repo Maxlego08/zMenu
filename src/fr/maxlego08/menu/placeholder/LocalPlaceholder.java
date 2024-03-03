@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.zcore.utils.interfaces.ReturnBiConsumer;
 
+import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
+
 public class LocalPlaceholder {
 
 	private MenuPlugin plugin;
@@ -56,6 +58,7 @@ public class LocalPlaceholder {
 	}
 
 	public void register(String startWith, ReturnBiConsumer<UUID, String, String> biConsumer) {
+		getLogger().log("register"+biConsumer);
 		this.autoPlaceholders.add(new AutoPlaceholder(startWith, biConsumer));
 	}
 
@@ -78,6 +81,7 @@ public class LocalPlaceholder {
 			String stringPlaceholder = matcher.group(0);
 			String regex = matcher.group(1).replace(realPrefix, "");
 			String replace = this.onRequest(uuid, regex);
+
 			if (replace != null) {
 				placeholder = placeholder.replace(stringPlaceholder, replace);
 			}

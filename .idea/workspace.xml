@@ -5,17 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3497f54-ea03-4041-8c32-c4b8cf6950ab" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/MenuPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/MenuPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/ZCommandManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/ZCommandManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/api/command/CommandManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/api/command/CommandManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/loader/ZButtonLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/loader/ZButtonLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/loader/permissible/PlaceholderPermissibleLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/loader/permissible/PlaceholderPermissibleLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/AutoPlaceholder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/AutoPlaceholder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/MenuItemStack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/MenuItemStack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/api/utils/MetaUpdater.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/api/utils/MetaUpdater.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/loader/MenuItemStackLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/loader/MenuItemStackLoader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/DistantPlaceholder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/DistantPlaceholder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/LocalPlaceholder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/LocalPlaceholder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/Placeholder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/placeholder/Placeholder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/players/ZDataManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/players/ZDataManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/requirement/permissible/ZPlaceholderPermissible.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/requirement/permissible/ZPlaceholderPermissible.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/zcore/utils/PapiUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/zcore/utils/PapiUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/zcore/utils/meta/ClassicMeta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/zcore/utils/meta/ClassicMeta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fr/maxlego08/menu/zcore/utils/meta/ComponentMeta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/fr/maxlego08/menu/zcore/utils/meta/ComponentMeta.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

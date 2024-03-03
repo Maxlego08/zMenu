@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
+
 public class PapiUtils extends TranslationHelper {
 
     private static volatile Placeholder placeholder;
@@ -25,7 +27,7 @@ public class PapiUtils extends TranslationHelper {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
         if (!placeHolder.contains("%")) return placeHolder;
-
+        getLogger().log("placeHolder "+placeHolder);
         String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
         CacheEntry cachedResult = cache.get(cacheKey);
 
@@ -35,6 +37,7 @@ public class PapiUtils extends TranslationHelper {
 
         String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
 
+        getLogger().log("result "+result);
         cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
         return result;
     }
