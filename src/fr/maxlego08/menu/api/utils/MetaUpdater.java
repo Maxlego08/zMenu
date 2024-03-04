@@ -28,9 +28,10 @@ public interface MetaUpdater extends MessageSender {
      *
      * @param itemMeta        The ItemMeta to be updated.
      * @param text            The text to set as the display name.
-     * @param offlineplayer   The player for whom MiniMessage will be applied.
+     * @param offlinePlayer   The player for whom MiniMessage will be applied.
      */
-    void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer);
+    void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer);
+
     /**
      * Updates the lore of the {@link ItemMeta}.
      *
@@ -44,9 +45,9 @@ public interface MetaUpdater extends MessageSender {
      *
      * @param itemMeta        The ItemMeta to be updated.
      * @param lore            The lore to set.
-     * @param offlineplayer   The player for whom MiniMessage will be applied.
+     * @param offlinePlayer   The player for whom MiniMessage will be applied.
      */
-    void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer);
+    void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer);
 
     /**
      * Create an {@link Inventory}

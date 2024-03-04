@@ -193,8 +193,8 @@ public class MenuPlugin extends ZPlugin {
         this.getSavers().forEach(saver -> saver.load(this.getPersist()));
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
-        localPlaceholder.register("argument_", (uuid, value) -> {
-            Optional<String> optional = this.commandManager.getPlayerArgument(uuid, value);
+        localPlaceholder.register("argument_", (offlinePlayer, value) -> {
+            Optional<String> optional = this.commandManager.getPlayerArgument(offlinePlayer.getUniqueId(), value);
             return optional.orElse(null);
         });
 

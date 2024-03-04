@@ -37,12 +37,13 @@ public class DistantPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer p, String params) {
-        return this.placeholder.onRequest(p.getUniqueId(), params);
+    public String onRequest(OfflinePlayer offlinePlayer, String params) {
+        return this.placeholder.onRequest(offlinePlayer, params);
     }
+
     @Override
-    public String onPlaceholderRequest(Player p, String params) {
-        return this.placeholder.onRequest(p.getUniqueId(), params);
+    public String onPlaceholderRequest(Player player, String params) {
+        return this.placeholder.onRequest(player, params);
     }
 
 }

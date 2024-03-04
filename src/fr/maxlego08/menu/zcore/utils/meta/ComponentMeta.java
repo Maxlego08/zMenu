@@ -17,7 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.InvocationTargetException;
@@ -72,7 +71,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         inventoryMethod.setAccessible(true);
     }
 
-    private void updateDisplayName(ItemMeta itemMeta, String text){
+    private void updateDisplayName(ItemMeta itemMeta, String text) {
         Component component = this.cache.get(text, () -> {
             return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
         });
@@ -82,36 +81,30 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             exception.printStackTrace();
         }
     }
+
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
         updateDisplayName(itemMeta, papi(text, player));
     }
 
     @Override
-    public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
-        updateDisplayName(itemMeta, papi(text, offlineplayer));
+    public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
+        updateDisplayName(itemMeta, papi(text, offlinePlayer));
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        List<Component> components = lore.stream().map(text -> {
-            String result = papi(text, player);
-            return this.cache.get(result, () -> {
-                return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
-            });
-        }).collect(Collectors.toList());
-
-        try {
-            loreMethod.invoke(itemMeta, components);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        update(itemMeta, lore, player);
     }
 
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer) {
+    public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
+        update(itemMeta, lore, offlinePlayer);
+    }
+
+    public void update(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
         List<Component> components = lore.stream().map(text -> {
-            String result = papi(text, offlineplayer);
+            String result = papi(text, offlinePlayer);
             return this.cache.get(result, () -> {
                 return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
             });

@@ -1,20 +1,20 @@
 package fr.maxlego08.menu.placeholder;
 
 import fr.maxlego08.menu.zcore.utils.interfaces.ReturnBiConsumer;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
 public class AutoPlaceholder {
 
     private final String startWith;
-    private final ReturnBiConsumer<UUID, String, String> biConsumer;
+    private final ReturnBiConsumer<OfflinePlayer, String, String> biConsumer;
 
     /**
      * @param startWith
      * @param biConsumer
      */
-    public AutoPlaceholder(String startWith, ReturnBiConsumer<UUID, String, String> biConsumer) {
+    public AutoPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer) {
         super();
         this.startWith = startWith;
         this.biConsumer = biConsumer;
@@ -30,12 +30,12 @@ public class AutoPlaceholder {
     /**
      * @return the biConsumer
      */
-    public ReturnBiConsumer<UUID, String, String> getBiConsumer() {
+    public ReturnBiConsumer<OfflinePlayer, String, String> getBiConsumer() {
         return biConsumer;
     }
 
-    public String accept(UUID uuid, String value) {
-        return this.biConsumer.accept(uuid, value);
+    public String accept(OfflinePlayer offlinePlayer, String value) {
+        return this.biConsumer.accept(offlinePlayer, value);
     }
 
 }

@@ -59,8 +59,8 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
 
             valueAsString = papi(placeholders.parse(this.placeholder), player);
             resultAsString = papi(placeholders.parse(this.value), player);
-
         } else {
+
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player));
             valueAsString = papi(placeholders.parse(this.placeholder), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
             resultAsString = papi(placeholders.parse(this.value), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);

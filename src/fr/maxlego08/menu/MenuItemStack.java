@@ -145,18 +145,10 @@ public class MenuItemStack extends ZUtils {
             this.material = "STONE";
         }
 
-        OfflinePlayer offlinePlayer = null;
-        if (this.targetPlayer != null) {
-            offlinePlayer = Bukkit.getOfflinePlayer(papi(this.targetPlayer, player));
-        }
+        OfflinePlayer offlinePlayer = this.targetPlayer != null ? Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player)) : null;
 
-        String papiMaterial = (this.targetPlayer == null)
-                ? papi(placeholders.parse(this.material), player)
-                : papi(placeholders.parse(this.material), offlinePlayer);
-
-        int amount = (this.targetPlayer == null)
-                ? this.parseAmount(player, placeholders)
-                : this.parseAmount(offlinePlayer, placeholders);
+        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer);
+        int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
 
         try {
             material = getMaterial(Integer.parseInt(papiMaterial));
@@ -234,11 +226,7 @@ public class MenuItemStack extends ZUtils {
 
         if (this.displayName != null) {
             try {
-                if (this.targetPlayer == null){
-                    Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), player);
-                } else {
-                    Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), offlinePlayer);
-                }
+                Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), offlinePlayer == null ? player : offlinePlayer);
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -246,11 +234,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (!this.lore.isEmpty()) {
-            if (this.targetPlayer == null){
-                Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), player);
-            } else {
-                Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), offlinePlayer);
-            }
+            Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), offlinePlayer == null ? player : offlinePlayer);
         }
 
         if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
@@ -261,9 +245,7 @@ public class MenuItemStack extends ZUtils {
 
         try {
 
-            int customModelData = (this.targetPlayer == null)
-                    ? Integer.parseInt(papi(placeholders.parse(this.modelID), player))
-                    : Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer));
+            int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer));
             if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
         } catch (NumberFormatException ignored) {
         }
@@ -286,7 +268,6 @@ public class MenuItemStack extends ZUtils {
         if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
         return itemStack;
     }
-
 
 
     /**
@@ -565,6 +546,7 @@ public class MenuItemStack extends ZUtils {
         }
         return amount;
     }
+
     public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {

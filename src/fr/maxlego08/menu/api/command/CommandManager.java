@@ -84,11 +84,20 @@ public interface CommandManager extends Savable {
     /**
      * Retrieves the value of an argument associated with a player and key.
      *
-     * @param uuid The player for whom to retrieve the argument.
-     * @param key    The argument key.
+     * @param uuid The player uuid for whom to retrieve the argument.
+     * @param key  The argument key.
      * @return An optional containing the argument value, or empty if not found.
      */
     Optional<String> getPlayerArgument(UUID uuid, String key);
+
+    /**
+     * Retrieves the value of an argument associated with a player and key.
+     *
+     * @param player The player for whom to retrieve the argument.
+     * @param key    The argument key.
+     * @return An optional containing the argument value, or empty if not found.
+     */
+    Optional<String> getPlayerArgument(Player player, String key);
 
     /**
      * Retrieves the command associated with a specific name.

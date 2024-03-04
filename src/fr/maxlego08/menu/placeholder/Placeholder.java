@@ -51,21 +51,21 @@ public interface Placeholder {
 
         @Override
         public String setPlaceholders(Player player, String string) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player.getUniqueId(), string);
+            return LocalPlaceholder.getInstance().setPlaceholders(player, string);
         }
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player.getUniqueId(), string);
+            return LocalPlaceholder.getInstance().setPlaceholders(player, string);
         }
 
         @Override
         public List<String> setPlaceholders(Player player, List<String> list) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player.getUniqueId(), list);
+            return LocalPlaceholder.getInstance().setPlaceholders(player, list);
         }
         @Override
         public List<String> setPlaceholders(OfflinePlayer player, List<String> list) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player.getUniqueId(), list);
+            return LocalPlaceholder.getInstance().setPlaceholders(player, list);
         }
 
     }

@@ -39,28 +39,7 @@ public class PapiUtils extends TranslationHelper {
         cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
         return result;
     }
-    public String papi(String placeHolder, Player player) {
-        if (placeHolder == null) return null;
-        if (player == null) return placeHolder;
-        if (!placeHolder.contains("%")) return placeHolder;
 
-        String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
-        CacheEntry cachedResult = cache.get(cacheKey);
-
-        if (cachedResult != null && cachedResult.isValid()) {
-            return cachedResult.value;
-        }
-
-        String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
-
-        cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
-        return result;
-    }
-
-    public List<String> papi(List<String> placeHolders, Player player) {
-        if (player == null) return placeHolders;
-        return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
-    }
     public List<String> papi(List<String> placeHolders, OfflinePlayer player) {
         if (player == null) return placeHolders;
         return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());

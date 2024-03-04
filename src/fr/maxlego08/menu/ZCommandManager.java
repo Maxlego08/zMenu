@@ -195,6 +195,11 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     }
 
     @Override
+    public Optional<String> getPlayerArgument(Player player, String key) {
+        return getPlayerArgument(player.getUniqueId(), key);
+    }
+
+    @Override
     public Optional<Command> getCommand(String commandName) {
         return this.getCommands().stream().filter(e -> e.getCommand().equalsIgnoreCase(commandName)).findFirst();
     }

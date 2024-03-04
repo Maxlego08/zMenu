@@ -124,9 +124,9 @@ public class ZDataManager implements DataManager {
 
     public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
 
-        localPlaceholder.register("player_key_exist_", (uuid, key) -> {
+        localPlaceholder.register("player_key_exist_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(uuid);
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "false";
             }
@@ -136,9 +136,9 @@ public class ZDataManager implements DataManager {
 
         });
 
-        localPlaceholder.register("player_value_", (uuid, key) -> {
+        localPlaceholder.register("player_value_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(uuid);
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "Key '" + key + "' doesn't exist for this player";
             }
@@ -152,9 +152,9 @@ public class ZDataManager implements DataManager {
             return data.getValue().toString();
         });
 
-        localPlaceholder.register("player_expire_format_", (uuid, key) -> {
+        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(uuid);
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "Key '" + key + "' doesn't exist for this player";
             }
@@ -174,9 +174,9 @@ public class ZDataManager implements DataManager {
             return TimerBuilder.getStringTime(seconds);
         });
 
-        localPlaceholder.register("player_expire_", (uuid, key) -> {
+        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(uuid);
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "Key '" + key + "' doesn't exist for this player";
             }
