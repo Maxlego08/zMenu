@@ -2,11 +2,14 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.save.Config;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
 
 public class PapiUtils extends TranslationHelper {
 
@@ -20,11 +23,10 @@ public class PapiUtils extends TranslationHelper {
         return placeholder;
     }
 
-    public String papi(String placeHolder, Player player) {
+    public String papi(String placeHolder, OfflinePlayer player) {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
         if (!placeHolder.contains("%")) return placeHolder;
-
         String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
         CacheEntry cachedResult = cache.get(cacheKey);
 
@@ -38,7 +40,7 @@ public class PapiUtils extends TranslationHelper {
         return result;
     }
 
-    public List<String> papi(List<String> placeHolders, Player player) {
+    public List<String> papi(List<String> placeHolders, OfflinePlayer player) {
         if (player == null) return placeHolders;
         return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
     }

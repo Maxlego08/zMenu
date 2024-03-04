@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -70,11 +71,9 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         inventoryMethod.setAccessible(true);
     }
 
-    @Override
-    public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        String result = papi(text, player);
-        Component component = this.cache.get(result, () -> {
-            return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
+    private void updateDisplayName(ItemMeta itemMeta, String text) {
+        Component component = this.cache.get(text, () -> {
+            return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
         });
         try {
             nameMethod.invoke(itemMeta, component);
@@ -84,9 +83,28 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
+    public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
+        updateDisplayName(itemMeta, papi(text, player));
+    }
+
+    @Override
+    public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
+        updateDisplayName(itemMeta, papi(text, offlinePlayer));
+    }
+
+    @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
+        update(itemMeta, lore, player);
+    }
+
+    @Override
+    public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
+        update(itemMeta, lore, offlinePlayer);
+    }
+
+    public void update(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
         List<Component> components = lore.stream().map(text -> {
-            String result = papi(text, player);
+            String result = papi(text, offlinePlayer);
             return this.cache.get(result, () -> {
                 return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
             });
@@ -97,6 +115,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+
     }
 
     @Override

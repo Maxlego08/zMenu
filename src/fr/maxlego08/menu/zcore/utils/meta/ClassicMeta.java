@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils.meta;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -18,8 +19,19 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
+    public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
+        itemMeta.setDisplayName(papi(color(text), offlineplayer));
+    }
+
+    @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
         itemMeta.setLore(papi(color(lore), player));
+    }
+
+    @Override
+    public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer) {
+        itemMeta.setLore(papi(color(lore), offlineplayer));
+
     }
 
     @Override

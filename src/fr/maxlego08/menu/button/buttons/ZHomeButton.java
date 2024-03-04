@@ -3,6 +3,7 @@ package fr.maxlego08.menu.button.buttons;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,8 +18,8 @@ public class ZHomeButton extends ZBackButton implements HomeButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-        super.onClick(player, event, inventory, slot);
+    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
+        super.onClick(player, event, inventory, slot, placeholders);
 
         if (this.inventory == null) {
             return;

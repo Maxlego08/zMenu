@@ -65,6 +65,7 @@ public enum Message {
 	DESCRIPTION_MARKETPLACE("Open marketplace inventory"),
 	DESCRIPTION_DISCONNECT("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
+    DESCRIPTION_EDITOR("Open zmenu online editor"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
     DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration"),
     DESCRIPTION_PLAYERS_REMOVE("Remove player data"),

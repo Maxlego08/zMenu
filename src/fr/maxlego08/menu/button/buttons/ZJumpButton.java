@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button.buttons;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -23,15 +24,15 @@ public class ZJumpButton extends ZNextButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
-        super.onClick(player, event, inventory, slot);
+    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
+        super.onClick(player, event, inventory, slot, placeholders);
 
         Inventory toInventory = inventory.getMenuInventory();
         this.inventoryManager.openInventory(player, toInventory, page, new ArrayList<>());
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryDefault inventory) {
+    public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
         return this.page != inventory.getPage();
     }
 }

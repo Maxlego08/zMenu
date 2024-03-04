@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.players.inventory;
 
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,7 +10,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ZInventoryPlayer extends ZUtils implements InventoryPlayer {
+public class ZInventoryPlayer implements InventoryPlayer {
 
     private final Map<Integer, String> inventories = new HashMap<>();
 
@@ -29,7 +29,7 @@ public class ZInventoryPlayer extends ZUtils implements InventoryPlayer {
     private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content) {
         ItemStack itemStack = content[slot];
         if (itemStack != null) {
-            inventories.put(slot, encode(itemStack));
+            inventories.put(slot, ItemStackUtils.serializeItemStack(itemStack));
         }
         playerInventory.clear(slot);
     }
@@ -37,6 +37,6 @@ public class ZInventoryPlayer extends ZUtils implements InventoryPlayer {
     @Override
     public void giveInventory(Player player) {
         PlayerInventory playerInventory = player.getInventory();
-        inventories.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, decode(encodedItemStack)));
+        inventories.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(encodedItemStack)));
     }
 }

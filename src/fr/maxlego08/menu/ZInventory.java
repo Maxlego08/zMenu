@@ -2,10 +2,12 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -74,8 +77,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public <T extends Button> List<T> getButtons(Class<T> type) {
-        return this.getButtons().stream().filter(e -> type.isAssignableFrom(e.getClass())).map(type::cast)
-                .collect(Collectors.toList());
+        return this.getButtons().stream().filter(e -> type.isAssignableFrom(e.getClass())).map(type::cast).collect(Collectors.toList());
     }
 
     @Override
@@ -96,6 +98,9 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
+
+        int maxPage = 1;
+
         List<Button> buttons = new ArrayList<>();
         buttons.addAll(this.buttons);
         buttons.addAll(patterns.stream().flatMap(pattern -> pattern.getButtons().stream()).collect(Collectors.toList()));
@@ -103,9 +108,16 @@ public class ZInventory extends ZUtils implements Inventory {
         Optional<Integer> optional = buttons.stream().map(Button::getSlot).max(Integer::compare);
         if (optional.isPresent()) {
             int maxSlot = optional.get();
-            return (maxSlot / this.size) + 1;
+            maxPage = (maxSlot / this.size) + 1;
         }
-        return 1;
+
+        Optional<PaginateButton> optionalPaginate = this.buttons.stream().filter(button -> button instanceof PaginateButton).map(e -> (PaginateButton) e).sorted(Comparator.comparingInt(e -> ((PaginateButton) e).getPaginationSize(player)).reversed()).findFirst();
+        if (optionalPaginate.isPresent()) {
+            PaginateButton paginateButton = optionalPaginate.get();
+            maxPage = (int) Math.ceil((double) paginateButton.getPaginationSize(player) / paginateButton.getSlots().size());
+        }
+
+        return maxPage;
     }
 
     @Override
@@ -128,7 +140,7 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public InventoryResult openInventory(Player player, InventoryDefault inventoryDefault) {
 
-        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault)) {
+        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
             return InventoryResult.PERMISSION;
         }
 

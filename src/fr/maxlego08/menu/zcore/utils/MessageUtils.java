@@ -135,14 +135,14 @@ public abstract class MessageUtils extends LocationUtils {
     }
 
     protected String getMessage(String message, Object... args) {
-        if (args.length % 2 != 0) {
-            System.err.println("Impossible to apply the method for messages.");
-        } else {
-            for (int a = 0; a < args.length; a += 2) {
-                String replace = args[a].toString();
-                String to = args[a + 1].toString();
-                message = message.replace(replace, to);
-            }
+
+        if (args.length % 2 != 0)
+            throw new IllegalArgumentException("Number of invalid arguments. Arguments must be in pairs.");
+
+        for (int i = 0; i < args.length; i += 2) {
+            if (args[i] == null || args[i + 1] == null)
+                throw new IllegalArgumentException("Keys and replacement values must not be null.");
+            message = message.replace(args[i].toString(), args[i + 1].toString());
         }
         return message;
     }

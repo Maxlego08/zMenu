@@ -2,6 +2,7 @@ package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
@@ -20,9 +21,9 @@ public class BroadcastAction extends Action {
     }
 
     @Override
-    public void execute(Player ignored, Button button, InventoryDefault inventory) {
+    public void execute(Player ignored, Button button, InventoryDefault inventory, Placeholders placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> {
-            papi(this.messages, player).forEach(message -> {
+            papi(placeholders.parse(this.messages), player).forEach(message -> {
                 if (miniMessage) {
                     Meta.meta.sendMessage(player, message);
                 } else {

@@ -4,11 +4,13 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
     private final PlaceholderAction action;
     private final String placeholder;
     private final String value;
+    private final String targetPlayer;
 
     /**
      * Constructs a ZPlaceholderPermissible with the specified placeholder action, placeholder key, and value.
@@ -30,24 +33,38 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
      * @param placeholder The placeholder key to evaluate.
      * @param value       The value associated with the placeholder.
      */
-    public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value, List<Action> denyActions, List<Action> successActions) {
+    public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value, String targetPlayer, List<Action> denyActions, List<Action> successActions) {
         super(denyActions, successActions);
         this.action = action;
         this.placeholder = placeholder;
         this.value = value;
+        this.targetPlayer = targetPlayer;
     }
 
     /**
      * Checks whether the player has the necessary permission based on the specified placeholder values and actions.
      *
-     * @param player The player whose permission is being checked.
+     * @param player       The player whose permission is being checked.
+     * @param placeholders Placeholders
      * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
      */
-    @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
 
-        String valueAsString = papi(this.placeholder, player);
-        String resultAsString = papi(this.value, player);
+    @Override
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+
+        String valueAsString;
+        String resultAsString;
+
+        if (this.targetPlayer == null || this.targetPlayer.equalsIgnoreCase("null")) {
+
+            valueAsString = papi(placeholders.parse(this.placeholder), player);
+            resultAsString = papi(placeholders.parse(this.value), player);
+        } else {
+
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player));
+            valueAsString = papi(placeholders.parse(this.placeholder), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
+            resultAsString = papi(placeholders.parse(this.value), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
+        }
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 

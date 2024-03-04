@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement.permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -48,12 +49,13 @@ public class ZPermissionPermissible extends ZPermissible implements PermissionPe
     /**
      * Checks whether the player has the necessary permission based on the specified permission node and reverse flag.
      *
-     * @param player The player whose permission is being checked.
+     * @param player       The player whose permission is being checked.
+     * @param placeholders
      * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
      */
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
-        return this.isReverse != player.hasPermission(this.permission);
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+        return this.isReverse != player.hasPermission(papi(placeholders.parse(this.permission), player));
     }
 
     /**

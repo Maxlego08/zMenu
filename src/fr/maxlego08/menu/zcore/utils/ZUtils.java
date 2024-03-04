@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.builder.CooldownBuilder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
@@ -56,6 +57,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -84,6 +86,37 @@ public abstract class ZUtils extends MessageUtils {
                 byId[material.getId()] = material;
             }
         }
+    }
+
+    protected int getInventorySizeByMatrix(List<String> matrix) {
+        return Math.min(matrix.size() * 9, 54);
+    }
+
+    protected Map<Character, List<Integer>> generateMatrix(List<String> matrix) {
+        Map<Character, List<Integer>> charMap = new HashMap<>();
+
+        if (matrix == null || matrix.size() > 6) {
+            Logger.info("Matrix is wrong !", Logger.LogType.ERROR);
+            return new HashMap<>();
+        }
+        for (String line : matrix) {
+            if (line.length() > 9) {
+                Logger.info("Each line of the matrix must have exactly 9 characters.", Logger.LogType.ERROR);
+                return new HashMap<>();
+            }
+        }
+
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < Math.min(matrix.get(i).length(), 9); j++) {
+                char c = matrix.get(i).charAt(j);
+                if (c != ' ') {
+                    int slot = i * 9 + j;
+                    charMap.computeIfAbsent(c, k -> new ArrayList<>()).add(slot);
+                }
+            }
+        }
+
+        return charMap;
     }
 
     /**

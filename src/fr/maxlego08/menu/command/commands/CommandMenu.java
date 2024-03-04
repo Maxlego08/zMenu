@@ -30,6 +30,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuTestDupe(plugin));
         this.addSubCommand(new CommandMenuSave(plugin));
         this.addSubCommand(new CommandMenuGiveOpenItem(plugin));
+        this.addSubCommand(new CommandMenuEditor(plugin));
 
 		// Disable website connexion for beta
 		/*this.addSubCommand(new CommandMenuDownload(plugin));

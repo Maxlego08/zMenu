@@ -32,6 +32,9 @@ public class DefaultButtonValue {
     // Default refreshOnClick value
     private boolean refreshOnClick = false;
 
+    // Default useCache value
+    private boolean useCache = true;
+
     // Default playerHead value
     private String playerHead = null;
 
@@ -195,5 +198,13 @@ public class DefaultButtonValue {
      */
     public void setPlayerHead(String playerHead) {
         this.playerHead = playerHead;
+    }
+
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
+    }
+
+    public boolean isUseCache() {
+        return useCache;
     }
 }

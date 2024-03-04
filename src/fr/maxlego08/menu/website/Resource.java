@@ -77,13 +77,13 @@ public class Resource extends ZUtils {
 
     public Placeholders getPlaceholders() {
         Placeholders placeholders = new Placeholders();
-        placeholders.register("%resource_name%", this.name);
-        placeholders.register("%resource_tag%", this.tag);
-        placeholders.register("%resource_price%", isFree() ? "FREE" : format(this.price) + this.currency);
-        placeholders.register("%resource_author%", this.user.getName());
-        placeholders.register("%resource_version%", this.version);
-        placeholders.register("%resource_category%", this.category);
-        placeholders.register("%resource_download%", String.valueOf(this.download));
+        placeholders.register("resource_name", this.name);
+        placeholders.register("resource_tag", this.tag);
+        placeholders.register("resource_price", isFree() ? "FREE" : format(this.price) + this.currency);
+        placeholders.register("resource_author", this.user.getName());
+        placeholders.register("resource_version", this.version);
+        placeholders.register("resource_category", this.category);
+        placeholders.register("resource_download", String.valueOf(this.download));
         return placeholders;
     }
 

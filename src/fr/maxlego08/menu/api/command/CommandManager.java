@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Manages the registration, loading, and execution of commands associated with inventories.
@@ -79,6 +80,15 @@ public interface CommandManager extends Savable {
      * @param value  The argument value.
      */
     void setPlayerArgument(Player player, String key, String value);
+
+    /**
+     * Retrieves the value of an argument associated with a player and key.
+     *
+     * @param uuid The player uuid for whom to retrieve the argument.
+     * @param key  The argument key.
+     * @return An optional containing the argument value, or empty if not found.
+     */
+    Optional<String> getPlayerArgument(UUID uuid, String key);
 
     /**
      * Retrieves the value of an argument associated with a player and key.

@@ -5,6 +5,7 @@ import com.gamingmesh.jobs.container.Job;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.JobPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -22,8 +23,8 @@ public class ZJobPermissible extends ZPermissible implements JobPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory) {
-        Job job = Jobs.getJob(this.jobName);
+    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+        Job job = Jobs.getJob(papi(placeholders.parse(this.jobName), player));
         if (job == null) {
             Logger.info("Job " + this.jobName +" was not found !", Logger.LogType.ERROR);
             return true;

@@ -3,7 +3,7 @@
 - [x] Add anti dupe system with NMS Tag
 - [x] Add the BACK action, to return to the previous inventory when clicking   
 - [x] Add the ability to perform actions when clicking
-- [ ] Improve the firework system to put more option. Being able to put several effects, power etc.
+- [ ] Improve the firework system to put more buttonOption. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
 - [ ] Add an order to display the list of official addons.
 - [ ] Add a ``/zm help`` command to send to documentation.
@@ -31,8 +31,27 @@
 - [ ] Add matrix support for slot (like this: https://abstractmenus.github.io/docs/general/item_format.html#way-4-matrix)
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
+- [ ] Can split a file into several and thus avoid having too large files
 
 # Unreleased
+
+# 1.0.2.7
+
+- Start of development of the [zMenu+](https://m.zmenu.dev/4) paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
+- Huge API Change. This change introduces [zMenu+](https://m.zmenu.dev/4)
+- Create ButtonOption, allows any developer to add options that will be available for all types of buttons.
+- Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will manage the number of pages in the inventory.
+- Add matrix support for button slots [#39](https://github.com/Maxlego08/zMenu/issues/39)
+- Add /zm editor, at the moment this command redirects to the online editor
+- Add target placeholder [#48](https://github.com/Maxlego08/zMenu/issues/48)
+- Fix reload command with pattern. The pattern were reload after the inventories 
+- Fix error with InventoryPlayer
+- Fix NmsVersion with 1.8 and 1.9
+- Fix anti-dupe for old version
+- Fix MenuItemStack loader with placeholder check
+- Fix CONTAINS_STRING action for placeholder
+- Fix NMS with 1.20.4
+- Fix method ``getRealSlot`` with isPermanent
 
 # 1.0.2.6
 
@@ -284,7 +303,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Add method getCurrentPlayerInventory in InventoryManager
 - Add method buildDisplayName in Button
 - Add method buildLore in Button
-- Add updateOnClick option, update button if player click on another button
+- Add updateOnClick buttonOption, update button if player click on another button
 - Add button listener method in InventoryManager 
 - Add check for new messages value saving
 - Fix placeholder verification

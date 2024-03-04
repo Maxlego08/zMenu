@@ -15,6 +15,8 @@ import org.bukkit.OfflinePlayer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
+
 public class ZDataManager implements DataManager {
 
     private static Map<UUID, ZPlayerData> players = new HashMap<>();
@@ -122,9 +124,9 @@ public class ZDataManager implements DataManager {
 
     public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
 
-        localPlaceholder.register("player_key_exist_", (player, key) -> {
+        localPlaceholder.register("player_key_exist_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "false";
             }
@@ -134,9 +136,9 @@ public class ZDataManager implements DataManager {
 
         });
 
-        localPlaceholder.register("player_value_", (player, key) -> {
+        localPlaceholder.register("player_value_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "Key '" + key + "' doesn't exist for this player";
             }
@@ -150,9 +152,9 @@ public class ZDataManager implements DataManager {
             return data.getValue().toString();
         });
 
-        localPlaceholder.register("player_expire_format_", (player, key) -> {
+        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "Key '" + key + "' doesn't exist for this player";
             }
@@ -172,9 +174,9 @@ public class ZDataManager implements DataManager {
             return TimerBuilder.getStringTime(seconds);
         });
 
-        localPlaceholder.register("player_expire_", (player, key) -> {
+        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> {
 
-            Optional<PlayerData> optional = this.getPlayer(player.getUniqueId());
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return "Key '" + key + "' doesn't exist for this player";
             }

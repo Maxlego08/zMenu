@@ -15,7 +15,9 @@ import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -38,6 +40,7 @@ public class MenuItemStack extends ZUtils {
     private final String filePath;
     private final String path;
     private String material;
+    private String targetPlayer;
     private String amount;
     private String url;
     private int data;
@@ -142,8 +145,10 @@ public class MenuItemStack extends ZUtils {
             this.material = "STONE";
         }
 
-        String papiMaterial = papi(this.material, player);
-        int amount = this.parseAmount(player);
+        OfflinePlayer offlinePlayer = this.targetPlayer != null ? Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player)) : null;
+
+        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer);
+        int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
 
         try {
             material = getMaterial(Integer.parseInt(papiMaterial));
@@ -221,7 +226,7 @@ public class MenuItemStack extends ZUtils {
 
         if (this.displayName != null) {
             try {
-                Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), player);
+                Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), offlinePlayer == null ? player : offlinePlayer);
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -229,7 +234,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (!this.lore.isEmpty()) {
-            Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), player);
+            Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), offlinePlayer == null ? player : offlinePlayer);
         }
 
         if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
@@ -239,7 +244,8 @@ public class MenuItemStack extends ZUtils {
         }
 
         try {
-            int customModelData = Integer.parseInt(papi(this.modelID, player));
+
+            int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer));
             if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
         } catch (NumberFormatException ignored) {
         }
@@ -263,6 +269,21 @@ public class MenuItemStack extends ZUtils {
         return itemStack;
     }
 
+
+    /**
+     * @return the target player
+     */
+    public String getTargetPlayer() {
+        return targetPlayer;
+    }
+
+    /**
+     * @param targetPlayer the targetPlayer to set
+     */
+    public void setTargetPlayer(String targetPlayer) {
+        this.targetPlayer = targetPlayer;
+    }
+
     /**
      * @return the material
      */
@@ -275,7 +296,7 @@ public class MenuItemStack extends ZUtils {
      */
     public void setMaterial(String material) {
         this.material = material;
-        this.updatePlaceholder(amount);
+        this.updatePlaceholder(material);
     }
 
     /**
@@ -517,6 +538,24 @@ public class MenuItemStack extends ZUtils {
         return amount;
     }
 
+    public int parseAmount(Player player, Placeholders placeholders) {
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(papi(placeholders.parse(this.amount), player));
+        } catch (Exception ignored) {
+        }
+        return amount;
+    }
+
+    public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(papi(placeholders.parse(this.amount), offlinePlayer));
+        } catch (Exception ignored) {
+        }
+        return amount;
+    }
+
     /**
      * Let's know if the ItemStack needs a placeholder, if not then the ItemStack will be cached
      *
@@ -530,4 +569,5 @@ public class MenuItemStack extends ZUtils {
     public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
         this.needPlaceholderAPI = needPlaceholderAPI;
     }
+
 }

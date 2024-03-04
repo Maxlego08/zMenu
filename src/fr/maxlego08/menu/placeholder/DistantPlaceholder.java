@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class DistantPlaceholder extends PlaceholderExpansion {
@@ -36,8 +37,13 @@ public class DistantPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player p, String params) {
-        return this.placeholder.onRequest(p, params);
+    public String onRequest(OfflinePlayer offlinePlayer, String params) {
+        return this.placeholder.onRequest(offlinePlayer, params);
+    }
+
+    @Override
+    public String onPlaceholderRequest(Player player, String params) {
+        return this.placeholder.onRequest(player, params);
     }
 
 }
