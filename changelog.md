@@ -35,6 +35,8 @@
 
 # Unreleased
 
+# 1.0.2.7
+
 - Start of development of the [zMenu+](https://m.zmenu.dev/4) paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
 - Huge API Change. This change introduces [zMenu+](https://m.zmenu.dev/4)
 - Create ButtonOption, allows any developer to add options that will be available for all types of buttons.
