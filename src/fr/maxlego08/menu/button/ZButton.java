@@ -150,7 +150,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public int getRealSlot(int inventorySize, int page) {
-        return this.isPermanent ? this.slot : this.slot - ((page - 1) * inventorySize);
+        return this.isPermanent() ? this.slot : this.slot - ((page - 1) * inventorySize);
     }
 
     @Override

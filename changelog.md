@@ -35,19 +35,21 @@
 
 # Unreleased
 
-- Fix reload command with pattern. The pattern were reload after the inventories 
+- Start of development of the [zMenu+](https://m.zmenu.dev/4) paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
+- Huge API Change. This change introduces [zMenu+](https://m.zmenu.dev/4)
+- Create ButtonOption, allows any developer to add options that will be available for all types of buttons.
+- Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will manage the number of pages in the inventory.
+- Add matrix support for button slots [#39](https://github.com/Maxlego08/zMenu/issues/39)
 - Add /zm editor, at the moment this command redirects to the online editor
+- Add target placeholder [#48](https://github.com/Maxlego08/zMenu/issues/48)
+- Fix reload command with pattern. The pattern were reload after the inventories 
 - Fix error with InventoryPlayer
 - Fix NmsVersion with 1.8 and 1.9
 - Fix anti-dupe for old version
 - Fix MenuItemStack loader with placeholder check
 - Fix CONTAINS_STRING action for placeholder
-- Add matrix support for button slots [#39](https://github.com/Maxlego08/zMenu/issues/39)
-- Create ButtonOption, allows any developer to add options that will be available for all types of buttons.
-- Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will manage the number of pages in the inventory.
-- Start of development of the zMenu+ paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
 - Fix NMS with 1.20.4
-- Huge API Change. This change introduces zMenu+
+- Fix method ``getRealSlot`` with isPermanent
 
 # 1.0.2.6
 

@@ -30,7 +30,7 @@ public class Placeholders {
             if (capitalize.length() > 1) {
                 capitalize = capitalize.substring(0, 1).toUpperCase() + capitalize.substring(1);
             }
-            string = string.replace("%capitalize_" + entry.getKey() + "%", entry.getValue().toLowerCase());
+            string = string.replace("%capitalize_" + entry.getKey() + "%", capitalize);
         }
         return string;
     }
