@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,6 +29,28 @@ public class DupeListener implements Listener {
     public DupeListener(ZScheduler schedule, DupeManager dupeManager) {
         this.schedule = schedule;
         this.dupeManager = dupeManager;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInteract(PlayerInteractEvent event) {
+
+        if (event.isCancelled()) return;
+
+        try {
+            ItemStack itemStack = event.getItem();
+            if (itemStack != null && this.dupeManager.isDupeItem(itemStack)) {
+                event.setCancelled(true);
+                event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
+                sendInformation(new DupeItem(itemStack, event.getPlayer()));
+            }
+        } catch (Exception exception) {
+            ItemStack itemStack = event.getPlayer().getItemInHand();
+            if (itemStack != null && this.dupeManager.isDupeItem(itemStack)) {
+                event.setCancelled(true);
+                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                sendInformation(new DupeItem(itemStack, event.getPlayer()));
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

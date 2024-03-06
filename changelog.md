@@ -32,8 +32,11 @@
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
 - [ ] Can split a file into several and thus avoid having too large files
+- [ ] Add open link with a book
 
 # Unreleased
+
+- Add PlayerInteractEvent in DupeListener
 
 # 1.0.2.7
 

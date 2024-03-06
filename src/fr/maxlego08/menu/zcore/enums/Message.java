@@ -2,11 +2,13 @@ package fr.maxlego08.menu.zcore.enums;
 
 import java.util.*;
 
+import fr.maxlego08.menu.api.enums.MessageType;
+import fr.maxlego08.menu.api.utils.IMessage;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 
-public enum Message {
+public enum Message implements IMessage {
 
 	PREFIX("§8(§6zMenu§8) "),
 	AND("and"),
