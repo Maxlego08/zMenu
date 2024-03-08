@@ -37,6 +37,7 @@
 # Unreleased
 
 - Add PlayerInteractEvent in DupeListener
+- Fix classic meta with PAPI color
 
 # 1.0.2.7
 

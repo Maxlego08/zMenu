@@ -15,22 +15,22 @@ import java.util.List;
 public class ClassicMeta extends ZUtils implements MetaUpdater {
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        itemMeta.setDisplayName(papi(color(text), player));
+        itemMeta.setDisplayName(color(papi(text, player)));
     }
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
-        itemMeta.setDisplayName(papi(color(text), offlineplayer));
+        itemMeta.setDisplayName(color(papi(text, offlineplayer)));
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        itemMeta.setLore(papi(color(lore), player));
+        itemMeta.setLore(color((papi(lore, player))));
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer) {
-        itemMeta.setLore(papi(color(lore), offlineplayer));
+        itemMeta.setLore(color(papi(lore, offlineplayer)));
 
     }
 
@@ -41,7 +41,7 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
-        player.sendTitle(color(title), color(subtitle), (int) start, (int) duration, (int) end);
+        player.sendTitle(color(papi(title, player)), color(papi(subtitle, player)), (int) start, (int) duration, (int) end);
     }
 
     @Override
