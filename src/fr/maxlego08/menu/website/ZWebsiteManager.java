@@ -300,7 +300,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.getId()), new JsonObject());
         request.setBearer(Token.token);
         request.setMethod("GET");
-        
+
         folder.mkdirs();
 
         request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
