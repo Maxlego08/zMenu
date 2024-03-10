@@ -286,23 +286,22 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
     public void downloadInventory(Player player, Inventory inventory, boolean forceDownload) {
 
-        player.closeInventory();
-        message(player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
-
-        HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.getId()), new JsonObject());
-        request.setBearer(Token.token);
-        request.setMethod("GET");
-
         File folder = getFolderPath(inventory);
-
-        folder.mkdirs();
-
         File file = new File(folder, inventory.getFileName() + ".yml");
 
         if (file.exists() && !forceDownload) {
             message(player, Message.WEBSITE_INVENTORY_EXIST);
             return;
         }
+
+        player.closeInventory();
+        message(player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
+
+        HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.getId()), new JsonObject());
+        request.setBearer(Token.token);
+        request.setMethod("GET");
+        
+        folder.mkdirs();
 
         request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
     }

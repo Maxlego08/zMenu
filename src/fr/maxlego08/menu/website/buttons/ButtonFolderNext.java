@@ -37,8 +37,7 @@ public class ButtonFolderNext extends ZButton {
         List<Folder> folders = manager.getFolders(folder);
 
         int folderPage = manager.getFolderPage();
-        int maxPage = getMaxPage(folders, this.slots.size());
-        System.out.println(maxPage + " - " + this.slots.size() + " - " + folders.size());
+        int maxPage = getMaxPage(folders, 5);
 
         if (folderPage < maxPage) {
             manager.openInventoriesInventory(player, manager.getInventoryPage(), folderPage + 1, folder.getId());
