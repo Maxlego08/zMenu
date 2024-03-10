@@ -8,27 +8,40 @@ import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
+import fr.maxlego08.menu.website.buttons.ButtonFolderBack;
+import fr.maxlego08.menu.website.buttons.ButtonFolderNext;
+import fr.maxlego08.menu.website.buttons.ButtonFolderPrevious;
+import fr.maxlego08.menu.website.buttons.ButtonFolders;
+import fr.maxlego08.menu.website.buttons.ButtonInventories;
 import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
-import fr.maxlego08.menu.website.inventories.InventoryMarketplace;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
-    private final String API_URL = "http://mib.test/api/v1/";
+    // private final String API_URL = "http://mib.test/api/v1/";
+    private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
     private final MenuPlugin plugin;
+    private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
     private boolean isDownloadResource = false;
     private long lastResourceUpdate = 0;
     private List<Resource> resources = new ArrayList<>();
+    private int folderPage = 1;
+    private int inventoryPage = 1;
+    private int currentFolderId = -1;
+    private int baseFolderId = 1;
 
     public ZWebsiteManager(MenuPlugin plugin) {
         super();
@@ -147,19 +160,155 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         localPlaceholder.register("marketplace_resources", (a, b) -> String.valueOf(this.resources.size()));
     }
 
-    private void openMarketplaceInventory(Player player) {
+    public void openMarketplaceInventory(Player player) {
         this.plugin.getInventoryManager().openInventory(player, this.plugin, "marketplace");
+    }
+
+    public void openInventoriesInventory(Player player, int inventorypage, int folderPage, int currentFolderId) {
+        this.inventoryPage = inventorypage;
+        this.folderPage = folderPage;
+        this.currentFolderId = currentFolderId;
+        this.plugin.getInventoryManager().openInventory(player, this.plugin, "inventories");
     }
 
     public void loadButtons(ButtonManager buttonManager) {
         buttonManager.register(new NoneLoader(this.plugin, ButtonMarketplace.class, "zmenu_marketplace_resources"));
+
+        buttonManager.register(new NoneLoader(this.plugin, ButtonFolders.class, "zmenu_builder_folders"));
+        buttonManager.register(new NoneLoader(this.plugin, ButtonFolderNext.class, "zmenu_builder_folder_next"));
+        buttonManager.register(new NoneLoader(this.plugin, ButtonFolderPrevious.class, "zmenu_builder_folder_previous"));
+        buttonManager.register(new NoneLoader(this.plugin, ButtonFolderBack.class, "zmenu_builder_folder_back"));
+
+        buttonManager.register(new NoneLoader(this.plugin, ButtonBuilderRefresh.class, "zmenu_builder_refresh"));
+        buttonManager.register(new NoneLoader(this.plugin, ButtonInventories.class, "zmenu_builder_inventories"));
     }
 
     public void loadInventories(InventoryManager inventoryManager) {
-        /*try {
-            inventoryManager.loadInventory(this.plugin, "website/marketplace.yml", InventoryMarketplace.class);
+        try {
+            // inventoryManager.loadInventory(this.plugin, "website/marketplace.yml", InventoryMarketplace.class);
+            inventoryManager.loadInventory(this.plugin, "website/inventories.yml");
         } catch (InventoryException exception) {
             exception.printStackTrace();
-        }*/
+        }
+    }
+
+    public void fetchInventories(Player player) {
+        if (Token.token == null) {
+            message(player, Message.WEBSITE_NOT_CONNECT);
+            return;
+        }
+
+        if (!this.folders.isEmpty()) {
+            openInventoriesInventory(player, 1, 1, this.baseFolderId);
+            return;
+        }
+
+        // Affichage d'un message d'attente
+        message(player, Message.WEBSITE_MARKETPLACE_WAIT);
+
+        JsonObject data = new JsonObject();
+        HttpRequest request = new HttpRequest(this.API_URL + "inventories", data);
+        request.setBearer(Token.token);
+        request.setMethod("GET");
+        request.submit(this.plugin, map -> {
+
+            boolean status = map.getOrDefault("status", false);
+            if (status) {
+                List<Map<String, Object>> folderMaps = (List<Map<String, Object>>) map.get("folders");
+
+                this.folders.clear();
+                for (Map<String, Object> folderMap : folderMaps) {
+                    Folder folder = Folder.fromMap(folderMap);
+                    this.folders.add(folder);
+                }
+
+                this.baseFolderId = this.folders.stream().filter(e -> e.getParentId() == -1).map(Folder::getId).findFirst().orElse(-1);
+
+                this.plugin.getScheduler().runTask(player.getLocation(), () -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
+            } else {
+                message(player, Message.WEBSITE_MARKETPLACE_ERROR);
+            }
+        });
+    }
+
+    public int getFolderPage() {
+        return folderPage;
+    }
+
+    public void setFolderPage(int folderPage) {
+        this.folderPage = folderPage;
+    }
+
+    public int getInventoryPage() {
+        return inventoryPage;
+    }
+
+    public void setInventoryPage(int inventoryPage) {
+        this.inventoryPage = inventoryPage;
+    }
+
+    public Optional<Folder> getCurrentFolder() {
+        return this.folders.stream().filter(e -> e.getId() == currentFolderId).findFirst();
+    }
+
+    public Optional<Folder> getFolder(int id) {
+        return this.folders.stream().filter(e -> e.getId() == id).findFirst();
+    }
+
+    public List<Folder> getFolders(Folder folder) {
+        return this.folders.stream().filter(e -> e.getParentId() == folder.getId()).collect(Collectors.toList());
+    }
+
+    public void loadPlaceholders() {
+        LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+        placeholder.register("folder_name", (player, args) -> {
+            Optional<Folder> optional = getCurrentFolder();
+            return optional.isPresent() ? optional.get().getName() : "Not found";
+        });
+    }
+
+    private String getFolderPath(Folder folder, String path) {
+        if (folder.getParentId() == -1) {
+            return path;
+        }
+        Optional<Folder> optional = getFolder(folder.getParentId());
+        if (optional.isPresent()) {
+            Folder parrentFolder = optional.get();
+            return getFolderPath(parrentFolder, folder.getName() + "/" + path);
+        }
+        return folder.getName() + "/" + path;
+    }
+
+    private File getFolderPath(Inventory inventory) {
+        Optional<Folder> optional = getFolder(inventory.getFolderId());
+        return optional.map(folder -> new File(this.plugin.getDataFolder(), "inventories/" + getFolderPath(folder, ""))).orElseGet(() -> new File(this.plugin.getDataFolder(), "inventories"));
+    }
+
+    public void downloadInventory(Player player, Inventory inventory, boolean forceDownload) {
+
+        player.closeInventory();
+        message(player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
+
+        HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.getId()), new JsonObject());
+        request.setBearer(Token.token);
+        request.setMethod("GET");
+
+        File folder = getFolderPath(inventory);
+
+        folder.mkdirs();
+
+        File file = new File(folder, inventory.getFileName() + ".yml");
+
+        if (file.exists() && !forceDownload) {
+            message(player, Message.WEBSITE_INVENTORY_EXIST);
+            return;
+        }
+
+        request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
+    }
+
+    public void refreshInventories(Player player) {
+        this.folders.clear();
+        this.fetchInventories(player);
     }
 }

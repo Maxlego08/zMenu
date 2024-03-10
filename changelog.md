@@ -33,6 +33,7 @@
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add open link with a book
+- [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
 # Unreleased
 

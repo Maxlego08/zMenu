@@ -357,7 +357,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return
      */
     protected int getMaxPage(Collection<?> items, int a) {
-        return (items.size() / a) + 1;
+        return (int) Math.ceil((double) items.size() / a);
     }
 
     /**

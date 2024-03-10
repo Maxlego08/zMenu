@@ -113,6 +113,7 @@ public class MenuPlugin extends ZPlugin {
         files.add("inventories/example_punish.yml");
 
         // files.add("website/marketplace.yml");
+        files.add("website/inventories.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");
@@ -230,6 +231,8 @@ public class MenuPlugin extends ZPlugin {
         Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
         Logger.info("");
 
+
+        websiteManager.loadPlaceholders();
 
         this.postEnable();
     }

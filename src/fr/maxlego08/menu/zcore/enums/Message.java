@@ -77,6 +77,7 @@ public enum Message implements IMessage {
     DESCRIPTION_PLAYERS_CLEAR_PLAYER("Clear player's data"),
 	DESCRIPTION_OPEN_MAIN_MENU("Open the main menu"),
 	DESCRIPTION_CREATE("Create a new config file"),
+	DESCRIPTION_INVENTORIES("Open inventories builder"),
 	
 	RELOAD("§aYou have just reloaded the configuration files. §8(§7%inventories% inventories§8)"),
 	RELOAD_INVENTORY("§aYou have just reloaded the inventories files. §8(§7%inventories% inventories§8)"),
@@ -107,7 +108,7 @@ public enum Message implements IMessage {
 	PLAYERS_DATA_GET_ERROR("§cCannot find the key §f%key%§c."),
 	PLAYERS_DATA_REMOVE_SUCCESS("§aYou have just deleted the §f%key% §for the §b%player%§a."),
 	PLAYERS_DATA_REMOVE_ERROR("§cCannot find the key §f%key%§c."),
-	
+
 	WEBSITE_LOGIN_ERROR_TOKEN("§cYour token seems invalid, please try again."),
 	WEBSITE_LOGIN_ERROR_ALREADY("§cYou are already connected to the site."),
 	WEBSITE_LOGIN_ERROR_INFO("§cAn error occurred during your connection, please try again."),
@@ -115,10 +116,14 @@ public enum Message implements IMessage {
 	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
 	WEBSITE_NOT_CONNECT("§cYou need to log into the site before you can do that."),
 	WEBSITE_MARKETPLACE_WAIT("§7Download resources, please wait before opening inventory."),
-	
+	WEBSITE_INVENTORY_WAIT("§7Download inventory §f%name%§7, please wait before opening inventory."),
+	WEBSITE_INVENTORY_EXIST("§cThe inventory already exists. Unable to download."),
+	WEBSITE_INVENTORY_SUCCESS("§aInventory %name%§a download successfully. §8(§7use /zm reload to load this inventory§8)"),
+	WEBSITE_INVENTORY_ERROR("§cAn error occurred while downloading the file."),
+	WEBSITE_MARKETPLACE_ERROR("§cUnable to retrieve data from the site, please try again."),
 	WEBSITE_DISCONNECT_SUCCESS("§cYou have just deleted the link to the site."), 
-	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."), 
-	
+	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."),
+
 	PLACEHOLDER_NEVER("never"),
 
 	LIST_EMPTY("§cNo inventory of available."),
