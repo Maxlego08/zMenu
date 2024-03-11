@@ -40,6 +40,7 @@
 - Add /zm inventories - Allows access to the inventories of the online inventory editor
 - Add PlayerInteractEvent in DupeListener
 - Fix classic meta with PAPI color
+- Fix NPE with ButtonOption
 
 # 1.0.2.7
 

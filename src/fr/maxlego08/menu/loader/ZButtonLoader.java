@@ -39,6 +39,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -245,7 +246,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
-        List<ButtonOption> buttonOptions = inventoryManager.getOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(option -> createInstance(entry.getKey(), option))).collect(Collectors.toList());
+        List<ButtonOption> buttonOptions = inventoryManager.getOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(option -> createInstance(entry.getKey(), option))).filter(Objects::nonNull).collect(Collectors.toList());
         buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, file));
         button.setOptions(buttonOptions);
 
