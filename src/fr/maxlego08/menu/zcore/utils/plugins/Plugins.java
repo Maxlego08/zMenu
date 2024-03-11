@@ -16,6 +16,7 @@ public enum Plugins {
 	ECO("eco"),
 
 	JOBS("Jobs"),
+	LUCKPERMS("LuckPerms"),
 	;
 
 	private final String name;

@@ -262,5 +262,11 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/Jobs5.2.2.3.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
