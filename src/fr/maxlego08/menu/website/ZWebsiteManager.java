@@ -18,6 +18,7 @@ import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -183,7 +184,29 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         buttonManager.register(new NoneLoader(this.plugin, ButtonInventories.class, "zmenu_builder_inventories"));
     }
 
+    private void loadFiles() {
+
+        List<String> files = new ArrayList<>();
+
+        // files.add("website/marketplace.yml");
+        files.add("website/inventories.yml");
+
+        files.forEach(filePath -> {
+            if (!new File(this.plugin.getDataFolder(), filePath).exists()) {
+
+                if (NMSUtils.isNewVersion()) {
+                    this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, false);
+                } else {
+                    this.plugin.saveResource(filePath, false);
+                }
+            }
+        });
+    }
+
     public void loadInventories(InventoryManager inventoryManager) {
+
+        this.loadFiles();
+
         try {
             // inventoryManager.loadInventory(this.plugin, "website/marketplace.yml", InventoryMarketplace.class);
             inventoryManager.loadInventory(this.plugin, "website/inventories.yml");
@@ -193,6 +216,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     public void fetchInventories(Player player) {
+
         if (Token.token == null) {
             message(player, Message.WEBSITE_NOT_CONNECT);
             return;
@@ -203,7 +227,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return;
         }
 
-        // Affichage d'un message d'attente
         message(player, Message.WEBSITE_MARKETPLACE_WAIT);
 
         JsonObject data = new JsonObject();

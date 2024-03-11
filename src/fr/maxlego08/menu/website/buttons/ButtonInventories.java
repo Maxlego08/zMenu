@@ -61,7 +61,7 @@ public class ButtonInventories extends ZButton {
         Placeholders placeholders = new Placeholders();
 
         placeholders.register("fileName", inventory.getFileName());
-        placeholders.register("name", inventory.getName());
+        placeholders.register("name", inventory.getName() == null ? "Inventory" : inventory.getName());
         placeholders.register("id", String.valueOf(inventory.getId()));
         placeholders.register("size", String.valueOf(inventory.getSize()));
         placeholders.register("createdAt", inventory.toCreateDate());
