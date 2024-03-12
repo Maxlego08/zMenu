@@ -37,6 +37,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
     private boolean isDownloadResource = false;
+    private boolean isDownloadInventories = false;
     private long lastResourceUpdate = 0;
     private List<Resource> resources = new ArrayList<>();
     private int folderPage = 1;
@@ -222,6 +223,12 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return;
         }
 
+        if (isDownloadInventories) {
+            message(player, Message.WEBSITE_ALREADY_INVENTORY);
+            return;
+        }
+        isDownloadInventories = true;
+
         if (!this.folders.isEmpty()) {
             openInventoriesInventory(player, 1, 1, this.baseFolderId);
             return;
@@ -235,6 +242,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         request.setMethod("GET");
         request.submit(this.plugin, map -> {
 
+            isDownloadInventories = false;
             boolean status = map.getOrDefault("status", false);
             if (status) {
                 List<Map<String, Object>> folderMaps = (List<Map<String, Object>>) map.get("folders");
@@ -317,6 +325,12 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return;
         }
 
+        if (isDownloadInventories) {
+            message(player, Message.WEBSITE_ALREADY_INVENTORY);
+            return;
+        }
+        isDownloadInventories = true;
+
         player.closeInventory();
         message(player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
 
@@ -326,7 +340,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         folder.mkdirs();
 
-        request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
+        request.submitForFileDownload(this.plugin, file, isSuccess -> {
+            isDownloadInventories = false;
+            message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName());
+        });
     }
 
     public void refreshInventories(Player player) {

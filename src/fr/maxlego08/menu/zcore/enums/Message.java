@@ -115,6 +115,7 @@ public enum Message implements IMessage {
 	WEBSITE_LOGIN_PROCESS("§7Connection in progress, please wait."),
 	WEBSITE_LOGIN_SUCCESS("§aYou have successfully connected to the site.", "§aYou can now access your purchased resources and the inventory editor."),
 	WEBSITE_NOT_CONNECT("§cYou need to log into the site before you can do that."),
+	WEBSITE_ALREADY_INVENTORY("§cYou are already performing this action, please wait."),
 	WEBSITE_MARKETPLACE_WAIT("§7Download resources, please wait before opening inventory."),
 	WEBSITE_INVENTORY_WAIT("§7Download inventory §f%name%§7, please wait before opening inventory."),
 	WEBSITE_INVENTORY_EXIST("§cThe inventory already exists. Unable to download."),
