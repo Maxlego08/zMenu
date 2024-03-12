@@ -3,8 +3,7 @@ size: 54
 items:
   decorations:
     item:
-      material: STAINED_GLASS_PANE
-      data: 8
+      material: GRAY_STAINED_GLASS_PANE
       name: ''
     slots:
       - 36-44
@@ -39,6 +38,28 @@ items:
         - " &f⌂ #e6fff3Inventories#8c8c8c: #92bed8%quantity%"
         - ""
         - " #8c8c8c• #92bed8Click #e6fff3to open the folder"
+
+  inventoryPrevious:
+    type: ZMENU_BUILDER_INVENTORY_PREVIOUS
+    slot: 27
+    item:
+      material: PLAYER_HEAD
+      url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjllYTFkODYyNDdmNGFmMzUxZWQxODY2YmNhNmEzMDQwYTA2YzY4MTc3Yzc4ZTQyMzE2YTEwOThlNjBmYjdkMyJ9fX0="
+      name: "#18f54c⬅ &fᴘʀᴇᴠɪᴏᴜs ᴘᴀɢᴇ ɪɴᴠᴇɴᴛᴏʀʏ"
+      lore:
+        - ""
+        - "&f➥ &7Click to access the #18f54cprevious page"
+
+  inventoryNext:
+    type: ZMENU_BUILDER_INVENTORY_NEXT
+    slot: 35
+    item:
+      material: PLAYER_HEAD
+      url: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODI3MWE0NzEwNDQ5NWUzNTdjM2U4ZTgwZjUxMWE5ZjEwMmIwNzAwY2E5Yjg4ZTg4Yjc5NWQzM2ZmMjAxMDVlYiJ9fX0="
+      name: "#18f54c➡ &fɴᴇxᴛ ᴘᴀɢᴇ ɪɴᴠᴇɴᴛᴏʀʏ"
+      lore:
+        - ""
+        - "&f➥ &7Click to access the #18f54cnext page"
 
   folderPrevious:
     type: ZMENU_BUILDER_FOLDER_PREVIOUS

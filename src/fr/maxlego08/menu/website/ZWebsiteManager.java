@@ -8,12 +8,15 @@ import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
 import fr.maxlego08.menu.website.buttons.ButtonFolderBack;
 import fr.maxlego08.menu.website.buttons.ButtonFolderNext;
 import fr.maxlego08.menu.website.buttons.ButtonFolderPrevious;
 import fr.maxlego08.menu.website.buttons.ButtonFolders;
 import fr.maxlego08.menu.website.buttons.ButtonInventories;
+import fr.maxlego08.menu.website.buttons.ButtonInventoryNext;
+import fr.maxlego08.menu.website.buttons.ButtonInventoryPrevious;
 import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -37,7 +40,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
     private boolean isDownloadResource = false;
-    private boolean isDownloadInventories = false;
     private long lastResourceUpdate = 0;
     private List<Resource> resources = new ArrayList<>();
     private int folderPage = 1;
@@ -183,6 +185,8 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         buttonManager.register(new NoneLoader(this.plugin, ButtonBuilderRefresh.class, "zmenu_builder_refresh"));
         buttonManager.register(new NoneLoader(this.plugin, ButtonInventories.class, "zmenu_builder_inventories"));
+        buttonManager.register(new NoneLoader(this.plugin, ButtonInventoryPrevious.class, "zmenu_builder_inventory_previous"));
+        buttonManager.register(new NoneLoader(this.plugin, ButtonInventoryNext.class, "zmenu_builder_inventory_next"));
     }
 
     private void loadFiles() {
@@ -193,13 +197,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         files.add("website/inventories.yml");
 
         files.forEach(filePath -> {
-            if (!new File(this.plugin.getDataFolder(), filePath).exists()) {
-
-                if (NMSUtils.isNewVersion()) {
-                    this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, false);
-                } else {
-                    this.plugin.saveResource(filePath, false);
-                }
+            if (NMSUtils.isNewVersion()) {
+                this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, !Config.enableDebug);
+            } else {
+                this.plugin.saveResource(filePath, !Config.enableDebug);
             }
         });
     }
@@ -223,12 +224,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return;
         }
 
-        if (isDownloadInventories) {
-            message(player, Message.WEBSITE_ALREADY_INVENTORY);
-            return;
-        }
-        isDownloadInventories = true;
-
         if (!this.folders.isEmpty()) {
             openInventoriesInventory(player, 1, 1, this.baseFolderId);
             return;
@@ -242,7 +237,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         request.setMethod("GET");
         request.submit(this.plugin, map -> {
 
-            isDownloadInventories = false;
             boolean status = map.getOrDefault("status", false);
             if (status) {
                 List<Map<String, Object>> folderMaps = (List<Map<String, Object>>) map.get("folders");
@@ -325,12 +319,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return;
         }
 
-        if (isDownloadInventories) {
-            message(player, Message.WEBSITE_ALREADY_INVENTORY);
-            return;
-        }
-        isDownloadInventories = true;
-
         player.closeInventory();
         message(player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
 
@@ -341,7 +329,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         folder.mkdirs();
 
         request.submitForFileDownload(this.plugin, file, isSuccess -> {
-            isDownloadInventories = false;
             message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName());
         });
     }
