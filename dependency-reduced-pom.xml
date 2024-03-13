@@ -242,7 +242,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <xseries.version>9.4.0</xseries.version>
+    <xseries.version>9.9.0</xseries.version>
     <maven.compiler.source>8</maven.compiler.source>
     <folialib.version>0.2.5</folialib.version>
     <maven.compiler.target>8</maven.compiler.target>
