@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -27,7 +28,7 @@ public abstract class MessageUtils extends LocationUtils {
      * @param message
      * @param args
      */
-    protected void messageWO(CommandSender sender, Message message, Object... args) {
+    protected void messageWO(CommandSender sender, IMessage message, Object... args) {
         Meta.meta.sendMessage(sender, getMessage(message, args));
     }
 
@@ -60,7 +61,7 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void message(CommandSender sender, Message message, Object... args) {
+    protected void message(CommandSender sender, IMessage message, Object... args) {
 
         if (sender instanceof ConsoleCommandSender) {
             if (message.getMessages().size() > 0) {
@@ -114,7 +115,7 @@ public abstract class MessageUtils extends LocationUtils {
      * @param message
      * @param args
      */
-    protected void broadcast(Message message, Object... args) {
+    protected void broadcast(IMessage message, Object... args) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             message(player, message, args);
         }
@@ -126,11 +127,11 @@ public abstract class MessageUtils extends LocationUtils {
      * @param message
      * @param args
      */
-    protected void actionMessage(Player player, Message message, Object... args) {
+    protected void actionMessage(Player player, IMessage message, Object... args) {
         ActionBar.sendActionBar(player, getMessage(message, args));
     }
 
-    protected String getMessage(Message message, Object... args) {
+    protected String getMessage(IMessage message, Object... args) {
         return getMessage(message.getMessage(), args);
     }
 

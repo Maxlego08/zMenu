@@ -45,6 +45,7 @@ import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.LuckPermPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
@@ -262,6 +263,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
         if (this.plugin.isEnable(Plugins.JOBS)) {
             buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
+        }
+        if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
+            buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
         }
 
         // Load actions

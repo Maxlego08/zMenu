@@ -5,15 +5,11 @@ import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
-import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
+import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
-import fr.maxlego08.menu.command.commands.website.CommandMenuMarketplace;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 public class CommandMenu extends VCommand {
 
@@ -32,11 +28,12 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuGiveOpenItem(plugin));
         this.addSubCommand(new CommandMenuEditor(plugin));
 
-		// Disable website connexion for beta
-		/*this.addSubCommand(new CommandMenuDownload(plugin));
-		this.addSubCommand(new CommandMenuLogin(plugin));
-		this.addSubCommand(new CommandMenuDisconnect(plugin));
-		this.addSubCommand(new CommandMenuMarketplace(plugin));*/
+        // Disable website connexion for beta
+        // this.addSubCommand(new CommandMenuDownload(plugin));
+        this.addSubCommand(new CommandMenuLogin(plugin));
+        this.addSubCommand(new CommandMenuDisconnect(plugin));
+        this.addSubCommand(new CommandMenuInventories(plugin));
+        // this.addSubCommand(new CommandMenuMarketplace(plugin));
 
 
         if (Bukkit.getPluginManager().getPlugin("zMenuConvert") == null) {

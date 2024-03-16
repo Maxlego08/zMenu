@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.2.7</version>
+  <version>1.0.2.8</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -228,6 +228,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>net.luckperms</groupId>
+      <artifactId>api</artifactId>
+      <version>5.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.Zrips</groupId>
       <artifactId>Jobs</artifactId>
       <version>5.2.2.3</version>
@@ -236,7 +242,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <xseries.version>9.4.0</xseries.version>
+    <xseries.version>9.9.0</xseries.version>
     <maven.compiler.source>8</maven.compiler.source>
     <folialib.version>0.2.5</folialib.version>
     <maven.compiler.target>8</maven.compiler.target>

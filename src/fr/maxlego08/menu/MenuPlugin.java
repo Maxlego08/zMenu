@@ -112,8 +112,6 @@ public class MenuPlugin extends ZPlugin {
         files.add("inventories/pro_inventory.yml");
         files.add("inventories/example_punish.yml");
 
-        // files.add("website/marketplace.yml");
-
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");
 
@@ -129,7 +127,7 @@ public class MenuPlugin extends ZPlugin {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
 
                     if (NMSUtils.isNewVersion()) {
-                        saveResource(filePath.replace("inventories/", "inventories/1_13/").replace("website/", "website/1_13/"), filePath, false);
+                        saveResource(filePath.replace("inventories/", "inventories/1_13/"), filePath, false);
                     } else {
                         saveResource(filePath, false);
                     }
@@ -230,6 +228,8 @@ public class MenuPlugin extends ZPlugin {
         Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
         Logger.info("");
 
+
+        websiteManager.loadPlaceholders();
 
         this.postEnable();
     }

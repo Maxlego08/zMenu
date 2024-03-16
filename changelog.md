@@ -32,8 +32,17 @@
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
 - [ ] Can split a file into several and thus avoid having too large files
+- [ ] Add open link with a book
+- [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
 # Unreleased
+
+# 1.0.2.8
+
+- Add /zm inventories - Allows access to the inventories of the online inventory editor
+- Add PlayerInteractEvent in DupeListener
+- Fix classic meta with PAPI color
+- Fix NPE with ButtonOption
 
 # 1.0.2.7
 
@@ -57,9 +66,10 @@
 
 - Add BlockPlaceEvent for Anti Dupe
 - Add placeholder %zmenu_test% for testing
-- Fix sound action, pitch and volume was reversed
 - Add ``job`` requirement. Check if the player has a job with JobsReborn plugins
 - Added a cache on placeholders. By default, the cache is 500ms. That corresponds to opening a menu. So if you have several times the same placeholder used, it will only be called once.
+- Fix sound action, pitch and volume was reversed
+- Fix commands async
 
 # 1.0.2.5
 

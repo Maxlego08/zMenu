@@ -7,11 +7,12 @@ version: ${project.version}
 api-version: 1.13
 contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes ]
 softdepend:
-- HeadDatabase
-- PlaceholderAPI
-- zTranslator
-- ItemsAdder
-- Slimefun
-- eco
-- Jobs
+  - HeadDatabase
+  - PlaceholderAPI
+  - zTranslator
+  - ItemsAdder
+  - Slimefun
+  - eco
+  - Jobs
+  - LuckPerms
 folia-supported: true

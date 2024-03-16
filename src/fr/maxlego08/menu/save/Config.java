@@ -12,7 +12,7 @@ import java.util.Map;
 public class Config implements Savable {
 
     // Enable debug, allows you to display errors in the console that would normally be hidden.
-    public static boolean enableDebug = true;
+    public static boolean enableDebug = false;
 
     // Enable debug time, allows you to display the code execution time in nanosecond, perfect for testing the effectiveness of the plugin.
     public static boolean enableDebugTime = false;

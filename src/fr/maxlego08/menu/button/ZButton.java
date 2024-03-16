@@ -237,7 +237,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(player, event.getClick());
+        this.execute(player, event.getClick(), inventory.getPlugin().getScheduler());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.save;
 
 import fr.maxlego08.menu.zcore.enums.Message;
-import fr.maxlego08.menu.zcore.enums.MessageType;
+import fr.maxlego08.menu.api.enums.MessageType;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;

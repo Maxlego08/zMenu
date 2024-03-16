@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.maxlego08</groupId>
     <artifactId>zmenu</artifactId>
-    <version>1.0.2.7</version>
+    <version>1.0.2.8</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <xseries.version>9.4.0</xseries.version>
+        <xseries.version>9.9.0</xseries.version>
         <folialib.version>0.2.5</folialib.version>
         <item-nbt-api.version>2.12.2</item-nbt-api.version>
     </properties>
@@ -261,6 +261,12 @@
             <version>5.2.2.3</version> <!-- Change the LATEST to the current version of jobs -->
             <scope>system</scope>
             <systemPath>${basedir}/libs/Jobs5.2.2.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

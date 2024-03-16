@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.button;
 
 import fr.maxlego08.menu.api.button.PerformButton;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.save.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -91,22 +92,24 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     }
 
     @Override
-    public void execute(Player player, ClickType type) {
+    public void execute(Player player, ClickType type, ZScheduler scheduler) {
 
-        if (type.equals(ClickType.RIGHT)) {
-            this.execute(player, player, this.consoleRightCommands);
-        }
+        scheduler.runTask(null, () -> {
+            if (type.equals(ClickType.RIGHT)) {
+                this.execute(player, player, this.consoleRightCommands);
+            }
 
-        if (type.equals(ClickType.LEFT)) {
-            this.execute(player, player, this.consoleLeftCommands);
-        }
+            if (type.equals(ClickType.LEFT)) {
+                this.execute(player, player, this.consoleLeftCommands);
+            }
 
-        this.execute(player, player, this.commands);
-        this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands);
+            this.execute(player, player, this.commands);
+            this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands);
 
-        if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
-            this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands);
-        }
+            if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
+                this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands);
+            }
+        });
     }
 
     /**
@@ -123,9 +126,11 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
                 if (executor instanceof Player && Config.enablePlayerCommandInChat) {
                     player.chat("/" + papi(command, player));
                 } else {
+
                     Bukkit.dispatchCommand(executor, papi(command, player));
                 }
-            } catch (Exception ignored) {
+            } catch (Exception exception) {
+                exception.printStackTrace();
                 // Ignore Async dispatch Exception on Folia
             }
         });
