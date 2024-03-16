@@ -37,6 +37,8 @@
 
 # Unreleased
 
+# 1.0.2.8
+
 - Add /zm inventories - Allows access to the inventories of the online inventory editor
 - Add PlayerInteractEvent in DupeListener
 - Fix classic meta with PAPI color
