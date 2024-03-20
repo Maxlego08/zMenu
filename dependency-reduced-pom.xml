@@ -228,6 +228,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.Maxlego08</groupId>
+      <artifactId>zHead</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>net.luckperms</groupId>
       <artifactId>api</artifactId>
       <version>5.4</version>

@@ -5,6 +5,7 @@ public enum Plugins {
 	VAULT("Vault"),
 	ESSENTIALS("Essentials"),
 	HEADDATABASE("HeadDatabase"), 
+	ZHEAD("zHead"),
 	PLACEHOLDER("PlaceholderAPI"),
 	CITIZENS("Citizens"),
 	TRANSLATIONAPI("TranslationAPI"),

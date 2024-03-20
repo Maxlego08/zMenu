@@ -184,7 +184,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param classz Class provider
      * @return nes provider
      */
-    protected <T> T getProvider(Class<T> classz) {
+    public <T> T getProvider(Class<T> classz) {
         RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classz);
         if (provider == null) {
             log.log("Unable to retrieve the provider " + classz, LogType.WARNING);

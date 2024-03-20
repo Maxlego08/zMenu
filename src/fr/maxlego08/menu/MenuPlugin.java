@@ -25,6 +25,7 @@ import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
 import fr.maxlego08.menu.loader.materials.NovaLoader;
 import fr.maxlego08.menu.loader.materials.OraxenLoader;
 import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
+import fr.maxlego08.menu.loader.materials.ZHeadLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -171,6 +172,9 @@ public class MenuPlugin extends ZPlugin {
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
         if (this.isEnable(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
+        }
+        if (this.isEnable(Plugins.ZHEAD)) {
+            this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
         }
         if (this.isEnable(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
