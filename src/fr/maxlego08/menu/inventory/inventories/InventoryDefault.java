@@ -2,6 +2,7 @@ package fr.maxlego08.menu.inventory.inventories;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -61,10 +62,12 @@ public class InventoryDefault extends VInventory {
         this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).collect(Collectors.toList()));
         this.buttons.addAll(this.inventory.sortButtons(page, args));
 
-
         this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
+
+        InventoryManager manager = this.plugin.getInventoryManager();
+        manager.setPlayerPage(player, page, maxPage);
 
         // Create inventory
         String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);

@@ -37,6 +37,9 @@
 
 # Unreleased
 
+- Create new placeholder ``%zmenu_player_page%``, return player page
+- Create new placeholder ``%zmenu_player_max_page%&``, return player max page
+
 # 1.0.2.8
 
 - Add /zm inventories - Allows access to the inventories of the online inventory editor

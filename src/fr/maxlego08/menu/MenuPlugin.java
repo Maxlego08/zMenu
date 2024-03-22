@@ -202,6 +202,8 @@ public class MenuPlugin extends ZPlugin {
 
         this.websiteManager.registerPlaceholders();
         localPlaceholder.register("test", (a, b) -> "&ctest");
+        localPlaceholder.register("player_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player)));
+        localPlaceholder.register("player_max_page", (player, s) -> String.valueOf(this.inventoryManager.getMaxPage(player)));
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
