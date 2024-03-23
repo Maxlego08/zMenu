@@ -71,9 +71,13 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         inventoryMethod.setAccessible(true);
     }
 
+    private TextDecoration.State getState(String text) {
+        return text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>") ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
+    }
+
     private void updateDisplayName(ItemMeta itemMeta, String text) {
         Component component = this.cache.get(text, () -> {
-            return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
+            return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)); // We will force the italics in false, otherwise it will activate for no reason
         });
         try {
             nameMethod.invoke(itemMeta, component);
@@ -106,7 +110,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         List<Component> components = lore.stream().map(text -> {
             String result = papi(text, offlinePlayer);
             return this.cache.get(result, () -> {
-                return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE); // We will force the italics in false, otherwise it will activate for no reason
+                return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, getState(result)); // We will force the italics in false, otherwise it will activate for no reason
             });
         }).collect(Collectors.toList());
 

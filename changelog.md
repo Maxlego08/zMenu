@@ -40,6 +40,7 @@
 - Create new placeholder ``%zmenu_player_page%``, return player page
 - Create new placeholder ``%zmenu_player_max_page%&``, return player max page
 - Change NEXT and PREVIOUS button. If you click right you will go directly to the first or last page.
+- Improve MiniMessage format with italic text
 
 # 1.0.2.8
 
