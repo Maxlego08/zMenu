@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.players;
 
+import fr.maxlego08.head.placeholder.ReturnConsumer;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
@@ -11,24 +12,29 @@ import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
 
 public class ZDataManager implements DataManager {
 
     private static Map<UUID, ZPlayerData> players = new HashMap<>();
     private final transient MenuPlugin plugin;
+    private transient Map<String, String> defaultValues = new HashMap<>();
     private transient long lastSave;
 
-    /**
-     * @param plugin
-     */
     public ZDataManager(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
+        this.defaultValues = new HashMap<>();
     }
 
     @Override
@@ -122,74 +128,58 @@ public class ZDataManager implements DataManager {
         this.autoSave();
     }
 
+    @Override
+    public void loadDefaultValues() {
+        File file = new File(plugin.getDataFolder(), "default_values.yml");
+        if (!file.exists()) {
+            this.plugin.saveResource("default_values.yml", false);
+        }
+
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection configurationSection = configuration.getConfigurationSection("values");
+        if (configurationSection == null) return;
+
+        this.defaultValues.clear();
+        configurationSection.getKeys(false).forEach(key -> this.defaultValues.put(key, configuration.getString("values." + key)));
+    }
+
     public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
 
         localPlaceholder.register("player_key_exist_", (offlinePlayer, key) -> {
 
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) {
-                return "false";
-            }
+            if (!optional.isPresent()) return "false";
 
             PlayerData playerData = optional.get();
             return String.valueOf(playerData.containsKey(key));
 
         });
 
-        localPlaceholder.register("player_value_", (offlinePlayer, key) -> {
+        localPlaceholder.register("player_value_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> data.getValue().toString()));
 
-            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) {
-                return "Key '" + key + "' doesn't exist for this player";
-            }
-
-            PlayerData playerData = optional.get();
-            if (!playerData.containsKey(key)) {
-                return "Key '" + key + "' doesn't exist for this player";
-            }
-
-            Data data = playerData.getData(key).get();
-            return data.getValue().toString();
-        });
-
-        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> {
-
-            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) {
-                return "Key '" + key + "' doesn't exist for this player";
-            }
-
-            PlayerData playerData = optional.get();
-            if (!playerData.containsKey(key)) {
-                return "Key '" + key + "' doesn't exist for this player";
-            }
-
-            Data data = playerData.getData(key).get();
-
+        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> {
             if (data.getExpiredAt() <= 0) {
                 return Message.PLACEHOLDER_NEVER.getMessage();
             }
 
             long seconds = Math.abs(System.currentTimeMillis() - data.getExpiredAt()) / 1000;
             return TimerBuilder.getStringTime(seconds);
-        });
+        }));
 
-        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> {
+        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> String.valueOf(data.getExpiredAt())));
+    }
 
-            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) {
-                return "Key '" + key + "' doesn't exist for this player";
-            }
+    private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, ReturnConsumer<Data, String> consumer) {
+        Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
+        if (!optional.isPresent()) return getDefaultKey(key);
 
-            PlayerData playerData = optional.get();
-            if (!playerData.containsKey(key)) {
-                return "Key '" + key + "' doesn't exist for this player";
-            }
+        PlayerData playerData = optional.get();
+        Optional<Data> optionalData = playerData.getData(key);
+        return optionalData.isPresent() ? consumer.accept(optionalData.get()) : getDefaultKey(key);
+    }
 
-            Data data = playerData.getData(key).get();
-            return String.valueOf(data.getExpiredAt());
-        });
-
+    private String getDefaultKey(String key) {
+        return this.defaultValues.containsKey(key) ? this.defaultValues.get(key) : "Key '" + key + "' doesn't exist for this player";
     }
 
 }

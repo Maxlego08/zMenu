@@ -235,7 +235,8 @@ public class MenuPlugin extends ZPlugin {
         Logger.info("");
 
 
-        websiteManager.loadPlaceholders();
+        this.websiteManager.loadPlaceholders();
+        this.dataManager.loadDefaultValues();
 
         this.postEnable();
     }

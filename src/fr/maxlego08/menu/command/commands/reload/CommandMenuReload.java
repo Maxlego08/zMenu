@@ -30,7 +30,6 @@ public class CommandMenuReload extends VCommand {
         Config.getInstance().load(plugin.getPersist());
 
         plugin.getVInventoryManager().close();
-
         plugin.getPatternManager().loadPatterns();
 
         inventoryManager.deleteInventories(plugin);
@@ -38,6 +37,8 @@ public class CommandMenuReload extends VCommand {
 
         CommandManager commandManager = plugin.getCommandManager();
         commandManager.loadCommands();
+
+        plugin.getDataManager().loadDefaultValues();
 
         message(this.sender, Message.RELOAD, "%inventories%", inventoryManager.getInventories(plugin).size());
 

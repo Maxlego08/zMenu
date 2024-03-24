@@ -34,6 +34,7 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
+- [ ] Be able to set default values for player data
 
 # Unreleased
 
@@ -41,6 +42,7 @@
 - Create new placeholder ``%zmenu_player_max_page%&``, return player max page
 - Change NEXT and PREVIOUS button. If you click right you will go directly to the first or last page.
 - Improve MiniMessage format with italic text
+- Create new file: `default_values.yml`, it will contain all the default values for the placeholders of the player data.
 
 # 1.0.2.8
 
