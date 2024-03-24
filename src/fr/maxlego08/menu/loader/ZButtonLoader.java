@@ -18,6 +18,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
@@ -76,8 +77,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         // Using the pattern file to load the button
         if (patternSection != null) {
 
-            Map<String, Object> placeholders = new HashMap<>();
-            patternSection.getKeys(false).forEach(key -> placeholders.put(key, patternSection.get(key)));
+            Map<String, Object> mapPlaceholders = new HashMap<>();
+            patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
             String fileName = configuration.getString(path + "pattern.fileName");
             File patternFile = new File(this.plugin.getDataFolder(), "patterns/" + fileName + ".yml");
@@ -90,12 +91,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
                 BufferedReader input = new BufferedReader(reader);
                 StringBuilder builder = new StringBuilder();
+                Placeholders placeholders = new Placeholders();
 
                 String line;
                 try {
                     while ((line = input.readLine()) != null) {
 
-                        for (Map.Entry<String, Object> replacement : placeholders.entrySet()) {
+                        for (Map.Entry<String, Object> replacement : mapPlaceholders.entrySet()) {
                             String key = replacement.getKey();
                             Object value = replacement.getValue();
 
@@ -103,14 +105,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                                 if (value instanceof List<?> && line.contains("%" + key + "%")) {
                                     String finalLine = line;
                                     ((List<?>) value).forEach(currentValue -> {
-                                        String currentElement = finalLine.replace("%" + replacement.getKey() + "%", currentValue.toString());
+                                        String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
                                         builder.append(currentElement);
                                         builder.append('\n');
                                     });
 
                                     line = null;
                                 } else {
-                                    line = line.replace("%" + key + "%", value.toString());
+                                    line = placeholders.parse(line, key, value.toString());
                                 }
                             }
                         }
