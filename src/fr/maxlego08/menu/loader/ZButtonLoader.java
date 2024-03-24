@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
+import com.google.common.base.Charsets;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
@@ -34,9 +35,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,6 +70,65 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
         DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue();
+
+        ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
+
+        // Using the pattern file to load the button
+        if (patternSection != null) {
+
+            Map<String, String> placeholders = new HashMap<>();
+            patternSection.getKeys(false).forEach(key -> placeholders.put(key, patternSection.getString(key)));
+
+            String fileName = configuration.getString(path + "pattern.fileName");
+            File patternFile = new File(this.plugin.getDataFolder(), "patterns/" + fileName + ".yml");
+
+            YamlConfiguration testConfiguration = new YamlConfiguration();
+
+            try {
+                FileInputStream stream = new FileInputStream(patternFile);
+                Reader reader = new InputStreamReader(stream, Charsets.UTF_8);
+
+                BufferedReader input = new BufferedReader(reader);
+                StringBuilder builder = new StringBuilder();
+
+                String line;
+                try {
+                    while ((line = input.readLine()) != null) {
+
+                        for (Map.Entry<String, String> replacement : placeholders.entrySet()) {
+                            String key = replacement.getKey();
+                            String value = replacement.getValue();
+                            if (value.contains("\n") && line.contains("%" + key + "%")) {
+
+                                String[] lines = value.split("\n");
+                                for (String currentValue : lines) {
+                                    String currentElement = line.replace("%" + replacement.getKey() + "%", currentValue);
+                                    builder.append(currentElement);
+                                    builder.append('\n');
+                                }
+
+                                line = null;
+                            } else {
+                                line = line.replace("%" + key + "%", value);
+                            }
+                        }
+
+                        if (line != null) {
+                            builder.append(line);
+                            builder.append('\n');
+                        }
+                    }
+                } finally {
+                    input.close();
+                }
+
+                testConfiguration.loadFromString(builder.toString());
+
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            return this.load(testConfiguration, "button.", buttonName);
+        }
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);

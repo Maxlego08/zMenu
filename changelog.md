@@ -43,6 +43,7 @@
 - Change NEXT and PREVIOUS button. If you click right you will go directly to the first or last page.
 - Improve MiniMessage format with italic text
 - Create new file: `default_values.yml`, it will contain all the default values for the placeholders of the player data.
+- Create pattern for Button. You can create a pattern file for a button with placeholders. And in your inventory, just call the pattern with a placeholder list. The placeholders will be replaced by your values and the button will be loaded with the new values. Thus, you can have dozens of similar buttons while reducing your configurations by several hundred lines.
 
 # 1.0.2.8
 
