@@ -76,8 +76,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         // Using the pattern file to load the button
         if (patternSection != null) {
 
-            Map<String, String> placeholders = new HashMap<>();
-            patternSection.getKeys(false).forEach(key -> placeholders.put(key, patternSection.getString(key)));
+            Map<String, Object> placeholders = new HashMap<>();
+            patternSection.getKeys(false).forEach(key -> placeholders.put(key, patternSection.get(key)));
 
             String fileName = configuration.getString(path + "pattern.fileName");
             File patternFile = new File(this.plugin.getDataFolder(), "patterns/" + fileName + ".yml");
@@ -95,21 +95,23 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 try {
                     while ((line = input.readLine()) != null) {
 
-                        for (Map.Entry<String, String> replacement : placeholders.entrySet()) {
+                        for (Map.Entry<String, Object> replacement : placeholders.entrySet()) {
                             String key = replacement.getKey();
-                            String value = replacement.getValue();
-                            if (value.contains("\n") && line.contains("%" + key + "%")) {
+                            Object value = replacement.getValue();
 
-                                String[] lines = value.split("\n");
-                                for (String currentValue : lines) {
-                                    String currentElement = line.replace("%" + replacement.getKey() + "%", currentValue);
-                                    builder.append(currentElement);
-                                    builder.append('\n');
+                            if (line != null) {
+                                if (value instanceof List<?> && line.contains("%" + key + "%")) {
+                                    String finalLine = line;
+                                    ((List<?>) value).forEach(currentValue -> {
+                                        String currentElement = finalLine.replace("%" + replacement.getKey() + "%", currentValue.toString());
+                                        builder.append(currentElement);
+                                        builder.append('\n');
+                                    });
+
+                                    line = null;
+                                } else {
+                                    line = line.replace("%" + key + "%", value.toString());
                                 }
-
-                                line = null;
-                            } else {
-                                line = line.replace("%" + key + "%", value);
                             }
                         }
 
