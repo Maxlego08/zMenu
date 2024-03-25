@@ -70,6 +70,8 @@ public enum Message implements IMessage {
     DESCRIPTION_EDITOR("Open zmenu online editor"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
     DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration"),
+    DESCRIPTION_PLAYERS_ADD("Add a number to a value, works only for numbers."),
+    DESCRIPTION_PLAYERS_SUBTRACT("Subtract a number to a value, works only for numbers."),
     DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
     DESCRIPTION_PLAYERS_GET("Get player data"),
     DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player"),
@@ -98,6 +100,8 @@ public enum Message implements IMessage {
 	PLAYERS_DATA_CLEAR_PLAYER("§aYou have just deleted the player's data §f%player%§a."),
 	
 	PLAYERS_DATA_SET("§aYou have just added a data for the §b%player% §a with the §f%key%§a."),
+	PLAYERS_DATA_ADD("§aYou have just added a data for the §b%player% §a with the §f%key%§a."),
+	PLAYERS_DATA_SUBTRACT("§aYou have just subtract a data for the §b%player% §a with the §f%key%§a."),
 	PLAYERS_DATA_KEYS_SUCCESS("§aPlayer's Key §f%player%§8: §7%keys%"),
 	PLAYERS_DATA_KEYS_EMPTY("§cThe §f%player% §chas no key."),
 	PLAYERS_DATA_GET_SUCCESS(

@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.players.Data;
 public class ZData implements Data {
 
     private final String key;
-    private final Object value;
+    private Object value;
     private final long expiredAt;
 
     /**

@@ -33,4 +33,8 @@ public interface Data {
      */
     boolean isExpired();
 
+    void add(int amount);
+
+    void remove(int amount);
+
 }
