@@ -40,4 +40,16 @@ public class ZData implements Data {
         return this.expiredAt != 0 && System.currentTimeMillis() > this.expiredAt;
     }
 
+    @Override
+    public void add(int amount) {
+        int value = Integer.parseInt(this.value.toString());
+        this.value = value + amount;
+    }
+
+    @Override
+    public void remove(int amount) {
+        int value = Integer.parseInt(this.value.toString());
+        this.value = value - amount;
+    }
+
 }
