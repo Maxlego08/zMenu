@@ -88,6 +88,14 @@ public abstract class ZUtils extends MessageUtils {
         }
     }
 
+    protected int parseInt(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception exception) {
+            return defaultValue;
+        }
+    }
+
     protected int getInventorySizeByMatrix(List<String> matrix) {
         return Math.min(matrix.size() * 9, 54);
     }

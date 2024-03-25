@@ -158,15 +158,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 String[] strings = slotString.split("-");
                 page = Integer.parseInt(strings[0]);
                 slot = Integer.parseInt(strings[1]);
-
             } else {
-                slot = configuration.getInt(path + "slot", defaultButtonValue.getSlot());
-                page = configuration.getInt(path + "page", defaultButtonValue.getPage());
-            }
 
-        } catch (Exception e) {
-            slot = configuration.getInt(path + "slot", defaultButtonValue.getSlot());
-            page = configuration.getInt(path + "page", defaultButtonValue.getPage());
+                slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+                page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
+            }
+        } catch (Exception ignored) {
+            slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+            page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
         }
 
         page = Math.max(page, 1);
