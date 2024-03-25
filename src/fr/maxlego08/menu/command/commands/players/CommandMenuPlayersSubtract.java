@@ -17,8 +17,8 @@ public class CommandMenuPlayersSubtract extends VCommand {
     public CommandMenuPlayersSubtract(MenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_PLAYERS);
-        this.setDescription(Message.DESCRIPTION_PLAYERS_ADD);
-        this.addSubCommand("CommandMenuPlayersAdd");
+        this.setDescription(Message.DESCRIPTION_PLAYERS_SUBTRACT);
+        this.addSubCommand("subtract");
         this.addRequireArg("player");
         this.addRequireArg("key");
         this.addRequireArg("number");
