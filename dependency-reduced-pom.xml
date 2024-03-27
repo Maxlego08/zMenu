@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.2.8</version>
+  <version>1.0.2.9</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -225,6 +225,12 @@
       <groupId>com.nisovin.shopkeepers</groupId>
       <artifactId>ShopkeepersAPI</artifactId>
       <version>2.19.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.Maxlego08</groupId>
+      <artifactId>zHead</artifactId>
+      <version>1.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

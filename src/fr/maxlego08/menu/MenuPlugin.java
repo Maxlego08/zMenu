@@ -25,6 +25,7 @@ import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
 import fr.maxlego08.menu.loader.materials.NovaLoader;
 import fr.maxlego08.menu.loader.materials.OraxenLoader;
 import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
+import fr.maxlego08.menu.loader.materials.ZHeadLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -172,6 +173,9 @@ public class MenuPlugin extends ZPlugin {
         if (this.isEnable(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
         }
+        if (this.isEnable(Plugins.ZHEAD)) {
+            this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
+        }
         if (this.isEnable(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
         }
@@ -198,6 +202,8 @@ public class MenuPlugin extends ZPlugin {
 
         this.websiteManager.registerPlaceholders();
         localPlaceholder.register("test", (a, b) -> "&ctest");
+        localPlaceholder.register("player_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player)));
+        localPlaceholder.register("player_max_page", (player, s) -> String.valueOf(this.inventoryManager.getMaxPage(player)));
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
@@ -229,7 +235,8 @@ public class MenuPlugin extends ZPlugin {
         Logger.info("");
 
 
-        websiteManager.loadPlaceholders();
+        this.websiteManager.loadPlaceholders();
+        this.dataManager.loadDefaultValues();
 
         this.postEnable();
     }

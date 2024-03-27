@@ -52,4 +52,6 @@ public interface DataManager extends Savable {
      */
     void clearPlayer(UUID uniqueId);
 
+    void loadDefaultValues();
+
 }

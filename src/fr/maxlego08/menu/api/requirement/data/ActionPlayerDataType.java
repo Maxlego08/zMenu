@@ -5,4 +5,8 @@ public enum ActionPlayerDataType {
     SET,
     REMOVE,
 
+    ADD,
+
+    SUBTRACT,
+
 }

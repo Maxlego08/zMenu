@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -432,4 +433,10 @@ public interface InventoryManager extends Savable, Listener {
      * @return An Optional containing the button option class if found, or an empty Optional if not found.
      */
     Optional<Class<? extends ButtonOption>> getOption(String name);
+
+    void setPlayerPage(OfflinePlayer player, int page, int maxPage);
+
+    int getPage(OfflinePlayer player);
+
+    int getMaxPage(OfflinePlayer player);
 }

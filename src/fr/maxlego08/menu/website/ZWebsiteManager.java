@@ -54,7 +54,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
     @Override
     public void login(CommandSender sender, String token) {
-
         if (token == null) {
             message(sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
@@ -72,7 +71,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         }
 
         String code = parts[1];
-        if (code.length() != 40) {
+        if (code.length() < 40) {
             message(sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }

@@ -75,9 +75,29 @@ public class ZActionPlayerData implements ActionPlayerData {
                 PlayerData data = optional.get();
                 data.removeData(this.key);
             }
-        } else {
+        } else if (this.type == ActionPlayerDataType.ADD) {
 
+            Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.key);
+            if (optional.isPresent()) {
+                Data data = optional.get();
+                data.add(Integer.parseInt(this.value.toString()));
+            } else {
+                dataManager.addData(player.getUniqueId(), this.toData());
+            }
+        } else if (this.type == ActionPlayerDataType.SUBTRACT) {
+
+            Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.key);
+            if (optional.isPresent()) {
+                Data data = optional.get();
+                data.remove(Integer.parseInt(this.value.toString()));
+            } else {
+                long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
+                dataManager.addData(player.getUniqueId(), new ZData(this.key, -(int) this.value, expiredAt));
+            }
+        } else if (this.type == ActionPlayerDataType.SET) {
             dataManager.addData(player.getUniqueId(), this.toData());
         }
+
+        dataManager.autoSave();
     }
 }

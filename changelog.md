@@ -34,8 +34,25 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
+- [ ] Be able to set default values for player data
 
 # Unreleased
+
+# 1.0.2.9
+
+- Added support for [zHead](https://www.spigotmc.org/resources/zhead-database-plugin-for-heads.115717/). A free and open source head database plugin (with more than 72.000 heads)
+- Create new placeholder ``%zmenu_player_page%``, return player page
+- Create new placeholder ``%zmenu_player_max_page%&``, return player max page
+- Change NEXT and PREVIOUS button. If you click right you will go directly to the first or last page.
+- Improve MiniMessage format with italic text
+- Create new file: `default_values.yml`, it will contain all the default values for the placeholders of the player data.
+- Create pattern for Button. You can create a pattern file for a button with placeholders. And in your inventory, just call the pattern with a placeholder list. The placeholders will be replaced by your values and the button will be loaded with the new values. Thus, you can have dozens of similar buttons while reducing your configurations by several hundred lines. More information [here](https://docs.zmenu.dev/configurations/patterns#button).
+- Creation of 5 configurations for zMenu:
+1. PLAYTIME LEVELS - zMenu Configurations: https://minecraft-inventory-builder.com/resources/9
+2. VOTE MENU - zMenu Configurations: https://minecraft-inventory-builder.com/resources/8
+3. DONUTSMP HOME - zMenu Configurations: https://minecraft-inventory-builder.com/resources/7
+4. zAuctionHouse - Hypixel AuctionHouse: https://minecraft-inventory-builder.com/resources/6
+5. zAuctionHouse - DonutSMP AuctionHouse: https://minecraft-inventory-builder.com/resources/5
 
 # 1.0.2.8
 

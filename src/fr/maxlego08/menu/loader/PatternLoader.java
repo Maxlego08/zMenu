@@ -34,6 +34,10 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
         String name = configuration.getString("name");
         boolean enableMultiPage = configuration.getBoolean("enableMultiPage", false);
 
+        if (configuration.getString("type", "INVENTORY").equalsIgnoreCase("button")) {
+            return null;
+        }
+
         if (name == null) {
             Logger.info("name is null for pattern " + file.getAbsolutePath(), Logger.LogType.ERROR);
             return null;

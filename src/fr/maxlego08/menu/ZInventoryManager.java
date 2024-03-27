@@ -61,6 +61,7 @@ import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -101,6 +102,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new HashMap<>();
     private final Map<String, ItemStackSimilar> itemStackSimilarMap = new HashMap<>();
+
+    private final Map<UUID, Integer> playerPages = new HashMap<>();
+    private final Map<UUID, Integer> playerMaxPages = new HashMap<>();
 
     public ZInventoryManager(MenuPlugin plugin) {
         super();
@@ -314,6 +318,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void loadInventories() {
+
+        this.playerMaxPages.clear();
+        this.playerPages.clear();
 
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "inventories");
@@ -674,5 +681,21 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Map<Plugin, List<Class<? extends ButtonOption>>> getOptions() {
         return this.buttonOptions;
+    }
+
+    @Override
+    public void setPlayerPage(OfflinePlayer player, int page, int maxPage) {
+        this.playerPages.put(player.getUniqueId(), page);
+        this.playerMaxPages.put(player.getUniqueId(), maxPage);
+    }
+
+    @Override
+    public int getPage(OfflinePlayer player) {
+        return this.playerPages.getOrDefault(player.getUniqueId(), 0);
+    }
+
+    @Override
+    public int getMaxPage(OfflinePlayer player) {
+        return this.playerMaxPages.getOrDefault(player.getUniqueId(), 0);
     }
 }

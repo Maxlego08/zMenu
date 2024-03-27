@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
+import com.google.common.base.Charsets;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
@@ -17,6 +18,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
@@ -34,9 +36,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,6 +72,68 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String buttonName = (String) objects[0];
         DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue();
 
+        ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
+
+        // Using the pattern file to load the button
+        if (patternSection != null) {
+
+            Map<String, Object> mapPlaceholders = new HashMap<>();
+            patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
+
+            String fileName = configuration.getString(path + "pattern.fileName");
+            File patternFile = new File(this.plugin.getDataFolder(), "patterns/" + fileName + ".yml");
+
+            YamlConfiguration testConfiguration = new YamlConfiguration();
+
+            try {
+                FileInputStream stream = new FileInputStream(patternFile);
+                Reader reader = new InputStreamReader(stream, Charsets.UTF_8);
+
+                BufferedReader input = new BufferedReader(reader);
+                StringBuilder builder = new StringBuilder();
+                Placeholders placeholders = new Placeholders();
+
+                String line;
+                try {
+                    while ((line = input.readLine()) != null) {
+
+                        for (Map.Entry<String, Object> replacement : mapPlaceholders.entrySet()) {
+                            String key = replacement.getKey();
+                            Object value = replacement.getValue();
+
+                            if (line != null) {
+                                if (value instanceof List<?> && line.contains("%" + key + "%")) {
+                                    String finalLine = line;
+                                    ((List<?>) value).forEach(currentValue -> {
+                                        String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
+                                        builder.append(currentElement);
+                                        builder.append('\n');
+                                    });
+
+                                    line = null;
+                                } else {
+                                    line = placeholders.parse(line, key, value.toString());
+                                }
+                            }
+                        }
+
+                        if (line != null) {
+                            builder.append(line);
+                            builder.append('\n');
+                        }
+                    }
+                } finally {
+                    input.close();
+                }
+
+                testConfiguration.loadFromString(builder.toString());
+
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            return this.load(testConfiguration, "button.", buttonName);
+        }
+
         ButtonManager buttonManager = this.plugin.getButtonManager();
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
 
@@ -89,15 +158,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 String[] strings = slotString.split("-");
                 page = Integer.parseInt(strings[0]);
                 slot = Integer.parseInt(strings[1]);
-
             } else {
-                slot = configuration.getInt(path + "slot", defaultButtonValue.getSlot());
-                page = configuration.getInt(path + "page", defaultButtonValue.getPage());
-            }
 
-        } catch (Exception e) {
-            slot = configuration.getInt(path + "slot", defaultButtonValue.getSlot());
-            page = configuration.getInt(path + "page", defaultButtonValue.getPage());
+                slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+                page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
+            }
+        } catch (Exception ignored) {
+            slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+            page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
         }
 
         page = Math.max(page, 1);

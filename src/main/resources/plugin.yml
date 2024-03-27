@@ -15,4 +15,5 @@ softdepend:
   - eco
   - Jobs
   - LuckPerms
+  - zHead
 folia-supported: true
