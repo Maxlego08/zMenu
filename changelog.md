@@ -38,6 +38,8 @@
 
 # Unreleased
 
+# 1.0.2.9
+
 - Added support for [zHead](https://www.spigotmc.org/resources/zhead-database-plugin-for-heads.115717/). A free and open source head database plugin (with more than 72.000 heads)
 - Create new placeholder ``%zmenu_player_page%``, return player page
 - Create new placeholder ``%zmenu_player_max_page%&``, return player max page
