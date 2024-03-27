@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.players;
 
-import fr.maxlego08.head.placeholder.ReturnConsumer;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
@@ -9,6 +8,7 @@ import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
+import fr.maxlego08.menu.zcore.utils.interfaces.ReturnConsumer;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
