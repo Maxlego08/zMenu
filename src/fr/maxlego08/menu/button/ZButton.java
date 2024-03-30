@@ -80,6 +80,10 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
             String name = papi(this.playerHead.replace("%player%", player.getName()), player);
 
+            if (!isMinecraftName(name)) {
+                return itemStack;
+            }
+
             if (NMSUtils.isNewHeadApi()) {
 
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
