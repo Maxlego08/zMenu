@@ -40,6 +40,7 @@
 
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page
 - Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
+- Create new requirement: ``playername``, Check if a text is a player nickname
 - Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
 
 # 1.0.2.9
