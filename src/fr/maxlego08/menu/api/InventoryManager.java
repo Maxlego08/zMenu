@@ -434,9 +434,29 @@ public interface InventoryManager extends Savable, Listener {
      */
     Optional<Class<? extends ButtonOption>> getOption(String name);
 
+    /**
+     * Sets the current page number for a given player in a paginated context. This method is useful for managing player-specific UI elements that require pagination, such as inventory screens or custom GUIs. It allows for the tracking and updating of the player's current page within a multi-page UI component.
+     *
+     * @param player  The {@link OfflinePlayer} instance representing the player whose page number is being set. This object allows for the operation to affect players who are not currently online as well.
+     * @param page    The current page number to set for the player. This should be within the range of 1 to {@code maxPage}, inclusive.
+     * @param maxPage The maximum number of pages available. This is used to validate the {@code page} parameter and ensure it does not exceed the available range of pages.
+     */
     void setPlayerPage(OfflinePlayer player, int page, int maxPage);
 
+    /**
+     * Retrieves the current page number of a given player in a paginated context. This method is typically used in conjunction with {@link #setPlayerPage(OfflinePlayer, int, int)} to manage navigation through a multi-page UI component, allowing for a dynamic user experience based on the player's interaction.
+     *
+     * @param player The {@link OfflinePlayer} instance representing the player whose current page number is being queried. This enables the method to obtain information about players who are not currently online.
+     * @return The current page number of the specified player. If the player's page has not been set previously, this method may return a default value or 0, depending on implementation.
+     */
     int getPage(OfflinePlayer player);
 
+    /**
+     * Obtains the maximum page number set for a given player in a paginated context. This method allows for the retrieval of the upper limit of the pagination range for a player, facilitating UI boundary checks and preventing navigation beyond the available content.
+     *
+     * @param player The {@link OfflinePlayer} instance representing the player whose maximum page number is being retrieved. As with other methods, this supports offline players, allowing for a wide range of applications.
+     * @return The maximum page number available for the specified player. Similar to {@link #getPage(OfflinePlayer)}, if the max page has not been set, this method might return a default value or 0, depending on how it's implemented.
+     */
     int getMaxPage(OfflinePlayer player);
+
 }

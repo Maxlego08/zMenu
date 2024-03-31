@@ -38,11 +38,16 @@
 
 # Unreleased
 
+- Create new placeholder ``%zmenu_player_next_page%``, return player next page
+- Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
+- Create new requirement: ``playername``, Check if a text is a player nickname
+- Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
+
 # 1.0.2.9
 
 - Added support for [zHead](https://www.spigotmc.org/resources/zhead-database-plugin-for-heads.115717/). A free and open source head database plugin (with more than 72.000 heads)
 - Create new placeholder ``%zmenu_player_page%``, return player page
-- Create new placeholder ``%zmenu_player_max_page%&``, return player max page
+- Create new placeholder ``%zmenu_player_max_page%``, return player max page
 - Change NEXT and PREVIOUS button. If you click right you will go directly to the first or last page.
 - Improve MiniMessage format with italic text
 - Create new file: `default_values.yml`, it will contain all the default values for the placeholders of the player data.

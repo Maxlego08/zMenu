@@ -76,6 +76,14 @@ public abstract class ZUtils extends MessageUtils {
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
 
+
+    protected boolean isMinecraftName(String username) {
+        String MINECRAFT_USERNAME_REGEX = "^[a-zA-Z0-9_]{3,16}$";
+        Pattern pattern = Pattern.compile(MINECRAFT_USERNAME_REGEX);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
+    }
+
     static {
         if (!NMSUtils.isNewVersion()) {
             byId = new Material[0];
