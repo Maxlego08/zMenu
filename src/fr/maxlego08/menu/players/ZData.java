@@ -8,11 +8,6 @@ public class ZData implements Data {
     private Object value;
     private final long expiredAt;
 
-    /**
-     * @param key
-     * @param value
-     * @param expiredAt
-     */
     public ZData(String key, Object value, long expiredAt) {
         super();
         this.key = key;
@@ -42,14 +37,24 @@ public class ZData implements Data {
 
     @Override
     public void add(int amount) {
-        int value = Integer.parseInt(this.value.toString());
+        int value = safeStringToInt(this.value.toString());
         this.value = value + amount;
     }
 
     @Override
     public void remove(int amount) {
-        int value = Integer.parseInt(this.value.toString());
+        int value = safeStringToInt(this.value.toString());
         this.value = value - amount;
+
+    }
+
+    private int safeStringToInt(String str) {
+        if (str.contains(".")) {
+            double doubleValue = Double.parseDouble(str);
+            return (int) doubleValue;
+        } else {
+            return Integer.parseInt(str);
+        }
     }
 
 }

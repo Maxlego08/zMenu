@@ -172,7 +172,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     @Override
     public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
         if (player instanceof Audience) {
-            Title.Times times = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3000), Duration.ofMillis(1000));
+            Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
             Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
             Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(subtitle)));
             ((Audience) player).showTitle(Title.title(componentTitle, componentSubTitle, times));
