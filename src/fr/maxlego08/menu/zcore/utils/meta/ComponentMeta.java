@@ -5,6 +5,7 @@ import fr.maxlego08.menu.zcore.utils.SimpleCache;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -176,6 +177,22 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
             Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(subtitle)));
             ((Audience) player).showTitle(Title.title(componentTitle, componentSubTitle, times));
+        }
+    }
+
+    @Override
+    public void openBook(Player player, String title, String author, List<String> lines) {
+
+        Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
+        Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(author)));
+        List<Component> linesComponent = lines.stream().map(text -> {
+            String result = papi(text, player);
+            return this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(result)));
+        }).collect(Collectors.toList());
+
+        Book book = Book.book(titleComponent, authorComponent, linesComponent);
+        if (player instanceof Audience) {
+            ((Audience) player).openBook(book);
         }
     }
 }

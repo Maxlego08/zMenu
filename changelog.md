@@ -32,7 +32,7 @@
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
 - [ ] Can split a file into several and thus avoid having too large files
-- [ ] Add open link with a book
+- [x] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 - [ ] Be able to set default values for player data
 
@@ -42,6 +42,7 @@
 - Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
 - Create new requirement: ``playername``, Check if a text is a player nickname
 - Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
+- You can now open a book
 
 # 1.0.2.9
 

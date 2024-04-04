@@ -59,4 +59,5 @@ public interface MetaUpdater extends MessageSender {
      */
     Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder);
 
+    void openBook(Player player, String title, String author, List<String> lines);
 }
