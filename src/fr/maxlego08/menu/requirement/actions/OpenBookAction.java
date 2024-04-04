@@ -23,6 +23,6 @@ public class OpenBookAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        Meta.meta.openBook(player, title, author, lines);
+        Meta.meta.openBook(player, papi(title, player), papi(author, player), papi(lines, player));
     }
 }
