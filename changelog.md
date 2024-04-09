@@ -35,6 +35,7 @@
 - [x] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 - [ ] Be able to set default values for player data
+- [x] Create a command `/zm download <link>` to download a configuration from a link (Allows to simply share its configurations, from discord for example) 
 
 # Unreleased
 
@@ -43,6 +44,7 @@
 - Create new requirement: ``playername``, Check if a text is a player nickname
 - Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
 - You can now open a book
+- Create ``/zm download <link>`` command. You can download configuration files from links, discord links for example.
 
 # 1.0.2.9
 

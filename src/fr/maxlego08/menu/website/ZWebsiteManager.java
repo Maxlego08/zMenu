@@ -26,6 +26,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -327,13 +329,65 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         folder.mkdirs();
 
-        request.submitForFileDownload(this.plugin, file, isSuccess -> {
-            message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName());
-        });
+        request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
     }
 
     public void refreshInventories(Player player) {
         this.folders.clear();
         this.fetchInventories(player);
+    }
+
+    private boolean isYamlFile(String filePath) {
+        return filePath.toLowerCase().endsWith(".yml") || filePath.toLowerCase().endsWith(".yaml");
+    }
+
+    private String getFileNameFromUrl(String url) {
+        URI uri = null;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException exception) {
+            return null;
+        }
+        String path = uri.getPath();
+        String[] segments = path.split("/");
+        if (segments.length > 0) {
+            return segments[segments.length - 1];
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void downloadFromUrl(CommandSender sender, String url, boolean force) {
+
+
+        String fileName = getFileNameFromUrl(url);
+
+        if (fileName == null) {
+            message(sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
+            return;
+        }
+
+        if (!isYamlFile(fileName)) {
+            message(sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+            return;
+        }
+
+        File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
+        if (!folder.exists()) folder.mkdirs();
+        File file = new File(folder, fileName);
+
+        if (file.exists() && !force) {
+            message(sender, Message.WEBSITE_INVENTORY_EXIST);
+            return;
+        }
+
+        message(sender, Message.WEBSITE_DOWNLOAD_START);
+
+        HttpRequest request = new HttpRequest(url, new JsonObject());
+        request.setMethod("GET");
+
+        request.submitForFileDownload(this.plugin, file, isSuccess -> message(sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
+
     }
 }

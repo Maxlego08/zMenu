@@ -47,3 +47,8 @@ commands:
   pro_command:
     command: pro_command
     inventory: pro_inventory
+    auto-completion:
+      1:
+        - "spawn"
+        - "create"
+        - "etc"

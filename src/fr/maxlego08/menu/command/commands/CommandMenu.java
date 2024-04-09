@@ -5,6 +5,7 @@ import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
+import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -29,7 +30,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuEditor(plugin));
 
         // Disable website connexion for beta
-        // this.addSubCommand(new CommandMenuDownload(plugin));
+        this.addSubCommand(new CommandMenuDownload(plugin));
         this.addSubCommand(new CommandMenuLogin(plugin));
         this.addSubCommand(new CommandMenuDisconnect(plugin));
         this.addSubCommand(new CommandMenuInventories(plugin));

@@ -25,4 +25,6 @@ public interface WebsiteManager {
     void disconnect(CommandSender sender);
 
     void openMarketplace(Player player);
+
+    void downloadFromUrl(CommandSender sender, String url, boolean force);
 }
