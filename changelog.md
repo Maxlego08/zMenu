@@ -39,6 +39,8 @@
 
 # Unreleased
 
+# 1.0.3.0
+
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page
 - Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
 - Create new requirement: ``playername``, Check if a text is a player nickname
