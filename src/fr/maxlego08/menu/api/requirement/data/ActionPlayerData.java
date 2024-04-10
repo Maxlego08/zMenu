@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.requirement.data;
 
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -42,7 +43,7 @@ public interface ActionPlayerData {
      *
      * @return The {@link Data}.
      */
-    Data toData();
+    Data toData(OfflinePlayer player);
 
     /**
      * Executes the action when the player clicks.

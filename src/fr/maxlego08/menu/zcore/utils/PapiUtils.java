@@ -3,13 +3,10 @@ package fr.maxlego08.menu.zcore.utils;
 import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.save.Config;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
 
 public class PapiUtils extends TranslationHelper {
 
@@ -21,6 +18,10 @@ public class PapiUtils extends TranslationHelper {
             placeholder = Placeholder.Placeholders.getPlaceholder();
         }
         return placeholder;
+    }
+
+    public Object papi(Object placeHolder, OfflinePlayer player) {
+        return placeHolder instanceof String ? papi((String) placeHolder, player) : placeHolder;
     }
 
     public String papi(String placeHolder, OfflinePlayer player) {
