@@ -43,6 +43,11 @@
 - Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
 - Create new requirement: ``playername``, Check if a text is a player nickname
 - Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
+- Fixed Numbers saved in PlayerData are not Numbers after a restart. [#59](https://github.com/Maxlego08/zMenu/issues/59)
+- Added Placeholder in head url [#58](https://github.com/Maxlego08/zMenu/issues/58)
+- Added Action - Data placeholder [#56](https://github.com/Maxlego08/zMenu/issues/56)
+- Expand player data commands with add & subtract [#46](https://github.com/Maxlego08/zMenu/issues/46)
+- New features for Commands (Perform action and Auto-completion) [#26](https://github.com/Maxlego08/zMenu/issues/26)
 - You can now open a book
 - Create ``/zm download <link>`` command. You can download configuration files from links, discord links for example.
 
