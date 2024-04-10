@@ -130,6 +130,7 @@ public enum Message implements IMessage {
 	WEBSITE_DISCONNECT_ERROR("§cYou are not connected to the site."),
 	WEBSITE_DOWNLOAD_ERROR_TYPE("§cThe link is not a yml file."),
 	WEBSITE_DOWNLOAD_ERROR_NAME("§cCannot find file name."),
+	WEBSITE_DOWNLOAD_ERROR_CONSOLE("§cAn error has occurred, look at the console."),
 	WEBSITE_DOWNLOAD_START("§7Start downloading inventory, please wait."),
 
 	PLACEHOLDER_NEVER("never"),
