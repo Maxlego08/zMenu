@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.command;
 
+import fr.maxlego08.menu.api.requirement.Action;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -79,4 +80,6 @@ public interface Command {
 	 * @return The path of the command in the configuration file.
 	 */
 	String getPath();
+
+	List<Action> getActions();
 }

@@ -32,16 +32,26 @@
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
 - [ ] Can split a file into several and thus avoid having too large files
-- [ ] Add open link with a book
+- [x] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 - [ ] Be able to set default values for player data
+- [x] Create a command `/zm download <link>` to download a configuration from a link (Allows to simply share its configurations, from discord for example) 
 
 # Unreleased
+
+# 1.0.3.0
 
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page
 - Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
 - Create new requirement: ``playername``, Check if a text is a player nickname
 - Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
+- Fixed Numbers saved in PlayerData are not Numbers after a restart. [#59](https://github.com/Maxlego08/zMenu/issues/59)
+- Added Placeholder in head url [#58](https://github.com/Maxlego08/zMenu/issues/58)
+- Added Action - Data placeholder [#56](https://github.com/Maxlego08/zMenu/issues/56)
+- Expand player data commands with add & subtract [#46](https://github.com/Maxlego08/zMenu/issues/46)
+- New features for Commands (Perform action and Auto-completion) [#26](https://github.com/Maxlego08/zMenu/issues/26)
+- You can now open a book
+- Create ``/zm download <link>`` command. You can download configuration files from links, discord links for example.
 
 # 1.0.2.9
 

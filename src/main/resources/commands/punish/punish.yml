@@ -42,5 +42,14 @@ commands:
       - sanction
     inventory: example_punish
     arguments:
-      - target
-      - reason
+      - name: target
+      - name: reason
+        auto-completion:
+          - cheat
+          - chat
+          - skin
+          - other
+        actions:
+          - type: message
+            messages:
+              - "&7You will put a punishment to the player &f&n%target%&r &7with the reason&8: &f%reason%"

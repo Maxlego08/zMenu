@@ -31,6 +31,7 @@ import fr.maxlego08.menu.itemstack.ModelIdSimilar;
 import fr.maxlego08.menu.itemstack.NameSimilar;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
+import fr.maxlego08.menu.loader.actions.BookLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
 import fr.maxlego08.menu.loader.actions.ChatLoader;
@@ -277,6 +278,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());
         buttonManager.registerAction(new MessageLoader());
+        buttonManager.registerAction(new BookLoader());
         buttonManager.registerAction(new SoundLoader());
         buttonManager.registerAction(new BroadcastSoundLoader());
         buttonManager.registerAction(new CloseLoader());

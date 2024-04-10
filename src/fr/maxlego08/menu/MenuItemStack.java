@@ -192,7 +192,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (this.url != null) {
-            itemStack = this.createSkull(this.url);
+            itemStack = this.createSkull(this.papi(this.url, player));
         }
 
         if (this.potion != null) {

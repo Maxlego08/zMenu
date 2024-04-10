@@ -6,8 +6,8 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 import java.util.List;
@@ -32,13 +32,18 @@ public class CommandInventory extends VCommand {
             this.setExtendedArgs(true);
 
             for (CommandArgument argument : command.getArguments()) {
-                if (argument.isRequired()) this.addRequireArg(argument.getArgument());
-                 else this.addOptionalArg(argument.getArgument());
+                if (argument.isRequired()) {
+                    this.addRequireArg(argument.getArgument(), (a, b) -> argument.getAutoCompletion());
+                } else {
+                    this.addOptionalArg(argument.getArgument(), (a, b) -> argument.getAutoCompletion());
+                }
             }
         }
     }
 
     private Optional<Inventory> getInventoryByName(String inventoryName) {
+        if (inventoryName == null) return Optional.empty();
+
         InventoryManager manager = this.plugin.getInventoryManager();
         if (inventoryName.contains(":")) {
             String[] values = inventoryName.split(":");
@@ -52,6 +57,8 @@ public class CommandInventory extends VCommand {
         String inventoryName = this.command.getInventory();
         InventoryManager manager = plugin.getInventoryManager();
         Optional<Inventory> optional = getInventoryByName(inventoryName);
+        CommandArgument lastArgument = null;
+        Placeholders placeholders = new Placeholders();
 
         if (this.command.hasArgument()) {
 
@@ -62,6 +69,7 @@ public class CommandInventory extends VCommand {
 
                 StringBuilder value = new StringBuilder(this.args[index]);
                 CommandArgument argument = arguments.get(index);
+                lastArgument = argument;
 
                 if (this.args.length > arguments.size() && index == arguments.size() - 1) {
 
@@ -82,17 +90,17 @@ public class CommandInventory extends VCommand {
                     optional = getInventoryByName(optionalInventory.get());
                 }
 
+                placeholders.register(argument.getArgument(), value.toString());
                 commandManager.setPlayerArgument(this.player, argument.getArgument(), value.toString());
             }
-
         }
 
-
-        if (optional.isPresent()) {
-            manager.openInventory(this.player, optional.get());
-        } else {
-            message(this.player, Message.INVENTORY_ERROR, "%name%", inventoryName);
+        this.command.getActions().forEach(action -> action.preExecute(player, null, null, placeholders));
+        if (lastArgument != null) {
+            lastArgument.getActions().forEach(action -> action.preExecute(player, null, null, placeholders));
         }
+
+        optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
 
         return CommandType.SUCCESS;
     }

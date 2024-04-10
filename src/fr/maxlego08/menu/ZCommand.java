@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
+import fr.maxlego08.menu.api.requirement.Action;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -16,23 +17,25 @@ public class ZCommand implements Command {
     private final String permission;
     private final String inventory;
     private final List<CommandArgument> arguments;
+    private final List<Action> actions;
 
     private final String path;
     private final File file;
 
 
     /**
-     * @param plugin The plugin where the command comes from
-     * @param command Main command
-     * @param aliases List of aliases
+     * @param plugin     The plugin where the command comes from
+     * @param command    Main command
+     * @param aliases    List of aliases
      * @param permission Command Permission
-     * @param inventory Inventory name
-     * @param arguments List of arguments
-     * @param path file path
-     * @param file File
+     * @param inventory  Inventory name
+     * @param arguments  List of arguments
+     * @param actions    Actions
+     * @param path       file path
+     * @param file       File
      */
     public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
-                    List<CommandArgument> arguments, String path, File file) {
+                    List<CommandArgument> arguments, List<Action> actions, String path, File file) {
         super();
         this.plugin = plugin;
         this.command = command;
@@ -40,6 +43,7 @@ public class ZCommand implements Command {
         this.permission = permission;
         this.inventory = inventory;
         this.arguments = arguments;
+        this.actions = actions;
         this.path = path;
         this.file = file;
     }
@@ -98,6 +102,11 @@ public class ZCommand implements Command {
     @Override
     public String getPath() {
         return path;
+    }
+
+    @Override
+    public List<Action> getActions() {
+        return this.actions;
     }
 
     @Override

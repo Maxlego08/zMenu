@@ -26,6 +26,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -327,13 +332,100 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         folder.mkdirs();
 
-        request.submitForFileDownload(this.plugin, file, isSuccess -> {
-            message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName());
-        });
+        request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
     }
 
     public void refreshInventories(Player player) {
         this.folders.clear();
         this.fetchInventories(player);
+    }
+
+    private String getFileNameFromUrl(String url) {
+        URI uri = null;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException exception) {
+            exception.printStackTrace();
+            return null;
+        }
+        String path = uri.getPath();
+        System.out.println("PATH -> " + path);
+        String[] segments = path.split("/");
+        if (segments.length > 0) {
+            return segments[segments.length - 1];
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void downloadFromUrl(CommandSender sender, String baseUrl, boolean force) {
+
+        message(sender, Message.WEBSITE_DOWNLOAD_START);
+        plugin.getScheduler().runTaskAsynchronously(() -> {
+
+            try {
+                String finalUrl = followRedirection(baseUrl);
+
+                URL url = new URL(finalUrl);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                String fileName = getFileNameFromContentDisposition(httpURLConnection);
+
+                if (fileName == null) {
+                    message(sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
+                    return;
+                }
+
+                if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
+                    message(sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+                    return;
+                }
+
+                File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
+                if (!folder.exists()) folder.mkdirs();
+                File file = new File(folder, fileName);
+
+                if (file.exists() && !force) {
+                    message(sender, Message.WEBSITE_INVENTORY_EXIST);
+                    return;
+                }
+
+                HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
+                request.setMethod("GET");
+
+                request.submitForFileDownload(this.plugin, file, isSuccess -> message(sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
+            } catch (IOException exception) {
+                exception.printStackTrace();
+                message(sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+            }
+        });
+    }
+
+    private String followRedirection(String urlString) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setInstanceFollowRedirects(true);
+        int status = conn.getResponseCode();
+        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
+                || status == HttpURLConnection.HTTP_SEE_OTHER) {
+            return conn.getHeaderField("Location");
+        }
+        return urlString;
+    }
+
+    private boolean isYmlFile(HttpURLConnection connection) throws IOException {
+        String contentType = connection.getContentType();
+        return contentType.contains("text/yaml") || contentType.contains("application/x-yaml");
+    }
+
+    private String getFileNameFromContentDisposition(HttpURLConnection conn) {
+        String contentDisposition = conn.getHeaderField("Content-Disposition");
+        if (contentDisposition != null) {
+            int index = contentDisposition.indexOf("filename=");
+            if (index > 0) {
+                return contentDisposition.substring(index + 9).replaceAll("\"", "");
+            }
+        }
+        return generateRandomString(16);
     }
 }

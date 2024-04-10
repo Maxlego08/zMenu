@@ -24,16 +24,16 @@ public class FoliaScheduler implements ZScheduler {
     @Override
     public @NotNull ZScheduler runTask(Location location, Runnable task) {
         if (location != null) {
-            serverImplementation.runAtLocation(location, task);
+            serverImplementation.runAtLocation(location, w -> task.run());
         } else {
-            serverImplementation.runNextTick(task);
+            serverImplementation.runNextTick(w -> task.run());
         }
         return this;
     }
 
     @Override
     public @NotNull ZScheduler runTaskAsynchronously(Runnable task) {
-        serverImplementation.runAsync(task);
+        serverImplementation.runAsync(w -> task.run());
         return this;
     }
 

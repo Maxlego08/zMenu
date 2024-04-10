@@ -47,3 +47,15 @@ commands:
   pro_command:
     command: pro_command
     inventory: pro_inventory
+  openbook:
+    command: openbook
+    actions:
+      - type: book
+        author: "Maxlego08" # Book author
+        title: "&cTest" # Book title
+        lines: # Book pages
+          1: # First page
+            - '     #34ebe8zMenu'
+            - ''
+            - ''
+            - '<hover:show_text:"#34eba8Open an url !"><click:open_url:"https://minecraft-inventory-builder.com/">#f0af24Open URL<reset>'
