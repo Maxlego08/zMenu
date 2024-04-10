@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.command;
 
+import fr.maxlego08.menu.api.requirement.Action;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,4 +30,8 @@ public interface CommandArgument {
      * @return {@code true} if the argument is required, otherwise {@code false}.
      */
     boolean isRequired();
+
+    List<Action> getActions();
+
+    List<String> getAutoCompletion();
 }

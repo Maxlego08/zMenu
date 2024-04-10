@@ -227,9 +227,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         for (VCommand command : commands) {
 
             if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
-                if (args.length == 1 && command.getParent() == null) {
-                    return processTab(sender, command, args);
-                }
+                return processTab(sender, command, args);
             } else {
                 String[] newArgs = Arrays.copyOf(args, args.length - 1);
                 if (newArgs.length >= 1 && command.getParent() != null

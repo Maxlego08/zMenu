@@ -52,7 +52,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         VCommandManager manager = this.plugin.getVCommandManager();
         manager.registerCommand(command);
 
-        List<Command> commands = this.commands.getOrDefault(command.getPlugin().getName(), new ArrayList<Command>());
+        List<Command> commands = this.commands.getOrDefault(command.getPlugin().getName(), new ArrayList<>());
         commands.add(command);
         this.commands.put(command.getPlugin().getName(), commands);
 
@@ -147,7 +147,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     @Override
     public void loadCommand(Plugin plugin, File file) {
 
-        Loader<Command> loader = new CommandLoader(plugin);
+        Loader<Command> loader = new CommandLoader(plugin, this.plugin);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         if (!configuration.contains("commands") || !configuration.isConfigurationSection("commands.")) {
             return;
@@ -218,7 +218,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         String path = command.getPath();
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        Loader<Command> loader = new CommandLoader(this.plugin);
+        Loader<Command> loader = new CommandLoader(this.plugin, this.plugin);
         try {
             Command newCommand = loader.load(configuration, path, file);
             this.registerCommand(newCommand);
