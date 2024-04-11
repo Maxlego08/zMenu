@@ -83,7 +83,6 @@ public class DownloadFile extends ZUtils {
 
                     if (newPath.getParent() != null) {
                         if (Files.notExists(newPath.getParent())) {
-                            System.out.println("ICI!");
                             Files.createDirectories(newPath.getParent());
                         }
                     }

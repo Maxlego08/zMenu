@@ -115,7 +115,7 @@ public class ZDataManager implements DataManager {
     @Override
     public void autoSave() {
         if (System.currentTimeMillis() > this.lastSave) {
-            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            this.plugin.getScheduler().runTaskAsynchronously(() -> {
                 this.save(this.plugin.getPersist());
                 this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000L);
             });

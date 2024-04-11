@@ -39,6 +39,8 @@
 
 # Unreleased
 
+- Fix folia commands and data manager
+
 # 1.0.3.0
 
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page

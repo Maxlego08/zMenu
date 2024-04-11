@@ -96,18 +96,18 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
 
         scheduler.runTask(player.getLocation(), () -> {
             if (type.equals(ClickType.RIGHT)) {
-                this.execute(player, player, this.consoleRightCommands);
+                this.execute(player, player, this.consoleRightCommands, scheduler);
             }
 
             if (type.equals(ClickType.LEFT)) {
-                this.execute(player, player, this.consoleLeftCommands);
+                this.execute(player, player, this.consoleLeftCommands, scheduler);
             }
 
-            this.execute(player, player, this.commands);
-            this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands);
+            this.execute(player, player, this.commands, scheduler);
+            this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands, scheduler);
 
             if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
-                this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands);
+                this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands, scheduler);
             }
         });
     }
@@ -119,7 +119,7 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
      * @param player
      * @param strings
      */
-    private void execute(CommandSender executor, Player player, List<String> strings) {
+    private void execute(CommandSender executor, Player player, List<String> strings, ZScheduler scheduler) {
         strings.forEach(command -> {
             command = command.replace("%player%", player.getName());
             try {
@@ -127,11 +127,15 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
                     player.chat("/" + papi(command, player));
                 } else {
 
-                    Bukkit.dispatchCommand(executor, papi(command, player));
+                    String finalCommand = command;
+                    if (executor instanceof Player) {
+                        scheduler.runTask(((Player) executor).getLocation(), () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player)));
+                    } else {
+                        scheduler.runTask(null, () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player)));
+                    }
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
-                // Ignore Async dispatch Exception on Folia
             }
         });
     }
