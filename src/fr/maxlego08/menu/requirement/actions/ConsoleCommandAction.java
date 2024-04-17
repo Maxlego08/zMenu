@@ -19,8 +19,10 @@ public class ConsoleCommandAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        papi(placeholders.parse(this.commands), player).forEach(command -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+        inventory.getPlugin().getScheduler().runTask(null, () -> {
+            papi(placeholders.parse(this.commands), player).forEach(command -> {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+            });
         });
     }
 }

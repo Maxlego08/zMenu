@@ -33,12 +33,14 @@ public class InventoryAction extends Action {
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
 
-        this.inventoryArgument.process(player);
+        inventory.getPlugin().getScheduler().runTask(null, () -> {
+            this.inventoryArgument.process(player);
 
-        Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.papi(placeholders.parse(this.inventory), player));
-        if (optional.isPresent()) {
-            this.inventoryManager.openInventory(player, optional.get(), page);
-        } else Logger.info("Unable to find the inventory " + inventory, Logger.LogType.WARNING);
+            Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.papi(placeholders.parse(this.inventory), player));
+            if (optional.isPresent()) {
+                this.inventoryManager.openInventory(player, optional.get(), page);
+            } else Logger.info("Unable to find the inventory " + inventory, Logger.LogType.WARNING);
+        });
     }
 
 }

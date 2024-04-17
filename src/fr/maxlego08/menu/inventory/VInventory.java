@@ -199,4 +199,8 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
 
     }
+
+    public void setPlugin(MenuPlugin plugin) {
+        this.plugin = plugin;
+    }
 }

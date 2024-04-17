@@ -32,6 +32,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -81,7 +82,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
             String fileName = configuration.getString(path + "pattern.fileName");
-            File patternFile = new File(this.plugin.getDataFolder(), "patterns/" + fileName + ".yml");
+            String pluginName = configuration.getString(path + "pattern.pluginName", null);
+            Plugin plugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
+            if (plugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
+
+            File patternFile = new File(plugin.getDataFolder(), "patterns/" + fileName + ".yml");
+            if (!patternFile.exists()) {
+                throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
+            }
 
             YamlConfiguration testConfiguration = new YamlConfiguration();
 

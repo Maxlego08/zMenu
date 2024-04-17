@@ -224,46 +224,49 @@ public class MenuItemStack extends ZUtils {
         Material finalMaterial = itemStack.getType();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        if (this.displayName != null) {
+        if (itemMeta != null) {
+            if (this.displayName != null) {
+                try {
+                    Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), offlinePlayer == null ? player : offlinePlayer);
+                } catch (Exception exception) {
+                    Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
+                    exception.printStackTrace();
+                }
+            }
+
+            if (!this.lore.isEmpty()) {
+                Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), offlinePlayer == null ? player : offlinePlayer);
+            }
+
+            if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
+
+                itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+
             try {
-                Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), offlinePlayer == null ? player : offlinePlayer);
-            } catch (Exception exception) {
-                Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
-                exception.printStackTrace();
+
+                int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer));
+                if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
+            } catch (NumberFormatException ignored) {
             }
+
+            this.enchantments.forEach((enchantment, level) -> {
+                if (finalMaterial.equals(Material.ENCHANTED_BOOK)) {
+                    ((EnchantmentStorageMeta) itemMeta).addStoredEnchant(enchantment, level, true);
+                } else {
+                    itemMeta.addEnchant(enchantment, level, true);
+                }
+            });
+
+            this.flags.forEach(itemMeta::addItemFlags);
+            itemStack.setItemMeta(itemMeta);
         }
 
-        if (!this.lore.isEmpty()) {
-            Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), offlinePlayer == null ? player : offlinePlayer);
+        if (!itemStack.getType().isAir()) {
+            AttributeApplier attributeApplier = new AttributeApplier(attributes);
+            attributeApplier.apply(itemStack);
         }
-
-        if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
-
-            itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
-
-        try {
-
-            int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer));
-            if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
-        } catch (NumberFormatException ignored) {
-        }
-
-        this.enchantments.forEach((enchantment, level) -> {
-            if (finalMaterial.equals(Material.ENCHANTED_BOOK)) {
-                ((EnchantmentStorageMeta) itemMeta).addStoredEnchant(enchantment, level, true);
-            } else {
-                itemMeta.addEnchant(enchantment, level, true);
-            }
-        });
-
-        this.flags.forEach(itemMeta::addItemFlags);
-
-        itemStack.setItemMeta(itemMeta);
-
-        AttributeApplier attributeApplier = new AttributeApplier(attributes);
-        attributeApplier.apply(itemStack);
 
         if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
         return itemStack;
