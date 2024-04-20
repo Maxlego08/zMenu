@@ -95,11 +95,11 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     public void execute(Player player, ClickType type, ZScheduler scheduler) {
 
         scheduler.runTask(player.getLocation(), () -> {
-            if (type.equals(ClickType.RIGHT)) {
+            if (type.isRightClick()) {
                 this.execute(player, player, this.consoleRightCommands, scheduler);
             }
 
-            if (type.equals(ClickType.LEFT)) {
+            if (type.isLeftClick()) {
                 this.execute(player, player, this.consoleLeftCommands, scheduler);
             }
 
