@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
@@ -17,18 +18,15 @@ public class ZItemPermissible extends ZPermissible implements ItemPermissible {
 
     private final Material material;
     private final int amount;
+    private final int modelId;
 
-    /**
-     * @param material
-     * @param amount
-     */
-    public ZItemPermissible(Material material, int amount, List<Action> denyActions, List<Action> successActions) {
+    public ZItemPermissible(Material material, int amount, List<Action> denyActions, List<Action> successActions, int modelId) {
         super(denyActions, successActions);
         this.material = material;
         this.amount = amount;
+        this.modelId = modelId;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventoryDefault, Placeholders placeholders) {
 
@@ -37,14 +35,25 @@ public class ZItemPermissible extends ZPermissible implements ItemPermissible {
         }
 
         PlayerInventory inventory = player.getInventory();
-        ItemStack itemStack = inventory.getItemInHand();
+        int items = 0;
+        ItemStack itemStack = new ItemStack(this.material);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta != null) {
+            if (this.modelId > 0) {
+                itemMeta.setCustomModelData(this.modelId);
+            }
+        }
+        itemStack.setItemMeta(itemMeta);
 
-        if (itemStack == null || itemStack.getType() != this.material) {
-            return false;
+        for (int a = 0; a != 36; a++) {
+            ItemStack is = player.getInventory().getContents()[a];
+            if (is != null && is.isSimilar(itemStack)) {
+                items += is.getAmount();
+            }
         }
 
-		return this.amount <= 0 || itemStack.getAmount() >= this.amount;
-	}
+        return items >= this.amount;
+    }
 
     @Override
     public boolean isValid() {

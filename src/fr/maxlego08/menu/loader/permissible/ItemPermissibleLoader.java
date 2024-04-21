@@ -9,9 +9,7 @@ import fr.maxlego08.menu.requirement.permissible.ZItemPermissible;
 import org.bukkit.Material;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ItemPermissibleLoader extends ZPermissibleLoader {
 
@@ -30,10 +28,11 @@ public class ItemPermissibleLoader extends ZPermissibleLoader {
     public Permissible load(String path, TypedMapAccessor accessor, File file) {
         Material material = Material.valueOf(accessor.getString("material").toUpperCase());
         int amount = accessor.getInt("amount");
+        int modelId = accessor.getInt("modelId", 0);
 
         List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
 
-        return new ZItemPermissible(material, amount, denyActions, successActions);
+        return new ZItemPermissible(material, amount, denyActions, successActions, modelId);
     }
 }
