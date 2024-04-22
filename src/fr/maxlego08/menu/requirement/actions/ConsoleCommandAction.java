@@ -2,6 +2,7 @@ package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.Bukkit;
@@ -19,10 +20,9 @@ public class ConsoleCommandAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        inventory.getPlugin().getScheduler().runTask(player.getLocation(), () -> {
-            papi(placeholders.parse(this.commands), player).forEach(command -> {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
-            });
+        ZScheduler scheduler = inventory.getPlugin().getScheduler();
+        papi(placeholders.parse(this.commands), player).forEach(command -> {
+            scheduler.runTask(null, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName())));
         });
     }
 }
