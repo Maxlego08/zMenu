@@ -1,25 +1,12 @@
 package fr.maxlego08.menu.api.utils;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
- * This class provides typed access to a {@code Map<String, Object>}, allowing retrieval
+ * This interface provides typed access to a map of key-value pairs, allowing retrieval
  * of values of different types with or without default values if the key is not present in the map.
  */
-public class TypedMapAccessor implements MapConfiguration {
-
-    private final Map<String, Object> map;
-
-    /**
-     * Constructs a TypedMapAccessor with the specified map.
-     *
-     * @param map The map containing key-value pairs.
-     */
-    public TypedMapAccessor(Map<String, Object> map) {
-        this.map = map;
-    }
+public interface MapConfiguration {
 
     /**
      * Retrieves a string value from the map based on the provided key.
@@ -27,9 +14,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The string value associated with the key or null if the key is not present.
      */
-    public String getString(String key) {
-        return String.valueOf(map.get(key));
-    }
+    String getString(String key);
 
     /**
      * Retrieves a string value from the map based on the provided key.
@@ -39,9 +24,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The string value associated with the key or the default value.
      */
-    public String getString(String key, String defaultValue) {
-        return map.containsKey(key) ? String.valueOf(map.get(key)) : defaultValue;
-    }
+    String getString(String key, String defaultValue);
 
     /**
      * Retrieves an integer value from the map based on the provided key.
@@ -49,9 +32,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The integer value associated with the key or 0 if the key is not present.
      */
-    public int getInt(String key) {
-        return Integer.parseInt(getString(key, "0"));
-    }
+    int getInt(String key);
 
     /**
      * Retrieves an integer value from the map based on the provided key.
@@ -61,9 +42,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The integer value associated with the key or the default value.
      */
-    public int getInt(String key, int defaultValue) {
-        return Integer.parseInt(getString(key, String.valueOf(defaultValue)));
-    }
+    int getInt(String key, int defaultValue);
 
     /**
      * Retrieves a long value from the map based on the provided key.
@@ -71,9 +50,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The long value associated with the key or 0L if the key is not present.
      */
-    public long getLong(String key) {
-        return Long.parseLong(getString(key, "0"));
-    }
+    long getLong(String key);
 
     /**
      * Retrieves a long value from the map based on the provided key.
@@ -83,9 +60,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The long value associated with the key or the default value.
      */
-    public long getLong(String key, long defaultValue) {
-        return Long.parseLong(getString(key, String.valueOf(defaultValue)));
-    }
+    long getLong(String key, long defaultValue);
 
     /**
      * Retrieves a list of strings from the map based on the provided key.
@@ -93,9 +68,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The list of strings associated with the key or an empty list if the key is not present.
      */
-    public List<String> getStringList(String key) {
-        return (List<String>) map.getOrDefault(key, Collections.emptyList());
-    }
+    List<String> getStringList(String key);
 
     /**
      * Retrieves a list of strings from the map based on the provided key.
@@ -105,9 +78,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The list of strings associated with the key or the default value.
      */
-    public List<String> getStringList(String key, List<String> defaultValue) {
-        return (List<String>) map.getOrDefault(key, defaultValue);
-    }
+    List<String> getStringList(String key, List<String> defaultValue);
 
     /**
      * Retrieves a list of integers from the map based on the provided key.
@@ -115,9 +86,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The list of integers associated with the key or an empty list if the key is not present.
      */
-    public List<Integer> getIntList(String key) {
-        return (List<Integer>) map.getOrDefault(key, Collections.emptyList());
-    }
+    List<Integer> getIntList(String key);
 
     /**
      * Retrieves a list of integers from the map based on the provided key.
@@ -127,9 +96,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The list of integers associated with the key or the default value.
      */
-    public List<Integer> getIntList(String key, List<Integer> defaultValue) {
-        return (List<Integer>) map.getOrDefault(key, defaultValue);
-    }
+    List<Integer> getIntList(String key, List<Integer> defaultValue);
 
     /**
      * Retrieves a boolean value from the map based on the provided key.
@@ -137,9 +104,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The boolean value associated with the key or false if the key is not present.
      */
-    public boolean getBoolean(String key) {
-        return (boolean) map.getOrDefault(key, false);
-    }
+    boolean getBoolean(String key);
 
     /**
      * Retrieves a boolean value from the map based on the provided key.
@@ -149,9 +114,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The boolean value associated with the key or the default value.
      */
-    public boolean getBoolean(String key, boolean defaultValue) {
-        return (boolean) map.getOrDefault(key, defaultValue);
-    }
+    boolean getBoolean(String key, boolean defaultValue);
 
     /**
      * Retrieves a double value from the map based on the provided key.
@@ -159,9 +122,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The double value associated with the key or 0.0 if the key is not present.
      */
-    public double getDouble(String key) {
-        return (double) map.getOrDefault(key, 0.0);
-    }
+    double getDouble(String key);
 
     /**
      * Retrieves a double value from the map based on the provided key.
@@ -171,9 +132,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The double value associated with the key or the default value.
      */
-    public double getDouble(String key, double defaultValue) {
-        return (double) map.getOrDefault(key, defaultValue);
-    }
+    double getDouble(String key, double defaultValue);
 
     /**
      * Retrieves an object from the map based on the provided key.
@@ -181,9 +140,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The object associated with the key or null if the key is not present.
      */
-    public Object getObject(String key) {
-        return map.get(key);
-    }
+    Object getObject(String key);
 
     /**
      * Retrieves an object from the map based on the provided key.
@@ -192,9 +149,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The object associated with the key or null if the key is not present.
      */
-    public Object getObject(String key, Object defaultValue) {
-        return map.getOrDefault(key, defaultValue);
-    }
+    Object getObject(String key, Object defaultValue);
 
     /**
      * Retrieves a float value from the map based on the provided key.
@@ -202,9 +157,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The float value associated with the key or 0.0f if the key is not present.
      */
-    public float getFloat(String key) {
-        return Float.parseFloat(getString(key, "1.0f"));
-    }
+    float getFloat(String key);
 
     /**
      * Retrieves a float value from the map based on the provided key.
@@ -214,24 +167,9 @@ public class TypedMapAccessor implements MapConfiguration {
      * @param defaultValue The default value if the key is not present.
      * @return The float value associated with the key or the default value.
      */
-    public float getFloat(String key, float defaultValue) {
-        return map.containsKey(key) ? Float.parseFloat(getString(key, String.valueOf(defaultValue))) : defaultValue;
-    }
+    float getFloat(String key, float defaultValue);
 
-    @Override
-    public List<?> getList(String key) {
-        return (List<?>) map.get(key);
-    }
+    List<?> getList(String key);
 
-    @Override
-    public boolean contains(String key) {
-        return map.containsKey(key);
-    }
-
-    @Override
-    public String toString() {
-        return "TypedMapAccessor{" +
-                "map=" + map +
-                '}';
-    }
+    boolean contains(String key);
 }

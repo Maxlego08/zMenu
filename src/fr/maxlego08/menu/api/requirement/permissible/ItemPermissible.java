@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.requirement.permissible;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import org.bukkit.Material;
 
@@ -9,11 +10,11 @@ import org.bukkit.Material;
 public interface ItemPermissible extends Permissible {
 
     /**
-     * Gets the material that the player must have.
+     * Gets the MenuItemStack that the player must have.
      *
-     * @return The required material.
+     * @return The required MenuItemStack.
      */
-    Material getMaterial();
+    MenuItemStack getMenuItemStack();
 
     /**
      * Gets the number of items that the player must have at least. Put 0 to not check the amount.

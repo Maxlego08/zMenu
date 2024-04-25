@@ -43,6 +43,7 @@
 - Fix actions for command with delay
 - Fix MenuItemStack with AIR material
 - Fix color with messages in button
+- Fixed saving enchantments with /zm save  
 - Change Item Permission to check in all inventory instead of just the player's hand
 
 # 1.0.3.0

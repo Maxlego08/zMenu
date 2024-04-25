@@ -290,7 +290,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
         if (item.getEnchantments() != null && !item.getEnchantments().isEmpty()) {
-            List<String> stringEnchantments = item.getEnchantments().entrySet().stream().map(e -> e.getKey().toString() + "," + e.getValue().toString()).collect(Collectors.toList());
+            List<String> stringEnchantments = item.getEnchantments().entrySet().stream().map(e -> e.getKey().getName() + "," + e.getValue().toString()).collect(Collectors.toList());
 
             configuration.set(path + "enchants", stringEnchantments);
         }

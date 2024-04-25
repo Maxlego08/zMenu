@@ -1,54 +1,44 @@
 package fr.maxlego08.menu.requirement.permissible;
 
+import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.ItemPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.requirement.ZPermissible;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
 public class ZItemPermissible extends ZPermissible implements ItemPermissible {
 
-    private final Material material;
+    private final MenuItemStack menuItemStack;
     private final int amount;
-    private final int modelId;
 
-    public ZItemPermissible(Material material, int amount, List<Action> denyActions, List<Action> successActions, int modelId) {
+    public ZItemPermissible(MenuItemStack menuItemStack, int amount, List<Action> denyActions, List<Action> successActions) {
         super(denyActions, successActions);
-        this.material = material;
+        this.menuItemStack = menuItemStack;
         this.amount = amount;
-        this.modelId = modelId;
     }
 
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventoryDefault, Placeholders placeholders) {
 
-        if (this.material == null) {
+        if (this.menuItemStack == null) {
             return true;
         }
 
         PlayerInventory inventory = player.getInventory();
         int items = 0;
-        ItemStack itemStack = new ItemStack(this.material);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            if (this.modelId > 0) {
-                itemMeta.setCustomModelData(this.modelId);
-            }
-        }
-        itemStack.setItemMeta(itemMeta);
+        ItemStack itemStack = menuItemStack.build(player, false, placeholders);
 
-        for (int a = 0; a != 36; a++) {
-            ItemStack is = player.getInventory().getContents()[a];
-            if (is != null && is.isSimilar(itemStack)) {
-                items += is.getAmount();
+        for (int slot = 0; slot != 36; slot++) {
+            ItemStack currentItemStack = inventory.getContents()[slot];
+            if (currentItemStack != null && currentItemStack.isSimilar(itemStack)) {
+                items += currentItemStack.getAmount();
             }
         }
 
@@ -57,12 +47,12 @@ public class ZItemPermissible extends ZPermissible implements ItemPermissible {
 
     @Override
     public boolean isValid() {
-        return this.material != null;
+        return this.menuItemStack != null;
     }
 
     @Override
-    public Material getMaterial() {
-        return this.material;
+    public MenuItemStack getMenuItemStack() {
+        return this.menuItemStack;
     }
 
     @Override

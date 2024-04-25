@@ -1,22 +1,23 @@
 package fr.maxlego08.menu.loader.permissible;
 
+import fr.maxlego08.menu.MenuItemStack;
+import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.loader.ZPermissibleLoader;
 import fr.maxlego08.menu.requirement.permissible.ZItemPermissible;
-import org.bukkit.Material;
 
 import java.io.File;
 import java.util.List;
 
 public class ItemPermissibleLoader extends ZPermissibleLoader {
 
-    private final ButtonManager buttonManager;
+    private final MenuPlugin plugin;
 
-    public ItemPermissibleLoader(ButtonManager buttonManager) {
-        this.buttonManager = buttonManager;
+    public ItemPermissibleLoader(MenuPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
@@ -26,13 +27,16 @@ public class ItemPermissibleLoader extends ZPermissibleLoader {
 
     @Override
     public Permissible load(String path, TypedMapAccessor accessor, File file) {
-        Material material = Material.valueOf(accessor.getString("material").toUpperCase());
+        ButtonManager buttonManager = this.plugin.getButtonManager();
+
+        MenuItemStack menuItemStack = new MenuItemStack(this.plugin.getInventoryManager(), file.getPath(), path);
+        menuItemStack.setTypeMapAccessor(accessor);
+
         int amount = accessor.getInt("amount");
-        int modelId = accessor.getInt("modelId", 0);
 
         List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
 
-        return new ZItemPermissible(material, amount, denyActions, successActions, modelId);
+        return new ZItemPermissible(menuItemStack, amount, denyActions, successActions);
     }
 }
