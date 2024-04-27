@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.permissible;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -33,10 +34,11 @@ public class ItemPermissibleLoader extends ZPermissibleLoader {
         menuItemStack.setTypeMapAccessor(accessor);
 
         int amount = accessor.getInt("amount");
+        ItemVerification itemVerification = ItemVerification.valueOf(accessor.getString("verification", ItemVerification.SIMILAR.name()));
 
         List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
 
-        return new ZItemPermissible(menuItemStack, amount, denyActions, successActions);
+        return new ZItemPermissible(menuItemStack, amount, denyActions, successActions, itemVerification);
     }
 }
