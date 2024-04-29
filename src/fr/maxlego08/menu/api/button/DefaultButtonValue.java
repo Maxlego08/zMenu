@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.button;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,15 @@ public class DefaultButtonValue {
 
     // Default playerHead value
     private String playerHead = null;
+    private File file;
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
 
     /**
      * Gets the default slot value.
@@ -200,11 +210,11 @@ public class DefaultButtonValue {
         this.playerHead = playerHead;
     }
 
-    public void setUseCache(boolean useCache) {
-        this.useCache = useCache;
-    }
-
     public boolean isUseCache() {
         return useCache;
+    }
+
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
     }
 }

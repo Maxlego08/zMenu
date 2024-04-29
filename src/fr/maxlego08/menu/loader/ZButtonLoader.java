@@ -72,6 +72,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
         DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue();
+        defaultButtonValue.setFile(file);
 
         ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
 
