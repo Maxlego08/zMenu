@@ -46,6 +46,7 @@
 - Fixed saving enchantments with /zm save  
 - Change Item Permission to check in all inventory instead of just the player's hand
 - Create new Button for zMenu+ ``INPUT``, allows you to choose a number or a text in the chat and perform actions
+- You can choose the pattern plugin for the button with ``pluginName``
 
 # 1.0.3.0
 
