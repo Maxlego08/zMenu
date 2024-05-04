@@ -218,7 +218,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (item.getDisplayName() != null) configuration.set(path + "name", item.getDisplayName());
         if (!item.getLore().isEmpty()) configuration.set(path + "lore", item.getLore());
         if (item.isGlowing()) configuration.set(path + "glow", item.isGlowing());
-        if (item.getModelID() != null) configuration.set(path + "modelID", item.getModelID());
+        if (item.getModelID() != null && !item.getModelID().equalsIgnoreCase("0")) {
+            configuration.set(path + "modelID", item.getModelID());
+        }
         if (item.getData() > 0) configuration.set(path + "data", item.getData());
         if (item.getDurability() > 0) configuration.set(path + "durability", item.getDurability());
         if (item.getAmount() != null) {

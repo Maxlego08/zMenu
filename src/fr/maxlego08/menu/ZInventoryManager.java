@@ -702,4 +702,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public int getMaxPage(OfflinePlayer player) {
         return this.playerMaxPages.getOrDefault(player.getUniqueId(), 0);
     }
+
+    @Override
+    public InventoryDefault getFakeInventory() {
+        InventoryDefault inventoryDefault = new InventoryDefault();
+        inventoryDefault.setPlugin(this.plugin);
+        return inventoryDefault;
+    }
 }
