@@ -39,6 +39,18 @@
 
 # Unreleased
 
+# 1.0.3.1
+
+- Fix folia commands and data manager [#63](https://github.com/Maxlego08/zMenu/issues/63)
+- Fix actions for command with delay
+- Fix MenuItemStack with AIR material
+- Fix color with messages in button
+- Fixed saving enchantments with /zm save  
+- Change Item Permission to check in all inventory instead of just the player's hand
+- Create new Button for zMenu+ ``INPUT``, allows you to choose a number or a text in the chat and perform actions
+- You can choose the pattern plugin for the button with ``pluginName``
+- Fix MenuItemStackLoader for save model id
+
 # 1.0.3.0
 
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page

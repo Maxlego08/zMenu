@@ -16,6 +16,7 @@ public class AttributeApplier {
 	}
 
 	public void apply(ItemStack itemStack) {
+		if (this.attributes.isEmpty()) return;
 		NBT.modify(itemStack, nbt -> {
 			ReadWriteNBTCompoundList attributeModifiers = nbt.getCompoundList("AttributeModifiers");
 			for (IAttribute attribute : this.attributes) {

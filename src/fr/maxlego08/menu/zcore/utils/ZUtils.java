@@ -961,6 +961,8 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected ItemStack createSkull(String url) {
 
+        if (url == null) return null;
+
         ItemStack head = playerHead();
         if (url.isEmpty()) {
             return head;

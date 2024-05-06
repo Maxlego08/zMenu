@@ -54,8 +54,6 @@ public class CommandLoader implements Loader<Command> {
                 List<Action> actions = menuPlugin.getButtonManager().loadActions(elements, path, file);
                 List<String> autoCompletions = map.containsKey("auto-completion") ? (List<String>) map.get("auto-completion") : new ArrayList<>();
 
-                System.out.println(autoCompletions + " - " + argument + " - " + actions);
-
                 return new ZCommandArgument(argument, inventoryName, isRequired, actions, autoCompletions);
             }).collect(Collectors.toList());
         } else {

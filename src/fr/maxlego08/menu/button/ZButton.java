@@ -38,7 +38,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean isPermanent = false;
     private boolean closeInventory = false;
     private boolean useCache = true;
-    private List<String> messages = new ArrayList<String>();
+    private List<String> messages = new ArrayList<>();
     private SoundOption soundOption;
     private String playerHead;
     private OpenLink openLink = new ZOpenLink();
@@ -144,11 +144,8 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         return this.messages;
     }
 
-    /**
-     * @param messages
-     */
     public ZButton setMessages(List<String> messages) {
-        this.messages = color(messages);
+        this.messages = messages;
         return this;
     }
 

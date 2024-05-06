@@ -24,6 +24,8 @@ public class BroadcastAction extends Action {
     public void execute(Player ignored, Button button, InventoryDefault inventory, Placeholders placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             papi(placeholders.parse(this.messages), player).forEach(message -> {
+                message = message.replace("%player%", ignored.getName());
+                message = message.replace("%receiver%", player.getName());
                 if (miniMessage) {
                     Meta.meta.sendMessage(player, message);
                 } else {

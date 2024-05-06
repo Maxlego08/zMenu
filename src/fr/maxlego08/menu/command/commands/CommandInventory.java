@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 import java.util.List;
@@ -95,9 +96,11 @@ public class CommandInventory extends VCommand {
             }
         }
 
-        this.command.getActions().forEach(action -> action.preExecute(player, null, null, placeholders));
+        InventoryDefault inventoryDefault = new InventoryDefault();
+        inventoryDefault.setPlugin(plugin);
+        this.command.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
         if (lastArgument != null) {
-            lastArgument.getActions().forEach(action -> action.preExecute(player, null, null, placeholders));
+            lastArgument.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
         }
 
         optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));

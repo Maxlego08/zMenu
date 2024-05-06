@@ -349,7 +349,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return null;
         }
         String path = uri.getPath();
-        System.out.println("PATH -> " + path);
         String[] segments = path.split("/");
         if (segments.length > 0) {
             return segments[segments.length - 1];

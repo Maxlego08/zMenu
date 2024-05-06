@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -458,5 +459,7 @@ public interface InventoryManager extends Savable, Listener {
      * @return The maximum page number available for the specified player. Similar to {@link #getPage(OfflinePlayer)}, if the max page has not been set, this method might return a default value or 0, depending on how it's implemented.
      */
     int getMaxPage(OfflinePlayer player);
+
+    InventoryDefault getFakeInventory();
 
 }
