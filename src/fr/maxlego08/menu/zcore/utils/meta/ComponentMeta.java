@@ -171,6 +171,14 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
+    public void sendAction(Player player, String message) {
+        if (player instanceof Audience) {
+            Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
+            ((Audience) player).sendActionBar(component);
+        }
+    }
+
+    @Override
     public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
         if (player instanceof Audience) {
             Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));

@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils.meta;
 
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -52,5 +53,10 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     @Override
     public void openBook(Player player, String title, String author, List<String> lines) {
         player.sendMessage("§cYou cant open a book with your minecraft version !");
+    }
+
+    @Override
+    public void sendAction(Player player, String message) {
+        ActionBar.sendActionBar(player, message);
     }
 }
