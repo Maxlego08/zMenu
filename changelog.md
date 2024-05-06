@@ -39,6 +39,8 @@
 
 # Unreleased
 
+# 1.0.3.1
+
 - Fix folia commands and data manager [#63](https://github.com/Maxlego08/zMenu/issues/63)
 - Fix actions for command with delay
 - Fix MenuItemStack with AIR material
