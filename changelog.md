@@ -40,6 +40,7 @@
 # Unreleased
 
 - Create action ``actionbar``, allows to send a message in the action bar of the player
+- Fix folia (omg folia wtf)
 
 # 1.0.3.1
 
