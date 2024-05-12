@@ -167,6 +167,15 @@ public class ZDataManager implements DataManager {
         }));
 
         localPlaceholder.register("player_expire_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> String.valueOf(data.getExpiredAt())));
+        localPlaceholder.register("player_is_expired_", (offlinePlayer, key) -> {
+
+            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
+            if (!optional.isPresent()) return "true";
+
+            PlayerData playerData = optional.get();
+            Optional<Data> optionalData = playerData.getData(key);
+            return optionalData.map(data -> String.valueOf(data.isExpired())).orElse("true");
+        });
     }
 
     private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, ReturnConsumer<Data, String> consumer) {

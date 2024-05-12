@@ -41,6 +41,7 @@
 
 - Create action ``actionbar``, allows to send a message in the action bar of the player
 - Fix folia (omg folia wtf)
+- Add placeholder ``%zmenu_player_is_expired_<key>%`` Check if a key has expired, if the key does not exist it will be considered expired 
 
 # 1.0.3.1
 
