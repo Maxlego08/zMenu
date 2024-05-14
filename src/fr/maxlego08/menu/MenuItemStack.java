@@ -276,7 +276,7 @@ public class MenuItemStack extends ZUtils {
             itemStack.setItemMeta(itemMeta);
         }
 
-        if (!itemStack.getType().isAir()) {
+        if (itemStack.getType() != Material.AIR) {
             AttributeApplier attributeApplier = new AttributeApplier(attributes);
             attributeApplier.apply(itemStack);
         }
