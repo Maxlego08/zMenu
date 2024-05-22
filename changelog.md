@@ -43,6 +43,7 @@
 - Fix folia (omg folia wtf)
 - Add placeholder ``%zmenu_player_is_expired_<key>%`` Check if a key has expired, if the key does not exist it will be considered expired
 - Fix refresh action
+- Fix placeholder API cache, its disable by default
 
 # 1.0.3.1
 
