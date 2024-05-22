@@ -25,7 +25,7 @@ public class TitleAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        Meta.meta.sendTitle(player, this.papi(placeholders.parse(title), player), this.papi(placeholders.parse(subtitle), player), start, duration, end);
+        Meta.meta.sendTitle(player, this.papi(placeholders.parse(title), player, true), this.papi(placeholders.parse(subtitle), player, true), start, duration, end);
     }
 
 }

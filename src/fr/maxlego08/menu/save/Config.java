@@ -73,7 +73,8 @@ public class Config implements Savable {
 
     public static boolean enableCooldownClick = true;
     public static long cooldownClickMilliseconds = 100;
-    public static long cachePlaceholderAPI = 500;
+    public static long cachePlaceholderAPI = 20;
+    public static boolean enableCachePlaceholderAPI = false;
 
     /**
      * static Singleton instance.

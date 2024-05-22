@@ -20,7 +20,7 @@ public class ActionBarAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        String finalMessage = papi(placeholders.parse(this.message), player);
+        String finalMessage = papi(placeholders.parse(this.message), player, true);
         if (miniMessage) {
             Meta.meta.sendAction(player, finalMessage);
         } else {

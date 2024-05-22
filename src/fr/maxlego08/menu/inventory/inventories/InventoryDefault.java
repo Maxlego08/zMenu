@@ -71,7 +71,7 @@ public class InventoryDefault extends VInventory {
 
         // Create inventory
         String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
-        super.createMetaInventory(super.papi(inventoryName, player), this.inventory.size());
+        super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
 
         // Display fill items
         if (this.inventory.getFillItemStack() != null) {
@@ -192,6 +192,7 @@ public class InventoryDefault extends VInventory {
 
                     event.setCancelled(true);
                     button.onClick(this.player, event, this, slot, new Placeholders());
+
                     if (button.isRefreshOnClick()) {
                         this.cancel(slot);
                         this.buildButton(button.getMasterParentButton());

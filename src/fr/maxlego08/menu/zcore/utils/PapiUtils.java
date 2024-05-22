@@ -20,30 +20,33 @@ public class PapiUtils extends TranslationHelper {
         return placeholder;
     }
 
-    public Object papi(Object placeHolder, OfflinePlayer player) {
-        return placeHolder instanceof String ? papi((String) placeHolder, player) : placeHolder;
+    public Object papi(Object placeHolder, OfflinePlayer player, boolean useCache) {
+        return placeHolder instanceof String ? papi((String) placeHolder, player, useCache) : placeHolder;
     }
 
-    public String papi(String placeHolder, OfflinePlayer player) {
+    public String papi(String placeHolder, OfflinePlayer player, boolean useCache) {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
         if (!placeHolder.contains("%")) return placeHolder;
-        String cacheKey = placeHolder + ";" + player.getUniqueId().toString();
+        String cacheKey = placeHolder + ";" + player.getUniqueId();
         CacheEntry cachedResult = cache.get(cacheKey);
 
-        if (cachedResult != null && cachedResult.isValid()) {
+        if (Config.enableCachePlaceholderAPI && cachedResult != null && cachedResult.isValid() && useCache) {
             return cachedResult.value;
         }
 
         String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
 
-        cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
+        if (Config.enableCachePlaceholderAPI) {
+            this.cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
+        }
+
         return result;
     }
 
-    public List<String> papi(List<String> placeHolders, OfflinePlayer player) {
+    public List<String> papi(List<String> placeHolders, OfflinePlayer player, boolean useCache) {
         if (player == null) return placeHolders;
-        return placeHolders.stream().map(placeHolder -> papi(placeHolder, player)).collect(Collectors.toList());
+        return placeHolders.stream().map(placeHolder -> papi(placeHolder, player, useCache)).collect(Collectors.toList());
     }
 
     private static class CacheEntry {

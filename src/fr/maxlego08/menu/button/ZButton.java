@@ -78,7 +78,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
 
-            String name = papi(this.playerHead.replace("%player%", player.getName()), player);
+            String name = papi(this.playerHead.replace("%player%", player.getName()), player, false);
 
             if (!isMinecraftName(name)) {
                 return itemStack;
@@ -209,7 +209,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
             for (ActionPlayerData actionPlayerData : this.datas) {
                 actionPlayerData.execute(player, dataManager);
             }
-
         }
 
         if (this.messages.size() > 0) {
@@ -219,7 +218,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 this.openLink.send(player, this.messages);
             } else {
 
-                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message.replace("%player%", player.getName()), player)));
+                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message.replace("%player%", player.getName()), player, true)));
             }
         }
 

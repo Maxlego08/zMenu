@@ -264,7 +264,7 @@ public abstract class MessageUtils extends LocationUtils {
 
     protected void broadcastAction(String message) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            ActionBar.sendActionBar(player, papi(message, player));
+            ActionBar.sendActionBar(player, papi(message, player, true));
         }
     }
 

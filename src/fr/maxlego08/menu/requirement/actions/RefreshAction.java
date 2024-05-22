@@ -12,6 +12,7 @@ public class RefreshAction extends Action {
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
         if (button != null) {
             inventory.buildButton(button.getMasterParentButton());
+            inventory.cancel(button.getSlot());
         }
     }
 }

@@ -55,7 +55,7 @@ public class ZPermissionPermissible extends ZPermissible implements PermissionPe
      */
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        return this.isReverse != player.hasPermission(papi(placeholders.parse(this.permission), player));
+        return this.isReverse != player.hasPermission(papi(placeholders.parse(this.permission), player, false));
     }
 
     /**

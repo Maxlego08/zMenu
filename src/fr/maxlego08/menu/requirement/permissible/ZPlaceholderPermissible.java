@@ -57,13 +57,13 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
 
         if (this.targetPlayer == null || this.targetPlayer.equalsIgnoreCase("null")) {
 
-            valueAsString = papi(placeholders.parse(this.placeholder), player);
-            resultAsString = papi(placeholders.parse(this.value), player);
+            valueAsString = papi(placeholders.parse(this.placeholder), player, false);
+            resultAsString = papi(placeholders.parse(this.value), player, false);
         } else {
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player));
-            valueAsString = papi(placeholders.parse(this.placeholder), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
-            resultAsString = papi(placeholders.parse(this.value), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player, false));
+            valueAsString = papi(placeholders.parse(this.placeholder), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, false);
+            resultAsString = papi(placeholders.parse(this.value), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, false);
         }
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {

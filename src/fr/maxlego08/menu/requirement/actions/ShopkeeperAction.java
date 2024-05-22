@@ -21,7 +21,7 @@ public class ShopkeeperAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(this.papi(placeholders.parse(this.shopName), player)).findFirst();
+        Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(this.papi(placeholders.parse(this.shopName), player, false)).findFirst();
         if (optional.isPresent()) {
             optional.get().openTradingWindow(player);
         } else {

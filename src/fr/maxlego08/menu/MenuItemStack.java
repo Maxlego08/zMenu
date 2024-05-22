@@ -155,9 +155,9 @@ public class MenuItemStack extends ZUtils {
             this.material = "STONE";
         }
 
-        OfflinePlayer offlinePlayer = this.targetPlayer != null ? Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player)) : null;
+        OfflinePlayer offlinePlayer = this.targetPlayer != null ? Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
 
-        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer);
+        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
 
         try {
@@ -202,7 +202,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (this.url != null && !url.equalsIgnoreCase("null")) {
-            String urlResult = this.papi(this.url, player);
+            String urlResult = this.papi(this.url, player, false);
             if (urlResult != null) {
                 itemStack = this.createSkull(urlResult);
             }
@@ -259,7 +259,7 @@ public class MenuItemStack extends ZUtils {
 
             try {
 
-                int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer));
+                int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer, true));
                 if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
             } catch (NumberFormatException ignored) {
             }
@@ -548,7 +548,7 @@ public class MenuItemStack extends ZUtils {
     public int parseAmount(Player player) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(papi(this.amount, player));
+            amount = Integer.parseInt(papi(this.amount, player, true));
         } catch (Exception ignored) {
         }
         return amount;
@@ -557,7 +557,7 @@ public class MenuItemStack extends ZUtils {
     public int parseAmount(Player player, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(papi(placeholders.parse(this.amount), player));
+            amount = Integer.parseInt(papi(placeholders.parse(this.amount), player, true));
         } catch (Exception ignored) {
         }
         return amount;
@@ -566,7 +566,7 @@ public class MenuItemStack extends ZUtils {
     public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(papi(placeholders.parse(this.amount), offlinePlayer));
+            amount = Integer.parseInt(papi(placeholders.parse(this.amount), offlinePlayer, true));
         } catch (Exception ignored) {
         }
         return amount;

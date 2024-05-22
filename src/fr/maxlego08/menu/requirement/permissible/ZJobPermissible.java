@@ -24,7 +24,7 @@ public class ZJobPermissible extends ZPermissible implements JobPermissible {
 
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        Job job = Jobs.getJob(papi(placeholders.parse(this.jobName), player));
+        Job job = Jobs.getJob(papi(placeholders.parse(this.jobName), player, false));
         if (job == null) {
             Logger.info("Job " + this.jobName +" was not found !", Logger.LogType.ERROR);
             return true;

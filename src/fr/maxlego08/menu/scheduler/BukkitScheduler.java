@@ -59,4 +59,8 @@ public class BukkitScheduler implements ZScheduler {
         }
     }
 
+    @Override
+    public boolean isFolia() {
+        return false;
+    }
 }

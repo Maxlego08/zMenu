@@ -124,14 +124,14 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
             command = command.replace("%player%", player.getName());
             try {
                 if (executor instanceof Player && Config.enablePlayerCommandInChat) {
-                    player.chat("/" + papi(command, player));
+                    player.chat("/" + papi(command, player, true));
                 } else {
 
                     String finalCommand = command;
                     if (executor instanceof Player) {
-                        scheduler.runTask(((Player) executor).getLocation(), () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player)));
+                        scheduler.runTask(((Player) executor).getLocation(), () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player, true)));
                     } else {
-                        scheduler.runTask(null, () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player)));
+                        scheduler.runTask(null, () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player, true)));
                     }
                 }
             } catch (Exception exception) {

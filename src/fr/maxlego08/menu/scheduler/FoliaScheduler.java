@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.scheduler;
 
 import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.impl.FoliaImplementation;
 import com.tcoded.folialib.impl.ServerImplementation;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
@@ -11,9 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class FoliaScheduler implements ZScheduler {
     private final FoliaLib foliaLib;
     private final ServerImplementation serverImplementation;
-    private WrappedTask task;
-
     JavaPlugin plugin;
+    private WrappedTask task;
 
     public FoliaScheduler(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -72,4 +72,8 @@ public class FoliaScheduler implements ZScheduler {
         }
     }
 
+    @Override
+    public boolean isFolia() {
+        return this.serverImplementation instanceof FoliaImplementation;
+    }
 }

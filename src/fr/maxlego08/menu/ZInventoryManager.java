@@ -42,6 +42,7 @@ import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
+import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
@@ -293,6 +294,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new ShopkeeperLoader());
         buttonManager.registerAction(new TitleLoader());
         buttonManager.registerAction(new ActionBarLoader());
+        buttonManager.registerAction(new RefreshLoader());
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each
