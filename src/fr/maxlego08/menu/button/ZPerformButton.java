@@ -93,31 +93,29 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
 
     @Override
     public void execute(Player player, ClickType type, ZScheduler scheduler) {
+        if (type.isRightClick()) {
+            this.execute(player, player, this.consoleRightCommands, scheduler);
+        }
 
-        scheduler.runTask(player.getLocation(), () -> {
-            if (type.isRightClick()) {
-                this.execute(player, player, this.consoleRightCommands, scheduler);
-            }
+        if (type.isLeftClick()) {
+            this.execute(player, player, this.consoleLeftCommands, scheduler);
+        }
 
-            if (type.isLeftClick()) {
-                this.execute(player, player, this.consoleLeftCommands, scheduler);
-            }
+        this.execute(player, player, this.commands, scheduler);
+        this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands, scheduler);
 
-            this.execute(player, player, this.commands, scheduler);
-            this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands, scheduler);
-
-            if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
-                this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands, scheduler);
-            }
-        });
+        if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
+            this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands, scheduler);
+        }
     }
 
     /**
-     * Allows you to execute a list of commands
+     * Executes a list of commands on behalf of the specified executor and player, using a scheduler to run the commands.
      *
-     * @param executor
-     * @param player
-     * @param strings
+     * @param executor  the CommandSender executing the commands
+     * @param player    the Player for whom the commands are executed
+     * @param strings   the list of commands to be executed
+     * @param scheduler the ZScheduler used to schedule the command executions
      */
     private void execute(CommandSender executor, Player player, List<String> strings, ZScheduler scheduler) {
         strings.forEach(command -> {
@@ -128,11 +126,11 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
                 } else {
 
                     String finalCommand = command;
-                    if (executor instanceof Player) {
-                        scheduler.runTask(((Player) executor).getLocation(), () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player, true)));
-                    } else {
-                        scheduler.runTask(null, () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player, true)));
-                    }
+                    Runnable runnable = () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player, true));
+                    if (scheduler.isFolia()) {
+                        if (executor instanceof Player) scheduler.runTask(((Player) executor).getLocation(), runnable);
+                        else scheduler.runTask(null, runnable);
+                    } else runnable.run();
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
