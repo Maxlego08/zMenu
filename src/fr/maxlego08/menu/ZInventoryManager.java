@@ -53,6 +53,7 @@ import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.VaultPermissibleLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -275,6 +276,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
+        }
+        if (this.plugin.isEnable(Plugins.VAULT)) {
+            buttonManager.registerPermissible(new VaultPermissibleLoader(buttonManager));
         }
 
         // Load actions

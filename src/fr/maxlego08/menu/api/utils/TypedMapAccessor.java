@@ -160,7 +160,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @return The double value associated with the key or 0.0 if the key is not present.
      */
     public double getDouble(String key) {
-        return (double) map.getOrDefault(key, 0.0);
+        return ((Number) map.getOrDefault(key, 0.0)).doubleValue();
     }
 
     /**
