@@ -29,6 +29,7 @@ public class DefaultButtonValue {
 
     // Default update value
     private boolean update = false;
+    private boolean updateMasterButton = false;
 
     // Default refreshOnClick value
     private boolean refreshOnClick = false;
@@ -216,5 +217,13 @@ public class DefaultButtonValue {
 
     public void setUseCache(boolean useCache) {
         this.useCache = useCache;
+    }
+
+    public boolean isUpdateMasterButton() {
+        return updateMasterButton;
+    }
+
+    public void setUpdateMasterButton(boolean updateMasterButton) {
+        this.updateMasterButton = updateMasterButton;
     }
 }

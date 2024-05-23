@@ -43,6 +43,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private String playerHead;
     private OpenLink openLink = new ZOpenLink();
     private boolean isUpdated = false;
+    private boolean isMasterButtonUpdated = false;
     private boolean refreshOnClick = false;
     private List<ActionPlayerData> datas = new ArrayList<>();
     private boolean updateOnClick = false;
@@ -405,5 +406,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     @Override
     public boolean hasCustomRender() {
         return false;
+    }
+
+    @Override
+    public boolean isUpdatedMasterButton() {
+        return this.isMasterButtonUpdated;
+    }
+
+    public void setMasterButtonUpdated(boolean masterButtonUpdated) {
+        isMasterButtonUpdated = masterButtonUpdated;
     }
 }

@@ -226,7 +226,8 @@ public class InventoryDefault extends VInventory {
                     }
 
                     Button masterButton = button.getMasterParentButton();
-                    if (!masterButton.checkPermission(this.player, this, new Placeholders())) {
+
+                    if (button.isUpdatedMasterButton()) {
                         this.cancel(slot);
                         this.buildButton(masterButton);
                         return;

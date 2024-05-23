@@ -40,8 +40,9 @@
 # Unreleased
 
 - Create action ``actionbar``, allows to send a message in the action bar of the player
-- Fix folia (omg folia wtf)
 - Add placeholder ``%zmenu_player_is_expired_<key>%`` Check if a key has expired, if the key does not exist it will be considered expired
+- Add ``updateMasterButton``, allows to update the button entirely during the update. You have `update` enabled
+- Fix folia (omg folia wtf)
 - Fix refresh action
 - Fix placeholder API cache, its disable by default
 
