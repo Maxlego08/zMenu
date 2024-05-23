@@ -43,6 +43,7 @@
 - Add placeholder ``%zmenu_player_is_expired_<key>%`` Check if a key has expired, if the key does not exist it will be considered expired
 - Add ``updateMasterButton``, allows to update the button entirely during the update. You have `update` enabled
 - Add requirement permissible ``money``, allows you to check if the player has enough money by using the Vault API
+- Add action `withdraw` and `deposit`, allows to withdraw and add money to the player’s account using the Vault API
 - Fix folia (omg folia wtf)
 - Fix refresh action
 - Fix placeholder API cache, its disable by default
