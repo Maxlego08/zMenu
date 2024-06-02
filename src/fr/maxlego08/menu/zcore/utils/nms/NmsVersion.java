@@ -44,6 +44,8 @@ public enum NmsVersion {
     V_1_20_2(1202),
     V_1_20_3(1203),
     V_1_20_4(1204),
+    V_1_20_5(1205),
+    V_1_20_6(1206),
     V_1_21(1210),
 
     ;
@@ -157,6 +159,10 @@ public enum NmsVersion {
      */
     public int getVersion() {
         return version;
+    }
+
+    public boolean isAttributItemStack() {
+        return version >= 1205;
     }
 
 }

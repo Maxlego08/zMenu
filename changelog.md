@@ -47,6 +47,7 @@
 - Fix folia (omg folia wtf)
 - Fix refresh action
 - Fix placeholder API cache, its disable by default
+- Add support for 1.20.6 (There has been a big change on how to encode and decode itemstacks in base64, the old values will no longer work)
 
 # 1.0.3.1
 
