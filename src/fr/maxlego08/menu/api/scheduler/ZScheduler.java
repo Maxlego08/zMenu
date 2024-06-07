@@ -77,4 +77,6 @@ public interface ZScheduler {
      * Cancels the task.
      */
     void cancel();
+
+    boolean isFolia();
 }

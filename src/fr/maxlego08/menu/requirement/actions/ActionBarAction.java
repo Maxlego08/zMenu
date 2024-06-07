@@ -5,28 +5,26 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
+import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+public class ActionBarAction extends Action {
 
-public class MessageAction extends Action {
-
-    private final List<String> messages;
+    private final String message;
     private final boolean miniMessage;
 
-    public MessageAction(List<String> messages, boolean miniMessage) {
-        this.messages = messages;
+    public ActionBarAction(String message, boolean miniMessage) {
+        this.message = message;
         this.miniMessage = miniMessage;
     }
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        papi(placeholders.parse(this.messages), player, true).forEach(message -> {
-            if (miniMessage) {
-                Meta.meta.sendMessage(player, message);
-            } else {
-                player.sendMessage(message);
-            }
-        });
+        String finalMessage = papi(placeholders.parse(this.message), player, true);
+        if (miniMessage) {
+            Meta.meta.sendAction(player, finalMessage);
+        } else {
+            ActionBar.sendActionBar(player, finalMessage);
+        }
     }
 }

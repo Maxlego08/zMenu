@@ -25,7 +25,7 @@ public class ZRegexPermissible extends ZPermissible implements Permissible {
 
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        return pattern.matcher(papi(placeholders.parse(this.placeholder), player)).find();
+        return pattern.matcher(papi(placeholders.parse(this.placeholder), player, false)).find();
     }
 
     @Override

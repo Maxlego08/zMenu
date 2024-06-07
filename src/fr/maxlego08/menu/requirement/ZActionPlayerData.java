@@ -19,12 +19,6 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     private final Object value;
     private final long seconds;
 
-    /**
-     * @param key
-     * @param type
-     * @param value
-     * @param seconds
-     */
     public ZActionPlayerData(String key, ActionPlayerDataType type, Object value, long seconds) {
         super();
         this.key = key;
@@ -56,7 +50,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     @Override
     public Data toData(OfflinePlayer player) {
         long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
-        return new ZData(this.papi(this.key, player), this.papi(this.value, player), expiredAt);
+        return new ZData(this.papi(this.key, player, false), this.papi(this.value, player, false), expiredAt);
     }
 
     /* (non-Javadoc)
@@ -75,26 +69,26 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
             if (optional.isPresent()) {
                 PlayerData data = optional.get();
-                data.removeData(this.papi(this.key, player));
+                data.removeData(this.papi(this.key, player, false));
             }
         } else if (this.type == ActionPlayerDataType.ADD) {
 
-            Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player));
+            Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                data.add(Integer.parseInt(papi(this.value.toString(), player)));
+                data.add(Integer.parseInt(papi(this.value.toString(), player, false)));
             } else {
                 dataManager.addData(player.getUniqueId(), this.toData(player));
             }
         } else if (this.type == ActionPlayerDataType.SUBTRACT) {
 
-            Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player));
+            Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                data.remove(Integer.parseInt(papi(this.value.toString(), player)));
+                data.remove(Integer.parseInt(papi(this.value.toString(), player, false)));
             } else {
                 long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
-                dataManager.addData(player.getUniqueId(), new ZData(this.papi(this.key, player), -(int) this.value, expiredAt));
+                dataManager.addData(player.getUniqueId(), new ZData(this.papi(this.key, player, false), -(int) this.value, expiredAt));
             }
         } else if (this.type == ActionPlayerDataType.SET) {
             dataManager.addData(player.getUniqueId(), this.toData(player));

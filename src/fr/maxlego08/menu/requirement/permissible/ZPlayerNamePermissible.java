@@ -21,7 +21,7 @@ public class ZPlayerNamePermissible extends ZPermissible implements PlayerNamePe
 
     @Override
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        String name = this.papi(this.playerName.replace("%player%", player.getName()), player);
+        String name = this.papi(this.playerName.replace("%player%", player.getName()), player, false);
         return isMinecraftName(name);
     }
 

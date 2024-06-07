@@ -31,4 +31,5 @@ public interface MessageSender {
      */
     void sendTitle(Player player, String title, String subtitle, long start, long duration, long end);
 
+    void sendAction(Player player, String message);
 }

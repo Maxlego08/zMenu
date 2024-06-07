@@ -185,6 +185,14 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     boolean isUpdated();
 
     /**
+     * Indicates whether the master button need to be updated.
+     *
+     * @return true if the master button need to be updated, false otherwise
+     */
+    boolean isUpdatedMasterButton();
+
+
+    /**
      * Checks if the button should be refreshed on click.
      *
      * @return True if the button should be refreshed on click, false otherwise.
@@ -283,9 +291,27 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      */
     void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault);
 
+    /**
+     * Checks if the cache is being used.
+     *
+     * @return true if the cache is in use, false otherwise
+     */
     boolean isUseCache();
 
+    /**
+     * Retrieves a list of button options.
+     *
+     * @return a List of ButtonOption objects
+     */
     List<ButtonOption> getOptions();
 
+    /**
+     * Checks if custom rendering is enabled.
+     *
+     * @return true if custom rendering is enabled, false otherwise
+     */
     boolean hasCustomRender();
+
+    boolean isOpenAsync();
+
 }

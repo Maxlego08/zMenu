@@ -83,7 +83,7 @@ public abstract class MessageUtils extends LocationUtils {
 
                     break;
                 case ACTION:
-                    this.actionMessage(player, message, args);
+                    Meta.meta.sendAction(player, getMessage(message, args));
                     break;
                 case TCHAT:
                     if (message.getMessages().size() > 0) {
@@ -264,7 +264,7 @@ public abstract class MessageUtils extends LocationUtils {
 
     protected void broadcastAction(String message) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            ActionBar.sendActionBar(player, papi(message, player));
+            ActionBar.sendActionBar(player, papi(message, player, true));
         }
     }
 

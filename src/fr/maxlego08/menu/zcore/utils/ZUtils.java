@@ -76,14 +76,6 @@ public abstract class ZUtils extends MessageUtils {
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
 
-
-    protected boolean isMinecraftName(String username) {
-        String MINECRAFT_USERNAME_REGEX = "^[a-zA-Z0-9_]{3,16}$";
-        Pattern pattern = Pattern.compile(MINECRAFT_USERNAME_REGEX);
-        Matcher matcher = pattern.matcher(username);
-        return matcher.matches();
-    }
-
     static {
         if (!NMSUtils.isNewVersion()) {
             byId = new Material[0];
@@ -94,6 +86,13 @@ public abstract class ZUtils extends MessageUtils {
                 byId[material.getId()] = material;
             }
         }
+    }
+
+    protected boolean isMinecraftName(String username) {
+        String MINECRAFT_USERNAME_REGEX = "^[a-zA-Z0-9_]{3,16}$";
+        Pattern pattern = Pattern.compile(MINECRAFT_USERNAME_REGEX);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
     }
 
     protected int parseInt(String value, int defaultValue) {
@@ -237,19 +236,19 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * Remove the item from the player's hand
+     * Removes a specified amount of items from the player's hand.
      *
-     * @param player
+     * @param player the Player whose item in hand is to be removed
      */
     protected void removeItemInHand(Player player) {
         removeItemInHand(player, 64);
     }
 
     /**
-     * Remove the item from the player's hand
+     * Removes a specified amount of items from the player's hand.
      *
-     * @param player
-     * @param how    of items to withdraw
+     * @param player the Player whose item in hand is to be removed
+     * @param how    the number of items to remove
      */
     protected void removeItemInHand(Player player, int how) {
         if (player.getItemInHand().getAmount() > how)
@@ -259,37 +258,38 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * Check if two locations are identical
+     * Checks if two locations are the same, comparing their block coordinates and world names.
      *
-     * @param l  location
-     * @param l2 location
-     * @return true if both rentals are the same
+     * @param l  the first Location to compare
+     * @param l2 the second Location to compare
+     * @return true if the locations are the same, false otherwise
      */
     protected boolean same(Location l, Location l2) {
         return (l.getBlockX() == l2.getBlockX()) && (l.getBlockY() == l2.getBlockY()) && (l.getBlockZ() == l2.getBlockZ()) && l.getWorld().getName().equals(l2.getWorld().getName());
     }
 
     /**
-     * Format a double in a String
+     * Formats a decimal number to two decimal places.
      *
-     * @param decimal
-     * @return formatting current duplicate
+     * @param decimal the number to format
+     * @return the formatted number as a String
      */
     protected String format(double decimal) {
         return format(decimal, "#.##");
     }
 
     /**
-     * Format a double in a String
+     * Formats a decimal number according to the specified format.
      *
-     * @param decimal
-     * @param format
-     * @return formatting current double according to the given format
+     * @param decimal the number to format
+     * @param format  the format pattern to apply
+     * @return the formatted number as a String
      */
     protected String format(double decimal, String format) {
         DecimalFormat decimalFormat = new DecimalFormat(format);
         return decimalFormat.format(decimal);
     }
+
 
     /**
      * Remove a certain number of items from a player's inventory
@@ -319,10 +319,6 @@ public abstract class ZUtils extends MessageUtils {
         player.updateInventory();
     }
 
-    /**
-     * @param delay
-     * @param runnable
-     */
     protected void schedule(long delay, Runnable runnable) {
         ZScheduler.TIMER.schedule(new TimerTask() {
 
@@ -334,8 +330,10 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param string
-     * @return
+     * Converts a string to a properly formatted name by replacing underscores with spaces and capitalizing the first letter.
+     *
+     * @param string the input string
+     * @return the formatted name
      */
     protected String name(String string) {
         String name = string.replace("_", " ").toLowerCase();
@@ -343,8 +341,10 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param string
-     * @return
+     * Converts a Material enum name to a properly formatted name by replacing underscores with spaces and capitalizing the first letter.
+     *
+     * @param string the Material enum
+     * @return the formatted name
      */
     protected String name(Material string) {
         String name = string.name().replace("_", " ").toLowerCase();
@@ -352,48 +352,67 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param itemStack
-     * @return
+     * Retrieves the name of an item from the given ItemStack.
+     *
+     * @param itemStack the ItemStack containing the item
+     * @return the name of the item
      */
     protected String name(ItemStack itemStack) {
         return this.getItemName(itemStack);
     }
 
     /**
-     * @param items
-     * @return
+     * Calculates the maximum number of pages needed to display a collection of items with each page containing up to 45 items.
+     *
+     * @param items the collection of items
+     * @return the maximum number of pages
      */
     protected int getMaxPage(Collection<?> items) {
         return (items.size() / 45) + 1;
     }
 
     /**
-     * @param items
-     * @param a
-     * @return
+     * Calculates the maximum number of pages needed to display a collection of items with each page containing up to the specified number of items.
+     *
+     * @param items the collection of items
+     * @param a     the number of items per page
+     * @return the maximum number of pages
      */
     protected int getMaxPage(Collection<?> items, int a) {
         return (items.size() / a) + 1;
     }
 
+
     /**
-     * @param value
-     * @param total
-     * @return
+     * Calculates the percentage of a value relative to a total.
+     *
+     * @param value the part value
+     * @param total the total value
+     * @return the percentage of the value relative to the total
      */
     protected double percent(double value, double total) {
         return (value * 100) / total;
     }
 
     /**
-     * @param total
-     * @param percent
-     * @return
+     * Calculates the numerical value of a given percentage of a total.
+     *
+     * @param total   the total value
+     * @param percent the percentage to be calculated
+     * @return the numerical value of the percentage of the total
      */
     protected double percentNum(double total, double percent) {
         return total * (percent / 100);
     }
 
+    /**
+     * Schedules a repetitive task to run at a fixed rate for a specific count.
+     *
+     * @param plugin   the Plugin for which the task is scheduled
+     * @param delay    the delay in milliseconds between successive task executions
+     * @param count    the number of times the task should be executed
+     * @param runnable the Runnable task to be executed
+     */
     protected void schedule(Plugin plugin, long delay, int count, Runnable runnable) {
         ZScheduler.TIMER.scheduleAtFixedRate(new TimerTask() {
             int tmpCount = 0;
@@ -419,18 +438,23 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param plugin
-     * @param player
-     * @param inventory
+     * Creates an inventory for the specified plugin and player with the given inventory type.
+     *
+     * @param plugin    the MenuPlugin for which the inventory is created
+     * @param player    the Player for whom the inventory is created
+     * @param inventory the type of EnumInventory to be created
      */
     protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory) {
         createInventory(plugin, player, inventory, 1);
     }
 
     /**
-     * @param player
-     * @param inventory
-     * @param page
+     * Creates an inventory for the specified plugin and player with the given inventory type and page number.
+     *
+     * @param plugin    the MenuPlugin for which the inventory is created
+     * @param player    the Player for whom the inventory is created
+     * @param inventory the type of EnumInventory to be created
+     * @param page      the page number of the inventory
      */
     protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page) {
         createInventory(plugin, player, inventory, page, new Object() {
@@ -438,56 +462,74 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * @param player
-     * @param inventory
-     * @param page
-     * @param objects
+     * Creates an inventory for the specified plugin and player with the given inventory type, page number, and additional objects.
+     *
+     * @param plugin    the MenuPlugin for which the inventory is created
+     * @param player    the Player for whom the inventory is created
+     * @param inventory the type of EnumInventory to be created
+     * @param page      the page number of the inventory
+     * @param objects   additional objects to be passed for inventory creation
      */
     protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page, Object... objects) {
         plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
     }
 
     /**
-     * @param player
-     * @param inventory
-     * @param page
-     * @param objects
+     * Creates an inventory for the specified plugin and player with the given inventory ID, page number, and additional objects.
+     *
+     * @param plugin    the MenuPlugin for which the inventory is created
+     * @param player    the Player for whom the inventory is created
+     * @param inventory the ID of the inventory to be created
+     * @param page      the page number of the inventory
+     * @param objects   additional objects to be passed for inventory creation
      */
     protected void createInventory(MenuPlugin plugin, Player player, int inventory, int page, Object... objects) {
         plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
     }
 
     /**
-     * @param permissible
-     * @param permission
-     * @return
+     * Checks if the given permissible has the specified permission.
+     *
+     * @param permissible the Permissible to check
+     * @param permission  the Permission to check for
+     * @return true if the permissible has the permission, false otherwise
      */
     protected boolean hasPermission(Permissible permissible, Permission permission) {
         return permissible.hasPermission(permission.getPermission());
     }
 
     /**
-     * @param permissible
-     * @param permission
-     * @return
+     * Checks if the given permissible has the specified permission.
+     *
+     * @param permissible the Permissible to check
+     * @param permission  the permission string to check for
+     * @return true if the permissible has the permission, false otherwise
      */
     protected boolean hasPermission(Permissible permissible, String permission) {
         return permissible.hasPermission(permission);
     }
 
+
     /**
-     * @param delay
-     * @param consumer
+     * Schedules a fixed-rate execution of a task associated with the given plugin.
+     *
+     * @param plugin   the MenuPlugin for which the task is scheduled
+     * @param delay    the delay in milliseconds before task is to be executed and between successive task executions
+     * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
+     * @return the scheduled TimerTask
      */
     protected TimerTask scheduleFix(MenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         return this.scheduleFix(plugin, delay, delay, consumer);
     }
 
     /**
-     * @param plugin
-     * @param startAt
-     * @param delay
-     * @param consumer
+     * Schedules a fixed-rate execution of a task associated with the given plugin.
+     *
+     * @param plugin   the MenuPlugin for which the task is scheduled
+     * @param startAt  the delay in milliseconds before the task is first executed
+     * @param delay    the delay in milliseconds between successive task executions
+     * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
+     * @return the scheduled TimerTask
      */
     protected TimerTask scheduleFix(MenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         TimerTask task = new TimerTask() {
@@ -505,10 +547,7 @@ public abstract class ZUtils extends MessageUtils {
         return task;
     }
 
-    /**
-     * @param element
-     * @return
-     */
+
     protected <T> T randomElement(List<T> element) {
         if (element.size() == 0) return null;
         if (element.size() == 1) return element.get(0);

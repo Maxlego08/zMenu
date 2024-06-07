@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.nms;
 
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.utils.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -21,19 +22,19 @@ public class ItemStackUtils {
     private static final NmsVersion NMS_VERSION = NmsVersion.nmsVersion;
     private static final Map<ItemStack, String> itemStackSerialized = new HashMap<ItemStack, String>();
 
-    /**
-     * Change {@link ItemStack} to {@link String}
-     *
-     * @param paramItemStack
-     * @return {@link String}
-     */
     public static String serializeItemStack(ItemStack paramItemStack) {
 
-        if (paramItemStack == null)
+        if (paramItemStack == null) {
             return "null";
+        }
 
-        if (itemStackSerialized.containsKey(paramItemStack))
+        if (itemStackSerialized.containsKey(paramItemStack)) {
             return itemStackSerialized.get(paramItemStack);
+        }
+
+        if (NmsVersion.getCurrentVersion().isAttributItemStack()) {
+            return Base64ItemStack.encode(paramItemStack);
+        }
 
         ByteArrayOutputStream localByteArrayOutputStream = null;
         try {
@@ -57,29 +58,31 @@ public class ItemStackUtils {
                     .getMethod("a", localClass, OutputStream.class)
                     .invoke(null, localObject1, localByteArrayOutputStream);
         } catch (Exception localException) {
-            // localException.printStackTrace();
+            if (Config.enableDebug) {
+                localException.printStackTrace();
+            }
         }
         String string = Base64.encode(localByteArrayOutputStream.toByteArray());
         itemStackSerialized.put(paramItemStack, string);
         return string;
     }
 
-    /**
-     * Change {@link String} to {@link ItemStack}
-     *
-     * @param paramString
-     * @return {@link ItemStack}
-     */
     public static ItemStack deserializeItemStack(String paramString) {
 
-        if (paramString.equals("null"))
+        if (paramString == null || paramString.equals("null")) {
             return null;
+        }
+
+        if (NmsVersion.getCurrentVersion().isAttributItemStack()) {
+            return Base64ItemStack.decode(paramString);
+        }
 
         ByteArrayInputStream localByteArrayInputStream = null;
         try {
             localByteArrayInputStream = new ByteArrayInputStream(Base64.decode(paramString));
-        } catch (Exception localBase64DecodingException) {
+        } catch (Exception ignored) {
         }
+
         Class<?> localClass1 = EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz();
         Class<?> localClass2 = EnumReflectionItemStack.ITEMSTACK.getClassz();
         Object localObject1 = null;
@@ -91,11 +94,11 @@ public class ItemStackUtils {
                 DataInputStream datainputstream = new DataInputStream(
                         new BufferedInputStream(new GZIPInputStream(localByteArrayInputStream)));
                 localObject1 = EnumReflectionItemStack.NBTCOMPRESSEDSTREAMTOOLS.getClassz()
-                        .getMethod("a", new Class[] { DataInput.class }).invoke(null, datainputstream);
+                        .getMethod("a", new Class[]{DataInput.class}).invoke(null, datainputstream);
             } else {
 
                 localObject1 = EnumReflectionItemStack.NBTCOMPRESSEDSTREAMTOOLS.getClassz()
-                        .getMethod("a", new Class[] { InputStream.class })
+                        .getMethod("a", new Class[]{InputStream.class})
                         .invoke(null, localByteArrayInputStream);
             }
 
@@ -103,15 +106,15 @@ public class ItemStackUtils {
                 Constructor<?> localConstructor = localClass2.getConstructor(localClass1);
                 localObject2 = localConstructor.newInstance(localObject1);
             } else if (!NMS_VERSION.isItemLegacy()) {
-                localObject2 = localClass2.getMethod("a", new Class[] { localClass1 }).invoke(null,
+                localObject2 = localClass2.getMethod("a", new Class[]{localClass1}).invoke(null,
                         localObject1);
             } else {
-                localObject2 = localClass2.getMethod("createStack", new Class[] { localClass1 }).invoke(null,
+                localObject2 = localClass2.getMethod("createStack", new Class[]{localClass1}).invoke(null,
                         localObject1);
             }
 
             localItemStack = (ItemStack) EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
-                    .getMethod("asBukkitCopy", new Class[] { localClass2 }).invoke(null, new Object[] { localObject2 });
+                    .getMethod("asBukkitCopy", new Class[]{localClass2}).invoke(null, new Object[]{localObject2});
         } catch (Exception localException) {
             // localException.printStackTrace();
         }
@@ -142,7 +145,7 @@ public class ItemStackUtils {
          * @param newClassName
          * @param isBukkit
          */
-		EnumReflectionItemStack(String oldClassName, String newClassName, boolean isBukkit) {
+        EnumReflectionItemStack(String oldClassName, String newClassName, boolean isBukkit) {
             this.oldClassName = oldClassName;
             this.newClassName = newClassName;
             this.isBukkit = isBukkit;
@@ -152,14 +155,14 @@ public class ItemStackUtils {
          * @param oldClassName
          * @param newClassName
          */
-		EnumReflectionItemStack(String oldClassName, String newClassName) {
+        EnumReflectionItemStack(String oldClassName, String newClassName) {
             this(oldClassName, newClassName, false);
         }
 
         /**
          * @param oldClassName
          */
-		EnumReflectionItemStack(String oldClassName) {
+        EnumReflectionItemStack(String oldClassName) {
             this(oldClassName, null, false);
         }
 
@@ -167,7 +170,7 @@ public class ItemStackUtils {
          * @param oldClassName
          * @param isBukkit
          */
-		EnumReflectionItemStack(String oldClassName, boolean isBukkit) {
+        EnumReflectionItemStack(String oldClassName, boolean isBukkit) {
             this(oldClassName, null, isBukkit);
         }
 
@@ -192,7 +195,6 @@ public class ItemStackUtils {
             }
             return localClass;
         }
-
     }
 
 }

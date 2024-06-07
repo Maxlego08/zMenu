@@ -89,12 +89,12 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        updateDisplayName(itemMeta, papi(text, player));
+        updateDisplayName(itemMeta, papi(text, player, true));
     }
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
-        updateDisplayName(itemMeta, papi(text, offlinePlayer));
+        updateDisplayName(itemMeta, papi(text, offlinePlayer, true));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     public void update(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
         List<Component> components = lore.stream().map(text -> {
-            String result = papi(text, offlinePlayer);
+            String result = papi(text, offlinePlayer, true);
             return this.cache.get(result, () -> {
                 return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, getState(result)); // We will force the italics in false, otherwise it will activate for no reason
             });
@@ -171,6 +171,14 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
+    public void sendAction(Player player, String message) {
+        if (player instanceof Audience) {
+            Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
+            ((Audience) player).sendActionBar(component);
+        }
+    }
+
+    @Override
     public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
         if (player instanceof Audience) {
             Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
@@ -186,7 +194,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
         Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(author)));
         List<Component> linesComponent = lines.stream().map(text -> {
-            String result = papi(text, player);
+            String result = papi(text, player, true);
             return this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(result)));
         }).collect(Collectors.toList());
 

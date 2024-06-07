@@ -97,14 +97,18 @@ public class VInventoryManager extends ListenerAdapter {
         clonedInventory.setId(id);
         try {
             InventoryResult result = clonedInventory.preOpenInventory(this.plugin, player, page, objects);
-            if (result.equals(InventoryResult.SUCCESS)) {
+            if (result == InventoryResult.SUCCESS) {
 
                 clonedInventory.postOpen(this.plugin, player, page, objects);
 
                 Inventory spigotInventory = clonedInventory.getSpigotInventory();
                 player.openInventory(spigotInventory);
 
-            } else if (result.equals(InventoryResult.ERROR)) {
+            } else if (result == InventoryResult.SUCCESS_ASYNC) {
+
+                clonedInventory.postOpen(this.plugin, player, page, objects);
+            } else if (result == InventoryResult.ERROR) {
+
                 message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
             }
         } catch (InventoryOpenException e) {

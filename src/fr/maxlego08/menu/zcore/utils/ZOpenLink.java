@@ -78,7 +78,7 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
             messages.forEach(message -> {
 
-                String finalMessage = this.papi(message, player);
+                String finalMessage = this.papi(message, player, true);
 
                 if (finalMessage.contains(this.replace)) {
 
@@ -107,7 +107,7 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
         } else {
 
-            messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player)));
+            messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player, true)));
 
         }
     }

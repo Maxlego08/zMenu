@@ -220,8 +220,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
+        button.setMasterButtonUpdated(configuration.getBoolean(path + "updateMasterButton", defaultButtonValue.isUpdateMasterButton()));
         button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", defaultButtonValue.isRefreshOnClick()));
         button.setUseCache(configuration.getBoolean(path + "useCache", defaultButtonValue.isUseCache()));
+        button.setOpenAsync(configuration.getBoolean(path + "openAsync", false));
 
         if (configuration.contains(path + "openLink")) {
 
@@ -267,6 +269,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             elseDefaultButtonValue.setPage(page);
             elseDefaultButtonValue.setPermanent(button.isPermanent());
             elseDefaultButtonValue.setUseCache(button.isUseCache());
+            elseDefaultButtonValue.setUpdate(button.isUpdated());
+            elseDefaultButtonValue.setUpdateMasterButton(button.isUpdatedMasterButton());
+            elseDefaultButtonValue.setUpdateOnClick(button.updateOnClick());
 
             Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
             button.setElseButton(elseButton);

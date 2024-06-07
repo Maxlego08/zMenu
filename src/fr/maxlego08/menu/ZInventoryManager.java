@@ -31,6 +31,7 @@ import fr.maxlego08.menu.itemstack.ModelIdSimilar;
 import fr.maxlego08.menu.itemstack.NameSimilar;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
+import fr.maxlego08.menu.loader.actions.ActionBarLoader;
 import fr.maxlego08.menu.loader.actions.BookLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastLoader;
 import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
@@ -41,9 +42,12 @@ import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
+import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
+import fr.maxlego08.menu.loader.actions.VaultDepositLoader;
+import fr.maxlego08.menu.loader.actions.VaultWithdrawLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.LuckPermPermissibleLoader;
@@ -51,6 +55,7 @@ import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.VaultPermissibleLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -274,6 +279,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
         }
+        if (this.plugin.isEnable(Plugins.VAULT)) {
+            buttonManager.registerPermissible(new VaultPermissibleLoader(buttonManager));
+        }
 
         // Load actions
         buttonManager.registerAction(new BroadcastLoader());
@@ -291,6 +299,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.BackLoader(this.plugin));
         buttonManager.registerAction(new ShopkeeperLoader());
         buttonManager.registerAction(new TitleLoader());
+        buttonManager.registerAction(new ActionBarLoader());
+        buttonManager.registerAction(new RefreshLoader());
+        if (this.plugin.isEnable(Plugins.VAULT)) {
+            buttonManager.registerAction(new VaultWithdrawLoader());
+            buttonManager.registerAction(new VaultDepositLoader());
+        }
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each
