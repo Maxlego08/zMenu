@@ -312,4 +312,6 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      */
     boolean hasCustomRender();
 
+    boolean isOpenAsync();
+
 }

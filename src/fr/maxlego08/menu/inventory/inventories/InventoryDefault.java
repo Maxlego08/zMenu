@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
@@ -39,6 +40,7 @@ public class InventoryDefault extends VInventory {
     private List<Inventory> oldInventories;
     private List<Button> buttons;
     private int maxPage = 1;
+    private boolean isAsync = false;
 
     private List<Button> updatedButtons = new ArrayList<>();
 
@@ -62,28 +64,58 @@ public class InventoryDefault extends VInventory {
         this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).collect(Collectors.toList()));
         this.buttons.addAll(this.inventory.sortButtons(page, args));
 
-        this.buttons.forEach(button -> button.onInventoryOpen(player, this));
-
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
-
+        isAsync = this.buttons.stream().anyMatch(Button::isOpenAsync);
         InventoryManager manager = this.plugin.getInventoryManager();
         manager.setPlayerPage(player, page, maxPage);
 
-        // Create inventory
-        String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
-        super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
+        if (isAsync) {
 
-        // Display fill items
-        if (this.inventory.getFillItemStack() != null) {
-            for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
-                this.addItem(a, this.inventory.getFillItemStack().build(player));
+            ZScheduler scheduler = this.plugin.getScheduler();
+            scheduler.runTaskAsynchronously(() -> {
+
+                this.buttons.forEach(button -> button.onInventoryOpen(player, this));
+
+                String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
+                super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
+
+                // Display fill items
+                if (this.inventory.getFillItemStack() != null) {
+                    for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
+                        this.addItem(a, this.inventory.getFillItemStack().build(player));
+                    }
+                }
+
+                // Display buttons
+                this.buttons.forEach(this::buildButton);
+
+                scheduler.runTask(player.getLocation(), () -> {
+                    player.openInventory(this.getSpigotInventory());
+                });
+            });
+
+            return InventoryResult.SUCCESS_ASYNC;
+
+        } else {
+
+            this.buttons.forEach(button -> button.onInventoryOpen(player, this));
+
+            // Create inventory
+            String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
+            super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
+
+            // Display fill items
+            if (this.inventory.getFillItemStack() != null) {
+                for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
+                    this.addItem(a, this.inventory.getFillItemStack().build(player));
+                }
             }
+
+            // Display buttons
+            this.buttons.forEach(this::buildButton);
+
+            return InventoryResult.SUCCESS;
         }
-
-        // Display buttons
-        this.buttons.forEach(this::buildButton);
-
-        return InventoryResult.SUCCESS;
     }
 
     @Override
@@ -155,11 +187,16 @@ public class InventoryDefault extends VInventory {
 
         if (button.hasSpecialRender()) {
 
-            button.onRender(player, this);
+            Runnable runnable = () -> button.onRender(player, this);
+            if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
+            else runnable.run();
 
         } else {
 
-            this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
+            Runnable runnable = () -> this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
+
+            if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
+            else runnable.run();
         }
     }
 

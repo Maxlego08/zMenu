@@ -47,6 +47,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean refreshOnClick = false;
     private List<ActionPlayerData> datas = new ArrayList<>();
     private boolean updateOnClick = false;
+    private boolean isOpenAsync = false;
     private List<Requirement> clickRequirements = new ArrayList<>();
     private Requirement viewRequirement;
     private List<Action> actions = new ArrayList<>();
@@ -415,5 +416,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     public void setMasterButtonUpdated(boolean masterButtonUpdated) {
         isMasterButtonUpdated = masterButtonUpdated;
+    }
+
+    @Override
+    public boolean isOpenAsync() {
+        return isOpenAsync;
+    }
+
+    public void setOpenAsync(boolean openAsync) {
+        isOpenAsync = openAsync;
     }
 }
