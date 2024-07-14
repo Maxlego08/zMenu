@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final String fileName;
     private final int size;
     private final List<Button> buttons;
+    private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns;
     private MenuItemStack fillItemStack;
     private int updateInterval;
@@ -63,6 +66,12 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public String getName(Player player) {
+        String locale = findPlayerLocale(player);
+        return locale == null ? this.name : this.translatedNames.getOrDefault(locale, this.name);
     }
 
     @Override
@@ -238,6 +247,11 @@ public class ZInventory extends ZUtils implements Inventory {
         this.openWithItem = openWithItem;
     }
 
+    @Override
+    public Map<String, String> getTranslatedName() {
+        return this.translatedNames;
+    }
+
     public void setClearInventory(boolean clearInventory) {
         this.clearInventory = clearInventory;
     }
@@ -249,5 +263,9 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setPatterns(List<Pattern> patterns) {
         this.patterns = patterns;
+    }
+
+    public void setTranslatedNames(Map<String, String> translatedNames) {
+        this.translatedNames = translatedNames;
     }
 }

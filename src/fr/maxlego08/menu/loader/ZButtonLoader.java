@@ -32,6 +32,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -210,7 +211,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
 
         if (playerHead != null) {
-            if (NMSUtils.isNewVersion()) {
+            if (NmsVersion.nmsVersion.isNewMaterial()) {
                 itemStack.setMaterial("PLAYER_HEAD");
             } else {
                 itemStack.setMaterial("SKULL_ITEM");

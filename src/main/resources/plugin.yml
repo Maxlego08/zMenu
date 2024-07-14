@@ -12,7 +12,6 @@ softdepend:
   - zTranslator
   - ItemsAdder
   - Slimefun
-  - eco
   - Jobs
   - LuckPerms
   - zHead

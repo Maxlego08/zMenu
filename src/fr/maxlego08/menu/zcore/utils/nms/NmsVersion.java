@@ -47,6 +47,9 @@ public enum NmsVersion {
     V_1_20_5(1205),
     V_1_20_6(1206),
     V_1_21(1210),
+    V_1_21_1(1211),
+    V_1_21_2(1212),
+    V_1_21_3(1213),
 
     ;
 
@@ -163,6 +166,34 @@ public enum NmsVersion {
 
     public boolean isAttributItemStack() {
         return version >= 1205;
+    }
+
+    public boolean isOneHand() {
+        return version == 188;
+    }
+
+    public boolean isBarrel() {
+        return version >= V_1_14.version;
+    }
+
+    public boolean isShulker() {
+        return version >= V_1_9.version;
+    }
+
+    public boolean isNewMaterial() {
+        return version >= V_1_13.version;
+    }
+
+    public boolean isNewNBTVersion() {
+        return version >= V_1_18.version;
+    }
+
+    public boolean isNewHeadApi(){
+        return version >= V_1_20.version;
+    }
+
+    public boolean isNewNMSVersion(){
+        return version >= V_1_17.version;
     }
 
 }

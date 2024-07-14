@@ -1,13 +1,15 @@
 # ToDo
 
 - [x] Add anti dupe system with NMS Tag
-- [x] Add the BACK action, to return to the previous inventory when clicking   
+- [x] Add the BACK action, to return to the previous inventory when clicking
 - [x] Add the ability to perform actions when clicking
 - [ ] Improve the firework system to put more buttonOption. Being able to put several effects, power etc.
-- [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for example.
+- [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there
+  can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for
+  example.
 - [ ] Add an order to display the list of official addons.
 - [ ] Add a ``/zm help`` command to send to documentation.
-- [ ] Add a ``/zm command <command> <inventory>`` command to create an order file for an inventory. 
+- [ ] Add a ``/zm command <command> <inventory>`` command to create an order file for an inventory.
 - [ ] Add a system to translate plugin messages.
 - [ ] Update developer doc
 - [ ] Add a chance system for actions
@@ -19,37 +21,58 @@
 - [ ] Upgrade potion support for multiple effect, main effect and color
 - [ ] Remove config.json and setup a config.yml
 - [ ] Create an extension for vscode, notepadd++ to configure the plugin faster
-- [ ] Upgrade `/zmenu save <name>` to add support for heads, fireworks and banner etc   
-- [ ] When loading inventories, check the name, or the color of the item or the name of the inventory will contain a placeholders, so do not call placeholder API if it is not useful. The same can be done on messages, commands or any other action that uses placeholder API   
+- [ ] Upgrade `/zmenu save <name>` to add support for heads, fireworks and banner etc
+- [ ] When loading inventories, check the name, or the color of the item or the name of the inventory will contain a
+  placeholders, so do not call placeholder API if it is not useful. The same can be done on messages, commands or any
+  other action that uses placeholder API
 - [ ] Add the Pagination button, it will allow to take an input number, an output number and browse the value number
 - [ ] Add a way to display the list of online players in a button list
-- [ ] Add Citizen and [ZNPCsPlus](https://www.spigotmc.org/resources/znpcsplus.109380/) support to open an inventory by clicking on an NPC
+- [ ] Add Citizen and [ZNPCsPlus](https://www.spigotmc.org/resources/znpcsplus.109380/) support to open an inventory by
+  clicking on an NPC
 - [x] Add a tool to transform ItemStack to base64 and vice versa. This tool can be used to all my plugins.
 - [ ] Fix the bug about the `clearInventory: true`. It does not restore inventory when the menu is closed.
-- [ ] Add the support for the `http://textures.minecraft.net/texture/e34969c2684e4f62d5f87875460441a9f849d296c01e4c621636bb6acda696f7` in the URL of a custom head.
+- [ ] Add the support for
+  the `http://textures.minecraft.net/texture/e34969c2684e4f62d5f87875460441a9f849d296c01e4c621636bb6acda696f7` in the
+  URL of a custom head.
 - [ ] Update pom.xml for add {projet.version} in plugin.yml
-- [ ] Add matrix support for slot (like this: https://abstractmenus.github.io/docs/general/item_format.html#way-4-matrix)
-- [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the user will not have the information of why, for example when the item does not exist.
-- [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an itemstack
+- [ ] Add matrix support for slot (like
+  this: https://abstractmenus.github.io/docs/general/item_format.html#way-4-matrix)
+- [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the
+  user will not have the information of why, for example when the item does not exist.
+- [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an
+  itemstack
 - [ ] Can split a file into several and thus avoid having too large files
 - [x] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 - [ ] Be able to set default values for player data
-- [x] Create a command `/zm download <link>` to download a configuration from a link (Allows to simply share its configurations, from discord for example) 
+- [x] Create a command `/zm download <link>` to download a configuration from a link (Allows to simply share its
+  configurations, from discord for example)
 
 # Unreleased
+
+# 1.0.3.3
+
+- Fix nullable player in MenuItemStack
+- Add ``performMainAction`` for commands, allows to activate or not the main actions of the command. This allows you to
+  create commands with arguments without opening an inventory for example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
+- Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the player’s game language
+  you can set other messages and make your server international
+- Remove ``eco`` from plugin.yml, this caused problems loading various plugins
+- Tab completes for more of the sub commands [#75](https://github.com/Maxlego08/zMenu/issues/75)
 
 # 1.0.3.2
 
 - Create action ``actionbar``, allows to send a message in the action bar of the player
-- Add placeholder ``%zmenu_player_is_expired_<key>%`` Check if a key has expired, if the key does not exist it will be considered expired
+- Add placeholder ``%zmenu_player_is_expired_<key>%`` Check if a key has expired, if the key does not exist it will be
+  considered expired
 - Add ``updateMasterButton``, allows to update the button entirely during the update. You have `update` enabled
 - Add requirement permissible ``money``, allows you to check if the player has enough money by using the Vault API
 - Add action `withdraw` and `deposit`, allows to withdraw and add money to the player’s account using the Vault API
 - Fix folia (omg folia wtf)
 - Fix refresh action
 - Fix placeholder API cache, its disable by default
-- Add support for 1.20.6 (There has been a big change on how to encode and decode itemstacks in base64, the old values will no longer work)
+- Add support for 1.20.6 (There has been a big change on how to encode and decode itemstacks in base64, the old values
+  will no longer work)
 
 # 1.0.3.1
 
@@ -57,7 +80,7 @@
 - Fix actions for command with delay
 - Fix MenuItemStack with AIR material
 - Fix color with messages in button
-- Fixed saving enchantments with /zm save  
+- Fixed saving enchantments with /zm save
 - Change Item Permission to check in all inventory instead of just the player's hand
 - Create new Button for zMenu+ ``INPUT``, allows you to choose a number or a text in the chat and perform actions
 - You can choose the pattern plugin for the button with ``pluginName``
@@ -68,7 +91,8 @@
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page
 - Create new placeholder ``%zmenu_player_previous_page%``, return player previous page
 - Create new requirement: ``playername``, Check if a text is a player nickname
-- Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening inventory.
+- Fixed the display of a button with a playerHead if the text is not a `playerHead`. This avoids server lag when opening
+  inventory.
 - Fixed Numbers saved in PlayerData are not Numbers after a restart. [#59](https://github.com/Maxlego08/zMenu/issues/59)
 - Added Placeholder in head url [#58](https://github.com/Maxlego08/zMenu/issues/58)
 - Added Action - Data placeholder [#56](https://github.com/Maxlego08/zMenu/issues/56)
@@ -79,14 +103,19 @@
 
 # 1.0.2.9
 
-- Added support for [zHead](https://www.spigotmc.org/resources/zhead-database-plugin-for-heads.115717/). A free and open source head database plugin (with more than 72.000 heads)
+- Added support for [zHead](https://www.spigotmc.org/resources/zhead-database-plugin-for-heads.115717/). A free and open
+  source head database plugin (with more than 72.000 heads)
 - Create new placeholder ``%zmenu_player_page%``, return player page
 - Create new placeholder ``%zmenu_player_max_page%``, return player max page
 - Change NEXT and PREVIOUS button. If you click right you will go directly to the first or last page.
 - Improve MiniMessage format with italic text
 - Create new file: `default_values.yml`, it will contain all the default values for the placeholders of the player data.
-- Create pattern for Button. You can create a pattern file for a button with placeholders. And in your inventory, just call the pattern with a placeholder list. The placeholders will be replaced by your values and the button will be loaded with the new values. Thus, you can have dozens of similar buttons while reducing your configurations by several hundred lines. More information [here](https://docs.zmenu.dev/configurations/patterns#button).
+- Create pattern for Button. You can create a pattern file for a button with placeholders. And in your inventory, just
+  call the pattern with a placeholder list. The placeholders will be replaced by your values and the button will be
+  loaded with the new values. Thus, you can have dozens of similar buttons while reducing your configurations by several
+  hundred lines. More information [here](https://docs.zmenu.dev/configurations/patterns#button).
 - Creation of 5 configurations for zMenu:
+
 1. PLAYTIME LEVELS - zMenu Configurations: https://minecraft-inventory-builder.com/resources/9
 2. VOTE MENU - zMenu Configurations: https://minecraft-inventory-builder.com/resources/8
 3. DONUTSMP HOME - zMenu Configurations: https://minecraft-inventory-builder.com/resources/7
@@ -102,14 +131,16 @@
 
 # 1.0.2.7
 
-- Start of development of the [zMenu+](https://m.zmenu.dev/4) paid addon. This addon will be available with the purchase of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
+- Start of development of the [zMenu+](https://m.zmenu.dev/4) paid addon. This addon will be available with the purchase
+  of [Premium](https://minecraft-inventory-builder.com/account-upgrade) upgrade.
 - Huge API Change. This change introduces [zMenu+](https://m.zmenu.dev/4)
 - Create ButtonOption, allows any developer to add options that will be available for all types of buttons.
-- Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will manage the number of pages in the inventory.
+- Create PaginateButton interface. This interface allows you to create buttons that need pagination. This interface will
+  manage the number of pages in the inventory.
 - Add matrix support for button slots [#39](https://github.com/Maxlego08/zMenu/issues/39)
 - Add /zm editor, at the moment this command redirects to the online editor
 - Add target placeholder [#48](https://github.com/Maxlego08/zMenu/issues/48)
-- Fix reload command with pattern. The pattern were reload after the inventories 
+- Fix reload command with pattern. The pattern were reload after the inventories
 - Fix error with InventoryPlayer
 - Fix NmsVersion with 1.8 and 1.9
 - Fix anti-dupe for old version
@@ -123,7 +154,8 @@
 - Add BlockPlaceEvent for Anti Dupe
 - Add placeholder %zmenu_test% for testing
 - Add ``job`` requirement. Check if the player has a job with JobsReborn plugins
-- Added a cache on placeholders. By default, the cache is 500ms. That corresponds to opening a menu. So if you have several times the same placeholder used, it will only be called once.
+- Added a cache on placeholders. By default, the cache is 500ms. That corresponds to opening a menu. So if you have
+  several times the same placeholder used, it will only be called once.
 - Fix sound action, pitch and volume was reversed
 - Fix commands async
 
@@ -135,19 +167,22 @@
 - Improved API, added many new methods to make API more permissive.
 - Patterns can now be on multiple pages
 - Add custom sound to SoundOption
-- Added ability to add arguments and select page for INVENTORY button [#45](https://github.com/Maxlego08/zMenu/issues/45)
+- Added ability to add arguments and select page for INVENTORY
+  button [#45](https://github.com/Maxlego08/zMenu/issues/45)
 - Change update interval to milliseconds [#37](https://github.com/Maxlego08/zMenu/issues/37)
 
 # 1.0.2.4
 
-- Added replacement of , by . for  placeholders requirements. If your placeholder returns a number with a comma instead of a period, the plugin can handle that.
+- Added replacement of , by . for placeholders requirements. If your placeholder returns a number with a comma instead
+  of a period, the plugin can handle that.
 - Added base64 MaterialLoader. Allows to load ItemStack with all the data it can contain.
 - Added cooldown on button click. The default cooldown will be 350ms.
 - Fix Folia with VersionChecker [#35](https://github.com/Maxlego08/zMenu/issues/35)
 - Fix error with mini message format in 1.16
 - Fix JUMP Button
-- Change `/zm save <item name> <base64/yml>`, saves an element in YML or base64 format. The base64 format will save the itemStack with all its data.
-- Change `page` from JUMP Button to `toPage` 
+- Change `/zm save <item name> <base64/yml>`, saves an element in YML or base64 format. The base64 format will save the
+  itemStack with all its data.
+- Change `page` from JUMP Button to `toPage`
 
 # 1.0.2.3
 
@@ -164,20 +199,26 @@
 # 1.0.2.1
 
 - Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
-- Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for action. [#27](https://github.com/Maxlego08/zMenu/issues/27) 
-- Added deny and success action for each requirement. In addition to its global actions, you can add them for each requirement. Perfect to set the error message for the player.
+- Added [ShopKeeper](https://www.spigotmc.org/threads/shopkeepers.447969/) support for
+  action. [#27](https://github.com/Maxlego08/zMenu/issues/27)
+- Added deny and success action for each requirement. In addition to its global actions, you can add them for each
+  requirement. Perfect to set the error message for the player.
 - When creating ItemStacks, the plugin will no longer use PlaceholderAPI if the item contains no placeholders.
-- Added cache system for ItemStack. If ItemStack does not use placeholder API, then it will be created once and cached. All inventories will therefore use the same ItemStack. This allows to improve performance (from a few thousand nano seconds per item, so if you have a lot of items in your inventory the gain can be very important).
-- Fixed command /zm open. The opening arguments were only taken into account if the command had more than 5 arguments instead of starting from 5.
+- Added cache system for ItemStack. If ItemStack does not use placeholder API, then it will be created once and cached.
+  All inventories will therefore use the same ItemStack. This allows to improve performance (from a few thousand nano
+  seconds per item, so if you have a lot of items in your inventory the gain can be very important).
+- Fixed command /zm open. The opening arguments were only taken into account if the command had more than 5 arguments
+  instead of starting from 5.
 - Fixed command /zm reload with commands.
 
 # 1.0.2.0
 
-- Added ANY and ALL support for click requirements [#24](https://github.com/Maxlego08/zMenu/issues/24) 
-- Added a check when displaying the item to prevent that if the slot is outside the slots this triggers an error but just a message in the console
+- Added ANY and ALL support for click requirements [#24](https://github.com/Maxlego08/zMenu/issues/24)
+- Added a check when displaying the item to prevent that if the slot is outside the slots this triggers an error but
+  just a message in the console
 - Fix error with 1.20.4
 - Fix error with Meta
-- Fix error with slot page and else button 
+- Fix error with slot page and else button
 - Fix checkPermission with view requirement who made it check placeholders and permissions impossible
 
 # 1.0.1.9
@@ -189,7 +230,8 @@
 # 1.0.1.8
 
 - Add command ``/zmenu save <name>``. Allows to save the item in your hand in format for plugin configuration.
-- Add material loader for [eco](https://plugins.auxilor.io/all-plugins/the-item-lookup-system) [#19](https://github.com/Maxlego08/zMenu/pull/19)
+- Add material loader
+  for [eco](https://plugins.auxilor.io/all-plugins/the-item-lookup-system) [#19](https://github.com/Maxlego08/zMenu/pull/19)
 - Set ``enableAntiDupeDiscordNotification`` to false by default
 - Fix ItemStackCompound
 - Fix PDC dupe, replace BOOLEAN by INT
@@ -199,9 +241,11 @@
 - Added number of inventory loaded with command /zm reload
 - Added anti dupe system with NMS Tag
 - Fix model id value in config, you can now you modelId, customModelId or customModelData
-- Fix player head for 1.20+ (https://blog.jeff-media.com/creating-custom-heads-in-spigot-1-18-1/) https://github.com/Maxlego08/zMenu/issues/16
+- Fix player head for
+  1.20+ (https://blog.jeff-media.com/creating-custom-heads-in-spigot-1-18-1/) https://github.com/Maxlego08/zMenu/issues/16
 - Fix docs for potion
 - Added information about potion in 1.8 - 1.12. You have to do this:
+
 ```yml
 material: POTION
 durability: 16454
@@ -209,8 +253,10 @@ durability: 16454
 
 # 1.0.1.6
 
-- Start of the translation of the plugin documentation in French. If you want to translate zMenu documentation into your language, please contact me.
+- Start of the translation of the plugin documentation in French. If you want to translate zMenu documentation into your
+  language, please contact me.
 - You can use multiple placeholders now, do like this:
+
 ```yml
 placeholders:
   - placeholder: <your placeholder>
@@ -220,12 +266,16 @@ placeholders:
     value: <your value>
     action: <your action>
 ``` 
+
 Be careful, you must put an ``s`` to **placeholder**, otherwise it will not work.
+
 - You can use now the text ``placeholder`` instanceof ``placeHolder``
 - Start new way to configure the plugin, you have now ``requirement`` and ``actions``:
-A requirement consists of a permission list to check (placeholder, permission, regex and item), an action list on success and an action list on deny.
-You have 11 actions available:
-1. broadcast 
+  A requirement consists of a permission list to check (placeholder, permission, regex and item), an action list on
+  success and an action list on deny.
+  You have 11 actions available:
+
+1. broadcast
 2. broadcast_sound
 3. close
 4. connect
@@ -238,6 +288,7 @@ You have 11 actions available:
 11. sound
 
 Example for ``view_requirement``:
+
 ```yml
 view_requirement:
   deny:
@@ -261,7 +312,9 @@ view_requirement:
       value: "yes"
       action: equals_string
 ```
+
 Example for ``open_requirement``:
+
 ```yml
 open_requirement:
   requirements:
@@ -273,7 +326,9 @@ open_requirement:
       messages:
         - "&cYou doesn't have an item in your hand."
 ```
+
 Example for ``click_requirement``:
+
 ```yml
 click_requirement:
   left_click:
@@ -294,8 +349,11 @@ click_requirement:
         messages:
           - "well <red>done <green>you did it"
 ```
+
 More information on the plugin documentation: https://docs.zmenu.dev/
+
 - Add alias for placeholder action:
+
 1. BOOLEAN: `b=`
 2. EQUALS_STRING: `s=`
 3. EQUALSIGNORECASE_STRING: `s==`
@@ -305,6 +363,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 7. SUPERIOR_OR_EQUAL: `>=`
 8. LOWER: `<`
 9. LOWER_OR_EQUAL: <`=`
+
 - Enable version checker
 - Improve javadocs
 - Remove example.yml, example2.yml and example3.yml in inventories folder
@@ -320,7 +379,8 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Fix button load if type doesn't exist
 - Add ``onBackClick`` in Button, is called when a player will click a ``BACK`` button just before performing his action.
 - Add method ``setMaxPage`` in InventoryDefault class
-- Add event cancel before use the button. It is now possible to activate the click of items in the inventory from the api
+- Add event cancel before use the button. It is now possible to activate the click of items in the inventory from the
+  api
 
 # 1.0.1.4
 
@@ -331,7 +391,9 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 
 # 1.0.1.3
 
-- Added `DefaultButtonValue` in `Button`, Change the default values of the buttons if they are not present in the configuration. To avoid, for example, having to redefine the slot for elses buttons or not having to set isPermanent: true for NEXT or PREVIOUS type buttons
+- Added `DefaultButtonValue` in `Button`, Change the default values of the buttons if they are not present in the
+  configuration. To avoid, for example, having to redefine the slot for elses buttons or not having to set isPermanent:
+  true for NEXT or PREVIOUS type buttons
 - Added `advanced_inventory.yml` in default config file
 - Fix `/zm reload` with patterns
 - Previous and Next button are now permanent button by default
@@ -350,16 +412,18 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 # 1.0.1.1
 
 - Add ``playerCommands`` as an aliases for ``commands``
-- Add ``FastEvent`` interface, allows you to listen to plugin events without going through the Bukkit API, performance gain
+- Add ``FastEvent`` interface, allows you to listen to plugin events without going through the Bukkit API, performance
+  gain
 - Add ``InventoryLoadEvent`` event, Event called when an inventory is loaded
 - Add ``ButtonLoadEvent`` event, Event called when a button is loaded
 - Add ``PlayerOpenInventoryEvent`` event, Event called when a player opens an inventory
 - Removed the requirement to have another button for the NEXT and PREVIOUS button
 - Removed registerButtonListener
-- Fix /zm open argument, you can now set argument like that: `/zm open zmenu:example_punish Maxlego08 false target:Maxlego09 reason:"this is a really long reason"`
+- Fix /zm open argument, you can now set argument like
+  that: `/zm open zmenu:example_punish Maxlego08 false target:Maxlego09 reason:"this is a really long reason"`
 - Fix Leather color material case
 - Fix GameProfile with null name
-- Change ButtonLoadEvent to ButtonLoaderRegisterEvent 
+- Change ButtonLoadEvent to ButtonLoaderRegisterEvent
 
 # 1.0.1.0
 
@@ -370,19 +434,19 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Add method buildDisplayName in Button
 - Add method buildLore in Button
 - Add updateOnClick buttonOption, update button if player click on another button
-- Add button listener method in InventoryManager 
+- Add button listener method in InventoryManager
 - Add check for new messages value saving
 - Fix placeholder verification
 - Fix patterns interactions
 - Fix itemstack amount with custom material
 - Fix item lore with lore is empty
 - Fix message translation for hex color
-- Fix Component meta regex 
+- Fix Component meta regex
 
 # 1.0.0.9
 
 - Add %player% variable for messages on button
-- Add PlaceholderAPI support for custom model data (modelID) 
+- Add PlaceholderAPI support for custom model data (modelID)
 - Add argument for command /zm open
 
 # 1.0.0.8

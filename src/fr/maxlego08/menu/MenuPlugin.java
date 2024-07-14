@@ -127,7 +127,7 @@ public class MenuPlugin extends ZPlugin {
             files.forEach(filePath -> {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
 
-                    if (NMSUtils.isNewVersion()) {
+                    if (NmsVersion.nmsVersion.isNewMaterial()) {
                         saveResource(filePath.replace("inventories/", "inventories/1_13/"), filePath, false);
                     } else {
                         saveResource(filePath, false);
