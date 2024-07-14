@@ -50,6 +50,8 @@
 
 # Unreleased
 
+# 1.0.3.3
+
 - Fix nullable player in MenuItemStack
 - Add ``performMainAction`` for commands, allows to activate or not the main actions of the command. This allows you to
   create commands with arguments without opening an inventory for example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
