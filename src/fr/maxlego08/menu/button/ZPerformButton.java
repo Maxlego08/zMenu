@@ -13,6 +13,8 @@ import java.util.List;
 public abstract class ZPerformButton extends ZSlotButton implements PerformButton {
 
     private List<String> commands;
+    private List<String> leftCommands;
+    private List<String> rightCommands;
     private List<String> consoleCommands;
     private List<String> consoleRightCommands;
     private List<String> consoleLeftCommands;
@@ -30,6 +32,31 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     public void setCommands(List<String> commands) {
         this.commands = commands;
     }
+
+    public List<String> getLeftCommands() {
+        return this.leftCommands;
+    }
+
+
+    public List<String> getRightCommands() {
+        return this.rightCommands;
+    }
+    
+    /**
+     * @param leftCommands the left click commands to set
+     */
+    public void setLeftCommands(List<String> leftCommands) {
+        this.leftCommands = leftCommands;
+    }
+
+    /**
+     * @param rightCommands the right click commands to set
+     */
+    public void setRightCommands(List<String> rightCommands) {
+        this.rightCommands = rightCommands;
+    }
+
+    
 
     @Override
     public List<String> getConsoleCommands() {
@@ -94,10 +121,12 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     @Override
     public void execute(Player player, ClickType type, ZScheduler scheduler) {
         if (type.isRightClick()) {
+            this.execute(player, player, this.rightCommands, scheduler);
             this.execute(player, player, this.consoleRightCommands, scheduler);
         }
 
         if (type.isLeftClick()) {
+            this.execute(player, player, this.leftCommands, scheduler);
             this.execute(player, player, this.consoleLeftCommands, scheduler);
         }
 

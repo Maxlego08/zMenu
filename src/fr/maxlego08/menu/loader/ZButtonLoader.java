@@ -306,6 +306,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> commands = configuration.getStringList(path + "commands");
         if (commands.isEmpty()) commands = configuration.getStringList(path + "playerCommands");
 
+        List<String> leftCommands = configuration.getStringList(path + "leftCommands");
+        if (leftCommands.isEmpty()) commands = configuration.getStringList(path + "leftPlayerCommands");
+
+        List<String> rightCommands = configuration.getStringList(path + "rightCommands");
+        if (rightCommands.isEmpty()) commands = configuration.getStringList(path + "rightPlayerCommands");
+        
         List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
         List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
         List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");
@@ -313,6 +319,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String consolePermission = configuration.getString(path + "consolePermission");
 
         button.setCommands(commands);
+        button.setLeftCommands(leftCommands);
+        button.setRightCommands(rightCommands);
         button.setConsoleCommands(consoleCommands);
         button.setConsoleRightCommands(consoleRightCommands);
         button.setConsoleLeftCommands(consoleLeftCommands);
