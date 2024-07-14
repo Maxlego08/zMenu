@@ -127,6 +127,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setPatterns(patterns);
         inventory.setOpenWithItem(openWithItem);
 
+        Map<String, String> translatedDisplayName = new HashMap<>();
+        configuration.getMapList(path + "translatedName").forEach(map -> {
+            if (map.containsKey("locale") && map.containsKey("name")) {
+                String locale = (String) map.get("locale");
+                String inventoryName = (String) map.get("name");
+                translatedDisplayName.put(locale.toLowerCase(), inventoryName);
+            }
+        });
+        inventory.setTranslatedNames(translatedDisplayName);
+
         // Open requirement
         if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement.")) {
             Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);

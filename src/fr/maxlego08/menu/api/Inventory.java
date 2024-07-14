@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The `Inventory` interface defines the structure and behavior of inventory-related operations.
@@ -36,6 +37,13 @@ public interface Inventory {
      * @return The name of the inventory.
      */
     String getName();
+
+    /**
+     * Returns the translated name of the inventory.
+     *
+     * @return The name of the inventory.
+     */
+    String getName(Player player);
 
     /**
      * Returns the name of the file associated with the inventory.
@@ -179,4 +187,6 @@ public interface Inventory {
      * @return The OpenWithItem
      */
     OpenWithItem getOpenWithItem();
+
+    Map<String, String> getTranslatedName();
 }

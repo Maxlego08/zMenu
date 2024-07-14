@@ -16,7 +16,6 @@ import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -59,6 +58,8 @@ public class MenuItemStack extends ZUtils {
     private List<String> lore = new ArrayList<>();
     private List<ItemFlag> flags = new ArrayList<>();
     private String displayName;
+    private Map<String, String> translatedDisplayName = new HashMap<>();
+    private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -236,11 +237,13 @@ public class MenuItemStack extends ZUtils {
 
         Material finalMaterial = itemStack.getType();
         ItemMeta itemMeta = itemStack.getItemMeta();
+        String locale = findPlayerLocale(player);
 
         if (itemMeta != null) {
             if (this.displayName != null) {
                 try {
-                    Meta.meta.updateDisplayName(itemMeta, placeholders.parse(this.displayName), offlinePlayer == null ? player : offlinePlayer);
+                    String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
+                    Meta.meta.updateDisplayName(itemMeta, placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer);
                 } catch (Exception exception) {
                     Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                     exception.printStackTrace();
@@ -248,10 +251,11 @@ public class MenuItemStack extends ZUtils {
             }
 
             if (!this.lore.isEmpty()) {
-                Meta.meta.updateLore(itemMeta, placeholders.parse(this.lore), offlinePlayer == null ? player : offlinePlayer);
+                List<String> lore = locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore);
+                Meta.meta.updateLore(itemMeta, placeholders.parse(lore), offlinePlayer == null ? player : offlinePlayer);
             }
 
-            if (this.isGlowing && NMSUtils.getNMSVersion() != 1.7) {
+            if (this.isGlowing) {
 
                 itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
                 itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -738,5 +742,21 @@ public class MenuItemStack extends ZUtils {
         }
 
         return colors;
+    }
+
+    public Map<String, String> getTranslatedDisplayName() {
+        return translatedDisplayName;
+    }
+
+    public void setTranslatedDisplayName(Map<String, String> translatedDisplayName) {
+        this.translatedDisplayName = translatedDisplayName;
+    }
+
+    public Map<String, List<String>> getTranslatedLore() {
+        return translatedLore;
+    }
+
+    public void setTranslatedLore(Map<String, List<String>> translatedLore) {
+        this.translatedLore = translatedLore;
     }
 }

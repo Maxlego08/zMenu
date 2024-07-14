@@ -128,6 +128,28 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
         menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", "0")))));
 
+        Map<String, String> translatedDisplayName = new HashMap<>();
+        Map<String, List<String>> translatedLore = new HashMap<>();
+
+        configuration.getMapList(path + "translatedName").forEach(map -> {
+            if (map.containsKey("locale") && map.containsKey("name")) {
+                String locale = (String) map.get("locale");
+                String name = (String) map.get("name");
+                translatedDisplayName.put(locale.toLowerCase(), name);
+            }
+        });
+
+        configuration.getMapList(path + "translatedLore").forEach(map -> {
+            if (map.containsKey("locale") && map.containsKey("lore")) {
+                String locale = (String) map.get("locale");
+                List<String> name = (List<String>) map.get("lore");
+                translatedLore.put(locale.toLowerCase(), name);
+            }
+        });
+
+        menuItemStack.setTranslatedDisplayName(translatedDisplayName);
+        menuItemStack.setTranslatedLore(translatedLore);
+
         List<String> enchants = configuration.getStringList(path + "enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
 

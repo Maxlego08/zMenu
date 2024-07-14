@@ -22,6 +22,7 @@ import fr.maxlego08.menu.website.request.HttpRequest;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -201,7 +202,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         files.add("website/inventories.yml");
 
         files.forEach(filePath -> {
-            if (NMSUtils.isNewVersion()) {
+            if (NmsVersion.nmsVersion.isNewMaterial()) {
                 this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, !Config.enableDebug);
             } else {
                 this.plugin.saveResource(filePath, !Config.enableDebug);

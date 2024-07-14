@@ -96,14 +96,20 @@ public class CommandInventory extends VCommand {
             }
         }
 
+        boolean performMainActions = lastArgument == null || lastArgument.isPerformMainActions();
+
         InventoryDefault inventoryDefault = new InventoryDefault();
         inventoryDefault.setPlugin(plugin);
-        this.command.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+
+
         if (lastArgument != null) {
             lastArgument.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
         }
 
-        optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
+        if (performMainActions) {
+            this.command.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+            optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
+        }
 
         return CommandType.SUCCESS;
     }

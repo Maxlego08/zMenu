@@ -69,39 +69,11 @@ public class InventoryDefault extends VInventory {
         InventoryManager manager = this.plugin.getInventoryManager();
         manager.setPlayerPage(player, page, maxPage);
 
-        if (isAsync) {
-
-            ZScheduler scheduler = this.plugin.getScheduler();
-            scheduler.runTaskAsynchronously(() -> {
-
-                this.buttons.forEach(button -> button.onInventoryOpen(player, this));
-
-                String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
-                super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
-
-                // Display fill items
-                if (this.inventory.getFillItemStack() != null) {
-                    for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
-                        this.addItem(a, this.inventory.getFillItemStack().build(player));
-                    }
-                }
-
-                // Display buttons
-                this.buttons.forEach(this::buildButton);
-
-                scheduler.runTask(player.getLocation(), () -> {
-                    player.openInventory(this.getSpigotInventory());
-                });
-            });
-
-            return InventoryResult.SUCCESS_ASYNC;
-
-        } else {
-
+        ZScheduler scheduler = this.plugin.getScheduler();
+        Runnable runnable = () -> {
             this.buttons.forEach(button -> button.onInventoryOpen(player, this));
 
-            // Create inventory
-            String inventoryName = this.getMessage(this.inventory.getName(), "%page%", page, "%maxPage%", this.maxPage);
+            String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
             super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
 
             // Display fill items
@@ -114,6 +86,20 @@ public class InventoryDefault extends VInventory {
             // Display buttons
             this.buttons.forEach(this::buildButton);
 
+            if (isAsync) {
+                scheduler.runTask(player.getLocation(), () -> {
+                    player.openInventory(this.getSpigotInventory());
+                });
+            }
+        };
+
+        if (isAsync) {
+
+            scheduler.runTaskAsynchronously(runnable);
+            return InventoryResult.SUCCESS_ASYNC;
+        } else {
+
+            runnable.run();
             return InventoryResult.SUCCESS;
         }
     }

@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -170,7 +171,7 @@ public abstract class MessageUtils extends LocationUtils {
      */
     protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
 
-        if (NMSUtils.isNewVersion()) {
+        if (NmsVersion.nmsVersion.isNewMaterial()) {
             player.sendTitle(title, subtitle, fadeInTime, showTime, fadeOutTime);
             return;
         }
