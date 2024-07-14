@@ -52,7 +52,7 @@
 
 - Fix nullable player in MenuItemStack
 - Add ``performMainAction`` for commands, allows to activate or not the main actions of the command. This allows you to
-  create commands with arguments without opening an inventory for example.
+  create commands with arguments without opening an inventory for example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
 - Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the player’s game language
   you can set other messages and make your server international
 - Remove ``eco`` from plugin.yml, this caused problems loading various plugins
