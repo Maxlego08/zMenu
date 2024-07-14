@@ -56,6 +56,7 @@
 - Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the player’s game language
   you can set other messages and make your server international
 - Remove ``eco`` from plugin.yml, this caused problems loading various plugins
+- Tab completes for more of the sub commands [#75](https://github.com/Maxlego08/zMenu/issues/75)
 
 # 1.0.3.2
 
