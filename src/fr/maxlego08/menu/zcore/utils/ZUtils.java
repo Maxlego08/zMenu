@@ -90,12 +90,16 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected String findPlayerLocale(Player player) {
-        try {
-            return player != null ? player.getLocale() : null;
-        } catch (Exception exception) {
-            return null;
+        if (NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_13.getVersion()) {
+            try {
+                return player != null ? player.getLocale() : null;
+            } catch (Exception exception) {
+                return null;
+            }
         }
+        return null;
     }
+
     protected boolean isMinecraftName(String username) {
         String MINECRAFT_USERNAME_REGEX = "^[a-zA-Z0-9_]{3,16}$";
         Pattern pattern = Pattern.compile(MINECRAFT_USERNAME_REGEX);
