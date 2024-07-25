@@ -248,6 +248,11 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
+    public void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders) {
+
+    }
+
+    @Override
     public boolean closeInventory() {
         return this.closeInventory;
     }

@@ -71,10 +71,12 @@ public class InventoryDefault extends VInventory {
 
         ZScheduler scheduler = this.plugin.getScheduler();
         Runnable runnable = () -> {
-            this.buttons.forEach(button -> button.onInventoryOpen(player, this));
+            Placeholders placeholders = new Placeholders();
+            this.buttons.forEach(button -> button.onInventoryOpen(player, this)); // Remove in few version !
+            this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
             String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
-            super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
+            super.createMetaInventory(super.papi(placeholders.parse(inventoryName), player, false), this.inventory.size());
 
             // Display fill items
             if (this.inventory.getFillItemStack() != null) {

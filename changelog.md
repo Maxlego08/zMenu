@@ -52,6 +52,7 @@
 
 - Add permissions on default commands
 - Add PlaceholderAction: ``DIFFERENT_STRING``, check that a string is different from the value
+- Deprecated method ``onInventoryOpen(Player, InventoryDefault)`` use now `onInventoryOpen(Player, InventoryDefault, Placeholders)`
 
 # 1.0.3.3
 
