@@ -276,7 +276,7 @@ public class MenuItemStack extends ZUtils {
                 }
             });
 
-            this.flags.forEach(itemMeta::addItemFlags);
+            this.flags.stream().filter(Objects::nonNull).forEach(itemMeta::addItemFlags);
             itemStack.setItemMeta(itemMeta);
         }
 

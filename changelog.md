@@ -50,6 +50,9 @@
 
 # Unreleased
 
+- Add permissions on default commands
+- Add PlaceholderAction: ``DIFFERENT_STRING``, check that a string is different from the value
+
 # 1.0.3.3
 
 - Fix nullable player in MenuItemStack
