@@ -38,17 +38,20 @@ commands:
   basic_command:
     command: basic_command
     inventory: basic_inventory
+    permission: "zmenu.basic"
   advanced_command:
     command: advanced_command
-    permission: "admin.use"
+    permission: "zmenu.admin"
     aliases:
       - zai
     inventory: advanced_inventory
   pro_command:
     command: pro_command
     inventory: pro_inventory
+    permission: "zmenu.pro"
   openbook:
     command: openbook
+    permission: "zmenu.open.book"
     actions:
       - type: book
         author: "Maxlego08" # Book author
