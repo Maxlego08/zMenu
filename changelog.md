@@ -50,6 +50,7 @@
 
 # Unreleased
 
+- Add support for ``\n`` in item lore
 - Add ``refresh_requirement``, allows refreshing the lore, name of the item or the button in its entirety according to several conditions.
 - Add permissions on default commands
 - Add PlaceholderAction: ``DIFFERENT_STRING``, check that a string is different from the value
