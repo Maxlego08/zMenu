@@ -398,7 +398,6 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     private void loadRefreshRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<RefreshRequirement> loader = new RefreshRequiementLoader(this.plugin);
         if (configuration.getConfigurationSection(path + "refresh_requirements") != null) {
-            System.out.println("Load : " + path + " refresh_requirements");
             button.setRefreshRequirement(loader.load(configuration, path + "refresh_requirements.", file));
         }
     }
