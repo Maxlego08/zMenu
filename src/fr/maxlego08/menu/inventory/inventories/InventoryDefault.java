@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
@@ -167,9 +168,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display the button in the inventory
-     *
-     * @param button
+     * Allows displaying the button in the inventory
      */
     private void displayButton(Button button) {
 
@@ -189,10 +188,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display the button and to put the actions on the clicks
-     *
-     * @param button
-     * @param slots
+     * Allows displaying the button and putting the actions on the clicks
      */
     public void displayFinalButton(Button button, int... slots) {
 
@@ -231,7 +227,62 @@ public class InventoryDefault extends VInventory {
                 itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
             }
 
-            if (button.isUpdated()) {
+            System.out.println("Need refresh: " + button.hasRefreshRequirement());
+            if (button.hasRefreshRequirement()) {
+
+                RefreshRequirement refreshRequirement = button.getRefreshRequirement();
+                if (!refreshRequirement.needRefresh(player, button, this, new Placeholders())) {
+                    return;
+                }
+
+                TimerTask timerTask = this.scheduleFix(this.plugin, refreshRequirement.getUpdateInterval(), (task, canRun) -> {
+
+                    if (!canRun) {
+                        return;
+                    }
+
+                    if (this.isClose()) {
+                        task.cancel();
+                        return;
+                    }
+
+                    TimerTask tTask = this.timers.get(slot);
+                    if (!task.equals(tTask)) {
+                        task.cancel();
+                        return;
+                    }
+
+                    if (refreshRequirement.canRefresh(player, button, this, new Placeholders())) {
+
+                        this.cancel(slot);
+
+                        if (refreshRequirement.isRefreshLore() || refreshRequirement.isRefreshName()) {
+
+                            ItemMeta itemMeta = itemStack.getItemMeta();
+
+                            List<String> lore = button.buildLore(this.player);
+                            String displayName = button.buildDisplayName(this.player);
+
+                            if (!lore.isEmpty() && refreshRequirement.isRefreshLore())
+                                Meta.meta.updateLore(itemMeta, lore, this.player);
+                            if (displayName != null && refreshRequirement.isRefreshName())
+                                Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+
+                            itemStack.setItemMeta(itemMeta);
+                            this.getSpigotInventory().setItem(slot, itemStack);
+
+                        } else if (refreshRequirement.isRefreshButton()) {
+
+                            this.buildButton(button.getMasterParentButton());
+                        }
+
+                    }
+
+                });
+
+                this.timers.put(slot, timerTask);
+
+            } else if (button.isUpdated()) {
 
                 TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval(), (task, canRun) -> {
 
@@ -277,7 +328,7 @@ public class InventoryDefault extends VInventory {
     }
 
     public void cancel(int slot) {
-        TimerTask task = this.timers.get(slot);
+        TimerTask task = this.timers.remove(slot);
         if (task != null) {
             task.cancel();
         }
