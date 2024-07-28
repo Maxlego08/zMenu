@@ -227,102 +227,41 @@ public class InventoryDefault extends VInventory {
                 itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
             }
 
-            System.out.println("Need refresh: " + button.hasRefreshRequirement());
-            if (button.hasRefreshRequirement()) {
+            if (button.hasRefreshRequirement() || button.isUpdated()) {
 
-                RefreshRequirement refreshRequirement = button.getRefreshRequirement();
-                if (!refreshRequirement.needRefresh(player, button, this, new Placeholders())) {
-                    return;
-                }
+                RefreshRequirement refreshRequirement = button.hasRefreshRequirement() ? button.getRefreshRequirement() : null;
+                boolean needRefresh = refreshRequirement != null && refreshRequirement.needRefresh(player, button, this, new Placeholders());
 
-                TimerTask timerTask = this.scheduleFix(this.plugin, refreshRequirement.getUpdateInterval(), (task, canRun) -> {
-
-                    if (!canRun) {
-                        return;
-                    }
-
-                    if (this.isClose()) {
-                        task.cancel();
-                        return;
-                    }
-
-                    TimerTask tTask = this.timers.get(slot);
-                    if (!task.equals(tTask)) {
-                        task.cancel();
-                        return;
-                    }
-
-                    if (refreshRequirement.canRefresh(player, button, this, new Placeholders())) {
-
-                        this.cancel(slot);
-
-                        if (refreshRequirement.isRefreshLore() || refreshRequirement.isRefreshName()) {
-
-                            ItemMeta itemMeta = itemStack.getItemMeta();
-
-                            List<String> lore = button.buildLore(this.player);
-                            String displayName = button.buildDisplayName(this.player);
-
-                            if (!lore.isEmpty() && refreshRequirement.isRefreshLore())
-                                Meta.meta.updateLore(itemMeta, lore, this.player);
-                            if (displayName != null && refreshRequirement.isRefreshName())
-                                Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
-
-                            itemStack.setItemMeta(itemMeta);
-                            this.getSpigotInventory().setItem(slot, itemStack);
-
-                        } else if (refreshRequirement.isRefreshButton()) {
-
-                            this.buildButton(button.getMasterParentButton());
+                if (needRefresh || button.isUpdated()) {
+                    long interval = refreshRequirement != null ? refreshRequirement.getUpdateInterval() : this.inventory.getUpdateInterval();
+                    TimerTask timerTask = this.scheduleFix(this.plugin, interval, (task, canRun) -> {
+                        if (!canRun) {
+                            return;
                         }
 
-                    }
+                        if (this.isClose()) {
+                            task.cancel();
+                            return;
+                        }
 
-                });
+                        TimerTask tTask = this.timers.get(slot);
+                        if (!task.equals(tTask)) {
+                            task.cancel();
+                            return;
+                        }
 
-                this.timers.put(slot, timerTask);
+                        if (refreshRequirement != null && refreshRequirement.canRefresh(player, button, this, new Placeholders())) {
+                            this.cancel(slot);
+                            updateItemMeta(itemStack, button, refreshRequirement, slot);
+                        } else if (button.isUpdated()) {
+                            handleUpdatedButton(button, itemStack, slot);
+                        }
+                    });
 
-            } else if (button.isUpdated()) {
-
-                TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval(), (task, canRun) -> {
-
-                    if (!canRun) {
-                        return;
-                    }
-
-                    if (this.isClose()) {
-                        task.cancel();
-                        return;
-                    }
-
-                    TimerTask tTask = this.timers.get(slot);
-                    if (!task.equals(tTask)) {
-                        task.cancel();
-                        return;
-                    }
-
-                    Button masterButton = button.getMasterParentButton();
-
-                    if (button.isUpdatedMasterButton()) {
-                        this.cancel(slot);
-                        this.buildButton(masterButton);
-                        return;
-                    }
-
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-
-                    List<String> lore = button.buildLore(this.player);
-                    String displayName = button.buildDisplayName(this.player);
-
-                    if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, lore, this.player);
-                    if (displayName != null) Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
-
-                    itemStack.setItemMeta(itemMeta);
-                    this.getSpigotInventory().setItem(slot, itemStack);
-                });
-
-                this.timers.put(slot, timerTask);
+                    this.timers.put(slot, timerTask);
+                }
             }
+
         }
 
     }
@@ -361,5 +300,46 @@ public class InventoryDefault extends VInventory {
 
     public List<Button> getButtons() {
         return buttons;
+    }
+
+    private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        List<String> lore = button.buildLore(this.player);
+        String displayName = button.buildDisplayName(this.player);
+
+        if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
+            Meta.meta.updateLore(itemMeta, lore, this.player);
+        }
+
+        if (displayName != null && refreshRequirement.isRefreshName()) {
+            Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+        }
+
+        itemStack.setItemMeta(itemMeta);
+        this.getSpigotInventory().setItem(slot, itemStack);
+
+        if (refreshRequirement.isRefreshButton()) {
+            this.buildButton(button.getMasterParentButton());
+        }
+    }
+
+    private void handleUpdatedButton(Button button, ItemStack itemStack, int slot) {
+        Button masterButton = button.getMasterParentButton();
+
+        if (button.isUpdatedMasterButton()) {
+            this.cancel(slot);
+            this.buildButton(masterButton);
+            return;
+        }
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        List<String> lore = button.buildLore(this.player);
+        String displayName = button.buildDisplayName(this.player);
+
+        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, lore, this.player);
+        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+
+        itemStack.setItemMeta(itemMeta);
+        this.getSpigotInventory().setItem(slot, itemStack);
     }
 }
