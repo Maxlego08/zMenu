@@ -347,8 +347,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load inventories
-        try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))) {
-            s.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
+        try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
+            stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
                 try {
                     this.loadInventory(this.plugin, file);
                 } catch (InventoryException e1) {
@@ -359,7 +359,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             exception.printStackTrace();
         }
 
-        // Load specify path inventories
+        // Load specifies path inventories
         List<String> list = Config.specifyPathMenus;
         for (String s : list) {
             File file = new File(s);
