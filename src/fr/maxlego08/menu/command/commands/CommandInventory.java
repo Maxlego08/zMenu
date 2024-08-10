@@ -22,11 +22,15 @@ public class CommandInventory extends VCommand {
      * @param plugin  Menu plugin
      * @param command Menu Command
      */
-    public CommandInventory(MenuPlugin plugin, Command command) {
+    public CommandInventory(MenuPlugin plugin, Command command, boolean isSubCommands) {
         super(plugin);
         this.command = command;
         this.setPermission(command.getPermission());
         this.setConsoleCanUse(false);
+        if (isSubCommands) {
+            this.addSubCommand(command.getCommand());
+            this.addSubCommand(command.getAliases());
+        }
 
         if (command.hasArgument()) {
 
@@ -40,6 +44,8 @@ public class CommandInventory extends VCommand {
                 }
             }
         }
+
+        command.getSubCommands().forEach(subCommand -> this.addSubCommand(new CommandInventory(plugin, subCommand, true)));
     }
 
     private Optional<Inventory> getInventoryByName(String inventoryName) {

@@ -180,7 +180,7 @@ public class MenuPlugin extends ZPlugin {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
         }
         if (this.isEnable(Plugins.ITEMSADDER)) {
-            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader());
+            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
         }
         if (this.isEnable(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());

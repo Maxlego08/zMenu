@@ -4,8 +4,16 @@ import dev.lone.itemsadder.api.CustomStack;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 public class ItemsAdderLoader implements MaterialLoader {
+
+    private final Plugin plugin;
+
+    public ItemsAdderLoader(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public String getKey() {
         return "itemsadder";
@@ -13,6 +21,11 @@ public class ItemsAdderLoader implements MaterialLoader {
 
     @Override
     public ItemStack load(YamlConfiguration configuration, String path, String materialString) {
-        return CustomStack.getInstance(materialString).getItemStack();
+        CustomStack customStack = CustomStack.getInstance(materialString);
+        if (customStack == null) {
+            plugin.getLogger().severe("Impossible to find the item " + materialString);
+            return null;
+        }
+        return customStack.getItemStack();
     }
 }

@@ -54,6 +54,7 @@
 - Add ``refresh_requirement``, allows refreshing the lore, name of the item or the button in its entirety according to several conditions.
 - Add permissions on default commands
 - Add PlaceholderAction: ``DIFFERENT_STRING``, check that a string is different from the value
+- Add sub commands for commands. You can now have sub commands to perform actions, for example, create a `/votes party` command, a `/votes info` command !
 - Deprecated method ``onInventoryOpen(Player, InventoryDefault)`` use now `onInventoryOpen(Player, InventoryDefault, Placeholders)`
 
 # 1.0.3.3
