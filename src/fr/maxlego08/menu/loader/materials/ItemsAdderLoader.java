@@ -26,6 +26,6 @@ public class ItemsAdderLoader implements MaterialLoader {
             plugin.getLogger().severe("Impossible to find the item " + materialString);
             return null;
         }
-        return customStack.getItemStack();
+        return customStack.getItemStack().clone();
     }
 }
