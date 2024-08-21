@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -562,7 +563,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void updateInventory(Player player) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryDefault) {
             InventoryDefault inventoryDefault = (InventoryDefault) holder;
             this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
@@ -571,7 +572,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void updateInventory(Player player, Plugin plugin) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryDefault) {
             InventoryDefault inventoryDefault = (InventoryDefault) holder;
             if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {

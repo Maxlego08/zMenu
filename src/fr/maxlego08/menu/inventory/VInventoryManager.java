@@ -186,7 +186,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     public void close(Predicate<VInventory> predicate) {
         Bukkit.getOnlinePlayers().stream().filter(player -> {
-            InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
             return holder != null && holder instanceof VInventory;
         }).map(player -> (VInventory) CompatibilityUtil.getTopInventory(player).getHolder()).filter(predicate).forEach(vInventory -> {
             Player player = vInventory.getPlayer();

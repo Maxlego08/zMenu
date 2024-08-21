@@ -183,7 +183,7 @@ public class ZInventory extends ZUtils implements Inventory {
     public void closeInventory(Player player, InventoryDefault inventoryDefault) {
         if (this.clearInventory) {
             MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
-                InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();
+                InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
                 if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.giveInventory(player);
