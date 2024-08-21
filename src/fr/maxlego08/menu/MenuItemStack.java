@@ -88,7 +88,7 @@ public class MenuItemStack extends ZUtils {
     private boolean fireResistant;
     private boolean hideTooltip;
     private boolean hideAdditionalTooltip;
-    private boolean enchantmentGlint;
+    private Boolean enchantmentGlint;
     private boolean enchantmentShowInTooltip;
     private boolean attributeShowInTooltip;
     private MenuItemRarity itemRarity;
@@ -360,7 +360,10 @@ public class MenuItemStack extends ZUtils {
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
-        itemMeta.setEnchantmentGlintOverride(this.enchantmentGlint);
+        if (this.enchantmentGlint != null) {
+            itemMeta.setEnchantmentGlintOverride(this.enchantmentGlint);
+        }
+
         itemMeta.setFireResistant(this.fireResistant);
 
         if (!this.attributeShowInTooltip) {
@@ -934,7 +937,7 @@ public class MenuItemStack extends ZUtils {
         return enchantmentGlint;
     }
 
-    public void setEnchantmentGlint(boolean enchantmentGlint) {
+    public void setEnchantmentGlint(Boolean enchantmentGlint) {
         this.enchantmentGlint = enchantmentGlint;
     }
 

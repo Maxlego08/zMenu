@@ -227,7 +227,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setFireResistant(configuration.getBoolean(path + "fire-resistant", false));
         menuItemStack.setHideTooltip(configuration.getBoolean(path + "hide-tooltip", false));
         menuItemStack.setHideAdditionalTooltip(configuration.getBoolean(path + "hide-additional-tooltip", false));
-        menuItemStack.setEnchantmentGlint(configuration.getBoolean(path + "enchantment-glint", false));
+        menuItemStack.setEnchantmentGlint(configuration.contains(path + "enchantment-glint") ? configuration.getBoolean(path + "enchantment-glint") : null);
         menuItemStack.setEnchantmentShowInTooltip(configuration.getBoolean(path + "enchantment-show-in-tooltip", true));
         menuItemStack.setAttributeShowInTooltip(configuration.getBoolean(path + "attribute-show-in-tooltip", true));
 
