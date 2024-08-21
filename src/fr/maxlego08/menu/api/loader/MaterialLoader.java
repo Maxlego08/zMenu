@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.loader;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -19,11 +20,12 @@ public interface MaterialLoader {
     /**
      * Loads an ItemStack based on the provided configuration.
      *
-     * @param configuration   The current configuration.
-     * @param path            The current path.
-     * @param materialString  The material as a String.
+     * @param player
+     * @param configuration  The current configuration.
+     * @param path           The current path.
+     * @param materialString The material as a String.
      * @return The loaded ItemStack.
      */
-    ItemStack load(YamlConfiguration configuration, String path, String materialString);
+    ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString);
 
 }

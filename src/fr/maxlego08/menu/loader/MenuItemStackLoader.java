@@ -6,6 +6,9 @@ import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
+import fr.maxlego08.menu.api.enums.MenuItemRarity;
+import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
+import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.utils.Banner;
 import fr.maxlego08.menu.zcore.utils.Firework;
@@ -13,6 +16,8 @@ import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
@@ -23,6 +28,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionType;
 
 import java.io.File;
@@ -164,19 +171,19 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 String[] splitEnchant = enchantString.split(",");
 
                 if (splitEnchant.length == 1)
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
+                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
 
                 int level;
                 String enchant = splitEnchant[0];
                 try {
                     level = Integer.parseInt(splitEnchant[1]);
                 } catch (NumberFormatException e) {
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
+                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
                 }
 
                 Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments(enchant);
                 if (!optional.isPresent()) {
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
+                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
                 }
 
                 enchantments.put(optional.get().getEnchantment(), level);
@@ -203,7 +210,47 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setFlags(flags);
         menuItemStack.setAttributes(attributeModifiers);
 
+        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+            loadNewItemStacks(menuItemStack, configuration, path, file);
+        }
+
         return menuItemStack;
+    }
+
+    private void loadNewItemStacks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
+        menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 64));
+        menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
+        menuItemStack.setDamage(configuration.getInt(path + "damage", 0));
+        menuItemStack.setRepairCost(configuration.getInt(path + "repair-cost", 0));
+        menuItemStack.setUnbreakableEnabled(configuration.getBoolean(path + "unbreakable", false));
+        menuItemStack.setUnbreakableShowInTooltip(configuration.getBoolean(path + "unbreakable-show-in-tooltip", false));
+        menuItemStack.setFireResistant(configuration.getBoolean(path + "fire-resistant", false));
+        menuItemStack.setHideTooltip(configuration.getBoolean(path + "hide-tooltip", false));
+        menuItemStack.setHideAdditionalTooltip(configuration.getBoolean(path + "hide-additional-tooltip", false));
+        menuItemStack.setEnchantmentGlint(configuration.getBoolean(path + "enchantment-glint", false));
+        menuItemStack.setEnchantmentShowInTooltip(configuration.getBoolean(path + "enchantment-show-in-tooltip", true));
+        menuItemStack.setAttributeShowInTooltip(configuration.getBoolean(path + "attribute-show-in-tooltip", true));
+
+        String rarityString = configuration.getString("item-rarity", null);
+        if (rarityString != null) {
+            menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
+        }
+
+        boolean enableTrim = configuration.getBoolean(path + "trim.enable", false);
+        if (enableTrim) {
+            TrimHelper trimHelper = new TrimHelper();
+            TrimPattern trimPattern = trimHelper.getTrimPatterns().get(configuration.getString(path + "trim.pattern", "").toLowerCase());
+            if (trimPattern == null) {
+                enableTrim = false;
+                Bukkit.getLogger().severe("Trim pattern " + configuration.getString(path + "trim.pattern", "") + " was not found for item " + file.getAbsolutePath());
+            }
+            TrimMaterial trimMaterial = trimHelper.getTrimMaterials().get(configuration.getString(path + "trim.material", "").toLowerCase());
+            if (trimMaterial == null) {
+                enableTrim = false;
+                Bukkit.getLogger().severe("Trim material " + configuration.getString(path + "trim.material", "") + " was not found for item " + file.getAbsolutePath());
+            }
+            menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
+        }
     }
 
     private Color getColor(YamlConfiguration configuration, String key, Color def) {

@@ -188,12 +188,16 @@ public enum NmsVersion {
         return version >= V_1_18.version;
     }
 
-    public boolean isNewHeadApi(){
+    public boolean isNewHeadApi() {
         return version >= V_1_20.version;
     }
 
-    public boolean isNewNMSVersion(){
+    public boolean isNewNMSVersion() {
         return version >= V_1_17.version;
+    }
+
+    public boolean isNewItemStackAPI() {
+        return version >= V_1_21.version;
     }
 
 }

@@ -1,10 +1,13 @@
 package fr.maxlego08.menu;
 
+import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
+import fr.maxlego08.menu.api.enums.MenuItemRarity;
+import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -30,9 +33,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionType;
 
 import javax.annotation.Nullable;
@@ -71,6 +78,21 @@ public class MenuItemStack extends ZUtils {
     private LeatherArmor leatherArmor;
     private boolean needPlaceholderAPI = false;
     private ItemStack cacheItemStack;
+
+    private int maxStackSize;
+    private int maxDamage;
+    private int damage;
+    private int repairCost;
+    private boolean unbreakableEnabled;
+    private boolean unbreakableShowInTooltip;
+    private boolean fireResistant;
+    private boolean hideTooltip;
+    private boolean hideAdditionalTooltip;
+    private boolean enchantmentGlint;
+    private boolean enchantmentShowInTooltip;
+    private boolean attributeShowInTooltip;
+    private MenuItemRarity itemRarity;
+    private TrimConfiguration trimConfiguration;
 
     public MenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         super();
@@ -189,7 +211,7 @@ public class MenuItemStack extends ZUtils {
                     Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
                     if (optional.isPresent()) {
                         MaterialLoader loader = optional.get();
-                        itemStack = loader.load(null, null, value);
+                        itemStack = loader.load(player, null, path, value);
                     }
                 }
             }
@@ -285,6 +307,15 @@ public class MenuItemStack extends ZUtils {
             });
 
             this.flags.stream().filter(Objects::nonNull).forEach(itemMeta::addItemFlags);
+
+            if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+                this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
+            }
+
+            if (attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+                itemMeta.setAttributeModifiers(ArrayListMultimap.create());
+            }
+
             itemStack.setItemMeta(itemMeta);
         }
 
@@ -294,9 +325,56 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
+
         return itemStack;
     }
 
+    private void buildNewItemStackAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
+        if (this.maxStackSize > 0) {
+            itemMeta.setMaxStackSize(this.maxStackSize);
+        }
+
+        if (itemMeta instanceof Damageable) {
+            Damageable damageable = (Damageable) itemMeta;
+            if (this.maxDamage > 0) damageable.setMaxDamage(this.maxDamage);
+            damageable.setDamage(this.damage);
+            damageable.setUnbreakable(this.unbreakableEnabled);
+
+            if (!this.unbreakableShowInTooltip) {
+                itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            }
+        }
+
+        if (itemMeta instanceof Repairable) {
+            ((Repairable) itemMeta).setRepairCost(this.repairCost);
+        }
+
+        itemMeta.setHideTooltip(this.hideTooltip);
+        if (this.hideAdditionalTooltip) {
+            for (ItemFlag value : ItemFlag.values()) {
+                itemMeta.addItemFlags(value);
+            }
+        }
+
+        if (!this.enchantmentShowInTooltip) {
+            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }
+
+        itemMeta.setEnchantmentGlintOverride(this.enchantmentGlint);
+        itemMeta.setFireResistant(this.fireResistant);
+
+        if (!this.attributeShowInTooltip) {
+            itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        }
+
+        if (this.itemRarity != null) {
+            itemMeta.setRarity(this.itemRarity.getItemRarity());
+        }
+
+        if (itemMeta instanceof ArmorMeta && this.trimConfiguration != null) {
+            ((ArmorMeta) itemMeta).setTrim(new ArmorTrim(this.trimConfiguration.getMaterial(), this.trimConfiguration.getPattern()));
+        }
+    }
 
     /**
      * @return the target player
@@ -594,10 +672,6 @@ public class MenuItemStack extends ZUtils {
         needPlaceholderAPI = string.contains("%");
     }
 
-    public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
-        this.needPlaceholderAPI = needPlaceholderAPI;
-    }
-
     public void setTypeMapAccessor(MapConfiguration configuration) {
 
         setData(configuration.getInt("data", 0));
@@ -766,5 +840,133 @@ public class MenuItemStack extends ZUtils {
 
     public void setTranslatedLore(Map<String, List<String>> translatedLore) {
         this.translatedLore = translatedLore;
+    }
+
+    public boolean isNeedPlaceholderAPI() {
+        return needPlaceholderAPI;
+    }
+
+    public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
+        this.needPlaceholderAPI = needPlaceholderAPI;
+    }
+
+    public ItemStack getCacheItemStack() {
+        return cacheItemStack;
+    }
+
+    public void setCacheItemStack(ItemStack cacheItemStack) {
+        this.cacheItemStack = cacheItemStack;
+    }
+
+    public int getMaxStackSize() {
+        return maxStackSize;
+    }
+
+    public void setMaxStackSize(int maxStackSize) {
+        this.maxStackSize = maxStackSize;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
+    }
+
+    public void setMaxDamage(int maxDamage) {
+        this.maxDamage = maxDamage;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public int getRepairCost() {
+        return repairCost;
+    }
+
+    public void setRepairCost(int repairCost) {
+        this.repairCost = repairCost;
+    }
+
+    public boolean isUnbreakableEnabled() {
+        return unbreakableEnabled;
+    }
+
+    public void setUnbreakableEnabled(boolean unbreakableEnabled) {
+        this.unbreakableEnabled = unbreakableEnabled;
+    }
+
+    public boolean isUnbreakableShowInTooltip() {
+        return unbreakableShowInTooltip;
+    }
+
+    public void setUnbreakableShowInTooltip(boolean unbreakableShowInTooltip) {
+        this.unbreakableShowInTooltip = unbreakableShowInTooltip;
+    }
+
+    public boolean isFireResistant() {
+        return fireResistant;
+    }
+
+    public void setFireResistant(boolean fireResistant) {
+        this.fireResistant = fireResistant;
+    }
+
+    public boolean isHideTooltip() {
+        return hideTooltip;
+    }
+
+    public void setHideTooltip(boolean hideTooltip) {
+        this.hideTooltip = hideTooltip;
+    }
+
+    public boolean isHideAdditionalTooltip() {
+        return hideAdditionalTooltip;
+    }
+
+    public void setHideAdditionalTooltip(boolean hideAdditionalTooltip) {
+        this.hideAdditionalTooltip = hideAdditionalTooltip;
+    }
+
+    public boolean isEnchantmentGlint() {
+        return enchantmentGlint;
+    }
+
+    public void setEnchantmentGlint(boolean enchantmentGlint) {
+        this.enchantmentGlint = enchantmentGlint;
+    }
+
+    public boolean isEnchantmentShowInTooltip() {
+        return enchantmentShowInTooltip;
+    }
+
+    public void setEnchantmentShowInTooltip(boolean enchantmentShowInTooltip) {
+        this.enchantmentShowInTooltip = enchantmentShowInTooltip;
+    }
+
+    public boolean isAttributeShowInTooltip() {
+        return attributeShowInTooltip;
+    }
+
+    public void setAttributeShowInTooltip(boolean attributeShowInTooltip) {
+        this.attributeShowInTooltip = attributeShowInTooltip;
+    }
+
+    public MenuItemRarity getItemRarity() {
+        return itemRarity;
+    }
+
+    public void setItemRarity(MenuItemRarity itemRarity) {
+        this.itemRarity = itemRarity;
+    }
+
+    public TrimConfiguration getTrimConfiguration() {
+        return trimConfiguration;
+    }
+
+    public void setTrimConfiguration(TrimConfiguration trimConfiguration) {
+        this.trimConfiguration = trimConfiguration;
     }
 }

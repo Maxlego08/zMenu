@@ -263,6 +263,13 @@
             <systemPath>${basedir}/libs/Jobs5.2.2.3.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>fr.maxlego08.items</groupId>
+            <artifactId>zItems</artifactId>
+            <version>1.0.0</version> <!-- Change the LATEST to the current version of jobs -->
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/zItems-1.0.0.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.github.Maxlego08</groupId>
             <artifactId>zHead</artifactId>
             <version>1.1</version>

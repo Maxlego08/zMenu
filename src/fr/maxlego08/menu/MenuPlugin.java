@@ -28,6 +28,7 @@ import fr.maxlego08.menu.loader.materials.NovaLoader;
 import fr.maxlego08.menu.loader.materials.OraxenLoader;
 import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
 import fr.maxlego08.menu.loader.materials.ZHeadLoader;
+import fr.maxlego08.menu.loader.materials.ZItemsLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -190,6 +191,10 @@ public class MenuPlugin extends ZPlugin {
         }
         if (this.isEnable(Plugins.ECO)) {
             this.inventoryManager.registerMaterialLoader(new EcoLoader());
+        }
+
+        if (this.isEnable(Plugins.ZITEMS)) {
+            this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
         }
 
         this.getSavers().forEach(saver -> saver.load(this.getPersist()));

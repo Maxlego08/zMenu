@@ -4,6 +4,7 @@ import fr.maxlego08.head.api.HeadManager;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class ZHeadLoader implements MaterialLoader {
@@ -20,7 +21,7 @@ public class ZHeadLoader implements MaterialLoader {
     }
 
     @Override
-    public ItemStack load(YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
         return this.headManager.createItemStack(materialString);
     }
 }

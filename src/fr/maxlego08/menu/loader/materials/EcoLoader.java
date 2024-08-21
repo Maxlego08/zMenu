@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.materials;
 import com.willfp.eco.core.items.Items;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class EcoLoader implements MaterialLoader {
@@ -12,7 +13,7 @@ public class EcoLoader implements MaterialLoader {
     }
 
     @Override
-    public ItemStack load(YamlConfiguration yamlConfiguration, String path, String materialString) {
+    public ItemStack load(Player player, YamlConfiguration yamlConfiguration, String path, String materialString) {
         try {
             //eco item lookup system:
             // https://plugins.auxilor.io/all-plugins/the-item-lookup-system

@@ -15,4 +15,5 @@ softdepend:
   - Jobs
   - LuckPerms
   - zHead
+  - zItems
 folia-supported: true
