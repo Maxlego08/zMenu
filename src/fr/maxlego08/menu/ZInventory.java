@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -158,7 +159,10 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+
+        org.bukkit.inventory.Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+        InventoryHolder holder = topInventory.getHolder();
+
         if (holder != null) {
             if (holder instanceof InventoryDefault) {
                 InventoryDefault inventoryHolder = (InventoryDefault) holder;

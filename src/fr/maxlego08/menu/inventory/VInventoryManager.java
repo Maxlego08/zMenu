@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.listener.ListenerAdapter;
@@ -157,7 +158,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder != null && holder instanceof VInventory) {
             ((VInventory) holder).onPreClose(event, this.plugin, player);
         }
@@ -165,7 +166,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     @Override
     protected void onInventoryDrag(InventoryDragEvent event, Player player) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder != null && holder instanceof VInventory) {
             ((VInventory) holder).onDrag(event, this.plugin, player);
         }
@@ -173,7 +174,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     /**
      * @param id - Inventory I'd
-     * @return Optional - Allows to return the inventory in an optional
+     * @return Optional - Allows returning the inventory in an optional
      */
     private Optional<VInventory> getInventory(int id) {
         return Optional.ofNullable(this.inventories.getOrDefault(id, null));
@@ -187,7 +188,7 @@ public class VInventoryManager extends ListenerAdapter {
         Bukkit.getOnlinePlayers().stream().filter(player -> {
             InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
             return holder != null && holder instanceof VInventory;
-        }).map(player -> (VInventory) player.getOpenInventory().getTopInventory().getHolder()).filter(predicate).forEach(vInventory -> {
+        }).map(player -> (VInventory) CompatibilityUtil.getTopInventory(player).getHolder()).filter(predicate).forEach(vInventory -> {
             Player player = vInventory.getPlayer();
             if (player.isOnline()) {
                 player.closeInventory();
