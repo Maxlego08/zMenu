@@ -125,7 +125,7 @@ public class VInventoryManager extends ListenerAdapter {
             return;
         }
 
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
 
         if (holder instanceof VInventory) {
 
