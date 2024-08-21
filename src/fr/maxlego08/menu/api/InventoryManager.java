@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
@@ -461,5 +462,7 @@ public interface InventoryManager extends Savable, Listener {
     int getMaxPage(OfflinePlayer player);
 
     InventoryDefault getFakeInventory();
+
+    Enchantments getEnchantments();
 
 }

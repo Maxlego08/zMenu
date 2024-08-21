@@ -15,6 +15,7 @@ public enum Plugins {
 	SLIMEFUN("Slimefun"),
 	NOVA("Nova"),
 	ECO("eco"),
+	ZITEMS("zItems"),
 
 	JOBS("Jobs"),
 	LUCKPERMS("LuckPerms"),

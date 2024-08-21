@@ -91,13 +91,6 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
         boolean isGlowing = configuration.getBoolean(path + "glow");
 
-        if (isGlowing ) {
-
-            meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-        }
-
         if (modelID > 0) meta.setCustomModelData(modelID);
 
         // Permet de charger l'enchantement de l'item

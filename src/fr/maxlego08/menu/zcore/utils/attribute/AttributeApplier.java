@@ -10,25 +10,26 @@ import java.util.List;
 
 public class AttributeApplier {
 
-	List<IAttribute> attributes;
-	public AttributeApplier(List<IAttribute> attributes) {
-		this.attributes = attributes;
-	}
+    private final List<IAttribute> attributes;
 
-	public void apply(ItemStack itemStack) {
-		if (this.attributes.isEmpty()) return;
-		NBT.modify(itemStack, nbt -> {
-			ReadWriteNBTCompoundList attributeModifiers = nbt.getCompoundList("AttributeModifiers");
-			for (IAttribute attribute : this.attributes) {
-				ReadWriteNBT compound = attributeModifiers.addCompound();
-				compound.setString("Name", attribute.getName());
-				compound.setUUID("UUID", attribute.getUuid());
-				compound.setString("AttributeName", "minecraft:" + attribute.getType().getKey());
-				compound.setDouble("Amount", attribute.getAmount());
-				if (attribute.getSlot() != null) {
-					compound.setString("Slot", attribute.getSlot().name().toLowerCase());
-				}
-			}
-		});
-	}
+    public AttributeApplier(List<IAttribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public void apply(ItemStack itemStack) {
+        if (this.attributes.isEmpty()) return;
+        NBT.modify(itemStack, nbt -> {
+            ReadWriteNBTCompoundList attributeModifiers = nbt.getCompoundList("AttributeModifiers");
+            for (IAttribute attribute : this.attributes) {
+                ReadWriteNBT compound = attributeModifiers.addCompound();
+                compound.setString("Name", attribute.getName());
+                compound.setUUID("UUID", attribute.getUuid());
+                compound.setString("AttributeName", "minecraft:" + attribute.getType().getKey());
+                compound.setDouble("Amount", attribute.getAmount());
+                if (attribute.getSlot() != null) {
+                    compound.setString("Slot", attribute.getSlot().name().toLowerCase());
+                }
+            }
+        });
+    }
 }

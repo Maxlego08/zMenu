@@ -79,6 +79,8 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
             switch (this.action) {
                 case EQUALS_STRING:
                     return valueAsString.equals(resultAsString);
+                case DIFFERENT_STRING:
+                    return !valueAsString.equals(resultAsString);
                 case EQUALSIGNORECASE_STRING:
                     return valueAsString.equalsIgnoreCase(resultAsString);
                 case CONTAINS_STRING:

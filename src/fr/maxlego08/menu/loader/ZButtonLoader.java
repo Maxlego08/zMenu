@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
@@ -31,7 +32,6 @@ import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -311,7 +311,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         List<String> rightCommands = configuration.getStringList(path + "rightCommands");
         if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "rightPlayerCommands");
-        
+
         List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
         List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
         List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");
@@ -331,6 +331,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         loadViewRequirements(button, configuration, path, file);
         // Load clicks requirements
         loadClickRequirements(button, configuration, path, file);
+        // Load refresh requirements
+        loadRefreshRequirements(button, configuration, path, file);
         // Load actions
         List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file);
         button.setActions(actions);
@@ -373,7 +375,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     }
 
     /**
-     * Allows to load view requirements
+     * Allows loading view requirements
      *
      * @param button        The button
      * @param configuration the configuration
@@ -383,6 +385,21 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     private void loadViewRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         button.setViewRequirement(loader.load(configuration, path + "view_requirement.", file));
+    }
+
+    /**
+     * Allows loading refresh requirements
+     *
+     * @param button        The button
+     * @param configuration the configuration
+     * @param file          the file
+     * @param path          current path in configuration
+     */
+    private void loadRefreshRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+        Loader<RefreshRequirement> loader = new RefreshRequiementLoader(this.plugin);
+        if (configuration.getConfigurationSection(path + "refresh_requirements") != null) {
+            button.setRefreshRequirement(loader.load(configuration, path + "refresh_requirements.", file));
+        }
     }
 
     @Override

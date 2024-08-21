@@ -50,12 +50,45 @@
 
 # Unreleased
 
+# 1.0.3.4
+
+- Add support for ``\n`` in item lore
+- Add ``refresh_requirement``, allows refreshing the lore, name of the item or the button in its entirety according to
+  several conditions.
+- Add permissions on default commands
+- Add PlaceholderAction: ``DIFFERENT_STRING``, check that a string is different from the value
+- Add sub commands for commands. You can now have sub commands to perform actions, for example, create a `/votes party`
+  command, a `/votes info` command !
+- Added aliases for enchantments, this allows using the word `protection` to obtain the `PROTECTION_ENVIRONMENTAL`
+  enchantment
+- Deprecated method ``onInventoryOpen(Player, InventoryDefault)`` use
+  now `onInventoryOpen(Player, InventoryDefault, Placeholders)`
+- Fixed items flags (HIDE_ATTRIBUTES) for 1.20.4 and above
+- Added [zItems](https://www.spigotmc.org/resources/zitems-demo.118638/) support, Example: ``material: "zitem:<item name>"``, zItems is an item that allows you to create items taking advantage of all the features of 1.21
+### Only for version 1.21 and above 
+- Added ``max-stack-size: <number>``, Overrides the default maximum stack size of this item.
+- Added ``max-damage: <number>``, Controls the maximum amount of damage an item can take.
+- Added ``damage: <number>``, The absolute amount of damage or use this item has taken.
+- Added ``repair-cost: <number>``, Number of enchantment levels to add to the base level cost when repairing, combining, or renaming this item with an Anvil.
+- Added ``unbreakable: <true/fasle>``, Tools, armor and weapons set with this won't lose durability when used.
+- Added ``unbreakable-show-in-tooltip: <true/fasle>``, If false, an 'Unbreakable' line will not be included in the tooltip. Default is True.
+- Added ``fire-resistant: <true/fasle>``, If true, this item will not burn in fire.
+- Added ``hide-tooltip: <true/fasle>``, If present, it will completely hide whole item tooltip (that includes item name). The tooltip will be still visible and searchable in creative mode.
+- Added ``hide-additional-tooltip: <true/fasle>``, If true, disables 'additional' tooltip part which comes from the item type.
+- Added ``enchantment-glint: <true/fasle>``, If true, the item will glint, even without enchantments; if false, the item will not glint, even with enchantments. If null, the override will be cleared.
+- Added ``enchantment-show-in-tooltip: <true/fasle>``, If false, no enchantments will be shown in the item tooltip. Default is true.
+- Added ``attribute-show-in-tooltip: <true/fasle>``, If false. The attributes will not show on the item tooltip. Default is true.
+- Added ``item-rarity: <COMMON/UNCOMMON,RARE,EPIC>``, Determines the default color of its name. This enum is ordered from least rare to most rare.
+- Added ``trim: <trim configuration>``, Represents an armor trim that may be applied to an item.
+
 # 1.0.3.3
 
 - Fix nullable player in MenuItemStack
 - Add ``performMainAction`` for commands, allows to activate or not the main actions of the command. This allows you to
-  create commands with arguments without opening an inventory for example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
-- Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the player’s game language
+  create commands with arguments without opening an inventory for
+  example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
+- Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the
+  player’s game language
   you can set other messages and make your server international
 - Remove ``eco`` from plugin.yml, this caused problems loading various plugins
 - Tab completes for more of the sub commands [#75](https://github.com/Maxlego08/zMenu/issues/75)

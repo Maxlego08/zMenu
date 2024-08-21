@@ -18,24 +18,26 @@ public class ZCommand implements Command {
     private final String inventory;
     private final List<CommandArgument> arguments;
     private final List<Action> actions;
+    private final List<Command> subCommands;
 
     private final String path;
     private final File file;
 
 
     /**
-     * @param plugin     The plugin where the command comes from
-     * @param command    Main command
-     * @param aliases    List of aliases
-     * @param permission Command Permission
-     * @param inventory  Inventory name
-     * @param arguments  List of arguments
-     * @param actions    Actions
-     * @param path       file path
-     * @param file       File
+     * @param plugin      The plugin where the command comes from
+     * @param command     Main command
+     * @param aliases     List of aliases
+     * @param permission  Command Permission
+     * @param inventory   Inventory name
+     * @param arguments   List of arguments
+     * @param actions     Actions
+     * @param subCommands Sub Commands
+     * @param path        file path
+     * @param file        File
      */
     public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
-                    List<CommandArgument> arguments, List<Action> actions, String path, File file) {
+                    List<CommandArgument> arguments, List<Action> actions, List<Command> subCommands, String path, File file) {
         super();
         this.plugin = plugin;
         this.command = command;
@@ -44,6 +46,7 @@ public class ZCommand implements Command {
         this.inventory = inventory;
         this.arguments = arguments;
         this.actions = actions;
+        this.subCommands = subCommands;
         this.path = path;
         this.file = file;
     }
@@ -73,15 +76,20 @@ public class ZCommand implements Command {
         return this.command;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
-        return "ZCommand [plugin=" + plugin + ", command=" + command + ", aliases=" + aliases + ", permission="
-                + permission + ", inventory=" + inventory + "]";
+        return "ZCommand{" +
+                "plugin=" + plugin +
+                ", command='" + command + '\'' +
+                ", aliases=" + aliases +
+                ", permission='" + permission + '\'' +
+                ", inventory='" + inventory + '\'' +
+                ", arguments=" + arguments +
+                ", actions=" + actions +
+                ", subCommands=" + subCommands +
+                ", path='" + path + '\'' +
+                ", file=" + file +
+                '}';
     }
 
     @Override
@@ -114,4 +122,8 @@ public class ZCommand implements Command {
         return file;
     }
 
+    @Override
+    public List<Command> getSubCommands() {
+        return subCommands;
+    }
 }

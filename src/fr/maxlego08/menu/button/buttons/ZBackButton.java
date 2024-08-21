@@ -42,7 +42,7 @@ public class ZBackButton extends ZButton implements BackButton {
     }
 
     @Override
-    public void onInventoryOpen(Player player, InventoryDefault inventory) {
+    public void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders) {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
         if (!oldInventories.isEmpty()) {

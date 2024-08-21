@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.exceptions.InventoryOpenException;
@@ -71,10 +72,12 @@ public class InventoryDefault extends VInventory {
 
         ZScheduler scheduler = this.plugin.getScheduler();
         Runnable runnable = () -> {
-            this.buttons.forEach(button -> button.onInventoryOpen(player, this));
+            Placeholders placeholders = new Placeholders();
+            this.buttons.forEach(button -> button.onInventoryOpen(player, this)); // Remove in few version !
+            this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
             String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
-            super.createMetaInventory(super.papi(inventoryName, player, false), this.inventory.size());
+            super.createMetaInventory(super.papi(placeholders.parse(inventoryName), player, false), this.inventory.size());
 
             // Display fill items
             if (this.inventory.getFillItemStack() != null) {
@@ -165,9 +168,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display the button in the inventory
-     *
-     * @param button
+     * Allows displaying the button in the inventory
      */
     private void displayButton(Button button) {
 
@@ -187,10 +188,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display the button and to put the actions on the clicks
-     *
-     * @param button
-     * @param slots
+     * Allows displaying the button and putting the actions on the clicks
      */
     public void displayFinalButton(Button button, int... slots) {
 
@@ -229,53 +227,47 @@ public class InventoryDefault extends VInventory {
                 itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
             }
 
-            if (button.isUpdated()) {
+            if (button.hasRefreshRequirement() || button.isUpdated()) {
 
-                TimerTask timerTask = this.scheduleFix(this.plugin, this.inventory.getUpdateInterval(), (task, canRun) -> {
+                RefreshRequirement refreshRequirement = button.hasRefreshRequirement() ? button.getRefreshRequirement() : null;
+                boolean needRefresh = refreshRequirement != null && refreshRequirement.needRefresh(player, button, this, new Placeholders());
 
-                    if (!canRun) {
-                        return;
-                    }
+                if (needRefresh || button.isUpdated()) {
+                    long interval = refreshRequirement != null ? refreshRequirement.getUpdateInterval() : this.inventory.getUpdateInterval();
+                    TimerTask timerTask = this.scheduleFix(this.plugin, interval, (task, canRun) -> {
+                        if (!canRun) {
+                            return;
+                        }
 
-                    if (this.isClose()) {
-                        task.cancel();
-                        return;
-                    }
+                        if (this.isClose()) {
+                            task.cancel();
+                            return;
+                        }
 
-                    TimerTask tTask = this.timers.get(slot);
-                    if (!task.equals(tTask)) {
-                        task.cancel();
-                        return;
-                    }
+                        TimerTask tTask = this.timers.get(slot);
+                        if (!task.equals(tTask)) {
+                            task.cancel();
+                            return;
+                        }
 
-                    Button masterButton = button.getMasterParentButton();
+                        if (refreshRequirement != null && refreshRequirement.canRefresh(player, button, this, new Placeholders())) {
+                            this.cancel(slot);
+                            updateItemMeta(itemStack, button, refreshRequirement, slot);
+                        } else if (button.isUpdated()) {
+                            handleUpdatedButton(button, itemStack, slot);
+                        }
+                    });
 
-                    if (button.isUpdatedMasterButton()) {
-                        this.cancel(slot);
-                        this.buildButton(masterButton);
-                        return;
-                    }
-
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-
-                    List<String> lore = button.buildLore(this.player);
-                    String displayName = button.buildDisplayName(this.player);
-
-                    if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, lore, this.player);
-                    if (displayName != null) Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
-
-                    itemStack.setItemMeta(itemMeta);
-                    this.getSpigotInventory().setItem(slot, itemStack);
-                });
-
-                this.timers.put(slot, timerTask);
+                    this.timers.put(slot, timerTask);
+                }
             }
+
         }
 
     }
 
     public void cancel(int slot) {
-        TimerTask task = this.timers.get(slot);
+        TimerTask task = this.timers.remove(slot);
         if (task != null) {
             task.cancel();
         }
@@ -308,5 +300,46 @@ public class InventoryDefault extends VInventory {
 
     public List<Button> getButtons() {
         return buttons;
+    }
+
+    private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        List<String> lore = button.buildLore(this.player);
+        String displayName = button.buildDisplayName(this.player);
+
+        if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
+            Meta.meta.updateLore(itemMeta, lore, this.player);
+        }
+
+        if (displayName != null && refreshRequirement.isRefreshName()) {
+            Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+        }
+
+        itemStack.setItemMeta(itemMeta);
+        this.getSpigotInventory().setItem(slot, itemStack);
+
+        if (refreshRequirement.isRefreshButton()) {
+            this.buildButton(button.getMasterParentButton());
+        }
+    }
+
+    private void handleUpdatedButton(Button button, ItemStack itemStack, int slot) {
+        Button masterButton = button.getMasterParentButton();
+
+        if (button.isUpdatedMasterButton()) {
+            this.cancel(slot);
+            this.buildButton(masterButton);
+            return;
+        }
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        List<String> lore = button.buildLore(this.player);
+        String displayName = button.buildDisplayName(this.player);
+
+        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, lore, this.player);
+        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+
+        itemStack.setItemMeta(itemMeta);
+        this.getSpigotInventory().setItem(slot, itemStack);
     }
 }

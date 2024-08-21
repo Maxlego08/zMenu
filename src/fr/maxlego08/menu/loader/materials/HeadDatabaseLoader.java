@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.materials;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class HeadDatabaseLoader implements MaterialLoader {
@@ -13,7 +14,7 @@ public class HeadDatabaseLoader implements MaterialLoader {
     }
 
     @Override
-    public ItemStack load(YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
 
         try {
 

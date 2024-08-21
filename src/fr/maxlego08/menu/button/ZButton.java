@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
@@ -52,6 +53,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private Requirement viewRequirement;
     private List<Action> actions = new ArrayList<>();
     private List<ButtonOption> options = new ArrayList<>();
+    private RefreshRequirement refreshRequirement;
 
     @Override
     public String getName() {
@@ -248,6 +250,11 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
+    public void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders) {
+
+    }
+
+    @Override
     public boolean closeInventory() {
         return this.closeInventory;
     }
@@ -425,5 +432,19 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     public void setOpenAsync(boolean openAsync) {
         isOpenAsync = openAsync;
+    }
+
+    @Override
+    public boolean hasRefreshRequirement() {
+        return this.refreshRequirement != null;
+    }
+
+    @Override
+    public RefreshRequirement getRefreshRequirement() {
+        return refreshRequirement;
+    }
+
+    public void setRefreshRequirement(RefreshRequirement refreshRequirement) {
+        this.refreshRequirement = refreshRequirement;
     }
 }

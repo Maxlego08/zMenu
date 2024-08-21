@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.3.3</version>
+  <version>1.0.3.4</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -136,7 +136,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.20.2-R0.1-SNAPSHOT</version>
+      <version>1.21-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -251,6 +251,13 @@
       <version>5.2.2.3</version>
       <scope>system</scope>
       <systemPath>${basedir}/libs/Jobs5.2.2.3.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>fr.maxlego08.items</groupId>
+      <artifactId>zItems</artifactId>
+      <version>1.0.0</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/libs/zItems-1.0.0.jar</systemPath>
     </dependency>
   </dependencies>
   <properties>

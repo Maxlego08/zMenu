@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
@@ -347,8 +348,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load inventories
-        try (Stream<Path> s = Files.walk(Paths.get(folder.getPath()))) {
-            s.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
+        try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
+            stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
                 try {
                     this.loadInventory(this.plugin, file);
                 } catch (InventoryException e1) {
@@ -359,7 +360,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             exception.printStackTrace();
         }
 
-        // Load specify path inventories
+        // Load specifies path inventories
         List<String> list = Config.specifyPathMenus;
         for (String s : list) {
             File file = new File(s);
@@ -722,5 +723,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         InventoryDefault inventoryDefault = new InventoryDefault();
         inventoryDefault.setPlugin(this.plugin);
         return inventoryDefault;
+    }
+
+    @Override
+    public Enchantments getEnchantments() {
+        return this.plugin.getEnchantments();
     }
 }

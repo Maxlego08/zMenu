@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -77,7 +78,18 @@ public class CommandLoader implements Loader<Command> {
             }
         }
 
-        return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments, commandActions, path, file);
+        List<Command> subCommands = new ArrayList<>();
+        ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "sub-commands");
+        if (configurationSection != null) {
+            for (String key : configurationSection.getKeys(false)) {
+                Command subCommand = load(configuration, path + "sub-commands." + key + ".", args);
+                if (subCommand != null && subCommand.getCommand() != null) {
+                    subCommands.add(subCommand);
+                }
+            }
+        }
+
+        return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments, commandActions, subCommands, path, file);
     }
 
     @Override

@@ -125,7 +125,7 @@ items:
           slot: HEAD # Optional
     # We now want the console to execute the command /say %player% is great !
     consoleCommands:
-      - "say %player% is great"
+      - "say %player% is great (message from zMenu / Basic Inventory file)"
 
 #################################################################
 #

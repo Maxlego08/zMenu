@@ -5,7 +5,7 @@ description: Inventory management plugin
 website: https://groupez.dev/resources/zmenu.253
 version: ${project.version}
 api-version: 1.13
-contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes ]
+contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag ]
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
@@ -15,4 +15,5 @@ softdepend:
   - Jobs
   - LuckPerms
   - zHead
+  - zItems
 folia-supported: true

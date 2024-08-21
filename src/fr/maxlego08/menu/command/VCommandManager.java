@@ -303,7 +303,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public void registerCommand(fr.maxlego08.menu.api.command.Command command) {
-        this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command),
+        this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command, false),
                 command.getAliases());
     }
 
