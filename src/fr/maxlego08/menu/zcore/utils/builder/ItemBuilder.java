@@ -183,15 +183,6 @@ public class ItemBuilder extends ZUtils implements Cloneable {
     }
 
     /**
-     * @return
-     */
-    public ItemBuilder glow() {
-        addEnchant(material != Material.BOW ? Enchantment.ARROW_INFINITE : Enchantment.LUCK, 10);
-        setFlag(ItemFlag.HIDE_ENCHANTS);
-        return this;
-    }
-
-    /**
      * @param name
      * @return
      */

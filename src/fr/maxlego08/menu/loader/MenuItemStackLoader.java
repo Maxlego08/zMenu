@@ -4,6 +4,8 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.utils.Banner;
 import fr.maxlego08.menu.zcore.utils.Firework;
@@ -30,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -150,6 +153,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setTranslatedDisplayName(translatedDisplayName);
         menuItemStack.setTranslatedLore(translatedLore);
 
+        Enchantments helperEnchantments = this.manager.getEnchantments();
         List<String> enchants = configuration.getStringList(path + "enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
 
@@ -170,12 +174,12 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
                 }
 
-                Enchantment enchantment = Enchantment.getByName(enchant);
-                if (enchantment == null) {
+                Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments(enchant);
+                if (!optional.isPresent()) {
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
                 }
 
-                enchantments.put(enchantment, level);
+                enchantments.put(optional.get().getEnchantment(), level);
 
             } catch (ItemEnchantException e) {
                 e.printStackTrace();

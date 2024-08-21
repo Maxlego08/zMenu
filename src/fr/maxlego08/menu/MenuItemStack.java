@@ -3,6 +3,8 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -256,10 +258,15 @@ public class MenuItemStack extends ZUtils {
                 Meta.meta.updateLore(itemMeta, lore, offlinePlayer == null ? player : offlinePlayer);
             }
 
+            Enchantments helperEnchantments = inventoryManager.getEnchantments();
             if (this.isGlowing) {
 
-                itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments("power");
+                if (optional.isPresent()) {
+                    MenuEnchantment menuEnchantment = optional.get();
+                    itemMeta.addEnchant(menuEnchantment.getEnchantment(), 1, true);
+                    itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
             }
 
             try {

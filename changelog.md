@@ -51,18 +51,25 @@
 # Unreleased
 
 - Add support for ``\n`` in item lore
-- Add ``refresh_requirement``, allows refreshing the lore, name of the item or the button in its entirety according to several conditions.
+- Add ``refresh_requirement``, allows refreshing the lore, name of the item or the button in its entirety according to
+  several conditions.
 - Add permissions on default commands
 - Add PlaceholderAction: ``DIFFERENT_STRING``, check that a string is different from the value
-- Add sub commands for commands. You can now have sub commands to perform actions, for example, create a `/votes party` command, a `/votes info` command !
-- Deprecated method ``onInventoryOpen(Player, InventoryDefault)`` use now `onInventoryOpen(Player, InventoryDefault, Placeholders)`
+- Add sub commands for commands. You can now have sub commands to perform actions, for example, create a `/votes party`
+  command, a `/votes info` command !
+- Added aliases for enchantments, this allows using the word `protection` to obtain the `PROTECTION_ENVIRONMENTAL`
+  enchantment
+- Deprecated method ``onInventoryOpen(Player, InventoryDefault)`` use
+  now `onInventoryOpen(Player, InventoryDefault, Placeholders)`
 
 # 1.0.3.3
 
 - Fix nullable player in MenuItemStack
 - Add ``performMainAction`` for commands, allows to activate or not the main actions of the command. This allows you to
-  create commands with arguments without opening an inventory for example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
-- Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the player’s game language
+  create commands with arguments without opening an inventory for
+  example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
+- Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the
+  player’s game language
   you can set other messages and make your server international
 - Remove ``eco`` from plugin.yml, this caused problems loading various plugins
 - Tab completes for more of the sub commands [#75](https://github.com/Maxlego08/zMenu/issues/75)

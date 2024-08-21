@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
@@ -722,5 +723,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         InventoryDefault inventoryDefault = new InventoryDefault();
         inventoryDefault.setPlugin(this.plugin);
         return inventoryDefault;
+    }
+
+    @Override
+    public Enchantments getEnchantments() {
+        return this.plugin.getEnchantments();
     }
 }

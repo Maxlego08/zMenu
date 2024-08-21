@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
+import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
@@ -14,6 +15,7 @@ import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
+import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -39,13 +41,13 @@ import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.ServicesManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -75,6 +77,7 @@ public class MenuPlugin extends ZPlugin {
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
+    private final Enchantments enchantments = new ZEnchantments();
     private CommandMenu commandMenu;
     private ZScheduler scheduler;
     private DupeManager dupeManager;
@@ -102,6 +105,7 @@ public class MenuPlugin extends ZPlugin {
                 : new BukkitScheduler(this);
 
         this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
+        this.enchantments.register();
 
         this.preEnable();
 
@@ -139,20 +143,16 @@ public class MenuPlugin extends ZPlugin {
         this.zCommandManager = new VCommandManager(this);
         this.vinventoryManager = new VInventoryManager(this);
 
-        this.getServer().getServicesManager().register(InventoryManager.class, this.inventoryManager, this,
-                ServicePriority.Highest);
-        this.getServer().getServicesManager().register(ButtonManager.class, this.buttonManager, this,
-                ServicePriority.Highest);
-        this.getServer().getServicesManager().register(CommandManager.class, this.commandManager, this,
-                ServicePriority.Highest);
-        this.getServer().getServicesManager().register(WebsiteManager.class, this.websiteManager, this,
-                ServicePriority.Highest);
-        this.getServer().getServicesManager().register(DataManager.class, this.dataManager, this,
-                ServicePriority.Highest);
-        this.getServer().getServicesManager().register(InventoriesPlayer.class, this.inventoriesPlayer, this,
-                ServicePriority.Highest);
-        this.getServer().getServicesManager().register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
-        this.getServer().getServicesManager().register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
+        ServicesManager servicesManager = this.getServer().getServicesManager();
+        servicesManager.register(InventoryManager.class, this.inventoryManager, this, ServicePriority.Highest);
+        servicesManager.register(ButtonManager.class, this.buttonManager, this, ServicePriority.Highest);
+        servicesManager.register(CommandManager.class, this.commandManager, this, ServicePriority.Highest);
+        servicesManager.register(WebsiteManager.class, this.websiteManager, this, ServicePriority.Highest);
+        servicesManager.register(DataManager.class, this.dataManager, this, ServicePriority.Highest);
+        servicesManager.register(InventoriesPlayer.class, this.inventoriesPlayer, this, ServicePriority.Highest);
+        servicesManager.register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
+        servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
+        servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -337,5 +337,9 @@ public class MenuPlugin extends ZPlugin {
 
     public DupeManager getDupeManager() {
         return dupeManager;
+    }
+
+    public Enchantments getEnchantments() {
+        return enchantments;
     }
 }

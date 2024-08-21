@@ -22,7 +22,6 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -35,7 +34,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
@@ -1129,39 +1127,6 @@ public abstract class ZUtils extends MessageUtils {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-    }
-
-    /**
-     * Allows to make an itemstack shine
-     *
-     * @param itemStack
-     */
-    public void glow(ItemStack itemStack) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-        if (NMSUtils.getNMSVersion() != 1.7) itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    /**
-     * Allows you to clear a player's inventory, remove potion effects and put
-     * him on life support
-     *
-     * @param player
-     */
-    protected void clearPlayer(Player player) {
-        player.getInventory().clear();
-        player.getInventory().setBoots(null);
-        player.getInventory().setChestplate(null);
-        player.getInventory().setLeggings(null);
-        player.getInventory().setHelmet(null);
-        player.getPlayer().setItemOnCursor(null);
-        player.getPlayer().setFireTicks(0);
-        player.getPlayer().getOpenInventory().getTopInventory().clear();
-        player.setGameMode(GameMode.SURVIVAL);
-        player.getPlayer().getActivePotionEffects().forEach(e -> {
-            player.getPlayer().removePotionEffect(e.getType());
-        });
     }
 
     /**
