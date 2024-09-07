@@ -50,6 +50,8 @@
 
 # Unreleased
 
+- Fixed itemstack with 1.21, components was added when it should not be added by default.
+
 # 1.0.3.4
 
 - Add support for ``\n`` in item lore

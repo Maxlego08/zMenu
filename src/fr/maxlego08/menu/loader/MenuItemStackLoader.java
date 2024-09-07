@@ -217,19 +217,26 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         return menuItemStack;
     }
 
+    private Boolean getOrNull(Object o) {
+        if (o instanceof Boolean) {
+            return (Boolean) o;
+        }
+        return null;
+    }
+
     private void loadNewItemStacks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 64));
         menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
         menuItemStack.setDamage(configuration.getInt(path + "damage", 0));
         menuItemStack.setRepairCost(configuration.getInt(path + "repair-cost", 0));
-        menuItemStack.setUnbreakableEnabled(configuration.getBoolean(path + "unbreakable", false));
-        menuItemStack.setUnbreakableShowInTooltip(configuration.getBoolean(path + "unbreakable-show-in-tooltip", false));
-        menuItemStack.setFireResistant(configuration.getBoolean(path + "fire-resistant", false));
-        menuItemStack.setHideTooltip(configuration.getBoolean(path + "hide-tooltip", false));
-        menuItemStack.setHideAdditionalTooltip(configuration.getBoolean(path + "hide-additional-tooltip", false));
-        menuItemStack.setEnchantmentGlint(configuration.contains(path + "enchantment-glint") ? configuration.getBoolean(path + "enchantment-glint") : null);
-        menuItemStack.setEnchantmentShowInTooltip(configuration.getBoolean(path + "enchantment-show-in-tooltip", true));
-        menuItemStack.setAttributeShowInTooltip(configuration.getBoolean(path + "attribute-show-in-tooltip", true));
+        menuItemStack.setUnbreakableEnabled(getOrNull(configuration.get(path + "unbreakable", null)));
+        menuItemStack.setUnbreakableShowInTooltip(getOrNull(configuration.get(path + "unbreakable-show-in-tooltip", null)));
+        menuItemStack.setFireResistant(getOrNull(configuration.get(path + "fire-resistant", null)));
+        menuItemStack.setHideTooltip(getOrNull(configuration.get(path + "hide-tooltip", null)));
+        menuItemStack.setHideAdditionalTooltip(getOrNull(configuration.get(path + "hide-additional-tooltip", null)));
+        menuItemStack.setEnchantmentGlint(getOrNull(configuration.get(path + "enchantment-glint", null)));
+        menuItemStack.setEnchantmentShowInTooltip(getOrNull(configuration.get(path + "enchantment-show-in-tooltip", null)));
+        menuItemStack.setAttributeShowInTooltip(getOrNull(configuration.get(path + "attribute-show-in-tooltip", null)));
 
         String rarityString = configuration.getString("item-rarity", null);
         if (rarityString != null) {
