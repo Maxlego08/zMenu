@@ -275,7 +275,7 @@ public class MenuItemStack extends ZUtils {
             }
 
             if (!this.lore.isEmpty()) {
-                List<String> lore = placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore));
+                List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
                 lore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).collect(Collectors.toList());
                 Meta.meta.updateLore(itemMeta, lore, offlinePlayer == null ? player : offlinePlayer);
             }
