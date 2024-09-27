@@ -35,7 +35,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final int size;
     private final List<Button> buttons;
     private Map<String, String> translatedNames = new HashMap<>();
-    private List<Pattern> patterns;
+    private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
     private int updateInterval;
     private File file;

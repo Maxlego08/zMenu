@@ -1,14 +1,10 @@
 # ToDo
 
-- [x] Add anti dupe system with NMS Tag
-- [x] Add the BACK action, to return to the previous inventory when clicking
-- [x] Add the ability to perform actions when clicking
 - [ ] Improve the firework system to put more buttonOption. Being able to put several effects, power etc.
 - [ ] Add a system that allows you to cache an ItemStack, so instead of returning the ItemStack at each opening, there
   can be several minutes without having to recreate a new ItemStack. For decorations, buttons without placeholders for
   example.
 - [ ] Add an order to display the list of official addons.
-- [ ] Add a ``/zm help`` command to send to documentation.
 - [ ] Add a ``/zm command <command> <inventory>`` command to create an order file for an inventory.
 - [ ] Add a system to translate plugin messages.
 - [ ] Update developer doc
@@ -29,12 +25,10 @@
 - [ ] Add a way to display the list of online players in a button list
 - [ ] Add Citizen and [ZNPCsPlus](https://www.spigotmc.org/resources/znpcsplus.109380/) support to open an inventory by
   clicking on an NPC
-- [x] Add a tool to transform ItemStack to base64 and vice versa. This tool can be used to all my plugins.
 - [ ] Fix the bug about the `clearInventory: true`. It does not restore inventory when the menu is closed.
 - [ ] Add the support for
   the `http://textures.minecraft.net/texture/e34969c2684e4f62d5f87875460441a9f849d296c01e4c621636bb6acda696f7` in the
   URL of a custom head.
-- [ ] Update pom.xml for add {projet.version} in plugin.yml
 - [ ] Add matrix support for slot (like
   this: https://abstractmenus.github.io/docs/general/item_format.html#way-4-matrix)
 - [ ] Adding more logs on the errors that can occur with custom items like ItemAdder, this will cause an error but the
@@ -42,15 +36,14 @@
 - [ ] Create a new class for loading buttons to add more elements, like a boolean to check if the button needs an
   itemstack
 - [ ] Can split a file into several and thus avoid having too large files
-- [x] Add open link with a book
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
-- [ ] Be able to set default values for player data
-- [x] Create a command `/zm download <link>` to download a configuration from a link (Allows to simply share its
-  configurations, from discord for example)
 
 # Unreleased
 
+- Added command ``/zm documentation [<word>]``
+- Added key `title` for inventory name, you can use `name` or `title` now
 - Fixed itemstack with 1.21, components was added when it should not be added by default.
+- Fixed the item backup system for potions and firework (use in `/zm save` command and in `zEssentials`)
 
 # 1.0.3.4
 

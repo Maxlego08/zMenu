@@ -324,9 +324,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             Color potionColor = potion.getColor();
 
             configuration.set(path + "potion", potion.getType().toString());
-            configuration.set(path + "level", potion.getLevel());
-            configuration.set(path + "splash", potion.isSplash());
-            configuration.set(path + "extended", potion.hasExtendedDuration());
+            if (potion.getLevel() != 0) configuration.set(path + "level", potion.getLevel());
+            if (potion.isSplash()) configuration.set(path + "splash", true);
+            if (potion.hasExtendedDuration()) configuration.set(path + "extended", true);
 
             if (potionColor != null) {
                 configuration.set("color", potionColor.getAlpha() + "," + potionColor.getRed() + "," + potionColor.getGreen() + "," + potionColor.getBlue());
@@ -337,9 +337,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             ConfigurationSection fireworkSection = configuration.createSection(path + "firework");
             FireworkEffect effect = firework.getEffect();
             List<String> stringColors = new ArrayList<>();
-            effect.getColors().forEach(c -> stringColors.add(c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue()));
+            effect.getColors().forEach(color -> stringColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
             List<String> stringFadeColors = new ArrayList<>();
-            effect.getColors().forEach(c -> stringFadeColors.add(c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue()));
+            effect.getColors().forEach(color -> stringFadeColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
 
             fireworkSection.set("star", firework.isStar());
             fireworkSection.set("flicker", effect.hasFlicker());

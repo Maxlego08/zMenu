@@ -25,6 +25,7 @@ import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
@@ -36,7 +37,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
@@ -143,6 +147,43 @@ public class MenuItemStack extends ZUtils {
                 if (enchantmentStorageMeta.hasStoredEnchants()) {
                     menuItemStack.setEnchantments(enchantmentStorageMeta.getEnchants());
                 }
+            }
+
+            try {
+                if (itemMeta instanceof PotionMeta) {
+                    PotionMeta potionMeta = (PotionMeta) itemMeta;
+                    PotionType type = potionMeta.getBasePotionType();
+                    if (type != null) {
+                        Potion menuPotion = new Potion(type, 0);
+                        menuItemStack.setPotion(menuPotion);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            try {
+                // ToDo, upgrade for multiple effect
+                if (itemMeta instanceof FireworkMeta) {
+                    FireworkMeta fireworkMeta = (FireworkMeta) itemMeta;
+                    List<FireworkEffect> fireworkEffects = fireworkMeta.getEffects();
+                    if (!fireworkEffects.isEmpty()) {
+                        FireworkEffect effect = fireworkEffects.get(0);
+                        Firework menuFirework = new Firework(false, effect);
+                        menuItemStack.setFirework(menuFirework);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            try {
+                // ToDo, upgrade for multiple effect
+                if (itemMeta instanceof FireworkEffectMeta) {
+                    FireworkEffectMeta fireworkMeta = (FireworkEffectMeta) itemMeta;
+                    FireworkEffect effect = fireworkMeta.getEffect();
+                    Firework menuFirework = new Firework(true, effect);
+                    menuItemStack.setFirework(menuFirework);
+                }
+            } catch (Exception ignored) {
             }
         }
 

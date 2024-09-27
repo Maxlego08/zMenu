@@ -43,7 +43,8 @@ public enum Message implements IMessage {
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
 	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
 	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://docs.zmenu.dev/"),
-	
+	DOCUMENTATION_INFORMATION_LINK("§7Documentation§8: §f%link%"),
+
 	INVENTORY_NOT_FOUND("§cUnable to find the §f%toName% §cinventory in the §f%name%§c inventory."),
 	INVENTORY_OPEN_OTHER("§aYou have just opened the inventory §f%name%§a to the §3%player%§a."),
 	INVENTORY_OPEN_SUCCESS("§aYou have just opened the inventory §f%name%§a."),
@@ -67,6 +68,7 @@ public enum Message implements IMessage {
 	DESCRIPTION_DISCONNECT("WIP"),
     DESCRIPTION_CONVERT("Convert other configurations to zmenu"),
     DESCRIPTION_EDITOR("Open zmenu online editor"),
+    DESCRIPTION_DOCUMENTATION("Open documentation"),
     DESCRIPTION_PLAYERS("Displays the list of commands for the players' data"),
     DESCRIPTION_PLAYERS_SET("Set new player data. You must set the expiration time in seconds. Put 0 to have no expiration"),
     DESCRIPTION_PLAYERS_ADD("Add a number to a value, works only for numbers."),

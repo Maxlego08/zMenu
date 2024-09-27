@@ -1,40 +1,32 @@
-package fr.maxlego08.menu.loader;
+package fr.maxlego08.menu.loader.deluxemenu;
 
-import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
-import fr.maxlego08.menu.api.pattern.Pattern;
-import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
-import fr.maxlego08.menu.itemstack.FullSimilar;
+import fr.maxlego08.menu.loader.MenuItemStackLoader;
+import fr.maxlego08.menu.loader.RequirementLoader;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.block.Action;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-public class InventoryLoader extends ZUtils implements Loader<Inventory> {
+public class InventoryDeluxeMenuLoader extends ZUtils implements Loader<Inventory> {
 
     private final MenuPlugin plugin;
 
-    public InventoryLoader(MenuPlugin plugin) {
+    public InventoryDeluxeMenuLoader(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
@@ -43,7 +35,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
-        String name = configuration.getString("name", configuration.getString("title"));
+        String name = configuration.getString("name", configuration.getString("menu_title", configuration.getString("title")));
         name = name == null ? "" : name;
 
         int size = configuration.getInt("size", 54);
@@ -51,20 +43,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
         }
 
-        Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
-        if (!matrix.isEmpty()) size = getInventorySizeByMatrix(configuration.getStringList("matrix"));
-
         List<Button> buttons = new ArrayList<>();
-        Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
-
-        Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
-        MenuItemStack itemStack = null;
-        try {
-            if (configuration.contains("fillItem")) {
-                itemStack = menuItemStackLoader.load(configuration, "fillItem.", file);
-            }
-        } catch (Exception ignored) {
-        }
+        Loader<Button> loader = new ButtonDeluxeMenuLoader(this.plugin, file, size);
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
@@ -80,31 +60,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
         }
 
-        PatternManager patternManager = this.plugin.getPatternManager();
-        List<Pattern> patterns = configuration.getStringList("patterns").stream().filter(pName -> patternManager.getPattern(pName).isPresent()).map(pName -> patternManager.getPattern(pName).get()).collect(Collectors.toList());
-
         String fileName = this.getFileNameWithoutExtension(file);
-
-        OpenWithItem openWithItem = null;
-        try {
-            if (configuration.contains("openWithItem")) {
-                MenuItemStack loadedItem = menuItemStackLoader.load(configuration, "openWithItem.item.", file);
-
-                List<Action> actions = configuration.getStringList("openWithItem.actions").stream().map(string -> {
-                    try {
-                        return Action.valueOf(string.toUpperCase());
-                    } catch (Exception exception) {
-                        return null;
-                    }
-                }).filter(Objects::nonNull).collect(Collectors.toList());
-
-                String type = configuration.getString("openWithItem.type", "full");
-                ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
-
-                openWithItem = new OpenWithItem(loadedItem, actions, itemStackSimilar);
-            }
-        } catch (Exception ignored) {
-        }
 
         ZInventory inventory;
 
@@ -120,27 +76,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
         }
 
-        inventory.setFillItemStack(itemStack);
-        inventory.setUpdateInterval(configuration.getInt(path + "updateInterval", 1000));
-        inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
+        inventory.setUpdateInterval(configuration.getInt(path + "update_interval", 1) * 1000);
+        inventory.setClearInventory(false);
         inventory.setFile(file);
-        inventory.setPatterns(patterns);
-        inventory.setOpenWithItem(openWithItem);
-
-        Map<String, String> translatedDisplayName = new HashMap<>();
-        configuration.getMapList(path + "translatedName").forEach(map -> {
-            if (map.containsKey("locale") && map.containsKey("name")) {
-                String locale = (String) map.get("locale");
-                String inventoryName = (String) map.get("name");
-                translatedDisplayName.put(locale.toLowerCase(), inventoryName);
-            }
-        });
-        inventory.setTranslatedNames(translatedDisplayName);
 
         // Open requirement
         if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement.")) {
             Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
             inventory.setOpenRequirement(requirementLoader.load(configuration, "open_requirement.", file));
+        }
+
+        if (Config.enableDebug) {
+            plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");
         }
 
         return inventory;

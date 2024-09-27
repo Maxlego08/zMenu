@@ -50,6 +50,7 @@ import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.actions.VaultDepositLoader;
 import fr.maxlego08.menu.loader.actions.VaultWithdrawLoader;
+import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.LuckPermPermissibleLoader;
@@ -158,8 +159,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        Loader<Inventory> loader = new InventoryLoader(this.plugin);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        boolean isDeluxeMenu = configuration.contains("menu_title");
+
+        Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
         List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
