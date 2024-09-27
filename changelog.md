@@ -40,6 +40,9 @@
 
 # Unreleased
 
+# 1.0.3.5
+
+- Added support for DeluxeMenus configurations. You no longer need to convert your DeluxeMenu configurations to zMenu, they are now automatically compatible!
 - Added command ``/zm documentation [<word>]``
 - Added key `title` for inventory name, you can use `name` or `title` now
 - Fixed itemstack with 1.21, components was added when it should not be added by default.
