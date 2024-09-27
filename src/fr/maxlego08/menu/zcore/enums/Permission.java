@@ -18,7 +18,7 @@ public enum Permission {
 	ZMENU_INVENTORIES,
 	ZMENU_DESCRIPTION,
 
-	;
+    ZMENU_DOCUMENTATION;
 
 	private String permission;
 

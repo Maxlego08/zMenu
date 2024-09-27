@@ -134,9 +134,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
         menuItemStack.setLore(lore);
-        menuItemStack.setDisplayName(configuration.getString(path + "name", null));
+        menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", null)));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", "0")))));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", "0"))))));
 
         Map<String, String> translatedDisplayName = new HashMap<>();
         Map<String, List<String>> translatedLore = new HashMap<>();
@@ -217,19 +217,26 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         return menuItemStack;
     }
 
+    private Boolean getOrNull(Object o) {
+        if (o instanceof Boolean) {
+            return (Boolean) o;
+        }
+        return null;
+    }
+
     private void loadNewItemStacks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 64));
         menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
         menuItemStack.setDamage(configuration.getInt(path + "damage", 0));
         menuItemStack.setRepairCost(configuration.getInt(path + "repair-cost", 0));
-        menuItemStack.setUnbreakableEnabled(configuration.getBoolean(path + "unbreakable", false));
-        menuItemStack.setUnbreakableShowInTooltip(configuration.getBoolean(path + "unbreakable-show-in-tooltip", false));
-        menuItemStack.setFireResistant(configuration.getBoolean(path + "fire-resistant", false));
-        menuItemStack.setHideTooltip(configuration.getBoolean(path + "hide-tooltip", false));
-        menuItemStack.setHideAdditionalTooltip(configuration.getBoolean(path + "hide-additional-tooltip", false));
-        menuItemStack.setEnchantmentGlint(configuration.contains(path + "enchantment-glint") ? configuration.getBoolean(path + "enchantment-glint") : null);
-        menuItemStack.setEnchantmentShowInTooltip(configuration.getBoolean(path + "enchantment-show-in-tooltip", true));
-        menuItemStack.setAttributeShowInTooltip(configuration.getBoolean(path + "attribute-show-in-tooltip", true));
+        menuItemStack.setUnbreakableEnabled(getOrNull(configuration.get(path + "unbreakable", null)));
+        menuItemStack.setUnbreakableShowInTooltip(getOrNull(configuration.get(path + "unbreakable-show-in-tooltip", null)));
+        menuItemStack.setFireResistant(getOrNull(configuration.get(path + "fire-resistant", null)));
+        menuItemStack.setHideTooltip(getOrNull(configuration.get(path + "hide-tooltip", null)));
+        menuItemStack.setHideAdditionalTooltip(getOrNull(configuration.get(path + "hide-additional-tooltip", null)));
+        menuItemStack.setEnchantmentGlint(getOrNull(configuration.get(path + "enchantment-glint", null)));
+        menuItemStack.setEnchantmentShowInTooltip(getOrNull(configuration.get(path + "enchantment-show-in-tooltip", null)));
+        menuItemStack.setAttributeShowInTooltip(getOrNull(configuration.get(path + "attribute-show-in-tooltip", null)));
 
         String rarityString = configuration.getString("item-rarity", null);
         if (rarityString != null) {
@@ -317,9 +324,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             Color potionColor = potion.getColor();
 
             configuration.set(path + "potion", potion.getType().toString());
-            configuration.set(path + "level", potion.getLevel());
-            configuration.set(path + "splash", potion.isSplash());
-            configuration.set(path + "extended", potion.hasExtendedDuration());
+            if (potion.getLevel() != 0) configuration.set(path + "level", potion.getLevel());
+            if (potion.isSplash()) configuration.set(path + "splash", true);
+            if (potion.hasExtendedDuration()) configuration.set(path + "extended", true);
 
             if (potionColor != null) {
                 configuration.set("color", potionColor.getAlpha() + "," + potionColor.getRed() + "," + potionColor.getGreen() + "," + potionColor.getBlue());
@@ -330,9 +337,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             ConfigurationSection fireworkSection = configuration.createSection(path + "firework");
             FireworkEffect effect = firework.getEffect();
             List<String> stringColors = new ArrayList<>();
-            effect.getColors().forEach(c -> stringColors.add(c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue()));
+            effect.getColors().forEach(color -> stringColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
             List<String> stringFadeColors = new ArrayList<>();
-            effect.getColors().forEach(c -> stringFadeColors.add(c.getAlpha() + "," + c.getRed() + "," + c.getGreen() + "," + c.getBlue()));
+            effect.getColors().forEach(color -> stringFadeColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
 
             fireworkSection.set("star", firework.isStar());
             fireworkSection.set("flicker", effect.hasFlicker());

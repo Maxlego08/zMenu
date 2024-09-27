@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -49,6 +50,7 @@ import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.actions.VaultDepositLoader;
 import fr.maxlego08.menu.loader.actions.VaultWithdrawLoader;
+import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.LuckPermPermissibleLoader;
@@ -157,8 +159,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        Loader<Inventory> loader = new InventoryLoader(this.plugin);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        boolean isDeluxeMenu = configuration.contains("menu_title");
+
+        Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);
         Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
         List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
@@ -562,7 +566,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void updateInventory(Player player) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryDefault) {
             InventoryDefault inventoryDefault = (InventoryDefault) holder;
             this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
@@ -571,7 +575,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void updateInventory(Player player, Plugin plugin) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryDefault) {
             InventoryDefault inventoryDefault = (InventoryDefault) holder;
             if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {

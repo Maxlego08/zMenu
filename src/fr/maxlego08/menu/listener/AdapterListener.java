@@ -16,7 +16,13 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 @SuppressWarnings("deprecation")
 public class AdapterListener extends ZUtils implements Listener {
@@ -80,24 +86,26 @@ public class AdapterListener extends ZUtils implements Listener {
 
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {
-        template.getListenerAdapters().forEach(adapter -> adapter.onCraftItem(event));
+        this.template.getListenerAdapters().forEach(adapter -> adapter.onCraftItem(event));
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        template.getListenerAdapters()
-                .forEach(adapter -> adapter.onInventoryDrag(event, (Player) event.getWhoClicked()));
+        if (event.getWhoClicked() instanceof Player) {
+            this.template.getListenerAdapters().forEach(adapter -> adapter.onInventoryDrag(event, (Player) event.getWhoClicked()));
+        }
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
-        template.getListenerAdapters().forEach(adapter -> adapter.onInventoryClose(event, (Player) event.getPlayer()));
+        if (event.getPlayer() instanceof Player) {
+            this.template.getListenerAdapters().forEach(adapter -> adapter.onInventoryClose(event, (Player) event.getPlayer()));
+        }
     }
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        template.getListenerAdapters()
-                .forEach(adapter -> adapter.onCommand(event, event.getPlayer(), event.getMessage()));
+        this.template.getListenerAdapters().forEach(adapter -> adapter.onCommand(event, event.getPlayer(), event.getMessage()));
     }
 
     @EventHandler

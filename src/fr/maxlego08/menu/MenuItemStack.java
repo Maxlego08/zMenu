@@ -25,6 +25,7 @@ import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
@@ -36,7 +37,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
@@ -83,14 +87,14 @@ public class MenuItemStack extends ZUtils {
     private int maxDamage;
     private int damage;
     private int repairCost;
-    private boolean unbreakableEnabled;
-    private boolean unbreakableShowInTooltip;
-    private boolean fireResistant;
-    private boolean hideTooltip;
-    private boolean hideAdditionalTooltip;
+    private Boolean unbreakableEnabled;
+    private Boolean unbreakableShowInTooltip;
+    private Boolean fireResistant;
+    private Boolean hideTooltip;
+    private Boolean hideAdditionalTooltip;
     private Boolean enchantmentGlint;
-    private boolean enchantmentShowInTooltip;
-    private boolean attributeShowInTooltip;
+    private Boolean enchantmentShowInTooltip;
+    private Boolean attributeShowInTooltip;
     private MenuItemRarity itemRarity;
     private TrimConfiguration trimConfiguration;
 
@@ -143,6 +147,43 @@ public class MenuItemStack extends ZUtils {
                 if (enchantmentStorageMeta.hasStoredEnchants()) {
                     menuItemStack.setEnchantments(enchantmentStorageMeta.getEnchants());
                 }
+            }
+
+            try {
+                if (itemMeta instanceof PotionMeta) {
+                    PotionMeta potionMeta = (PotionMeta) itemMeta;
+                    PotionType type = potionMeta.getBasePotionType();
+                    if (type != null) {
+                        Potion menuPotion = new Potion(type, 0);
+                        menuItemStack.setPotion(menuPotion);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            try {
+                // ToDo, upgrade for multiple effect
+                if (itemMeta instanceof FireworkMeta) {
+                    FireworkMeta fireworkMeta = (FireworkMeta) itemMeta;
+                    List<FireworkEffect> fireworkEffects = fireworkMeta.getEffects();
+                    if (!fireworkEffects.isEmpty()) {
+                        FireworkEffect effect = fireworkEffects.get(0);
+                        Firework menuFirework = new Firework(false, effect);
+                        menuItemStack.setFirework(menuFirework);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            try {
+                // ToDo, upgrade for multiple effect
+                if (itemMeta instanceof FireworkEffectMeta) {
+                    FireworkEffectMeta fireworkMeta = (FireworkEffectMeta) itemMeta;
+                    FireworkEffect effect = fireworkMeta.getEffect();
+                    Firework menuFirework = new Firework(true, effect);
+                    menuItemStack.setFirework(menuFirework);
+                }
+            } catch (Exception ignored) {
             }
         }
 
@@ -275,7 +316,7 @@ public class MenuItemStack extends ZUtils {
             }
 
             if (!this.lore.isEmpty()) {
-                List<String> lore = placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore));
+                List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
                 lore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).collect(Collectors.toList());
                 Meta.meta.updateLore(itemMeta, lore, offlinePlayer == null ? player : offlinePlayer);
             }
@@ -336,27 +377,29 @@ public class MenuItemStack extends ZUtils {
 
         if (itemMeta instanceof Damageable) {
             Damageable damageable = (Damageable) itemMeta;
-            if (this.maxDamage > 0) damageable.setMaxDamage(this.maxDamage);
-            damageable.setDamage(this.damage);
-            damageable.setUnbreakable(this.unbreakableEnabled);
 
-            if (!this.unbreakableShowInTooltip) {
+            if (this.maxDamage > 0) damageable.setMaxDamage(this.maxDamage);
+            if (this.damage != 0) damageable.setDamage(this.damage);
+
+            if (this.unbreakableEnabled != null) damageable.setUnbreakable(this.unbreakableEnabled);
+
+            if (this.unbreakableShowInTooltip != null && !this.unbreakableShowInTooltip) {
                 itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
             }
         }
 
-        if (itemMeta instanceof Repairable) {
+        if (itemMeta instanceof Repairable && this.repairCost > 0) {
             ((Repairable) itemMeta).setRepairCost(this.repairCost);
         }
 
-        itemMeta.setHideTooltip(this.hideTooltip);
-        if (this.hideAdditionalTooltip) {
+        if (this.hideTooltip != null) itemMeta.setHideTooltip(this.hideTooltip);
+        if (this.hideAdditionalTooltip != null && this.hideAdditionalTooltip) {
             for (ItemFlag value : ItemFlag.values()) {
                 itemMeta.addItemFlags(value);
             }
         }
 
-        if (!this.enchantmentShowInTooltip) {
+        if (this.enchantmentShowInTooltip != null && !this.enchantmentShowInTooltip) {
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
@@ -364,9 +407,9 @@ public class MenuItemStack extends ZUtils {
             itemMeta.setEnchantmentGlintOverride(this.enchantmentGlint);
         }
 
-        itemMeta.setFireResistant(this.fireResistant);
+        if (this.fireResistant != null) itemMeta.setFireResistant(this.fireResistant);
 
-        if (!this.attributeShowInTooltip) {
+        if (this.attributeShowInTooltip != null && !this.attributeShowInTooltip) {
             itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         }
 
@@ -897,7 +940,7 @@ public class MenuItemStack extends ZUtils {
         return unbreakableEnabled;
     }
 
-    public void setUnbreakableEnabled(boolean unbreakableEnabled) {
+    public void setUnbreakableEnabled(Boolean unbreakableEnabled) {
         this.unbreakableEnabled = unbreakableEnabled;
     }
 
@@ -905,7 +948,7 @@ public class MenuItemStack extends ZUtils {
         return unbreakableShowInTooltip;
     }
 
-    public void setUnbreakableShowInTooltip(boolean unbreakableShowInTooltip) {
+    public void setUnbreakableShowInTooltip(Boolean unbreakableShowInTooltip) {
         this.unbreakableShowInTooltip = unbreakableShowInTooltip;
     }
 
@@ -913,7 +956,7 @@ public class MenuItemStack extends ZUtils {
         return fireResistant;
     }
 
-    public void setFireResistant(boolean fireResistant) {
+    public void setFireResistant(Boolean fireResistant) {
         this.fireResistant = fireResistant;
     }
 
@@ -921,7 +964,7 @@ public class MenuItemStack extends ZUtils {
         return hideTooltip;
     }
 
-    public void setHideTooltip(boolean hideTooltip) {
+    public void setHideTooltip(Boolean hideTooltip) {
         this.hideTooltip = hideTooltip;
     }
 
@@ -929,7 +972,7 @@ public class MenuItemStack extends ZUtils {
         return hideAdditionalTooltip;
     }
 
-    public void setHideAdditionalTooltip(boolean hideAdditionalTooltip) {
+    public void setHideAdditionalTooltip(Boolean hideAdditionalTooltip) {
         this.hideAdditionalTooltip = hideAdditionalTooltip;
     }
 
@@ -945,7 +988,7 @@ public class MenuItemStack extends ZUtils {
         return enchantmentShowInTooltip;
     }
 
-    public void setEnchantmentShowInTooltip(boolean enchantmentShowInTooltip) {
+    public void setEnchantmentShowInTooltip(Boolean enchantmentShowInTooltip) {
         this.enchantmentShowInTooltip = enchantmentShowInTooltip;
     }
 
@@ -953,7 +996,7 @@ public class MenuItemStack extends ZUtils {
         return attributeShowInTooltip;
     }
 
-    public void setAttributeShowInTooltip(boolean attributeShowInTooltip) {
+    public void setAttributeShowInTooltip(Boolean attributeShowInTooltip) {
         this.attributeShowInTooltip = attributeShowInTooltip;
     }
 

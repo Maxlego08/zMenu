@@ -43,7 +43,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
-        String name = configuration.getString("name");
+        String name = configuration.getString("name", configuration.getString("title"));
         name = name == null ? "" : name;
 
         int size = configuration.getInt("size", 54);

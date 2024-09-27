@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -34,7 +35,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final int size;
     private final List<Button> buttons;
     private Map<String, String> translatedNames = new HashMap<>();
-    private List<Pattern> patterns;
+    private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
     private int updateInterval;
     private File file;
@@ -158,7 +159,10 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
-        InventoryHolder holder = player.getOpenInventory().getTopInventory().getHolder();
+
+        org.bukkit.inventory.Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+        InventoryHolder holder = topInventory.getHolder();
+
         if (holder != null) {
             if (holder instanceof InventoryDefault) {
                 InventoryDefault inventoryHolder = (InventoryDefault) holder;
@@ -179,7 +183,7 @@ public class ZInventory extends ZUtils implements Inventory {
     public void closeInventory(Player player, InventoryDefault inventoryDefault) {
         if (this.clearInventory) {
             MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
-                InventoryHolder newHolder = player.getOpenInventory().getTopInventory().getHolder();
+                InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
                 if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.giveInventory(player);
