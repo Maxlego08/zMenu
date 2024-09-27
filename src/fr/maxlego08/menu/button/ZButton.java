@@ -54,6 +54,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private List<Action> actions = new ArrayList<>();
     private List<ButtonOption> options = new ArrayList<>();
     private RefreshRequirement refreshRequirement;
+    private int priority; // only use for convert DeluxeMenus config to zmenu object
 
     @Override
     public String getName() {
@@ -446,5 +447,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     public void setRefreshRequirement(RefreshRequirement refreshRequirement) {
         this.refreshRequirement = refreshRequirement;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 }

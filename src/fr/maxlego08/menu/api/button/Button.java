@@ -330,4 +330,6 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     RefreshRequirement getRefreshRequirement();
 
     boolean hasRefreshRequirement();
+
+    int getPriority();
 }

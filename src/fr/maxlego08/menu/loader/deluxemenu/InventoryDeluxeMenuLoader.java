@@ -4,14 +4,16 @@ import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.loader.RequirementLoader;
+import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,9 +22,13 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
-public class InventoryDeluxeMenuLoader extends ZUtils implements Loader<Inventory> {
+public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
 
     private final MenuPlugin plugin;
 
@@ -60,6 +66,30 @@ public class InventoryDeluxeMenuLoader extends ZUtils implements Loader<Inventor
             Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
         }
 
+        // Sort buttons with priority id
+        List<Button> copiedButtons = new ArrayList<>(buttons);
+        for (Button button : copiedButtons) {
+
+            if (button.getPriority() < 0) continue; // Le bouton n'a pas de priorité
+
+            List<Button> sameButtons = buttons.stream().filter(currentButton -> currentButton.getSlot() == button.getSlot() && currentButton.getPriority() >= 0).collect(Collectors.toList()); // On va trier les boutons par slot et priorité
+            if (sameButtons.size() < 2) continue; // Pas assez de bouton pour gérer la priorité
+
+            buttons.removeAll(sameButtons); // On supprime les boutons de la liste par défaut
+
+            sameButtons.sort(Comparator.comparingInt(Button::getPriority).reversed());
+            Queue<Button> queue = new LinkedList<>(sameButtons);
+
+            Button lastButton = queue.poll(); // On récupère le dernier bouton
+            while (!queue.isEmpty()) {
+                Button currentButton = queue.poll();
+                ((ZButton) currentButton).setElseButton(lastButton);
+                lastButton = currentButton;
+            }
+
+            buttons.add(lastButton);
+        }
+
         String fileName = this.getFileNameWithoutExtension(file);
 
         ZInventory inventory;
@@ -81,10 +111,22 @@ public class InventoryDeluxeMenuLoader extends ZUtils implements Loader<Inventor
         inventory.setFile(file);
 
         // Open requirement
-        if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement.")) {
-            Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
-            inventory.setOpenRequirement(requirementLoader.load(configuration, "open_requirement.", file));
+        List<Action> actions = new ArrayList<>();
+        List<Permissible> permissibles = new ArrayList<>();
+
+        if (configuration.contains("open_commands")) {
+            actions = loadActions(plugin.getInventoryManager(), plugin.getCommandManager(), plugin, configuration.getStringList("open_commands"));
         }
+
+        if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement")) {
+            ConfigurationSection configurationSection = configuration.getConfigurationSection("open_requirement.requirements");
+            if (configurationSection != null) {
+                permissibles = loadPermissibles(plugin.getInventoryManager(), plugin.getCommandManager(), plugin, configurationSection);
+            }
+        }
+
+        Requirement requirement = new ZRequirement(configuration.getInt("open_requirement.minimum_requirements", permissibles.size()), permissibles, new ArrayList<>(), actions, new ArrayList<>());
+        inventory.setOpenRequirement(requirement);
 
         if (Config.enableDebug) {
             plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");

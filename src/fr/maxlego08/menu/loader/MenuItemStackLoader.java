@@ -134,9 +134,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
         menuItemStack.setLore(lore);
-        menuItemStack.setDisplayName(configuration.getString(path + "name", null));
+        menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", null)));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", "0")))));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", "0"))))));
 
         Map<String, String> translatedDisplayName = new HashMap<>();
         Map<String, List<String>> translatedLore = new HashMap<>();

@@ -8,18 +8,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ZPerformButton extends ZSlotButton implements PerformButton {
 
-    private List<String> commands;
-    private List<String> leftCommands;
-    private List<String> rightCommands;
-    private List<String> consoleCommands;
-    private List<String> consoleRightCommands;
-    private List<String> consoleLeftCommands;
-    private List<String> consolePermissionCommands;
-    private String consolePermission;
+    private List<String> commands = new ArrayList<>();
+    private List<String> leftCommands = new ArrayList<>();
+    private List<String> rightCommands = new ArrayList<>();
+    private List<String> consoleCommands = new ArrayList<>();
+    private List<String> consoleRightCommands = new ArrayList<>();
+    private List<String> consoleLeftCommands = new ArrayList<>();
+    private List<String> consolePermissionCommands = new ArrayList<>();
+    private String consolePermission ;
 
     @Override
     public List<String> getCommands() {
