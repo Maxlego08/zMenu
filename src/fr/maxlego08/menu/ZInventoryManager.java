@@ -245,6 +245,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public void openInventoryWithOldInventories(Player player, Inventory inventory, int page) {
+        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault) {
+            InventoryDefault inventoryDefault = (InventoryDefault) player.getOpenInventory().getTopInventory().getHolder();
+
+            Inventory fromInventory = inventoryDefault.getMenuInventory();
+            List<Inventory> oldInventories = inventoryDefault.getOldInventories();
+            oldInventories.add(fromInventory);
+
+            this.openInventory(player, inventory, page, oldInventories);
+        }
+    }
+
+    @Override
     public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);

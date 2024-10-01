@@ -197,6 +197,8 @@ public interface InventoryManager extends Savable, Listener {
      */
     void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
 
+    void openInventoryWithOldInventories(Player player, Inventory inventory, int page);
+
     /**
      * Opens an inventory for a player on a specific page with old inventories.
      *
