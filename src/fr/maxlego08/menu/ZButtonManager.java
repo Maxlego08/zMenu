@@ -144,7 +144,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 action.setDelay(accessor.getInt("delay", 0));
                 return action;
             }
-            Logger.info("Error, an element is invalid in " + path + " with type " + type, Logger.LogType.ERROR);
+            Logger.info("Error, an element is invalid in " + path + " with type " + type +", he doesn't exist!", Logger.LogType.ERROR);
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }

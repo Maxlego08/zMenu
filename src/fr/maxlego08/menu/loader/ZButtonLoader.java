@@ -93,7 +93,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
             }
 
-            YamlConfiguration testConfiguration = new YamlConfiguration();
+            YamlConfiguration patternConfiguration = new YamlConfiguration();
 
             try {
                 FileInputStream stream = new FileInputStream(patternFile);
@@ -136,12 +136,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                     input.close();
                 }
 
-                testConfiguration.loadFromString(builder.toString());
+                patternConfiguration.loadFromString(builder.toString());
 
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-            return this.load(testConfiguration, "button.", buttonName);
+            return this.load(patternConfiguration, "button.", buttonName);
         }
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
