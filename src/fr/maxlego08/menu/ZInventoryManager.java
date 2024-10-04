@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
@@ -745,5 +746,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Enchantments getEnchantments() {
         return this.plugin.getEnchantments();
+    }
+
+    @Override
+    public FontImage getFontImage() {
+        return this.plugin.getFontImage();
     }
 }

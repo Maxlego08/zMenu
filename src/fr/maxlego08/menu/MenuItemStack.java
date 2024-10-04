@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
+import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
@@ -303,12 +304,13 @@ public class MenuItemStack extends ZUtils {
         Material finalMaterial = itemStack.getType();
         ItemMeta itemMeta = itemStack.getItemMeta();
         String locale = findPlayerLocale(player);
+        FontImage fontImage = this.inventoryManager.getFontImage();
 
         if (itemMeta != null) {
             if (this.displayName != null) {
                 try {
                     String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                    Meta.meta.updateDisplayName(itemMeta, placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer);
+                    Meta.meta.updateDisplayName(itemMeta, fontImage.replace(placeholders.parse(displayName)), offlinePlayer == null ? player : offlinePlayer);
                 } catch (Exception exception) {
                     Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                     exception.printStackTrace();
@@ -317,7 +319,8 @@ public class MenuItemStack extends ZUtils {
 
             if (!this.lore.isEmpty()) {
                 List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
-                lore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).collect(Collectors.toList());
+                lore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).map(fontImage::replace).collect(Collectors.toList());
+
                 Meta.meta.updateLore(itemMeta, lore, offlinePlayer == null ? player : offlinePlayer);
             }
 

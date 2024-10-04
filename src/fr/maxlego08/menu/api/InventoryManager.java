@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
+import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
@@ -466,5 +467,7 @@ public interface InventoryManager extends Savable, Listener {
     InventoryDefault getFakeInventory();
 
     Enchantments getEnchantments();
+
+    FontImage getFontImage();
 
 }

@@ -40,6 +40,10 @@
 
 # Unreleased
 
+- Added the ability to use font ItemsAdder with format `:font-name:`
+- Improve TypedMapAccessor
+- Added more API method
+
 # 1.0.3.5
 
 - Added support for DeluxeMenus configurations. You no longer need to convert your DeluxeMenu configurations to zMenu, they are now automatically compatible!
