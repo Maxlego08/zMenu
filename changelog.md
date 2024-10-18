@@ -42,7 +42,10 @@
 
 - Added the ability to use font ItemsAdder with format `:font-name:`
 - Improve TypedMapAccessor
-- Added more API method
+- Added API method ``InventoryManager#openInventoryWithOldInventories``
+- Added API method ``ZButton#paginate``
+- Added action ``set permission``, allows to set a permission to a player with luckperms
+- Added aliases ``command`` and `commands` for console command action.
 
 # 1.0.3.5
 

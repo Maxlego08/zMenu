@@ -16,6 +16,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
+import fr.maxlego08.menu.zcore.utils.inventory.Pagination;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.Bukkit;
@@ -29,6 +30,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 
 public abstract class ZButton extends ZPlaceholderButton implements Button {
 
@@ -449,12 +451,23 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.refreshRequirement = refreshRequirement;
     }
 
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
     public void setPriority(int priority) {
         this.priority = priority;
     }
 
-    @Override
-    public int getPriority() {
-        return priority;
+    protected <T> void paginate(List<T> elements, InventoryDefault inventory, BiConsumer<Integer, T> consumer) {
+        Pagination<T> pagination = new Pagination<>();
+        elements = pagination.paginate(elements, this.slots.size(), inventory.getPage());
+
+        for (int i = 0; i != Math.min(elements.size(), this.slots.size()); i++) {
+            int slot = slots.get(i);
+            T element = elements.get(i);
+            consumer.accept(slot, element);
+        }
     }
 }
