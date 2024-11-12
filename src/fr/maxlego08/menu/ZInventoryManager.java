@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
@@ -42,6 +43,7 @@ import fr.maxlego08.menu.loader.actions.CloseLoader;
 import fr.maxlego08.menu.loader.actions.ConnectLoader;
 import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
+import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
 import fr.maxlego08.menu.loader.actions.RefreshLoader;
@@ -245,6 +247,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public void openInventoryWithOldInventories(Player player, Inventory inventory, int page) {
+        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault) {
+            InventoryDefault inventoryDefault = (InventoryDefault) player.getOpenInventory().getTopInventory().getHolder();
+
+            Inventory fromInventory = inventoryDefault.getMenuInventory();
+            List<Inventory> oldInventories = inventoryDefault.getOldInventories();
+            oldInventories.add(fromInventory);
+
+            this.openInventory(player, inventory, page, oldInventories);
+        }
+    }
+
+    @Override
     public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);
@@ -309,6 +324,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.isEnable(Plugins.VAULT)) {
             buttonManager.registerAction(new VaultWithdrawLoader());
             buttonManager.registerAction(new VaultDepositLoader());
+        }
+        if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
+            buttonManager.registerAction(new LuckPermissionSetLoader());
         }
 
         // Loading ButtonLoader
@@ -732,5 +750,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Enchantments getEnchantments() {
         return this.plugin.getEnchantments();
+    }
+
+    @Override
+    public FontImage getFontImage() {
+        return this.plugin.getFontImage();
     }
 }

@@ -27,42 +27,42 @@ public interface Inventory {
     /**
      * Returns the size of the inventory.
      *
-     * @return The size of the inventory.
+     * @return The size of the inventory. This value is the number of slots in the inventory.
      */
     int size();
 
     /**
      * Returns the name of the inventory.
      *
-     * @return The name of the inventory.
+     * @return The name of the inventory. This name is used internally by zMenu and can be used to identify the inventory.
      */
     String getName();
 
     /**
      * Returns the translated name of the inventory.
      *
-     * @return The name of the inventory.
+     * @return The name of the inventory, translated to the player's language.
      */
     String getName(Player player);
 
     /**
      * Returns the name of the file associated with the inventory.
      *
-     * @return The file name.
+     * @return The file name. This name is the name of the configuration file.
      */
     String getFileName();
 
     /**
      * Returns a collection of buttons present in the inventory.
      *
-     * @return A collection of buttons.
+     * @return A collection of buttons. This collection contains all the buttons present in the inventory, including the ones in the patterns.
      */
     Collection<Button> getButtons();
 
     /**
      * Returns a collection of patterns associated with the inventory.
      *
-     * @return A collection of patterns.
+     * @return A collection of patterns. This collection contains all the patterns associated with the inventory.
      */
     Collection<Pattern> getPatterns();
 
@@ -96,8 +96,8 @@ public interface Inventory {
      * Returns the maximum number of pages for the inventory.
      *
      * @param patterns Pattern list
-     * @param player  The player for whom the page count is determined.
-     * @param objects Additional elements.
+     * @param player   The player for whom the page count is determined.
+     * @param objects  Additional elements.
      * @return The maximum number of pages.
      */
     int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects);

@@ -40,6 +40,16 @@
 
 # Unreleased
 
+# 1.0.3.6
+
+- Added the ability to use font ItemsAdder with format `:font-name:`
+- Improve TypedMapAccessor
+- Added API method ``InventoryManager#openInventoryWithOldInventories``
+- Added API method ``ZButton#paginate``
+- Added action ``set permission``, allows setting a permission to a player with luckperms
+- Added aliases ``command`` and `commands` for console command action.
+- Fixed max-stack-size for itemstack with 1.21
+
 # 1.0.3.5
 
 - Added support for DeluxeMenus configurations. You no longer need to convert your DeluxeMenu configurations to zMenu, they are now automatically compatible!

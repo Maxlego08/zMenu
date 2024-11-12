@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
@@ -16,6 +17,8 @@ import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
+import fr.maxlego08.menu.font.EmptyFont;
+import fr.maxlego08.menu.font.ItemsAdderFont;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -82,6 +85,7 @@ public class MenuPlugin extends ZPlugin {
     private CommandMenu commandMenu;
     private ZScheduler scheduler;
     private DupeManager dupeManager;
+    private FontImage fontImage = new EmptyFont();
 
     public static boolean isFolia() {
         try {
@@ -182,6 +186,7 @@ public class MenuPlugin extends ZPlugin {
         }
         if (this.isEnable(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
+            this.fontImage = new ItemsAdderFont();
         }
         if (this.isEnable(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
@@ -346,5 +351,9 @@ public class MenuPlugin extends ZPlugin {
 
     public Enchantments getEnchantments() {
         return enchantments;
+    }
+
+    public FontImage getFontImage() {
+        return this.fontImage;
     }
 }

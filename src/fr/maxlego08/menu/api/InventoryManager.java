@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
+import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
@@ -196,6 +197,8 @@ public interface InventoryManager extends Savable, Listener {
      * @param oldInventories List of old inventories.
      */
     void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
+
+    void openInventoryWithOldInventories(Player player, Inventory inventory, int page);
 
     /**
      * Opens an inventory for a player on a specific page with old inventories.
@@ -461,8 +464,25 @@ public interface InventoryManager extends Savable, Listener {
      */
     int getMaxPage(OfflinePlayer player);
 
+    /**
+     * Retrieves a fake inventory for testing or simulation purposes.
+     *
+     * @return An instance of {@link InventoryDefault} representing the fake inventory.
+     */
     InventoryDefault getFakeInventory();
 
+    /**
+     * Provides access to the enchantments management interface.
+     *
+     * @return An instance of {@link Enchantments} for managing custom enchantments.
+     */
     Enchantments getEnchantments();
+
+    /**
+     * Retrieves the font image utility for managing custom fonts.
+     *
+     * @return An instance of {@link FontImage} for handling font images.
+     */
+    FontImage getFontImage();
 
 }

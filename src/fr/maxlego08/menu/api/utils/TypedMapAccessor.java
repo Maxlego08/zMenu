@@ -54,11 +54,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public int getInt(String key) {
-        Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
-        }
-        return 0;
+        return getInt(key, 0);
     }
 
     /**
@@ -72,8 +68,13 @@ public class TypedMapAccessor implements MapConfiguration {
     @Override
     public int getInt(String key, int defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
+        try {
+            if (value instanceof Number) {
+                return ((Number) value).intValue();
+            } else if (value instanceof String) {
+                return Integer.parseInt((String) value);
+            }
+        } catch (NumberFormatException ignored) {
         }
         return defaultValue;
     }
@@ -86,11 +87,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public long getLong(String key) {
-        Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).longValue();
-        }
-        return 0L;
+        return getLong(key, 0L);
     }
 
     /**
@@ -104,8 +101,13 @@ public class TypedMapAccessor implements MapConfiguration {
     @Override
     public long getLong(String key, long defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).longValue();
+        try {
+            if (value instanceof Number) {
+                return ((Number) value).longValue();
+            } else if (value instanceof String) {
+                return Long.parseLong((String) value);
+            }
+        } catch (NumberFormatException ignored) {
         }
         return defaultValue;
     }
@@ -209,7 +211,13 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public boolean getBoolean(String key, boolean defaultValue) {
-        return (boolean) map.getOrDefault(key, defaultValue);
+        Object value = map.get(key);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        } else if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
+        return defaultValue;
     }
 
     /**
@@ -220,11 +228,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public double getDouble(String key) {
-        Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).doubleValue();
-        }
-        return 0.0;
+        return getDouble(key, 0.0);
     }
 
     /**
@@ -238,8 +242,14 @@ public class TypedMapAccessor implements MapConfiguration {
     @Override
     public double getDouble(String key, double defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).doubleValue();
+        try {
+            if (value instanceof Number) {
+                return ((Number) value).doubleValue();
+            } else if (value instanceof String) {
+                return Double.parseDouble((String) value);
+            }
+        } catch (NumberFormatException e) {
+            // Handle the exception and return default value
         }
         return defaultValue;
     }
@@ -275,11 +285,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public float getFloat(String key) {
-        Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).floatValue();
-        }
-        return 0.0f;
+        return getFloat(key, 0f);
     }
 
     /**
@@ -293,8 +299,13 @@ public class TypedMapAccessor implements MapConfiguration {
     @Override
     public float getFloat(String key, float defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).floatValue();
+        try {
+            if (value instanceof Number) {
+                return ((Number) value).floatValue();
+            } else if (value instanceof String) {
+                return Float.parseFloat((String) value);
+            }
+        } catch (NumberFormatException ignored) {
         }
         return defaultValue;
     }

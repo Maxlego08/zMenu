@@ -325,11 +325,31 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      */
     boolean hasCustomRender();
 
+    /**
+     * Checks if the inventory is opened asynchronously.
+     *
+     * @return true if the inventory is opened asynchronously, false otherwise
+     */
     boolean isOpenAsync();
 
+    /**
+     * Retrieves the refresh requirement associated with the button.
+     *
+     * @return A RefreshRequirement object, or null if no refresh requirement is set
+     */
     RefreshRequirement getRefreshRequirement();
 
+    /**
+     * Checks if a refresh requirement is associated with the button.
+     *
+     * @return true if a refresh requirement is associated with the button, false otherwise
+     */
     boolean hasRefreshRequirement();
 
+    /**
+     * Retrieves the priority of the button.
+     *
+     * @return The priority of the button, which is used to determine the order in which buttons are processed
+     */
     int getPriority();
 }
