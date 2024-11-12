@@ -40,11 +40,13 @@
 
 # Unreleased
 
+# 1.0.3.6
+
 - Added the ability to use font ItemsAdder with format `:font-name:`
 - Improve TypedMapAccessor
 - Added API method ``InventoryManager#openInventoryWithOldInventories``
 - Added API method ``ZButton#paginate``
-- Added action ``set permission``, allows to set a permission to a player with luckperms
+- Added action ``set permission``, allows setting a permission to a player with luckperms
 - Added aliases ``command`` and `commands` for console command action.
 - Fixed max-stack-size for itemstack with 1.21
 
