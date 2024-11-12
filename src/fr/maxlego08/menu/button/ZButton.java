@@ -460,6 +460,17 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.priority = priority;
     }
 
+    /**
+     * Paginate a given list of elements and set them as elements of this button
+     * according to the page of the inventory.
+     *
+     * @param elements    the elements to paginate
+     * @param inventory   the inventory to get the page from
+     * @param consumer    a consumer that will be used to set the elements, it will
+     *                    be called with the slot of the element and the element
+     *                    itself
+     * @param <T>         the type of the elements
+     */
     protected <T> void paginate(List<T> elements, InventoryDefault inventory, BiConsumer<Integer, T> consumer) {
         Pagination<T> pagination = new Pagination<>();
         elements = pagination.paginate(elements, this.slots.size(), inventory.getPage());

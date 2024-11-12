@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.loader.PermissibleLoader;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -15,57 +15,57 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The `ButtonManager` interface provides a centralized management system for buttons, allowing the creation,
- * registration, and retrieval of various types of buttons through designated loaders.
+ * The {@code ButtonManager} interface offers a centralized management system for buttons, enabling the creation,
+ * registration, and retrieval of different types of buttons via designated loaders.
  *
- * Documentation: <a href="https://docs.zmenu.dev/api/create-button#3.-register-button-1">ButtonManager Documentation</a>
+ * <p>For creating a {@link Button}, utilize a {@link ButtonLoader} and register it with the {@code ButtonManager}.</p>
+ * <p>This interface allows plugins to manage buttons, facilitating the dynamic creation and interaction of menus.</p>
  *
- * <p>To create a {@link Button}, use a {@link ButtonLoader}, and then register it with the `ButtonManager`.</p>
- * <p>Buttons can be managed by plugins using this interface, facilitating dynamic menu creation and interaction.</p>
+ * <p>Documentation can be found here: <a href="https://docs.zmenu.dev/api/create-button#3.-register-button-1">ButtonManager Documentation</a></p>
  */
 public interface ButtonManager {
 
     /**
-     * Registers a new {@link ButtonLoader} for handling button creation.
+     * Registers a new {@link ButtonLoader} responsible for button creation.
      *
-     * @param button The new {@link ButtonLoader} to register.
+     * @param button The {@link ButtonLoader} instance to register.
      */
     void register(ButtonLoader button);
 
     /**
-     * Unregisters a {@link ButtonLoader} to stop handling button creation.
+     * Unregisters an existing {@link ButtonLoader}, ceasing its button creation responsibilities.
      *
-     * @param button The {@link ButtonLoader} to unregister.
+     * @param button The {@link ButtonLoader} instance to unregister.
      */
     void unregister(ButtonLoader button);
 
     /**
-     * Unregisters all {@link ButtonLoader}s associated with a specific plugin.
+     * Unregisters all {@link ButtonLoader} instances linked to a specific plugin.
      *
-     * @param plugin The plugin for which to unregister all loaders.
+     * @param plugin The plugin whose loaders should be unregistered.
      */
     void unregisters(Plugin plugin);
 
     /**
-     * Retrieves a collection of all registered {@link ButtonLoader}s.
+     * Retrieves all registered {@link ButtonLoader} instances.
      *
-     * @return A collection of {@link ButtonLoader}s.
+     * @return A collection containing all registered {@link ButtonLoader} instances.
      */
     Collection<ButtonLoader> getLoaders();
 
     /**
-     * Retrieves a collection of {@link ButtonLoader}s associated with a specific plugin.
+     * Retrieves {@link ButtonLoader} instances associated with a given plugin.
      *
-     * @param plugin The plugin for which to retrieve loaders.
-     * @return A collection of {@link ButtonLoader}s or an empty collection if none are found.
+     * @param plugin The plugin whose loaders are to be retrieved.
+     * @return A collection of {@link ButtonLoader} instances or an empty collection if none are found.
      */
     Collection<ButtonLoader> getLoaders(Plugin plugin);
 
     /**
-     * Retrieves a {@link ButtonLoader} based on the class of the associated {@link Button}.
+     * Retrieves a {@link ButtonLoader} based on the class type of the associated {@link Button}.
      *
-     * @param classz Class of {@link Button}.
-     * @return An optional {@link ButtonLoader}.
+     * @param classz The class type of {@link Button}.
+     * @return An {@link Optional} containing the {@link ButtonLoader}, if found.
      */
     Optional<ButtonLoader> getLoader(Class<? extends Button> classz);
 
@@ -73,66 +73,66 @@ public interface ButtonManager {
      * Retrieves a {@link ButtonLoader} based on the name of the associated {@link Button}.
      *
      * @param name The name of the {@link ButtonLoader}.
-     * @return An optional {@link ButtonLoader}.
+     * @return An {@link Optional} containing the {@link ButtonLoader}, if found.
      */
     Optional<ButtonLoader> getLoader(String name);
 
     /**
-     * Registers a new {@link PermissibleLoader} for handling permissible creation.
+     * Registers a new {@link PermissibleLoader} responsible for permissible creation.
      *
-     * @param permissibleLoader The new {@link PermissibleLoader} to register.
+     * @param permissibleLoader The {@link PermissibleLoader} instance to register.
      */
     void registerPermissible(PermissibleLoader permissibleLoader);
 
     /**
-     * Retrieves a map of permissible keys and associated {@link PermissibleLoader}s.
+     * Retrieves a mapping of permissible keys to their associated {@link PermissibleLoader} instances.
      *
-     * @return A map of permissible keys to {@link PermissibleLoader}s.
+     * @return A map linking permissible keys to their corresponding {@link PermissibleLoader} instances.
      */
     Map<String, PermissibleLoader> getPermissibles();
 
     /**
-     * Retrieves an optional {@link PermissibleLoader} based on a permissible key.
+     * Retrieves an {@link Optional} {@link PermissibleLoader} based on a specific permissible key.
      *
-     * @param key The key associated with the permissible.
-     * @return An optional {@link PermissibleLoader}.
+     * @param key The key identifying the permissible.
+     * @return An {@link Optional} containing the {@link PermissibleLoader}, if found.
      */
     Optional<PermissibleLoader> getPermission(String key);
 
     /**
-     * Registers a new {@link ActionLoader} for handling action creation.
+     * Registers a new {@link ActionLoader} responsible for action creation.
      *
-     * @param actionLoader The new {@link ActionLoader} to register.
+     * @param actionLoader The {@link ActionLoader} instance to register.
      */
     void registerAction(ActionLoader actionLoader);
 
     /**
-     * Retrieves an optional {@link ActionLoader} based on an action key.
+     * Retrieves an {@link Optional} {@link ActionLoader} based on a specific action key.
      *
-     * @param key The key associated with the action.
-     * @return An optional {@link ActionLoader}.
+     * @param key The key identifying the action.
+     * @return An {@link Optional} containing the {@link ActionLoader}, if found.
      */
     Optional<ActionLoader> getActionLoader(String key);
 
     /**
-     * Transforms a list of map elements from a configuration file into a list of permissibles.
+     * Converts a list of map elements from a configuration file into a list of {@link Permissible} objects.
      *
-     * @param elements List of items from the configuration containing the entire configuration of a permissible.
-     * @param path     The path to or from the list of permissibles.
-     * @param file     The current configuration file.
-     * @return A list of {@link Permissible}s.
+     * @param elements The list of configuration items detailing a permissible's entire configuration.
+     * @param path     The path specifying the location of the permissible list.
+     * @param file     The configuration file in use.
+     * @return A list of {@link Permissible} objects derived from the configuration.
      */
     List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path, File file);
 
     /**
-     * Transforms a list of map elements from a configuration file into a list of actions.
+     * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
      *
-     * Documentation about actions: <a href="https://docs.zmenu.dev/configurations/actions">Action Documentation</a>
+     * <p>Further action documentation is available at: <a href="https://docs.zmenu.dev/configurations/actions">Action Documentation</a></p>
      *
-     * @param elements List of items from the configuration containing the entire configuration of an action.
-     * @param path     The path to or from the list of actions.
-     * @param file     The current configuration file.
-     * @return A list of {@link Action}s.
+     * @param elements The list of configuration items detailing an action's entire configuration.
+     * @param path     The path specifying the location of the action list.
+     * @param file     The configuration file in use.
+     * @return A list of {@link Action} objects derived from the configuration.
      */
     List<Action> loadActions(List<Map<String, Object>> elements, String path, File file);
 }

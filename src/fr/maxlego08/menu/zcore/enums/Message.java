@@ -37,11 +37,11 @@ public enum Message implements IMessage {
 	FORMAT_DAY("d"),
 	FORMAT_DAYS("days"),
 	
-	COMMAND_SYNTAXE_ERROR("§cYou must execute the command like this§7: §a%syntax%"),
+	COMMAND_SYNTAX_ERROR("§cYou must execute the command like this§7: §a%syntax%"),
 	COMMAND_NO_PERMISSION("§cYou do not have permission to run this command."),
 	COMMAND_NO_CONSOLE("§cOnly one player can execute this command."),
 	COMMAND_NO_ARG("§cImpossible to find the command with its arguments."),
-	COMMAND_SYNTAXE_HELP("§f%syntax% §7» §7%description%"),
+	COMMAND_SYNTAX_HELP("§f%syntax% §7» §7%description%"),
 	DOCUMENTATION_INFORMATION("§7Documentation§8: §fhttps://docs.zmenu.dev/"),
 	DOCUMENTATION_INFORMATION_LINK("§7Documentation§8: §f%link%"),
 

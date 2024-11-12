@@ -225,7 +225,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     }
 
     private void loadNewItemStacks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
-        menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 64));
+        menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 0));
         menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
         menuItemStack.setDamage(configuration.getInt(path + "damage", 0));
         menuItemStack.setRepairCost(configuration.getInt(path + "repair-cost", 0));

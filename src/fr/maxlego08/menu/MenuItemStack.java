@@ -374,20 +374,26 @@ public class MenuItemStack extends ZUtils {
     }
 
     private void buildNewItemStackAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
-        if (this.maxStackSize > 0) {
+        if (this.maxStackSize > 0 && this.maxStackSize != itemStack.getMaxStackSize()) {
             itemMeta.setMaxStackSize(this.maxStackSize);
         }
 
         if (itemMeta instanceof Damageable) {
             Damageable damageable = (Damageable) itemMeta;
 
-            if (this.maxDamage > 0) damageable.setMaxDamage(this.maxDamage);
-            if (this.damage != 0) damageable.setDamage(this.damage);
+            if (this.maxDamage > 0) {
+                damageable.setMaxDamage(this.maxDamage);
+            }
+            if (this.damage != 0) {
+                damageable.setDamage(this.damage);
+            }
 
-            if (this.unbreakableEnabled != null) damageable.setUnbreakable(this.unbreakableEnabled);
+            if (this.unbreakableEnabled != null) {
+                damageable.setUnbreakable(this.unbreakableEnabled);
 
-            if (this.unbreakableShowInTooltip != null && !this.unbreakableShowInTooltip) {
-                itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+                if (this.unbreakableShowInTooltip != null && !this.unbreakableShowInTooltip) {
+                    itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+                }
             }
         }
 
@@ -395,7 +401,9 @@ public class MenuItemStack extends ZUtils {
             ((Repairable) itemMeta).setRepairCost(this.repairCost);
         }
 
-        if (this.hideTooltip != null) itemMeta.setHideTooltip(this.hideTooltip);
+        if (this.hideTooltip != null) {
+            itemMeta.setHideTooltip(this.hideTooltip);
+        }
         if (this.hideAdditionalTooltip != null && this.hideAdditionalTooltip) {
             for (ItemFlag value : ItemFlag.values()) {
                 itemMeta.addItemFlags(value);
@@ -410,7 +418,9 @@ public class MenuItemStack extends ZUtils {
             itemMeta.setEnchantmentGlintOverride(this.enchantmentGlint);
         }
 
-        if (this.fireResistant != null) itemMeta.setFireResistant(this.fireResistant);
+        if (this.fireResistant != null) {
+            itemMeta.setFireResistant(this.fireResistant);
+        }
 
         if (this.attributeShowInTooltip != null && !this.attributeShowInTooltip) {
             itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

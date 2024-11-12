@@ -161,14 +161,14 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                 super.runAsync(this.plugin, () -> {
                     CommandType returnType = command.prePerform(this.plugin, sender, strings);
                     if (returnType == CommandType.SYNTAX_ERROR)
-                        message(sender, Message.COMMAND_SYNTAXE_ERROR, "%syntax%", command.getSyntax());
+                        message(sender, Message.COMMAND_SYNTAX_ERROR, "%syntax%", command.getSyntax());
                 });
                 return CommandType.DEFAULT;
             }
 
             CommandType returnType = command.prePerform(this.plugin, sender, strings);
             if (returnType == CommandType.SYNTAX_ERROR)
-                message(sender, Message.COMMAND_SYNTAXE_ERROR, "%syntax%", command.getSyntax());
+                message(sender, Message.COMMAND_SYNTAX_ERROR, "%syntax%", command.getSyntax());
             return returnType;
         }
         message(sender, Message.COMMAND_NO_PERMISSION);
@@ -191,7 +191,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         this.commands.forEach(command -> {
             if (isValid(command, commandString)
                     && (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-                message(sender, Message.COMMAND_SYNTAXE_HELP, "%syntax%", command.getSyntax(), "%description%",
+                message(sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%",
                         command.getDescription());
             }
         });

@@ -55,7 +55,11 @@ public class FoliaScheduler implements ZScheduler {
 
     @Override
     public @NotNull ZScheduler runTaskTimer(Location location, long delay, long period, Runnable task) {
-        this.task = serverImplementation.runAtLocationTimer(location, task, delay, period);
+        if (location == null) {
+            this.task = serverImplementation.runTimer(task, delay, period);
+        } else {
+            this.task = serverImplementation.runAtLocationTimer(location, task, delay, period);
+        }
         return this;
     }
 

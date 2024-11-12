@@ -46,6 +46,7 @@
 - Added API method ``ZButton#paginate``
 - Added action ``set permission``, allows to set a permission to a player with luckperms
 - Added aliases ``command`` and `commands` for console command action.
+- Fixed max-stack-size for itemstack with 1.21
 
 # 1.0.3.5
 
