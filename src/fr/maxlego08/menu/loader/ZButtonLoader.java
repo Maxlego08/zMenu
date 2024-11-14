@@ -113,10 +113,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
                             if (line != null) {
                                 if (value instanceof List<?> && line.contains("%" + key + "%")) {
-                                    String finalLine = line;
+                                    int index = line.indexOf("%" + key + "%");
+                                    String prefix = line.substring(0, index);
+                                    String finalLine = line.substring(index);
+                                    System.out.println(line + " - " + index + " - " + prefix + " - " + finalLine);
                                     ((List<?>) value).forEach(currentValue -> {
                                         String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
-                                        builder.append(currentElement);
+                                        builder.append(placeholders.parse(prefix, key, currentValue.toString())).append(currentElement);
                                         builder.append('\n');
                                     });
 

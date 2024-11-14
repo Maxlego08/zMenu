@@ -40,6 +40,8 @@
 
 # Unreleased
 
+- Added the possibility to include a prefix for lists when using a pattern. You need to add text in front of your placeholder
+
 # 1.0.3.6
 
 - Added the ability to use font ItemsAdder with format `:font-name:`
