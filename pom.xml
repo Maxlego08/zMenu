@@ -92,6 +92,10 @@
                                     <pattern>de.tr7zw.changeme.nbtapi</pattern>
                                     <shadedPattern>fr.maxlego08.menu.zcore.utils.nbtapi</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>fr.traqueur.currencies</pattern>
+                                    <shadedPattern>fr.maxlego08.menu.zcore.utils.currencies</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -282,10 +286,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
-            <scope>provided</scope>
+            <groupId>com.github.Traqueur-dev</groupId>
+            <artifactId>CurrenciesAPI</artifactId>
+            <version>7078a467bb</version>
         </dependency>
     </dependencies>
 </project>

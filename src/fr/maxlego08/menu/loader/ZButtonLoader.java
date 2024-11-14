@@ -116,7 +116,6 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                                     int index = line.indexOf("%" + key + "%");
                                     String prefix = line.substring(0, index);
                                     String finalLine = line.substring(index);
-                                    System.out.println(line + " - " + index + " - " + prefix + " - " + finalLine);
                                     ((List<?>) value).forEach(currentValue -> {
                                         String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
                                         builder.append(placeholders.parse(prefix, key, currentValue.toString())).append(currentElement);

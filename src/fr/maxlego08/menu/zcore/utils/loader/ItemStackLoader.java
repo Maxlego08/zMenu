@@ -4,8 +4,8 @@ import fr.maxlego08.menu.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.exceptions.ItemFlagException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
+import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
 import java.io.File;
@@ -133,7 +132,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         List<String> flags = configuration.getStringList(path + "flags");
 
         // Permet de charger les diffÃ©rents flags
-        if (flags.size() != 0 ) {
+        if (flags.size() != 0) {
 
             for (String flagString : flags) {
 

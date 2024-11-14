@@ -41,6 +41,8 @@
 # Unreleased
 
 - Added the possibility to include a prefix for lists when using a pattern. You need to add text in front of your placeholder
+- Modified the ``money`` permissible to support more economies using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
+- Modified the ``deposit`` and ``withdraw`` action to support more economies using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
 
 # 1.0.3.6
 

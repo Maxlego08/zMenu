@@ -14,20 +14,21 @@ import fr.maxlego08.menu.requirement.actions.BroadcastSoundAction;
 import fr.maxlego08.menu.requirement.actions.CloseAction;
 import fr.maxlego08.menu.requirement.actions.ConnectAction;
 import fr.maxlego08.menu.requirement.actions.ConsoleCommandAction;
+import fr.maxlego08.menu.requirement.actions.CurrencyDepositAction;
+import fr.maxlego08.menu.requirement.actions.CurrencyWithdrawAction;
 import fr.maxlego08.menu.requirement.actions.InventoryAction;
 import fr.maxlego08.menu.requirement.actions.MessageAction;
 import fr.maxlego08.menu.requirement.actions.PlayerCommandAction;
 import fr.maxlego08.menu.requirement.actions.RefreshAction;
 import fr.maxlego08.menu.requirement.actions.SoundAction;
-import fr.maxlego08.menu.requirement.actions.VaultDepositAction;
-import fr.maxlego08.menu.requirement.actions.VaultWithdrawAction;
+import fr.maxlego08.menu.requirement.permissible.ZCurrencyPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZItemPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZRegexPermissible;
-import fr.maxlego08.menu.requirement.permissible.ZVaultPermissible;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.traqueur.currencies.Currencies;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -63,8 +64,8 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         actionMap.put("[broadcastsound]", cmd -> new BroadcastSoundAction(getSoundOption(removePrefix(cmd, "[broadcastsound]"))));
         actionMap.put("[broadcastsoundworld]", cmd -> new BroadcastSoundAction(getSoundOption(removePrefix(cmd, "[broadcastsoundworld]"))));
         actionMap.put("[sound]", cmd -> new SoundAction(getSoundOption(removePrefix(cmd, "[sound]"))));
-        actionMap.put("[takemoney]", cmd -> new VaultWithdrawAction(Double.parseDouble(removePrefix(cmd, "[takemoney]"))));
-        actionMap.put("[givemoney]", cmd -> new VaultDepositAction(Double.parseDouble(removePrefix(cmd, "[givemoney]"))));
+        actionMap.put("[takemoney]", cmd -> new CurrencyWithdrawAction(removePrefix(cmd, "[takemoney]"), Currencies.VAULT, null));
+        actionMap.put("[givemoney]", cmd -> new CurrencyDepositAction(removePrefix(cmd, "[givemoney]"), Currencies.VAULT, null));
 
         for (String command : commands) {
             CommandDelayResult result = extractAndRemoveDelay(command);
@@ -204,8 +205,8 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
             case "has money":
             case "hasmoney":
             case "money": {
-                double amount = section.getDouble("amount");
-                return new ZVaultPermissible(denyActions, new ArrayList<>(), amount);
+                String amount = section.getString("amount");
+                return new ZCurrencyPermissible(denyActions, new ArrayList<>(), Currencies.VAULT, amount, null);
             }
 
             case "has item":
