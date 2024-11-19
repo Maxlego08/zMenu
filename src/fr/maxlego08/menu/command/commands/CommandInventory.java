@@ -25,8 +25,11 @@ public class CommandInventory extends VCommand {
     public CommandInventory(MenuPlugin plugin, Command command, boolean isSubCommands) {
         super(plugin);
         this.command = command;
+
         this.setPermission(command.getPermission());
+        this.setDenyMessage(command.getDenyMessage());
         this.setConsoleCanUse(false);
+
         if (isSubCommands) {
             this.addSubCommand(command.getCommand());
             this.addSubCommand(command.getAliases());

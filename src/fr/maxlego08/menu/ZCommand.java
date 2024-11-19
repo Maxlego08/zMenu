@@ -19,6 +19,7 @@ public class ZCommand implements Command {
     private final List<CommandArgument> arguments;
     private final List<Action> actions;
     private final List<Command> subCommands;
+    private final String denyMessage;
 
     private final String path;
     private final File file;
@@ -37,7 +38,7 @@ public class ZCommand implements Command {
      * @param file        File
      */
     public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
-                    List<CommandArgument> arguments, List<Action> actions, List<Command> subCommands, String path, File file) {
+                    List<CommandArgument> arguments, List<Action> actions, List<Command> subCommands, String denyMessage, String path, File file) {
         super();
         this.plugin = plugin;
         this.command = command;
@@ -47,6 +48,7 @@ public class ZCommand implements Command {
         this.arguments = arguments;
         this.actions = actions;
         this.subCommands = subCommands;
+        this.denyMessage = denyMessage;
         this.path = path;
         this.file = file;
     }
@@ -104,7 +106,7 @@ public class ZCommand implements Command {
 
     @Override
     public boolean hasArgument() {
-        return this.arguments.size() > 0;
+        return !this.arguments.isEmpty();
     }
 
     @Override
@@ -125,5 +127,10 @@ public class ZCommand implements Command {
     @Override
     public List<Command> getSubCommands() {
         return subCommands;
+    }
+
+    @Override
+    public String getDenyMessage() {
+        return this.denyMessage;
     }
 }

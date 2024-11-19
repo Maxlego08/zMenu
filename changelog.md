@@ -43,6 +43,7 @@
 - Added the possibility to include a prefix for lists when using a pattern. You need to add text in front of your placeholder
 - Modified the ``money`` permissible to support more economies using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
 - Modified the ``deposit`` and ``withdraw`` action to support more economies using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
+- Added ``deny-message`` for commands. Allows to send a custom error message if the player does not have permission.
 
 # 1.0.3.6
 

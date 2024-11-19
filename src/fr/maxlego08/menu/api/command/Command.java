@@ -81,7 +81,24 @@ public interface Command {
      */
     String getPath();
 
+    /**
+     * Gets the list of actions associated with the command.
+     *
+     * @return The list of actions associated with the command.
+     */
     List<Action> getActions();
 
+    /**
+     * Gets the list of sub-commands associated with the command.
+     *
+     * @return The list of sub-commands associated with the command.
+     */
     List<Command> getSubCommands();
+
+    /**
+     * Gets the message to display when the player does not have the required permission.
+     *
+     * @return The message to display when the player does not have the required permission.
+     */
+    String getDenyMessage();
 }
