@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 
-public class CurrencyDepositAction extends Action {
+public class CurrencyWithdrawAction extends Action {
 
     private final String amount;
     private final Currencies currencies;
     private final String economyName;
 
-    public CurrencyDepositAction(String amount, Currencies currencies, String economyName) {
+    public CurrencyWithdrawAction(String amount, Currencies currencies, String economyName) {
         this.amount = amount;
         this.currencies = currencies;
         this.economyName = economyName;
@@ -23,6 +23,6 @@ public class CurrencyDepositAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        this.currencies.deposit(player, new BigDecimal(papi(placeholders.parse(this.amount), player, false)), this.economyName == null ? "default" : this.economyName);
+        this.currencies.withdraw(player, new BigDecimal(papi(placeholders.parse(this.amount), player, false)), this.economyName == null ? currencies.name() : this.economyName);
     }
 }

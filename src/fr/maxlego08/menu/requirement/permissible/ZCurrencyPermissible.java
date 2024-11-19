@@ -39,7 +39,8 @@ public class ZCurrencyPermissible extends ZPermissible implements CurrencyPermis
     public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
         String result = papi(placeholders.parse(this.amount), player, false);
         BigDecimal bigDecimal = new BigDecimal(result);
-        return Currencies.VAULT.getBalance(player, this.economyName == null ? currencies.name() : this.economyName).compareTo(bigDecimal) >= 0;
+        BigDecimal amount = this.currencies.getBalance(player, this.economyName == null ? "default" : this.economyName);
+        return amount.compareTo(bigDecimal) >= 0;
     }
 
     @Override

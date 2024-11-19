@@ -23,6 +23,6 @@ public class CurrencyWithdrawAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        this.currencies.withdraw(player, new BigDecimal(papi(placeholders.parse(this.amount), player, false)), this.economyName == null ? currencies.name() : this.economyName);
+        this.currencies.withdraw(player, new BigDecimal(papi(placeholders.parse(this.amount), player, false)), this.economyName == null ? "default" : this.economyName);
     }
 }
