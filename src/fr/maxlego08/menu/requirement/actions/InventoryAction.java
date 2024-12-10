@@ -19,14 +19,19 @@ public class InventoryAction extends Action {
     private final InventoryManager inventoryManager;
     private final String inventory;
     private final String plugin;
-    private final int page;
+    private String stringPage;
+    private int intPage;
     private final InventoryArgument inventoryArgument;
 
-    public InventoryAction(InventoryManager inventoryManager, CommandManager commandManager, String inventory, String plugin, int page, List<String> arguments) {
+    public InventoryAction(InventoryManager inventoryManager, CommandManager commandManager, String inventory, String plugin, String page, List<String> arguments) {
         this.inventoryManager = inventoryManager;
         this.inventory = inventory;
         this.plugin = plugin;
-        this.page = page;
+        if (page.contains("%")) {
+            this.stringPage = page;
+        } else {
+            this.intPage = getInt(page);
+        }
         this.inventoryArgument = new InventoryArgument(commandManager, arguments);
     }
 
@@ -38,9 +43,19 @@ public class InventoryAction extends Action {
 
             Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.papi(placeholders.parse(this.inventory), player, false));
             if (optional.isPresent()) {
+                int page = this.stringPage == null
+                        ? this.intPage
+                        : getInt(this.papi(placeholders.parse(this.stringPage), player, false));
+
                 this.inventoryManager.openInventory(player, optional.get(), page);
             } else Logger.info("Unable to find the inventory " + inventory, Logger.LogType.WARNING);
         });
     }
-
+    private int getInt(String value){
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ignored) {
+            return 1;
+        }
+    }
 }

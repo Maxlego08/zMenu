@@ -57,8 +57,8 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         actionMap.put("[minibroadcast]", cmd -> new BroadcastAction(Collections.singletonList(removePrefix(cmd, "[minibroadcast]")), true));
         actionMap.put("[message]", cmd -> new MessageAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false));
         actionMap.put("[broadcast]", cmd -> new BroadcastAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false));
-        actionMap.put("[openguimenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openguimenu]"), "zMenu", 1, new ArrayList<>()));
-        actionMap.put("[openmenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openmenu]"), "zMenu", 1, new ArrayList<>()));
+        actionMap.put("[openguimenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openguimenu]"), "zMenu", "1", new ArrayList<>()));
+        actionMap.put("[openmenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openmenu]"), "zMenu", "1", new ArrayList<>()));
         actionMap.put("[connect]", cmd -> new ConnectAction(removePrefix(cmd, "[connect]"), plugin));
         actionMap.put("[refresh]", cmd -> new RefreshAction());
         actionMap.put("[broadcastsound]", cmd -> new BroadcastSoundAction(getSoundOption(removePrefix(cmd, "[broadcastsound]"))));

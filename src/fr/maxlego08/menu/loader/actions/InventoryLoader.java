@@ -27,7 +27,7 @@ public class InventoryLoader implements ActionLoader {
     public Action load(String path, TypedMapAccessor accessor, File file) {
         String inventory = accessor.getString("inventory");
         String plugin = accessor.getString("plugin");
-        int page = accessor.getInt("page", 1);
+        String page = accessor.getString("page");
         List<String> arguments = accessor.getStringList("arguments");
         return new InventoryAction(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), inventory, plugin, page, arguments);
     }
