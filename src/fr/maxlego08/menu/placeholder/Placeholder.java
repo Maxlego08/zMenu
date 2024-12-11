@@ -19,10 +19,12 @@ public interface Placeholder {
     List<String> setPlaceholders(OfflinePlayer player, List<String> list);
 
     class Api implements Placeholder {
+        private final Placeholder localPlaceholder;
 
         public Api() {
             PlaceholderExpansion expansion = new DistantPlaceholder(LocalPlaceholder.getInstance());
             expansion.register();
+            localPlaceholder = new Local();
         }
 
         @Override
@@ -32,7 +34,7 @@ public interface Placeholder {
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
-            return PlaceholderAPI.setPlaceholders(player, string);
+            return PlaceholderAPI.setPlaceholders(player, localPlaceholder.setPlaceholders(player, string));
         }
 
         @Override
