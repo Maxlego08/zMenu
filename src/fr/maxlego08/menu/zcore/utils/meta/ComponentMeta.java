@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,6 +40,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     private final Method loreMethod;
     private final Method nameMethod;
     private final Method inventoryMethod;
+    private final Method inventoryTypeMethod;
 
     public ComponentMeta() throws Exception {
         this.COLORS_MAPPINGS.put("0", "black");
@@ -70,6 +72,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         nameMethod.setAccessible(true);
         inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
         inventoryMethod.setAccessible(true);
+        inventoryTypeMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, InventoryType.class, Component.class);
+        inventoryTypeMethod.setAccessible(true);
     }
 
     private TextDecoration.State getState(String text) {
@@ -132,6 +136,17 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             exception.printStackTrace();
         }
         return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
+    }
+
+    @Override
+    public Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder) {
+        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
+        try {
+            return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryType, component);
+        } catch (IllegalAccessException | InvocationTargetException exception) {
+            exception.printStackTrace();
+        }
+        return Bukkit.createInventory(inventoryHolder, inventoryType, color(inventoryName));
     }
 
     private String colorMiniMessage(String message) {
