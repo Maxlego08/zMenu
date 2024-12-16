@@ -50,8 +50,8 @@ import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
-import fr.maxlego08.menu.loader.actions.VaultDepositLoader;
-import fr.maxlego08.menu.loader.actions.VaultWithdrawLoader;
+import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
+import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
@@ -60,7 +60,7 @@ import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.VaultPermissibleLoader;
+import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -300,7 +300,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
         }
         if (this.plugin.isEnable(Plugins.VAULT)) {
-            buttonManager.registerPermissible(new VaultPermissibleLoader(buttonManager));
+            buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
         }
 
         // Load actions
@@ -322,8 +322,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
         if (this.plugin.isEnable(Plugins.VAULT)) {
-            buttonManager.registerAction(new VaultWithdrawLoader());
-            buttonManager.registerAction(new VaultDepositLoader());
+            buttonManager.registerAction(new CurrencyWithdrawLoader());
+            buttonManager.registerAction(new CurrencyDepositLoader());
         }
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());

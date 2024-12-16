@@ -40,6 +40,7 @@ public class CommandLoader implements Loader<Command> {
         String command = configuration.getString(path + "command");
         String permission = configuration.getString(path + "permission");
         String inventory = configuration.getString(path + "inventory");
+        String denyMessage = configuration.getString(path + "deny-message", null);
         List<String> aliases = configuration.getStringList(path + "aliases");
 
         List<Action> commandActions = menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
@@ -89,7 +90,7 @@ public class CommandLoader implements Loader<Command> {
             }
         }
 
-        return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments, commandActions, subCommands, path, file);
+        return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments, commandActions, subCommands, denyMessage, path, file);
     }
 
     @Override
@@ -100,6 +101,7 @@ public class CommandLoader implements Loader<Command> {
         configuration.set(path + "inventory", object.getInventory());
         configuration.set(path + "aliases", object.getAliases());
         configuration.set(path + "arguments", object.getArguments());
+        configuration.set(path + "deny-message", object.getDenyMessage());
 
         try {
             configuration.save(file);

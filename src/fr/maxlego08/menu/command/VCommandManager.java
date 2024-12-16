@@ -87,14 +87,11 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
                 if ((args.length == 0 || command.isIgnoreParent()) && command.getParent() == null) {
                     CommandType type = processRequirements(command, sender, args);
-                    if (!type.equals(CommandType.CONTINUE))
-                        return true;
+                    if (!type.equals(CommandType.CONTINUE)) return true;
                 }
-            } else if (args.length >= 1 && command.getParent() != null
-                    && canExecute(args, cmd.getName().toLowerCase(), command)) {
+            } else if (args.length >= 1 && command.getParent() != null && canExecute(args, cmd.getName().toLowerCase(), command)) {
                 CommandType type = processRequirements(command, sender, args);
-                if (!type.equals(CommandType.CONTINUE))
-                    return true;
+                if (!type.equals(CommandType.CONTINUE)) return true;
             }
         }
         message(sender, Message.COMMAND_NO_ARG);
@@ -110,11 +107,9 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     private boolean canExecute(String[] args, String cmd, VCommand command) {
         for (int index = args.length - 1; index > -1; index--) {
             if (command.getSubCommands().contains(args[index].toLowerCase())) {
-                if (command.isIgnoreArgs()
-                        && (command.getParent() == null || canExecute(args, cmd, command.getParent(), index - 1)))
+                if (command.isIgnoreArgs() && (command.getParent() == null || canExecute(args, cmd, command.getParent(), index - 1)))
                     return true;
-                if (index < args.length - 1)
-                    return false;
+                if (index < args.length - 1) return false;
                 return canExecute(args, cmd, command.getParent(), index - 1);
             }
         }
@@ -122,21 +117,18 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     /**
-     * @param args
-     * @param cmd
-     * @param command
-     * @param index
-     * @return
+     * @param args    - All arguments
+     * @param cmd     - Current command
+     * @param command - Current {@link VCommand}
+     * @param index   - Index of the arguments
+     * @return - true if all subcommands are valid
      */
     private boolean canExecute(String[] args, String cmd, VCommand command, int index) {
-        if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase()))
-            return true;
-        else if (index < 0)
-            return false;
+        if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase())) return true;
+        else if (index < 0) return false;
         else if (command.getSubCommands().contains(args[index].toLowerCase()))
             return canExecute(args, cmd, command.getParent(), index - 1);
-        else
-            return false;
+        else return false;
     }
 
     /**
@@ -171,7 +163,12 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                 message(sender, Message.COMMAND_SYNTAX_ERROR, "%syntax%", command.getSyntax());
             return returnType;
         }
-        message(sender, Message.COMMAND_NO_PERMISSION);
+
+        if (command.getDenyMessage() != null) {
+            messageWO(sender, command.getDenyMessage());
+        } else {
+            message(sender, Message.COMMAND_NO_PERMISSION);
+        }
         return CommandType.DEFAULT;
     }
 
@@ -189,10 +186,8 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
      */
     public void sendHelp(String commandString, CommandSender sender) {
         this.commands.forEach(command -> {
-            if (isValid(command, commandString)
-                    && (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
-                message(sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%",
-                        command.getDescription());
+            if (isValid(command, commandString) && (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
+                message(sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%", command.getDescription());
             }
         });
     }
@@ -203,8 +198,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
      * @return
      */
     public boolean isValid(VCommand command, String commandString) {
-        return command.getParent() != null ? isValid(command.getParent(), commandString)
-                : command.getSubCommands().contains(commandString.toLowerCase());
+        return command.getParent() != null ? isValid(command.getParent(), commandString) : command.getSubCommands().contains(commandString.toLowerCase());
     }
 
     /**
@@ -214,8 +208,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     private void commandChecking() {
         this.commands.forEach(command -> {
             if (command.sameSubCommands()) {
-                Logger.info(command + " command to an argument similar to its parent command !",
-                        LogType.ERROR);
+                Logger.info(command + " command to an argument similar to its parent command !", LogType.ERROR);
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
         });
@@ -230,8 +223,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                 return processTab(sender, command, args);
             } else {
                 String[] newArgs = Arrays.copyOf(args, args.length - 1);
-                if (newArgs.length >= 1 && command.getParent() != null
-                        && canExecute(newArgs, cmd.getName().toLowerCase(), command)) {
+                if (newArgs.length >= 1 && command.getParent() != null && canExecute(newArgs, cmd.getName().toLowerCase(), command)) {
                     return processTab(sender, command, args);
                 }
             }
@@ -303,8 +295,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public void registerCommand(fr.maxlego08.menu.api.command.Command command) {
-        this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command, false),
-                command.getAliases());
+        this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command, false), command.getAliases());
     }
 
     public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {

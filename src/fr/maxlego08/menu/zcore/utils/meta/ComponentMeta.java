@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,6 +40,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     private final Method loreMethod;
     private final Method nameMethod;
     private final Method inventoryMethod;
+    private final Method inventoryTypeMethod;
 
     public ComponentMeta() throws Exception {
         this.COLORS_MAPPINGS.put("0", "black");
@@ -70,6 +72,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         nameMethod.setAccessible(true);
         inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
         inventoryMethod.setAccessible(true);
+        inventoryTypeMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, InventoryType.class, Component.class);
+        inventoryTypeMethod.setAccessible(true);
     }
 
     private TextDecoration.State getState(String text) {
@@ -120,19 +124,36 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
 
+    private Inventory createInventoryInternal(String inventoryName, InventoryHolder inventoryHolder, Object inventoryTypeOrSize) {
+        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
+        try {
+            if (inventoryTypeOrSize instanceof Integer) {
+                return (Inventory) inventoryMethod.invoke(null, inventoryHolder, inventoryTypeOrSize, component);
+            } else if (inventoryTypeOrSize instanceof InventoryType) {
+                return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryTypeOrSize, component);
+            }
+        } catch (IllegalAccessException | InvocationTargetException exception) {
+            exception.printStackTrace();
+        }
+        if (inventoryTypeOrSize instanceof Integer) {
+            return Bukkit.createInventory(inventoryHolder, (int) inventoryTypeOrSize, color(inventoryName));
+        } else {
+            return Bukkit.createInventory(inventoryHolder, (InventoryType) inventoryTypeOrSize, color(inventoryName));
+        }
     }
 
     @Override
     public Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder) {
-        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
-        try {
-            return (Inventory) inventoryMethod.invoke(null, inventoryHolder, size, component);
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            exception.printStackTrace();
-        }
-        return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
+        return createInventoryInternal(inventoryName, inventoryHolder, size);
     }
+
+    @Override
+    public Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder) {
+        return createInventoryInternal(inventoryName, inventoryHolder, inventoryType);
+    }
+
 
     private String colorMiniMessage(String message) {
 

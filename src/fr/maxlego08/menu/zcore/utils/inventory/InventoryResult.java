@@ -4,7 +4,6 @@ public enum InventoryResult {
 
 	SUCCESS,
 	SUCCESS_ASYNC,
-
 	ERROR,
 	CLOSE,
 	PERMISSION,

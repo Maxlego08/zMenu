@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
+import fr.maxlego08.menu.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
@@ -19,6 +20,7 @@ import fr.maxlego08.menu.zcore.utils.loader.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -45,10 +47,24 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         File file = (File) objects[0];
         String name = configuration.getString("name", configuration.getString("title"));
         name = name == null ? "" : name;
+        InventoryType inventoryType;
+        int size;
+        String nameType = configuration.getString("type","CHEST").toUpperCase();
+        try {
+            inventoryType = InventoryType.valueOf(nameType);
+            if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) {
+                throw new InventoryTypeException("Type Inventory " + nameType + " can't use for the moment for inventory " + file.getAbsolutePath());
+            }
+            size = inventoryType.getDefaultSize();
+        } catch (IllegalArgumentException exception) {
+            throw new InventoryTypeException("Type Inventory " + nameType + " is not valid for inventory " + file.getAbsolutePath());
+        }
 
-        int size = configuration.getInt("size", 54);
-        if (size % 9 != 0) {
-            throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
+        if (inventoryType == InventoryType.CHEST){
+            size = configuration.getInt("size", 54);
+            if (size % 9 != 0) {
+                throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
+            }
         }
 
         Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
@@ -120,6 +136,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
         }
 
+        inventory.setType(inventoryType);
         inventory.setFillItemStack(itemStack);
         inventory.setUpdateInterval(configuration.getInt(path + "updateInterval", 1000));
         inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));

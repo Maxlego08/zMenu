@@ -35,6 +35,7 @@ public abstract class VCommand extends Arguments {
      * execute the command
      */
     private String permission;
+    private String denyMessage;
     /**
      * Are all sub commands used
      */
@@ -582,4 +583,11 @@ public abstract class VCommand extends Arguments {
         return optional;
     }
 
+    public void setDenyMessage(String denyMessage) {
+        this.denyMessage = denyMessage;
+    }
+
+    public String getDenyMessage() {
+        return denyMessage;
+    }
 }

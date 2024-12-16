@@ -19,7 +19,7 @@ public enum Plugins {
 
 	JOBS("Jobs"),
 	LUCKPERMS("LuckPerms"),
-	;
+    NEXO("Nexo");
 
 	private final String name;
 
