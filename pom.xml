@@ -274,6 +274,13 @@
             <systemPath>${basedir}/libs/zItems-1.0.0.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>nexo</groupId>
+            <artifactId>nexo</artifactId>
+            <version>0.5.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/nexo-0.5.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.github.Maxlego08</groupId>
             <artifactId>zHead</artifactId>
             <version>1.1</version>
