@@ -7,6 +7,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/*
+* If you have problems compiling this class, delete it there; At the moment, it is impossible to access the nexo API.
+* */
 public class NexoLoader implements MaterialLoader {
 
     @Override
