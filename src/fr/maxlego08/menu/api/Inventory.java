@@ -196,5 +196,10 @@ public interface Inventory {
      */
     OpenWithItem getOpenWithItem();
 
-    Map<String, String> getTranslatedName();
+    /**
+     * Returns the translated name of the inventory.
+     *
+     * @return The translated name, a map of locale to translated name.
+     */
+    Map<String, String> getTranslatedNames();
 }

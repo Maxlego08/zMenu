@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.inventory;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,15 +17,16 @@ public class Pagination<T> {
      * @param page - Current pagination page
      */
     public List<T> paginateReverse(List<T> list, int inventorySize, int page) {
+        if (page <= 0) page = 1;
+
+        int idStart = Math.max(0, list.size() - (page - 1) * inventorySize - 1);
+        int idEnd = Math.max(-1, idStart - inventorySize);
+
         List<T> currentList = new ArrayList<>();
-        if (page == 0)
-            page = 1;
-        int idStart = list.size() - 1 - ((page - 1) * inventorySize);
-        int idEnd = idStart - inventorySize;
-        if (idEnd < list.size() - inventorySize && list.size() < inventorySize * page)
-            idEnd = -1;
-        for (int a = idStart; a != idEnd; a--)
-            currentList.add(list.get(a));
+        for (int i = idStart; i > idEnd; i--) {
+            currentList.add(list.get(i));
+        }
+
         return currentList;
     }
 
@@ -37,16 +39,12 @@ public class Pagination<T> {
      * @param page - Current pagination page
      */
     public List<T> paginate(List<T> list, int size, int page) {
-        List<T> currentList = new ArrayList<>();
-        if (page <= 0)
-            page = 1;
-        int idStart = ((page - 1)) * size;
-        int idEnd = idStart + size;
-        if (idEnd > list.size())
-            idEnd = list.size();
-        for (int a = idStart; a != idEnd; a++)
-            currentList.add(list.get(a));
-        return currentList;
+        if (page <= 0) page = 1;
+
+        int idStart = (page - 1) * size;
+        int idEnd = Math.min(list.size(), idStart + size);
+
+        return new ArrayList<>(list.subList(idStart, idEnd));
     }
 
     /**
@@ -57,7 +55,7 @@ public class Pagination<T> {
      * @param page current page
      */
     public List<T> paginateReverse(Map<?, T> map, int size, int page) {
-        return paginateReverse(new ArrayList<>(map.values()), size, page);
+        return paginateReverse(new ArrayList<>(new LinkedHashMap<>(map).values()), size, page);
     }
 
     /**
@@ -68,7 +66,7 @@ public class Pagination<T> {
      * @param page current page
      */
     public List<T> paginate(Map<?, T> map, int inventorySize, int page) {
-        return paginate(new ArrayList<>(map.values()), inventorySize, page);
+        return paginate(new ArrayList<>(new LinkedHashMap<>(map).values()), inventorySize, page);
     }
 
 }

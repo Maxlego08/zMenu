@@ -56,7 +56,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 throw new InventoryTypeException("Type Inventory " + nameType + " can't use for the moment for inventory " + file.getAbsolutePath());
             }
             size = inventoryType.getDefaultSize();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException exception) {
             throw new InventoryTypeException("Type Inventory " + nameType + " is not valid for inventory " + file.getAbsolutePath());
         }
 

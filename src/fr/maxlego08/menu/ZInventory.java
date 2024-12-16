@@ -263,8 +263,8 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public Map<String, String> getTranslatedName() {
-        return this.translatedNames;
+    public Map<String, String> getTranslatedNames() {
+        return translatedNames;
     }
 
     public void setClearInventory(boolean clearInventory) {

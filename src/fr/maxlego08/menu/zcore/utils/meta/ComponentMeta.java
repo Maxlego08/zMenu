@@ -124,30 +124,36 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
 
+    private Inventory createInventoryInternal(String inventoryName, InventoryHolder inventoryHolder, Object inventoryTypeOrSize) {
+        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
+        try {
+            if (inventoryTypeOrSize instanceof Integer) {
+                return (Inventory) inventoryMethod.invoke(null, inventoryHolder, inventoryTypeOrSize, component);
+            } else if (inventoryTypeOrSize instanceof InventoryType) {
+                return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryTypeOrSize, component);
+            }
+        } catch (IllegalAccessException | InvocationTargetException exception) {
+            exception.printStackTrace();
+        }
+        if (inventoryTypeOrSize instanceof Integer) {
+            return Bukkit.createInventory(inventoryHolder, (int) inventoryTypeOrSize, color(inventoryName));
+        } else {
+            return Bukkit.createInventory(inventoryHolder, (InventoryType) inventoryTypeOrSize, color(inventoryName));
+        }
     }
 
     @Override
     public Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder) {
-        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
-        try {
-            return (Inventory) inventoryMethod.invoke(null, inventoryHolder, size, component);
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            exception.printStackTrace();
-        }
-        return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
+        return createInventoryInternal(inventoryName, inventoryHolder, size);
     }
 
     @Override
     public Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder) {
-        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
-        try {
-            return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryType, component);
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            exception.printStackTrace();
-        }
-        return Bukkit.createInventory(inventoryHolder, inventoryType, color(inventoryName));
+        return createInventoryInternal(inventoryName, inventoryHolder, inventoryType);
     }
+
 
     private String colorMiniMessage(String message) {
 

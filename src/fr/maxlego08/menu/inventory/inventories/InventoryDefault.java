@@ -51,7 +51,7 @@ public class InventoryDefault extends VInventory {
 
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
-        this.maxPage = this.inventory.getMaxPage(patterns, player, args);
+        this.maxPage = Math.max(1, this.inventory.getMaxPage(patterns, player, args));
 
         this.buttons = new ArrayList<>();
         this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).collect(Collectors.toList()));
