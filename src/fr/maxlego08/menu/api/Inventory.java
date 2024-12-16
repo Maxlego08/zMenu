@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -44,6 +45,13 @@ public interface Inventory {
      * @return The name of the inventory, translated to the player's language.
      */
     String getName(Player player);
+
+    /**
+     * Returns the type of the inventory.
+     *
+     * @return The type of the inventory.
+     */
+    InventoryType getType();
 
     /**
      * Returns the name of the file associated with the inventory.

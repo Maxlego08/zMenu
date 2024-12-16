@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,6 +39,11 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     @Override
     public Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder) {
         return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
+    }
+
+    @Override
+    public Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder) {
+        return Bukkit.createInventory(inventoryHolder, inventoryType, color(inventoryName));
     }
 
     @Override

@@ -13,6 +13,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 
@@ -42,6 +43,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private boolean clearInventory;
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
+    private InventoryType type;
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -73,6 +75,15 @@ public class ZInventory extends ZUtils implements Inventory {
     public String getName(Player player) {
         String locale = findPlayerLocale(player);
         return locale == null ? this.name : this.translatedNames.getOrDefault(locale, this.name);
+    }
+
+    public void setType(InventoryType type){
+        this.type = type;
+    }
+
+    @Override
+    public InventoryType getType(){
+        return type;
     }
 
     @Override

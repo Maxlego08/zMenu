@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.utils;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -58,6 +59,15 @@ public interface MetaUpdater extends MessageSender {
      * @return Inventory with colored name
      */
     Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder);
+    /**
+     * Create an {@link Inventory}
+     *
+     * @param inventoryName   Inventory Name.
+     * @param inventoryHolder Inventory Holder.
+     * @param inventoryType Inventory Type.
+     * @return Inventory with colored name
+     */
+    Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder);
 
     void openBook(Player player, String title, String author, List<String> lines);
 }

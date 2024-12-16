@@ -5,6 +5,7 @@ import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -55,8 +56,13 @@ public abstract class PaginateInventory<T> extends VInventory {
         if (collections == null)
             throw new InventoryOpenException("Collection is null");
 
-        super.createInventory(inventoryName.replace("%mp%", String.valueOf(getMaxPage(collections))).replace("%p%",
+        if (this.inventory.getType() == InventoryType.CHEST){
+            super.createInventory(inventoryName.replace("%mp%", String.valueOf(getMaxPage(collections))).replace("%p%",
                 String.valueOf(page)), inventorySize);
+        } else {
+            super.createInventory(inventoryName.replace("%mp%", String.valueOf(getMaxPage(collections))).replace("%p%",
+                    String.valueOf(page)), this.inventory.getType());
+        }
 
         Pagination<T> pagination = new Pagination<>();
         AtomicInteger slot = new AtomicInteger(defaultSlot);

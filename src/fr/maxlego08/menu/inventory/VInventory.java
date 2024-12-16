@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -58,10 +59,17 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         this.guiName = name;
         this.inventory = Bukkit.createInventory(this, size, name);
     }
-
+    protected void createInventory(String name, InventoryType inventoryType) {
+        this.guiName = name;
+        this.inventory = Bukkit.createInventory(this, inventoryType, name);
+    }
     protected void createMetaInventory(String name, int size) {
         this.guiName = name;
         this.inventory = Meta.meta.createInventory(name, size, this);
+    }
+    protected void createMetaInventory(String name, InventoryType inventoryType) {
+        this.guiName = name;
+        this.inventory = Meta.meta.createInventory(name, inventoryType, this);
     }
 
     private void createDefaultInventory() {
