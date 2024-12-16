@@ -40,6 +40,8 @@
 
 # Unreleased
 
+# 1.0.3.7
+
 - Added inventory type [#97](https://github.com/Maxlego08/zMenu/pull/97)
 - Added placeholder priority [#96](https://github.com/Maxlego08/zMenu/pull/96)
 - Added the possibility to include a prefix for lists when using a pattern. You need to add text in front of your placeholder
