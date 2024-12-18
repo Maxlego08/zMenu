@@ -40,6 +40,8 @@
 
 # Unreleased
 
+- Fixed custom head with url
+
 # 1.0.3.7
 
 - Added inventory type [#97](https://github.com/Maxlego08/zMenu/pull/97)

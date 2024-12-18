@@ -1050,10 +1050,14 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     public URL getUrlFromBase64(String base64) throws MalformedURLException {
-        String decoded = new String(Base64.getDecoder().decode(base64));
-        // We simply remove the "beginning" and "ending" part of the JSON, so we're left with only the URL. You could use a proper
-        // JSON parser for this, but that's not worth it. The String will always start exactly with this stuff anyway
-        return new URL(decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length()));
+        String decoded;
+        try {
+            decoded = new String(Base64.getDecoder().decode(base64));
+        } catch (IllegalArgumentException exception) {
+            // If the base64 is not valid, try to assume it's a simple URL
+            decoded = base64;
+        }
+        return new URL(decoded);
     }
 
     protected void applyTexture(ItemStack itemStack, String url) {
