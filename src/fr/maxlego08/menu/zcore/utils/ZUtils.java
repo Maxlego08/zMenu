@@ -1029,7 +1029,10 @@ public abstract class ZUtils extends MessageUtils {
     private void applyTextureUrl(ItemStack itemStack, String url) {
         SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
         if (headMeta != null) {
-            headMeta.setOwnerProfile((PlayerProfile) cache.get(url, () -> getProfile(url)));
+            Object result = cache.get(url, () -> getProfile(url));
+            if (result instanceof PlayerProfile) {
+                headMeta.setOwnerProfile((PlayerProfile) result);
+            }
         }
         itemStack.setItemMeta(headMeta);
     }
@@ -1042,7 +1045,8 @@ public abstract class ZUtils extends MessageUtils {
             // urlObject = new URL(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
             urlObject = getUrlFromBase64(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
         } catch (MalformedURLException exception) {
-            throw new RuntimeException("Invalid URL", exception);
+            exception.printStackTrace();
+            return null;
         }
         textures.setSkin(urlObject); // Set the skin of the player profile to the URL
         profile.setTextures(textures); // Set the textures back to the profile
@@ -1053,6 +1057,7 @@ public abstract class ZUtils extends MessageUtils {
         String decoded;
         try {
             decoded = new String(Base64.getDecoder().decode(base64));
+            decoded = decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length());
         } catch (IllegalArgumentException exception) {
             // If the base64 is not valid, try to assume it's a simple URL
             decoded = base64;

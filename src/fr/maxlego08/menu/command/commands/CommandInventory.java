@@ -35,10 +35,10 @@ public class CommandInventory extends VCommand {
             this.addSubCommand(command.getAliases());
         }
 
+
         if (command.hasArgument()) {
 
             this.setExtendedArgs(true);
-
             for (CommandArgument argument : command.getArguments()) {
                 if (argument.isRequired()) {
                     this.addRequireArg(argument.getArgument(), (a, b) -> argument.getAutoCompletion());
