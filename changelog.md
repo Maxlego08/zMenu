@@ -41,6 +41,7 @@
 # Unreleased
 
 - Fixed custom head with url
+- Fixed inventories that do not have a default type
 
 # 1.0.3.7
 

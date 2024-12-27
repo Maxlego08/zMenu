@@ -43,7 +43,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private boolean clearInventory;
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
-    private InventoryType type;
+    private InventoryType type = InventoryType.CHEST;
 
     /**
      * @param plugin   The plugin where the inventory comes from
