@@ -42,6 +42,7 @@
 
 - Fixed custom head with url
 - Fixed inventories that do not have a default type
+- Added sound category
 
 # 1.0.3.7
 

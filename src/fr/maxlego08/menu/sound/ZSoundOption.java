@@ -3,6 +3,7 @@ package fr.maxlego08.menu.sound;
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import org.bukkit.Location;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -57,7 +58,9 @@ public class ZSoundOption implements SoundOption {
         if (this.soundAsString != null && this.isCustom()) {
             Location location = entity.getLocation();
             if (entity instanceof Player) {
-                ((Player) entity).playSound(location, soundAsString, this.volume, this.pitch);
+                Player player = (Player) entity;
+                SoundCategory soundCategory = SoundCategory.valueOf(this.category.name());
+                player.playSound(location, soundAsString, soundCategory, this.volume, this.pitch);
             } else location.getWorld().playSound(location, soundAsString, this.volume, this.pitch);
         }
 
