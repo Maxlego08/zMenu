@@ -9,7 +9,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <xseries.version>13.0.0</xseries.version>
-        <folialib.version>0.3.1</folialib.version>
+        <folialib.version>0.4.3</folialib.version>
         <item-nbt-api.version>2.12.3</item-nbt-api.version>
     </properties>
     <build>
@@ -208,7 +208,7 @@
             <version>${xseries.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.tcoded</groupId>
+            <groupId>com.github.technicallycoded</groupId>
             <artifactId>FoliaLib</artifactId>
             <version>${folialib.version}</version>
             <scope>compile</scope>

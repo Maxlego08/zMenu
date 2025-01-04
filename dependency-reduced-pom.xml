@@ -273,7 +273,7 @@
   <properties>
     <xseries.version>13.0.0</xseries.version>
     <maven.compiler.source>8</maven.compiler.source>
-    <folialib.version>0.3.1</folialib.version>
+    <folialib.version>0.4.3</folialib.version>
     <maven.compiler.target>8</maven.compiler.target>
     <item-nbt-api.version>2.12.3</item-nbt-api.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

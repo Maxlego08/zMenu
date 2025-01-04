@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.api.scheduler;
 
 import org.bukkit.Location;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Timer;
@@ -23,7 +22,7 @@ public interface ZScheduler {
      * @param task     The task to run.
      * @return The created {@link ZScheduler}.
      */
-    @NotNull ZScheduler runTask(@Nullable Location location, Runnable task);
+    ZScheduler runTask(@Nullable Location location, Runnable task);
 
     /**
      * Runs the task asynchronously.
@@ -31,7 +30,7 @@ public interface ZScheduler {
      * @param task The task to run.
      * @return The created {@link ZScheduler}.
      */
-    @NotNull ZScheduler runTaskAsynchronously(Runnable task);
+    ZScheduler runTaskAsynchronously(Runnable task);
 
     /**
      * Runs the task after a specified number of ticks.
@@ -41,7 +40,7 @@ public interface ZScheduler {
      * @param delay    The number of ticks to wait.
      * @return The created {@link ZScheduler}.
      */
-    @NotNull ZScheduler runTaskLater(@Nullable Location location, long delay, Runnable task);
+    ZScheduler runTaskLater(@Nullable Location location, long delay, Runnable task);
 
     /**
      * Runs the task asynchronously after a specified number of ticks.
@@ -50,7 +49,7 @@ public interface ZScheduler {
      * @param delay The number of ticks to wait.
      * @return The created {@link ZScheduler}.
      */
-    @NotNull ZScheduler runTaskLaterAsynchronously(long delay, Runnable task);
+    ZScheduler runTaskLaterAsynchronously(long delay, Runnable task);
 
     /**
      * Runs the task repeatedly on a timer.
@@ -61,7 +60,7 @@ public interface ZScheduler {
      * @param period   The ticks elapsed before the task is run again.
      * @return The created {@link ZScheduler}.
      */
-    @NotNull ZScheduler runTaskTimer(@Nullable Location location, long delay, long period, Runnable task);
+    ZScheduler runTaskTimer(@Nullable Location location, long delay, long period, Runnable task);
 
     /**
      * Runs the task repeatedly on a timer asynchronously.
@@ -71,7 +70,7 @@ public interface ZScheduler {
      * @param period The ticks elapsed before the task is run again.
      * @return The created {@link ZScheduler}.
      */
-    @NotNull ZScheduler runTaskTimerAsynchronously(long delay, long period, Runnable task);
+    ZScheduler runTaskTimerAsynchronously(long delay, long period, Runnable task);
 
     /**
      * Cancels the task.

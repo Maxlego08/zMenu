@@ -9,7 +9,6 @@ import org.bukkit.potion.PotionBrewer;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -38,7 +37,7 @@ public class Potion {
      *
      * @param type The potion type
      */
-    public Potion(@NotNull PotionType type) {
+    public Potion(PotionType type) {
         this.type = type;
     }
 
@@ -48,7 +47,7 @@ public class Potion {
      * @param type  The type of potion.
      * @param level The potion's level.
      */
-    public Potion(@NotNull PotionType type, int level) {
+    public Potion(PotionType type, int level) {
         this(type);
         this.level = level;
     }
@@ -62,7 +61,7 @@ public class Potion {
      *               {@link #Potion(PotionType)} with {@link #splash()}.
      */
 
-    public Potion(@NotNull PotionType type, int level, boolean splash) {
+    public Potion(PotionType type, int level, boolean splash) {
         this(type, level);
         this.splash = splash;
     }
@@ -78,7 +77,7 @@ public class Potion {
      *                 possibly {@link #splash()}.
      */
 
-    public Potion(@NotNull PotionType type, int level, boolean splash, boolean extended) {
+    public Potion(PotionType type, int level, boolean splash, boolean extended) {
         this(type, level, splash);
         this.extended = extended;
     }
@@ -89,7 +88,7 @@ public class Potion {
      * @param damage the damage value
      * @return the produced potion
      */
-    @NotNull
+
     public static Potion fromDamage(int damage) {
         PotionType type;
         switch (damage & POTION_BIT) {
@@ -160,7 +159,7 @@ public class Potion {
      *
      * @return An instance of PotionBrewer
      */
-    @NotNull
+
     public static PotionBrewer getBrewer() {
         return brewer;
     }
@@ -171,7 +170,7 @@ public class Potion {
      *
      * @param other The new PotionBrewer
      */
-    public static void setPotionBrewer(@NotNull PotionBrewer other) {
+    public static void setPotionBrewer(PotionBrewer other) {
         if (brewer != null)
             throw new IllegalArgumentException("brewer can only be set internally");
         brewer = other;
@@ -182,7 +181,7 @@ public class Potion {
      *
      * @return The potion.
      */
-    @NotNull
+
     public Potion splash() {
         setSplash(true);
         return this;
@@ -193,7 +192,7 @@ public class Potion {
      *
      * @return The potion.
      */
-    @NotNull
+
     public Potion extend() {
         setHasExtendedDuration(true);
         return this;
@@ -205,7 +204,7 @@ public class Potion {
      *
      * @param to The itemstack to apply to
      */
-    public void apply(@NotNull ItemStack to) {
+    public void apply(ItemStack to) {
         PotionMeta meta = (PotionMeta) to.getItemMeta();
         meta.setBasePotionData(new PotionData(type, extended, level == 2));
         to.setItemMeta(meta);
@@ -218,7 +217,7 @@ public class Potion {
      * @param to The entity to apply the effects to
      * @see LivingEntity#addPotionEffects(Collection)
      */
-    public void apply(@NotNull LivingEntity to) {
+    public void apply(LivingEntity to) {
         to.addPotionEffects(getEffects());
     }
 
@@ -242,7 +241,7 @@ public class Potion {
      * @see PotionBrewer#getEffectsFromDamage(int)
      * @see Potion#toDamageValue()
      */
-    @NotNull
+
     public Collection<PotionEffect> getEffects() {
         return getBrewer().getEffects(type, level == 2, extended);
     }
@@ -270,7 +269,7 @@ public class Potion {
      *
      * @return The type of this potion
      */
-    @NotNull
+
     public PotionType getType() {
         return type;
     }
@@ -280,7 +279,7 @@ public class Potion {
      *
      * @param type The new type of this potion
      */
-    public void setType(@NotNull PotionType type) {
+    public void setType(PotionType type) {
         this.type = type;
     }
 
@@ -289,7 +288,7 @@ public class Potion {
      *
      * @return The color of this potion
      */
-    public Color getColor(){
+    public Color getColor() {
         return color;
     }
 
@@ -368,7 +367,7 @@ public class Potion {
      * @param amount The amount of the ItemStack
      * @return The created ItemStack
      */
-    @NotNull
+
     public ItemStack toItemStack(int amount) {
         Material material;
         if (isSplash()) {

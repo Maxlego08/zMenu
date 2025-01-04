@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -39,7 +38,6 @@ public class Banner {
         this.patterns = patterns;
     }
 
-    @NotNull
     public ItemStack toItemStack(int amount){
         Material material = Material.getMaterial(baseColor.toString()+"_BANNER");
         assert material != null;

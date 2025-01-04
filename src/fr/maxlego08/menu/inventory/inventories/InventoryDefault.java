@@ -15,12 +15,20 @@ import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 /**
@@ -271,7 +279,7 @@ public class InventoryDefault extends VInventory {
     /**
      * @return the inventory
      */
-    public @NotNull Inventory getMenuInventory() {
+    public Inventory getMenuInventory() {
         return inventory;
     }
 
