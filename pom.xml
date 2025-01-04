@@ -8,7 +8,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <xseries.version>9.9.0</xseries.version>
+        <xseries.version>13.0.0</xseries.version>
         <folialib.version>0.3.1</folialib.version>
         <item-nbt-api.version>2.12.3</item-nbt-api.version>
     </properties>
@@ -55,6 +55,10 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>com/cryptomorin/xseries/profiles/**</exclude>
+                                        <exclude>com/cryptomorin/xseries/profiles/*/*</exclude>
+                                        <exclude>com/cryptomorin/xseries/reflection/**</exclude>
+                                        <exclude>com/cryptomorin/xseries/reflection/*/*</exclude>
                                         <exclude>com/cryptomorin/xseries/messages/*</exclude>
                                         <exclude>com/cryptomorin/xseries/particles/*</exclude>
                                         <exclude>com/cryptomorin/xseries/XBiome*</exclude>
@@ -71,6 +75,7 @@
                                         <exclude>com/cryptomorin/xseries/XEnchantment*</exclude>
                                         <exclude>com/cryptomorin/xseries/SkullUtils*</exclude>
                                         <exclude>com/cryptomorin/xseries/ReflectionUtils*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XWorldBorder*</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

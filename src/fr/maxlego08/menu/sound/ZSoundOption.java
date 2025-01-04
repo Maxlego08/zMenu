@@ -9,20 +9,21 @@ import org.bukkit.entity.Player;
 public class ZSoundOption implements SoundOption {
 
     private final XSound sound;
+    private final XSound.Category category;
     private final String soundAsString;
     private final float pitch;
     private final float volume;
     private final boolean isCustom;
 
-    public ZSoundOption(XSound sound, String soundAsString, float pitch, float volume, boolean isCustom) {
+    public ZSoundOption(XSound sound, XSound.Category category, String soundAsString, float pitch, float volume, boolean isCustom) {
         super();
         this.sound = sound;
+        this.category = category;
         this.soundAsString = soundAsString;
         this.pitch = pitch;
         this.volume = volume;
         this.isCustom = isCustom;
     }
-
 
     /**
      * @return the sound
@@ -61,7 +62,17 @@ public class ZSoundOption implements SoundOption {
         }
 
         if (this.sound != null) {
-            this.sound.play(entity, this.volume, this.pitch);
+            if (entity instanceof Player) {
+                this.sound.record()
+                        .withVolume(volume)
+                        .withPitch(pitch)
+                        .inCategory(category)
+                        .soundPlayer()
+                        .forPlayers((Player) entity)
+                        .play();
+            } else {
+                this.sound.play(entity, this.volume, this.pitch);
+            }
         }
     }
 
