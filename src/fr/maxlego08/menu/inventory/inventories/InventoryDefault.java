@@ -182,7 +182,10 @@ public class InventoryDefault extends VInventory {
 
         } else {
 
-            Runnable runnable = () -> this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
+            Runnable runnable = () -> {
+                int slot = button.getRealSlot(button.isPlayerInventory() ? 36 : this.inventory.size(), this.page);
+                this.displayFinalButton(button, slot);
+            };
 
             if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
             else runnable.run();
@@ -202,7 +205,8 @@ public class InventoryDefault extends VInventory {
                 continue;
             }
 
-            if (slot >= this.inventory.size()) {
+            int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
+            if (slot >= maxSlotSize) {
                 Logger.info("slot is out of range ! (" + slot + ") Button: " + button.getName() + " in inventory " + this.inventory.getFileName(), Logger.LogType.ERROR);
                 continue;
             }
