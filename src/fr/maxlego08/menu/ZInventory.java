@@ -161,15 +161,9 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public InventoryResult openInventory(Player player, InventoryDefault inventoryDefault) {
 
-        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
+        if (this.openRequirement != null && !this.openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
             return InventoryResult.PERMISSION;
         }
-
-        return InventoryResult.SUCCESS;
-    }
-
-    @Override
-    public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
 
         org.bukkit.inventory.Inventory topInventory = CompatibilityUtil.getTopInventory(player);
         InventoryHolder holder = topInventory.getHolder();
@@ -188,6 +182,13 @@ public class ZInventory extends ZUtils implements Inventory {
                 }
             }
         }
+
+        return InventoryResult.SUCCESS;
+    }
+
+    @Override
+    public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
+
     }
 
     @Override

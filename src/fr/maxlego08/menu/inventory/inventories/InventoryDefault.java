@@ -132,7 +132,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display a button
+     * Allows displaying a button
      *
      * @param button The button
      */
@@ -207,7 +207,7 @@ public class InventoryDefault extends VInventory {
                 continue;
             }
 
-            ItemButton itemButton = this.addItem(slot, itemStack);
+            ItemButton itemButton = this.addItem(button.isPlayerInventory(), slot, itemStack);
             if (button.isClickable()) {
                 itemButton.setClick(event -> {
 

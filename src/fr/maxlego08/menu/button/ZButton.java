@@ -56,6 +56,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private List<ButtonOption> options = new ArrayList<>();
     private RefreshRequirement refreshRequirement;
     private int priority; // only use for convert DeluxeMenus config to zmenu object
+    private boolean isInPlayerInventory;
 
     @Override
     public String getName() {
@@ -467,5 +468,15 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
             T element = elements.get(i);
             consumer.accept(slot, element);
         }
+    }
+
+    @Override
+    public boolean isPlayerInventory() {
+        return this.isInPlayerInventory;
+    }
+
+    @Override
+    public void setPlayerInventory(boolean inPlayerInventory) {
+        isInPlayerInventory = inPlayerInventory;
     }
 }
