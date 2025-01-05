@@ -120,17 +120,6 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
 
     /**
      * Called when the player opens the inventory.
-     * @deprecated Use onInventoryOpen(Player, InventoryDefault, Placeholders)
-     * @since 1.0.3.4
-     *
-     * @param player    The player.
-     * @param inventory The inventory.
-     */
-    @Deprecated
-    void onInventoryOpen(Player player, InventoryDefault inventory);
-
-    /**
-     * Called when the player opens the inventory.
      *
      * @param player    The player.
      * @param inventory The inventory.
@@ -147,7 +136,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     void onInventoryClose(Player player, InventoryDefault inventory);
 
     /**
-     * Allows to get the real slot of the button.
+     * Allows getting the real slot of the button.
      *
      * @param inventorySize The size of the inventory.
      * @param page          The current page.

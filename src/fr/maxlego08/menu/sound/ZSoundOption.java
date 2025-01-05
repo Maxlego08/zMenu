@@ -16,10 +16,16 @@ public class ZSoundOption implements SoundOption {
     private final float volume;
     private final boolean isCustom;
 
-    public ZSoundOption(XSound sound, XSound.Category category, String soundAsString, float pitch, float volume, boolean isCustom) {
+    public ZSoundOption(XSound sound, String categoryName, String soundAsString, float pitch, float volume, boolean isCustom) {
         super();
+        XSound.Category localCategory;
         this.sound = sound;
-        this.category = category;
+        try {
+            localCategory = XSound.Category.valueOf(categoryName.toUpperCase());
+        } catch (Exception e) {
+            localCategory = XSound.Category.MASTER;
+        }
+        this.category = localCategory;
         this.soundAsString = soundAsString;
         this.pitch = pitch;
         this.volume = volume;

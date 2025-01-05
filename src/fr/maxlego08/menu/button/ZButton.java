@@ -37,7 +37,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private MenuPlugin plugin;
     private String buttonName;
     private MenuItemStack itemStack;
-    private int slot = 0;
     private boolean isPermanent = false;
     private boolean closeInventory = false;
     private boolean useCache = true;
@@ -117,14 +116,15 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public int getSlot() {
-        return this.slot;
+        return this.slots.get(0);
     }
 
     /**
      * @param slot the slot to set
      */
     public ZButton setSlot(int slot) {
-        this.slot = slot;
+        this.slots = new ArrayList<>();
+        this.slots.add(slot);
         return this;
     }
 
@@ -158,7 +158,8 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public int getRealSlot(int inventorySize, int page) {
-        return this.isPermanent() ? this.slot : this.slot - ((page - 1) * inventorySize);
+        int slot = getSlot();
+        return this.isPermanent() ? slot : slot - ((page - 1) * inventorySize);
     }
 
     @Override
@@ -168,7 +169,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public boolean hasSpecialRender() {
-        return this.getSlots().size() > 0;
+        return this.getSlots().size() > 1;
     }
 
     @Override
@@ -218,7 +219,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
             }
         }
 
-        if (this.messages.size() > 0) {
+        if (!this.messages.isEmpty()) {
 
             if (this.openLink != null) {
 
@@ -248,11 +249,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public void onInventoryOpen(Player player, InventoryDefault inventory) {
-
-    }
-
-    @Override
     public void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders) {
 
     }
@@ -262,25 +258,16 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         return this.closeInventory;
     }
 
-    /**
-     * @param buttonName the buttonName to set
-     */
     public ZButton setButtonName(String buttonName) {
         this.buttonName = buttonName;
         return this;
     }
 
-    /**
-     * @param closeInventory
-     */
     public ZButton setCloseInventory(boolean closeInventory) {
         this.closeInventory = closeInventory;
         return this;
     }
 
-    /**
-     * @param soundOption
-     */
     public ZButton setSoundOption(SoundOption soundOption) {
         this.soundOption = soundOption;
         return this;
@@ -464,12 +451,12 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
      * Paginate a given list of elements and set them as elements of this button
      * according to the page of the inventory.
      *
-     * @param elements    the elements to paginate
-     * @param inventory   the inventory to get the page from
-     * @param consumer    a consumer that will be used to set the elements, it will
-     *                    be called with the slot of the element and the element
-     *                    itself
-     * @param <T>         the type of the elements
+     * @param elements  the elements to paginate
+     * @param inventory the inventory to get the page from
+     * @param consumer  a consumer that will be used to set the elements, it will
+     *                  be called with the slot of the element and the element
+     *                  itself
+     * @param <T>       the type of the elements
      */
     protected <T> void paginate(List<T> elements, InventoryDefault inventory, BiConsumer<Integer, T> consumer) {
         Pagination<T> pagination = new Pagination<>();

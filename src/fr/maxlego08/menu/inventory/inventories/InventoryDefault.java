@@ -73,7 +73,6 @@ public class InventoryDefault extends VInventory {
         ZScheduler scheduler = this.plugin.getScheduler();
         Runnable runnable = () -> {
             Placeholders placeholders = new Placeholders();
-            this.buttons.forEach(button -> button.onInventoryOpen(player, this)); // Remove in few version !
             this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
             String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);

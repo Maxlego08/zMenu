@@ -43,6 +43,8 @@
 - Fixed custom head with url
 - Fixed inventories that do not have a default type
 - Added sound category
+- Delete deprecated method ``onInventoryOpen(Player player, InventoryDefault inventory)``
+- Improved code, removed the ``slot`` variable to use only the list of ``slots`` for each button
 
 # 1.0.3.7
 
