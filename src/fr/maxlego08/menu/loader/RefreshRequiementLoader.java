@@ -30,10 +30,10 @@ public class RefreshRequiementLoader implements Loader<RefreshRequirement> {
         List<Permissible> permissibles = buttonManager.loadPermissible((List<Map<String, Object>>) configuration.getList(path + "requirements", configuration.getList(path + "requirement", new ArrayList<>())), path, file);
         List<Permissible> enablePermissibles = buttonManager.loadPermissible((List<Map<String, Object>>) configuration.getList(path + "enable_requirements", configuration.getList(path + "enable-requirements", new ArrayList<>())), path, file);
         boolean task = configuration.getBoolean(path + "task", false);
-        boolean refreshLore = configuration.getBoolean(path + "refreshLore", false);
-        boolean refreshName = configuration.getBoolean(path + "refreshName", false);
-        boolean refreshButton = configuration.getBoolean(path + "refreshButton", false);
-        int updateInterval = configuration.getInt(path + "updateInterval", 500);
+        boolean refreshLore = configuration.getBoolean(path + "refreshLore", configuration.getBoolean(path + "refresh-lore", false));
+        boolean refreshName = configuration.getBoolean(path + "refreshName", configuration.getBoolean(path + "refresh-name", false));
+        boolean refreshButton = configuration.getBoolean(path + "refreshButton", configuration.getBoolean(path + "refresh-button", false));
+        int updateInterval = configuration.getInt(path + "updateInterval", configuration.getInt(path + "update-interval", 500));
 
         return new ZRefreshRequirement(enablePermissibles, permissibles, task, refreshLore, refreshName, refreshButton, updateInterval);
     }

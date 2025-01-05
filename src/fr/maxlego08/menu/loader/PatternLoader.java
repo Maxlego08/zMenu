@@ -32,7 +32,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
 
         File file = (File) objects[0];
         String name = configuration.getString("name");
-        boolean enableMultiPage = configuration.getBoolean("enableMultiPage", false);
+        boolean enableMultiPage = configuration.getBoolean("enableMultiPage", configuration.getBoolean("enable-multi-page", false));
 
         if (configuration.getString("type", "INVENTORY").equalsIgnoreCase("button")) {
             return null;

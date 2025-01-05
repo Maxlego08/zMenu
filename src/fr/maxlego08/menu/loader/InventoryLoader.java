@@ -76,9 +76,15 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
         MenuItemStack itemStack = null;
         try {
+            // support both old and new configs
+            String loadString = null;
             if (configuration.contains("fillItem")) {
-                itemStack = menuItemStackLoader.load(configuration, "fillItem.", file);
+                loadString = "fillItem";
+            } else if (configuration.contains("fill-item")) {
+                loadString = "fill-item";
             }
+            if (loadString != null)
+                itemStack = menuItemStackLoader.load(configuration, loadString + ".", file);
         } catch (Exception ignored) {
         }
 
@@ -103,10 +109,17 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         OpenWithItem openWithItem = null;
         try {
+            // support both old and new configs
+            String loadString = null;
             if (configuration.contains("openWithItem")) {
-                MenuItemStack loadedItem = menuItemStackLoader.load(configuration, "openWithItem.item.", file);
+                loadString = "openWithItem";
+            } else if (configuration.contains("open-with-item")) {
+                loadString = "open-with-item";
+            }
+            if (loadString != null) {
+                MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
-                List<Action> actions = configuration.getStringList("openWithItem.actions").stream().map(string -> {
+                List<Action> actions = configuration.getStringList(loadString + ".actions").stream().map(string -> {
                     try {
                         return Action.valueOf(string.toUpperCase());
                     } catch (Exception exception) {
@@ -114,7 +127,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                     }
                 }).filter(Objects::nonNull).collect(Collectors.toList());
 
-                String type = configuration.getString("openWithItem.type", "full");
+                String type = configuration.getString(loadString + ".type", "full");
                 ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
 
                 openWithItem = new OpenWithItem(loadedItem, actions, itemStackSimilar);
@@ -138,26 +151,42 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         inventory.setType(inventoryType);
         inventory.setFillItemStack(itemStack);
-        inventory.setUpdateInterval(configuration.getInt(path + "updateInterval", 1000));
-        inventory.setClearInventory(configuration.getBoolean(path + "clearInventory", false));
+        inventory.setUpdateInterval(configuration.getInt(path + "update-interval", configuration.getInt(path + "updateInterval", 1000)));
+        inventory.setClearInventory(configuration.getBoolean(path + "clear-inventory", configuration.getBoolean(path + "clearInventory", false)));
         inventory.setFile(file);
         inventory.setPatterns(patterns);
         inventory.setOpenWithItem(openWithItem);
 
         Map<String, String> translatedDisplayName = new HashMap<>();
-        configuration.getMapList(path + "translatedName").forEach(map -> {
-            if (map.containsKey("locale") && map.containsKey("name")) {
-                String locale = (String) map.get("locale");
-                String inventoryName = (String) map.get("name");
-                translatedDisplayName.put(locale.toLowerCase(), inventoryName);
-            }
-        });
+        String loadString = null;
+        if (configuration.contains(path + "translatedName")) {
+            loadString = "translatedName";
+        } else if (configuration.contains(path + "translated-name")) {
+            loadString = "translated-name";
+        }
+        if (loadString != null) {
+            configuration.getMapList(path + loadString).forEach(map -> {
+                if (map.containsKey("locale") && map.containsKey("name")) {
+                    String locale = (String) map.get("locale");
+                    String inventoryName = (String) map.get("name");
+                    translatedDisplayName.put(locale.toLowerCase(), inventoryName);
+                }
+            });
+        }
         inventory.setTranslatedNames(translatedDisplayName);
 
         // Open requirement
-        if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement.")) {
-            Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
-            inventory.setOpenRequirement(requirementLoader.load(configuration, "open_requirement.", file));
+        loadString = null;
+        if (configuration.contains("open_requirement")) {
+            loadString = "open_requirement";
+        } else if (configuration.contains("open-requirement")) {
+            loadString = "open-requirement";
+        }
+        if (loadString != null) {
+            if (configuration.contains(loadString) && configuration.isConfigurationSection(loadString + ".")) {
+                Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
+                inventory.setOpenRequirement(requirementLoader.load(configuration, loadString + ".", file));
+            }
         }
 
         return inventory;
@@ -171,7 +200,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         configuration.set("size", object.size());
 
         if (object.getFillItemStack() != null) {
-            itemStackLoader.save(object.getFillItemStack(), configuration, "fillItem.", file);
+            itemStackLoader.save(object.getFillItemStack(), configuration, "fill-item.", file);
         }
 
         //TODO: FINISH THE SAVE METHOD
