@@ -393,15 +393,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         };
         ConfigurationSection section = null;
         String sectionString = "";
-        int i = 0;
-        while (section == null) {
-            if (i == sectionStrings.length) {
-                return;
-            }
+        for (int i = 0; i < sectionStrings.length; i++) {
             sectionString = sectionStrings[i];
             section = configuration.getConfigurationSection(path + sectionString);
-            i++;
+            if (section != null) break;
         }
+        if (section == null) return;
 
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         List<Requirement> requirements = new ArrayList<>();
