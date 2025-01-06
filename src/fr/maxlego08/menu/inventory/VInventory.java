@@ -98,6 +98,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return addItem(inPlayerInventory, slot, itemStack, true);
     }
 
+    public ItemButton addItem(int slot, ItemStack itemStack, Boolean enableAntiDupe) {
+        return addItem(false, slot, itemStack, enableAntiDupe);
+    }
+
     public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, Boolean enableAntiDupe) {
 
         createDefaultInventory();
