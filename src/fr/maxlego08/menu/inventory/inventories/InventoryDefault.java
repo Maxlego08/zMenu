@@ -89,11 +89,7 @@ public class InventoryDefault extends VInventory {
             }
 
             // Display buttons
-            this.buttons.forEach(button -> {
-                System.out.println("forEach");
-                System.out.println(button.getSlots());
-                this.buildButton(button);
-            });
+            this.buttons.forEach(this::buildButton);
 
             if (isAsync) {
                 scheduler.runTask(player.getLocation(), () -> {
@@ -141,6 +137,7 @@ public class InventoryDefault extends VInventory {
      * @param button The button
      */
     public void buildButton(Button button) {
+
         if (button.hasCustomRender()) {
             button.onRender(player, this);
             return;
@@ -202,6 +199,7 @@ public class InventoryDefault extends VInventory {
 
         ItemStack itemStack = button.getCustomItemStack(this.player);
         for (int slot : slots) {
+
             if (slot < 0) {
                 Logger.info("slot is negative ! (" + slot + ") Button: " + button.getName() + " in inventory " + this.inventory.getFileName(), Logger.LogType.ERROR);
                 continue;
