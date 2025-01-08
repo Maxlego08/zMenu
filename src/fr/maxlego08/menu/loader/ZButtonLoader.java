@@ -198,8 +198,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             }
         }
 
-        button.setSlots(slots);
-        button.setSlot(slot);
+        if(slots.isEmpty()) {
+            button.setSlot(slot);
+        } else {
+            button.setSlots(slots);
+        }
+
         button.setPermanent(configuration.getBoolean(path + "isPermanent", defaultButtonValue.isPermanent()));
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", defaultButtonValue.isUpdateOnClick()));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", defaultButtonValue.isCloseInventory()));
