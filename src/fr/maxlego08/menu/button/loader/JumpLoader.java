@@ -34,7 +34,7 @@ public class JumpLoader implements ButtonLoader {
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
-        int page = configuration.getInt(path + "toPage");
+        int page = configuration.getInt(path + "toPage", configuration.getInt(path + "to-page"));
         return new ZJumpButton(this.inventoryManager, page);
     }
 }

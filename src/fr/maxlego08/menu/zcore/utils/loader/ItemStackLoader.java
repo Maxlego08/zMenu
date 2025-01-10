@@ -34,7 +34,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         int data = configuration.getInt(path + "data", 0);
         int amount = configuration.getInt(path + "amount", 1);
         short durability = (short) configuration.getInt(path + "durability", 0);
-        int modelID = configuration.getInt(path + "modelID", 0);
+        int modelID = configuration.getInt(path + "modelID", configuration.getInt(path + "model-id", 0));
         Material material = null;
 
         int value = configuration.getInt(path + "material", 0);
@@ -204,7 +204,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
             }
 
             if (NmsVersion.getCurrentVersion().isCustomModelData() && meta.hasCustomModelData()) {
-                configuration.set(path + "modelID", meta.getCustomModelData());
+                configuration.set(path + "model-id", meta.getCustomModelData());
             }
         }
 

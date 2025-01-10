@@ -804,7 +804,7 @@ public class MenuItemStack extends ZUtils {
         setLore(lore);
         setDisplayName(configuration.getString("name", null));
         setGlowing(configuration.getBoolean("glow"));
-        setModelID(configuration.getString("modelID", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0")))));
+        setModelID(configuration.getString("modelID", configuration.getString("model-id", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0"))))));
 
         List<String> enchants = configuration.getStringList("enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
