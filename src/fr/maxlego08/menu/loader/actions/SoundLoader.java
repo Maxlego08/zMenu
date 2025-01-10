@@ -26,7 +26,7 @@ public class SoundLoader implements ActionLoader {
         String sound = accessor.getString("sound");
         float pitch = accessor.getFloat("pitch", 1f);
         float volume = accessor.getFloat("volume", 1f);
-        XSound.Category category = XSound.Category.valueOf(accessor.getString("category", XSound.Category.MASTER.name()));
+        String category = accessor.getString("sound-category", accessor.getString("category", XSound.Category.MASTER.name()));
         XSound xSound = sound == null || sound.isEmpty() ? null : XSound.of(sound).orElse(null);
         return new ZSoundOption(xSound, category, sound, pitch, volume, xSound == null);
     }

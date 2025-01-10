@@ -188,9 +188,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 slots = new ArrayList<>();
             }
         }
-
-        button.setSlots(slots);
-        button.setSlot(slot);
+      
+        if(slots.isEmpty()) {
+            button.setSlot(slot);
+        } else {
+            button.setSlots(slots);
+        }
         button.setPermanent(configuration.getBoolean(path + "isPermanent", configuration.getBoolean(path + "is-permanent", defaultButtonValue.isPermanent())));
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));
@@ -234,15 +237,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         String sound = configuration.getString(path + "sound", null);
         Optional<XSound> optionalXSound = sound == null || sound.isEmpty() ? Optional.empty() : XSound.of(sound);
-        XSound.Category category = XSound.Category.valueOf(configuration.getString(path + "category", XSound.Category.MASTER.name()));
+        String categoryName = configuration.getString(path + "sound-category", configuration.getString(path + "category", XSound.Category.MASTER.name()));
         float pitch = Float.parseFloat(configuration.getString(path + "pitch", "1.0f"));
         float volume = Float.parseFloat(configuration.getString(path + "volume", "1.0f"));
 
         if (optionalXSound.isPresent()) {
             XSound xSound = optionalXSound.get();
-            button.setSoundOption(new ZSoundOption(xSound, category, null, pitch, volume, false));
+            button.setSoundOption(new ZSoundOption(xSound, categoryName, null, pitch, volume, false));
         } else {
-            button.setSoundOption(new ZSoundOption(null, category, sound, pitch, volume, true));
+            button.setSoundOption(new ZSoundOption(null, categoryName, sound, pitch, volume, true));
         }
 
         Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader();

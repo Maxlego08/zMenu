@@ -114,7 +114,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         float volume = values.length >= 2 ? Float.parseFloat(values[1]) : 1f;
         float pitch = values.length >= 3 ? Float.parseFloat(values[2]) : 1f;
         Optional<XSound> optionalXSound = sound == null || sound.isEmpty() ? Optional.empty() : XSound.of(sound);
-        return optionalXSound.map(xSound -> new ZSoundOption(xSound, XSound.Category.MASTER, null, volume, pitch, false)).orElseGet(() -> new ZSoundOption(null, XSound.Category.MASTER, sound, volume, pitch, true));
+        return optionalXSound.map(xSound -> new ZSoundOption(xSound, XSound.Category.MASTER.name(), null, volume, pitch, false)).orElseGet(() -> new ZSoundOption(null, XSound.Category.MASTER.name(), sound, volume, pitch, true));
     }
 
     protected List<Permissible> loadPermissibles(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, ConfigurationSection configurationSection) {

@@ -27,6 +27,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     protected int id;
     protected MenuPlugin plugin;
     protected Map<Integer, ItemButton> items = new HashMap<>();
+    protected Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
     protected Player player;
     protected int page;
     protected Object[] args;
@@ -59,14 +60,17 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         this.guiName = name;
         this.inventory = Bukkit.createInventory(this, size, name);
     }
+
     protected void createInventory(String name, InventoryType inventoryType) {
         this.guiName = name;
         this.inventory = Bukkit.createInventory(this, inventoryType, name);
     }
+
     protected void createMetaInventory(String name, int size) {
         this.guiName = name;
         this.inventory = Meta.meta.createInventory(name, size, this);
     }
+
     protected void createMetaInventory(String name, InventoryType inventoryType) {
         this.guiName = name;
         this.inventory = Meta.meta.createInventory(name, inventoryType, this);
@@ -87,10 +91,18 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     }
 
     public ItemButton addItem(int slot, ItemStack itemStack) {
-        return addItem(slot, itemStack, true);
+        return addItem(false, slot, itemStack, true);
+    }
+
+    public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack) {
+        return addItem(inPlayerInventory, slot, itemStack, true);
     }
 
     public ItemButton addItem(int slot, ItemStack itemStack, Boolean enableAntiDupe) {
+        return addItem(false, slot, itemStack, enableAntiDupe);
+    }
+
+    public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, Boolean enableAntiDupe) {
 
         createDefaultInventory();
 
@@ -99,13 +111,28 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         }
 
         ItemButton button = new ItemButton(itemStack, slot);
-        this.items.put(slot, button);
+        if (inPlayerInventory) {
 
-        if (this.openAsync) {
-            ItemStack finalItem = itemStack;
-            runAsync(this.plugin, () -> this.inventory.setItem(slot, finalItem));
+            this.playerInventoryItems.put(slot, button);
+
+            if (this.openAsync) {
+                ItemStack finalItem = itemStack;
+                runAsync(this.plugin, () -> this.player.getInventory().setItem(slot, finalItem));
+            } else {
+                this.player.getInventory().setItem(slot, itemStack);
+            }
+
         } else {
-            this.inventory.setItem(slot, itemStack);
+
+            this.items.put(slot, button);
+
+            if (this.openAsync) {
+                ItemStack finalItem = itemStack;
+                runAsync(this.plugin, () -> this.inventory.setItem(slot, finalItem));
+            } else {
+                this.inventory.setItem(slot, itemStack);
+            }
+
         }
         return button;
     }
@@ -114,12 +141,21 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         this.items.remove(slot);
     }
 
+    public void removePlayerItem(int slot) {
+        this.playerInventoryItems.remove(slot);
+    }
+
     public void clearItem() {
         this.items.clear();
+        this.playerInventoryItems.clear();
     }
 
     public Map<Integer, ItemButton> getItems() {
         return items;
+    }
+
+    public Map<Integer, ItemButton> getPlayerInventoryItems() {
+        return playerInventoryItems;
     }
 
     public boolean isDisableClick() {
@@ -178,6 +214,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return plugin;
     }
 
+    public void setPlugin(MenuPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     protected VInventory clone() {
         try {
@@ -206,9 +246,5 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
 
     public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
 
-    }
-
-    public void setPlugin(MenuPlugin plugin) {
-        this.plugin = plugin;
     }
 }

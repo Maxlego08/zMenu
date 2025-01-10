@@ -73,7 +73,6 @@ public class InventoryDefault extends VInventory {
         ZScheduler scheduler = this.plugin.getScheduler();
         Runnable runnable = () -> {
             Placeholders placeholders = new Placeholders();
-            this.buttons.forEach(button -> button.onInventoryOpen(player, this)); // Remove in few version !
             this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
             String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
@@ -133,7 +132,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display a button
+     * Allows displaying a button
      *
      * @param button The button
      */
@@ -183,7 +182,10 @@ public class InventoryDefault extends VInventory {
 
         } else {
 
-            Runnable runnable = () -> this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
+            Runnable runnable = () -> {
+                int slot = button.getRealSlot(button.isPlayerInventory() ? 36 : this.inventory.size(), this.page);
+                this.displayFinalButton(button, slot);
+            };
 
             if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
             else runnable.run();
@@ -203,12 +205,13 @@ public class InventoryDefault extends VInventory {
                 continue;
             }
 
-            if (slot >= this.inventory.size()) {
+            int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
+            if (slot >= maxSlotSize) {
                 Logger.info("slot is out of range ! (" + slot + ") Button: " + button.getName() + " in inventory " + this.inventory.getFileName(), Logger.LogType.ERROR);
                 continue;
             }
 
-            ItemButton itemButton = this.addItem(slot, itemStack);
+            ItemButton itemButton = this.addItem(button.isPlayerInventory(), slot, itemStack);
             if (button.isClickable()) {
                 itemButton.setClick(event -> {
 

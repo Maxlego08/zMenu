@@ -12,9 +12,11 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -77,13 +79,13 @@ public class ZInventory extends ZUtils implements Inventory {
         return locale == null ? this.name : this.translatedNames.getOrDefault(locale, this.name);
     }
 
-    public void setType(InventoryType type){
-        this.type = type;
+    @Override
+    public InventoryType getType() {
+        return type;
     }
 
-    @Override
-    public InventoryType getType(){
-        return type;
+    public void setType(InventoryType type) {
+        this.type = type;
     }
 
     @Override
@@ -120,32 +122,26 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
 
-        int maxPage = 1;
+        List<Button> buttons = new ArrayList<>(this.buttons);
+        patterns.forEach(pattern -> buttons.addAll(pattern.getButtons()));
 
-        List<Button> buttons = new ArrayList<>();
-        buttons.addAll(this.buttons);
-        buttons.addAll(patterns.stream().flatMap(pattern -> pattern.getButtons().stream()).collect(Collectors.toList()));
+        int maxSlotInventory = buttons.stream().filter(button -> !button.isPlayerInventory()).mapToInt(Button::getSlot).max().orElse(-1);
+        int maxPageInventory = (maxSlotInventory >= 0) ? (maxSlotInventory / this.size) + 1 : 1;
 
-        Optional<Integer> optional = buttons.stream().map(Button::getSlot).max(Integer::compare);
-        if (optional.isPresent()) {
-            int maxSlot = optional.get();
-            maxPage = (maxSlot / this.size) + 1;
-        }
+        int maxSlotPlayerInventory = buttons.stream().filter(Button::isPlayerInventory).mapToInt(Button::getSlot).max().orElse(-1);
+        int maxPagePlayerInventory = (maxSlotPlayerInventory >= 0) ? (maxSlotPlayerInventory / 36) + 1 : 1;
 
-        Optional<PaginateButton> optionalPaginate = this.buttons.stream().filter(button -> button instanceof PaginateButton).map(e -> (PaginateButton) e).sorted(Comparator.comparingInt(e -> ((PaginateButton) e).getPaginationSize(player)).reversed()).findFirst();
-        if (optionalPaginate.isPresent()) {
-            PaginateButton paginateButton = optionalPaginate.get();
-            maxPage = (int) Math.ceil((double) paginateButton.getPaginationSize(player) / paginateButton.getSlots().size());
-        }
+        final int maxPageFinal = Math.max(maxPageInventory, maxPagePlayerInventory);
 
-        return maxPage;
+        return this.buttons.stream().filter(PaginateButton.class::isInstance).map(PaginateButton.class::cast).max(Comparator.comparingInt(button -> button.getPaginationSize(player))).map(paginateButton -> Math.max(maxPageFinal, (int) Math.ceil((double) paginateButton.getPaginationSize(player) / paginateButton.getSlots().size()))).orElse(maxPageFinal);
     }
 
     @Override
     public List<Button> sortButtons(int page, Object... objects) {
         return this.buttons.stream().filter(button -> {
-            int slot = button.getRealSlot(this.size, page);
-            return slot >= 0 && slot < this.size;
+            int size = button.isPlayerInventory() ? 36 : this.size;
+            int slot = button.getRealSlot(size, page);
+            return slot >= 0 && slot < size;
         }).collect(Collectors.toList());
     }
 
@@ -161,15 +157,9 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public InventoryResult openInventory(Player player, InventoryDefault inventoryDefault) {
 
-        if (openRequirement != null && !openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
+        if (this.openRequirement != null && !this.openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
             return InventoryResult.PERMISSION;
         }
-
-        return InventoryResult.SUCCESS;
-    }
-
-    @Override
-    public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
 
         org.bukkit.inventory.Inventory topInventory = CompatibilityUtil.getTopInventory(player);
         InventoryHolder holder = topInventory.getHolder();
@@ -177,6 +167,9 @@ public class ZInventory extends ZUtils implements Inventory {
         if (holder != null) {
             if (holder instanceof InventoryDefault) {
                 InventoryDefault inventoryHolder = (InventoryDefault) holder;
+
+                clearPlayerInventoryButtons(player, inventoryHolder);
+
                 if (inventoryHolder.getMenuInventory().cleanInventory()) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.storeInventory(player);
@@ -188,19 +181,41 @@ public class ZInventory extends ZUtils implements Inventory {
                 }
             }
         }
+
+        return InventoryResult.SUCCESS;
+    }
+
+    private void clearPlayerInventoryButtons(Player player, InventoryDefault inventoryDefault) {
+        for (Button button : getButtons()) {
+            if (button.isPlayerInventory()) {
+                int slot = button.getRealSlot(36, inventoryDefault.getPage());
+                if (slot >= 0 && slot <= 36) {
+                    player.getInventory().setItem(slot, new ItemStack(Material.AIR));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
+
     }
 
     @Override
     public void closeInventory(Player player, InventoryDefault inventoryDefault) {
-        if (this.clearInventory) {
-            MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
-                InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
-                if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
+
+        MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
+            InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
+
+                clearPlayerInventoryButtons(player, inventoryDefault);
+
+                if (this.clearInventory) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.giveInventory(player);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -267,6 +282,10 @@ public class ZInventory extends ZUtils implements Inventory {
         return translatedNames;
     }
 
+    public void setTranslatedNames(Map<String, String> translatedNames) {
+        this.translatedNames = translatedNames;
+    }
+
     public void setClearInventory(boolean clearInventory) {
         this.clearInventory = clearInventory;
     }
@@ -278,9 +297,5 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setPatterns(List<Pattern> patterns) {
         this.patterns = patterns;
-    }
-
-    public void setTranslatedNames(Map<String, String> translatedNames) {
-        this.translatedNames = translatedNames;
     }
 }

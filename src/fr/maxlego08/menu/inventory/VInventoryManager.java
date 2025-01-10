@@ -23,6 +23,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -39,13 +40,6 @@ public class VInventoryManager extends ListenerAdapter {
         this.plugin = plugin;
     }
 
-    /**
-     * Allows you to record an inventory If the inventory ID already exists then
-     * an exception will be thrown
-     *
-     * @param enumInventory
-     * @param inventory
-     */
     public void registerInventory(EnumInventory enumInventory, VInventory inventory) {
         if (!this.inventories.containsKey(enumInventory.getId())) {
             this.inventories.put(enumInventory.getId(), inventory);
@@ -112,9 +106,9 @@ public class VInventoryManager extends ListenerAdapter {
 
                 message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
             }
-        } catch (InventoryOpenException e) {
+        } catch (InventoryOpenException exception) {
             message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
-            e.printStackTrace();
+            exception.printStackTrace();
         }
     }
 
@@ -134,32 +128,39 @@ public class VInventoryManager extends ListenerAdapter {
             event.setCancelled(inventory.isDisableClick());
 
             if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+
                 event.setCancelled(inventory.isDisablePlayerInventoryClick());
+
                 inventory.onInventoryClick(event, this.plugin, player);
-                return;
+                handleClick(true, player, inventory, event);
+
+            } else {
+
+                inventory.onInventoryClick(event, this.plugin, player);
+                handleClick(false, player, inventory, event);
             }
+        }
+    }
 
-            inventory.onInventoryClick(event, this.plugin, player);
+    private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
-            if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
-                message(player, Message.CLICK_COOLDOWN);
-                return;
-            }
+        if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
+            message(player, Message.CLICK_COOLDOWN);
+            return;
+        }
 
-            this.cooldownClick.put(player.getUniqueId(),
-                    System.currentTimeMillis() + Config.cooldownClickMilliseconds);
+        this.cooldownClick.put(player.getUniqueId(), System.currentTimeMillis() + Config.cooldownClickMilliseconds);
 
-            ItemButton button = inventory.getItems().getOrDefault(event.getSlot(), null);
-            if (button != null) {
-                button.onClick(event);
-            }
+        ItemButton button = (inPlayerInventory ? inventory.getPlayerInventoryItems() : inventory.getItems()).getOrDefault(event.getSlot(), null);
+        if (button != null) {
+            button.onClick(event);
         }
     }
 
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
-        if (holder != null && holder instanceof VInventory) {
+        if (holder instanceof VInventory) {
             ((VInventory) holder).onPreClose(event, this.plugin, player);
         }
     }
@@ -167,7 +168,7 @@ public class VInventoryManager extends ListenerAdapter {
     @Override
     protected void onInventoryDrag(InventoryDragEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
-        if (holder != null && holder instanceof VInventory) {
+        if (holder instanceof VInventory) {
             ((VInventory) holder).onDrag(event, this.plugin, player);
         }
     }
@@ -187,8 +188,8 @@ public class VInventoryManager extends ListenerAdapter {
     public void close(Predicate<VInventory> predicate) {
         Bukkit.getOnlinePlayers().stream().filter(player -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-            return holder != null && holder instanceof VInventory;
-        }).map(player -> (VInventory) CompatibilityUtil.getTopInventory(player).getHolder()).filter(predicate).forEach(vInventory -> {
+            return holder instanceof VInventory;
+        }).map(player -> (VInventory) CompatibilityUtil.getTopInventory(player).getHolder()).filter(predicate).filter(Objects::nonNull).forEach(vInventory -> {
             Player player = vInventory.getPlayer();
             if (player.isOnline()) {
                 player.closeInventory();
