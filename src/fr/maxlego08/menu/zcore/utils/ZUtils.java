@@ -1,10 +1,12 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -29,6 +31,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -42,7 +45,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1209,6 +1216,61 @@ public abstract class ZUtils extends MessageUtils {
     public String getFileNameWithoutExtension(File file) {
         Pattern pattern = Pattern.compile("(?<=.)\\.[^.]+$");
         return pattern.matcher(file.getName()).replaceAll("").replace(" ", "_");
+    }
+
+    protected YamlConfiguration loadAndReplaceConfiguration(File file, Map<String, Object> mapPlaceholders) {
+        YamlConfiguration loadConfiguration = new YamlConfiguration();
+
+        try {
+            FileInputStream stream = new FileInputStream(file);
+            Reader reader = new InputStreamReader(stream, Charsets.UTF_8);
+
+            BufferedReader input = new BufferedReader(reader);
+            StringBuilder builder = new StringBuilder();
+            Placeholders placeholders = new Placeholders();
+
+            String line;
+            try {
+                while ((line = input.readLine()) != null) {
+
+                    for (Map.Entry<String, Object> replacement : mapPlaceholders.entrySet()) {
+                        String key = replacement.getKey();
+                        Object value = replacement.getValue();
+
+                        if (line != null) {
+                            if (value instanceof List<?> && line.contains("%" + key + "%")) {
+                                int index = line.indexOf("%" + key + "%");
+                                String prefix = line.substring(0, index);
+                                String finalLine = line.substring(index);
+                                ((List<?>) value).forEach(currentValue -> {
+                                    String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
+                                    builder.append(placeholders.parse(prefix, key, currentValue.toString())).append(currentElement);
+                                    builder.append('\n');
+                                });
+
+                                line = null;
+                            } else {
+                                line = placeholders.parse(line, key, value.toString());
+                            }
+                        }
+                    }
+
+                    if (line != null) {
+                        builder.append(line);
+                        builder.append('\n');
+                    }
+                }
+            } finally {
+                input.close();
+            }
+
+            loadConfiguration.loadFromString(builder.toString());
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        return loadConfiguration;
     }
 
 }

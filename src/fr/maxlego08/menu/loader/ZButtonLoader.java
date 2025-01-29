@@ -76,64 +76,16 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
             String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name"));
             String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", null));
-            Plugin plugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
-            if (plugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
+            Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
+            if (patternPlugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
 
-            File patternFile = new File(plugin.getDataFolder(), "patterns/" + fileName + ".yml");
+            File patternFile = new File(patternPlugin.getDataFolder(), "patterns/" + fileName + ".yml");
             if (!patternFile.exists()) {
                 throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
             }
 
-            YamlConfiguration patternConfiguration = new YamlConfiguration();
-
-            try {
-                FileInputStream stream = new FileInputStream(patternFile);
-                Reader reader = new InputStreamReader(stream, Charsets.UTF_8);
-
-                BufferedReader input = new BufferedReader(reader);
-                StringBuilder builder = new StringBuilder();
-                Placeholders placeholders = new Placeholders();
-
-                String line;
-                try {
-                    while ((line = input.readLine()) != null) {
-
-                        for (Map.Entry<String, Object> replacement : mapPlaceholders.entrySet()) {
-                            String key = replacement.getKey();
-                            Object value = replacement.getValue();
-
-                            if (line != null) {
-                                if (value instanceof List<?> && line.contains("%" + key + "%")) {
-                                    int index = line.indexOf("%" + key + "%");
-                                    String prefix = line.substring(0, index);
-                                    String finalLine = line.substring(index);
-                                    ((List<?>) value).forEach(currentValue -> {
-                                        String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
-                                        builder.append(placeholders.parse(prefix, key, currentValue.toString())).append(currentElement);
-                                        builder.append('\n');
-                                    });
-
-                                    line = null;
-                                } else {
-                                    line = placeholders.parse(line, key, value.toString());
-                                }
-                            }
-                        }
-
-                        if (line != null) {
-                            builder.append(line);
-                            builder.append('\n');
-                        }
-                    }
-                } finally {
-                    input.close();
-                }
-
-                patternConfiguration.loadFromString(builder.toString());
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+            mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
+            YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
             return this.load(patternConfiguration, "button.", buttonName);
         }
 

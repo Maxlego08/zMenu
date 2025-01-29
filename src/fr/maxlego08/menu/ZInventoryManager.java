@@ -161,7 +161,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration configuration = loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
         boolean isDeluxeMenu = configuration.contains("menu_title");
 
         Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);

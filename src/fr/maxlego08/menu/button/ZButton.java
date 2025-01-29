@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.inventory.Pagination;
@@ -51,7 +52,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean updateOnClick = false;
     private boolean isOpenAsync = false;
     private List<Requirement> clickRequirements = new ArrayList<>();
-    private Requirement viewRequirement;
+    private Requirement viewRequirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     private List<Action> actions = new ArrayList<>();
     private List<ButtonOption> options = new ArrayList<>();
     private RefreshRequirement refreshRequirement;
@@ -124,7 +125,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
      * @param slot the slot to set
      */
     public ZButton setSlot(int slot) {
-        if(this.slots == null) {
+        if (this.slots == null) {
             this.slots = new ArrayList<>();
         }
         this.slots.add(slot);
@@ -364,7 +365,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
-        return super.checkPermission(player, inventory, placeholders) && this.viewRequirement.execute(player, this, inventory, placeholders);
+        return super.checkPermission(player, inventory, placeholders) && (this.viewRequirement == null || this.viewRequirement.execute(player, this, inventory, placeholders));
     }
 
     @Override

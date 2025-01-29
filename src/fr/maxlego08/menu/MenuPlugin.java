@@ -51,12 +51,15 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -87,6 +90,7 @@ public class MenuPlugin extends ZPlugin {
     private ZScheduler scheduler;
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
+    private Map<String, Object> globalPlaceholders = new HashMap<>();
 
     public static boolean isFolia() {
         try {
@@ -106,9 +110,7 @@ public class MenuPlugin extends ZPlugin {
 
         instance = this;
 
-        this.scheduler = isFolia()
-                ? new FoliaScheduler(this)
-                : new BukkitScheduler(this);
+        this.scheduler = isFolia() ? new FoliaScheduler(this) : new BukkitScheduler(this);
 
         this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
@@ -145,6 +147,8 @@ public class MenuPlugin extends ZPlugin {
                 }
             });
         }
+
+        this.loadGlobalPlaceholders();
 
         this.zCommandManager = new VCommandManager(this);
         this.vinventoryManager = new VInventoryManager(this);
@@ -271,7 +275,6 @@ public class MenuPlugin extends ZPlugin {
         }
 
         this.postDisable();
-
     }
 
     /**
@@ -359,5 +362,21 @@ public class MenuPlugin extends ZPlugin {
 
     public FontImage getFontImage() {
         return this.fontImage;
+    }
+
+    public Map<String, Object> getGlobalPlaceholders() {
+        return this.globalPlaceholders;
+    }
+
+    public void loadGlobalPlaceholders() {
+
+        this.globalPlaceholders.clear();
+        File file = new File(this.getDataFolder(), "global-placeholders.yml");
+        if (!file.exists()) {
+            this.saveResource("global-placeholders.yml", false);
+        }
+
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        configuration.getKeys(false).forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
     }
 }
