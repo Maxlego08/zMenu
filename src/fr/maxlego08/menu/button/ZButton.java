@@ -125,9 +125,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
      * @param slot the slot to set
      */
     public ZButton setSlot(int slot) {
-        if (this.slots == null) {
-            this.slots = new ArrayList<>();
-        }
+        this.slots = new ArrayList<>();
         this.slots.add(slot);
         return this;
     }
