@@ -33,20 +33,7 @@ public class Placeholders {
 
     public String parse(String string) {
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            try {
-
-                string = string.replace("%" + entry.getKey() + "%", entry.getValue());
-                string = string.replace("%upper_" + entry.getKey() + "%", entry.getValue().toUpperCase());
-                string = string.replace("%lower_" + entry.getKey() + "%", entry.getValue().toLowerCase());
-                String capitalize = entry.getValue();
-                if (capitalize.length() > 1) {
-                    capitalize = capitalize.substring(0, 1).toUpperCase() + capitalize.substring(1);
-                }
-                string = string.replace("%capitalize_" + entry.getKey() + "%", capitalize);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                Logger.info("Error with placeholder key " + entry.getKey() + " !", Logger.LogType.ERROR);
-            }
+            string = parse(string, entry.getKey(), entry.getValue());
         }
         return string;
     }

@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
-import com.google.common.base.Charsets;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
@@ -19,7 +18,6 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
@@ -38,9 +36,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
@@ -140,8 +143,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 slots = new ArrayList<>();
             }
         }
-      
-        if(slots.isEmpty()) {
+
+        if (slots.isEmpty()) {
             button.setSlot(slot);
         } else {
             button.setSlots(slots);
@@ -282,16 +285,24 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "right-player-commands");
 
         List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
-        if (consoleCommands.isEmpty()) consoleCommands = configuration.getStringList(path + "console-commands");
+        if (consoleCommands.isEmpty()) {
+            consoleCommands = configuration.getStringList(path + "console-commands");
+        }
+
         List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
-        if (consoleRightCommands.isEmpty())
+        if (consoleRightCommands.isEmpty()) {
             consoleRightCommands = configuration.getStringList(path + "console-right-commands");
+        }
+
         List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");
-        if (consoleLeftCommands.isEmpty())
+        if (consoleLeftCommands.isEmpty()) {
             consoleLeftCommands = configuration.getStringList(path + "console-left-commands");
+        }
+
         List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
-        if (consolePermissionCommands.isEmpty())
+        if (consolePermissionCommands.isEmpty()) {
             consolePermissionCommands = configuration.getStringList(path + "console-permission-commands");
+        }
         String consolePermission = configuration.getString(path + "consolePermission", configuration.getString(path + "console-permission"));
 
         button.setCommands(commands);
@@ -336,16 +347,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param path          current path in configuration
      */
     private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
-        String[] sectionStrings = {
-                "click_requirement.",
-                "click-requirement.",
-                "click_requirements.",
-                "click-requirements.",
-                "clicks_requirement.",
-                "clicks-requirement.",
-                "clicks_requirements.",
-                "clicks-requirements."
-        };
+        String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
         ConfigurationSection section = null;
         String sectionString = "";
         for (int i = 0; i < sectionStrings.length; i++) {

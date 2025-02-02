@@ -40,6 +40,7 @@
 
 # Unreleased
 
+- Added [Global Placeholders](https://docs.zmenu.dev/configurations/global-placeholders). Allows you to define values that will be available across all inventory configuration files.
 - Fixed custom head with url
 - Fixed inventories that do not have a default type
 - Added sound category

@@ -72,7 +72,7 @@ items:
   # So we have red glass that will be displayed on all pages of slot 2 to 6
   decorations:
     # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#ispermanent)
-    isPermanent: true
+    is-permanent: true
     item:
       material: RED_STAINED_GLASS_PANE
       name: "&e"
@@ -117,10 +117,11 @@ items:
     plugin: "zMenu"
     item:
       material: COMPASS
-      name: "&fOpen basic inventory"
+      name: "&fOpen basic inventory &8- &7%example-a%" # Use of global placeholder
       lore:
         - "&7Click here for open"
         - "&7the &fbasic inventory"
+        - "%example-b%" # Use of global placeholder
 
   # PREVIOUS (https://docs.zmenu.dev/configurations/buttons#previous)
   #
