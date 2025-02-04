@@ -1,72 +1,77 @@
 package fr.maxlego08.menu.zcore.utils.inventory;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class Pagination<T> {
 
     /**
-     * Allows you to sort a list of items according to the number of items and the page
-     * Here the pagination will allow to invert the list of elements
-     * The system can be used to create inventories with several pages for example
+     * Paginates a list in reverse order.
      *
-     * @param list - List of element
-     * @param inventorySize - Pagination size
-     * @param page - Current pagination page
+     * @param list          the list of elements
+     * @param inventorySize the size of each page
+     * @param page          the current page (1-based index)
+     * @return a sublist corresponding to the requested page
      */
     public List<T> paginateReverse(List<T> list, int inventorySize, int page) {
+        if (list == null || list.isEmpty() || inventorySize <= 0) return Collections.emptyList();
         if (page <= 0) page = 1;
 
-        int idStart = Math.max(0, list.size() - (page - 1) * inventorySize - 1);
-        int idEnd = Math.max(-1, idStart - inventorySize);
-
         List<T> currentList = new ArrayList<>();
-        for (int i = idStart; i > idEnd; i--) {
+        int idStart = list.size() - ((page - 1) * inventorySize) - 1;
+        int idEnd = Math.max(idStart - inventorySize + 1, 0);
+
+        if (idStart < 0) return Collections.emptyList();
+
+        for (int i = idStart; i >= idEnd; i--) {
             currentList.add(list.get(i));
         }
-
         return currentList;
     }
 
     /**
-     * Allows you to sort a list of items according to the number of items and the page
-     * The system can be used to create inventories with several pages for example
+     * Paginates a list in normal order.
      *
-     * @param list - List of element
-     * @param size - Pagination size
-     * @param page - Current pagination page
+     * @param list the list of elements
+     * @param size the size of each page
+     * @param page the current page (1-based index)
+     * @return a sublist corresponding to the requested page
      */
     public List<T> paginate(List<T> list, int size, int page) {
+        if (list == null || list.isEmpty() || size <= 0) return Collections.emptyList();
         if (page <= 0) page = 1;
 
         int idStart = (page - 1) * size;
-        int idEnd = Math.min(list.size(), idStart + size);
+        if (idStart >= list.size()) return Collections.emptyList();
 
-        return new ArrayList<>(list.subList(idStart, idEnd));
+        int idEnd = Math.min(idStart + size, list.size());
+
+        return list.subList(idStart, idEnd);
     }
 
     /**
-     * The pagination will be done on the values of the map
+     * Paginates a map's values in reverse order.
      *
-     * @param map  of element
-     * @param size map size
-     * @param page current page
+     * @param map  the map of elements
+     * @param size the size of each page
+     * @param page the current page (1-based index)
+     * @return a sublist corresponding to the requested page
      */
     public List<T> paginateReverse(Map<?, T> map, int size, int page) {
-        return paginateReverse(new ArrayList<>(new LinkedHashMap<>(map).values()), size, page);
+        return (map == null || map.isEmpty()) ? Collections.emptyList() : paginateReverse(new ArrayList<>(map.values()), size, page);
     }
 
     /**
-     * The pagination will be done on the values of the map
+     * Paginates a map's values in normal order.
      *
-     * @param map  of element
-     * @param inventorySize need size
-     * @param page current page
+     * @param map  the map of elements
+     * @param size the size of each page
+     * @param page the current page (1-based index)
+     * @return a sublist corresponding to the requested page
      */
-    public List<T> paginate(Map<?, T> map, int inventorySize, int page) {
-        return paginate(new ArrayList<>(new LinkedHashMap<>(map).values()), inventorySize, page);
+    public List<T> paginate(Map<?, T> map, int size, int page) {
+        return (map == null || map.isEmpty()) ? Collections.emptyList() : paginate(new ArrayList<>(map.values()), size, page);
     }
-
 }

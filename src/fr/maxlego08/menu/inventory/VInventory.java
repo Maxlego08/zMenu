@@ -106,6 +106,11 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
 
         createDefaultInventory();
 
+        if (itemStack == null) {
+            plugin.getLogger().severe("Attention, a null itemstack was found in slot " + slot + " ! > " + this.toString());
+            return null;
+        }
+
         if (Config.enableAntiDupe && enableAntiDupe) {
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
