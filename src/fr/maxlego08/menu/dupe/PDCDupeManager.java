@@ -25,6 +25,10 @@ public class PDCDupeManager implements DupeManager {
             return null;
         }
 
+        if (!itemStack.hasItemMeta()) {
+            return itemStack;
+        }
+
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) return itemStack;
         PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
@@ -38,9 +42,13 @@ public class PDCDupeManager implements DupeManager {
 
         if (itemStack == null) return false;
 
+        if (!itemStack.hasItemMeta()) {
+            return false;
+        }
+
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) return false;
-        
+
         PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
         return persistentDataContainer.has(this.namespacedKey, PersistentDataType.INTEGER);
     }
