@@ -20,21 +20,28 @@ public class PDCDupeManager implements DupeManager {
     @Override
     public ItemStack protectItem(ItemStack itemStack) {
 
-        if (itemStack == null) {
-            Bukkit.getLogger().severe("Attention, you have a null ItemStack on protectItem method !");
-            return null;
-        }
+        try {
 
-        if (!itemStack.hasItemMeta()) {
+            if (itemStack == null) {
+                Bukkit.getLogger().severe("Attention, you have a null ItemStack on protectItem method !");
+                return null;
+            }
+
+            if (!itemStack.hasItemMeta()) {
+                return itemStack;
+            }
+
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta == null) return itemStack;
+            PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
+            persistentDataContainer.set(namespacedKey, PersistentDataType.INTEGER, 1);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        } catch (Exception exception) {
+            System.out.println("Error with the item " + itemStack);
+            exception.printStackTrace();
             return itemStack;
         }
-
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return itemStack;
-        PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
-        persistentDataContainer.set(namespacedKey, PersistentDataType.INTEGER, 1);
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
     }
 
     @Override

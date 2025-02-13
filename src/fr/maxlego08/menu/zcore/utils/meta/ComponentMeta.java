@@ -80,6 +80,10 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         return text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>") ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
     }
 
+    public Component getComponent(String text) {
+        return this.MINI_MESSAGE.deserialize(colorMiniMessage(text));
+    }
+
     private void updateDisplayName(ItemMeta itemMeta, String text) {
         Component component = this.cache.get(text, () -> {
             return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)); // We will force the italics in false, otherwise it will activate for no reason
