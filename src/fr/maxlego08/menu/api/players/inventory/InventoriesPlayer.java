@@ -20,7 +20,7 @@ public interface InventoriesPlayer extends Listener, Savable {
     void storeInventory(Player player);
 
     /**
-     * Allows to give the inventory back to the player
+     * Allows giving the inventory back to the player
      *
      * @param player Player
      */

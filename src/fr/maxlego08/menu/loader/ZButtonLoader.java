@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
-import com.google.common.base.Charsets;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
@@ -19,7 +18,6 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.OpenLink;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
@@ -38,11 +36,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,66 +77,18 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             Map<String, Object> mapPlaceholders = new HashMap<>();
             patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
-            String fileName = configuration.getString(path + "pattern.fileName");
-            String pluginName = configuration.getString(path + "pattern.pluginName", null);
-            Plugin plugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
-            if (plugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
+            String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name"));
+            String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", null));
+            Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
+            if (patternPlugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
 
-            File patternFile = new File(plugin.getDataFolder(), "patterns/" + fileName + ".yml");
+            File patternFile = new File(patternPlugin.getDataFolder(), "patterns/" + fileName + ".yml");
             if (!patternFile.exists()) {
                 throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
             }
 
-            YamlConfiguration patternConfiguration = new YamlConfiguration();
-
-            try {
-                FileInputStream stream = new FileInputStream(patternFile);
-                Reader reader = new InputStreamReader(stream, Charsets.UTF_8);
-
-                BufferedReader input = new BufferedReader(reader);
-                StringBuilder builder = new StringBuilder();
-                Placeholders placeholders = new Placeholders();
-
-                String line;
-                try {
-                    while ((line = input.readLine()) != null) {
-
-                        for (Map.Entry<String, Object> replacement : mapPlaceholders.entrySet()) {
-                            String key = replacement.getKey();
-                            Object value = replacement.getValue();
-
-                            if (line != null) {
-                                if (value instanceof List<?> && line.contains("%" + key + "%")) {
-                                    int index = line.indexOf("%" + key + "%");
-                                    String prefix = line.substring(0, index);
-                                    String finalLine = line.substring(index);
-                                    ((List<?>) value).forEach(currentValue -> {
-                                        String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
-                                        builder.append(placeholders.parse(prefix, key, currentValue.toString())).append(currentElement);
-                                        builder.append('\n');
-                                    });
-
-                                    line = null;
-                                } else {
-                                    line = placeholders.parse(line, key, value.toString());
-                                }
-                            }
-                        }
-
-                        if (line != null) {
-                            builder.append(line);
-                            builder.append('\n');
-                        }
-                    }
-                } finally {
-                    input.close();
-                }
-
-                patternConfiguration.loadFromString(builder.toString());
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+            mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
+            YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
             return this.load(patternConfiguration, "button.", buttonName);
         }
 
@@ -198,11 +144,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             }
         }
 
-        button.setSlots(slots);
-        button.setSlot(slot);
-        button.setPermanent(configuration.getBoolean(path + "isPermanent", defaultButtonValue.isPermanent()));
-        button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", defaultButtonValue.isUpdateOnClick()));
-        button.setCloseInventory(configuration.getBoolean(path + "closeInventory", defaultButtonValue.isCloseInventory()));
+        if (slots.isEmpty()) {
+            button.setSlot(slot);
+        } else {
+            button.setSlots(slots);
+        }
+        button.setPermanent(configuration.getBoolean(path + "isPermanent", configuration.getBoolean(path + "is-permanent", defaultButtonValue.isPermanent())));
+        button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
+        button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));
 
         MenuItemStack itemStack = itemStackLoader.load(configuration, path + "item.", file);
         button.setItemStack(itemStack);
@@ -210,7 +159,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setButtonName(buttonName);
         button.setMessages(configuration.getStringList(path + "messages"));
 
-        String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "item.playerHead", defaultButtonValue.getPlayerHead()));
+        String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "player-head", configuration.getString(path + "item.playerHead", configuration.getString(path + "item.player-head", defaultButtonValue.getPlayerHead()))));
 
         if (playerHead != null) {
             if (NmsVersion.nmsVersion.isNewMaterial()) {
@@ -223,28 +172,35 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
-        button.setMasterButtonUpdated(configuration.getBoolean(path + "updateMasterButton", defaultButtonValue.isUpdateMasterButton()));
-        button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", defaultButtonValue.isRefreshOnClick()));
-        button.setUseCache(configuration.getBoolean(path + "useCache", defaultButtonValue.isUseCache()));
-        button.setOpenAsync(configuration.getBoolean(path + "openAsync", false));
+        button.setMasterButtonUpdated(configuration.getBoolean(path + "updateMasterButton", configuration.getBoolean(path + "update-master-button", defaultButtonValue.isUpdateMasterButton())));
+        button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", configuration.getBoolean(path + "refresh-on-click", defaultButtonValue.isRefreshOnClick())));
+        button.setUseCache(configuration.getBoolean(path + "useCache", configuration.getBoolean(path + "use-cache", defaultButtonValue.isUseCache())));
+        button.setOpenAsync(configuration.getBoolean(path + "openAsync", configuration.getBoolean(path + "open-async", false)));
 
+        String loadString = null;
         if (configuration.contains(path + "openLink")) {
+            loadString = "openLink";
+        } else if (configuration.contains(path + "open-link")) {
+            loadString = "open-link";
+        }
+        if (configuration.contains(path + loadString)) {
 
             Loader<OpenLink> loaderLink = new OpenLinkLoader();
-            button.setOpenLink(loaderLink.load(configuration, path + "openLink."));
+            button.setOpenLink(loaderLink.load(configuration, path + loadString + "."));
 
         }
 
         String sound = configuration.getString(path + "sound", null);
-        Optional<XSound> optionalXSound = sound == null || sound.isEmpty() ? Optional.empty() : XSound.matchXSound(sound);
+        Optional<XSound> optionalXSound = sound == null || sound.isEmpty() ? Optional.empty() : XSound.of(sound);
+        String categoryName = configuration.getString(path + "sound-category", configuration.getString(path + "category", XSound.Category.MASTER.name()));
         float pitch = Float.parseFloat(configuration.getString(path + "pitch", "1.0f"));
         float volume = Float.parseFloat(configuration.getString(path + "volume", "1.0f"));
 
         if (optionalXSound.isPresent()) {
             XSound xSound = optionalXSound.get();
-            button.setSoundOption(new ZSoundOption(xSound, null, pitch, volume, false));
+            button.setSoundOption(new ZSoundOption(xSound, categoryName, null, pitch, volume, false));
         } else {
-            button.setSoundOption(new ZSoundOption(null, sound, pitch, volume, true));
+            button.setSoundOption(new ZSoundOption(null, categoryName, sound, pitch, volume, true));
         }
 
         Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader();
@@ -262,7 +218,16 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> permissions = configuration.getStringList(path + "permission");
         button.setPermissions(permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions, configuration.getString(path + "permission", null));
         List<String> orPermissions = configuration.getStringList(path + "orPermission");
-        button.setOrPermissionsString(orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions);
+        if (orPermissions.isEmpty()) {
+            orPermissions = configuration.getStringList(path + "or-permission");
+        }
+        if (orPermissions.isEmpty()) {
+            orPermissions = configuration.getStringList(path + "orPermissions");
+        }
+        if (orPermissions.isEmpty()) {
+            orPermissions = configuration.getStringList(path + "or-permissions");
+        }
+        button.setOrPermissionsString(orPermissions);
 
         if (configuration.contains(path + "else")) {
 
@@ -307,18 +272,38 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         // Perform commands
         List<String> commands = configuration.getStringList(path + "commands");
         if (commands.isEmpty()) commands = configuration.getStringList(path + "playerCommands");
+        if (commands.isEmpty()) commands = configuration.getStringList(path + "player-commands");
 
         List<String> leftCommands = configuration.getStringList(path + "leftCommands");
+        if (leftCommands.isEmpty()) leftCommands = configuration.getStringList(path + "left-commands");
         if (leftCommands.isEmpty()) leftCommands = configuration.getStringList(path + "leftPlayerCommands");
+        if (leftCommands.isEmpty()) leftCommands = configuration.getStringList(path + "left-player-commands");
 
         List<String> rightCommands = configuration.getStringList(path + "rightCommands");
+        if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "right-commands");
         if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "rightPlayerCommands");
+        if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "right-player-commands");
 
         List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
+        if (consoleCommands.isEmpty()) {
+            consoleCommands = configuration.getStringList(path + "console-commands");
+        }
+
         List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
+        if (consoleRightCommands.isEmpty()) {
+            consoleRightCommands = configuration.getStringList(path + "console-right-commands");
+        }
+
         List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");
+        if (consoleLeftCommands.isEmpty()) {
+            consoleLeftCommands = configuration.getStringList(path + "console-left-commands");
+        }
+
         List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
-        String consolePermission = configuration.getString(path + "consolePermission");
+        if (consolePermissionCommands.isEmpty()) {
+            consolePermissionCommands = configuration.getStringList(path + "console-permission-commands");
+        }
+        String consolePermission = configuration.getString(path + "consolePermission", configuration.getString(path + "console-permission"));
 
         button.setCommands(commands);
         button.setLeftCommands(leftCommands);
@@ -362,16 +347,20 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param path          current path in configuration
      */
     private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
-        ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement.");
-        if (section == null) section = configuration.getConfigurationSection(path + "click_requirements.");
-        if (section == null) section = configuration.getConfigurationSection(path + "clicks_requirements.");
-        if (section == null) section = configuration.getConfigurationSection(path + "clicks_requirement.");
+        String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
+        ConfigurationSection section = null;
+        String sectionString = "";
+        for (int i = 0; i < sectionStrings.length; i++) {
+            sectionString = sectionStrings[i];
+            section = configuration.getConfigurationSection(path + sectionString);
+            if (section != null) break;
+        }
         if (section == null) return;
 
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         List<Requirement> requirements = new ArrayList<>();
         for (String key : section.getKeys(false)) {
-            requirements.add(loader.load(configuration, path + "click_requirement." + key + ".", file));
+            requirements.add(loader.load(configuration, path + sectionString + key + ".", file));
         }
         button.setClickRequirements(requirements);
     }
@@ -386,7 +375,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      */
     private void loadViewRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
-        button.setViewRequirement(loader.load(configuration, path + "view_requirement.", file));
+        if (configuration.getConfigurationSection(path + "view_requirement.") != null) {
+            button.setViewRequirement(loader.load(configuration, path + "view_requirement.", file));
+        } else if (configuration.getConfigurationSection(path + "view-requirement.") != null) {
+            button.setViewRequirement(loader.load(configuration, path + "view-requirement.", file));
+        }
     }
 
     /**
@@ -401,6 +394,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<RefreshRequirement> loader = new RefreshRequiementLoader(this.plugin);
         if (configuration.getConfigurationSection(path + "refresh_requirements") != null) {
             button.setRefreshRequirement(loader.load(configuration, path + "refresh_requirements.", file));
+        } else if (configuration.getConfigurationSection(path + "refresh-requirements") != null) {
+            button.setRefreshRequirement(loader.load(configuration, path + "refresh-requirements.", file));
         }
     }
 

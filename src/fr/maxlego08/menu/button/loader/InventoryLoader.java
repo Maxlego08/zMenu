@@ -44,7 +44,7 @@ public class InventoryLoader implements ButtonLoader {
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         String inventoryName = configuration.getString(path + "inventory");
         String pluginName = configuration.getString(path + "plugin");
-        int toPage = configuration.getInt(path + "toPage", 1);
+        int toPage = configuration.getInt(path + "toPage", configuration.getInt(path + "to-page", 1));
         List<String> arguments = configuration.getStringList(path + "arguments");
         return new ZInventoryButton(this.manager, this.commandManager, inventoryName, pluginName, arguments, toPage);
     }

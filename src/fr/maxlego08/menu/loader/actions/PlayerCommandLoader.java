@@ -19,7 +19,7 @@ public class PlayerCommandLoader implements ActionLoader {
 
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file) {
-        boolean inChat = accessor.getBoolean("commandInChat", false);
+        boolean inChat = accessor.getBoolean("commandInChat", accessor.getBoolean("command-in-chat", false));
         List<String> commands = accessor.getStringList("commands");
         return new PlayerCommandAction(commands, inChat);
     }

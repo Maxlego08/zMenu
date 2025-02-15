@@ -42,6 +42,8 @@ import fr.maxlego08.menu.loader.actions.ChatLoader;
 import fr.maxlego08.menu.loader.actions.CloseLoader;
 import fr.maxlego08.menu.loader.actions.ConnectLoader;
 import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
+import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
+import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
 import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
@@ -50,9 +52,8 @@ import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
-import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
-import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
+import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.LuckPermPermissibleLoader;
@@ -60,7 +61,6 @@ import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -161,7 +161,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration configuration = loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
         boolean isDeluxeMenu = configuration.contains("menu_title");
 
         Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);

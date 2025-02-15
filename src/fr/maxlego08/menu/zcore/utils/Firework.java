@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.jetbrains.annotations.NotNull;
 
 public class Firework {
     private boolean isStar;
@@ -38,7 +37,6 @@ public class Firework {
         this.effect = effect;
     }
 
-    @NotNull
     public ItemStack toItemStack(int amount) {
         Material material = this.isStar ? Material.FIREWORK_STAR : Material.FIREWORK_ROCKET;
         ItemStack itemStack = new ItemStack(material, amount);

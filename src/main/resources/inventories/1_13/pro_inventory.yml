@@ -72,7 +72,7 @@ items:
   # So we have red glass that will be displayed on all pages of slot 2 to 6
   slots:
     # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#ispermanent)
-    isPermanent: true
+    is-permanent: true
     item:
       material: GRAY_STAINED_GLASS_PANE
       name: "&e"

@@ -27,6 +27,6 @@ public class PlayerNamePermissibleLoader extends ZPermissibleLoader {
     public Permissible load(String path, TypedMapAccessor accessor, File file) {
         List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
-        return new ZPlayerNamePermissible(accessor.getString("playerName", accessor.getString("playername")), denyActions, successActions);
+        return new ZPlayerNamePermissible(accessor.getString("playerName", accessor.getString("playername", accessor.getString("player-name"))), denyActions, successActions);
     }
 }

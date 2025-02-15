@@ -40,13 +40,32 @@
 
 # Unreleased
 
+# 1.0.3.8
+
+- Added [Global Placeholders](https://docs.zmenu.dev/configurations/global-placeholders), which allows you to define
+  values that will be available across all inventory configuration files.
+- Fixed custom heads with URLs
+- Fixed inventories that do not have a default type
+- Added sound category
+- Removed deprecated method ``onInventoryOpen(Player player, InventoryDefault inventory)``
+- Improved code, removed the ``slot`` variable to use only the list of ``slots`` for each button
+- Fixed actions withdraw, deposit and requirement money, now allowing lowercase
+- Added API code for use of slots in player inventory. Coming soon in[ zMenu+](https://www.spigotmc.org/resources/zmenu-premium-zmenu-addon.115533/) !
+- Updated folia API
+- All configuration keys are now in kebab case. Old configurations will still work but the documentation has been
+  updated to reflect the new format.
+- Improved pagination performance by avoiding unnecessary list management operations
+
 # 1.0.3.7
 
 - Added inventory type [#97](https://github.com/Maxlego08/zMenu/pull/97)
 - Added placeholder priority [#96](https://github.com/Maxlego08/zMenu/pull/96)
-- Added the possibility to include a prefix for lists when using a pattern. You need to add text in front of your placeholder
-- Modified the ``money`` permissible to support more economies using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
-- Modified the ``deposit`` and ``withdraw`` action to support more economies using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
+- Added the possibility to include a prefix for lists when using a pattern. You need to add text in front of your
+  placeholder
+- Modified the ``money`` permissible to support more economies
+  using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
+- Modified the ``deposit`` and ``withdraw`` action to support more economies
+  using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
 - Added ``deny-message`` for commands. Allows to send a custom error message if the player does not have permission.
 - Fixed the max page placeholder that says 0, it will now say 1 by default
 
@@ -62,7 +81,8 @@
 
 # 1.0.3.5
 
-- Added support for DeluxeMenus configurations. You no longer need to convert your DeluxeMenu configurations to zMenu, they are now automatically compatible!
+- Added support for DeluxeMenus configurations. You no longer need to convert your DeluxeMenu configurations to zMenu,
+  they are now automatically compatible!
 - Added command ``/zm documentation [<word>]``
 - Added key `title` for inventory name, you can use `name` or `title` now
 - Fixed itemstack with 1.21, components was added when it should not be added by default.
@@ -82,21 +102,33 @@
 - Deprecated method ``onInventoryOpen(Player, InventoryDefault)`` use
   now `onInventoryOpen(Player, InventoryDefault, Placeholders)`
 - Fixed items flags (HIDE_ATTRIBUTES) for 1.20.4 and above
-- Added [zItems](https://www.spigotmc.org/resources/zitems-demo.118638/) support, Example: ``material: "zitem:<item name>"``, zItems is an item that allows you to create items taking advantage of all the features of 1.21
-### Only for version 1.21 and above 
+- Added [zItems](https://www.spigotmc.org/resources/zitems-demo.118638/) support, Example:
+  ``material: "zitem:<item name>"``, zItems is an item that allows you to create items taking advantage of all the
+  features of 1.21
+
+### Only for version 1.21 and above
+
 - Added ``max-stack-size: <number>``, Overrides the default maximum stack size of this item.
 - Added ``max-damage: <number>``, Controls the maximum amount of damage an item can take.
 - Added ``damage: <number>``, The absolute amount of damage or use this item has taken.
-- Added ``repair-cost: <number>``, Number of enchantment levels to add to the base level cost when repairing, combining, or renaming this item with an Anvil.
+- Added ``repair-cost: <number>``, Number of enchantment levels to add to the base level cost when repairing, combining,
+  or renaming this item with an Anvil.
 - Added ``unbreakable: <true/fasle>``, Tools, armor and weapons set with this won't lose durability when used.
-- Added ``unbreakable-show-in-tooltip: <true/fasle>``, If false, an 'Unbreakable' line will not be included in the tooltip. Default is True.
+- Added ``unbreakable-show-in-tooltip: <true/fasle>``, If false, an 'Unbreakable' line will not be included in the
+  tooltip. Default is True.
 - Added ``fire-resistant: <true/fasle>``, If true, this item will not burn in fire.
-- Added ``hide-tooltip: <true/fasle>``, If present, it will completely hide whole item tooltip (that includes item name). The tooltip will be still visible and searchable in creative mode.
-- Added ``hide-additional-tooltip: <true/fasle>``, If true, disables 'additional' tooltip part which comes from the item type.
-- Added ``enchantment-glint: <true/fasle>``, If true, the item will glint, even without enchantments; if false, the item will not glint, even with enchantments. If null, the override will be cleared.
-- Added ``enchantment-show-in-tooltip: <true/fasle>``, If false, no enchantments will be shown in the item tooltip. Default is true.
-- Added ``attribute-show-in-tooltip: <true/fasle>``, If false. The attributes will not show on the item tooltip. Default is true.
-- Added ``item-rarity: <COMMON/UNCOMMON,RARE,EPIC>``, Determines the default color of its name. This enum is ordered from least rare to most rare.
+- Added ``hide-tooltip: <true/fasle>``, If present, it will completely hide whole item tooltip (that includes item
+  name). The tooltip will be still visible and searchable in creative mode.
+- Added ``hide-additional-tooltip: <true/fasle>``, If true, disables 'additional' tooltip part which comes from the item
+  type.
+- Added ``enchantment-glint: <true/fasle>``, If true, the item will glint, even without enchantments; if false, the item
+  will not glint, even with enchantments. If null, the override will be cleared.
+- Added ``enchantment-show-in-tooltip: <true/fasle>``, If false, no enchantments will be shown in the item tooltip.
+  Default is true.
+- Added ``attribute-show-in-tooltip: <true/fasle>``, If false. The attributes will not show on the item tooltip. Default
+  is true.
+- Added ``item-rarity: <COMMON/UNCOMMON,RARE,EPIC>``, Determines the default color of its name. This enum is ordered
+  from least rare to most rare.
 - Added ``trim: <trim configuration>``, Represents an armor trim that may be applied to an item.
 
 # 1.0.3.3

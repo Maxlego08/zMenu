@@ -136,26 +136,43 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setLore(lore);
         menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", null)));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", "0"))))));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", "0")))))));
 
         Map<String, String> translatedDisplayName = new HashMap<>();
         Map<String, List<String>> translatedLore = new HashMap<>();
 
-        configuration.getMapList(path + "translatedName").forEach(map -> {
-            if (map.containsKey("locale") && map.containsKey("name")) {
-                String locale = (String) map.get("locale");
-                String name = (String) map.get("name");
-                translatedDisplayName.put(locale.toLowerCase(), name);
-            }
-        });
+        String loadString = null;
+        if (configuration.contains(path + "translatedName")) {
+            loadString = "translatedName";
+        } else if (configuration.contains(path + "translated-name")) {
+            loadString = "translated-name";
+        }
+        if (loadString != null) {
+            configuration.getMapList(path + loadString).forEach(map -> {
+                if (map.containsKey("locale") && map.containsKey("name")) {
+                    String locale = (String) map.get("locale");
+                    String name = (String) map.get("name");
+                    translatedDisplayName.put(locale.toLowerCase(), name);
+                }
+            });
 
-        configuration.getMapList(path + "translatedLore").forEach(map -> {
-            if (map.containsKey("locale") && map.containsKey("lore")) {
-                String locale = (String) map.get("locale");
-                List<String> name = (List<String>) map.get("lore");
-                translatedLore.put(locale.toLowerCase(), name);
-            }
-        });
+        }
+
+        loadString = null;
+        if (configuration.contains(path + "translatedLore")) {
+            loadString = "translatedLore";
+        } else if (configuration.contains(path + "translated-lore")) {
+            loadString = "translated-lore";
+        }
+        if (loadString != null) {
+            configuration.getMapList(path + loadString).forEach(map -> {
+                if (map.containsKey("locale") && map.containsKey("lore")) {
+                    String locale = (String) map.get("locale");
+                    List<String> name = (List<String>) map.get("lore");
+                    translatedLore.put(locale.toLowerCase(), name);
+                }
+            });
+        }
 
         menuItemStack.setTranslatedDisplayName(translatedDisplayName);
         menuItemStack.setTranslatedLore(translatedLore);
@@ -299,7 +316,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (!item.getLore().isEmpty()) configuration.set(path + "lore", item.getLore());
         if (item.isGlowing()) configuration.set(path + "glow", item.isGlowing());
         if (item.getModelID() != null && !item.getModelID().equalsIgnoreCase("0")) {
-            configuration.set(path + "modelID", item.getModelID());
+            configuration.set(path + "model-id", item.getModelID());
         }
         if (item.getData() > 0) configuration.set(path + "data", item.getData());
         if (item.getDurability() > 0) configuration.set(path + "durability", item.getDurability());

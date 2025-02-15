@@ -12,6 +12,8 @@ import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.TrimHelper;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -31,6 +33,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -45,9 +48,12 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionType;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -189,6 +195,130 @@ public class MenuItemStack extends ZUtils {
         }
 
         return menuItemStack;
+    }
+
+    public static MenuItemStack fromMap(InventoryManager inventoryManager, File file, String path, Map<String, Object> map) {
+        TypedMapAccessor accessor = new TypedMapAccessor(map);
+        MenuItemStack menuItemStack = new MenuItemStack(inventoryManager, file.getPath(), path);
+
+        menuItemStack.setData(accessor.getInt("data", 0));
+        menuItemStack.setDurability(accessor.getInt("durability", 0));
+        menuItemStack.setAmount(accessor.getString("amount", "1"));
+        menuItemStack.setMaterial(accessor.getString("material", null));
+        menuItemStack.setTargetPlayer(accessor.getString("target", null));
+        menuItemStack.setUrl(accessor.getString("url", null));
+
+        List<String> lore = accessor.getStringList("lore");
+        if (lore.isEmpty()) {
+            Object object = accessor.getObject("lore", null);
+            if (object instanceof String) {
+                String loreString = (String) object;
+                lore = Arrays.asList(loreString.split("\n"));
+            }
+        }
+        menuItemStack.setLore(lore);
+        menuItemStack.setDisplayName(accessor.getString("name", accessor.getString("display_name", null)));
+        menuItemStack.setGlowing(accessor.getBoolean("glow"));
+        menuItemStack.setModelID(accessor.getString("modelID", accessor.getString("model-id", accessor.getString("modelId", accessor.getString("customModelId", accessor.getString("customModelData", accessor.getString("model_data", "0")))))));
+
+        Enchantments helperEnchantments = inventoryManager.getEnchantments();
+        List<String> enchants = accessor.getStringList("enchants");
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+
+        for (String enchantString : enchants) {
+
+            try {
+
+                String[] splitEnchant = enchantString.split(",");
+
+                if (splitEnchant.length == 1)
+                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
+
+                int level;
+                String enchant = splitEnchant[0];
+                try {
+                    level = Integer.parseInt(splitEnchant[1]);
+                } catch (NumberFormatException e) {
+                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
+                }
+
+                Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments(enchant);
+                if (!optional.isPresent()) {
+                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
+                }
+
+                enchantments.put(optional.get().getEnchantment(), level);
+
+            } catch (ItemEnchantException e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<ItemFlag> flags = accessor.getStringList("flags").stream().map(menuItemStack::getFlag).collect(Collectors.toList());
+
+        List<IAttribute> attributeModifiers = new ArrayList<>();
+
+        if (accessor.contains("attributes")) {
+            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) accessor.getList("attributes");
+            if (attributesFromConfig != null) {
+                for (Map<String, Object> attributeMap : attributesFromConfig) {
+                    attributeModifiers.add(Attribute.deserialize(attributeMap));
+                }
+            }
+        }
+
+        menuItemStack.setEnchantments(enchantments);
+        menuItemStack.setFlags(flags);
+        menuItemStack.setAttributes(attributeModifiers);
+
+        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+            loadNewItemStacks(menuItemStack, accessor, path, file);
+        }
+
+        return menuItemStack;
+    }
+
+    private static void loadNewItemStacks(MenuItemStack menuItemStack, TypedMapAccessor accessor, String path, File file) {
+        menuItemStack.setMaxStackSize(accessor.getInt("max-stack-size", 0));
+        menuItemStack.setMaxDamage(accessor.getInt("max-damage", 0));
+        menuItemStack.setDamage(accessor.getInt("damage", 0));
+        menuItemStack.setRepairCost(accessor.getInt("repair-cost", 0));
+        menuItemStack.setUnbreakableEnabled(getOrNull(accessor.getObject("unbreakable", null)));
+        menuItemStack.setUnbreakableShowInTooltip(getOrNull(accessor.getObject("unbreakable-show-in-tooltip", null)));
+        menuItemStack.setFireResistant(getOrNull(accessor.getObject("fire-resistant", null)));
+        menuItemStack.setHideTooltip(getOrNull(accessor.getObject("hide-tooltip", null)));
+        menuItemStack.setHideAdditionalTooltip(getOrNull(accessor.getObject("hide-additional-tooltip", null)));
+        menuItemStack.setEnchantmentGlint(getOrNull(accessor.getObject("enchantment-glint", null)));
+        menuItemStack.setEnchantmentShowInTooltip(getOrNull(accessor.getObject("enchantment-show-in-tooltip", null)));
+        menuItemStack.setAttributeShowInTooltip(getOrNull(accessor.getObject("attribute-show-in-tooltip", null)));
+
+        String rarityString = accessor.getString("item-rarity", null);
+        if (rarityString != null) {
+            menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
+        }
+
+        boolean enableTrim = accessor.getBoolean("trim.enable", false);
+        if (enableTrim) {
+            TrimHelper trimHelper = new TrimHelper();
+            TrimPattern trimPattern = trimHelper.getTrimPatterns().get(accessor.getString("trim.pattern", "").toLowerCase());
+            if (trimPattern == null) {
+                enableTrim = false;
+                Bukkit.getLogger().severe("Trim pattern " + accessor.getString("trim.pattern", "") + " was not found for item " + file.getAbsolutePath());
+            }
+            TrimMaterial trimMaterial = trimHelper.getTrimMaterials().get(accessor.getString("trim.material", "").toLowerCase());
+            if (trimMaterial == null) {
+                enableTrim = false;
+                Bukkit.getLogger().severe("Trim material " + accessor.getString("trim.material", "") + " was not found for item " + file.getAbsolutePath());
+            }
+            menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
+        }
+    }
+
+    private static Boolean getOrNull(Object o) {
+        if (o instanceof Boolean) {
+            return (Boolean) o;
+        }
+        return null;
     }
 
     /**
@@ -804,7 +934,7 @@ public class MenuItemStack extends ZUtils {
         setLore(lore);
         setDisplayName(configuration.getString("name", null));
         setGlowing(configuration.getBoolean("glow"));
-        setModelID(configuration.getString("modelID", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0")))));
+        setModelID(configuration.getString("modelID", configuration.getString("model-id", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0"))))));
 
         List<String> enchants = configuration.getStringList("enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();

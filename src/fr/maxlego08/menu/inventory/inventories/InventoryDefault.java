@@ -15,12 +15,20 @@ import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +73,6 @@ public class InventoryDefault extends VInventory {
         ZScheduler scheduler = this.plugin.getScheduler();
         Runnable runnable = () -> {
             Placeholders placeholders = new Placeholders();
-            this.buttons.forEach(button -> button.onInventoryOpen(player, this)); // Remove in few version !
             this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
             String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
@@ -125,7 +132,7 @@ public class InventoryDefault extends VInventory {
     }
 
     /**
-     * Allows to display a button
+     * Allows displaying a button
      *
      * @param button The button
      */
@@ -175,7 +182,10 @@ public class InventoryDefault extends VInventory {
 
         } else {
 
-            Runnable runnable = () -> this.displayFinalButton(button, button.getRealSlot(this.inventory.size(), this.page));
+            Runnable runnable = () -> {
+                int slot = button.getRealSlot(button.isPlayerInventory() ? 36 : this.inventory.size(), this.page);
+                this.displayFinalButton(button, slot);
+            };
 
             if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
             else runnable.run();
@@ -195,12 +205,13 @@ public class InventoryDefault extends VInventory {
                 continue;
             }
 
-            if (slot >= this.inventory.size()) {
+            int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
+            if (slot >= maxSlotSize) {
                 Logger.info("slot is out of range ! (" + slot + ") Button: " + button.getName() + " in inventory " + this.inventory.getFileName(), Logger.LogType.ERROR);
                 continue;
             }
 
-            ItemButton itemButton = this.addItem(slot, itemStack);
+            ItemButton itemButton = this.addItem(button.isPlayerInventory(), slot, itemStack);
             if (button.isClickable()) {
                 itemButton.setClick(event -> {
 
@@ -271,7 +282,7 @@ public class InventoryDefault extends VInventory {
     /**
      * @return the inventory
      */
-    public @NotNull Inventory getMenuInventory() {
+    public Inventory getMenuInventory() {
         return inventory;
     }
 

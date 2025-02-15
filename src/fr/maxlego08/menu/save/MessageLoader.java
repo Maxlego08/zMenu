@@ -75,9 +75,9 @@ public class MessageLoader extends YamlUtils implements Savable {
 
                 configuration.set(path + ".title", colorReverse(message.getTitle()));
                 configuration.set(path + ".subtitle", colorReverse(message.getSubTitle()));
-                configuration.set(path + ".fadeInTime", message.getStart());
-                configuration.set(path + ".showTime", message.getTime());
-                configuration.set(path + ".fadeOutTime", message.getEnd());
+                configuration.set(path + ".fade-in-time", message.getStart());
+                configuration.set(path + ".show-time", message.getTime());
+                configuration.set(path + ".fade-out-time", message.getEnd());
             }
         }
 
@@ -170,9 +170,9 @@ public class MessageLoader extends YamlUtils implements Savable {
                 case TITLE: {
                     String title = configuration.getString(key + ".title");
                     String subtitle = configuration.getString(key + ".subtitle");
-                    int fadeInTime = configuration.getInt(key + ".fadeInTime");
-                    int showTime = configuration.getInt(key + ".showTime");
-                    int fadeOutTime = configuration.getInt(key + ".fadeOutTime");
+                    int fadeInTime = configuration.getInt(key + ".fadeInTime", configuration.getInt(key + ".fade-in-time"));
+                    int showTime = configuration.getInt(key + ".showTime", configuration.getInt(key + ".show-time"));
+                    int fadeOutTime = configuration.getInt(key + ".fadeOutTime", configuration.getInt(key + ".fade-out-time"));
                     Map<String, Object> titles = new HashMap<String, Object>();
                     titles.put("title", color(title));
                     titles.put("subtitle", color(subtitle));

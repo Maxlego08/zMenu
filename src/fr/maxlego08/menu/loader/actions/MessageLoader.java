@@ -20,7 +20,7 @@ public class MessageLoader implements ActionLoader {
 
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file) {
-        boolean miniMessage = accessor.getBoolean("minimessage", true);
+        boolean miniMessage = accessor.getBoolean("minimessage", accessor.getBoolean("mini-message", true));
         List<String> messages = accessor.getStringList("messages");
         return new MessageAction(messages, miniMessage);
     }

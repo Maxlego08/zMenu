@@ -4,8 +4,8 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
-import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -120,20 +120,9 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
 
     /**
      * Called when the player opens the inventory.
-     * @deprecated Use onInventoryOpen(Player, InventoryDefault, Placeholders)
-     * @since 1.0.3.4
      *
-     * @param player    The player.
-     * @param inventory The inventory.
-     */
-    @Deprecated
-    void onInventoryOpen(Player player, InventoryDefault inventory);
-
-    /**
-     * Called when the player opens the inventory.
-     *
-     * @param player    The player.
-     * @param inventory The inventory.
+     * @param player       The player.
+     * @param inventory    The inventory.
      * @param placeholders Placeholders value.
      */
     void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders);
@@ -147,7 +136,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     void onInventoryClose(Player player, InventoryDefault inventory);
 
     /**
-     * Allows to get the real slot of the button.
+     * Allows getting the real slot of the button.
      *
      * @param inventorySize The size of the inventory.
      * @param page          The current page.
@@ -245,12 +234,12 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
     /**
      * Performs an action when a back button is clicked.
      *
-     * @param player          The player.
-     * @param event           The inventory click event.
-     * @param inventory       The current inventory.
-     * @param oldInventories  The list of old inventories.
-     * @param toInventory     The inventory to open.
-     * @param slot            The current slot.
+     * @param player         The player.
+     * @param event          The inventory click event.
+     * @param inventory      The current inventory.
+     * @param oldInventories The list of old inventories.
+     * @param toInventory    The inventory to open.
+     * @param slot           The current slot.
      */
     void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot);
 
@@ -279,7 +268,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * Called when the player drags items within the inventory or from their player inventory into the zMenu inventory.
      * This method allows for custom drag behavior to be implemented, providing flexibility in how items can be moved
      * around within an inventory and how these actions interact with the overall functionality of the menu.
-     *
+     * <p>
      * Implementations can use this method to prevent unwanted item movements, to trigger specific actions when
      * certain items are dragged to specific slots, or to manage the addition or removal of items in custom ways
      * that align with the menu's logic and requirements.
@@ -352,4 +341,18 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @return The priority of the button, which is used to determine the order in which buttons are processed
      */
     int getPriority();
+
+    /**
+     * Return true if the button is in the player's inventory, this feature is available with zMenu+
+     *
+     * @return true if the button is in the player's inventory
+     */
+    boolean isPlayerInventory();
+
+    /**
+     * Sets whether the button is in the player's inventory.
+     *
+     * @param playerInventory True if the button is in the player's inventory, false otherwise.
+     */
+    void setPlayerInventory(boolean playerInventory);
 }

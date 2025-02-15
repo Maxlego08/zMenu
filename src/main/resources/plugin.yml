@@ -17,3 +17,5 @@ softdepend:
   - zHead
   - zItems
 folia-supported: true
+loadbefore:
+  - SuperiorSkyblock2

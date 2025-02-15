@@ -22,11 +22,12 @@ public class SoundLoader implements ActionLoader {
         return new SoundAction(loadSound(path, accessor, file));
     }
 
-    protected SoundOption loadSound(String path, TypedMapAccessor accessor, File file){
+    protected SoundOption loadSound(String path, TypedMapAccessor accessor, File file) {
         String sound = accessor.getString("sound");
         float pitch = accessor.getFloat("pitch", 1f);
         float volume = accessor.getFloat("volume", 1f);
-        XSound xSound = sound == null || sound.isEmpty() ? null : XSound.matchXSound(sound).orElse(null);
-        return new ZSoundOption(xSound, sound, pitch, volume, xSound == null);
+        String category = accessor.getString("sound-category", accessor.getString("category", XSound.Category.MASTER.name()));
+        XSound xSound = sound == null || sound.isEmpty() ? null : XSound.of(sound).orElse(null);
+        return new ZSoundOption(xSound, category, sound, pitch, volume, xSound == null);
     }
 }

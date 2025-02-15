@@ -40,7 +40,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     public void storeInventory(Player player) {
         if (hasSavedInventory(player.getUniqueId())) {
             // Something is wrong
-            Logger.info("The plugin tries to save an inventory while the player already has an inventory saved!");
+            // Logger.info("The plugin tries to save an inventory while the player already has an inventory saved!");
             return;
         }
 
