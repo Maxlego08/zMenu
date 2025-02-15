@@ -19,7 +19,7 @@ public class CurrencyWithdrawLoader implements ActionLoader {
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file) {
         String bigDecimal = accessor.getString("amount");
-        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()));
+        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase());
         String economyName = accessor.getString("economy", null);
         return new CurrencyWithdrawAction(bigDecimal, currencies, economyName);
     }
