@@ -30,7 +30,7 @@ public class CurrencyPermissibleLoader extends ZPermissibleLoader {
         List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
         String amount = accessor.getString("amount");
-        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()));
+        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase());
         String economyName = accessor.getString("economy", null);
         return new ZCurrencyPermissible(denyActions, successActions, currencies, amount, economyName);
     }
