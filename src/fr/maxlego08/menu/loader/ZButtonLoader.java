@@ -166,7 +166,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 itemStack.setMaterial("PLAYER_HEAD");
             } else {
                 itemStack.setMaterial("SKULL_ITEM");
-                itemStack.setData(3);
+                itemStack.setData("3");
             }
             button.setPlayerHead(playerHead);
         }

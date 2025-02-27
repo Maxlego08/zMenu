@@ -63,7 +63,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         File file = (File) objects[0];
 
         MenuItemStack menuItemStack = new MenuItemStack(this.manager, file.getPath(), path);
-        menuItemStack.setData(configuration.getInt(path + "data", 0));
+        menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
         menuItemStack.setMaterial(configuration.getString(path + "material", null));
@@ -318,7 +318,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (item.getModelID() != null && !item.getModelID().equalsIgnoreCase("0")) {
             configuration.set(path + "model-id", item.getModelID());
         }
-        if (item.getData() > 0) configuration.set(path + "data", item.getData());
+        try {
+            if (Integer.parseInt(item.getData()) > 0) configuration.set(path + "data", item.getData());
+        } catch (Exception ignored) {
+            configuration.set(path + "data", item.getData());
+        }
         if (item.getDurability() > 0) configuration.set(path + "durability", item.getDurability());
         if (item.getAmount() != null) {
             try {

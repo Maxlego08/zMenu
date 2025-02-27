@@ -33,7 +33,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -72,7 +71,7 @@ public class MenuItemStack extends ZUtils {
     private String targetPlayer;
     private String amount;
     private String url;
-    private int data;
+    private String data;
     private int durability;
     private Potion potion;
     private List<String> lore = new ArrayList<>();
@@ -123,7 +122,7 @@ public class MenuItemStack extends ZUtils {
             int durability = itemStack.getDurability();
             if (durability > 0) menuItemStack.setDurability(durability);
             int data = itemStack.getData().getData();
-            if (data > 0) menuItemStack.setData(data);
+            if (data > 0) menuItemStack.setData(String.valueOf(data));
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -201,7 +200,7 @@ public class MenuItemStack extends ZUtils {
         TypedMapAccessor accessor = new TypedMapAccessor(map);
         MenuItemStack menuItemStack = new MenuItemStack(inventoryManager, file.getPath(), path);
 
-        menuItemStack.setData(accessor.getInt("data", 0));
+        menuItemStack.setData(accessor.getString("data", "0"));
         menuItemStack.setDurability(accessor.getInt("durability", 0));
         menuItemStack.setAmount(accessor.getString("amount", "1"));
         menuItemStack.setMaterial(accessor.getString("material", null));
@@ -395,7 +394,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (itemStack == null) {
-            itemStack = new ItemStack(material, amount, (byte) this.data);
+            itemStack = new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false)));
         }
 
         if (this.url != null && !url.equalsIgnoreCase("null")) {
@@ -627,14 +626,14 @@ public class MenuItemStack extends ZUtils {
     /**
      * @return the data
      */
-    public int getData() {
+    public String getData() {
         return data;
     }
 
     /**
      * @param data the data to set
      */
-    public void setData(int data) {
+    public void setData(String data) {
         this.data = data;
     }
 
@@ -863,7 +862,7 @@ public class MenuItemStack extends ZUtils {
 
     public void setTypeMapAccessor(MapConfiguration configuration) {
 
-        setData(configuration.getInt("data", 0));
+        setData(configuration.getString("data", "0"));
         setDurability(configuration.getInt("durability", 0));
         setAmount(configuration.getString("amount", "1"));
         setMaterial(configuration.getString("material", null));

@@ -756,4 +756,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public FontImage getFontImage() {
         return this.plugin.getFontImage();
     }
+
+    @Override
+    public YamlConfiguration loadYamlConfiguration(File file) {
+        return loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+    }
 }
