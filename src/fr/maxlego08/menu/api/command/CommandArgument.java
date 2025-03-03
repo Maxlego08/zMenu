@@ -39,9 +39,9 @@ public interface CommandArgument {
     List<Action> getActions();
 
     /**
-     * Gets a list of strings that can be used for auto-completion of this argument.
+     * Gets the list of possible auto-completions for this argument.
      *
-     * @return A list of strings that can be used to auto-complete the argument.
+     * @return A list of possible auto-completions.
      */
     List<String> getAutoCompletion();
 
@@ -51,4 +51,11 @@ public interface CommandArgument {
      * @return {@code true} if the main actions should be performed, otherwise {@code false}.
      */
     boolean isPerformMainActions();
+
+    /**
+     * Gets the default value associated with this argument. This is used when the argument is not specified.
+     *
+     * @return The default value associated with the argument.
+     */
+    String getDefaultValue();
 }
