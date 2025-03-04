@@ -180,33 +180,33 @@ public class MenuPlugin extends ZPlugin {
         this.addSave(this.dataManager);
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
-        if (this.isEnable(Plugins.HEADDATABASE)) {
+        if (this.isActive(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
         }
-        if (this.isEnable(Plugins.ZHEAD)) {
+        if (this.isActive(Plugins.ZHEAD)) {
             this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
         }
-        if (this.isEnable(Plugins.ORAXEN)) {
+        if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
         }
-        if (this.isEnable(Plugins.NEXO)) {
+        if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
         }
-        if (this.isEnable(Plugins.ITEMSADDER)) {
+        if (this.isActive(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
         }
-        if (this.isEnable(Plugins.SLIMEFUN)) {
+        if (this.isActive(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
         }
-        if (this.isEnable(Plugins.NOVA)) {
+        if (this.isActive(Plugins.NOVA)) {
             this.inventoryManager.registerMaterialLoader(new NovaLoader());
         }
-        if (this.isEnable(Plugins.ECO)) {
+        if (this.isActive(Plugins.ECO)) {
             this.inventoryManager.registerMaterialLoader(new EcoLoader());
         }
 
-        if (this.isEnable(Plugins.ZITEMS)) {
+        if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
         }
 

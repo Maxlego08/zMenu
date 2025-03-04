@@ -226,6 +226,17 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     /**
+     * Check if plugin is enabled
+     *
+     * @param pluginName Plugin name
+     * @return true is its enable
+     */
+    public boolean isActive(Plugins pluginName) {
+        Plugin plugin = getPlugin(pluginName);
+        return plugin != null;
+    }
+
+    /**
      * Get plugin for plugins enum
      *
      * @param plugin Plugin name
