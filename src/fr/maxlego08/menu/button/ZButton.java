@@ -228,7 +228,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 this.openLink.send(player, this.messages);
             } else {
 
-                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message.replace("%player%", player.getName()), player, true)));
+                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(placeholders.parse(message.replace("%player%", player.getName())), player, true)));
             }
         }
 
@@ -247,7 +247,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(player, event.getClick(), inventory.getPlugin().getScheduler());
+        this.execute(player, event.getClick(), inventory.getPlugin().getScheduler(), placeholders);
     }
 
     @Override

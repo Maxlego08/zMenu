@@ -40,6 +40,8 @@
 
 # Unreleased
 
+- Fixed placeholders for messages and commands
+
 # 1.0.3.8
 
 - Added [Global Placeholders](https://docs.zmenu.dev/configurations/global-placeholders), which allows you to define
