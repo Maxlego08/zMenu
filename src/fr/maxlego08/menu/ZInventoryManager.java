@@ -51,6 +51,7 @@ import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
 import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
+import fr.maxlego08.menu.loader.actions.TeleportLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
@@ -321,6 +322,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TitleLoader());
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
+        buttonManager.registerAction(new TeleportLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.VAULT)) {
             buttonManager.registerAction(new CurrencyWithdrawLoader());
             buttonManager.registerAction(new CurrencyDepositLoader());

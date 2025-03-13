@@ -38,9 +38,12 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
+- [ ] Ajouter un système qui permet de load un inventaire uniquement quand tout les requirements sont présents
+
 # Unreleased
 
 - Fixed placeholders for messages and commands
+- Added teleport action
 
 # 1.0.3.8
 
