@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
@@ -493,5 +494,7 @@ public interface InventoryManager extends Savable, Listener {
      * @return The loaded YAML configuration.
      */
     YamlConfiguration loadYamlConfiguration(File file);
+
+    void loadElement(InventoryRequirementType type, String value);
 
 }

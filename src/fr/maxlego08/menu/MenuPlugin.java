@@ -77,7 +77,7 @@ import java.util.Optional;
 public class MenuPlugin extends ZPlugin {
 
     private static MenuPlugin instance;
-    private final ButtonManager buttonManager = new ZButtonManager();
+    private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
     private final MessageLoader messageLoader = new MessageLoader(this);
