@@ -43,6 +43,7 @@
 # Unreleased
 
 - Fixed placeholders for messages and commands
+- Fixed ConcurrentModificationException on PlayerData
 - Added teleport action
 
 # 1.0.3.8
