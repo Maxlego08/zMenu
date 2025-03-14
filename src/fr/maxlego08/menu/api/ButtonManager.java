@@ -135,4 +135,26 @@ public interface ButtonManager {
      * @return A list of {@link Action} objects derived from the configuration.
      */
     List<Action> loadActions(List<Map<String, Object>> elements, String path, File file);
+
+    /**
+     * Retrieves a list of all empty actions from the given configuration elements.
+     *
+     * <p>This method is used to identify any actions specified in the configuration that do not have a corresponding
+     * action loader. This is useful for printing out any errors that may have occurred during the loading process.</p>
+     *
+     * @param elements The list of configuration items detailing an action's entire configuration.
+     * @return A list of all empty actions from the given configuration elements.
+     */
+    List<String> getEmptyActions(List<Map<String, Object>> elements);
+
+    /**
+     * Retrieves a list of all empty permissibles from the given configuration elements.
+     *
+     * <p>This method is used to identify any permissibles specified in the configuration that do not have a corresponding
+     * permissible loader. This is useful for printing out any errors that may have occurred during the loading process.</p>
+     *
+     * @param elements The list of configuration items detailing a permissible's entire configuration.
+     * @return A list of all empty permissibles from the given configuration elements.
+     */
+    List<String> getEmptyPermissible(List<Map<String, Object>> elements);
 }

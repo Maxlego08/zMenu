@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button;
 
 import fr.maxlego08.menu.api.button.PerformButton;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.save.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -120,22 +121,22 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     }
 
     @Override
-    public void execute(Player player, ClickType type, ZScheduler scheduler) {
+    public void execute(Player player, ClickType type, ZScheduler scheduler, Placeholders placeholders) {
         if (type.isRightClick()) {
-            this.execute(player, player, this.rightCommands, scheduler);
-            this.execute(player, player, this.consoleRightCommands, scheduler);
+            this.execute(player, player, this.rightCommands, scheduler, placeholders);
+            this.execute(player, player, this.consoleRightCommands, scheduler, placeholders);
         }
 
         if (type.isLeftClick()) {
-            this.execute(player, player, this.leftCommands, scheduler);
-            this.execute(player, player, this.consoleLeftCommands, scheduler);
+            this.execute(player, player, this.leftCommands, scheduler, placeholders);
+            this.execute(player, player, this.consoleLeftCommands, scheduler, placeholders);
         }
 
-        this.execute(player, player, this.commands, scheduler);
-        this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands, scheduler);
+        this.execute(player, player, this.commands, scheduler, placeholders);
+        this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands, scheduler, placeholders);
 
         if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
-            this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands, scheduler);
+            this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands, scheduler, placeholders);
         }
     }
 
@@ -147,9 +148,9 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
      * @param strings   the list of commands to be executed
      * @param scheduler the ZScheduler used to schedule the command executions
      */
-    private void execute(CommandSender executor, Player player, List<String> strings, ZScheduler scheduler) {
+    private void execute(CommandSender executor, Player player, List<String> strings, ZScheduler scheduler, Placeholders placeholders) {
         strings.forEach(command -> {
-            command = command.replace("%player%", player.getName());
+            command = placeholders.parse(command.replace("%player%", player.getName()));
             try {
                 if (executor instanceof Player && Config.enablePlayerCommandInChat) {
                     player.chat("/" + papi(command, player, true));

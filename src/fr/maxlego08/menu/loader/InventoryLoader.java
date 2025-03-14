@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
@@ -103,7 +104,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
 
         PatternManager patternManager = this.plugin.getPatternManager();
-        List<Pattern> patterns = configuration.getStringList("patterns").stream().filter(pName -> patternManager.getPattern(pName).isPresent()).map(pName -> patternManager.getPattern(pName).get()).collect(Collectors.toList());
+        List<Pattern> patterns = configuration.getStringList("patterns").stream().map(patternManager::getPattern).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
         String fileName = this.getFileNameWithoutExtension(file);
 
@@ -158,12 +159,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setOpenWithItem(openWithItem);
 
         Map<String, String> translatedDisplayName = new HashMap<>();
-        String loadString = null;
-        if (configuration.contains(path + "translatedName")) {
-            loadString = "translatedName";
-        } else if (configuration.contains(path + "translated-name")) {
-            loadString = "translated-name";
-        }
+        String loadString = configuration.contains(path + "translatedName") ? "translatedName" : configuration.contains(path + "translated-name") ? "translated-name" : null;
         if (loadString != null) {
             configuration.getMapList(path + loadString).forEach(map -> {
                 if (map.containsKey("locale") && map.containsKey("name")) {
@@ -176,12 +172,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setTranslatedNames(translatedDisplayName);
 
         // Open requirement
-        loadString = null;
-        if (configuration.contains("open_requirement")) {
-            loadString = "open_requirement";
-        } else if (configuration.contains("open-requirement")) {
-            loadString = "open-requirement";
-        }
+        loadString = configuration.contains("open_requirement") ? "open_requirement" : configuration.contains("open-requirement") ?  "open-requirement" : null;
         if (loadString != null) {
             if (configuration.contains(loadString) && configuration.isConfigurationSection(loadString + ".")) {
                 Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);

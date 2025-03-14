@@ -35,7 +35,6 @@ public class CommandInventory extends VCommand {
             this.addSubCommand(command.getAliases());
         }
 
-
         if (command.hasArgument()) {
 
             this.setExtendedArgs(true);
@@ -75,11 +74,12 @@ public class CommandInventory extends VCommand {
             CommandManager commandManager = plugin.getCommandManager();
 
             List<CommandArgument> arguments = this.command.getArguments();
-            for (int index = 0; index != Math.min(arguments.size(), this.args.length); index++) {
+            for (int index = 0; index < arguments.size(); index++) {
 
-                StringBuilder value = new StringBuilder(this.args[index]);
                 CommandArgument argument = arguments.get(index);
                 lastArgument = argument;
+                String defaultValue = argument.getDefaultValue();
+                StringBuilder value = new StringBuilder(index < this.args.length ? this.args[index] : (defaultValue != null && !defaultValue.isEmpty() ? defaultValue : ""));
 
                 if (this.args.length > arguments.size() && index == arguments.size() - 1) {
 
@@ -101,6 +101,7 @@ public class CommandInventory extends VCommand {
                 }
 
                 placeholders.register(argument.getArgument(), value.toString());
+                System.out.println("Register : " + argument.getArgument() + " - " + value);
                 commandManager.setPlayerArgument(this.player, argument.getArgument(), value.toString());
             }
         }
@@ -109,7 +110,6 @@ public class CommandInventory extends VCommand {
 
         InventoryDefault inventoryDefault = new InventoryDefault();
         inventoryDefault.setPlugin(plugin);
-
 
         if (lastArgument != null) {
             lastArgument.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
@@ -126,5 +126,4 @@ public class CommandInventory extends VCommand {
     public Command getCommand() {
         return this.command;
     }
-
 }

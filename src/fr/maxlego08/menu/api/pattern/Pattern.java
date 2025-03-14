@@ -11,26 +11,43 @@ import java.util.Collection;
 public interface Pattern {
 
     /**
-     * Retrieves the name of the pattern, which can be used to identify it in inventories.
+     * Gets the name of this pattern.
      *
-     * @return The name of the pattern.
+     * <p>This is the name that will be used to identify the pattern in the configuration.</p>
+     *
+     * @return The name of this pattern.
      */
     String getName();
 
     /**
-     * Gets the size of the inventory associated with the pattern.
+     * Gets the size of the inventory that this pattern is intended for.
      *
-     * @return The size of the inventory.
+     * <p>If the pattern does not support multi-page inventories (i.e. {@link #enableMultiPage()} returns false), this method must return the size of the inventory that the pattern is intended for.</p>
+     *
+     * <p>If the pattern does support multi-page inventories, this method can return any positive number, and the pattern will be distributed across as many pages as necessary.</p>
+     *
+     * @return The size of the inventory that this pattern is intended for.
      */
     int getInventorySize();
 
     /**
-     * Returns the collection of buttons included in the pattern.
+     * Gets the buttons that are a part of this pattern.
      *
-     * @return The buttons in the pattern.
+     * <p>This method should return all the buttons that make up this pattern.</p>
+     *
+     * @return The buttons that make up this pattern.
      */
     Collection<Button> getButtons();
 
+    /**
+     * Indicates whether the pattern supports multi-page inventories.
+     * <p>
+     * If this method returns true, the pattern will be able to be used in inventories of any size, and the buttons will be distributed across as many pages as necessary.
+     * <p>
+     * Otherwise, the pattern can only be used in inventories of the size returned by {@link #getInventorySize()}.
+     *
+     * @return Whether the pattern supports multi-page inventories.
+     */
     boolean enableMultiPage();
 
 }

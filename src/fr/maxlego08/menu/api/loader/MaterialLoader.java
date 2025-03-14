@@ -20,7 +20,7 @@ public interface MaterialLoader {
     /**
      * Loads an ItemStack based on the provided configuration.
      *
-     * @param player
+     * @param player         The player.
      * @param configuration  The current configuration.
      * @param path           The current path.
      * @param materialString The material as a String.

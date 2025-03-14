@@ -38,7 +38,16 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
+- [ ] Ajouter un système qui permet de load un inventaire uniquement quand tout les requirements sont présents
+
 # Unreleased
+
+- Added dependency management for inventory loading. If an inventory needs to be loaded but one of its dependencies is not yet loaded, it will be put on hold until all dependencies are loaded. This allows you to use any element from any other plugin in any zMenu inventory.
+- Added teleport action
+- Added default value for commands. This allows having optional arguments with a default value.
+- Added API method : ``InventoryManager#loadYamlConfiguration``, load a YAML file using the file’s placeholders `global-placeholders.yml`. This allows you to reduce the size of your configurations by avoiding the repetition of certain values.
+- Fixed placeholders for messages and commands
+- Fixed ConcurrentModificationException that could occur when using PlayerData [#104](https://github.com/Maxlego08/zMenu/issues/104) 
 
 # 1.0.3.8
 

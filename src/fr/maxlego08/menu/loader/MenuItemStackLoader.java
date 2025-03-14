@@ -63,7 +63,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         File file = (File) objects[0];
 
         MenuItemStack menuItemStack = new MenuItemStack(this.manager, file.getPath(), path);
-        menuItemStack.setData(configuration.getInt(path + "data", 0));
+        menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
         menuItemStack.setMaterial(configuration.getString(path + "material", null));
@@ -136,7 +136,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setLore(lore);
         menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", null)));
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", "0")))))));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", configuration.getString("custom-model-id", configuration.getString("custom-model-data", configuration.getString("model-data", "0"))))))))));
 
         Map<String, String> translatedDisplayName = new HashMap<>();
         Map<String, List<String>> translatedLore = new HashMap<>();
@@ -318,7 +318,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (item.getModelID() != null && !item.getModelID().equalsIgnoreCase("0")) {
             configuration.set(path + "model-id", item.getModelID());
         }
-        if (item.getData() > 0) configuration.set(path + "data", item.getData());
+        try {
+            if (Integer.parseInt(item.getData()) > 0) configuration.set(path + "data", item.getData());
+        } catch (Exception ignored) {
+            configuration.set(path + "data", item.getData());
+        }
         if (item.getDurability() > 0) configuration.set(path + "durability", item.getDurability());
         if (item.getAmount() != null) {
             try {
