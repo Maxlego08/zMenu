@@ -120,10 +120,34 @@ public abstract class ZUtils extends MessageUtils {
         }
     }
 
+    /**
+     * Calculates the inventory size based on the provided matrix.
+     * <p>
+     * The inventory size is determined by the number of lines in the matrix,
+     * each line representing 9 slots. The maximum inventory size is capped at 54.
+     *
+     * @param matrix the list of strings representing the matrix
+     * @return the calculated inventory size, which is the lesser of
+     * the matrix size times 9 or 54
+     */
     protected int getInventorySizeByMatrix(List<String> matrix) {
         return Math.min(matrix.size() * 9, 54);
     }
 
+    /**
+     * Generates a matrix from a list of strings.
+     * <p>
+     * The matrix must have exactly 6 lines, and each line must have exactly 9 characters.
+     * <p>
+     * The characters in the matrix are used to associate a slot in the inventory with a character.
+     * <p>
+     * Each character is associated with a list of slots.
+     * <p>
+     * If the matrix is wrong, an error message is sent to the logger and an empty map is returned.
+     *
+     * @param matrix the matrix to generate
+     * @return a map of characters to slots
+     */
     protected Map<Character, List<Integer>> generateMatrix(List<String> matrix) {
         Map<Character, List<Integer>> charMap = new HashMap<>();
 
@@ -1213,6 +1237,13 @@ public abstract class ZUtils extends MessageUtils {
         return false;
     }
 
+    /**
+     * Given a file, this method returns the name of the file without the extension.
+     * Replaces any spaces in the name with underscores.
+     *
+     * @param file the file
+     * @return the name of the file without the extension.
+     */
     public String getFileNameWithoutExtension(File file) {
         Pattern pattern = Pattern.compile("(?<=.)\\.[^.]+$");
         return pattern.matcher(file.getName()).replaceAll("").replace(" ", "_");

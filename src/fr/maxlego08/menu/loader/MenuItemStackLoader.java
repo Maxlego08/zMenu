@@ -27,7 +27,6 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionType;
@@ -63,15 +62,68 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         File file = (File) objects[0];
 
         MenuItemStack menuItemStack = new MenuItemStack(this.manager, file.getPath(), path);
+        menuItemStack.setMaterial(configuration.getString(path + "material", null));
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
-        menuItemStack.setMaterial(configuration.getString(path + "material", null));
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
         menuItemStack.setUrl(configuration.getString(path + "url", null));
 
-        Color potionColor = getColor(configuration, path + "color", null);
+        this.loadLeather(menuItemStack, configuration, path);
+        this.loadPotions(menuItemStack, configuration, path);
+        this.loadBanner(menuItemStack, configuration, path);
+        this.loadFireworks(menuItemStack, configuration, path);
+        this.loadLore(menuItemStack, configuration, path);
 
+        menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", configuration.getString("display-name", null))));
+        menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", configuration.getString("custom-model-id", configuration.getString("custom-model-data", configuration.getString("model-data", "0"))))))))));
+
+        this.loadTranslation(menuItemStack, configuration, path);
+        this.loadEnchantements(menuItemStack, configuration, path, file);
+        menuItemStack.setFlags(configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList()));
+
+        this.loadAttributes(menuItemStack, configuration, path);
+
+        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+            loadNewItemStacks(menuItemStack, configuration, path, file);
+        }
+
+        return menuItemStack;
+    }
+
+    /**
+     * Loads the lore from the configuration and applies it to the MenuItemStack.
+     * The lore can be specified in the configuration as a list of strings
+     * under the key "lore", or as a single string with newline characters that
+     * are split into a list of strings.
+     *
+     * @param menuItemStack the MenuItemStack to set the lore for
+     * @param configuration the configuration to read from
+     * @param path          the path to the configuration key for the lore
+     */
+    private void loadLore(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        List<String> lore = configuration.getStringList(path + "lore");
+        if (lore.isEmpty()) {
+            Object object = configuration.get(path + "lore", null);
+            if (object instanceof String) {
+                String loreString = (String) object;
+                lore = Arrays.asList(loreString.split("\n"));
+            }
+        }
+        menuItemStack.setLore(lore);
+    }
+
+    /**
+     * Loads leather armor settings from the configuration and applies them to the MenuItemStack.
+     * If the material specified in the configuration is a type of leather armor, it retrieves
+     * the color configuration and sets the leather armor with the appropriate type and color.
+     *
+     * @param menuItemStack The MenuItemStack to apply the leather armor settings to.
+     * @param configuration The YamlConfiguration to read the material and color from.
+     * @param path          The path in the configuration where the material and color are specified.
+     */
+    private void loadLeather(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         try {
             Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase());
             String materialName = material.toString();
@@ -82,101 +134,50 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         } catch (Exception ignored) {
         }
+    }
 
-        if (configuration.contains(path + "potion")) {
-            PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
-            int level = configuration.getInt(path + "level", 1);
-            boolean splash = configuration.getBoolean(path + "splash", false);
-            boolean extended = configuration.getBoolean(path + "extended", false);
+    /**
+     * Loads the attributes from the given configuration into the given
+     * {@link MenuItemStack}. The attributes are loaded from the "attributes"
+     * section of the configuration.
+     *
+     * @param menuItemStack The {@link MenuItemStack} to load the attributes
+     *                      into.
+     * @param configuration The configuration to load the attributes from.
+     * @param path          The path of the configuration section to load the
+     *                      attributes from.
+     */
+    private void loadAttributes(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        List<IAttribute> attributeModifiers = new ArrayList<>();
 
-            Potion potion = new Potion(type, level, splash, extended);
-            potion.setColor(potionColor);
-            menuItemStack.setPotion(potion);
-        }
-
-
-        if (configuration.contains(path + "banner")) {
-
-            DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase());
-            List<String> stringPattern = configuration.getStringList(path + "patterns");
-            List<Pattern> patterns = new ArrayList<>();
-            for (String string : stringPattern) {
-                String[] split = string.split(":");
-                if (split.length != 2) continue;
-                patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
-            }
-            menuItemStack.setBanner(new Banner(dyeColor, patterns));
-
-        }
-
-        if (configuration.contains(path + "firework")) {
-
-            ConfigurationSection section = configuration.getConfigurationSection(path + "firework");
-            if (section != null) {
-                boolean isStar = section.getBoolean("star", false);
-                FireworkEffect.Builder builder = FireworkEffect.builder();
-                builder.flicker(section.getBoolean("flicker"));
-                builder.trail(section.getBoolean("trail"));
-                builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
-                builder.withColor(getColors(section, "colors"));
-                builder.withFade(getColors(section, "fadeColors"));
-                menuItemStack.setFirework(new Firework(isStar, builder.build()));
-            }
-
-        }
-
-        List<String> lore = configuration.getStringList(path + "lore");
-        if (lore.isEmpty()) {
-            Object object = configuration.get(path + "lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
-                lore = Arrays.asList(loreString.split("\n"));
-            }
-        }
-        menuItemStack.setLore(lore);
-        menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", null)));
-        menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", configuration.getString("custom-model-id", configuration.getString("custom-model-data", configuration.getString("model-data", "0"))))))))));
-
-        Map<String, String> translatedDisplayName = new HashMap<>();
-        Map<String, List<String>> translatedLore = new HashMap<>();
-
-        String loadString = null;
-        if (configuration.contains(path + "translatedName")) {
-            loadString = "translatedName";
-        } else if (configuration.contains(path + "translated-name")) {
-            loadString = "translated-name";
-        }
-        if (loadString != null) {
-            configuration.getMapList(path + loadString).forEach(map -> {
-                if (map.containsKey("locale") && map.containsKey("name")) {
-                    String locale = (String) map.get("locale");
-                    String name = (String) map.get("name");
-                    translatedDisplayName.put(locale.toLowerCase(), name);
+        if (configuration.contains(path + "attributes")) {
+            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList(path + "attributes");
+            if (attributesFromConfig != null) {
+                for (Map<String, Object> attributeMap : attributesFromConfig) {
+                    attributeModifiers.add(Attribute.deserialize(attributeMap));
                 }
-            });
-
+            }
         }
 
-        loadString = null;
-        if (configuration.contains(path + "translatedLore")) {
-            loadString = "translatedLore";
-        } else if (configuration.contains(path + "translated-lore")) {
-            loadString = "translated-lore";
-        }
-        if (loadString != null) {
-            configuration.getMapList(path + loadString).forEach(map -> {
-                if (map.containsKey("locale") && map.containsKey("lore")) {
-                    String locale = (String) map.get("locale");
-                    List<String> name = (List<String>) map.get("lore");
-                    translatedLore.put(locale.toLowerCase(), name);
-                }
-            });
-        }
+        menuItemStack.setAttributes(attributeModifiers);
+    }
 
-        menuItemStack.setTranslatedDisplayName(translatedDisplayName);
-        menuItemStack.setTranslatedLore(translatedLore);
-
+    /**
+     * Loads the enchantments from the given configuration into the given
+     * MenuItemStack.
+     * <p>
+     * The enchantments are stored in a list under the given path with the
+     * following format: "enchant,level". If the enchantment is not found or if
+     * the format is incorrect, an ItemEnchantException is thrown.
+     * <p>
+     * The enchantments are loaded using the Enchantments helper class.
+     * <p>
+     * The enchantments are stored in a Map of Enchantment to Integer, where the
+     * Enchantment is the enchantment and the Integer is the level.
+     * <p>
+     * {@inheritDoc}
+     */
+    private void loadEnchantements(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         Enchantments helperEnchantments = this.manager.getEnchantments();
         List<String> enchants = configuration.getStringList(path + "enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -209,38 +210,206 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 e.printStackTrace();
             }
         }
+        menuItemStack.setEnchantments(enchantments);
+    }
 
-        List<ItemFlag> flags = configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList());
+    /**
+     * Loads potion effects from the given configuration and applies them to the specified MenuItemStack.
+     * <p>
+     * This method checks if the configuration contains potion data at the specified path. If so, it retrieves
+     * the potion type, level, splash status, and extended duration status from the configuration. A Potion object
+     * is then created with these attributes and its color is set. Finally, the potion is applied to the MenuItemStack.
+     * <p>
+     * Supported configuration keys at the given path include:
+     * <ul>
+     * <li>{@code potion}: The type of potion, defaulting to "REGEN" if not specified.</li>
+     * <li>{@code level}: The level of the potion effect, defaulting to 1.</li>
+     * <li>{@code splash}: Boolean indicating if the potion is a splash potion, defaulting to false.</li>
+     * <li>{@code extended}: Boolean indicating if the potion has an extended duration, defaulting to false.</li>
+     * </ul>
+     *
+     * @param menuItemStack the MenuItemStack to apply the potion effects to
+     * @param configuration the configuration containing the potion data
+     * @param path          the path within the configuration where the potion data is located
+     */
+    private void loadPotions(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        if (configuration.contains(path + "potion")) {
 
-        List<IAttribute> attributeModifiers = new ArrayList<>();
+            Color potionColor = getColor(configuration, path + "color", null);
+            PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
+            int level = configuration.getInt(path + "level", 1);
+            boolean splash = configuration.getBoolean(path + "splash", false);
+            boolean extended = configuration.getBoolean(path + "extended", false);
 
-        if (configuration.contains(path + "attributes")) {
-            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList(path + "attributes");
-            if (attributesFromConfig != null) {
-                for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(Attribute.deserialize(attributeMap));
-                }
+            Potion potion = new Potion(type, level, splash, extended);
+            potion.setColor(potionColor);
+            menuItemStack.setPotion(potion);
+        }
+    }
+
+    /**
+     * Loads a banner from the given configuration at the given path.
+     * <p>
+     * The configuration should contain the following elements:
+     * <ul>
+     * <li>A string at {@code path + "banner"} which is the base color of the banner.</li>
+     * <li>A list of strings at {@code path + "patterns"} which are the patterns on the banner. Each string should be in the format {@code "color:pattern"} where {@code color} is a string representing a {@link DyeColor} and {@code pattern} is a string representing a {@link PatternType}.</li>
+     * </ul>
+     *
+     * @param menuItemStack the {@link MenuItemStack} to load the banner on
+     * @param configuration the configuration to load the banner from
+     * @param path          the path to the banner in the configuration
+     */
+    private void loadBanner(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        if (configuration.contains(path + "banner")) {
+
+            DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase());
+            List<String> stringPattern = configuration.getStringList(path + "patterns");
+            List<Pattern> patterns = new ArrayList<>();
+            for (String string : stringPattern) {
+                String[] split = string.split(":");
+                if (split.length != 2) continue;
+                patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
+            }
+            menuItemStack.setBanner(new Banner(dyeColor, patterns));
+
+        }
+    }
+
+    /**
+     * Loads a firework effect from the given configuration section
+     * and applies it to the given {@link MenuItemStack}.
+     * <p>
+     * The configuration section should contain the following keys:
+     *
+     * <ul>
+     *  <li> {@code star}: whether the firework effect is a star or not. Optional, defaults to {@code false}. </li>
+     *  <li> {@code flicker}: whether the firework effect should flicker. Optional, defaults to {@code false}. </li>
+     *  <li> {@code trail}: whether the firework effect should have a trail. Optional, defaults to {@code false}. </li>
+     *  <li> {@code type}: the type of the firework effect. Optional, defaults to {@code BALL}. </li>
+     *  <li> {@code colors}: the colors of the firework effect. Optional. </li>
+     *  <li> {@code fadeColors}: the fade colors of the firework effect. Optional. </li>
+     * </ul>
+     *
+     * @param menuItemStack the item stack to set the firework effect on
+     * @param configuration the configuration section to load the firework effect from
+     * @param path          the path to the configuration section
+     */
+    private void loadFireworks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        if (configuration.contains(path + "firework")) {
+            ConfigurationSection section = configuration.getConfigurationSection(path + "firework");
+            if (section != null) {
+                boolean isStar = section.getBoolean("star", false);
+                FireworkEffect.Builder builder = FireworkEffect.builder();
+                builder.flicker(section.getBoolean("flicker"));
+                builder.trail(section.getBoolean("trail"));
+                builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
+                builder.withColor(getColors(section, "colors"));
+                builder.withFade(getColors(section, "fadeColors"));
+                menuItemStack.setFirework(new Firework(isStar, builder.build()));
             }
         }
-
-        menuItemStack.setEnchantments(enchantments);
-        menuItemStack.setFlags(flags);
-        menuItemStack.setAttributes(attributeModifiers);
-
-        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
-            loadNewItemStacks(menuItemStack, configuration, path, file);
-        }
-
-        return menuItemStack;
     }
 
+    /**
+     * Load the translated name and lore from the configuration for the given menu item stack.
+     * <p>
+     * This method calls {@link #loadTranslatedName(MenuItemStack, YamlConfiguration, String)} and
+     * {@link #loadTranslatedLore(MenuItemStack, YamlConfiguration, String)} to load the translated
+     * name and lore respectively.
+     *
+     * @param menuItemStack the menu item stack to load the translated name and lore for
+     * @param configuration the configuration to load the translated name and lore from
+     * @param path          the path to the configuration key for the translated name and lore
+     */
+    private void loadTranslation(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        loadTranslatedName(menuItemStack, configuration, path);
+        loadTranslatedLore(menuItemStack, configuration, path);
+    }
+
+    /**
+     * Load the translated lore from the configuration for the given menu item stack.
+     * <p>
+     * The translated lore is a map from locale to lore, where the locale is the
+     * language code and the lore is the translated lore of the item.
+     * <p>
+     * The translated lore is loaded from the configuration under the key
+     * "translatedLore" or "translated-lore".
+     *
+     * @param menuItemStack the menu item stack to load the translated lore for
+     * @param configuration the configuration to load the translated lore from
+     * @param path          the path to the configuration key for the translated lore
+     */
+    private void loadTranslatedLore(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        Map<String, List<String>> translatedLore = new HashMap<>();
+        String loadString = configuration.contains(path + "translatedLore") ? "translatedLore" : configuration.contains(path + "translated-lore") ? "translated-lore" : null;
+        if (loadString != null) {
+            configuration.getMapList(path + loadString).forEach(map -> {
+                if (map.containsKey("locale") && map.containsKey("lore")) {
+                    String locale = (String) map.get("locale");
+                    List<String> name = (List<String>) map.get("lore");
+                    translatedLore.put(locale.toLowerCase(), name);
+                }
+            });
+        }
+        menuItemStack.setTranslatedLore(translatedLore);
+    }
+
+    /**
+     * Load the translated name from the configuration for the given menu item stack.
+     * <p>
+     * The translated name is a map from locale to name, where the locale is the
+     * language code and the name is the translated name of the item.
+     * <p>
+     * The translated name is loaded from the configuration under the key
+     * "translatedName" or "translated-name".
+     *
+     * @param menuItemStack the menu item stack to load the translated name for
+     * @param configuration the configuration to load the translated name from
+     * @param path          the path to the configuration key for the translated name
+     */
+    private void loadTranslatedName(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        Map<String, String> translatedDisplayName = new HashMap<>();
+        String loadString = configuration.contains(path + "translatedName") ? "translatedName" : configuration.contains(path + "translated-name") ? "translated-name" : null;
+        if (loadString != null) {
+            configuration.getMapList(path + loadString).forEach(map -> {
+                if (map.containsKey("locale") && map.containsKey("name")) {
+                    String locale = (String) map.get("locale");
+                    String name = (String) map.get("name");
+                    translatedDisplayName.put(locale.toLowerCase(), name);
+                }
+            });
+        }
+        menuItemStack.setTranslatedDisplayName(translatedDisplayName);
+    }
+
+    /**
+     * Returns the given object if it is a Boolean, otherwise returns null.
+     * <p>
+     * This is a utility method for deserializing booleans from configurations.
+     *
+     * @param o the object to check
+     * @return the object if it is a Boolean, otherwise null
+     */
     private Boolean getOrNull(Object o) {
-        if (o instanceof Boolean) {
-            return (Boolean) o;
-        }
-        return null;
+        return o instanceof Boolean ? (Boolean) o : null;
     }
 
+    /**
+     * Loads additional item stack properties from the configuration into the provided MenuItemStack.
+     * <p>
+     * This method reads various properties such as max stack size, max damage, repair cost,
+     * unbreakable status, fire resistance, tooltip visibility, enchantment and attribute glints,
+     * and item rarity from the provided YamlConfiguration, and applies them to the given MenuItemStack.
+     * <p>
+     * Additionally, it configures trim patterns and materials if specified, logging errors for
+     * any missing configurations.
+     *
+     * @param menuItemStack the MenuItemStack to configure
+     * @param configuration the YamlConfiguration containing item stack properties
+     * @param path          the path within the configuration to read from
+     * @param file          the file from which the configuration was loaded, used for logging errors
+     */
     private void loadNewItemStacks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 0));
         menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
@@ -277,18 +446,44 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
     }
 
+    /**
+     * Parse a color from a YamlConfiguration.
+     * <p>
+     * The color may be specified in either RGB (three integers) or ARGB (four integers) format.
+     * If the configuration does not contain the specified key, or if the value is not a valid color,
+     * the specified default value is returned.
+     * </p>
+     *
+     * @param configuration the configuration to read the color from
+     * @param key           the key to read the color from
+     * @param def           the default value to return if the color cannot be parsed
+     * @return the parsed color, or the default value if the color cannot be parsed
+     */
     private Color getColor(YamlConfiguration configuration, String key, Color def) {
         String[] split = configuration.getString(key, "").split(",");
-
-        if (split.length == 3) {
-            return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        } else if (split.length == 4) {
-            return Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+        try {
+            if (split.length == 3) {
+                return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+            }
+            if (split.length == 4) {
+                return Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+            }
+        } catch (NumberFormatException ignored) {
         }
-
         return def;
     }
 
+    /**
+     * Reads a list of colors from a ConfigurationSection.
+     * <p>
+     * Colors may be specified in either RGB (three integers) or ARGB (four integers) format.
+     * If a color is not a valid color, it is ignored.
+     * </p>
+     *
+     * @param section the configuration section to read the colors from
+     * @param key     the key to read the colors from
+     * @return a list of colors
+     */
     private List<Color> getColors(ConfigurationSection section, String key) {
         List<Color> colors = new ArrayList<>();
 
@@ -306,7 +501,21 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     }
 
     /**
+     * Saves the properties of a MenuItemStack to a YamlConfiguration file.
+     * <p>
+     * This method serializes various properties of the given MenuItemStack, such as
+     * material, display name, lore, model ID, durability, amount, URL, potion effects,
+     * firework effects, leather armor color, banner patterns, enchantments, and flags.
+     * These properties are stored in the provided YamlConfiguration under the specified path.
+     * <p>
+     * Additionally, it attempts to save the configuration to the provided file, logging
+     * any IOExceptions that occur during the process.
      *
+     * @param item          the MenuItemStack whose properties are to be saved
+     * @param configuration the YamlConfiguration to store the properties in
+     * @param path          the path within the configuration to store the properties under
+     * @param file          the file in which to save the configuration
+     * @param objects       additional objects for potential future use
      */
     public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
 

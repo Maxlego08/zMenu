@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
@@ -52,6 +53,8 @@ import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
@@ -224,6 +227,18 @@ public class MenuPlugin extends ZPlugin {
         localPlaceholder.register("player_next_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player) + 1));
         localPlaceholder.register("player_previous_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player) - 1));
         localPlaceholder.register("player_max_page", (player, s) -> String.valueOf(this.inventoryManager.getMaxPage(player)));
+        localPlaceholder.register("player_previous_inventories", (playeofflinePlayer, s) -> {
+            if (playeofflinePlayer.isOnline()) {
+                Player player = playeofflinePlayer.getPlayer();
+                if (player == null) return "0";
+                InventoryHolder inventoryHolder = CompatibilityUtil.getTopInventory(player).getHolder();
+                if (inventoryHolder instanceof InventoryDefault) {
+                    InventoryDefault inventoryDefault = (InventoryDefault) inventoryHolder;
+                    return String.valueOf(inventoryDefault.getOldInventories().size());
+                }
+            }
+            return "0";
+        });
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
