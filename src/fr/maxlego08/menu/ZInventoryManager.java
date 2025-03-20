@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
@@ -114,6 +115,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
+    private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
@@ -806,5 +808,28 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         }
+    }
+
+    @Override
+    public void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption) {
+
+        if (getInventoryOption(inventoryOption.getName()).isPresent()) return;
+
+        this.inventoryOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(inventoryOption);
+    }
+
+    @Override
+    public Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions() {
+        return this.inventoryOptions;
+    }
+
+    @Override
+    public Optional<Class<? extends InventoryOption>> getInventoryOption(String name) {
+        return this.inventoryOptions.values().stream().flatMap(List::stream).filter(inventoryOption -> inventoryOption.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    @Override
+    public void unregisterInventoryOptions(Plugin plugin) {
+        this.inventoryOptions.remove(plugin);
     }
 }

@@ -75,7 +75,7 @@ public class InventoryDefault extends VInventory {
             Placeholders placeholders = new Placeholders();
             this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
-            String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
+            String inventoryName = this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage);
             if (this.inventory.getType() == InventoryType.CHEST) {
                 super.createMetaInventory(super.papi(placeholders.parse(inventoryName), player, false), this.inventory.size());
             } else {
