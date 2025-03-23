@@ -249,6 +249,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.FrancoBM12</groupId>
+      <artifactId>API-MagicCosmetics</artifactId>
+      <version>2.2.8</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.Zrips</groupId>
       <artifactId>Jobs</artifactId>
       <version>5.2.2.3</version>

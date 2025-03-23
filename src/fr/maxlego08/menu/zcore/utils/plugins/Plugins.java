@@ -19,7 +19,8 @@ public enum Plugins {
 
 	JOBS("Jobs"),
 	LUCKPERMS("LuckPerms"),
-    NEXO("Nexo");
+    NEXO("Nexo"),
+	MAGICCOSMETICS("MagicCosmetics");
 
 	private final String name;
 
