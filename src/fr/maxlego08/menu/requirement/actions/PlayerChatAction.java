@@ -18,6 +18,6 @@ public class PlayerChatAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        papi(placeholders.parse(this.commands), player, true).forEach(command -> player.chat(command.replace("%player%", player.getName())));
+        papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player, true).forEach(command -> player.chat(command.replace("%player%", player.getName())));
     }
 }
