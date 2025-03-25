@@ -278,6 +278,7 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/zItems-1.0.0.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>nexo</groupId>
             <artifactId>nexo</artifactId>
@@ -301,6 +302,13 @@
             <groupId>com.github.Traqueur-dev</groupId>
             <artifactId>CurrenciesAPI</artifactId>
             <version>1.0.7</version>
+        </dependency>
+        <!-- MagicCosmetics -->
+        <dependency>
+            <groupId>com.github.FrancoBM12</groupId>
+            <artifactId>API-MagicCosmetics</artifactId>
+            <version>2.2.8</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
