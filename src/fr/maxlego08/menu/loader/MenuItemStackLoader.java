@@ -230,6 +230,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
             loadNewItemStacks(menuItemStack, configuration, path, file);
         }
+        if (NmsVersion.getCurrentVersion().isNewHeadApi()){
+            loadTrims(menuItemStack, configuration, path, file);
+        }
 
         return menuItemStack;
     }
@@ -260,6 +263,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
         }
 
+
+    }
+    private void loadTrims(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         boolean enableTrim = configuration.getBoolean(path + "trim.enable", false);
         if (enableTrim) {
             TrimHelper trimHelper = new TrimHelper();
@@ -276,7 +282,6 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
         }
     }
-
     private Color getColor(YamlConfiguration configuration, String key, Color def) {
         String[] split = configuration.getString(key, "").split(",");
 
