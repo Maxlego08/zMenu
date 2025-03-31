@@ -33,7 +33,7 @@ public class RequirementLoader implements Loader<Requirement> {
         List<Action> successActions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "success", new ArrayList<>()), path + "success", file);
         List<Action> denyActions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "deny", new ArrayList<>()), path + "deny", file);
         List<ClickType> clickTypes = this.plugin.getInventoryManager().loadClicks(configuration.getStringList(path + "clicks"));
-        int miniumRequirement = configuration.getInt(path + "miniumRequirement", configuration.getInt(path + "minium-requirement", permissibles.size()));
+        int miniumRequirement = configuration.getInt(path + "minimumRequirement", configuration.getInt(path + "minimum-requirement", permissibles.size()));
 
         return new ZRequirement(miniumRequirement, permissibles, denyActions, successActions, clickTypes);
     }
