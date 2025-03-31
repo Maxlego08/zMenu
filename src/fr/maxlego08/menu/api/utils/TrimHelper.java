@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.utils;
 
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
@@ -40,6 +41,10 @@ public class TrimHelper {
         trimPatterns.put("silence", TrimPattern.SILENCE);
         trimPatterns.put("raiser", TrimPattern.RAISER);
         trimPatterns.put("host", TrimPattern.HOST);
+        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()){
+            trimPatterns.put("bolt", TrimPattern.BOLT);
+            trimPatterns.put("flow", TrimPattern.FLOW);
+        }
     }
 
     public Map<String, TrimMaterial> getTrimMaterials() {

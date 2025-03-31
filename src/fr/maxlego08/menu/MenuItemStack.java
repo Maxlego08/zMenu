@@ -273,6 +273,9 @@ public class MenuItemStack extends ZUtils {
         if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
             loadNewItemStacks(menuItemStack, accessor, path, file);
         }
+        if (NmsVersion.getCurrentVersion().isNewHeadApi()){
+            loadTrims(menuItemStack, accessor, path, file);
+        }
 
         return menuItemStack;
     }
@@ -296,6 +299,8 @@ public class MenuItemStack extends ZUtils {
             menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
         }
 
+    }
+    private static void loadTrims(MenuItemStack menuItemStack, TypedMapAccessor accessor, String path, File file) {
         boolean enableTrim = accessor.getBoolean("trim.enable", false);
         if (enableTrim) {
             TrimHelper trimHelper = new TrimHelper();
@@ -312,7 +317,6 @@ public class MenuItemStack extends ZUtils {
             menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
         }
     }
-
     private static Boolean getOrNull(Object o) {
         if (o instanceof Boolean) {
             return (Boolean) o;
@@ -484,6 +488,10 @@ public class MenuItemStack extends ZUtils {
             if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
                 this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
             }
+            if (NmsVersion.getCurrentVersion().isNewHeadApi()){
+                this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
+            }
+
 
             if (attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
                 itemMeta.setAttributeModifiers(ArrayListMultimap.create());
@@ -559,6 +567,9 @@ public class MenuItemStack extends ZUtils {
             itemMeta.setRarity(this.itemRarity.getItemRarity());
         }
 
+    }
+
+    private void buildTrimAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
         if (itemMeta instanceof ArmorMeta && this.trimConfiguration != null) {
             ((ArmorMeta) itemMeta).setTrim(new ArmorTrim(this.trimConfiguration.getMaterial(), this.trimConfiguration.getPattern()));
         }
