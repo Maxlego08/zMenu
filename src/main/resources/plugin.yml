@@ -16,6 +16,7 @@ softdepend:
   - LuckPerms
   - zHead
   - zItems
+  - MagicCosmetics
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

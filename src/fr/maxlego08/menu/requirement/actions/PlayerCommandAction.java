@@ -23,7 +23,7 @@ public class PlayerCommandAction extends Action {
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
         ZScheduler scheduler = inventory.getPlugin().getScheduler();
-        scheduler.runTask(player.getLocation(), () -> papi(placeholders.parse(this.commands), player, true).forEach(command -> {
+        scheduler.runTask(player.getLocation(), () -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player, true).forEach(command -> {
             command = command.replace("%player%", player.getName());
             if (this.inChat) {
                 player.chat("/" + command);

@@ -24,16 +24,7 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
-import fr.maxlego08.menu.loader.materials.Base64Loader;
-import fr.maxlego08.menu.loader.materials.EcoLoader;
-import fr.maxlego08.menu.loader.materials.HeadDatabaseLoader;
-import fr.maxlego08.menu.loader.materials.ItemsAdderLoader;
-import fr.maxlego08.menu.loader.materials.NexoLoader;
-import fr.maxlego08.menu.loader.materials.NovaLoader;
-import fr.maxlego08.menu.loader.materials.OraxenLoader;
-import fr.maxlego08.menu.loader.materials.SlimeFunLoader;
-import fr.maxlego08.menu.loader.materials.ZHeadLoader;
-import fr.maxlego08.menu.loader.materials.ZItemsLoader;
+import fr.maxlego08.menu.loader.materials.*;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
@@ -195,7 +186,10 @@ public class MenuPlugin extends ZPlugin {
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
         }
-        if (this.isActive(Plugins.ITEMSADDER)) {
+        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
+            this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
+        }
+        if (this.isEnable(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
         }

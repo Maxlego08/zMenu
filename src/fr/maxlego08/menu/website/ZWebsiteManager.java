@@ -21,7 +21,6 @@ import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -203,7 +202,9 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         files.forEach(filePath -> {
             if (NmsVersion.nmsVersion.isNewMaterial()) {
-                this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, !Config.enableDebug);
+                if (!new File(plugin.getDataFolder(), filePath).exists()) {
+                    this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, true);
+                }
             } else {
                 this.plugin.saveResource(filePath, !Config.enableDebug);
             }
@@ -366,6 +367,8 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
             try {
                 String finalUrl = followRedirection(baseUrl);
+
+                // ToDo, add a configuration for "allowed urls"
 
                 URL url = new URL(finalUrl);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
