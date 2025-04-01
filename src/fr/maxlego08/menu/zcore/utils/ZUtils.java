@@ -614,7 +614,7 @@ public abstract class ZUtils extends MessageUtils {
         return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    protected String colorReverse(String message) {
+    public String colorReverse(String message) {
         Pattern pattern = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
         Matcher matcher = pattern.matcher(message);
         while (matcher.find()) {
@@ -628,37 +628,21 @@ public abstract class ZUtils extends MessageUtils {
         return message.replace("§", "&");
     }
 
-    /**
-     * @param messages
-     * @return
-     */
     protected List<String> color(List<String> messages) {
         return messages.stream().map(this::color).collect(Collectors.toList());
     }
 
-    /**
-     * @param messages
-     * @return
-     */
-    protected List<String> colorReverse(List<String> messages) {
+    public List<String> colorReverse(List<String> messages) {
         return messages.stream().map(this::colorReverse).collect(Collectors.toList());
     }
 
-    /**
-     * @param flagString
-     * @return
-     */
-    protected ItemFlag getFlag(String flagString) {
+    public ItemFlag getFlag(String flagString) {
         for (ItemFlag flag : ItemFlag.values()) {
             if (flag.name().equalsIgnoreCase(flagString)) return flag;
         }
         return null;
     }
 
-    /**
-     * @param list
-     * @return
-     */
     protected <T> List<T> reverse(List<T> list) {
         List<T> tmpList = new ArrayList<>();
         for (int index = list.size() - 1; index != -1; index--)
@@ -666,36 +650,18 @@ public abstract class ZUtils extends MessageUtils {
         return tmpList;
     }
 
-    /**
-     * @param price
-     * @return
-     */
     protected String price(long price) {
         return String.format("%,d", price);
     }
 
-    /**
-     * Allows to generate a string
-     *
-     * @param length
-     * @return
-     */
     protected String generateRandomString(int length) {
         return new RandomString(length).nextString();
     }
 
-    /**
-     * @param message
-     * @return
-     */
     protected TextComponent buildTextComponent(String message) {
         return new TextComponent(message);
     }
 
-    /**
-     * @param component
-     * @return
-     */
     protected TextComponent setHoverMessage(TextComponent component, String... messages) {
         BaseComponent[] list = new BaseComponent[messages.length];
         for (int a = 0; a != messages.length; a++)
@@ -704,10 +670,6 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    /**
-     * @param component
-     * @return
-     */
     protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
         if (messages.size() > 0) {
             BaseComponent[] list = new BaseComponent[messages.size()];
@@ -719,21 +681,11 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    /**
-     * @param component
-     * @param action
-     * @param command
-     * @return
-     */
     protected TextComponent setClickAction(TextComponent component, net.md_5.bungee.api.chat.ClickEvent.Action action, String command) {
         component.setClickEvent(new ClickEvent(action, command));
         return component;
     }
 
-    /**
-     * @param value
-     * @return
-     */
     protected String getDisplayBalance(double value) {
         if (value < 10000) return format(value, "#.#");
         else if (value < 1000000) return Integer.valueOf((int) (value / 1000)) + "k ";
