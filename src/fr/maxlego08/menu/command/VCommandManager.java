@@ -43,42 +43,17 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     private final MenuPlugin plugin;
     private final List<VCommand> commands = new ArrayList<>();
 
-    /**
-     * F
-     *
-     * @param template
-     */
-    public VCommandManager(MenuPlugin template) {
-        this.plugin = template;
+    public VCommandManager(MenuPlugin plugin) {
+        this.plugin = plugin;
     }
 
-    /**
-     * Valid commands
-     */
     public void validCommands() {
         this.plugin.getLog().log("Loading " + getUniqueCommand() + " commands", LogType.SUCCESS);
         this.commandChecking();
     }
 
-    /**
-     * @param command
-     * @return
-     */
-    public VCommand registerCommand(VCommand command) {
+    public void registerCommand(VCommand command) {
         this.commands.add(command);
-        return command;
-    }
-
-    /**
-     * @param string
-     * @param command
-     * @return
-     */
-    public VCommand registerCommand(String string, VCommand command) {
-        commands.add(command.addSubCommand(string));
-        this.plugin.getCommand(string).setExecutor(this);
-        this.plugin.getCommand(string).setTabCompleter(this);
-        return command;
     }
 
     @Override
@@ -98,12 +73,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         return true;
     }
 
-    /**
-     * @param args
-     * @param cmd
-     * @param command
-     * @return true if can execute
-     */
     private boolean canExecute(String[] args, String cmd, VCommand command) {
         for (int index = args.length - 1; index > -1; index--) {
             if (command.getSubCommands().contains(args[index].toLowerCase())) {
@@ -116,13 +85,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         return false;
     }
 
-    /**
-     * @param args    - All arguments
-     * @param cmd     - Current command
-     * @param command - Current {@link VCommand}
-     * @param index   - Index of the arguments
-     * @return - true if all subcommands are valid
-     */
     private boolean canExecute(String[] args, String cmd, VCommand command, int index) {
         if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase())) return true;
         else if (index < 0) return false;
@@ -131,16 +93,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         else return false;
     }
 
-    /**
-     * Allows you to process an order. First we check if the sender has the
-     * permission or if the command has a permission. If yes then we execute the
-     * command otherwise we send the message for the permission
-     *
-     * @param command - Object that contains the command
-     * @param sender  - Person who executes the command
-     * @param strings - Argument of the command
-     * @return CommandType - Return of the command
-     */
     private CommandType processRequirements(VCommand command, CommandSender sender, String[] strings) {
 
         if (!(sender instanceof Player) && !command.isConsoleCanUse()) {
@@ -148,15 +100,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             return CommandType.DEFAULT;
         }
         if (command.getPermission() == null || hasPermission(sender, command.getPermission())) {
-
-            if (command.runAsync) {
-                super.runAsync(this.plugin, () -> {
-                    CommandType returnType = command.prePerform(this.plugin, sender, strings);
-                    if (returnType == CommandType.SYNTAX_ERROR)
-                        message(sender, Message.COMMAND_SYNTAX_ERROR, "%syntax%", command.getSyntax());
-                });
-                return CommandType.DEFAULT;
-            }
 
             CommandType returnType = command.prePerform(this.plugin, sender, strings);
             if (returnType == CommandType.SYNTAX_ERROR)
@@ -180,10 +123,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         return (int) this.commands.stream().filter(command -> command.getParent() == null).count();
     }
 
-    /**
-     * @param commandString
-     * @param sender
-     */
     public void sendHelp(String commandString, CommandSender sender) {
         this.commands.forEach(command -> {
             if (isValid(command, commandString) && (command.getPermission() == null || hasPermission(sender, command.getPermission()))) {
@@ -192,19 +131,10 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         });
     }
 
-    /**
-     * @param command
-     * @param commandString
-     * @return
-     */
     public boolean isValid(VCommand command, String commandString) {
         return command.getParent() != null ? isValid(command.getParent(), commandString) : command.getSubCommands().contains(commandString.toLowerCase());
     }
 
-    /**
-     * Allows you to check if all commands are correct If an command does not
-     * have
-     */
     private void commandChecking() {
         this.commands.forEach(command -> {
             if (command.sameSubCommands()) {
@@ -232,14 +162,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         return null;
     }
 
-    /**
-     * Allows to execute the tab completion
-     *
-     * @param sender
-     * @param command
-     * @param args
-     * @return list of arguments
-     */
     private List<String> processTab(CommandSender sender, VCommand command, String[] args) {
 
         CommandType type = command.getTabCompleter();
@@ -267,15 +189,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         return null;
     }
 
-    /**
-     * Register spigot command without plugin.yml This method will allow to
-     * register a command in the spigot without using the plugin.yml This saves
-     * time and understanding, the plugin.yml file is clearer
-     *
-     * @param string   - Main command
-     * @param vCommand - Command object
-     * @param aliases  - Command aliases
-     */
     public void registerCommand(Plugin plugin, String string, VCommand vCommand, List<String> aliases) {
         try {
             PluginCommand command = constructor.newInstance(string, plugin);
@@ -306,5 +219,4 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             this.commands.remove(vCommand);
         }
     }
-
 }

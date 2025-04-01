@@ -186,7 +186,11 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public void onRender(Player player, InventoryDefault inventory) {
-        inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
+        System.out.println(inventory.getPage() + " == " + this.getPage() + " || " + this.isPermanent());
+        if (inventory.getPage() == this.getPage() || this.isPermanent()) {
+            System.out.println("Slots: " + this.getSlots());
+            inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
+        }
     }
 
     @Override

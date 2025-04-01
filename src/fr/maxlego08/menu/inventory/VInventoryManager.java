@@ -72,20 +72,20 @@ public class VInventoryManager extends ListenerAdapter {
         Optional<VInventory> optional = this.getInventory(id);
 
         if (!optional.isPresent()) {
-            message(player, Message.VINVENTORY_CLONE_NULL, "%id%", id);
+            message(player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
         VInventory inventory = optional.get();
 
-        // We need to clone the object to have one object per open inventory
+        // We need to clone the object to have one object per open inventory.
         // An inventory will remain open for several seconds, during this time
         // the inventories of the inventory must be correctly saved according to
         // the player.
         VInventory clonedInventory = inventory.clone();
 
         if (clonedInventory == null) {
-            message(player, Message.VINVENTORY_CLONE_NULL, "%id%", id);
+            message(player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -104,10 +104,10 @@ public class VInventoryManager extends ListenerAdapter {
                 clonedInventory.postOpen(this.plugin, player, page, objects);
             } else if (result == InventoryResult.ERROR) {
 
-                message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
+                message(player, Message.VINVENTORY_ERROR, "%id%", id);
             }
         } catch (InventoryOpenException exception) {
-            message(player, Message.VINVENTORY_OPEN_ERROR, "%id%", id);
+            message(player, Message.VINVENTORY_ERROR, "%id%", id);
             exception.printStackTrace();
         }
     }
@@ -201,7 +201,7 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            plugin.getScheduler().runTaskLater(player.getLocation(), 20, () -> message(player, "§aLe serveur utilise §2zMenu v" + this.plugin.getDescription().getVersion()));
+            this.plugin.getScheduler().runTaskLater(player.getLocation(), 20, () -> message(player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()));
         }
     }
 

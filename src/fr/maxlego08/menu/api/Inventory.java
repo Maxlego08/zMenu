@@ -95,16 +95,6 @@ public interface Inventory {
     /**
      * Returns the maximum number of pages for the inventory.
      *
-     * @param player  The player for whom the page count is determined.
-     * @param objects Additional elements.
-     * @return The maximum number of pages.
-     */
-    @Deprecated
-    int getMaxPage(Player player, Object... objects);
-
-    /**
-     * Returns the maximum number of pages for the inventory.
-     *
      * @param patterns Pattern list
      * @param player   The player for whom the page count is determined.
      * @param objects  Additional elements.

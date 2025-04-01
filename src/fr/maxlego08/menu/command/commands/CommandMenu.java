@@ -36,11 +36,6 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuDisconnect(plugin));
         this.addSubCommand(new CommandMenuInventories(plugin));
         // this.addSubCommand(new CommandMenuMarketplace(plugin));
-
-
-        if (Bukkit.getPluginManager().getPlugin("zMenuConvert") == null) {
-            this.addSubCommand(new CommandMenuConvert(plugin));
-        }
     }
 
     @Override

@@ -14,4 +14,13 @@ public interface SlotButton {
      */
     Collection<Integer> getSlots();
 
+    /**
+     * Returns the page of the button in the inventory. The page is
+     * used to determine which elements should be displayed when the
+     * button is placed in an inventory that supports pagination.
+     *
+     * @return The page of the button.
+     */
+    int getPage();
+
 }

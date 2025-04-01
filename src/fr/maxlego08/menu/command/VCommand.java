@@ -18,39 +18,17 @@ import java.util.*;
 public abstract class VCommand extends Arguments {
 
     protected final MenuPlugin plugin;
-    /**
-     * Mother command of this command
-     */
     protected VCommand parent;
-    protected List<VCommand> subVCommands = new ArrayList<VCommand>();
-    protected boolean runAsync = false;
-    /**
-     * This is the person who executes the command
-     */
+    protected List<VCommand> subVCommands = new ArrayList<>();
     protected CommandSender sender;
     protected Player player;
     protected Map<Integer, CollectionBiConsumer> tabCompletions = new HashMap<>();
-    /**
-     * Permission used for the command, if it is a null then everyone can
-     * execute the command
-     */
     private String permission;
     private String denyMessage;
-    /**
-     * Are all sub commands used
-     */
-    private final List<String> subCommands = new ArrayList<String>();
-    private final List<String> requireArgs = new ArrayList<String>();
-    private final List<String> optionalArgs = new ArrayList<String>();
-    /**
-     * If this variable is false the command will not be able to use this
-     * command
-     */
+    private final List<String> subCommands = new ArrayList<>();
+    private final List<String> requireArgs = new ArrayList<>();
+    private final List<String> optionalArgs = new ArrayList<>();
     private boolean consoleCanUse = true;
-    /**
-     * This variable allows to run the main class of the command even with
-     * arguments convenient for commands like /ban <player>
-     */
     private boolean ignoreParent = false;
     private boolean ignoreArgs = false;
     private boolean extendedArgs = false;
@@ -60,17 +38,10 @@ public abstract class VCommand extends Arguments {
     private int argsMinLength;
     private int argsMaxLength;
 
-    /**
-     * @param plugin
-     */
     public VCommand(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
-
-    //
-    // GETTER
-    //
 
     public Optional<CollectionBiConsumer> getCompletionAt(int index) {
         return Optional.ofNullable(this.tabCompletions.getOrDefault(index, null));

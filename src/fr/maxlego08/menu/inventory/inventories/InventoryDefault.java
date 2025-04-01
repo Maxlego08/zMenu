@@ -267,9 +267,7 @@ public class InventoryDefault extends VInventory {
                     this.timers.put(slot, timerTask);
                 }
             }
-
         }
-
     }
 
     public void cancel(int slot) {
