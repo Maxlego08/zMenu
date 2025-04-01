@@ -127,12 +127,10 @@ public class ZInventory extends ZUtils implements Inventory {
         patterns.forEach(pattern -> buttons.addAll(pattern.getButtons()));
 
         int maxSlotInventory = buttons.stream().filter(button -> !button.isPlayerInventory()).mapToInt(Button::getSlot).max().orElse(-1);
-        int maxButtonPageInventory = buttons.stream().filter(button -> !button.isPermanent() && !button.isPlayerInventory()).mapToInt(Button::getPage).max().orElse(-1);
-        int maxPageInventory = Math.max((maxSlotInventory >= 0) ? (maxSlotInventory / this.size) + 1 : 1, maxButtonPageInventory);
+        int maxPageInventory = (maxSlotInventory >= 0) ? (maxSlotInventory / this.size) + 1 : 1;
 
         int maxSlotPlayerInventory = buttons.stream().filter(Button::isPlayerInventory).mapToInt(Button::getSlot).max().orElse(-1);
-        int maxButtonPagePlayerInventory = buttons.stream().filter(button -> !button.isPermanent() && button.isPlayerInventory()).mapToInt(Button::getPage).max().orElse(-1);
-        int maxPagePlayerInventory = Math.max((maxSlotPlayerInventory >= 0) ? (maxSlotPlayerInventory / 36) + 1 : 1, maxButtonPagePlayerInventory);
+        int maxPagePlayerInventory = (maxSlotPlayerInventory >= 0) ? (maxSlotPlayerInventory / 36) + 1 : 1;
 
         final int maxPageFinal = Math.max(maxPageInventory, maxPagePlayerInventory);
 
@@ -144,7 +142,7 @@ public class ZInventory extends ZUtils implements Inventory {
         return this.buttons.stream().filter(button -> {
             int size = button.isPlayerInventory() ? 36 : this.size;
             int slot = button.getRealSlot(size, page);
-            return (slot >= 0 && slot < size) || (button.hasSpecialRender() && button.getPage() == page);
+            return (slot >= 0 && slot < size);
         }).collect(Collectors.toList());
     }
 
