@@ -76,6 +76,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         this.loadLore(menuItemStack, configuration, path);
 
         menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", configuration.getString("display-name", null))));
+        menuItemStack.setCenterName(configuration.getBoolean(path + "center-name", false));
+        menuItemStack.setCenterLore(configuration.getBoolean(path + "center-lore", false));
+
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
         menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", configuration.getString("custom-model-id", configuration.getString("custom-model-data", configuration.getString("model-data", "0"))))))))));
 

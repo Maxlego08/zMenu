@@ -97,29 +97,28 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        updateDisplayName(itemMeta, papi(text, player, true));
+        updateDisplayName(itemMeta, text);
     }
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
-        updateDisplayName(itemMeta, papi(text, offlinePlayer, true));
+        updateDisplayName(itemMeta, text);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        update(itemMeta, lore, player);
+        update(itemMeta, lore);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
-        update(itemMeta, lore, offlinePlayer);
+        update(itemMeta, lore);
     }
 
-    public void update(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
+    public void update(ItemMeta itemMeta, List<String> lore) {
         List<Component> components = lore.stream().map(text -> {
-            String result = papi(text, offlinePlayer, true);
-            return this.cache.get(result, () -> {
-                return this.MINI_MESSAGE.deserialize(colorMiniMessage(result)).decoration(TextDecoration.ITALIC, getState(result)); // We will force the italics in false, otherwise it will activate for no reason
+            return this.cache.get(text, () -> {
+                return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)); // We will force the italics in false, otherwise it will activate for no reason
             });
         }).collect(Collectors.toList());
 

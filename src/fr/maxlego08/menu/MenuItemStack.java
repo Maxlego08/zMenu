@@ -82,6 +82,9 @@ public class MenuItemStack extends ZUtils {
     private boolean needPlaceholderAPI = false;
     private ItemStack cacheItemStack;
 
+    private boolean centerName;
+    private boolean centerLore;
+
     private int maxStackSize;
     private int maxDamage;
     private int damage;
@@ -237,22 +240,7 @@ public class MenuItemStack extends ZUtils {
         FontImage fontImage = this.inventoryManager.getFontImage();
 
         if (itemMeta != null) {
-            if (this.displayName != null) {
-                try {
-                    String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                    Meta.meta.updateDisplayName(itemMeta, fontImage.replace(placeholders.parse(displayName)), offlinePlayer == null ? player : offlinePlayer);
-                } catch (Exception exception) {
-                    Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
-                    exception.printStackTrace();
-                }
-            }
-
-            if (!this.lore.isEmpty()) {
-                List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
-                lore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).map(fontImage::replace).collect(Collectors.toList());
-
-                Meta.meta.updateLore(itemMeta, lore, offlinePlayer == null ? player : offlinePlayer);
-            }
+            this.applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
 
             Enchantments helperEnchantments = inventoryManager.getEnchantments();
             if (this.isGlowing) {
@@ -305,6 +293,35 @@ public class MenuItemStack extends ZUtils {
         if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
 
         return itemStack;
+    }
+
+    private void applyDisplayNameLore(Player player, Placeholders placeholders, ItemMeta itemMeta, OfflinePlayer offlinePlayer, String locale, FontImage fontImage, boolean useCache) {
+
+        String itemName = null;
+        List<String> itemLore = new ArrayList<>();
+
+        if (this.displayName != null) {
+            try {
+                String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
+                itemName = fontImage.replace(papi(placeholders.parse(displayName), player, useCache));
+            } catch (Exception exception) {
+                Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
+                exception.printStackTrace();
+            }
+        }
+
+        if (!this.lore.isEmpty()) {
+            List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
+            itemLore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).map(fontImage::replace).collect(Collectors.toList());
+        }
+
+        if (itemName != null) {
+            Meta.meta.updateDisplayName(itemMeta, itemName, offlinePlayer == null ? player : offlinePlayer);
+        }
+
+        if (!itemLore.isEmpty()) {
+            Meta.meta.updateLore(itemMeta, itemLore, offlinePlayer == null ? player : offlinePlayer);
+        }
     }
 
     private void buildNewItemStackAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
@@ -964,5 +981,21 @@ public class MenuItemStack extends ZUtils {
 
     public void setTrimConfiguration(TrimConfiguration trimConfiguration) {
         this.trimConfiguration = trimConfiguration;
+    }
+
+    public boolean isCenterLore() {
+        return centerLore;
+    }
+
+    public void setCenterLore(boolean centerLore) {
+        this.centerLore = centerLore;
+    }
+
+    public boolean isCenterName() {
+        return centerName;
+    }
+
+    public void setCenterName(boolean centerName) {
+        this.centerName = centerName;
     }
 }
