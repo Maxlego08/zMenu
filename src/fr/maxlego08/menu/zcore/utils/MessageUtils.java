@@ -97,15 +97,6 @@ public abstract class MessageUtils extends LocationUtils {
                         Meta.meta.sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
                     }
                     break;
-                case TITLE:
-                    // title message management
-                    String title = message.getTitle();
-                    String subTitle = message.getSubTitle();
-                    int fadeInTime = message.getStart();
-                    int showTime = message.getTime();
-                    int fadeOutTime = message.getEnd();
-                    this.title(player, this.getMessage(title, args), this.getMessage(subTitle, args), fadeInTime, showTime, fadeOutTime);
-                    break;
                 default:
                     break;
 

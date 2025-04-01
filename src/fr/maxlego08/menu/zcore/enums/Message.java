@@ -146,23 +146,12 @@ public enum Message implements IMessage {
 
     private List<String> messages;
     private String message;
-    private Map<String, Object> titles = new HashMap<>();
     private MessageType type = MessageType.TCHAT;
 
     private ItemStack itemStack;
 
     Message(String message) {
         this.message = message;
-    }
-
-    Message(String title, String subTitle, int a, int b, int c) {
-        this.titles.put("title", title);
-        this.titles.put("subtitle", subTitle);
-        this.titles.put("start", a);
-        this.titles.put("time", b);
-        this.titles.put("end", c);
-        this.titles.put("isUse", true);
-        this.type = MessageType.TITLE;
     }
 
     Message(String... message) {
@@ -205,43 +194,6 @@ public enum Message implements IMessage {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getTitle() {
-        return (String) titles.get("title");
-    }
-
-    public Map<String, Object> getTitles() {
-        return titles;
-    }
-
-    public void setTitles(Map<String, Object> titles) {
-        this.titles = titles;
-        this.type = MessageType.TITLE;
-    }
-
-    public String getSubTitle() {
-        return (String) titles.get("subtitle");
-    }
-
-    public boolean isTitle() {
-        return titles.containsKey("title");
-    }
-
-    public int getStart() {
-        return ((Number) titles.get("start")).intValue();
-    }
-
-    public int getEnd() {
-        return ((Number) titles.get("end")).intValue();
-    }
-
-    public int getTime() {
-        return ((Number) titles.get("time")).intValue();
-    }
-
-    public boolean isUseTitle() {
-        return (boolean) titles.getOrDefault("isUse", "true");
     }
 
     public String replace(String a, String b) {

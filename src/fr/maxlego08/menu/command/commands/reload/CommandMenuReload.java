@@ -27,7 +27,7 @@ public class CommandMenuReload extends VCommand {
         InventoryManager inventoryManager = plugin.getInventoryManager();
 
         plugin.loadGlobalPlaceholders();
-        plugin.getMessageLoader().load(plugin.getPersist());
+        plugin.getMessageLoader().load();
         Config.getInstance().load(plugin.getPersist());
 
         plugin.getVInventoryManager().close();

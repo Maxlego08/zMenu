@@ -18,7 +18,7 @@ public class CommandMenuReloadConfig extends VCommand {
     @Override
     protected CommandType perform(MenuPlugin plugin) {
 
-        plugin.getMessageLoader().load(plugin.getPersist());
+        plugin.getMessageLoader().load();
         Config.getInstance().load(plugin.getPersist());
 
         plugin.getPatternManager().loadPatterns();

@@ -168,7 +168,6 @@ public class MenuPlugin extends ZPlugin {
         this.addSimpleListener(this.inventoryManager);
 
         /* Add Saver */
-        this.addSave(this.messageLoader);
         this.addSave(this.inventoryManager);
         this.addSave(this.commandManager);
         this.addSave(this.dataManager);
@@ -208,6 +207,7 @@ public class MenuPlugin extends ZPlugin {
         }
 
         this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+        this.messageLoader.load();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
