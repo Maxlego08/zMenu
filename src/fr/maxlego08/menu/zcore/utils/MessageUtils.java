@@ -42,7 +42,8 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     protected void messageWO(CommandSender sender, String message, Object... args) {
-        Meta.meta.sendMessage(sender, getMessage(message, args));
+        String result = getMessage(message, args);
+        Meta.meta.sendMessage(sender, sender instanceof Player ? papi(result, (Player) sender, false) : result);
     }
 
     /**

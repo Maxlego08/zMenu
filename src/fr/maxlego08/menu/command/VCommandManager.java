@@ -195,6 +195,9 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             command.setExecutor(this);
             command.setTabCompleter(this);
             command.setAliases(aliases);
+            if (vCommand.getPermission() != null) {
+                command.setPermission(vCommand.getPermission());
+            }
 
             commands.add(vCommand.addSubCommand(string));
             vCommand.addSubCommand(aliases);
