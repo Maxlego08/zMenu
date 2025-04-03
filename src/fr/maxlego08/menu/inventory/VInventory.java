@@ -35,7 +35,6 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     protected String guiName;
     protected boolean disableClick = true;
     protected boolean disablePlayerInventoryClick = true;
-    protected boolean openAsync = false;
 
     private boolean isClose = false;
 
@@ -119,25 +118,11 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         if (inPlayerInventory) {
 
             this.playerInventoryItems.put(slot, button);
-
-            if (this.openAsync) {
-                ItemStack finalItem = itemStack;
-                runAsync(this.plugin, () -> this.player.getInventory().setItem(slot, finalItem));
-            } else {
-                this.player.getInventory().setItem(slot, itemStack);
-            }
-
+            this.player.getInventory().setItem(slot, itemStack);
         } else {
 
             this.items.put(slot, button);
-
-            if (this.openAsync) {
-                ItemStack finalItem = itemStack;
-                runAsync(this.plugin, () -> this.inventory.setItem(slot, finalItem));
-            } else {
-                this.inventory.setItem(slot, itemStack);
-            }
-
+            this.inventory.setItem(slot, itemStack);
         }
         return button;
     }
