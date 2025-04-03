@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.inventory.VInventory;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 

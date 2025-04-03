@@ -515,4 +515,10 @@ public interface InventoryManager extends Savable, Listener {
 
     void unregisterInventoryOptions(Plugin plugin);
 
+    void registerInventoryListener(InventoryListener inventoryListener);
+
+    void unregisterInventoryListener(InventoryListener inventoryListener);
+
+    List<InventoryListener> getInventoryListeners();
+
 }

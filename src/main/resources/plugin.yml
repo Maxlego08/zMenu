@@ -9,14 +9,13 @@ contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag ]
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
-  - zTranslator
   - ItemsAdder
   - Slimefun
   - Jobs
   - LuckPerms
   - zHead
-  - zItems
   - MagicCosmetics
+  - packetevents
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

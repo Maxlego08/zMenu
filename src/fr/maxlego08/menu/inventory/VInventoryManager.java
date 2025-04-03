@@ -91,6 +91,9 @@ public class VInventoryManager extends ListenerAdapter {
 
         clonedInventory.setId(id);
         try {
+
+            this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPreOpen(player, clonedInventory, page, objects));
+
             InventoryResult result = clonedInventory.preOpenInventory(this.plugin, player, page, objects);
             if (result == InventoryResult.SUCCESS) {
 
@@ -98,6 +101,8 @@ public class VInventoryManager extends ListenerAdapter {
 
                 Inventory spigotInventory = clonedInventory.getSpigotInventory();
                 player.openInventory(spigotInventory);
+
+                this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPostOpen(player, clonedInventory));
 
             } else if (result == InventoryResult.SUCCESS_ASYNC) {
 
@@ -153,6 +158,9 @@ public class VInventoryManager extends ListenerAdapter {
 
         ItemButton button = (inPlayerInventory ? inventory.getPlayerInventoryItems() : inventory.getItems()).getOrDefault(event.getSlot(), null);
         if (button != null) {
+
+            this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onButtonClick(player, button));
+
             button.onClick(event);
         }
     }
@@ -161,7 +169,9 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder instanceof VInventory) {
-            ((VInventory) holder).onPreClose(event, this.plugin, player);
+            VInventory inventory = (VInventory) holder;
+            this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryClose(player, inventory));
+            inventory.onPreClose(event, this.plugin, player);
         }
     }
 

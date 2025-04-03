@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.button.ButtonOption;
@@ -116,6 +117,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
+    private final List<InventoryListener> inventoryListeners = new ArrayList<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
@@ -831,5 +833,20 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void unregisterInventoryOptions(Plugin plugin) {
         this.inventoryOptions.remove(plugin);
+    }
+
+    @Override
+    public void registerInventoryListener(InventoryListener inventoryListener) {
+        this.inventoryListeners.add(inventoryListener);
+    }
+
+    @Override
+    public void unregisterInventoryListener(InventoryListener inventoryListener) {
+        this.inventoryListeners.remove(inventoryListener);
+    }
+
+    @Override
+    public List<InventoryListener> getInventoryListeners() {
+        return inventoryListeners;
     }
 }

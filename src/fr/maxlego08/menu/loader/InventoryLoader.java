@@ -123,7 +123,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         String loadString;
         inventory.setTranslatedNames(translatedDisplayName);*/
 
-
         return inventory;
     }
 
