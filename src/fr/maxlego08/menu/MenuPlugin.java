@@ -91,7 +91,7 @@ public class MenuPlugin extends ZPlugin {
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
-    private final PacketUtils packetUtils = new PacketUtils(this);
+    // private final PacketUtils packetUtils = new PacketUtils(this);
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private CommandMenu commandMenu;
     private ZScheduler scheduler;
@@ -113,14 +113,14 @@ public class MenuPlugin extends ZPlugin {
 
     @Override
     public void onLoad() {
-        this.packetUtils.onLoad();
+        // this.packetUtils.onLoad();
     }
 
     @Override
     public void onEnable() {
 
         instance = this;
-        this.packetUtils.onEnable();
+        // this.packetUtils.onEnable();
 
         this.scheduler = isFolia() ? new FoliaScheduler(this) : new BukkitScheduler(this);
 
@@ -285,7 +285,7 @@ public class MenuPlugin extends ZPlugin {
         this.websiteManager.loadPlaceholders();
         this.dataManager.loadDefaultValues();
 
-        this.inventoryManager.registerInventoryListener(this.packetUtils);
+        // this.inventoryManager.registerInventoryListener(this.packetUtils);
 
         this.postEnable();
     }
@@ -302,7 +302,7 @@ public class MenuPlugin extends ZPlugin {
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
-        this.packetUtils.onDisable();
+        // this.packetUtils.onDisable();
 
         this.postDisable();
     }
