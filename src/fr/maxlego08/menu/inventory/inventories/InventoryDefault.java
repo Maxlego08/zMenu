@@ -312,11 +312,11 @@ public class InventoryDefault extends VInventory {
         String displayName = button.buildDisplayName(this.player);
 
         if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
-            Meta.meta.updateLore(itemMeta, lore, this.player);
+            Meta.meta.updateLore(itemMeta, papi(lore, player, false), this.player);
         }
 
         if (displayName != null && refreshRequirement.isRefreshName()) {
-            Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+            Meta.meta.updateDisplayName(itemMeta, papi(displayName, player, false), this.player);
         }
 
         itemStack.setItemMeta(itemMeta);
@@ -340,8 +340,8 @@ public class InventoryDefault extends VInventory {
         List<String> lore = button.buildLore(this.player);
         String displayName = button.buildDisplayName(this.player);
 
-        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, lore, this.player);
-        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), this.player);
+        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
 
         itemStack.setItemMeta(itemMeta);
         this.getSpigotInventory().setItem(slot, itemStack);
