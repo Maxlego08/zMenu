@@ -312,7 +312,7 @@ public class InventoryDefault extends VInventory {
         String displayName = button.buildDisplayName(this.player);
 
         if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
-            Meta.meta.updateLore(itemMeta, papi(lore, player, false), this.player);
+            Meta.meta.updateLore(itemMeta, papi(lore, player, false), button.getItemStack().getLoreType());
         }
 
         if (displayName != null && refreshRequirement.isRefreshName()) {
@@ -340,7 +340,7 @@ public class InventoryDefault extends VInventory {
         List<String> lore = button.buildLore(this.player);
         String displayName = button.buildDisplayName(this.player);
 
-        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), this.player);
+        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), button.getItemStack().getLoreType());
         if (displayName != null) Meta.meta.updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
 
         itemStack.setItemMeta(itemMeta);

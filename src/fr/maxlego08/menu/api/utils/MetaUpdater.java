@@ -40,6 +40,7 @@ public interface MetaUpdater extends MessageSender {
      * @param lore     The lore to set.
      * @param player   The player for whom MiniMessage will be applied.
      */
+    @Deprecated
     void updateLore(ItemMeta itemMeta, List<String> lore, Player player);
 
     /**
@@ -49,7 +50,17 @@ public interface MetaUpdater extends MessageSender {
      * @param lore          The lore to set.
      * @param offlinePlayer The player for whom MiniMessage will be applied.
      */
+    @Deprecated
     void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer);
+
+    /**
+     * Updates the lore of the {@link ItemMeta}.
+     *
+     * @param itemMeta      The ItemMeta to be updated.
+     * @param lore          The lore to set.
+     * @param loreType      The lore type.
+     */
+    void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType);
 
     /**
      * Create an {@link Inventory}

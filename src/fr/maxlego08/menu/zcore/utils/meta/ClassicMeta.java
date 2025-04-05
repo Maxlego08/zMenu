@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.meta;
 
+import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassicMeta extends ZUtils implements MetaUpdater {
@@ -27,13 +29,30 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
-        itemMeta.setLore(color((papi(lore, player, true))));
+        updateLore(itemMeta, lore, LoreType.PREPEND);
     }
 
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer) {
-        itemMeta.setLore(color(papi(lore, offlineplayer, true)));
+        updateLore(itemMeta, lore, LoreType.PREPEND);
+    }
 
+    @Override
+    public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
+
+        List<String> newLore = new ArrayList<>();
+
+        if (loreType == LoreType.PREPEND && itemMeta.hasLore()) {
+            newLore.addAll(lore);
+            newLore.addAll(itemMeta.getLore());
+        } else if (loreType == LoreType.APPEND && itemMeta.hasLore()) {
+            newLore.addAll(itemMeta.getLore());
+            newLore.addAll(lore);
+        } else {
+            newLore.addAll(color(lore));
+        }
+
+        itemMeta.setLore(newLore);
     }
 
     @Override

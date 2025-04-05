@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
@@ -84,6 +85,7 @@ public class MenuItemStack extends ZUtils {
 
     private boolean centerName;
     private boolean centerLore;
+    private LoreType loreType = LoreType.REPLACE;
 
     private int maxStackSize;
     private int maxDamage;
@@ -295,6 +297,18 @@ public class MenuItemStack extends ZUtils {
         return itemStack;
     }
 
+    /**
+     * Applies the display name and lore to the item stack using the given Placeholders,
+     * FontImage, and locale.
+     *
+     * @param player        the player viewing the item stack.
+     * @param placeholders  the Placeholders to use.
+     * @param itemMeta      the item meta to update.
+     * @param offlinePlayer the offline player viewing the item stack, or null if not applicable.
+     * @param locale        the locale to use for translation.
+     * @param fontImage     the FontImage to use for replacing font codes.
+     * @param useCache      whether to use the cache for the placeholders.
+     */
     private void applyDisplayNameLore(Player player, Placeholders placeholders, ItemMeta itemMeta, OfflinePlayer offlinePlayer, String locale, FontImage fontImage, boolean useCache) {
 
         String itemName = null;
@@ -320,7 +334,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (!itemLore.isEmpty()) {
-            Meta.meta.updateLore(itemMeta, itemLore, offlinePlayer == null ? player : offlinePlayer);
+            Meta.meta.updateLore(itemMeta, itemLore, this.loreType);
         }
     }
 
@@ -997,5 +1011,13 @@ public class MenuItemStack extends ZUtils {
 
     public void setCenterName(boolean centerName) {
         this.centerName = centerName;
+    }
+
+    public LoreType getLoreType() {
+        return loreType;
+    }
+
+    public void setLoreType(LoreType loreType) {
+        this.loreType = loreType;
     }
 }

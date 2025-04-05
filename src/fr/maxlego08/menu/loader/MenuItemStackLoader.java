@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
+import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.utils.Banner;
@@ -78,6 +79,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", configuration.getString("display-name", null))));
         menuItemStack.setCenterName(configuration.getBoolean(path + "center-name", false));
         menuItemStack.setCenterLore(configuration.getBoolean(path + "center-lore", false));
+        try {
+            menuItemStack.setLoreType(LoreType.valueOf(configuration.getString(path + "lore-type", LoreType.REPLACE.name()).toUpperCase()));
+        } catch (Exception ignored) {
+        }
 
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
         menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", configuration.getString("custom-model-id", configuration.getString("custom-model-data", configuration.getString("model-data", "0"))))))))));
@@ -91,7 +96,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
             loadNewItemStacks(menuItemStack, configuration, path, file);
         }
-        if (NmsVersion.getCurrentVersion().isNewHeadApi()){
+        if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
             loadTrims(menuItemStack, configuration, path, file);
         }
         return menuItemStack;
@@ -436,6 +441,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
 
     }
+
     private void loadTrims(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         boolean enableTrim = configuration.getBoolean(path + "trim.enable", false);
         if (enableTrim) {
@@ -453,6 +459,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
         }
     }
+
     /**
      * Parse a color from a YamlConfiguration.
      * <p>
