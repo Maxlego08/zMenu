@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -125,6 +126,16 @@ public interface ButtonManager {
     List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path, File file);
 
     /**
+     * Converts a list of map elements from a configuration file into a list of {@link Permissible} objects.
+     *
+     * @param configuration The configuration file containing the permissible list.
+     * @param path          The path specifying the location of the permissible list.
+     * @param file          The file where the configuration is located.
+     * @return A list of {@link Permissible} objects derived from the configuration.
+     */
+    List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file);
+
+    /**
      * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
      *
      * <p>Further action documentation is available at: <a href="https://docs.zmenu.dev/configurations/actions">Action Documentation</a></p>
@@ -135,6 +146,18 @@ public interface ButtonManager {
      * @return A list of {@link Action} objects derived from the configuration.
      */
     List<Action> loadActions(List<Map<String, Object>> elements, String path, File file);
+
+    /**
+     * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
+     *
+     * <p>Further action documentation is available at: <a href="https://docs.zmenu.dev/configurations/actions">Action Documentation</a></p>
+     *
+     * @param configuration The configuration file containing the action list.
+     * @param path          The path specifying the location of the action list.
+     * @param file          The configuration file in use.
+     * @return A list of {@link Action} objects derived from the configuration.
+     */
+    List<Action> loadActions(YamlConfiguration configuration, String path, File file);
 
     /**
      * Retrieves a list of all empty actions from the given configuration elements.

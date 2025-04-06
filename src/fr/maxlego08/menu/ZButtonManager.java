@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -141,6 +142,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override
+    public List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+        return loadPermissible(elements, path, file);
+    }
+
+    @Override
     public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file) {
         return elements.stream().map(map -> {
             String type = (String) map.getOrDefault("type", null);
@@ -159,6 +166,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
             Logger.info("Error, an element is invalid in " + path + " with type " + type + ", he doesn't exist!", Logger.LogType.ERROR);
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+        return loadActions(elements, path, file);
     }
 
     @Override
