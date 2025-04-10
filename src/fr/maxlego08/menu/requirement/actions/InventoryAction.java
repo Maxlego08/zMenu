@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 
@@ -19,9 +19,9 @@ public class InventoryAction extends Action {
     private final InventoryManager inventoryManager;
     private final String inventory;
     private final String plugin;
+    private final InventoryArgument inventoryArgument;
     private String stringPage;
     private int intPage;
-    private final InventoryArgument inventoryArgument;
 
     public InventoryAction(InventoryManager inventoryManager, CommandManager commandManager, String inventory, String plugin, String page, List<String> arguments) {
         this.inventoryManager = inventoryManager;
@@ -39,19 +39,27 @@ public class InventoryAction extends Action {
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
 
         inventory.getPlugin().getScheduler().runTask(null, () -> {
+
+            Inventory fromInventory = inventory.getMenuInventory();
+            List<Inventory> oldInventories = inventory.getOldInventories();
+
             this.inventoryArgument.process(player);
 
-            Optional<Inventory> optional = this.inventoryManager.getInventory(this.plugin, this.papi(placeholders.parse(this.inventory), player, false));
+            String inventoryName = this.papi(placeholders.parse(this.inventory), player, false);
+            Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
             if (optional.isPresent()) {
-                int page = this.stringPage == null
-                        ? this.intPage
-                        : getInt(this.papi(placeholders.parse(this.stringPage), player, false));
 
-                this.inventoryManager.openInventory(player, optional.get(), page);
-            } else Logger.info("Unable to find the inventory " + inventory, Logger.LogType.WARNING);
+                int page = this.stringPage == null ? this.intPage : getInt(this.papi(placeholders.parse(this.stringPage), player, false));
+                oldInventories.add(fromInventory);
+                this.inventoryManager.openInventory(player, optional.get(), page, oldInventories);
+
+            } else {
+                message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+            }
         });
     }
-    private int getInt(String value){
+
+    private int getInt(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException ignored) {

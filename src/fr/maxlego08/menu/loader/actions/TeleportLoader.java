@@ -27,11 +27,11 @@ public class TeleportLoader implements ActionLoader {
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file) {
         String world = accessor.getString("world", "world");
-        double x = accessor.getDouble("x", 0.0D);
-        double y = accessor.getDouble("y", 0.0D);
-        double z = accessor.getDouble("z", 0.0D);
-        float yaw = accessor.getFloat("yaw", 0.0F);
-        float pitch = accessor.getFloat("pitch", 0.0F);
+        double x = Double.parseDouble(accessor.getString("x", "0.0"));
+        double y = Double.parseDouble(accessor.getString("y", "0.0"));
+        double z = Double.parseDouble(accessor.getString("z", "0.0"));
+        float yaw = Float.parseFloat(accessor.getString("yaw", "0.0"));
+        float pitch = Float.parseFloat(accessor.getString("pitch", "0.0"));
         return new TeleportAction(this.plugin, new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch));
     }
 }
