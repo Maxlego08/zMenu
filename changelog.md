@@ -55,6 +55,7 @@
 - Added MagicCosmestics material loader.
 - Added the ability to include `\n` in actions. This allows you to send a list of commands in an inventory argument and more !
 - Added ``lore-type``, allows you to define how the lore should interact with the itemstack. If you are using a material loader, you can specify that the lore is added at the end of the existing lore, added before the existing lore, or replaces the existing lore.
+- Added `and` and `or` permissible. Allows you to create more complex requirements. (available with [zMenu+](https://www.spigotmc.org/resources/zmenu-premium-zmenu-addon.115533/)). 
 - Fixed placeholders for messages and commands.
 - Fixed ConcurrentModificationException that could occur when using PlayerData [#104](https://github.com/Maxlego08/zMenu/issues/104).
 - Fixed material's loaders.
