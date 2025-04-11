@@ -38,7 +38,35 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
+- [ ] Ajouter un système qui permet de load un inventaire uniquement quand tout les requirements sont présents
+
 # Unreleased
+
+# 1.0.3.9
+
+- Added dependency management for inventory loading. If an inventory needs to be loaded but one of its dependencies is not yet loaded, it will be put on hold until all dependencies are loaded. This allows you to use any element from any other plugin in any zMenu inventory.
+- Added teleport action.
+- Added default value for commands. This allows having optional arguments with a default value.
+- Added API method : ``InventoryManager#loadYamlConfiguration(File file)``, load a YAML file using the file’s placeholders `global-placeholders.yml`. This allows you to reduce the size of your configurations by avoiding the repetition of certain values.
+- Added API method : ``ZPermissibleLoader#loadPermissible(ButtonManager buttonManager, TypedMapAccessor accessor, String key, String path, File file)``, Allows you to load a list of permissible. 
+- Added API method : ``ButtonManager#loadPermissible(YamlConfiguration configuration, String path, File file)``, allows you to load a list of permissible list from a configuration.
+- Added API method : ``ButtonManager#loadActions(YamlConfiguration configuration, String path, File file)``, allows you to load a list of action list from a configuration.
+- Added ``conditional-name``, allows you to change the name of the inventory based on conditions. (available with [zMenu+](https://www.spigotmc.org/resources/zmenu-premium-zmenu-addon.115533/)).
+- Added MagicCosmestics material loader.
+- Added the ability to include `\n` in actions. This allows you to send a list of commands in an inventory argument and more !
+- Added ``lore-type``, allows you to define how the lore should interact with the itemstack. If you are using a material loader, you can specify that the lore is added at the end of the existing lore, added before the existing lore, or replaces the existing lore.
+- Added `and` and `or` permissible. Allows you to create more complex requirements. (available with [zMenu+](https://www.spigotmc.org/resources/zmenu-premium-zmenu-addon.115533/)). 
+- Fixed placeholders for messages and commands.
+- Fixed ConcurrentModificationException that could occur when using PlayerData [#104](https://github.com/Maxlego08/zMenu/issues/104).
+- Fixed material's loaders.
+- Fixed commands and messages placeholders.
+- Fixed buttons with multiple slots that could not be on another page. You can now define a list of slots and a page for your buttons.
+- Fixed next and back button with old inventories
+- Rework `messages.yml`, you need to redo your configuration.
+- You can use trims in 1.20.
+- Updated `miniumRequirement` to `minimum-requirement` for requirements.
+- Updated `maxPage` to `max-page` for inventory name.
+- Register command permissions in Spigot. This prevents the command from appearing in the player's tab completion if they do not have permission.
 
 # 1.0.3.8
 

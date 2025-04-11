@@ -120,10 +120,34 @@ public abstract class ZUtils extends MessageUtils {
         }
     }
 
+    /**
+     * Calculates the inventory size based on the provided matrix.
+     * <p>
+     * The inventory size is determined by the number of lines in the matrix,
+     * each line representing 9 slots. The maximum inventory size is capped at 54.
+     *
+     * @param matrix the list of strings representing the matrix
+     * @return the calculated inventory size, which is the lesser of
+     * the matrix size times 9 or 54
+     */
     protected int getInventorySizeByMatrix(List<String> matrix) {
         return Math.min(matrix.size() * 9, 54);
     }
 
+    /**
+     * Generates a matrix from a list of strings.
+     * <p>
+     * The matrix must have exactly 6 lines, and each line must have exactly 9 characters.
+     * <p>
+     * The characters in the matrix are used to associate a slot in the inventory with a character.
+     * <p>
+     * Each character is associated with a list of slots.
+     * <p>
+     * If the matrix is wrong, an error message is sent to the logger and an empty map is returned.
+     *
+     * @param matrix the matrix to generate
+     * @return a map of characters to slots
+     */
     protected Map<Character, List<Integer>> generateMatrix(List<String> matrix) {
         Map<Character, List<Integer>> charMap = new HashMap<>();
 
@@ -590,7 +614,7 @@ public abstract class ZUtils extends MessageUtils {
         return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    protected String colorReverse(String message) {
+    public String colorReverse(String message) {
         Pattern pattern = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
         Matcher matcher = pattern.matcher(message);
         while (matcher.find()) {
@@ -604,37 +628,21 @@ public abstract class ZUtils extends MessageUtils {
         return message.replace("§", "&");
     }
 
-    /**
-     * @param messages
-     * @return
-     */
     protected List<String> color(List<String> messages) {
         return messages.stream().map(this::color).collect(Collectors.toList());
     }
 
-    /**
-     * @param messages
-     * @return
-     */
-    protected List<String> colorReverse(List<String> messages) {
+    public List<String> colorReverse(List<String> messages) {
         return messages.stream().map(this::colorReverse).collect(Collectors.toList());
     }
 
-    /**
-     * @param flagString
-     * @return
-     */
-    protected ItemFlag getFlag(String flagString) {
+    public ItemFlag getFlag(String flagString) {
         for (ItemFlag flag : ItemFlag.values()) {
             if (flag.name().equalsIgnoreCase(flagString)) return flag;
         }
         return null;
     }
 
-    /**
-     * @param list
-     * @return
-     */
     protected <T> List<T> reverse(List<T> list) {
         List<T> tmpList = new ArrayList<>();
         for (int index = list.size() - 1; index != -1; index--)
@@ -642,36 +650,18 @@ public abstract class ZUtils extends MessageUtils {
         return tmpList;
     }
 
-    /**
-     * @param price
-     * @return
-     */
     protected String price(long price) {
         return String.format("%,d", price);
     }
 
-    /**
-     * Allows to generate a string
-     *
-     * @param length
-     * @return
-     */
     protected String generateRandomString(int length) {
         return new RandomString(length).nextString();
     }
 
-    /**
-     * @param message
-     * @return
-     */
     protected TextComponent buildTextComponent(String message) {
         return new TextComponent(message);
     }
 
-    /**
-     * @param component
-     * @return
-     */
     protected TextComponent setHoverMessage(TextComponent component, String... messages) {
         BaseComponent[] list = new BaseComponent[messages.length];
         for (int a = 0; a != messages.length; a++)
@@ -680,10 +670,6 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    /**
-     * @param component
-     * @return
-     */
     protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
         if (messages.size() > 0) {
             BaseComponent[] list = new BaseComponent[messages.size()];
@@ -695,21 +681,11 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    /**
-     * @param component
-     * @param action
-     * @param command
-     * @return
-     */
     protected TextComponent setClickAction(TextComponent component, net.md_5.bungee.api.chat.ClickEvent.Action action, String command) {
         component.setClickEvent(new ClickEvent(action, command));
         return component;
     }
 
-    /**
-     * @param value
-     * @return
-     */
     protected String getDisplayBalance(double value) {
         if (value < 10000) return format(value, "#.#");
         else if (value < 1000000) return Integer.valueOf((int) (value / 1000)) + "k ";
@@ -1213,6 +1189,13 @@ public abstract class ZUtils extends MessageUtils {
         return false;
     }
 
+    /**
+     * Given a file, this method returns the name of the file without the extension.
+     * Replaces any spaces in the name with underscores.
+     *
+     * @param file the file
+     * @return the name of the file without the extension.
+     */
     public String getFileNameWithoutExtension(File file) {
         Pattern pattern = Pattern.compile("(?<=.)\\.[^.]+$");
         return pattern.matcher(file.getName()).replaceAll("").replace(" ", "_");

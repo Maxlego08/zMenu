@@ -56,8 +56,9 @@ public class CommandLoader implements Loader<Command> {
                 List<Map<String, Object>> elements = map.containsKey("actions") ? (List<Map<String, Object>>) map.get("actions") : new ArrayList<>();
                 List<Action> actions = menuPlugin.getButtonManager().loadActions(elements, path, file);
                 List<String> autoCompletions = map.containsKey("auto-completion") ? (List<String>) map.get("auto-completion") : new ArrayList<>();
+                String defaultValue = map.containsKey("defaultValue") ? (String) map.get("defaultValue") : null;
 
-                return new ZCommandArgument(argument, inventoryName, isRequired, performMainAction, actions, autoCompletions);
+                return new ZCommandArgument(argument, inventoryName, isRequired, performMainAction, actions, autoCompletions, defaultValue);
             }).collect(Collectors.toList());
         } else {
             List<String> strings = configuration.getStringList(path + "arguments");
@@ -74,7 +75,7 @@ public class CommandLoader implements Loader<Command> {
                         if (values.length >= 2) isRequired = Boolean.parseBoolean(values[1]);
                         if (values.length == 3) inventoryName = values[2];
                     }
-                    return new ZCommandArgument(argument, inventoryName, isRequired, performMainAction, new ArrayList<>(), new ArrayList<>());
+                    return new ZCommandArgument(argument, inventoryName, isRequired, performMainAction, new ArrayList<>(), new ArrayList<>(), null);
                 }).collect(Collectors.toList());
             }
         }

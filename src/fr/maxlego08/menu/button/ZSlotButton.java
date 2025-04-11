@@ -9,17 +9,23 @@ import java.util.List;
 public abstract class ZSlotButton extends ZUtils implements SlotButton {
 
     protected List<Integer> slots;
+    protected int page;
 
     @Override
     public Collection<Integer> getSlots() {
         return this.slots;
     }
 
-    /**
-     * @param slots the slots to set
-     */
     public void setSlots(List<Integer> slots) {
         this.slots = slots;
     }
 
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    @Override
+    public int getPage() {
+        return page;
+    }
 }

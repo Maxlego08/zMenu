@@ -21,7 +21,7 @@ public class MessageAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        papi(placeholders.parse(this.messages), player, true).forEach(message -> {
+        papi(placeholders.parse(this.parseAndFlattenCommands(this.messages, player)), player, true).forEach(message -> {
             if (miniMessage) {
                 Meta.meta.sendMessage(player, message);
             } else {

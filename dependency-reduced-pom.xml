@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.3.8</version>
+  <version>1.0.3.9</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -140,6 +140,14 @@
       <id>shopkeepers-repo</id>
       <url>https://nexus.lichtspiele.org/repository/releases/</url>
     </repository>
+    <repository>
+      <id>codemc-releases</id>
+      <url>https://repo.codemc.io/repository/maven-releases/</url>
+    </repository>
+    <repository>
+      <id>codemc-snapshots</id>
+      <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -252,6 +260,12 @@
       <groupId>com.github.FrancoBM12</groupId>
       <artifactId>API-MagicCosmetics</artifactId>
       <version>2.2.8</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.retrooper</groupId>
+      <artifactId>packetevents-spigot</artifactId>
+      <version>2.7.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

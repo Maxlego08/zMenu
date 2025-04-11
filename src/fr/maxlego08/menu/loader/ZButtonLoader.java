@@ -133,7 +133,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         List<String> slotsAsString = configuration.getStringList(path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
-        if (slots.isEmpty()) slots = defaultButtonValue.getSlots();
+        if (slots.isEmpty()) {
+            slots = defaultButtonValue.getSlots();
+        } else {
+            int finalPage = page;
+            slots = slots.stream().map(specialSlot -> specialSlot + ((finalPage - 1) * this.inventorySize)).collect(Collectors.toList());
+        }
 
         char currentChar = buttonName.charAt(0);
         if (this.matrix.containsKey(currentChar)) {
@@ -149,6 +154,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         } else {
             button.setSlots(slots);
         }
+        button.setPage(page);
+
         button.setPermanent(configuration.getBoolean(path + "isPermanent", configuration.getBoolean(path + "is-permanent", defaultButtonValue.isPermanent())));
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));
@@ -166,7 +173,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 itemStack.setMaterial("PLAYER_HEAD");
             } else {
                 itemStack.setMaterial("SKULL_ITEM");
-                itemStack.setData(3);
+                itemStack.setData("3");
             }
             button.setPlayerHead(playerHead);
         }
@@ -350,8 +357,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
         ConfigurationSection section = null;
         String sectionString = "";
-        for (int i = 0; i < sectionStrings.length; i++) {
-            sectionString = sectionStrings[i];
+        for (String string : sectionStrings) {
+            sectionString = string;
             section = configuration.getConfigurationSection(path + sectionString);
             if (section != null) break;
         }
@@ -372,14 +379,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param configuration the configuration
      * @param file          the file
      * @param path          current path in configuration
+     * @throws InventoryException if the configuration does not contain the "view_requirement" section
      */
     private void loadViewRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
-        if (configuration.getConfigurationSection(path + "view_requirement.") != null) {
-            button.setViewRequirement(loader.load(configuration, path + "view_requirement.", file));
-        } else if (configuration.getConfigurationSection(path + "view-requirement.") != null) {
-            button.setViewRequirement(loader.load(configuration, path + "view-requirement.", file));
-        }
+        String requirementPath = configuration.isConfigurationSection(path + "view_requirement.") ? "view_requirement." : configuration.isConfigurationSection(path + "view-requirement.") ? "view-requirement." : null;
+        if (requirementPath == null) return;
+
+        button.setViewRequirement(loader.load(configuration, path + requirementPath, file));
     }
 
     /**
@@ -392,11 +399,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      */
     private void loadRefreshRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<RefreshRequirement> loader = new RefreshRequiementLoader(this.plugin);
-        if (configuration.getConfigurationSection(path + "refresh_requirements") != null) {
-            button.setRefreshRequirement(loader.load(configuration, path + "refresh_requirements.", file));
-        } else if (configuration.getConfigurationSection(path + "refresh-requirements") != null) {
-            button.setRefreshRequirement(loader.load(configuration, path + "refresh-requirements.", file));
-        }
+        String requirementPath = configuration.isConfigurationSection(path + "refresh_requirements.") ? "refresh_requirements." : configuration.isConfigurationSection(path + "refresh-requirements.") ? "refresh-requirements." : null;
+        if (requirementPath == null) return;
+
+        button.setRefreshRequirement(loader.load(configuration, path + requirementPath, file));
     }
 
     @Override

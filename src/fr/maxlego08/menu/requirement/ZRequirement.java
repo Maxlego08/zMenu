@@ -49,7 +49,7 @@ public class ZRequirement implements Requirement {
     }
 
     @Override
-    public boolean execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean execute(Player player, Button button, InventoryDefault inventoryDefault, Placeholders placeholders) {
 
         AtomicBoolean earlyExit = new AtomicBoolean(false);
         long requirementSuccess = this.permissibles.stream().filter(permissible -> {
@@ -58,13 +58,9 @@ public class ZRequirement implements Requirement {
                 return false;
             }
 
-            boolean result = permissible.hasPermission(player, button, inventory, placeholders);
-            // Execution of actions in case of success permissible
-            if (result) {
-                permissible.getSuccessActions().forEach(action -> action.preExecute(player, button, inventory, placeholders));
-            } else { // Execution of actions in case of deny permissible
-                permissible.getDenyActions().forEach(action -> action.preExecute(player, button, inventory, placeholders));
-            }
+            boolean result = permissible.hasPermission(player, button, inventoryDefault, placeholders);
+            List<Action> actions = result ? permissible.getSuccessActions() : permissible.getDenyActions();
+            actions.forEach(action -> action.preExecute(player, button, inventoryDefault, placeholders));
 
             if (this.permissibles.size() == this.miniumRequirement && !result) {
                 earlyExit.set(true);
@@ -75,12 +71,8 @@ public class ZRequirement implements Requirement {
 
         boolean isSuccess = requirementSuccess >= this.miniumRequirement;
 
-        // Execution of actions in case of success permissible
-        if (isSuccess) {
-            this.successActions.forEach(action -> action.preExecute(player, button, inventory, placeholders));
-        } else { // Execution of actions in case of deny permissible
-            this.denyActions.forEach(action -> action.preExecute(player, button, inventory, placeholders));
-        }
+        List<Action> actions = isSuccess ? this.successActions : this.denyActions;
+        actions.forEach(action -> action.preExecute(player, button, inventoryDefault, placeholders));
 
         return isSuccess;
     }

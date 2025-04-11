@@ -28,7 +28,7 @@ public class ZNextButton extends ZButton implements HomeButton {
         super.onClick(player, event, inventory, slot, placeholders);
         if (inventory.getPage() != inventory.getMaxPage()) {
             Inventory toInventory = inventory.getMenuInventory();
-            this.inventoryManager.openInventory(player, toInventory, event.isLeftClick() ? inventory.getPage() + 1 : inventory.getMaxPage(), new ArrayList<>());
+            this.inventoryManager.openInventory(player, toInventory, event.isLeftClick() ? inventory.getPage() + 1 : inventory.getMaxPage(), inventory.getOldInventories());
         }
     }
 

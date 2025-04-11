@@ -13,10 +13,16 @@ import java.util.List;
 public interface Permissible {
 
     /**
-     * Checks if the player has the required permission.
+     * Checks if the player has permission to interact with the button in the given inventory and placeholders.
+     * <p>
+     * This method is called when a player attempts to interact with a button in an inventory.
+     * <p>
+     * If this method returns false, the button will not be interactable by the player and the deny actions will be performed.
      *
-     * @param player       The current player.
-     * @param placeholders
+     * @param player       The player who is attempting to interact with the button.
+     * @param button       The button that the player is attempting to interact with.
+     * @param inventory    The inventory that the button is in.
+     * @param placeholders The placeholders that are currently active in the inventory.
      * @return True if the player has permission; otherwise, false.
      */
     boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);

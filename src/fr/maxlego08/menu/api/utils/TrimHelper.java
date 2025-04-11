@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.api.utils;
 
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
@@ -13,6 +12,7 @@ public class TrimHelper {
     private final Map<String, TrimPattern> trimPatterns = new HashMap<>();
 
     public TrimHelper() {
+
         trimMaterials.put("quartz", TrimMaterial.QUARTZ);
         trimMaterials.put("iron", TrimMaterial.IRON);
         trimMaterials.put("netherite", TrimMaterial.NETHERITE);
@@ -25,26 +25,21 @@ public class TrimHelper {
         trimMaterials.put("amethyst", TrimMaterial.AMETHYST);
 
         trimPatterns.put("sentry", TrimPattern.SENTRY);
-        trimPatterns.put("vex", TrimPattern.VEX);
-        trimPatterns.put("wild", TrimPattern.WILD);
-        trimPatterns.put("coast", TrimPattern.COAST);
         trimPatterns.put("dune", TrimPattern.DUNE);
-        trimPatterns.put("wayfinder", TrimPattern.WAYFINDER);
-        trimPatterns.put("raiser", TrimPattern.RAISER);
-        trimPatterns.put("shaper", TrimPattern.SHAPER);
-        trimPatterns.put("host", TrimPattern.HOST);
+        trimPatterns.put("coast", TrimPattern.COAST);
+        trimPatterns.put("wild", TrimPattern.WILD);
         trimPatterns.put("ward", TrimPattern.WARD);
-        trimPatterns.put("silence", TrimPattern.SILENCE);
+        trimPatterns.put("eye", TrimPattern.EYE);
+        trimPatterns.put("vex", TrimPattern.VEX);
         trimPatterns.put("tide", TrimPattern.TIDE);
         trimPatterns.put("snout", TrimPattern.SNOUT);
         trimPatterns.put("rib", TrimPattern.RIB);
-        trimPatterns.put("eye", TrimPattern.EYE);
         trimPatterns.put("spire", TrimPattern.SPIRE);
-        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()){
-            trimPatterns.put("bolt", TrimPattern.BOLT);
-            trimPatterns.put("flow", TrimPattern.FLOW);
-        }
-
+        trimPatterns.put("wayfinder", TrimPattern.WAYFINDER);
+        trimPatterns.put("shaper", TrimPattern.SHAPER);
+        trimPatterns.put("silence", TrimPattern.SILENCE);
+        trimPatterns.put("raiser", TrimPattern.RAISER);
+        trimPatterns.put("host", TrimPattern.HOST);
     }
 
     public Map<String, TrimMaterial> getTrimMaterials() {

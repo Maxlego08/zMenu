@@ -3,8 +3,10 @@ package fr.maxlego08.menu.api;
 import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
@@ -44,7 +46,7 @@ public interface Inventory {
      *
      * @return The name of the inventory, translated to the player's language.
      */
-    String getName(Player player);
+    String getName(Player player, InventoryDefault inventoryDefault, Placeholders placeholders);
 
     /**
      * Returns the type of the inventory.
@@ -89,16 +91,6 @@ public interface Inventory {
      * @return The plugin.
      */
     Plugin getPlugin();
-
-    /**
-     * Returns the maximum number of pages for the inventory.
-     *
-     * @param player  The player for whom the page count is determined.
-     * @param objects Additional elements.
-     * @return The maximum number of pages.
-     */
-    @Deprecated
-    int getMaxPage(Player player, Object... objects);
 
     /**
      * Returns the maximum number of pages for the inventory.
@@ -202,4 +194,15 @@ public interface Inventory {
      * @return The translated name, a map of locale to translated name.
      */
     Map<String, String> getTranslatedNames();
+
+
+    /**
+     * Retrieves a list of all conditional names associated with this inventory.
+     *
+     * <p>These conditional names are used to determine whether a player can access the inventory, based on a
+     * set of permissions.</p>
+     *
+     * @return A list of all conditional names associated with this inventory.
+     */
+    List<ConditionalName> getConditionalNames();
 }

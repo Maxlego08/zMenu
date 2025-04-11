@@ -6,6 +6,10 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Represents an action that can be executed based on certain conditions.
  */
@@ -34,5 +38,9 @@ public abstract class Action extends ZUtils {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    protected List<String> parseAndFlattenCommands(List<String> liste, Player player) {
+        return liste.stream().flatMap(cmd -> Stream.of(cmd.split("\n"))).map(cmd -> cmd.replace("%player%", player.getName())).collect(Collectors.toList());
     }
 }

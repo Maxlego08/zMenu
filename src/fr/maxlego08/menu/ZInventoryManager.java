@@ -2,8 +2,12 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
+import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
@@ -51,6 +55,7 @@ import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
 import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
+import fr.maxlego08.menu.loader.actions.TeleportLoader;
 import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
@@ -61,6 +66,7 @@ import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
+import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -97,6 +103,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -109,6 +116,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
+    private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
+    private final List<InventoryListener> inventoryListeners = new ArrayList<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final MenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
@@ -117,6 +126,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final Map<UUID, Integer> playerPages = new HashMap<>();
     private final Map<UUID, Integer> playerMaxPages = new HashMap<>();
+
+    private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
     public ZInventoryManager(MenuPlugin plugin) {
         super();
@@ -162,6 +173,20 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
         YamlConfiguration configuration = loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+
+        InventoryRequirementChecker checker = new InventoryRequirementChecker(this.plugin);
+        Optional<InventoryLoadRequirement> optional = checker.canLoadInventory(configuration, plugin, file, classz);
+        if (optional.isPresent()) {
+
+            if (Config.enableInformationMessage) {
+                Logger.info("Cannot load inventory " + file.getPath() + ", inventory is waiting.", LogType.WARNING);
+            }
+
+            this.inventoryLoadRequirements.add(optional.get());
+
+            return null;
+        }
+
         boolean isDeluxeMenu = configuration.contains("menu_title");
 
         Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);
@@ -321,6 +346,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TitleLoader());
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
+        buttonManager.registerAction(new TeleportLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.VAULT)) {
             buttonManager.registerAction(new CurrencyWithdrawLoader());
             buttonManager.registerAction(new CurrencyDepositLoader());
@@ -755,5 +781,72 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public FontImage getFontImage() {
         return this.plugin.getFontImage();
+    }
+
+    @Override
+    public YamlConfiguration loadYamlConfiguration(File file) {
+        return loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+    }
+
+    @Override
+    public void loadElement(InventoryRequirementType type, String value) {
+
+        Iterator<InventoryLoadRequirement> iterator = this.inventoryLoadRequirements.iterator();
+        while (iterator.hasNext()) {
+            InventoryLoadRequirement inventoryLoadRequirement = iterator.next();
+            inventoryLoadRequirement.removeRequirement(type, value);
+
+            if (inventoryLoadRequirement.canLoad()) {
+                if (Config.enableInformationMessage) {
+                    Logger.info("Conditions are met to load the file " + inventoryLoadRequirement.getFile().getPath(), LogType.SUCCESS);
+                }
+
+                try {
+                    this.loadInventory(inventoryLoadRequirement.getPlugin(), inventoryLoadRequirement.getFile(), inventoryLoadRequirement.getClassz());
+                } catch (InventoryException exception) {
+                    exception.printStackTrace();
+                } finally {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption) {
+
+        if (getInventoryOption(inventoryOption.getName()).isPresent()) return;
+
+        this.inventoryOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(inventoryOption);
+    }
+
+    @Override
+    public Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions() {
+        return this.inventoryOptions;
+    }
+
+    @Override
+    public Optional<Class<? extends InventoryOption>> getInventoryOption(String name) {
+        return this.inventoryOptions.values().stream().flatMap(List::stream).filter(inventoryOption -> inventoryOption.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    @Override
+    public void unregisterInventoryOptions(Plugin plugin) {
+        this.inventoryOptions.remove(plugin);
+    }
+
+    @Override
+    public void registerInventoryListener(InventoryListener inventoryListener) {
+        this.inventoryListeners.add(inventoryListener);
+    }
+
+    @Override
+    public void unregisterInventoryListener(InventoryListener inventoryListener) {
+        this.inventoryListeners.remove(inventoryListener);
+    }
+
+    @Override
+    public List<InventoryListener> getInventoryListeners() {
+        return inventoryListeners;
     }
 }

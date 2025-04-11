@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
@@ -11,6 +12,7 @@ import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -25,9 +27,14 @@ import java.util.stream.Collectors;
 
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
+    private final MenuPlugin plugin;
     private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
     private final Map<String, PermissibleLoader> permissibles = new HashMap<>();
     private final Map<String, ActionLoader> actionsLoader = new HashMap<>();
+
+    public ZButtonManager(MenuPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void register(ButtonLoader button) {
@@ -36,8 +43,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         if (optional.isPresent()) {
             ButtonLoader loader = optional.get();
             if (loader.getName().equals(button.getName())) {
-                throw new ButtonAlreadyRegisterException("Button " + button.getButton().getName()
-                        + " was already register in the " + loader.getPlugin().getName());
+                throw new ButtonAlreadyRegisterException("Button " + button.getButton().getName() + " was already register in the " + loader.getPlugin().getName());
             }
         }
 
@@ -45,13 +51,15 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
         buttonLoaders.add(button);
         this.loaders.put(plugin.getName(), buttonLoaders);
+
+        this.plugin.getInventoryManager().loadElement(InventoryRequirementType.BUTTON, button.getName());
     }
 
     @Override
     public void unregister(ButtonLoader button) {
         String pluginName = button.getPlugin().getName();
         List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(pluginName, new ArrayList<>());
-        buttonLoaders.add(button);
+        buttonLoaders.remove(button);
         this.loaders.put(pluginName, buttonLoaders);
     }
 
@@ -83,6 +91,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public void registerPermissible(PermissibleLoader permissibleLoader) {
         this.permissibles.put(permissibleLoader.getKey().toLowerCase(), permissibleLoader);
+        this.plugin.getInventoryManager().loadElement(InventoryRequirementType.PERMISSIBLE, permissibleLoader.getKey());
     }
 
     @Override
@@ -101,8 +110,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         if (key.contains(",")) {
             for (String value : key.split(",")) {
                 this.actionsLoader.put(value, actionLoader);
+                this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, value);
             }
-        } else this.actionsLoader.put(key, actionLoader);
+        } else {
+            this.actionsLoader.put(key, actionLoader);
+            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, key);
+        }
     }
 
     @Override
@@ -129,6 +142,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override
+    public List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+        return loadPermissible(elements, path, file);
+    }
+
+    @Override
     public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file) {
         return elements.stream().map(map -> {
             String type = (String) map.getOrDefault("type", null);
@@ -144,8 +163,24 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 action.setDelay(accessor.getInt("delay", 0));
                 return action;
             }
-            Logger.info("Error, an element is invalid in " + path + " with type " + type +", he doesn't exist!", Logger.LogType.ERROR);
+            Logger.info("Error, an element is invalid in " + path + " with type " + type + ", he doesn't exist!", Logger.LogType.ERROR);
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+        return loadActions(elements, path, file);
+    }
+
+    @Override
+    public List<String> getEmptyActions(List<Map<String, Object>> elements) {
+        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> !getActionLoader(type).isPresent()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getEmptyPermissible(List<Map<String, Object>> elements) {
+        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> !getPermission(type).isPresent()).collect(Collectors.toList());
     }
 }

@@ -49,7 +49,7 @@ public interface Requirement {
      * @param player       The player.
      * @param button       The Button can be nullable
      * @param inventory    The Inventory.
-     * @param placeholders
+     * @param placeholders The placeholders.
      * @return True if the player has permission.
      */
     boolean execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);

@@ -75,7 +75,7 @@ public class InventoryDefault extends VInventory {
             Placeholders placeholders = new Placeholders();
             this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
-            String inventoryName = this.getMessage(this.inventory.getName(player), "%page%", page, "%maxPage%", this.maxPage);
+            String inventoryName = this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage);
             if (this.inventory.getType() == InventoryType.CHEST) {
                 super.createMetaInventory(super.papi(placeholders.parse(inventoryName), player, false), this.inventory.size());
             } else {
@@ -267,9 +267,7 @@ public class InventoryDefault extends VInventory {
                     this.timers.put(slot, timerTask);
                 }
             }
-
         }
-
     }
 
     public void cancel(int slot) {
@@ -314,11 +312,11 @@ public class InventoryDefault extends VInventory {
         String displayName = button.buildDisplayName(this.player);
 
         if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
-            Meta.meta.updateLore(itemMeta, lore, this.player);
+            Meta.meta.updateLore(itemMeta, papi(lore, player, false), button.getItemStack().getLoreType());
         }
 
         if (displayName != null && refreshRequirement.isRefreshName()) {
-            Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+            Meta.meta.updateDisplayName(itemMeta, papi(displayName, player, false), this.player);
         }
 
         itemStack.setItemMeta(itemMeta);
@@ -342,8 +340,8 @@ public class InventoryDefault extends VInventory {
         List<String> lore = button.buildLore(this.player);
         String displayName = button.buildDisplayName(this.player);
 
-        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, lore, this.player);
-        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, displayName, this.player);
+        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), button.getItemStack().getLoreType());
+        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
 
         itemStack.setItemMeta(itemMeta);
         this.getSpigotInventory().setItem(slot, itemStack);

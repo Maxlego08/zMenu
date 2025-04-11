@@ -12,15 +12,4 @@ public interface IMessage {
 
     MessageType getType();
 
-    String getTitle();
-
-    String getSubTitle();
-
-    int getStart();
-
-    int getEnd();
-
-    int getTime();
-
-
 }

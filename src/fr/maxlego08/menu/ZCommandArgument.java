@@ -14,14 +14,16 @@ public class ZCommandArgument implements CommandArgument {
     private final boolean performMainAction;
     private final List<Action> actions;
     private final List<String> autoCompletion;
+    private final String defaultValue;
 
-    public ZCommandArgument(String argument, String inventory, boolean isRequired, boolean performMainAction, List<Action> actions, List<String> autoCompletion) {
+    public ZCommandArgument(String argument, String inventory, boolean isRequired, boolean performMainAction, List<Action> actions, List<String> autoCompletion, String defaultValue) {
         this.argument = argument;
         this.inventory = inventory;
         this.isRequired = isRequired;
         this.performMainAction = performMainAction;
         this.actions = actions;
         this.autoCompletion = autoCompletion;
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -42,6 +44,11 @@ public class ZCommandArgument implements CommandArgument {
     @Override
     public boolean isPerformMainActions() {
         return this.performMainAction;
+    }
+
+    @Override
+    public String getDefaultValue() {
+        return this.defaultValue;
     }
 
     @Override

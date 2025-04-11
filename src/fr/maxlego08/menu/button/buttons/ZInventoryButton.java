@@ -53,7 +53,6 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
 
         Inventory fromInventory = inventory.getMenuInventory();
         List<Inventory> oldInventories = inventory.getOldInventories();
-        oldInventories.add(fromInventory);
 
         Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.getInventory(this.inventoryName) : this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
         if (!optional.isPresent()) {
@@ -62,6 +61,8 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
                     this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
             return;
         }
+
+        oldInventories.add(fromInventory);
 
         this.inventoryArgument.process(player);
 

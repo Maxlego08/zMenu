@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
@@ -46,6 +47,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
+    private List<ConditionalName> conditionalNames = new ArrayList<>();
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -74,7 +76,17 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public String getName(Player player) {
+    public String getName(Player player, InventoryDefault inventoryDefault, Placeholders placeholders) {
+
+        if (!this.conditionalNames.isEmpty()) {
+            Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::getPriority));
+
+            if (optional.isPresent()) {
+                ConditionalName conditionalName = optional.get();
+                return conditionalName.getName();
+            }
+        }
+
         String locale = findPlayerLocale(player);
         return locale == null ? this.name : this.translatedNames.getOrDefault(locale, this.name);
     }
@@ -109,17 +121,6 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    @Deprecated
-    public int getMaxPage(Player player, Object... objects) {
-        Optional<Integer> optional = this.buttons.stream().map(Button::getSlot).max(Integer::compare);
-        if (optional.isPresent()) {
-            int maxSlot = optional.get();
-            return (maxSlot / this.size) + 1;
-        }
-        return 1;
-    }
-
-    @Override
     public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
 
         List<Button> buttons = new ArrayList<>(this.buttons);
@@ -141,7 +142,7 @@ public class ZInventory extends ZUtils implements Inventory {
         return this.buttons.stream().filter(button -> {
             int size = button.isPlayerInventory() ? 36 : this.size;
             int slot = button.getRealSlot(size, page);
-            return slot >= 0 && slot < size;
+            return (slot >= 0 && slot < size);
         }).collect(Collectors.toList());
     }
 
@@ -284,6 +285,15 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setTranslatedNames(Map<String, String> translatedNames) {
         this.translatedNames = translatedNames;
+    }
+
+    @Override
+    public List<ConditionalName> getConditionalNames() {
+        return this.conditionalNames;
+    }
+
+    public void setConditionalNames(List<ConditionalName> conditionalNames) {
+        this.conditionalNames = conditionalNames;
     }
 
     public void setClearInventory(boolean clearInventory) {

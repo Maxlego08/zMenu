@@ -22,7 +22,7 @@ public class BackAction extends Action {
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
         List<Inventory> oldInventories = inventory.getOldInventories();
 
-        if (oldInventories.size() >= 1) {
+        if (!oldInventories.isEmpty()) {
             Inventory currentInventory = oldInventories.get(oldInventories.size() - 1);
             oldInventories.remove(currentInventory);
 

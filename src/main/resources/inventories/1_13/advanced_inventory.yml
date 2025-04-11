@@ -37,9 +37,9 @@ size: 54
 #
 # If your inventory has multiple pages, you can view the current page and the last page with the following placeholders:
 # %page% - Current max
-# %maxPage% - Last page
+# %max-page% - Last page
 #
-name: "&4Advanced &cInventory &7%page%&8/&7%maxPage%"
+name: "&4Advanced &cInventory &7%page%&8/&7%max-page%"
 
 # Patterns (https://docs.zmenu.dev/configurations/patterns)
 #
@@ -71,7 +71,7 @@ items:
   #
   # So we have red glass that will be displayed on all pages of slot 2 to 6
   decorations:
-    # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#ispermanent)
+    # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#is-permanent)
     is-permanent: true
     item:
       material: RED_STAINED_GLASS_PANE

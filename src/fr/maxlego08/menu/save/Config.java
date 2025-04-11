@@ -33,7 +33,7 @@ public class Config implements Savable {
     public static boolean enablePlayerCommandInChat = false;
 
     // Allows you to use the FastEvent interface instead of bukkit events. You gain performance. To use FastEvent, please read the documentation.
-    public static boolean enableFastEvent = true;
+    public static boolean enableFastEvent = false;
 
     // Seconds save player data: The time in seconds for automatic backup of player data.
     public static int secondsSavePlayerData = 600;

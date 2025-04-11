@@ -62,7 +62,8 @@ public class CommandMenuOpen extends VCommand {
             }
         }
 
-        // Custom arguments
+        int page = 1;
+
         if (args.length >= 5) {
             CommandManager commandManager = plugin.getCommandManager();
 
@@ -85,12 +86,20 @@ public class CommandMenuOpen extends VCommand {
                         }
                     }
                 }
+
+                if (name.equalsIgnoreCase("page")) {
+                    try {
+                        page = Integer.parseInt(value.toString());
+                    } catch (Exception ignored) {
+                    }
+                }
+
                 commandManager.setPlayerArgument(player, name, value.toString());
             }
         }
 
         Inventory inventory = optional.get();
-        inventoryManager.openInventory(player, inventory);
+        inventoryManager.openInventory(player, inventory, page);
 
         return CommandType.SUCCESS;
     }

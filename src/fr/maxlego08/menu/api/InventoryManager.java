@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
@@ -14,6 +15,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
@@ -412,7 +414,7 @@ public interface InventoryManager extends Savable, Listener {
     /**
      * Registers a new button option class with the plugin.
      *
-     * @param plugin The plugin with which the button option is to be registered.
+     * @param plugin       The plugin with which the button option is to be registered.
      * @param buttonOption The class of the button option to register.
      */
     void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption);
@@ -484,5 +486,39 @@ public interface InventoryManager extends Savable, Listener {
      * @return An instance of {@link FontImage} for handling font images.
      */
     FontImage getFontImage();
+
+    /**
+     * Loads a YAML configuration file and applies global placeholders.
+     *
+     * @param file The YAML file to load.
+     * @return The loaded YAML configuration.
+     */
+    YamlConfiguration loadYamlConfiguration(File file);
+
+    /**
+     * Loads an inventory element based on the specified requirement type and value.
+     * This method interprets the given type and value to configure or adjust
+     * inventory-related settings or behaviors.
+     *
+     * @param type  The type of inventory requirement to be loaded. This defines
+     *              the specific aspect of the inventory being targeted.
+     * @param value The value associated with the inventory requirement, used to
+     *              configure or modify the inventory setting as per the type specified.
+     */
+    void loadElement(InventoryRequirementType type, String value);
+
+    void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption);
+
+    Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions();
+
+    Optional<Class<? extends InventoryOption>> getInventoryOption(String name);
+
+    void unregisterInventoryOptions(Plugin plugin);
+
+    void registerInventoryListener(InventoryListener inventoryListener);
+
+    void unregisterInventoryListener(InventoryListener inventoryListener);
+
+    List<InventoryListener> getInventoryListeners();
 
 }

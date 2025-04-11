@@ -186,7 +186,18 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     @Override
     public void onRender(Player player, InventoryDefault inventory) {
-        inventory.displayFinalButton(this, this.getSlots().stream().mapToInt(Integer::intValue).toArray());
+        if (inventory.getPage() == this.getPage() || this.isPermanent()) {
+
+            int inventorySize = this.isPlayerInventory() ? 36 : inventory.getInventory().getSize();
+
+            int[] slots = this.getSlots().stream().map(slot -> {
+                if (!this.isPermanent) {
+                    return slot - ((this.getPage() - 1) * inventorySize);
+                }
+                return slot;
+            }).mapToInt(Integer::intValue).toArray();
+            inventory.displayFinalButton(this, slots);
+        }
     }
 
     @Override
@@ -228,7 +239,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 this.openLink.send(player, this.messages);
             } else {
 
-                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message.replace("%player%", player.getName()), player, true)));
+                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(placeholders.parse(message.replace("%player%", player.getName())), player, true)));
             }
         }
 
@@ -247,7 +258,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(player, event.getClick(), inventory.getPlugin().getScheduler());
+        this.execute(player, event.getClick(), inventory.getPlugin().getScheduler(), placeholders);
     }
 
     @Override

@@ -94,6 +94,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
 
         button.setSlots(slots);
         button.setSlot(slot);
+        button.setPage(page);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
         MenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", file);
