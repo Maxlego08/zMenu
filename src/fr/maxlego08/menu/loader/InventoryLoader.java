@@ -4,20 +4,17 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
-import fr.maxlego08.menu.api.requirement.ConditionalName;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.exceptions.InventoryException;
 import fr.maxlego08.menu.exceptions.InventorySizeException;
 import fr.maxlego08.menu.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.itemstack.FullSimilar;
-import fr.maxlego08.menu.requirement.ZConditionalName;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.loader.Loader;
@@ -123,6 +120,11 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         String loadString;
         inventory.setTranslatedNames(translatedDisplayName);*/
 
+        List<InventoryOption> inventoryOptions = this.plugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).collect(Collectors.toList());
+        for (InventoryOption inventoryOption : inventoryOptions) {
+            inventoryOption.loadInventory(inventory, file, configuration, this.plugin.getInventoryManager(), this.plugin.getButtonManager());
+        }
+
         return inventory;
     }
 
@@ -214,6 +216,21 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
                 inventory.setOpenRequirement(requirementLoader.load(configuration, loadString + ".", file));
             }
+        }
+    }
+
+    private InventoryOption createInstance(Plugin plugin, Class<? extends InventoryOption> aClass) {
+        try {
+            Constructor<? extends InventoryOption> constructor = aClass.getConstructor(Plugin.class);
+            return constructor.newInstance(plugin);
+        } catch (NoSuchMethodException ignored) {
+            try {
+                return aClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                return null;
+            }
+        } catch (Exception ignored) {
+            return null;
         }
     }
 
