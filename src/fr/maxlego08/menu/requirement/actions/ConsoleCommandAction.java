@@ -23,7 +23,7 @@ public class ConsoleCommandAction extends Action {
     @Override
     protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
         ZScheduler scheduler = inventory.getPlugin().getScheduler();
-        List<String> parsedCommands = placeholders.parse(parseAndFlattenCommands(commands, player));
+        List<String> parsedCommands = papi(placeholders.parse(parseAndFlattenCommands(commands, player)), player, true);
 
         Runnable runnable = () -> parsedCommands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
 
