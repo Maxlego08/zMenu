@@ -289,6 +289,13 @@
       <scope>system</scope>
       <systemPath>${basedir}/libs/nexo-0.5.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>com.hibiscusmc</groupId>
+      <artifactId>HMCCosmetics</artifactId>
+      <version>2.7.7</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/libs/HMCCosmetics-2.7.7.jar</systemPath>
+    </dependency>
   </dependencies>
   <properties>
     <xseries.version>13.0.0</xseries.version>
