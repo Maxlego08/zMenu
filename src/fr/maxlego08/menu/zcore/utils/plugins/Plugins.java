@@ -16,7 +16,7 @@ public enum Plugins {
 	NOVA("Nova"),
 	ECO("eco"),
 	ZITEMS("zItems"),
-
+	HMCCOSMETICS("HMCCosmetics"),
 	JOBS("Jobs"),
 	LUCKPERMS("LuckPerms"),
     NEXO("Nexo"),
