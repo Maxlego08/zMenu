@@ -80,6 +80,9 @@ public class CommandInventory extends VCommand {
                 lastArgument = argument;
                 String defaultValue = argument.getDefaultValue();
                 StringBuilder value = new StringBuilder(index < this.args.length ? this.args[index] : (defaultValue != null && !defaultValue.isEmpty() ? defaultValue : ""));
+                if (value.length() == 0 && argument.isRequired()) {
+                    return CommandType.SYNTAX_ERROR;
+                }
 
                 if (this.args.length > arguments.size() && index == arguments.size() - 1) {
 
@@ -100,9 +103,12 @@ public class CommandInventory extends VCommand {
                     optional = getInventoryByName(optionalInventory.get());
                 }
 
-                placeholders.register(argument.getArgument(), value.toString());
-                System.out.println("Register : " + argument.getArgument() + " - " + value);
-                commandManager.setPlayerArgument(this.player, argument.getArgument(), value.toString());
+                if (value.length() == 0 && !argument.isRequired()) {
+                    lastArgument = null;
+                } else {
+                    placeholders.register(argument.getArgument(), value.toString());
+                    commandManager.setPlayerArgument(this.player, argument.getArgument(), value.toString());
+                }
             }
         }
 
