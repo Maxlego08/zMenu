@@ -56,6 +56,23 @@ public class InventoryLoadRequirement {
         return this.requirements.values().stream().allMatch(List::isEmpty);
     }
 
+    public Map<InventoryRequirementType, List<String>> getRequirements() {
+        return requirements;
+    }
+
+
+    public String getDisplayError() {
+        StringBuilder sb = new StringBuilder();
+        this.requirements.forEach((type, names) -> {
+            if (!names.isEmpty()) {
+                sb.append(type.name().toUpperCase()).append(" : ");
+                sb.append(String.join(", ", names));
+                sb.append("\n");
+            }
+        });
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         return "InventoryLoadRequirement{" +

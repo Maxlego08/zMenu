@@ -43,7 +43,6 @@ public class InventoryAction extends Action {
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
 
-            this.inventoryArgument.process(player);
 
             String inventoryName = this.papi(placeholders.parse(this.inventory), player, false);
             Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
@@ -51,6 +50,8 @@ public class InventoryAction extends Action {
 
                 int page = this.stringPage == null ? this.intPage : getInt(this.papi(placeholders.parse(this.stringPage), player, false));
                 oldInventories.add(fromInventory);
+
+                this.inventoryArgument.process(player);
                 this.inventoryManager.openInventory(player, optional.get(), page, oldInventories);
 
             } else {

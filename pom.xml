@@ -309,7 +309,7 @@
         <dependency>
             <groupId>com.github.Traqueur-dev</groupId>
             <artifactId>CurrenciesAPI</artifactId>
-            <version>1.0.7</version>
+            <version>6a609a9d79</version>
         </dependency>
         <!-- MagicCosmetics -->
         <dependency>
