@@ -7,3 +7,4 @@ bin/
 .idea
 zmenu.iml
 libs/nexo-0.5.jar
+*.java~
