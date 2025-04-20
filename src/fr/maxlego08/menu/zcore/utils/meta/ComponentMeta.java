@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ComponentMeta extends ZUtils implements MetaUpdater {
-    private static final Component RESET = Component.text("").decoration(TextDecoration.ITALIC, false);
+    private static final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
 
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
