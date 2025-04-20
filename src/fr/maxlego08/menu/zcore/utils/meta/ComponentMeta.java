@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ComponentMeta extends ZUtils implements MetaUpdater {
+    private static final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
 
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
@@ -92,7 +93,9 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
     private void updateDisplayName(ItemMeta itemMeta, String text) {
         Component component = this.cache.get(text, () -> {
-            return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)); // We will force the italics in false, otherwise it will activate for no reason
+            //Fixed text becomes italic automatically
+            //From GitHub issue #62
+            return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
         });
         try {
             nameMethod.invoke(itemMeta, component);
@@ -124,13 +127,13 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
         List<Component> components = lore.stream().map(text -> this.cache.get(text, () -> {
-            return this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)); // We will force the italics in false, otherwise it will activate for no reason
+            //Fixed text becomes italic automatically
+            //From GitHub issue #62
+            return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
         })).collect(Collectors.toList());
         
         if (loreType != LoreType.REPLACE && itemMeta.hasLore()) {
-
             try {
-
                 List<Component> currentLore = (List<Component>) getLoreMethod.invoke(itemMeta);
 
                 if (currentLore != null) {
