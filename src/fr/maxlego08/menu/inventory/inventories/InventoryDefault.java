@@ -38,8 +38,8 @@ public class InventoryDefault extends VInventory {
 
     private final Map<Integer, TimerTask> timers = new HashMap<>();
     private Inventory inventory;
-    private List<Inventory> oldInventories;
-    private List<Button> buttons;
+    private List<Inventory> oldInventories = new ArrayList<>();
+    private List<Button> buttons = new ArrayList<>();
     private int maxPage = 1;
     private boolean isAsync = false;
 
@@ -288,7 +288,7 @@ public class InventoryDefault extends VInventory {
      * @return the oldInventories
      */
     public List<Inventory> getOldInventories() {
-        return oldInventories;
+        return this.oldInventories == null ? new ArrayList<>() : this.oldInventories;
     }
 
     /**

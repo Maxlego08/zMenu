@@ -42,6 +42,13 @@
 
 # Unreleased
 
+# 1.0.4.0
+
+- Fixed placeholders in actions
+- Fixed commands with arguments
+- Fixed minimessage [#124](https://github.com/Maxlego08/zMenu/pull/124)
+- Added RoyaleEconomy support
+
 # 1.0.3.9
 
 - Added dependency management for inventory loading. If an inventory needs to be loaded but one of its dependencies is not yet loaded, it will be put on hold until all dependencies are loaded. This allows you to use any element from any other plugin in any zMenu inventory.

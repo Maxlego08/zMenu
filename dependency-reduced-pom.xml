@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.maxlego08</groupId>
   <artifactId>zmenu</artifactId>
-  <version>1.0.3.9</version>
+  <version>1.0.4.0</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -288,6 +288,13 @@
       <version>0.5.0</version>
       <scope>system</scope>
       <systemPath>${basedir}/libs/nexo-0.5.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.hibiscusmc</groupId>
+      <artifactId>HMCCosmetics</artifactId>
+      <version>2.7.7</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/libs/HMCCosmetics-2.7.7.jar</systemPath>
     </dependency>
   </dependencies>
   <properties>

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.zcore.utils.plugins;
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
 /**
  * @author Maxlego08
  */
-public class VersionChecker implements Listener {
+public class VersionChecker extends ZUtils implements Listener {
 
     private final String URL_API = "https://groupez.dev/api/v1/resource/version/%s";
     private final String URL_RESOURCE = "https://groupez.dev/resources/%s";
@@ -69,9 +70,8 @@ public class VersionChecker implements Listener {
         final Player player = event.getPlayer();
         if (!useLastVersion && event.getPlayer().hasPermission("zplugin.notifs")) {
             plugin.getScheduler().runTaskLater(player.getLocation(), 20 * 2, () -> {
-                String prefix = Message.PREFIX.getMessage();
-                player.sendMessage(prefix + "§cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
-                player.sendMessage(prefix + "§fDownload plugin here: §a" + String.format(URL_RESOURCE, pluginID));
+                message(player, "&cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
+                message(player, "&fDownload plugin here: &a" + String.format(URL_RESOURCE, pluginID));
             });
         }
     }
