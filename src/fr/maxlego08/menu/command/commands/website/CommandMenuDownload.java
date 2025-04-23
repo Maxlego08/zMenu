@@ -2,6 +2,7 @@ package fr.maxlego08.menu.command.commands.website;
 
 import fr.maxlego08.menu.MenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -24,6 +25,14 @@ public class CommandMenuDownload extends VCommand {
 
         String link = this.argAsString(0);
         boolean force = this.argAsBoolean(1, false);
+
+        if (Config.enableDownloadCommand) {
+
+            plugin.getLogger().warning(sender.getName() + " try to download the link '" + link + "' (force: " + force + ") while the command is disable !");
+            message(sender, "&cThe command is disable for safety reason, you need to enable it in config.json.");
+
+            return CommandType.DEFAULT;
+        }
 
         /*DownloadFile downloadFile = new DownloadFile();
         runAsync(plugin, () -> downloadFile.download(plugin, this.sender, link));*/
