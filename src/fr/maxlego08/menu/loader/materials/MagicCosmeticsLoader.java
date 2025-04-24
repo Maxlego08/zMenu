@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader.materials;
 
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
