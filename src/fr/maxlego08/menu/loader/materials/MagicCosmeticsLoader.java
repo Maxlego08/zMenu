@@ -13,6 +13,7 @@ public class MagicCosmeticsLoader implements MaterialLoader {
     public String getKey() {
         return "magic_cosmetics";
     }
+
     @Override
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
         ItemStack itemStack = MagicAPI.getEquipped(player.getName(), materialString);
