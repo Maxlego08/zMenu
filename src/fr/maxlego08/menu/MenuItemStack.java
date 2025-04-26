@@ -200,7 +200,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (itemStack == null) {
-            itemStack = new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false)));
+            itemStack = data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
         }
 
         if (this.url != null && !url.equalsIgnoreCase("null")) {
