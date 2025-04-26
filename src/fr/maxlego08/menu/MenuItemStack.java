@@ -280,7 +280,7 @@ public class MenuItemStack extends ZUtils {
             }
 
 
-            if (attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+            if (!attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
                 itemMeta.setAttributeModifiers(ArrayListMultimap.create());
             }
 
