@@ -49,6 +49,7 @@ import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
 import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
 import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
 import fr.maxlego08.menu.loader.actions.DataLoader;
+import fr.maxlego08.menu.loader.actions.DiscordLoader;
 import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
@@ -349,6 +350,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TitleLoader());
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
+        buttonManager.registerAction(new DiscordLoader());
         buttonManager.registerAction(new TeleportLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.VAULT)) {
             buttonManager.registerAction(new CurrencyWithdrawLoader());
