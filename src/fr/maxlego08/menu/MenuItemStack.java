@@ -200,7 +200,7 @@ public class MenuItemStack extends ZUtils {
         }
 
         if (itemStack == null) {
-            itemStack = new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false)));
+            itemStack = data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
         }
 
         if (this.url != null && !url.equalsIgnoreCase("null")) {
@@ -280,7 +280,7 @@ public class MenuItemStack extends ZUtils {
             }
 
 
-            if (attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+            if (!attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
                 itemMeta.setAttributeModifiers(ArrayListMultimap.create());
             }
 
