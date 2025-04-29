@@ -153,6 +153,24 @@ public class DiscordEmbedConfiguration {
             embedObject.setTitle(consumer.accept(this.title));
         }
 
+        if (this.thumbnail != null) {
+            embedObject.setThumbnail(consumer.accept(this.thumbnail.getUrl()));
+        }
+
+        if (this.image != null) {
+            embedObject.setImage(consumer.accept(this.image.getUrl()));
+        }
+
+        if (this.footer != null) {
+            embedObject.setFooter(consumer.accept(this.footer.getText()), consumer.accept(this.footer.getIconUrl()));
+        }
+
+        if (!this.fields.isEmpty()) {
+            for (Field field : this.fields) {
+                embedObject.addField(consumer.accept(field.getName()), consumer.accept(field.getValue()), field.isInline());
+            }
+        }
+
         discordWebhook.addEmbed(embedObject);
     }
 

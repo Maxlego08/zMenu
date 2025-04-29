@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.save.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.DiscordWebhook;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -125,7 +124,9 @@ public class DupeListener implements Listener {
 
     private void sendInformation(DupeItem dupeItem) {
 
-        DiscordWebhook discordWebhook = new DiscordWebhook(Config.antiDupeDiscordWebhookUrl);
+        // Rework with new discord webhook class
+
+        /*DiscordWebhook discordWebhook = new DiscordWebhook(Config.antiDupeDiscordWebhookUrl);
         discordWebhook.setContent(Config.antiDupeMessage);
 
         Logger.info(discordWebhook.replaceString(Config.antiDupeMessage, dupeItem), Logger.LogType.WARNING);
@@ -137,7 +138,7 @@ public class DupeListener implements Listener {
                     exception.printStackTrace();
                 }
             });
-        }
+        }*/
     }
 
 }
