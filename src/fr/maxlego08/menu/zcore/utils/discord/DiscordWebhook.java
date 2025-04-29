@@ -149,8 +149,6 @@ public class DiscordWebhook {
         OutputStream stream = connection.getOutputStream();
         String jsonString = new Gson().toJson(json);
 
-        System.out.println("json: " + jsonString);
-
         stream.write(jsonString.getBytes(StandardCharsets.UTF_8));
         stream.flush();
         stream.close();
