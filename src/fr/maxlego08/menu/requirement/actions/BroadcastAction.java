@@ -21,10 +21,10 @@ public class BroadcastAction extends Action {
     }
 
     @Override
-    public void execute(Player ignored, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public void execute(Player sender, Button button, InventoryDefault inventory, Placeholders placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             papi(placeholders.parse(this.messages), player, true).forEach(message -> {
-                message = message.replace("%player%", ignored.getName());
+                message = message.replace("%sender%", sender.getName());
                 message = message.replace("%receiver%", player.getName());
                 if (miniMessage) {
                     Meta.meta.sendMessage(player, message);
