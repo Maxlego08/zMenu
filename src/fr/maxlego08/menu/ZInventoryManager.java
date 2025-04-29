@@ -333,7 +333,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load actions
-        buttonManager.registerAction(new BroadcastLoader());
+        buttonManager.registerAction(new BroadcastLoader(this.plugin));
         buttonManager.registerAction(new MessageLoader());
         buttonManager.registerAction(new BookLoader());
         buttonManager.registerAction(new SoundLoader());
