@@ -38,9 +38,22 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
-- [ ] Ajouter un système qui permet de load un inventaire uniquement quand tout les requirements sont présents
+- [ ] Ajouter un systï¿½me qui permet de load un inventaire uniquement quand tout les requirements sont prï¿½sents
 
 # Unreleased
+
+# 1.0.4.1
+
+- Added action ``discord``, Send a classic webhook discord.
+- Added action ``discord component``, Send a webhook discord with the new [component](https://discord.com/developers/docs/components/reference) system [#132](https://github.com/Maxlego08/zMenu/pull/132/).
+- Added requirements for broadcast action.
+- Added a new way to load messages action.
+- Fixed enchant loader.
+- Fixed magiccosmetics loader.
+- Fixed MenuItemStack when loaded by an ItemStack.
+- Fixed MenuItemStack attributes.
+- Change broadcast action placeholder for `%receiver%` and `%sender%`
+- Disabling the `/zm download` command by default, you must enable it in the configuration if you want to use it.
 
 # 1.0.4.0
 
@@ -54,7 +67,7 @@
 - Added dependency management for inventory loading. If an inventory needs to be loaded but one of its dependencies is not yet loaded, it will be put on hold until all dependencies are loaded. This allows you to use any element from any other plugin in any zMenu inventory.
 - Added teleport action.
 - Added default value for commands. This allows having optional arguments with a default value.
-- Added API method : ``InventoryManager#loadYamlConfiguration(File file)``, load a YAML file using the file’s placeholders `global-placeholders.yml`. This allows you to reduce the size of your configurations by avoiding the repetition of certain values.
+- Added API method : ``InventoryManager#loadYamlConfiguration(File file)``, load a YAML file using the fileï¿½s placeholders `global-placeholders.yml`. This allows you to reduce the size of your configurations by avoiding the repetition of certain values.
 - Added API method : ``ZPermissibleLoader#loadPermissible(ButtonManager buttonManager, TypedMapAccessor accessor, String key, String path, File file)``, Allows you to load a list of permissible. 
 - Added API method : ``ButtonManager#loadPermissible(YamlConfiguration configuration, String path, File file)``, allows you to load a list of permissible list from a configuration.
 - Added API method : ``ButtonManager#loadActions(YamlConfiguration configuration, String path, File file)``, allows you to load a list of action list from a configuration.
@@ -173,7 +186,7 @@
   create commands with arguments without opening an inventory for
   example. [#89](https://github.com/Maxlego08/zMenu/issues/89)
 - Add the possibility to have several languages for the lore and name of items and inventory name. Depending on the
-  player’s game language
+  playerï¿½s game language
   you can set other messages and make your server international
 - Remove ``eco`` from plugin.yml, this caused problems loading various plugins
 - Tab completes for more of the sub commands [#75](https://github.com/Maxlego08/zMenu/issues/75)
@@ -185,7 +198,7 @@
   considered expired
 - Add ``updateMasterButton``, allows to update the button entirely during the update. You have `update` enabled
 - Add requirement permissible ``money``, allows you to check if the player has enough money by using the Vault API
-- Add action `withdraw` and `deposit`, allows to withdraw and add money to the player’s account using the Vault API
+- Add action `withdraw` and `deposit`, allows to withdraw and add money to the playerï¿½s account using the Vault API
 - Fix folia (omg folia wtf)
 - Fix refresh action
 - Fix placeholder API cache, its disable by default

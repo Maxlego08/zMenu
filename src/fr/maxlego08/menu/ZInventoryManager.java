@@ -38,25 +38,7 @@ import fr.maxlego08.menu.itemstack.ModelIdSimilar;
 import fr.maxlego08.menu.itemstack.NameSimilar;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.loader.actions.ActionBarLoader;
-import fr.maxlego08.menu.loader.actions.BookLoader;
-import fr.maxlego08.menu.loader.actions.BroadcastLoader;
-import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
-import fr.maxlego08.menu.loader.actions.ChatLoader;
-import fr.maxlego08.menu.loader.actions.CloseLoader;
-import fr.maxlego08.menu.loader.actions.ConnectLoader;
-import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
-import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
-import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
-import fr.maxlego08.menu.loader.actions.DataLoader;
-import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
-import fr.maxlego08.menu.loader.actions.MessageLoader;
-import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
-import fr.maxlego08.menu.loader.actions.RefreshLoader;
-import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
-import fr.maxlego08.menu.loader.actions.SoundLoader;
-import fr.maxlego08.menu.loader.actions.TeleportLoader;
-import fr.maxlego08.menu.loader.actions.TitleLoader;
+import fr.maxlego08.menu.loader.actions.*;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
@@ -332,7 +314,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load actions
-        buttonManager.registerAction(new BroadcastLoader());
+        buttonManager.registerAction(new BroadcastLoader(this.plugin));
         buttonManager.registerAction(new MessageLoader());
         buttonManager.registerAction(new BookLoader());
         buttonManager.registerAction(new SoundLoader());
@@ -349,6 +331,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TitleLoader());
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
+        buttonManager.registerAction(new DiscordLoader());
+        buttonManager.registerAction(new DiscordComponentV2Loader());
         buttonManager.registerAction(new TeleportLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.VAULT)) {
             buttonManager.registerAction(new CurrencyWithdrawLoader());
