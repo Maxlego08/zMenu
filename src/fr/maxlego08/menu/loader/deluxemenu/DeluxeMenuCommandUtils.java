@@ -54,9 +54,9 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         actionMap.put("[player]", cmd -> new PlayerCommandAction(Collections.singletonList(removePrefix(cmd, "[player]")), false));
         actionMap.put("[commandevent]", cmd -> new PlayerCommandAction(Collections.singletonList(removePrefix(cmd, "[commandevent]")), true));
         actionMap.put("[minimessage]", cmd -> new MessageAction(Collections.singletonList(removePrefix(cmd, "[minimessage]")), true));
-        actionMap.put("[minibroadcast]", cmd -> new BroadcastAction(Collections.singletonList(removePrefix(cmd, "[minibroadcast]")), true));
+        actionMap.put("[minibroadcast]", cmd -> new BroadcastAction(Collections.singletonList(removePrefix(cmd, "[minibroadcast]")), true, new ArrayList<>()));
         actionMap.put("[message]", cmd -> new MessageAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false));
-        actionMap.put("[broadcast]", cmd -> new BroadcastAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false));
+        actionMap.put("[broadcast]", cmd -> new BroadcastAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false, new ArrayList<>()));
         actionMap.put("[openguimenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openguimenu]"), "zMenu", "1", new ArrayList<>()));
         actionMap.put("[openmenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openmenu]"), "zMenu", "1", new ArrayList<>()));
         actionMap.put("[connect]", cmd -> new ConnectAction(removePrefix(cmd, "[connect]"), plugin));
