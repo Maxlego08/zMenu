@@ -2,20 +2,20 @@ package fr.maxlego08.menu.zcore.utils.discord;
 
 import java.util.List;
 
-public class DiscordConfigurationComponentV2 {
+public class DiscordConfigurationComponent {
     private final String webhookUrl;
     private final String avatarUrl;
     private final String username;
     private final List<?> json;
 
-    public DiscordConfigurationComponentV2(String webhookUrl, String avatarUrl, String username, List<?> json) {
+    public DiscordConfigurationComponent(String webhookUrl, String avatarUrl, String username, List<?> json) {
         this.webhookUrl = webhookUrl;
         this.avatarUrl = avatarUrl;
         this.username = username;
         this.json = json;
     }
 
-    public void apply(ReturnConsumer<String, String> consumer, DiscordWebhookComponentV2 discordWebhook) {
+    public void apply(ReturnConsumer<String, String> consumer, DiscordWebhookComponent discordWebhook) {
 
         if (this.username != null) {
             discordWebhook.setUsername(consumer.accept(this.username));

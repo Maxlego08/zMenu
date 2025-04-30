@@ -3,8 +3,8 @@ package fr.maxlego08.menu.loader.actions;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.requirement.actions.DiscordActionComponentV2;
-import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponentV2;
+import fr.maxlego08.menu.requirement.actions.DiscordComponentAction;
+import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponent;
 
 import java.io.File;
 import java.net.HttpURLConnection;
@@ -18,7 +18,7 @@ public class DiscordComponentV2Loader implements ActionLoader {
     private static final Map<String, Boolean> webhookUrlCache = new HashMap<>();
 
     @Override
-    public String getKey() {return "discord_componentv2";}
+    public String getKey() {return "discord component,discord_component,discord webhook component,discordwebhookcomponent";}
 
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file){
@@ -27,8 +27,8 @@ public class DiscordComponentV2Loader implements ActionLoader {
         String username = accessor.getString("username", null);
         List<?> json = accessor.getList("component");
         if (checkWebhookExists(webhookUrl)){
-            DiscordConfigurationComponentV2 config = new DiscordConfigurationComponentV2(webhookUrl, avatarUrl, username, json);
-            return new DiscordActionComponentV2(config);
+            DiscordConfigurationComponent config = new DiscordConfigurationComponent(webhookUrl, avatarUrl, username, json);
+            return new DiscordComponentAction(config);
         } else {
             System.err.println("Impossible to load discord action, webhook does not exists: " + webhookUrl);
         }

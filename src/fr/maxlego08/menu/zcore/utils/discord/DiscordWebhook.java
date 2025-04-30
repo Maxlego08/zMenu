@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.zcore.utils.discord;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -9,7 +8,6 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -142,7 +140,7 @@ public class DiscordWebhook {
         URL url = URI.create(this.url).toURL();
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.addRequestProperty("Content-Type", "application/json");
-        int responseCode = DiscordWebhookComponentV2.SendDiscordHttpRequest(json, connection);
+        int responseCode = DiscordWebhookComponent.sendDiscordHttpRequest(json, connection);
         if (responseCode == 400) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
             StringBuilder response = new StringBuilder();
