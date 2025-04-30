@@ -142,18 +142,7 @@ public class DiscordWebhook {
         URL url = URI.create(this.url).toURL();
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.addRequestProperty("Content-Type", "application/json");
-        connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-
-        OutputStream stream = connection.getOutputStream();
-        String jsonString = new Gson().toJson(json);
-
-        stream.write(jsonString.getBytes(StandardCharsets.UTF_8));
-        stream.flush();
-        stream.close();
-
-        int responseCode = connection.getResponseCode();
+        int responseCode = DiscordWebhookComponentV2.SendDiscordHttpRequest(json, connection);
         if (responseCode == 400) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
             StringBuilder response = new StringBuilder();
