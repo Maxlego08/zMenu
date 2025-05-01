@@ -160,7 +160,9 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 ActionLoader actionLoader = optional.get();
                 TypedMapAccessor accessor = new TypedMapAccessor(map);
                 Action action = actionLoader.load(path, accessor, file);
-                action.setDelay(accessor.getInt("delay", 0));
+                if (action != null) {
+                    action.setDelay(accessor.getInt("delay", 0));
+                }
                 return action;
             }
             Logger.info("Error, an element is invalid in " + path + " with type " + type + ", he doesn't exist!", Logger.LogType.ERROR);
