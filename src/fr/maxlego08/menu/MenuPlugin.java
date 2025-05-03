@@ -256,7 +256,10 @@ public class MenuPlugin extends ZPlugin {
         }
 
         // Must register after config loads
-        this.addListener(new SwapKeyListener());
+        if (!Bukkit.getVersion().contains("1.8")) {
+            this.addListener(new SwapKeyListener());
+        }
+
         new VersionChecker(this, 253).useLastVersion();
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
