@@ -19,7 +19,8 @@ public enum Plugins {
 	HMCCOSMETICS("HMCCosmetics"),
 	JOBS("Jobs"),
 	LUCKPERMS("LuckPerms"),
-    NEXO("Nexo"),
+	CRAFTENGINE("CraftEngine"),
+	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics");
 
 	private final String name;
