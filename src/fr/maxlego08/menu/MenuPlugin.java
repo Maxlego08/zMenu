@@ -191,6 +191,9 @@ public class MenuPlugin extends ZPlugin {
         if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
         }
+        if (this.isActive(Plugins.CRAFTENGINE)) {
+            this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
+        }
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
         }

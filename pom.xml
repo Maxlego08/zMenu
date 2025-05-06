@@ -110,6 +110,10 @@
     </build>
     <repositories>
         <repository>
+            <id>momirealms-releases</id>
+            <url>https://repo.momirealms.net/releases/</url>
+        </repository>
+        <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
             <layout>default</layout>
@@ -168,6 +172,18 @@
         </dependency>
 
         <!-- hooks -->
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-core</artifactId>
+            <version>0.0.49</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-bukkit</artifactId>
+            <version>0.0.49</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>xyz.xenondevs.nova</groupId>
             <artifactId>nova-api</artifactId>
