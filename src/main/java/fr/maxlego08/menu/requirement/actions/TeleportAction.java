@@ -4,7 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -19,7 +19,7 @@ public class TeleportAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         this.plugin.getScheduler().runTask(player.getLocation(), () -> player.teleport(location));
     }
 }

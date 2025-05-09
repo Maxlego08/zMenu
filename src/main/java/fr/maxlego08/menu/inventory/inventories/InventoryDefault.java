@@ -285,9 +285,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         return inventory;
     }
 
-    /**
-     * @return the oldInventories
-     */
+    @Override
     public List<Inventory> getOldInventories() {
         return this.oldInventories == null ? new ArrayList<>() : this.oldInventories;
     }

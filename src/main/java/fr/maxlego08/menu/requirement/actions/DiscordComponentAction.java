@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponent;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordWebhookComponent;
@@ -19,7 +19,7 @@ public class DiscordComponentAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         ZScheduler scheduler = inventory.getPlugin().getScheduler();
         DiscordWebhookComponent discordWebhook = new DiscordWebhookComponent(configuration.getWebhookUrl());
         configuration.apply(text -> text == null ? null : player == null ? text : papi(placeholders.parse(text), player, false), discordWebhook);

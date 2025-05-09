@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,4 +13,5 @@ public interface MenuItemStack {
 
     ItemStack build(Player player, boolean useCache, Placeholders placeholders);
 
+    LoreType getLoreType();
 }

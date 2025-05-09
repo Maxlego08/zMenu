@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class InventoryAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
 
         inventory.getPlugin().getScheduler().runTask(null, () -> {
 

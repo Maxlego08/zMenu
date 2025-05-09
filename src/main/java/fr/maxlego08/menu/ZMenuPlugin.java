@@ -42,6 +42,7 @@ import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.hooks.ZItemsLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.save.MessageLoader;
@@ -438,5 +439,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             return null;
         }
         return provider.getProvider();
+    }
+
+    @Override
+    public String parse(Player player, String string) {
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, string);
+    }
+
+    @Override
+    public List<String> parse(Player player, List<String> strings) {
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings);
     }
 }

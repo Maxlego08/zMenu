@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import org.bukkit.entity.Player;
 
 public class DataAction extends Action {
@@ -19,7 +19,7 @@ public class DataAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         this.playerData.execute(player, this.plugin.getDataManager());
     }
 }
