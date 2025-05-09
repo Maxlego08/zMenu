@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.materials;
+package fr.maxlego08.menu.hooks;
 
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;

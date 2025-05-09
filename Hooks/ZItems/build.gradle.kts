@@ -1,4 +1,4 @@
-group = "Hooks:Nova"
+group = "Hooks:ZItems"
 
 repositories {
     maven("https://repo.xenondevs.xyz/releases")
@@ -6,5 +6,5 @@ repositories {
 
 dependencies {
     compileOnly(project(":API"))
-    compileOnly("xyz.xenondevs.nova:nova-api:0.14.10")
+    compileOnly(files("libs/zItems-1.0.0.jar"))
 }

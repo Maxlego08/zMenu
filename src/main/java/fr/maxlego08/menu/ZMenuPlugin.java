@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -27,6 +28,8 @@ import fr.maxlego08.menu.hooks.MagicCosmeticsLoader;
 import fr.maxlego08.menu.hooks.NexoLoader;
 import fr.maxlego08.menu.hooks.NovaLoader;
 import fr.maxlego08.menu.hooks.OraxenLoader;
+import fr.maxlego08.menu.hooks.SlimeFunLoader;
+import fr.maxlego08.menu.hooks.ZHeadLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
@@ -34,12 +37,13 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
-import fr.maxlego08.menu.loader.materials.*;
+import fr.maxlego08.menu.loader.materials.ArmorLoader;
+import fr.maxlego08.menu.loader.materials.Base64Loader;
+import fr.maxlego08.menu.hooks.ZItemsLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.scheduler.BukkitScheduler;
 import fr.maxlego08.menu.scheduler.FoliaScheduler;
@@ -55,6 +59,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
@@ -209,7 +214,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isEnable(Plugins.MAGICCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
         }
-        if (this.isEnable(Plugins.HMCCOSMETICS)){
+        if (this.isEnable(Plugins.HMCCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
         }
         if (this.isEnable(Plugins.ITEMSADDER)) {
@@ -421,5 +426,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         configuration.getKeys(false).forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
+    }
+
+    @Override
+    public <T> T getProvider(Class<T> classz) {
+        RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classz);
+        if (provider == null) {
+            getLogger().info("Unable to retrieve the provider " + classz);
+            return null;
+        }
+        return provider.getProvider();
     }
 }

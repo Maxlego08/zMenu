@@ -1,13 +1,10 @@
 package fr.maxlego08.menu.zcore;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.players.Data;
+import fr.maxlego08.menu.api.exceptions.ListenerNullException;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
-import fr.maxlego08.menu.api.exceptions.ListenerNullException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.listener.ListenerAdapter;
@@ -16,24 +13,18 @@ import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.zcore.utils.gson.DataAdapter;
-import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
-import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,8 +61,7 @@ public abstract class ZPlugin extends JavaPlugin {
             this.zCommandManager.validCommands();
         }
 
-        this.log.log(
-                "=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+        this.log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
     }
 
@@ -81,8 +71,7 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     protected void postDisable() {
-        this.log.log(
-                "=== DISABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+        this.log.log("=== DISABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
     }
 
@@ -110,8 +99,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param adapter New {@link ListenerAdapter}
      */
     public void addListener(ListenerAdapter adapter) {
-        if (adapter == null)
-            throw new ListenerNullException("Warning, your listener is null");
+        if (adapter == null) throw new ListenerNullException("Warning, your listener is null");
         this.listenerAdapters.add(adapter);
     }
 
@@ -122,19 +110,6 @@ public abstract class ZPlugin extends JavaPlugin {
      */
     public Logger getLog() {
         return this.log;
-    }
-
-    /**
-     * @param classz Class provider
-     * @return nes provider
-     */
-    public <T> T getProvider(Class<T> classz) {
-        RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classz);
-        if (provider == null) {
-            log.log("Unable to retrieve the provider " + classz, LogType.WARNING);
-            return null;
-        }
-        return provider.getProvider();
     }
 
     /**
@@ -223,8 +198,7 @@ public abstract class ZPlugin extends JavaPlugin {
             resourcePath = resourcePath.replace('\\', '/');
             InputStream in = this.getResource(resourcePath);
             if (in == null) {
-                throw new IllegalArgumentException(
-                        "The embedded resource '" + resourcePath + "' cannot be found in " + this.getFile());
+                throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in " + this.getFile());
             } else {
                 File outFile = new File(getDataFolder(), toPath);
                 int lastIndex = toPath.lastIndexOf(47);
@@ -235,8 +209,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
                 try {
                     if (outFile.exists() && !replace) {
-                        getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile
-                                + " because " + outFile.getName() + " already exists.");
+                        getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
                     } else {
                         OutputStream out = Files.newOutputStream(outFile.toPath());
                         byte[] buf = new byte[1024];
