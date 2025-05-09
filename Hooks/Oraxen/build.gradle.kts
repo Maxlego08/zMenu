@@ -1,0 +1,10 @@
+group = "Hooks:Oraxen"
+
+repositories {
+    maven("https://repo.oraxen.com/releases")
+}
+
+dependencies {
+    compileOnly(project(":API"))
+    compileOnly("io.th0rgal:oraxen:1.190.0")
+}

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.materials;
+package fr.maxlego08.menu.hooks;
 
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;

@@ -25,6 +25,8 @@ import fr.maxlego08.menu.hooks.EcoLoader;
 import fr.maxlego08.menu.hooks.HmccosmeticsLoader;
 import fr.maxlego08.menu.hooks.MagicCosmeticsLoader;
 import fr.maxlego08.menu.hooks.NexoLoader;
+import fr.maxlego08.menu.hooks.NovaLoader;
+import fr.maxlego08.menu.hooks.OraxenLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
