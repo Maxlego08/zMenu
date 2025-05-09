@@ -155,6 +155,12 @@
   </repositories>
   <dependencies>
     <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.21-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>net.momirealms</groupId>
       <artifactId>craft-engine-core</artifactId>
       <version>0.0.49</version>
@@ -164,12 +170,6 @@
       <groupId>net.momirealms</groupId>
       <artifactId>craft-engine-bukkit</artifactId>
       <version>0.0.49</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
-      <version>1.21-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
