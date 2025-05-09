@@ -21,6 +21,8 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.CraftEngineLoader;
+import fr.maxlego08.menu.hooks.EcoLoader;
+import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;

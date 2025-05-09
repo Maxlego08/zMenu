@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.materials;
+package fr.maxlego08.menu.hooks;
 
 import com.willfp.eco.core.items.Items;
 import fr.maxlego08.menu.api.loader.MaterialLoader;

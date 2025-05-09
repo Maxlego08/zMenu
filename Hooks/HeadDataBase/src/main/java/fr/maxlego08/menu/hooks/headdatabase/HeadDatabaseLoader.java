@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.materials;
+package fr.maxlego08.menu.hooks.headdatabase;
 
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
