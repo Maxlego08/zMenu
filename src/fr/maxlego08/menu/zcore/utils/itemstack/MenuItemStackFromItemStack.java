@@ -4,6 +4,7 @@ import fr.maxlego08.menu.MenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.Potion;
+import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.FireworkEffect;
 import org.bukkit.inventory.ItemStack;
@@ -100,6 +101,11 @@ public class MenuItemStackFromItemStack {
                     menuItemStack.setFirework(menuFirework);
                 }
             } catch (Exception ignored) {
+            }
+
+            if(!itemMeta.getPersistentDataContainer().getKeys().isEmpty()){
+                String base64 = ItemStackUtils.serializeItemStack(itemStack);
+                menuItemStack.setMaterial("base64:" + base64);
             }
         }
 
