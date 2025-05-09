@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.materials;
+package fr.maxlego08.menu.hooks;
 
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
