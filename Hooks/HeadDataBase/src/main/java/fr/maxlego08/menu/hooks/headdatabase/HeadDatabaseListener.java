@@ -1,25 +1,23 @@
-package fr.maxlego08.menu.listener;
+package fr.maxlego08.menu.hooks.headdatabase;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class HeadDatabaseListener implements Listener {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    /**
-     * @param plugin
-     */
-    public HeadDatabaseListener(ZMenuPlugin plugin) {
+    public HeadDatabaseListener(MenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onRead(DatabaseLoadEvent event) {
-        this.plugin.getSavers().forEach(saver -> saver.load(this.plugin.getPersist()));
+        this.plugin.getPatternManager().loadPatterns();
+        this.plugin.getInventoryManager().loadInventories();
     }
 
 }

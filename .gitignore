@@ -11,3 +11,4 @@ libs/nexo-0.5.jar
 *.xml~
 changelog.md~
 */build
+*/*/build
