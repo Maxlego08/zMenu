@@ -1,10 +1,9 @@
 package fr.maxlego08.menu.players.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
-import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +28,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     public void autoSave() {
         if (System.currentTimeMillis() > this.lastSave) {
             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                this.save(this.plugin.getPersist());
+                this.save();
                 this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerInventories * 1000L);
             });
         }
@@ -76,14 +75,12 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         return Optional.ofNullable(inventories.getOrDefault(uniqueId, null));
     }
 
-    @Override
-    public void save(Persist persist) {
-        persist.save(this, "players-inventory");
+    public void save() {
+        this.plugin.getPersist().save(this, "players-inventory");
     }
 
-    @Override
-    public void load(Persist persist) {
-        persist.loadOrSaveDefault(this, ZInventoriesPlayer.class, "players-inventory");
+    public void load() {
+        this.plugin.getPersist().loadOrSaveDefault(this, ZInventoriesPlayer.class, "players-inventory");
     }
 
     @EventHandler

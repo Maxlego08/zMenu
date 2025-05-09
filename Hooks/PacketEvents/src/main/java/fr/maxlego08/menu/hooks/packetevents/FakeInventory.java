@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.packet;
+package fr.maxlego08.menu.hooks.packetevents;
 
 import fr.maxlego08.menu.api.Inventory;
 import org.bukkit.Material;

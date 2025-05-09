@@ -41,4 +41,8 @@ public interface InventoriesPlayer extends Listener {
      */
     Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId);
 
+    void load();
+
+    void save();
+
 }

@@ -239,6 +239,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         System.out.println("ToDo, rewrok save");
         // this.getSavers().forEach(saver -> saver.load(this.getPersist()));
         this.messageLoader.load();
+        this.inventoriesPlayer.load();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
@@ -320,6 +321,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             Token.getInstance().save(this.getPersist());
         }*/
         // this.packetUtils.onDisable();
+        this.inventoriesPlayer.save();
 
         this.postDisable();
     }

@@ -1,7 +1,10 @@
 package fr.maxlego08.menu.zcore;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.exceptions.ListenerNullException;
+import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
@@ -13,18 +16,24 @@ import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
+import fr.maxlego08.menu.zcore.utils.gson.DataAdapter;
+import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
+import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
+import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +47,8 @@ public abstract class ZPlugin extends JavaPlugin {
     protected VCommandManager zCommandManager;
     protected VInventoryManager vinventoryManager;
     private long enableTime;
+    private Gson gson;
+    private Persist persist;
 
     protected void preEnable() {
 
@@ -49,6 +60,9 @@ public abstract class ZPlugin extends JavaPlugin {
         this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
 
         this.getDataFolder().mkdirs();
+
+        this.gson = getGsonBuilder().create();
+        this.persist = new Persist(this);
 
         Placeholder.Placeholders.getPlaceholder();
     }
@@ -73,6 +87,14 @@ public abstract class ZPlugin extends JavaPlugin {
     protected void postDisable() {
         this.log.log("=== DISABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
+    }
+
+    public GsonBuilder getGsonBuilder() {
+        return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
+                .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
+                .registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter(this))
+                .registerTypeAdapter(Data.class, new DataAdapter(this))
+                .registerTypeAdapter(Location.class, new LocationAdapter(this));
     }
 
     /**
@@ -232,4 +254,7 @@ public abstract class ZPlugin extends JavaPlugin {
         }
     }
 
+    public Persist getPersist() {
+        return persist;
+    }
 }

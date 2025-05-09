@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.packet;
+package fr.maxlego08.menu.hooks.packetevents;
 
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;

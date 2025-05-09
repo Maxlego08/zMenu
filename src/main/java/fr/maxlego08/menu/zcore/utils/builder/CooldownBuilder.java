@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.builder;
 
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

@@ -2,12 +2,13 @@ package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryListener;
-import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
+import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
+import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -23,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class VInventory extends ZUtils implements Cloneable, InventoryHolder {
+public abstract class VInventory extends ZUtils implements Cloneable, InventoryHolder, BaseInventory {
 
     protected int id;
     protected ZMenuPlugin plugin;
