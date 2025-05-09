@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands.players;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -10,7 +10,7 @@ import org.bukkit.OfflinePlayer;
 
 public class CommandMenuPlayersClearPlayer extends VCommand {
 
-    public CommandMenuPlayersClearPlayer(MenuPlugin plugin) {
+    public CommandMenuPlayersClearPlayer(ZMenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_PLAYERS);
         this.setDescription(Message.DESCRIPTION_PLAYERS_CLEAR_PLAYER);
@@ -19,7 +19,7 @@ public class CommandMenuPlayersClearPlayer extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         DataManager dataManager = plugin.getDataManager();
         OfflinePlayer offlinePlayer = this.argAsOfflinePlayer(0);

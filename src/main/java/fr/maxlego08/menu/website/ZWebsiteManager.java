@@ -1,14 +1,14 @@
 package fr.maxlego08.menu.website;
 
 import com.google.gson.JsonObject;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.button.loader.NoneLoader;
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
 import fr.maxlego08.menu.website.buttons.ButtonFolderBack;
 import fr.maxlego08.menu.website.buttons.ButtonFolderNext;
@@ -41,7 +41,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
     // private final String API_URL = "http://mib.test/api/v1/";
     private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
     private boolean isDownloadResource = false;
@@ -52,7 +52,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     private int currentFolderId = -1;
     private int baseFolderId = 1;
 
-    public ZWebsiteManager(MenuPlugin plugin) {
+    public ZWebsiteManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }

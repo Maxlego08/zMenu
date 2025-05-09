@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.players;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.zcore.utils.interfaces.ReturnConsumer;
@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 public class ZDataManager implements DataManager {
 
     private static Map<UUID, ZPlayerData> players = new HashMap<>();
-    private final transient MenuPlugin plugin;
+    private final transient ZMenuPlugin plugin;
     private transient Map<String, String> defaultValues = new HashMap<>();
     private transient long lastSave;
 
-    public ZDataManager(MenuPlugin plugin) {
+    public ZDataManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
         this.defaultValues = new HashMap<>();

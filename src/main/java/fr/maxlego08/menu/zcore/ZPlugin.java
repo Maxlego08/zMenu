@@ -2,12 +2,12 @@ package fr.maxlego08.menu.zcore;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
-import fr.maxlego08.menu.exceptions.ListenerNullException;
+import fr.maxlego08.menu.api.exceptions.ListenerNullException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.listener.ListenerAdapter;
@@ -21,8 +21,6 @@ import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
-import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
@@ -45,17 +43,14 @@ import java.util.logging.Level;
 public abstract class ZPlugin extends JavaPlugin {
 
     private final Logger log = new Logger(this.getDescription().getFullName());
-    private final List<Savable> savers = new ArrayList<>();
     private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
     protected VCommandManager zCommandManager;
     protected VInventoryManager vinventoryManager;
-    private Gson gson;
-    private Persist persist;
     private long enableTime;
 
     protected void preEnable() {
 
-        LocalPlaceholder.getInstance().setPlugin((MenuPlugin) this);
+        LocalPlaceholder.getInstance().setPlugin((ZMenuPlugin) this);
 
         this.enableTime = System.currentTimeMillis();
 
@@ -63,9 +58,6 @@ public abstract class ZPlugin extends JavaPlugin {
         this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
 
         this.getDataFolder().mkdirs();
-
-        this.gson = getGsonBuilder().create();
-        this.persist = new Persist(this);
 
         Placeholder.Placeholders.getPlaceholder();
     }
@@ -95,26 +87,11 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     /**
-     * Build gson
-     *
-     * @return gsonBuilder
-     */
-    public GsonBuilder getGsonBuilder() {
-        return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls()
-                .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
-                .registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter(this))
-                .registerTypeAdapter(Data.class, new DataAdapter(this))
-                .registerTypeAdapter(Location.class, new LocationAdapter(this));
-    }
-
-    /**
      * Add a listener
      *
      * @param listener New Listener
      */
     public void addListener(Listener listener) {
-        if (listener instanceof Savable)
-            this.addSave((Savable) listener);
         Bukkit.getPluginManager().registerEvents(listener, this);
     }
 
@@ -135,18 +112,7 @@ public abstract class ZPlugin extends JavaPlugin {
     public void addListener(ListenerAdapter adapter) {
         if (adapter == null)
             throw new ListenerNullException("Warning, your listener is null");
-        if (adapter instanceof Savable)
-            this.addSave((Savable) adapter);
         this.listenerAdapters.add(adapter);
-    }
-
-    /**
-     * Add a Savable
-     *
-     * @param saver New savable
-     */
-    public void addSave(Savable saver) {
-        this.savers.add(saver);
     }
 
     /**
@@ -156,28 +122,6 @@ public abstract class ZPlugin extends JavaPlugin {
      */
     public Logger getLog() {
         return this.log;
-    }
-
-    /**
-     * Get gson
-     *
-     * @return {@link Gson}
-     */
-    public Gson getGson() {
-        return gson;
-    }
-
-    public Persist getPersist() {
-        return persist;
-    }
-
-    /**
-     * Get all saveables
-     *
-     * @return savers
-     */
-    public List<Savable> getSavers() {
-        return savers;
     }
 
     /**

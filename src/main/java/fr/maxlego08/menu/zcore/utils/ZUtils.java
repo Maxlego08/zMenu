@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
@@ -485,7 +485,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param player    the Player for whom the inventory is created
      * @param inventory the type of EnumInventory to be created
      */
-    protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory) {
+    protected void createInventory(ZMenuPlugin plugin, Player player, EnumInventory inventory) {
         createInventory(plugin, player, inventory, 1);
     }
 
@@ -497,7 +497,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param inventory the type of EnumInventory to be created
      * @param page      the page number of the inventory
      */
-    protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page) {
+    protected void createInventory(ZMenuPlugin plugin, Player player, EnumInventory inventory, int page) {
         createInventory(plugin, player, inventory, page, new Object() {
         });
     }
@@ -511,7 +511,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param page      the page number of the inventory
      * @param objects   additional objects to be passed for inventory creation
      */
-    protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page, Object... objects) {
+    protected void createInventory(ZMenuPlugin plugin, Player player, EnumInventory inventory, int page, Object... objects) {
         plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
     }
 
@@ -524,7 +524,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param page      the page number of the inventory
      * @param objects   additional objects to be passed for inventory creation
      */
-    protected void createInventory(MenuPlugin plugin, Player player, int inventory, int page, Object... objects) {
+    protected void createInventory(ZMenuPlugin plugin, Player player, int inventory, int page, Object... objects) {
         plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
     }
 
@@ -559,7 +559,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
      * @return the scheduled TimerTask
      */
-    protected TimerTask scheduleFix(MenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+    protected TimerTask scheduleFix(ZMenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         return this.scheduleFix(plugin, delay, delay, consumer);
     }
 
@@ -572,7 +572,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
      * @return the scheduled TimerTask
      */
-    protected TimerTask scheduleFix(MenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+    protected TimerTask scheduleFix(ZMenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {

@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.api.command;
 
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -13,7 +12,7 @@ import java.util.UUID;
 /**
  * Manages the registration, loading, and execution of commands associated with inventories.
  */
-public interface CommandManager extends Savable {
+public interface CommandManager {
 
     /**
      * Registers a new {@link Command}.

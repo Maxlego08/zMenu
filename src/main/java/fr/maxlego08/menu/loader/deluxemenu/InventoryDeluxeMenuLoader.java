@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
@@ -8,13 +8,13 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.ZRequirement;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 
 public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public InventoryDeluxeMenuLoader(MenuPlugin plugin) {
+    public InventoryDeluxeMenuLoader(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }

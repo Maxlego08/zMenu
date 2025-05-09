@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands.reload;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class CommandMenuReloadCommand extends VCommand {
 
-    public CommandMenuReloadCommand(MenuPlugin plugin) {
+    public CommandMenuReloadCommand(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("command", "cmd");
         this.setPermission(Permission.ZMENU_RELOAD);
@@ -22,7 +22,7 @@ public class CommandMenuReloadCommand extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         String commandName = this.argAsString(0, null);
         CommandManager commandManager = plugin.getCommandManager();

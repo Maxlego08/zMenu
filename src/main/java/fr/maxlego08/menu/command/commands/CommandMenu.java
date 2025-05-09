@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
@@ -10,11 +10,10 @@ import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import org.bukkit.Bukkit;
 
 public class CommandMenu extends VCommand {
 
-    public CommandMenu(MenuPlugin plugin) {
+    public CommandMenu(ZMenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_USE);
         this.addSubCommand(new CommandMenuOpen(plugin));
@@ -39,7 +38,7 @@ public class CommandMenu extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
         this.sender.sendMessage("§fInventory Builder/Marketplace§8: §ahttps://minecraft-inventory-builder.com/");
         sendSyntax();
         return CommandType.SUCCESS;

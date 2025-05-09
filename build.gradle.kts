@@ -33,6 +33,11 @@ allprojects {
 
     dependencies {
         compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
+        compileOnly("com.mojang:authlib:1.5.26")
+        compileOnly("me.clip:placeholderapi:2.11.6")
+
+        implementation("com.github.cryptomorin:XSeries:13.2.0")
+        implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
     }
 }
 
@@ -44,12 +49,16 @@ dependencies {
 
     api(project(":API"))
 
+    rootProject.subprojects.filter { it.path.startsWith(":Hooks:") }.forEach { subproject ->
+        api(project(subproject.path))
+    }
 }
 
 tasks {
     shadowJar {
 
         // relocate("com.tcoded.folialib", "fr.maxlego08.essentials.libs.folialib")
+        relocate("fr.traqueur.currencies", "fr.maxlego08.menu.libs.currencies")
 
         archiveClassifier = ""
 

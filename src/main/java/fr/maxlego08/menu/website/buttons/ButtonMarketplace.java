@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.website.buttons;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ButtonMarketplace extends ZButton {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
     public ButtonMarketplace(Plugin plugin) {
-        this.plugin = (MenuPlugin) plugin;
+        this.plugin = (ZMenuPlugin) plugin;
     }
 
     @Override

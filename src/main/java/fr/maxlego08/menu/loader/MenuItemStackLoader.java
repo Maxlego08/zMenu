@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
@@ -10,13 +10,13 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
-import fr.maxlego08.menu.exceptions.ItemEnchantException;
+import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.utils.Banner;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.LeatherArmor;
 import fr.maxlego08.menu.zcore.utils.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -43,7 +43,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
-public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack> {
+public class MenuItemStackLoader extends ZUtils implements Loader<ZMenuItemStack> {
 
     private final InventoryManager manager;
 
@@ -58,11 +58,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      * Load ItemStack
      */
-    public MenuItemStack load(YamlConfiguration configuration, String path, Object... objects) {
+    public ZMenuItemStack load(YamlConfiguration configuration, String path, Object... objects) {
 
         File file = (File) objects[0];
 
-        MenuItemStack menuItemStack = new MenuItemStack(this.manager, file.getPath(), path);
+        ZMenuItemStack menuItemStack = new ZMenuItemStack(this.manager, file.getPath(), path);
         menuItemStack.setMaterial(configuration.getString(path + "material", null));
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
@@ -112,7 +112,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param configuration the configuration to read from
      * @param path          the path to the configuration key for the lore
      */
-    private void loadLore(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadLore(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         List<String> lore = configuration.getStringList(path + "lore");
         if (lore.isEmpty()) {
             Object object = configuration.get(path + "lore", null);
@@ -133,7 +133,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param configuration The YamlConfiguration to read the material and color from.
      * @param path          The path in the configuration where the material and color are specified.
      */
-    private void loadLeather(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadLeather(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         try {
             Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase());
             String materialName = material.toString();
@@ -148,16 +148,16 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
     /**
      * Loads the attributes from the given configuration into the given
-     * {@link MenuItemStack}. The attributes are loaded from the "attributes"
+     * {@link ZMenuItemStack}. The attributes are loaded from the "attributes"
      * section of the configuration.
      *
-     * @param menuItemStack The {@link MenuItemStack} to load the attributes
+     * @param menuItemStack The {@link ZMenuItemStack} to load the attributes
      *                      into.
      * @param configuration The configuration to load the attributes from.
      * @param path          The path of the configuration section to load the
      *                      attributes from.
      */
-    private void loadAttributes(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadAttributes(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         List<IAttribute> attributeModifiers = new ArrayList<>();
 
         if (configuration.contains(path + "attributes")) {
@@ -187,7 +187,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * <p>
      * {@inheritDoc}
      */
-    private void loadEnchantements(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
+    private void loadEnchantements(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         Enchantments helperEnchantments = this.manager.getEnchantments();
         List<String> enchants = configuration.getStringList(path + "enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -242,7 +242,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param configuration the configuration containing the potion data
      * @param path          the path within the configuration where the potion data is located
      */
-    private void loadPotions(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadPotions(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         if (configuration.contains(path + "potion")) {
 
             Color potionColor = getColor(configuration, path + "color", null);
@@ -266,11 +266,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * <li>A list of strings at {@code path + "patterns"} which are the patterns on the banner. Each string should be in the format {@code "color:pattern"} where {@code color} is a string representing a {@link DyeColor} and {@code pattern} is a string representing a {@link PatternType}.</li>
      * </ul>
      *
-     * @param menuItemStack the {@link MenuItemStack} to load the banner on
+     * @param menuItemStack the {@link ZMenuItemStack} to load the banner on
      * @param configuration the configuration to load the banner from
      * @param path          the path to the banner in the configuration
      */
-    private void loadBanner(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadBanner(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         if (configuration.contains(path + "banner")) {
 
             DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase());
@@ -288,7 +288,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
     /**
      * Loads a firework effect from the given configuration section
-     * and applies it to the given {@link MenuItemStack}.
+     * and applies it to the given {@link ZMenuItemStack}.
      * <p>
      * The configuration section should contain the following keys:
      *
@@ -305,7 +305,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param configuration the configuration section to load the firework effect from
      * @param path          the path to the configuration section
      */
-    private void loadFireworks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadFireworks(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         if (configuration.contains(path + "firework")) {
             ConfigurationSection section = configuration.getConfigurationSection(path + "firework");
             if (section != null) {
@@ -324,15 +324,15 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      * Load the translated name and lore from the configuration for the given menu item stack.
      * <p>
-     * This method calls {@link #loadTranslatedName(MenuItemStack, YamlConfiguration, String)} and
-     * {@link #loadTranslatedLore(MenuItemStack, YamlConfiguration, String)} to load the translated
+     * This method calls {@link #loadTranslatedName(ZMenuItemStack, YamlConfiguration, String)} and
+     * {@link #loadTranslatedLore(ZMenuItemStack, YamlConfiguration, String)} to load the translated
      * name and lore respectively.
      *
      * @param menuItemStack the menu item stack to load the translated name and lore for
      * @param configuration the configuration to load the translated name and lore from
      * @param path          the path to the configuration key for the translated name and lore
      */
-    private void loadTranslation(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadTranslation(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         loadTranslatedName(menuItemStack, configuration, path);
         loadTranslatedLore(menuItemStack, configuration, path);
     }
@@ -350,7 +350,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param configuration the configuration to load the translated lore from
      * @param path          the path to the configuration key for the translated lore
      */
-    private void loadTranslatedLore(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadTranslatedLore(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         Map<String, List<String>> translatedLore = new HashMap<>();
         String loadString = configuration.contains(path + "translatedLore") ? "translatedLore" : configuration.contains(path + "translated-lore") ? "translated-lore" : null;
         if (loadString != null) {
@@ -378,7 +378,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param configuration the configuration to load the translated name from
      * @param path          the path to the configuration key for the translated name
      */
-    private void loadTranslatedName(MenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+    private void loadTranslatedName(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         Map<String, String> translatedDisplayName = new HashMap<>();
         String loadString = configuration.contains(path + "translatedName") ? "translatedName" : configuration.contains(path + "translated-name") ? "translated-name" : null;
         if (loadString != null) {
@@ -420,7 +420,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param path          the path within the configuration to read from
      * @param file          the file from which the configuration was loaded, used for logging errors
      */
-    private void loadNewItemStacks(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
+    private void loadNewItemStacks(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         menuItemStack.setMaxStackSize(configuration.getInt(path + "max-stack-size", 0));
         menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
         menuItemStack.setDamage(configuration.getInt(path + "damage", 0));
@@ -442,7 +442,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
     }
 
-    private void loadTrims(MenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
+    private void loadTrims(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         boolean enableTrim = configuration.getBoolean(path + "trim.enable", false);
         if (enableTrim) {
             TrimHelper trimHelper = new TrimHelper();
@@ -531,7 +531,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param file          the file in which to save the configuration
      * @param objects       additional objects for potential future use
      */
-    public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(ZMenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
 
         configuration.set(path + "material", item.getMaterial());
 

@@ -1,15 +1,15 @@
 package fr.maxlego08.menu.inventory;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.exceptions.InventoryAlreadyExistException;
-import fr.maxlego08.menu.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
+import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.listener.ListenerAdapter;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
-import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
-import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import fr.maxlego08.menu.api.engine.InventoryResult;
+import fr.maxlego08.menu.api.engine.ItemButton;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -31,11 +31,11 @@ import java.util.function.Predicate;
 public class VInventoryManager extends ListenerAdapter {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final Map<UUID, Long> cooldownClick = new HashMap<>();
 
 
-    public VInventoryManager(MenuPlugin plugin) {
+    public VInventoryManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }

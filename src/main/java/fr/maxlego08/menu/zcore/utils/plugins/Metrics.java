@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -58,7 +58,7 @@ public class Metrics {
     }
 
     // The plugin
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     // The plugin id
     private final int pluginId;
     // A list with all custom charts
@@ -74,7 +74,7 @@ public class Metrics {
      *                 It can be found at <a href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     @SuppressWarnings("deprecation")
-    public Metrics(MenuPlugin plugin, int pluginId) {
+    public Metrics(ZMenuPlugin plugin, int pluginId) {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null!");
         }

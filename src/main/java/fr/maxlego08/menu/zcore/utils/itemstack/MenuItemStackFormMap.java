@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.itemstack;
 
-import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
@@ -10,7 +10,7 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.exceptions.ItemEnchantException;
+import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 
 public class MenuItemStackFormMap {
 
-    public static MenuItemStack fromMap(InventoryManager inventoryManager, File file, String path, Map<String, Object> map) {
+    public static ZMenuItemStack fromMap(InventoryManager inventoryManager, File file, String path, Map<String, Object> map) {
         TypedMapAccessor accessor = new TypedMapAccessor(map);
-        MenuItemStack menuItemStack = new MenuItemStack(inventoryManager, file.getPath(), path);
+        ZMenuItemStack menuItemStack = new ZMenuItemStack(inventoryManager, file.getPath(), path);
 
         menuItemStack.setData(accessor.getString("data", "0"));
         menuItemStack.setDurability(accessor.getInt("durability", 0));
@@ -113,7 +113,7 @@ public class MenuItemStackFormMap {
         return menuItemStack;
     }
 
-    private static void loadNewItemStacks(MenuItemStack menuItemStack, TypedMapAccessor accessor, String path, File file) {
+    private static void loadNewItemStacks(ZMenuItemStack menuItemStack, TypedMapAccessor accessor, String path, File file) {
         menuItemStack.setMaxStackSize(accessor.getInt("max-stack-size", 0));
         menuItemStack.setMaxDamage(accessor.getInt("max-damage", 0));
         menuItemStack.setDamage(accessor.getInt("damage", 0));
@@ -133,7 +133,7 @@ public class MenuItemStackFormMap {
         }
 
     }
-    private static void loadTrims(MenuItemStack menuItemStack, TypedMapAccessor accessor, String path, File file) {
+    private static void loadTrims(ZMenuItemStack menuItemStack, TypedMapAccessor accessor, String path, File file) {
         boolean enableTrim = accessor.getBoolean("trim.enable", false);
         if (enableTrim) {
             TrimHelper trimHelper = new TrimHelper();

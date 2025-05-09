@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.command;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.Arguments;
@@ -17,7 +17,7 @@ import java.util.*;
 
 public abstract class VCommand extends Arguments {
 
-    protected final MenuPlugin plugin;
+    protected final ZMenuPlugin plugin;
     protected VCommand parent;
     protected List<VCommand> subVCommands = new ArrayList<>();
     protected CommandSender sender;
@@ -38,7 +38,7 @@ public abstract class VCommand extends Arguments {
     private int argsMinLength;
     private int argsMaxLength;
 
-    public VCommand(MenuPlugin plugin) {
+    public VCommand(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
@@ -368,7 +368,7 @@ public abstract class VCommand extends Arguments {
      * @param args
      * @return
      */
-    public CommandType prePerform(MenuPlugin plugin, CommandSender commandSender, String[] args) {
+    public CommandType prePerform(ZMenuPlugin plugin, CommandSender commandSender, String[] args) {
 
         // We update the number of arguments according to the number of parents
 
@@ -414,7 +414,7 @@ public abstract class VCommand extends Arguments {
     /**
      * Method that allows you to execute the command
      */
-    protected abstract CommandType perform(MenuPlugin plugin);
+    protected abstract CommandType perform(ZMenuPlugin plugin);
 
     public boolean sameSubCommands() {
         if (this.parent == null) {
@@ -446,7 +446,7 @@ public abstract class VCommand extends Arguments {
      * @param args
      * @return
      */
-    public List<String> toTab(MenuPlugin plugin, CommandSender sender, String[] args) {
+    public List<String> toTab(ZMenuPlugin plugin, CommandSender sender, String[] args) {
 
         this.parentCount = this.parentCount(0);
 

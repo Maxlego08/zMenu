@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.nms;
 
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.utils.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;

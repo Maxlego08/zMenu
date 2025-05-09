@@ -1,15 +1,12 @@
-package fr.maxlego08.menu.save;
+package fr.maxlego08.menu.api.configuration;
 
-import fr.maxlego08.menu.zcore.utils.storage.Persist;
-import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-public class Config implements Savable {
+public class Config {
 
     // Enable debug, allows you to display errors in the console that would normally be hidden.
     public static boolean enableDebug = false;
@@ -103,12 +100,8 @@ public class Config implements Savable {
         return instance;
     }
 
-    public void save(Persist persist) {
-        persist.save(getInstance());
-    }
-
-    public void load(Persist persist) {
-        persist.loadOrSaveDefault(getInstance(), Config.class);
+    public void load() {
+        System.out.println("TODO LOAD CONFIG.YML");
     }
 
 }

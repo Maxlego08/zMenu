@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public class CommandMenuSave extends VCommand {
 
-    public CommandMenuSave(MenuPlugin plugin) {
+    public CommandMenuSave(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("save");
         this.addRequireArg("item name");
@@ -24,7 +24,7 @@ public class CommandMenuSave extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         InventoryManager inventoryManager = plugin.getInventoryManager();
         String name = this.argAsString(0);

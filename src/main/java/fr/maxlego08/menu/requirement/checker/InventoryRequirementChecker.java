@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.requirement.checker;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class InventoryRequirementChecker extends ConfigurationChecker {
 
-    public InventoryRequirementChecker(MenuPlugin plugin) {
+    public InventoryRequirementChecker(ZMenuPlugin plugin) {
         super(plugin);
     }
 

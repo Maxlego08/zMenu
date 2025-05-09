@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.button;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -9,7 +10,6 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -79,7 +79,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param player    The player.
      * @param inventory The inventory object containing all the information of the current inventory.
      */
-    void onRender(Player player, InventoryDefault inventory);
+    void onRender(Player player, InventoryEngine inventory);
 
     /**
      * Called when the player makes a click.
@@ -89,7 +89,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param inventory The inventory where the button comes from.
      * @param slot      The current slot.
      */
-    void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders);
+    void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders);
 
     /**
      * Called when the player makes a right click.
@@ -98,7 +98,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param event     The event that will be called.
      * @param inventory The inventory where the button comes from.
      */
-    void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
+    void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot);
 
     /**
      * Called when the player makes a left click.
@@ -107,7 +107,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param event     The event that will be called.
      * @param inventory The inventory where the button comes from.
      */
-    void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
+    void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot);
 
     /**
      * Called when the player makes a middle click or a drop key click.
@@ -116,7 +116,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param event     The event that will be called.
      * @param inventory The inventory where the button comes from.
      */
-    void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot);
+    void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot);
 
     /**
      * Called when the player opens the inventory.
@@ -125,7 +125,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param inventory    The inventory.
      * @param placeholders Placeholders value.
      */
-    void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders);
+    void onInventoryOpen(Player player, InventoryEngine inventory, Placeholders placeholders);
 
     /**
      * Called when the player closes the inventory.
@@ -133,7 +133,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param player    The player.
      * @param inventory The inventory.
      */
-    void onInventoryClose(Player player, InventoryDefault inventory);
+    void onInventoryClose(Player player, InventoryEngine inventory);
 
     /**
      * Allows getting the real slot of the button.
@@ -241,7 +241,7 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param toInventory    The inventory to open.
      * @param slot           The current slot.
      */
-    void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot);
+    void onBackClick(Player player, InventoryClickEvent event, InventoryEngine inventory, List<Inventory> oldInventories, Inventory toInventory, int slot);
 
     /**
      * Gets the list of requirements made when clicking.
@@ -275,10 +275,10 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      *
      * @param event            The inventory drag event that occurred, containing details about the drag action.
      * @param player           The player who performed the drag action.
-     * @param inventoryDefault The zMenu inventory where the drag action occurred, providing context for the action
+     * @param InventoryEngine The zMenu inventory where the drag action occurred, providing context for the action
      *                         and allowing for inventory-specific handling.
      */
-    void onDrag(InventoryDragEvent event, Player player, InventoryDefault inventoryDefault);
+    void onDrag(InventoryDragEvent event, Player player, InventoryEngine InventoryEngine);
 
     /**
      * Called when the player clicks an item within the zMenu inventory. This method is a general handler for all
@@ -288,10 +288,10 @@ public interface Button extends PermissibleButton, PlaceholderButton, SlotButton
      * @param event            The inventory click event that occurred, including details such as the click type
      *                         and the slot that was clicked.
      * @param player           The player who performed the click action.
-     * @param inventoryDefault The zMenu inventory where the click action occurred, providing the context needed
+     * @param InventoryEngine The zMenu inventory where the click action occurred, providing the context needed
      *                         to appropriately respond to the interaction.
      */
-    void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault);
+    void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine InventoryEngine);
 
     /**
      * Checks if the cache is being used.

@@ -1,14 +1,14 @@
 package fr.maxlego08.menu.pattern;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.PatternLoader;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -24,10 +24,10 @@ import java.util.stream.Stream;
 
 public class ZPatternManager implements PatternManager {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final Map<String, Pattern> patterns = new HashMap<>();
 
-    public ZPatternManager(MenuPlugin plugin) {
+    public ZPatternManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

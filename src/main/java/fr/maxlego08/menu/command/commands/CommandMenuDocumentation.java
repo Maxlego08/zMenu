@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -8,7 +8,7 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuDocumentation extends VCommand {
 
-    public CommandMenuDocumentation(MenuPlugin plugin) {
+    public CommandMenuDocumentation(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("documentation");
         this.setPermission(Permission.ZMENU_DOCUMENTATION);
@@ -17,7 +17,7 @@ public class CommandMenuDocumentation extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         String word = this.argAsString(0, null);
         if (word == null) {

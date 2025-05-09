@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader.permissible;
 
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -15,9 +15,9 @@ import java.util.List;
 
 public class ItemPermissibleLoader extends ZPermissibleLoader {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public ItemPermissibleLoader(MenuPlugin plugin) {
+    public ItemPermissibleLoader(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -30,7 +30,7 @@ public class ItemPermissibleLoader extends ZPermissibleLoader {
     public Permissible load(String path, TypedMapAccessor accessor, File file) {
         ButtonManager buttonManager = this.plugin.getButtonManager();
 
-        MenuItemStack menuItemStack = new MenuItemStack(this.plugin.getInventoryManager(), file.getPath(), path);
+        ZMenuItemStack menuItemStack = new ZMenuItemStack(this.plugin.getInventoryManager(), file.getPath(), path);
         menuItemStack.setTypeMapAccessor(accessor);
 
         int amount = accessor.getInt("amount");

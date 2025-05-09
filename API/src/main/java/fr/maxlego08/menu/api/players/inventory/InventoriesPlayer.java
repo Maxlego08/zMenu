@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.api.players.inventory;
 
-import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -10,7 +9,7 @@ import java.util.UUID;
 /**
  * <p>Management of player inventories</p>
  */
-public interface InventoriesPlayer extends Listener, Savable {
+public interface InventoriesPlayer extends Listener {
 
     /**
      * Saves the player's inventory to be stored

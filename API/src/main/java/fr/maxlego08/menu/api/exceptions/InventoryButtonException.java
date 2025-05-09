@@ -1,16 +1,16 @@
-package fr.maxlego08.menu.exceptions;
+package fr.maxlego08.menu.api.exceptions;
 
-public class InventoryTypeException extends InventoryException {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+public class InventoryButtonException extends InventoryException {
 
     /**
      *
      */
-    public InventoryTypeException() {
+    private static final long serialVersionUID = -8733148642557198564L;
+
+    /**
+     *
+     */
+    public InventoryButtonException() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -21,8 +21,8 @@ public class InventoryTypeException extends InventoryException {
      * @param enableSuppression
      * @param writableStackTrace
      */
-    public InventoryTypeException(String message, Throwable cause, boolean enableSuppression,
-                                  boolean writableStackTrace) {
+    public InventoryButtonException(String message, Throwable cause, boolean enableSuppression,
+                                    boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         // TODO Auto-generated constructor stub
     }
@@ -31,7 +31,7 @@ public class InventoryTypeException extends InventoryException {
      * @param message
      * @param cause
      */
-    public InventoryTypeException(String message, Throwable cause) {
+    public InventoryButtonException(String message, Throwable cause) {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }
@@ -39,7 +39,7 @@ public class InventoryTypeException extends InventoryException {
     /**
      * @param message
      */
-    public InventoryTypeException(String message) {
+    public InventoryButtonException(String message) {
         super(message);
         // TODO Auto-generated constructor stub
     }
@@ -47,7 +47,7 @@ public class InventoryTypeException extends InventoryException {
     /**
      * @param cause
      */
-    public InventoryTypeException(Throwable cause) {
+    public InventoryButtonException(Throwable cause) {
         super(cause);
         // TODO Auto-generated constructor stub
     }

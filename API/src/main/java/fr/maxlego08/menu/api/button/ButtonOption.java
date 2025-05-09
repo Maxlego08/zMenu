@@ -3,8 +3,8 @@ package fr.maxlego08.menu.api.button;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -59,10 +59,10 @@ public interface ButtonOption {
      * @param button The button that was clicked.
      * @param player The player who clicked the button.
      * @param event The click event that occurred.
-     * @param inventory The inventory in which the click occurred.
+     * @param inventoryEngine The inventory in which the click occurred.
      * @param slot The slot number where the click occurred.
      * @param isSuccess Indicates whether the action associated with the button was successful.
      */
-    void onClick(Button button, Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, boolean isSuccess);
+    void onClick(Button button, Player player, InventoryClickEvent event, InventoryEngine inventoryEngine, int slot, boolean isSuccess);
 }
 

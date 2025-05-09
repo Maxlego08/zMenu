@@ -1,13 +1,13 @@
 package fr.maxlego08.menu.inventory;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryListener;
-import fr.maxlego08.menu.exceptions.InventoryOpenException;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
-import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
-import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import fr.maxlego08.menu.api.engine.InventoryResult;
+import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,7 +26,7 @@ import java.util.Map;
 public abstract class VInventory extends ZUtils implements Cloneable, InventoryHolder {
 
     protected int id;
-    protected MenuPlugin plugin;
+    protected ZMenuPlugin plugin;
     protected Map<Integer, ItemButton> items = new HashMap<>();
     protected Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
     protected Player player;
@@ -185,7 +185,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return guiName;
     }
 
-    protected InventoryResult preOpenInventory(MenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
+    protected InventoryResult preOpenInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
 
         this.page = page;
         this.args = args;
@@ -195,24 +195,24 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return openInventory(main, player, page, args);
     }
 
-    public abstract InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException;
+    public abstract InventoryResult openInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException;
 
-    protected void onPreClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+    protected void onPreClose(InventoryCloseEvent event, ZMenuPlugin plugin, Player player) {
         this.isClose = true;
         this.onClose(event, plugin, player);
     }
 
-    protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+    protected void onClose(InventoryCloseEvent event, ZMenuPlugin plugin, Player player) {
     }
 
-    protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
+    protected void onDrag(InventoryDragEvent event, ZMenuPlugin plugin, Player player) {
     }
 
-    public MenuPlugin getPlugin() {
+    public ZMenuPlugin getPlugin() {
         return plugin;
     }
 
-    public void setPlugin(MenuPlugin plugin) {
+    public void setPlugin(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -226,7 +226,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return null;
     }
 
-    public void postOpen(MenuPlugin plugin, Player player, int page, Object[] objects) {
+    public void postOpen(ZMenuPlugin plugin, Player player, int page, Object[] objects) {
     }
 
     @Override
@@ -242,7 +242,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         this.disablePlayerInventoryClick = disablePlayerInventoryClick;
     }
 
-    public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
+    public void onInventoryClick(InventoryClickEvent event, ZMenuPlugin plugin, Player player) {
 
     }
 }

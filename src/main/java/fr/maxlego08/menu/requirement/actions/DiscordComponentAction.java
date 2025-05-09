@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponent;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordWebhookComponent;
 import org.bukkit.entity.Player;

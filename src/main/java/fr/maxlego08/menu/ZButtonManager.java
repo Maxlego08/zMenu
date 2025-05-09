@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.exceptions.ButtonAlreadyRegisterException;
+import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
     private final Map<String, PermissibleLoader> permissibles = new HashMap<>();
     private final Map<String, ActionLoader> actionsLoader = new HashMap<>();
 
-    public ZButtonManager(MenuPlugin plugin) {
+    public ZButtonManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

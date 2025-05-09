@@ -1,6 +1,6 @@
 name: zMenu
 authors: [ Maxlego08 ]
-main: fr.maxlego08.menu.MenuPlugin
+main: fr.maxlego08.menu.ZMenuPlugin
 description: Inventory management plugin
 website: https://groupez.dev/resources/zmenu.253
 version: ${version}

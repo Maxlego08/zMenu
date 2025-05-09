@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands.players;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.command.VCommand;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class CommandMenuPlayersRemove extends VCommand {
 
-    public CommandMenuPlayersRemove(MenuPlugin plugin) {
+    public CommandMenuPlayersRemove(ZMenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_PLAYERS);
         this.setDescription(Message.DESCRIPTION_PLAYERS_REMOVE);
@@ -27,7 +27,7 @@ public class CommandMenuPlayersRemove extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         DataManager dataManager = plugin.getDataManager();
 

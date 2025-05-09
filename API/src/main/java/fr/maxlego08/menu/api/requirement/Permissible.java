@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -21,11 +21,11 @@ public interface Permissible {
      *
      * @param player       The player who is attempting to interact with the button.
      * @param button       The button that the player is attempting to interact with.
-     * @param inventory    The inventory that the button is in.
+     * @param inventoryEngine    The inventory that the button is in.
      * @param placeholders The placeholders that are currently active in the inventory.
      * @return True if the player has permission; otherwise, false.
      */
-    boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);
+    boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 
     /**
      * Checks if the permissible is valid.

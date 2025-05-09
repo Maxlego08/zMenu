@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.website.buttons;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -13,11 +13,11 @@ import org.bukkit.plugin.Plugin;
 
 public class ButtonBuilderRefresh extends ZButton {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private boolean canUse = true;
 
     public ButtonBuilderRefresh(Plugin plugin) {
-        this.plugin = (MenuPlugin) plugin;
+        this.plugin = (ZMenuPlugin) plugin;
     }
 
     @Override

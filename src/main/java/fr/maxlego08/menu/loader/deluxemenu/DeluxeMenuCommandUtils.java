@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
 import com.cryptomorin.xseries.XSound;
-import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.enums.ItemVerification;
@@ -212,7 +212,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
             case "has item":
             case "item":
             case "hasitem": {
-                MenuItemStack menuItemStack = new MenuItemStack(inventoryManager, "", "");
+                ZMenuItemStack menuItemStack = new ZMenuItemStack(inventoryManager, "", "");
                 int amount = section.getInt("amount");
                 menuItemStack.setMaterial(section.getString("material"));
                 return new ZItemPermissible(menuItemStack, amount, denyActions, new ArrayList<>(), ItemVerification.SIMILAR);

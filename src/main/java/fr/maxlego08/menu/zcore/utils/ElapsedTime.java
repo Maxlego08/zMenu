@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils;
 
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 
 public class ElapsedTime extends ZUtils {
 

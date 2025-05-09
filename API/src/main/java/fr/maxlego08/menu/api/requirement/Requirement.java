@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
@@ -52,7 +52,7 @@ public interface Requirement {
      * @param placeholders The placeholders.
      * @return True if the player has permission.
      */
-    boolean execute(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);
+    boolean execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders);
 
     /**
      * Gets the list of clicks that will be used for the requirement.

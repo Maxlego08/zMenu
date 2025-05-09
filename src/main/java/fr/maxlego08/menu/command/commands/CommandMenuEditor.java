@@ -1,21 +1,20 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
-import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuEditor extends VCommand {
 
-    public CommandMenuEditor(MenuPlugin plugin) {
+    public CommandMenuEditor(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("editor");
         this.setDescription(Message.DESCRIPTION_EDITOR);
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         message(this.sender, "§fhttps://minecraft-inventory-builder.com/builder/");
 

@@ -1,7 +1,5 @@
 package fr.maxlego08.menu.api.utils;
 
-import fr.maxlego08.menu.zcore.logger.Logger;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +101,7 @@ public class Placeholders {
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            Logger.info("Error with placeholder key " + key + " !", Logger.LogType.ERROR);
+            System.err.println("Error with placeholder key " + key + " !");
         }
         return string;
     }

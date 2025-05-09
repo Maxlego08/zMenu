@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
@@ -12,12 +12,12 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.exceptions.InventoryButtonException;
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.ZRequirement;
-import fr.maxlego08.menu.save.Config;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
@@ -30,11 +30,11 @@ import java.util.Optional;
 
 public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Button> {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final File file;
     private final int inventorySize;
 
-    public ButtonDeluxeMenuLoader(MenuPlugin plugin, File file, int inventorySize) {
+    public ButtonDeluxeMenuLoader(ZMenuPlugin plugin, File file, int inventorySize) {
         super();
         this.plugin = plugin;
         this.file = file;
@@ -56,7 +56,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
             throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
-        Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<ZMenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
         ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
@@ -97,7 +97,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setPage(page);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
-        MenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", file);
+        ZMenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", file);
         button.setItemStack(itemStack);
         button.setButtonName(buttonName);
 

@@ -1,20 +1,20 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuVersion extends VCommand {
 
-    public CommandMenuVersion(MenuPlugin plugin) {
+    public CommandMenuVersion(ZMenuPlugin plugin) {
         super(plugin);
         this.setDescription(Message.DESCRIPTION_VERSION);
         this.addSubCommand("version", "v", "ver");
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         message(sender, "§aVersion du plugin§7: §2" + plugin.getDescription().getVersion());
         message(sender, "§aAuteur§7: §2Maxlego08");

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader.materials;
 
 import fr.maxlego08.head.api.HeadManager;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ public class ZHeadLoader implements MaterialLoader {
 
     private final HeadManager headManager;
 
-    public ZHeadLoader(MenuPlugin plugin) {
+    public ZHeadLoader(ZMenuPlugin plugin) {
         this.headManager = plugin.getProvider(HeadManager.class);
     }
 

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
@@ -11,13 +11,13 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.exceptions.InventorySizeException;
-import fr.maxlego08.menu.exceptions.InventoryTypeException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -35,9 +35,9 @@ import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public InventoryLoader(MenuPlugin plugin) {
+    public InventoryLoader(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
@@ -74,7 +74,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
 
-        Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<ZMenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
@@ -136,7 +136,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param inventory           the inventory to assign the fill item to
      * @param menuItemStackLoader the loader to use to load the fill item
      */
-    private void loadFillItem(YamlConfiguration configuration, ZInventory inventory, Loader<MenuItemStack> menuItemStackLoader, File file) {
+    private void loadFillItem(YamlConfiguration configuration, ZInventory inventory, Loader<ZMenuItemStack> menuItemStackLoader, File file) {
         try {
             String loadString = configuration.contains("fillItem") ? "fillItem" : configuration.contains("fill-item") ? "fill-item" : null;
             if (loadString != null) {
@@ -178,11 +178,11 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param file                the file that the configuration was loaded from
      * @param menuItemStackLoader the loader to use to load the item stack from the configuration
      */
-    private void loadOpenWithItem(YamlConfiguration configuration, ZInventory inventory, File file, Loader<MenuItemStack> menuItemStackLoader) {
+    private void loadOpenWithItem(YamlConfiguration configuration, ZInventory inventory, File file, Loader<ZMenuItemStack> menuItemStackLoader) {
         try {
             String loadString = configuration.contains("openWithItem") ? "openWithItem" : configuration.contains("open-with-item") ? "open-with-item" : null;
             if (loadString != null) {
-                MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
+                ZMenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
                 List<Action> actions = configuration.getStringList(loadString + ".actions").stream().map(string -> {
                     try {

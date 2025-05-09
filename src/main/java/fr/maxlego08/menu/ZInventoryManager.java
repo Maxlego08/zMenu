@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
-import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
@@ -29,8 +28,8 @@ import fr.maxlego08.menu.button.loader.MainMenuLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
-import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.exceptions.InventoryFileNotFound;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -50,13 +49,13 @@ import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
@@ -102,7 +101,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
     private final List<InventoryListener> inventoryListeners = new ArrayList<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new HashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new HashMap<>();
     private final Map<String, ItemStackSimilar> itemStackSimilarMap = new HashMap<>();
@@ -112,7 +111,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
-    public ZInventoryManager(MenuPlugin plugin) {
+    public ZInventoryManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
@@ -639,8 +638,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
         }
 
-        Loader<MenuItemStack> loader = new MenuItemStackLoader(this);
-        MenuItemStack menuItemStack = MenuItemStack.fromItemStack(this, itemStack);
+        Loader<ZMenuItemStack> loader = new MenuItemStackLoader(this);
+        ZMenuItemStack menuItemStack = ZMenuItemStack.fromItemStack(this, itemStack);
         if (type.equalsIgnoreCase("yml")) {
             loader.save(menuItemStack, configuration, "items." + name + ".", file);
         } else if (type.equalsIgnoreCase("base64")) {

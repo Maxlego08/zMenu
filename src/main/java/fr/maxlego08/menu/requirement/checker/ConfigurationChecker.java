@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.requirement.checker;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
@@ -15,12 +15,12 @@ import java.util.Map;
 
 public abstract class ConfigurationChecker extends ZUtils {
 
-    protected final MenuPlugin plugin;
+    protected final ZMenuPlugin plugin;
     protected final InventoryManager inventoryManager;
     protected final ButtonManager buttonManager;
     protected final PatternManager patternManager;
 
-    public ConfigurationChecker(MenuPlugin plugin) {
+    public ConfigurationChecker(ZMenuPlugin plugin) {
         this.plugin = plugin;
         this.buttonManager = plugin.getButtonManager();
         this.inventoryManager = plugin.getInventoryManager();

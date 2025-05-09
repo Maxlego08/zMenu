@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.website.buttons;
 
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -17,10 +17,10 @@ import java.util.Optional;
 
 public class ButtonFolders extends ZButton {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
     public ButtonFolders(Plugin plugin) {
-        this.plugin = (MenuPlugin) plugin;
+        this.plugin = (ZMenuPlugin) plugin;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ButtonFolders extends ZButton {
     }
 
     private void displayFolder(int slot, Folder folder, Player player, InventoryDefault inventoryDefault, ZWebsiteManager manager) {
-        MenuItemStack menuItemStack = this.getItemStack();
+        ZMenuItemStack menuItemStack = this.getItemStack();
 
         Placeholders placeholders = new Placeholders();
 

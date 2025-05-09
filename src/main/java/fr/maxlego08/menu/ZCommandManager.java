@@ -4,13 +4,13 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommandManager;
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.CommandLoader;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -39,9 +39,9 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     private final Map<String, List<Command>> commands = new HashMap<String, List<Command>>();
     private final Map<UUID, Map<String, String>> playerArguments = new HashMap<>();
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public ZCommandManager(MenuPlugin plugin) {
+    public ZCommandManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }

@@ -1,7 +1,6 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.pattern.Pattern;
@@ -13,7 +12,7 @@ import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
+import fr.maxlego08.menu.api.engine.InventoryResult;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -41,7 +40,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final List<Button> buttons;
     private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
-    private MenuItemStack fillItemStack;
+    private ZMenuItemStack fillItemStack;
     private int updateInterval;
     private File file;
     private boolean clearInventory;
@@ -206,7 +205,7 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public void closeInventory(Player player, InventoryDefault inventoryDefault) {
 
-        MenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
+        ZMenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
 
@@ -221,11 +220,11 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public MenuItemStack getFillItemStack() {
+    public ZMenuItemStack getFillItemStack() {
         return this.fillItemStack;
     }
 
-    public void setFillItemStack(MenuItemStack fillItemStack) {
+    public void setFillItemStack(ZMenuItemStack fillItemStack) {
         this.fillItemStack = fillItemStack;
     }
 

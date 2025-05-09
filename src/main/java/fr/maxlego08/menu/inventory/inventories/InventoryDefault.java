@@ -1,18 +1,19 @@
 package fr.maxlego08.menu.inventory.inventories;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.engine.InventoryResult;
+import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
-import fr.maxlego08.menu.zcore.utils.inventory.ItemButton;
+import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * @author Maxlego08
  */
-public class InventoryDefault extends VInventory {
+public class InventoryDefault extends VInventory implements InventoryEngine {
 
     private final Map<Integer, TimerTask> timers = new HashMap<>();
     private Inventory inventory;
@@ -46,7 +47,7 @@ public class InventoryDefault extends VInventory {
     private List<Button> updatedButtons = new ArrayList<>();
 
     @Override
-    public InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
+    public InventoryResult openInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
 
         this.inventory = (Inventory) args[0];
 
@@ -110,24 +111,24 @@ public class InventoryDefault extends VInventory {
     }
 
     @Override
-    public void postOpen(MenuPlugin plugin, Player player, int page, Object[] objects) {
+    public void postOpen(ZMenuPlugin plugin, Player player, int page, Object[] objects) {
         this.inventory.postOpenInventory(player, this);
     }
 
     @Override
-    protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
+    protected void onClose(InventoryCloseEvent event, ZMenuPlugin plugin, Player player) {
 
         this.inventory.closeInventory(player, this);
         this.buttons.forEach(button -> button.onInventoryClose(player, this));
     }
 
     @Override
-    protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
+    protected void onDrag(InventoryDragEvent event, ZMenuPlugin plugin, Player player) {
         this.buttons.forEach(button -> button.onDrag(event, player, this));
     }
 
     @Override
-    public void onInventoryClick(InventoryClickEvent event, MenuPlugin plugin, Player player) {
+    public void onInventoryClick(InventoryClickEvent event, ZMenuPlugin plugin, Player player) {
         this.buttons.forEach(button -> button.onInventoryClick(event, player, this));
     }
 
@@ -340,8 +341,12 @@ public class InventoryDefault extends VInventory {
         List<String> lore = button.buildLore(this.player);
         String displayName = button.buildDisplayName(this.player);
 
-        if (!lore.isEmpty()) Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), button.getItemStack().getLoreType());
-        if (displayName != null) Meta.meta.updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
+        if (!lore.isEmpty()) {
+            Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), button.getItemStack().getLoreType());
+        }
+        if (displayName != null) {
+            Meta.meta.updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
+        }
 
         itemStack.setItemMeta(itemMeta);
         this.getSpigotInventory().setItem(slot, itemStack);

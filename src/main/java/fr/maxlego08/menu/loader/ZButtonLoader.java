@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
@@ -21,15 +21,15 @@ import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.button.ZPermissibleButton;
-import fr.maxlego08.menu.exceptions.InventoryButtonException;
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,12 +48,12 @@ import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final File file;
     private final int inventorySize;
     private final Map<Character, List<Integer>> matrix;
 
-    public ZButtonLoader(MenuPlugin plugin, File file, int inventorySize, Map<Character, List<Integer>> matrix) {
+    public ZButtonLoader(ZMenuPlugin plugin, File file, int inventorySize, Map<Character, List<Integer>> matrix) {
         super();
         this.plugin = plugin;
         this.file = file;
@@ -99,7 +99,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
-        Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<ZMenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
         ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
@@ -160,7 +160,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));
 
-        MenuItemStack itemStack = itemStackLoader.load(configuration, path + "item.", file);
+        ZMenuItemStack itemStack = itemStackLoader.load(configuration, path + "item.", file);
         button.setItemStack(itemStack);
 
         button.setButtonName(buttonName);

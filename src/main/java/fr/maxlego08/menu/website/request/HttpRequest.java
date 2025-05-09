@@ -2,8 +2,8 @@ package fr.maxlego08.menu.website.request;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.configuration.Config;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -39,7 +39,7 @@ public class HttpRequest {
         this.bearer = bearer;
     }
 
-    public void submit(MenuPlugin plugin, Consumer<Response> consumer) {
+    public void submit(ZMenuPlugin plugin, Consumer<Response> consumer) {
         plugin.getScheduler().runTaskAsynchronously(() -> {
             Map<String, Object> map = new HashMap<>();
             HttpURLConnection connection;
@@ -89,7 +89,7 @@ public class HttpRequest {
         });
     }
 
-    public void submitForFileDownload(MenuPlugin plugin, File fileOut, Consumer<Boolean> consumer) {
+    public void submitForFileDownload(ZMenuPlugin plugin, File fileOut, Consumer<Boolean> consumer) {
         plugin.getScheduler().runTaskAsynchronously(() -> {
             HttpURLConnection connection;
 

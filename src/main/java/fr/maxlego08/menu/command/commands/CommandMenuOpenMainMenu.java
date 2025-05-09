@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -18,7 +18,7 @@ public class CommandMenuOpenMainMenu extends VCommand {
     /**
      * @param plugin the plugin
      */
-    public CommandMenuOpenMainMenu(MenuPlugin plugin) {
+    public CommandMenuOpenMainMenu(ZMenuPlugin plugin) {
         super(plugin);
 
         this.addSubCommand("openMainMenu", "omm");
@@ -29,7 +29,7 @@ public class CommandMenuOpenMainMenu extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
         InventoryManager inventoryManager = plugin.getInventoryManager();
 
         Player player = this.argAsPlayer(1, this.player);

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.commands.CommandInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -40,10 +40,10 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         }
     }
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final List<VCommand> commands = new ArrayList<>();
 
-    public VCommandManager(MenuPlugin plugin) {
+    public VCommandManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

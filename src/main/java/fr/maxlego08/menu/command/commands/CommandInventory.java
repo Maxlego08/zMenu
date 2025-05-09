@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.Command;
@@ -22,7 +22,7 @@ public class CommandInventory extends VCommand {
      * @param plugin  Menu plugin
      * @param command Menu Command
      */
-    public CommandInventory(MenuPlugin plugin, Command command, boolean isSubCommands) {
+    public CommandInventory(ZMenuPlugin plugin, Command command, boolean isSubCommands) {
         super(plugin);
         this.command = command;
 
@@ -61,7 +61,7 @@ public class CommandInventory extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         String inventoryName = this.command.getInventory();
         InventoryManager manager = plugin.getInventoryManager();

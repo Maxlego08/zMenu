@@ -1,14 +1,13 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.utils.inventory.InventoryResult;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
@@ -46,7 +45,7 @@ public interface Inventory {
      *
      * @return The name of the inventory, translated to the player's language.
      */
-    String getName(Player player, InventoryDefault inventoryDefault, Placeholders placeholders);
+    String getName(Player player, InventoryEngine InventoryEngine, Placeholders placeholders);
 
     /**
      * Returns the type of the inventory.
@@ -124,27 +123,27 @@ public interface Inventory {
     /**
      * Opens the inventory for a player and returns the result of the operation.
      *
-     * @param player           The player opening the inventory.
-     * @param inventoryDefault The inventory to be opened.
+     * @param player          The player opening the inventory.
+     * @param InventoryEngine The inventory to be opened.
      * @return The result of the inventory opening.
      */
-    InventoryResult openInventory(Player player, InventoryDefault inventoryDefault);
+    InventoryResult openInventory(Player player, InventoryEngine InventoryEngine);
 
     /**
      * Performs post-opening actions for the inventory.
      *
-     * @param player           The player for whom post-opening actions are performed.
-     * @param inventoryDefault The default inventory object.
+     * @param player          The player for whom post-opening actions are performed.
+     * @param InventoryEngine The default inventory object.
      */
-    void postOpenInventory(Player player, InventoryDefault inventoryDefault);
+    void postOpenInventory(Player player, InventoryEngine InventoryEngine);
 
     /**
      * Closes the inventory for a player.
      *
-     * @param player           The player closing the inventory.
-     * @param inventoryDefault The inventory to be closed.
+     * @param player          The player closing the inventory.
+     * @param InventoryEngine The inventory to be closed.
      */
-    void closeInventory(Player player, InventoryDefault inventoryDefault);
+    void closeInventory(Player player, InventoryEngine InventoryEngine);
 
     /**
      * Returns the item stack used to fill empty slots in the inventory.

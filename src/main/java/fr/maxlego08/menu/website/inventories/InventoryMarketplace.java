@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.website.inventories;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class InventoryMarketplace extends ZInventory {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -24,7 +24,7 @@ public class InventoryMarketplace extends ZInventory {
      */
     public InventoryMarketplace(Plugin plugin, String name, String fileName, int size, List<Button> buttons) {
         super(plugin, name, fileName, size, buttons);
-        this.plugin = (MenuPlugin) plugin;
+        this.plugin = (ZMenuPlugin) plugin;
     }
 
     @Override

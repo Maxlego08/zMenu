@@ -1,13 +1,13 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.requirement.ZRequirement;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
@@ -18,9 +18,9 @@ import java.util.Map;
 
 public class RequirementLoader implements Loader<Requirement> {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public RequirementLoader(MenuPlugin plugin) {
+    public RequirementLoader(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

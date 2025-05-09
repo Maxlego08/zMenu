@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands.players;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
@@ -9,7 +9,7 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuPlayersClearAll extends VCommand {
 
-    public CommandMenuPlayersClearAll(MenuPlugin plugin) {
+    public CommandMenuPlayersClearAll(ZMenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_PLAYERS);
         this.setDescription(Message.DESCRIPTION_PLAYERS_CLEAR_ALL);
@@ -17,7 +17,7 @@ public class CommandMenuPlayersClearAll extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         DataManager dataManager = plugin.getDataManager();
         dataManager.clearAll();

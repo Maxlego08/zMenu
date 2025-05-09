@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.pattern;
 
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 
 import java.io.File;
 import java.util.Collection;

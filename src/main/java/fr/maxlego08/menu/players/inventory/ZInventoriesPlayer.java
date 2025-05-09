@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.players.inventory;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,10 +19,10 @@ import java.util.UUID;
 public class ZInventoriesPlayer implements InventoriesPlayer {
 
     private static Map<UUID, ZInventoryPlayer> inventories = new HashMap<>();
-    private transient final MenuPlugin plugin;
+    private transient final ZMenuPlugin plugin;
     private transient long lastSave;
 
-    public ZInventoriesPlayer(MenuPlugin plugin) {
+    public ZInventoriesPlayer(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

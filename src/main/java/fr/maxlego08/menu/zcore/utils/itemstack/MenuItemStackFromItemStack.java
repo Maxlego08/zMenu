@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.itemstack;
 
-import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.zcore.utils.Firework;
 import fr.maxlego08.menu.zcore.utils.Potion;
@@ -21,9 +21,9 @@ import java.util.Objects;
 
 public class MenuItemStackFromItemStack {
 
-    public static MenuItemStack fromItemStack(InventoryManager manager, ItemStack itemStack) {
+    public static ZMenuItemStack fromItemStack(InventoryManager manager, ItemStack itemStack) {
 
-        MenuItemStack menuItemStack = new MenuItemStack(manager, "", "");
+        ZMenuItemStack menuItemStack = new ZMenuItemStack(manager, "", "");
 
         menuItemStack.setMaterial(itemStack.getType().name());
         int amount = itemStack.getAmount();

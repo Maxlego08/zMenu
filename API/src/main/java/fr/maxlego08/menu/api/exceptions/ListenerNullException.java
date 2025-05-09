@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.exceptions;
+package fr.maxlego08.menu.api.exceptions;
 
 public class ListenerNullException extends Error {
 

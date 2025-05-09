@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.requirement.permissible;
 
-import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -18,10 +18,10 @@ import java.util.List;
 public class ZItemPermissible extends ZPermissible implements ItemPermissible {
 
     private final ItemVerification itemVerification;
-    private final MenuItemStack menuItemStack;
+    private final ZMenuItemStack menuItemStack;
     private final int amount;
 
-    public ZItemPermissible(MenuItemStack menuItemStack, int amount, List<Action> denyActions, List<Action> successActions, ItemVerification itemVerification) {
+    public ZItemPermissible(ZMenuItemStack menuItemStack, int amount, List<Action> denyActions, List<Action> successActions, ItemVerification itemVerification) {
         super(denyActions, successActions);
         this.menuItemStack = menuItemStack;
         this.amount = amount;
@@ -67,7 +67,7 @@ public class ZItemPermissible extends ZPermissible implements ItemPermissible {
     }
 
     @Override
-    public MenuItemStack getMenuItemStack() {
+    public ZMenuItemStack getMenuItemStack() {
         return this.menuItemStack;
     }
 

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands.players;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.command.VCommand;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class CommandMenuPlayersSubtract extends VCommand {
 
-    public CommandMenuPlayersSubtract(MenuPlugin plugin) {
+    public CommandMenuPlayersSubtract(ZMenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_PLAYERS);
         this.setDescription(Message.DESCRIPTION_PLAYERS_SUBTRACT);
@@ -29,7 +29,7 @@ public class CommandMenuPlayersSubtract extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         OfflinePlayer player = this.argAsOfflinePlayer(0);
         String key = this.argAsString(1);

@@ -1,6 +1,6 @@
-package fr.maxlego08.menu.zcore.utils.loader;
+package fr.maxlego08.menu.api.utils;
 
-import fr.maxlego08.menu.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

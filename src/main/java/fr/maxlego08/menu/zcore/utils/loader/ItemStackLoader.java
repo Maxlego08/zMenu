@@ -1,7 +1,8 @@
 package fr.maxlego08.menu.zcore.utils.loader;
 
-import fr.maxlego08.menu.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.exceptions.ItemFlagException;
+import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
+import fr.maxlego08.menu.api.exceptions.ItemFlagException;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.Potion;

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.VCommand;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class CommandMenuGiveOpenItem extends VCommand {
 
-    public CommandMenuGiveOpenItem(MenuPlugin plugin) {
+    public CommandMenuGiveOpenItem(ZMenuPlugin plugin) {
         super(plugin);
         this.setPermission(Permission.ZMENU_OPEN_ITEM);
         this.setDescription(Message.DESCRIPTION_OPEN_ITEM);
@@ -29,7 +29,7 @@ public class CommandMenuGiveOpenItem extends VCommand {
     }
 
     @Override
-    protected CommandType perform(MenuPlugin plugin) {
+    protected CommandType perform(ZMenuPlugin plugin) {
 
         String inventoryName = this.argAsString(0);
         Player player = this.argAsPlayer(1, this.player);

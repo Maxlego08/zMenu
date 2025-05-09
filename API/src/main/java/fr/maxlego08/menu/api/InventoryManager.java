@@ -3,16 +3,15 @@ package fr.maxlego08.menu.api;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.utils.storage.Savable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,7 +37,7 @@ import java.util.Optional;
  * </ul>
  * <p>API example here: <a href="https://docs.zmenu.dev/api/create-inventory">https://docs.zmenu.dev/api/create-inventory</a></p>
  */
-public interface InventoryManager extends Savable, Listener {
+public interface InventoryManager extends Listener {
 
     /**
      * Loads an inventory. The plugin will retrieve the resource of
@@ -469,9 +468,9 @@ public interface InventoryManager extends Savable, Listener {
     /**
      * Retrieves a fake inventory for testing or simulation purposes.
      *
-     * @return An instance of {@link InventoryDefault} representing the fake inventory.
+     * @return An instance of {@link InventoryEngine} representing the fake inventory.
      */
-    InventoryDefault getFakeInventory();
+    InventoryEngine getFakeInventory();
 
     /**
      * Provides access to the enchantments management interface.

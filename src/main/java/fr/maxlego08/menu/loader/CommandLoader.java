@@ -1,13 +1,13 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZCommand;
 import fr.maxlego08.menu.ZCommandArgument;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 public class CommandLoader implements Loader<Command> {
 
     private final Plugin plugin;
-    private final MenuPlugin menuPlugin;
+    private final ZMenuPlugin menuPlugin;
 
     /**
      * @param plugin the plugin
      */
-    public CommandLoader(Plugin plugin, MenuPlugin menuPlugin) {
+    public CommandLoader(Plugin plugin, ZMenuPlugin menuPlugin) {
         super();
         this.plugin = plugin;
         this.menuPlugin = menuPlugin;

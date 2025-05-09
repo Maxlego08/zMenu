@@ -1,15 +1,15 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
-import fr.maxlego08.menu.exceptions.InventoryButtonException;
-import fr.maxlego08.menu.exceptions.InventoryException;
-import fr.maxlego08.menu.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.pattern.ZPattern;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.loader.Loader;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -21,9 +21,9 @@ import java.util.Map;
 
 public class PatternLoader extends ZUtils implements Loader<Pattern> {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public PatternLoader(MenuPlugin plugin) {
+    public PatternLoader(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

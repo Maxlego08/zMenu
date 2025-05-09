@@ -1,16 +1,16 @@
-package fr.maxlego08.menu.exceptions;
+package fr.maxlego08.menu.api.exceptions;
 
-public class ButtonAlreadyRegisterException extends Error {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2426306444018640211L;
+public class InventoryFileNotFound extends InventoryException {
 
     /**
      *
      */
-    public ButtonAlreadyRegisterException() {
+    private static final long serialVersionUID = 5794114572465101305L;
+
+    /**
+     *
+     */
+    public InventoryFileNotFound() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -21,8 +21,8 @@ public class ButtonAlreadyRegisterException extends Error {
      * @param enableSuppression
      * @param writableStackTrace
      */
-    public ButtonAlreadyRegisterException(String message, Throwable cause, boolean enableSuppression,
-                                          boolean writableStackTrace) {
+    public InventoryFileNotFound(String message, Throwable cause, boolean enableSuppression,
+                                 boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         // TODO Auto-generated constructor stub
     }
@@ -31,7 +31,7 @@ public class ButtonAlreadyRegisterException extends Error {
      * @param message
      * @param cause
      */
-    public ButtonAlreadyRegisterException(String message, Throwable cause) {
+    public InventoryFileNotFound(String message, Throwable cause) {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }
@@ -39,7 +39,7 @@ public class ButtonAlreadyRegisterException extends Error {
     /**
      * @param message
      */
-    public ButtonAlreadyRegisterException(String message) {
+    public InventoryFileNotFound(String message) {
         super(message);
         // TODO Auto-generated constructor stub
     }
@@ -47,7 +47,7 @@ public class ButtonAlreadyRegisterException extends Error {
     /**
      * @param cause
      */
-    public ButtonAlreadyRegisterException(Throwable cause) {
+    public InventoryFileNotFound(Throwable cause) {
         super(cause);
         // TODO Auto-generated constructor stub
     }

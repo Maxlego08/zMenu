@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -68,20 +68,20 @@ public interface RefreshRequirement {
      *
      * @param player The player to check.
      * @param button The button to check.
-     * @param inventory The inventory to check.
+     * @param inventoryEngine The inventory to check.
      * @param placeholders The placeholders to use.
      * @return True if the requirement should refresh the item.
      */
-    boolean needRefresh(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);
+    boolean needRefresh(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 
     /**
      * Checks if the requirement can be refreshed.
      *
      * @param player The player to check.
      * @param button The button to check.
-     * @param inventoryDefault The inventory to check.
+     * @param inventoryEngine The inventory to check.
      * @param placeholders The placeholders to use.
      * @return True if the requirement can be refreshed.
      */
-    boolean canRefresh(Player player, Button button, InventoryDefault inventoryDefault, Placeholders placeholders);
+    boolean canRefresh(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 }

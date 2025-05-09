@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -29,7 +30,7 @@ import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.scheduler.BukkitScheduler;
 import fr.maxlego08.menu.scheduler.FoliaScheduler;
@@ -68,9 +69,9 @@ import java.util.Optional;
  *
  * @author Maxlego08
  */
-public class MenuPlugin extends ZPlugin {
+public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
-    private static MenuPlugin instance;
+    private static ZMenuPlugin instance;
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
@@ -96,7 +97,7 @@ public class MenuPlugin extends ZPlugin {
         }
     }
 
-    public static MenuPlugin getInstance() {
+    public static ZMenuPlugin getInstance() {
         return instance;
     }
 
@@ -369,6 +370,7 @@ public class MenuPlugin extends ZPlugin {
         return dataManager;
     }
 
+    @Override
     public ZScheduler getScheduler() {
         return scheduler;
     }

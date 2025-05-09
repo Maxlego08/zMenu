@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.plugins;
 
-import fr.maxlego08.menu.MenuPlugin;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
@@ -24,7 +23,7 @@ public class VersionChecker extends ZUtils implements Listener {
 
     private final String URL_API = "https://groupez.dev/api/v1/resource/version/%s";
     private final String URL_RESOURCE = "https://groupez.dev/resources/%s";
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
     private final int pluginID;
     private boolean useLastVersion = false;
 
@@ -34,7 +33,7 @@ public class VersionChecker extends ZUtils implements Listener {
      * @param plugin
      * @param pluginID
      */
-    public VersionChecker(MenuPlugin plugin, int pluginID) {
+    public VersionChecker(ZMenuPlugin plugin, int pluginID) {
         super();
         this.plugin = plugin;
         this.pluginID = pluginID;

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.listener;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,9 +27,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 @SuppressWarnings("deprecation")
 public class AdapterListener extends ZUtils implements Listener {
 
-    private final MenuPlugin template;
+    private final ZMenuPlugin template;
 
-    public AdapterListener(MenuPlugin template) {
+    public AdapterListener(ZMenuPlugin template) {
         this.template = template;
     }
 

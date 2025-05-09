@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.save;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.enums.MessageType;
 import fr.maxlego08.menu.zcore.enums.Message;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,9 +18,9 @@ import java.util.List;
 public class MessageLoader {
 
     private final List<Message> loadedMessages = new ArrayList<>();
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public MessageLoader(MenuPlugin plugin) {
+    public MessageLoader(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 

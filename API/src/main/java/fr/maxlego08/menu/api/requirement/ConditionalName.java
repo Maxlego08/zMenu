@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -47,11 +47,11 @@ public interface ConditionalName {
      *
      * @param player       the player who is trying to access the menu.
      * @param button       the button that the player clicked to access the menu.
-     * @param inventory    the inventory that the button is located in.
+     * @param inventoryEngine    the inventory that the button is located in.
      * @param placeholders the placeholders to use when evaluating the conditional
      *                     name.
      * @return true if the player has permission to access the menu, and false
      * otherwise.
      */
-    boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders);
+    boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 }

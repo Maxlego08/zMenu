@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.placeholder.Placeholder;
-import fr.maxlego08.menu.save.Config;
+import fr.maxlego08.menu.api.configuration.Config;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.MenuPlugin;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
@@ -12,9 +12,9 @@ import java.io.File;
 
 public class DataLoader implements ActionLoader {
 
-    private final MenuPlugin plugin;
+    private final ZMenuPlugin plugin;
 
-    public DataLoader(MenuPlugin plugin) {
+    public DataLoader(ZMenuPlugin plugin) {
         this.plugin = plugin;
     }
 
