@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.materials;
+package fr.maxlego08.menu.hooks.itemsadder;
 
 import dev.lone.itemsadder.api.CustomStack;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
@@ -24,7 +24,7 @@ public class ItemsAdderLoader implements MaterialLoader {
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
         CustomStack customStack = CustomStack.getInstance(materialString);
         if (customStack == null) {
-            plugin.getLogger().severe("Impossible to find the item " + materialString);
+            this.plugin.getLogger().severe("Impossible to find the item " + materialString);
             return null;
         }
         return customStack.getItemStack().clone();

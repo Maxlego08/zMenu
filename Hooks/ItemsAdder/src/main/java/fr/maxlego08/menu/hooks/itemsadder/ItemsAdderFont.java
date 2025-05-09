@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.font;
+package fr.maxlego08.menu.hooks.itemsadder;
 
 import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
 import fr.maxlego08.menu.api.font.FontImage;

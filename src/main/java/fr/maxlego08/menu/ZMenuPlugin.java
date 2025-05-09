@@ -20,7 +20,8 @@ import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
-import fr.maxlego08.menu.font.ItemsAdderFont;
+import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
+import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -119,7 +120,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.preEnable();
 
-        Config.getInstance().load(getPersist());
+        Config.getInstance().load();
 
         List<String> files = new ArrayList<>();
         files.add("inventories/basic_inventory.yml");
@@ -176,9 +177,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addSimpleListener(this.inventoryManager);
 
         /* Add Saver */
-        this.addSave(this.inventoryManager);
+        // ToDo
+        /*this.addSave(this.inventoryManager);
         this.addSave(this.commandManager);
-        this.addSave(this.dataManager);
+        this.addSave(this.dataManager);*/
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
         this.inventoryManager.registerMaterialLoader(new ArmorLoader());
@@ -221,7 +223,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
         }
 
-        this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+        // ToDo
+        System.out.println("ToDo, rewrok save");
+        // this.getSavers().forEach(saver -> saver.load(this.getPersist()));
         this.messageLoader.load();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
@@ -255,7 +259,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) {
-            Token.getInstance().load(this.getPersist());
+            System.out.println("ToDo, rework token");
+            // Token.getInstance().load(this.getPersist());
         }
 
         // Must register after config loads
@@ -297,11 +302,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.vinventoryManager.close();
 
-        Config.getInstance().save(getPersist());
-        this.getSavers().forEach(saver -> saver.save(this.getPersist()));
+        // ToDo, update
+        /*this.getSavers().forEach(saver -> saver.save(this.getPersist()));
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
-        }
+        }*/
         // this.packetUtils.onDisable();
 
         this.postDisable();
