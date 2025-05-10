@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.pattern.PatternManager;
+import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -27,4 +28,6 @@ public interface MenuPlugin extends Plugin {
     List<String> parse(Player player, List<String> strings);
 
     List<String> parse(OfflinePlayer offlinePlayer, List<String> strings);
+
+    InventoriesPlayer getInventoriesPlayer();
 }

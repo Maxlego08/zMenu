@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -27,7 +28,7 @@ public class ButtonFolderPrevious extends ZButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
+    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         Optional<Folder> optional = manager.getCurrentFolder();

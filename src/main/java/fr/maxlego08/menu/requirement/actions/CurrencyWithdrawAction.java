@@ -1,15 +1,14 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.traqueur.currencies.Currencies;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 
-public class CurrencyWithdrawAction extends Action {
+public class CurrencyWithdrawAction extends ActionHelper {
 
     private final String amount;
     private final Currencies currencies;
@@ -23,6 +22,6 @@ public class CurrencyWithdrawAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        this.currencies.withdraw(player, new BigDecimal(papi(placeholders.parse(this.amount), player, false)), this.economyName == null ? "default" : this.economyName);
+        this.currencies.withdraw(player, new BigDecimal(papi(placeholders.parse(this.amount), player)), this.economyName == null ? "default" : this.economyName);
     }
 }

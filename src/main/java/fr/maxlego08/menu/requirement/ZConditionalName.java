@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -37,7 +38,7 @@ public class ZConditionalName implements ConditionalName {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         return this.permissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventory, placeholders));
     }
 }

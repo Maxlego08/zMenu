@@ -10,7 +10,7 @@ import fr.maxlego08.menu.zcore.utils.discord.DiscordConfiguration;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordWebhook;
 import org.bukkit.entity.Player;
 
-public class DiscordAction extends Action {
+public class DiscordAction extends ActionHelper {
 
     private final DiscordConfiguration configuration;
 
@@ -23,7 +23,7 @@ public class DiscordAction extends Action {
 
         ZScheduler scheduler = inventory.getPlugin().getScheduler();
         DiscordWebhook discordWebhook = new DiscordWebhook(configuration.getWebhookUrl());
-        configuration.apply(text -> text == null ? null : player == null ? text : papi(placeholders.parse(text), player, false), discordWebhook);
+        configuration.apply(text -> text == null ? null : player == null ? text : papi(placeholders.parse(text), player), discordWebhook);
 
         scheduler.runTaskAsynchronously(() -> {
             try {

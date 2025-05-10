@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
@@ -30,7 +31,7 @@ public class ButtonMarketplace extends ZButton {
     }
 
     @Override
-    public void onRender(Player player, InventoryDefault inventory) {
+    public void onRender(Player player, InventoryEngine inventory) {
 
         List<Resource> resources = plugin.getWebsiteManager().getResources();
         Pagination<Resource> pagination = new Pagination<>();

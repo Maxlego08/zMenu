@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 
-public class TitleAction extends Action {
+public class TitleAction extends ActionHelper {
 
     private final String title;
     private final String subtitle;
@@ -25,7 +25,7 @@ public class TitleAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        Meta.meta.sendTitle(player, this.papi(placeholders.parse(title), player, true), this.papi(placeholders.parse(subtitle), player, true), start, duration, end);
+        Meta.meta.sendTitle(player, this.papi(placeholders.parse(title), player), this.papi(placeholders.parse(subtitle), player), start, duration, end);
     }
 
 }

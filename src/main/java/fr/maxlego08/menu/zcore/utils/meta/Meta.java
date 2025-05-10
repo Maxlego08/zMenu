@@ -17,7 +17,9 @@ public class Meta {
         } else {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
-                meta = new ComponentMeta();
+                meta = new ComponentMeta(null);
+                // ToDo
+                System.out.println("TODO UPDATE COMPONENT META WITH PLUGIN");
                 Logger.info("Use ComponentMeta");
             } catch (Exception ignored) {
                 meta = new ClassicMeta();

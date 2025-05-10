@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class OpenBookAction extends Action {
+public class OpenBookAction extends ActionHelper {
 
     private final String title;
     private final String author;
@@ -23,6 +23,6 @@ public class OpenBookAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        Meta.meta.openBook(player, papi(title, player, true), papi(author, player, true), papi(lines, player, true));
+        Meta.meta.openBook(player, papi(title, player), papi(author, player), papi(lines, player));
     }
 }

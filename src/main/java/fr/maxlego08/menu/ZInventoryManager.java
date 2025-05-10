@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
@@ -116,12 +117,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin = plugin;
     }
 
-    @Override
     public void save(Persist persist) {
         // TODO
     }
 
-    @Override
     public void load(Persist persist) {
 
         this.loadButtons();
@@ -638,7 +637,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
         }
 
-        Loader<ZMenuItemStack> loader = new MenuItemStackLoader(this);
+        Loader<MenuItemStack> loader = new MenuItemStackLoader(this);
         ZMenuItemStack menuItemStack = ZMenuItemStack.fromItemStack(this, itemStack);
         if (type.equalsIgnoreCase("yml")) {
             loader.save(menuItemStack, configuration, "items." + name + ".", file);

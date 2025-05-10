@@ -1,8 +1,10 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
@@ -40,7 +42,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final List<Button> buttons;
     private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
-    private ZMenuItemStack fillItemStack;
+    private MenuItemStack fillItemStack;
     private int updateInterval;
     private File file;
     private boolean clearInventory;
@@ -76,7 +78,7 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public String getName(Player player, InventoryDefault inventoryDefault, Placeholders placeholders) {
+    public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
 
         if (!this.conditionalNames.isEmpty()) {
             Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::getPriority));
@@ -156,7 +158,7 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public InventoryResult openInventory(Player player, InventoryDefault inventoryDefault) {
+    public InventoryResult openInventory(Player player, InventoryEngine inventoryDefault) {
 
         if (this.openRequirement != null && !this.openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
             return InventoryResult.PERMISSION;
@@ -186,7 +188,7 @@ public class ZInventory extends ZUtils implements Inventory {
         return InventoryResult.SUCCESS;
     }
 
-    private void clearPlayerInventoryButtons(Player player, InventoryDefault inventoryDefault) {
+    private void clearPlayerInventoryButtons(Player player, InventoryEngine inventoryDefault) {
         for (Button button : getButtons()) {
             if (button.isPlayerInventory()) {
                 int slot = button.getRealSlot(36, inventoryDefault.getPage());
@@ -198,12 +200,12 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public void postOpenInventory(Player player, InventoryDefault inventoryDefault) {
+    public void postOpenInventory(Player player, InventoryEngine inventoryDefault) {
 
     }
 
     @Override
-    public void closeInventory(Player player, InventoryDefault inventoryDefault) {
+    public void closeInventory(Player player, InventoryEngine inventoryDefault) {
 
         ZMenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
@@ -220,11 +222,11 @@ public class ZInventory extends ZUtils implements Inventory {
     }
 
     @Override
-    public ZMenuItemStack getFillItemStack() {
+    public MenuItemStack getFillItemStack() {
         return this.fillItemStack;
     }
 
-    public void setFillItemStack(ZMenuItemStack fillItemStack) {
+    public void setFillItemStack(MenuItemStack fillItemStack) {
         this.fillItemStack = fillItemStack;
     }
 

@@ -5,6 +5,7 @@ import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
@@ -99,7 +100,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
-        Loader<ZMenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
         ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
@@ -160,7 +161,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));
 
-        ZMenuItemStack itemStack = itemStackLoader.load(configuration, path + "item.", file);
+        ZMenuItemStack itemStack = (ZMenuItemStack) itemStackLoader.load(configuration, path + "item.", file);
         button.setItemStack(itemStack);
 
         button.setButtonName(buttonName);

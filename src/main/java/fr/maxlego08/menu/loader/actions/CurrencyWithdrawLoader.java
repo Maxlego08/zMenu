@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;

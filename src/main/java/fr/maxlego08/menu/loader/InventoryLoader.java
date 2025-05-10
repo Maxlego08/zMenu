@@ -5,6 +5,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.Pattern;
@@ -74,7 +75,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
 
-        Loader<ZMenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
@@ -136,7 +137,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param inventory           the inventory to assign the fill item to
      * @param menuItemStackLoader the loader to use to load the fill item
      */
-    private void loadFillItem(YamlConfiguration configuration, ZInventory inventory, Loader<ZMenuItemStack> menuItemStackLoader, File file) {
+    private void loadFillItem(YamlConfiguration configuration, ZInventory inventory, Loader<MenuItemStack> menuItemStackLoader, File file) {
         try {
             String loadString = configuration.contains("fillItem") ? "fillItem" : configuration.contains("fill-item") ? "fill-item" : null;
             if (loadString != null) {
@@ -178,11 +179,11 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param file                the file that the configuration was loaded from
      * @param menuItemStackLoader the loader to use to load the item stack from the configuration
      */
-    private void loadOpenWithItem(YamlConfiguration configuration, ZInventory inventory, File file, Loader<ZMenuItemStack> menuItemStackLoader) {
+    private void loadOpenWithItem(YamlConfiguration configuration, ZInventory inventory, File file, Loader<MenuItemStack> menuItemStackLoader) {
         try {
             String loadString = configuration.contains("openWithItem") ? "openWithItem" : configuration.contains("open-with-item") ? "open-with-item" : null;
             if (loadString != null) {
-                ZMenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
+                MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
                 List<Action> actions = configuration.getStringList(loadString + ".actions").stream().map(string -> {
                     try {

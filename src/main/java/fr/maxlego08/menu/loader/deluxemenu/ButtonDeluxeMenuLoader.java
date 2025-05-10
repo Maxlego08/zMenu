@@ -4,6 +4,7 @@ import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
@@ -56,7 +57,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
             throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
-        Loader<ZMenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
+        Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
         ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
@@ -97,7 +98,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setPage(page);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
-        ZMenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", file);
+        MenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", file);
         button.setItemStack(itemStack);
         button.setButtonName(buttonName);
 

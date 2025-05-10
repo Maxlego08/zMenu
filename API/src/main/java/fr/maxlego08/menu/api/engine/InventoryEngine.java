@@ -22,4 +22,6 @@ public interface InventoryEngine extends BaseInventory {
     int getMaxPage();
 
     void setMaxPage(int maxPage);
+
+    void cancel(int slot);
 }

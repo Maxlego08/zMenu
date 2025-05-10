@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class MessageAction extends Action {
+public class MessageAction extends ActionHelper {
 
     private final List<String> messages;
     private final boolean miniMessage;
@@ -21,7 +21,7 @@ public class MessageAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        papi(placeholders.parse(this.parseAndFlattenCommands(this.messages, player)), player, true).forEach(message -> {
+        papi(placeholders.parse(this.parseAndFlattenCommands(this.messages, player)), player).forEach(message -> {
             if (miniMessage) {
                 Meta.meta.sendMessage(player, message);
             } else {

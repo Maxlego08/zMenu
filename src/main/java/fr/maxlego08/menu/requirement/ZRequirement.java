@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -49,7 +50,7 @@ public class ZRequirement implements Requirement {
     }
 
     @Override
-    public boolean execute(Player player, Button button, InventoryDefault inventoryDefault, Placeholders placeholders) {
+    public boolean execute(Player player, Button button, InventoryEngine inventoryDefault, Placeholders placeholders) {
 
         AtomicBoolean earlyExit = new AtomicBoolean(false);
         long requirementSuccess = this.permissibles.stream().filter(permissible -> {

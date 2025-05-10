@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -65,12 +66,12 @@ public class ZRefreshRequirement implements RefreshRequirement {
     }
 
     @Override
-    public boolean needRefresh(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean needRefresh(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         return this.enablePermissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventory, placeholders));
     }
 
     @Override
-    public boolean canRefresh(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean canRefresh(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         return this.permissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventory, placeholders));
     }
 }

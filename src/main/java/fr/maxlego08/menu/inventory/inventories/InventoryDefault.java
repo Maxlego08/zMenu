@@ -274,6 +274,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
     }
 
+    @Override
     public void cancel(int slot) {
         TimerTask task = this.timers.remove(slot);
         if (task != null) {

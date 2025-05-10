@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class PlayerCommandAction extends Action {
+public class PlayerCommandAction extends ActionHelper {
 
     private final List<String> commands;
     private final boolean inChat;
@@ -23,7 +23,7 @@ public class PlayerCommandAction extends Action {
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         ZScheduler scheduler = inventory.getPlugin().getScheduler();
-        scheduler.runTask(player.getLocation(), () -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player, true).forEach(command -> {
+        scheduler.runTask(player.getLocation(), () -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
             command = command.replace("%player%", player.getName());
             if (this.inChat) {
                 player.chat("/" + command);

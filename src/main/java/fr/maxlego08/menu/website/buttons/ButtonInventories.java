@@ -2,6 +2,8 @@ package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -35,7 +37,7 @@ public class ButtonInventories extends ZButton {
     }
 
     @Override
-    public void onRender(Player player, InventoryDefault inventory) {
+    public void onRender(Player player, InventoryEngine inventory) {
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         int inventoryPage = manager.getInventoryPage();
@@ -55,8 +57,8 @@ public class ButtonInventories extends ZButton {
         }
     }
 
-    private void displayFolder(int slot, Inventory inventory, Player player, InventoryDefault inventoryDefault, ZWebsiteManager manager) {
-        ZMenuItemStack menuItemStack = this.getItemStack();
+    private void displayFolder(int slot, Inventory inventory, Player player, InventoryEngine inventoryDefault, ZWebsiteManager manager) {
+        MenuItemStack menuItemStack = this.getItemStack();
 
         Placeholders placeholders = new Placeholders();
 

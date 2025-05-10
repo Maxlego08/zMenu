@@ -3,6 +3,7 @@ package fr.maxlego08.menu.button;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -38,7 +39,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
 
     private ZMenuPlugin plugin;
     private String buttonName;
-    private ZMenuItemStack itemStack;
+    private MenuItemStack itemStack;
     private boolean isPermanent = false;
     private boolean closeInventory = false;
     private boolean useCache = true;
@@ -66,14 +67,14 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public ZMenuItemStack getItemStack() {
+    public MenuItemStack getItemStack() {
         return this.itemStack;
     }
 
     /**
      * @param itemStack the itemStack to set
      */
-    public ZButton setItemStack(ZMenuItemStack itemStack) {
+    public ZButton setItemStack(MenuItemStack itemStack) {
         this.itemStack = itemStack;
         return this;
     }

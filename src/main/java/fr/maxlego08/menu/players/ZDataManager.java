@@ -37,12 +37,12 @@ public class ZDataManager implements DataManager {
         this.defaultValues = new HashMap<>();
     }
 
-    @Override
+
     public void save(Persist persist) {
         persist.save(this, "players");
     }
 
-    @Override
+
     public void load(Persist persist) {
         persist.loadOrSaveDefault(this, ZDataManager.class, "players");
     }

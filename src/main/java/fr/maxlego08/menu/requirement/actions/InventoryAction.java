@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Optional;
 
-public class InventoryAction extends Action {
+public class InventoryAction extends ActionHelper {
 
     private final InventoryManager inventoryManager;
     private final String inventory;
@@ -44,18 +44,20 @@ public class InventoryAction extends Action {
             List<Inventory> oldInventories = inventory.getOldInventories();
 
 
-            String inventoryName = this.papi(placeholders.parse(this.inventory), player, false);
+            String inventoryName = this.papi(placeholders.parse(this.inventory), player);
             Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
             if (optional.isPresent()) {
 
-                int page = this.stringPage == null ? this.intPage : getInt(this.papi(placeholders.parse(this.stringPage), player, false));
+                int page = this.stringPage == null ? this.intPage : getInt(this.papi(placeholders.parse(this.stringPage), player));
                 oldInventories.add(fromInventory);
 
                 this.inventoryArgument.process(player);
                 this.inventoryManager.openInventory(player, optional.get(), page, oldInventories);
 
             } else {
-                message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                // ToDo
+                System.out.println("TODO, update inventory not found message");
+                // message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }
