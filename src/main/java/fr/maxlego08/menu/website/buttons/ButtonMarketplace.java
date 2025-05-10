@@ -43,7 +43,7 @@ public class ButtonMarketplace extends ZButton {
             inventory.addItem(slot.getAndIncrement(), this.getItemStack().build(player, false, placeholders)).setLeftClick(event -> {
                 player.closeInventory();
 
-                OpenLink openLink = new ZOpenLink(ClickEvent.Action.OPEN_URL, "§7" + resource.getName(), resource.getLink(), resource.getName(), Collections.singletonList("§7Click here"));
+                OpenLink openLink = new ZOpenLink(this.plugin, ClickEvent.Action.OPEN_URL, "§7" + resource.getName(), resource.getLink(), resource.getName(), Collections.singletonList("§7Click here"));
                 openLink.send(player, Collections.singletonList("§fResource§8: §7" + resource.getName()));
 
             }).setRightClick(event -> {

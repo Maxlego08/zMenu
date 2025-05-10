@@ -69,8 +69,8 @@ public class VersionChecker extends ZUtils implements Listener {
         final Player player = event.getPlayer();
         if (!useLastVersion && event.getPlayer().hasPermission("zplugin.notifs")) {
             plugin.getScheduler().runTaskLater(player.getLocation(), 20 * 2, () -> {
-                message(player, "&cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
-                message(player, "&fDownload plugin here: &a" + String.format(URL_RESOURCE, pluginID));
+                message(this.plugin, player, "&cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
+                message(this.plugin, player, "&fDownload plugin here: &a" + String.format(URL_RESOURCE, pluginID));
             });
         }
     }

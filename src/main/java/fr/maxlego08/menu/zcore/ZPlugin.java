@@ -19,7 +19,6 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.gson.DataAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.LocationAdapter;
 import fr.maxlego08.menu.zcore.utils.gson.PotionEffectAdapter;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
@@ -68,8 +67,6 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     protected void postEnable() {
-
-        MetaUpdater updater = Meta.meta;
 
         if (this.zCommandManager != null) {
             this.zCommandManager.validCommands();

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.OpenLink;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ZOpenLink extends ZUtils implements OpenLink {
 
+    private final MenuPlugin plugin;
     private final Action action;
     private final String message;
     private final String link;
@@ -23,8 +24,9 @@ public class ZOpenLink extends ZUtils implements OpenLink {
      * @param replace - The replacement
      * @param hover   - The hover messages
      */
-    public ZOpenLink(Action action, String message, String link, String replace, List<String> hover) {
+    public ZOpenLink(MenuPlugin plugin, Action action, String message, String link, String replace, List<String> hover) {
         super();
+        this.plugin = plugin;
         this.action = action;
         this.message = message;
         this.link = link;
@@ -32,37 +34,22 @@ public class ZOpenLink extends ZUtils implements OpenLink {
         this.hover = hover;
     }
 
-    /**
-     *
-     */
     public ZOpenLink() {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, null);
     }
 
-    /**
-     * @return the message
-     */
     public String getMessage() {
         return message;
     }
 
-    /**
-     * @return the link
-     */
     public String getLink() {
         return link;
     }
 
-    /**
-     * @return the replacement
-     */
     public String getReplace() {
         return replace;
     }
 
-    /**
-     * @return the hover
-     */
     public List<String> getHover() {
         return hover;
     }
@@ -99,23 +86,18 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
                 } else {
 
-                    Meta.meta.sendMessage(player, finalMessage);
-
+                    this.plugin.getMetaUpdater().sendMessage(player, finalMessage);
                 }
-
             });
-
         } else {
 
-            messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(message, player, true)));
-
+            messages.forEach(message -> this.plugin.getMetaUpdater().sendMessage(player, this.papi(message, player, true)));
         }
     }
 
     @Override
     public boolean isValid() {
         return this.action != null && this.replace != null && this.hover != null && this.link != null
-                && this.message != null;
+                && this.message != null && this.plugin != null;
     }
-
 }

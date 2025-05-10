@@ -26,7 +26,7 @@ public class CommandMenuPlayersClearPlayer extends VCommand {
 
         dataManager.clearPlayer(offlinePlayer.getUniqueId());
 
-        message(this.sender, Message.PLAYERS_DATA_CLEAR_PLAYER, "%player%", offlinePlayer.getName());
+        message(plugin, this.sender, Message.PLAYERS_DATA_CLEAR_PLAYER, "%player%", offlinePlayer.getName());
 
         return CommandType.SUCCESS;
     }

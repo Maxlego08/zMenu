@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.zcore.enums.Message;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,8 +28,8 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void messageWO(CommandSender sender, IMessage message, Object... args) {
-        Meta.meta.sendMessage(sender, getMessage(message, args));
+    protected void messageWO(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
+        plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
     }
 
     /**
@@ -41,9 +41,9 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void messageWO(CommandSender sender, String message, Object... args) {
+    protected void messageWO(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
         String result = getMessage(message, args);
-        Meta.meta.sendMessage(sender, sender instanceof Player ? papi(result, (Player) sender, false) : result);
+        plugin.getMetaUpdater().sendMessage(sender, sender instanceof Player ? papi(result, (Player) sender, false) : result);
     }
 
     /**
@@ -55,8 +55,8 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void message(CommandSender sender, String message, Object... args) {
-        Meta.meta.sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+    protected void message(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
+        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
     }
 
     /**
@@ -68,13 +68,13 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void message(CommandSender sender, IMessage message, Object... args) {
+    protected void message(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
 
         if (sender instanceof ConsoleCommandSender) {
             if (!message.getMessages().isEmpty()) {
-                message.getMessages().forEach(msg -> Meta.meta.sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
             } else {
-                Meta.meta.sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
             }
         } else {
 
@@ -82,27 +82,25 @@ public abstract class MessageUtils extends LocationUtils {
             switch (message.getType()) {
                 case CENTER:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> Meta.meta.sendMessage(sender, this.getCenteredMessage(getMessage(msg, args))));
+                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(getMessage(msg, args))));
                     } else {
-                        Meta.meta.sendMessage(sender, this.getCenteredMessage(getMessage(message, args)));
+                        plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(getMessage(message, args)));
                     }
 
                     break;
                 case ACTION:
-                    Meta.meta.sendAction(player, getMessage(message, args));
+                    plugin.getMetaUpdater().sendAction(player, getMessage(message, args));
                     break;
                 case TCHAT:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> Meta.meta.sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
                     } else {
-                        Meta.meta.sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+                        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
                     }
                     break;
                 default:
                     break;
-
             }
-
         }
     }
 

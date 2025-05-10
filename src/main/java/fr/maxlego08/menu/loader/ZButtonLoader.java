@@ -193,7 +193,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
         if (configuration.contains(path + loadString)) {
 
-            Loader<OpenLink> loaderLink = new OpenLinkLoader();
+            Loader<OpenLink> loaderLink = new OpenLinkLoader(this.plugin);
             button.setOpenLink(loaderLink.load(configuration, path + loadString + "."));
 
         }

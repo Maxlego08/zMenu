@@ -530,10 +530,10 @@ public abstract class VCommand extends Arguments {
      * Send a list of commands with their syntax and description
      */
     protected void sendSyntax() {
-        message(this.sender, Message.DOCUMENTATION_INFORMATION);
+        message(this.plugin, this.sender, Message.DOCUMENTATION_INFORMATION);
         this.subVCommands.forEach(command -> {
             if (command.getPermission() == null || this.sender.hasPermission(command.getPermission())) {
-                message(this.sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%",
+                message(this.plugin, this.sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%",
                         command.getDescription());
             }
         });

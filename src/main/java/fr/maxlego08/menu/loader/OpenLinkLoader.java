@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
@@ -13,6 +14,12 @@ import java.util.List;
 
 public class OpenLinkLoader implements Loader<OpenLink> {
 
+    private final MenuPlugin plugin;
+
+    public OpenLinkLoader(MenuPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public OpenLink load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
 
@@ -22,7 +29,7 @@ public class OpenLinkLoader implements Loader<OpenLink> {
         String replace = configuration.getString(path + "replace");
         List<String> hover = configuration.getStringList(path + "hover");
 
-        return new ZOpenLink(action, message, link, replace, hover);
+        return new ZOpenLink(this.plugin, action, message, link, replace, hover);
     }
 
     @Override

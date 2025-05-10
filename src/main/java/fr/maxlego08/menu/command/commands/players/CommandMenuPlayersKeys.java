@@ -33,7 +33,7 @@ public class CommandMenuPlayersKeys extends VCommand {
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
         if (!optional.isPresent()) {
-            message(this.sender, Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", player.getName());
+            message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", player.getName());
             return CommandType.SUCCESS;
         }
 
@@ -41,12 +41,12 @@ public class CommandMenuPlayersKeys extends VCommand {
         Collection<Data> collection = playerData.getDatas();
 
         if (collection.isEmpty()) {
-            message(this.sender, Message.PLAYERS_DATA_KEYS_EMPTY);
+            message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY);
             return CommandType.SUCCESS;
         }
 
         String keys = toList(collection.stream().map(Data::getKey).collect(Collectors.toList()), "§8", "§7");
-        message(this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
+        message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
 
         return CommandType.SUCCESS;
     }

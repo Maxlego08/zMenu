@@ -34,7 +34,7 @@ public class CommandMenuGiveOpenItem extends VCommand {
         String inventoryName = this.argAsString(0);
         Player player = this.argAsPlayer(1, this.player);
         if (player == null) {
-            message(this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
+            message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
 
@@ -42,18 +42,18 @@ public class CommandMenuGiveOpenItem extends VCommand {
         Optional<Inventory> optional = findInventory(inventoryName, inventoryManager);
 
         if (!optional.isPresent()) {
-            message(this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+            message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
             return CommandType.DEFAULT;
         }
 
         Inventory inventory = optional.get();
         if (inventory.getOpenWithItem() == null) {
-            message(sender, Message.INVENTORY_OPEN_ITEM_ERROR, "%name%", inventoryName);
+            message(plugin, sender, Message.INVENTORY_OPEN_ITEM_ERROR, "%name%", inventoryName);
             return CommandType.DEFAULT;
         } else {
             ItemStack itemStack = inventory.getOpenWithItem().getItemStack().build(player);
             give(player, itemStack);
-            message(sender, Message.INVENTORY_OPEN_ITEM_SUCCESS, "%name%", player.getName());
+            message(plugin, sender, Message.INVENTORY_OPEN_ITEM_SUCCESS, "%name%", player.getName());
         }
 
         return CommandType.SUCCESS;

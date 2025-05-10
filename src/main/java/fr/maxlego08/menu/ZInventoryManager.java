@@ -9,16 +9,20 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -29,8 +33,6 @@ import fr.maxlego08.menu.button.loader.MainMenuLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
 import fr.maxlego08.menu.button.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -39,7 +41,27 @@ import fr.maxlego08.menu.itemstack.ModelIdSimilar;
 import fr.maxlego08.menu.itemstack.NameSimilar;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.loader.actions.*;
+import fr.maxlego08.menu.loader.actions.ActionBarLoader;
+import fr.maxlego08.menu.loader.actions.BookLoader;
+import fr.maxlego08.menu.loader.actions.BroadcastLoader;
+import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
+import fr.maxlego08.menu.loader.actions.ChatLoader;
+import fr.maxlego08.menu.loader.actions.CloseLoader;
+import fr.maxlego08.menu.loader.actions.ConnectLoader;
+import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
+import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
+import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
+import fr.maxlego08.menu.loader.actions.DataLoader;
+import fr.maxlego08.menu.loader.actions.DiscordComponentV2Loader;
+import fr.maxlego08.menu.loader.actions.DiscordLoader;
+import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
+import fr.maxlego08.menu.loader.actions.MessageLoader;
+import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
+import fr.maxlego08.menu.loader.actions.RefreshLoader;
+import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
+import fr.maxlego08.menu.loader.actions.SoundLoader;
+import fr.maxlego08.menu.loader.actions.TeleportLoader;
+import fr.maxlego08.menu.loader.actions.TitleLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
@@ -50,14 +72,11 @@ import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
@@ -441,7 +460,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
             return;
         }
 
@@ -455,7 +474,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
             return;
         }
 
@@ -469,7 +488,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
             return;
         }
 
@@ -498,7 +517,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public MetaUpdater getMeta() {
-        return Meta.meta;
+        return this.plugin.getMetaUpdater();
     }
 
     @Override
@@ -548,13 +567,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void sendInventories(CommandSender sender) {
 
         if (this.inventories.isEmpty()) {
-            message(sender, Message.LIST_EMPTY);
+            message(this.plugin, sender, Message.LIST_EMPTY);
             return;
         }
 
         this.inventories.forEach((plugin, inventories) -> {
             String inventoriesAsString = toList(inventories.stream().map(Inventory::getFileName).collect(Collectors.toList()), "§8", "§7");
-            messageWO(sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
+            messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
         });
     }
 
@@ -564,13 +583,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         fileName = fileName.replace(".yml", "");
         File file = new File(this.plugin.getDataFolder(), "inventories/" + fileName + ".yml");
         if (file.exists()) {
-            message(sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
             return;
         }
         try {
             file.createNewFile();
         } catch (IOException exception) {
-            message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -582,15 +601,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         try {
             configuration.save(file);
         } catch (IOException exception) {
-            message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
-        message(sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
+        message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
 
         try {
             loadInventory(this.plugin, file);
         } catch (InventoryException exception) {
-            message(sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
     }
 
@@ -632,7 +651,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (configurationSection != null) {
             Set<String> names = configurationSection.getKeys(false);
             if (names.contains(name)) {
-                message(sender, Message.SAVE_ERROR_NAME);
+                message(this.plugin, sender, Message.SAVE_ERROR_NAME);
                 return;
             }
         }
@@ -652,11 +671,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
 
         } else {
-            message(sender, Message.SAVE_ERROR_TYPE, "%name%", name);
+            message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
             return;
         }
 
-        message(sender, Message.SAVE_SUCCESS, "%name%", name);
+        message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
 
     }
 

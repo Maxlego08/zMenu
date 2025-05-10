@@ -14,7 +14,6 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.api.engine.ItemButton;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -313,11 +312,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         String displayName = button.buildDisplayName(this.player);
 
         if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
-            Meta.meta.updateLore(itemMeta, papi(lore, player, false), button.getItemStack().getLoreType());
+            this.plugin.getMetaUpdater().updateLore(itemMeta, papi(lore, player, false), button.getItemStack().getLoreType());
         }
 
         if (displayName != null && refreshRequirement.isRefreshName()) {
-            Meta.meta.updateDisplayName(itemMeta, papi(displayName, player, false), this.player);
+            this.plugin.getMetaUpdater().updateDisplayName(itemMeta, papi(displayName, player, false), this.player);
         }
 
         itemStack.setItemMeta(itemMeta);
@@ -342,10 +341,10 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         String displayName = button.buildDisplayName(this.player);
 
         if (!lore.isEmpty()) {
-            Meta.meta.updateLore(itemMeta, papi(lore, this.player, false), button.getItemStack().getLoreType());
+            this.plugin.getMetaUpdater().updateLore(itemMeta, papi(lore, this.player, false), button.getItemStack().getLoreType());
         }
         if (displayName != null) {
-            Meta.meta.updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
+            this.plugin.getMetaUpdater().updateDisplayName(itemMeta, papi(displayName, this.player, false), this.player);
         }
 
         itemStack.setItemMeta(itemMeta);

@@ -46,7 +46,7 @@ public class CommandMenuPlayersSubtract extends VCommand {
         }
         dataManager.autoSave();
 
-        message(this.sender, Message.PLAYERS_DATA_SUBTRACT, "%player%", player.getName(), "%key%", key);
+        message(plugin, this.sender, Message.PLAYERS_DATA_SUBTRACT, "%player%", player.getName(), "%key%", key);
 
         return CommandType.SUCCESS;
     }

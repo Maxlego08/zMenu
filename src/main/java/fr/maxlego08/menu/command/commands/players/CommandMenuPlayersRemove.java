@@ -36,19 +36,19 @@ public class CommandMenuPlayersRemove extends VCommand {
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
         if (!optional.isPresent()) {
-            message(this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
+            message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
             return CommandType.SUCCESS;
         }
 
         PlayerData playerData = optional.get();
         if (!playerData.containsKey(key)) {
-            message(this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
+            message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
             return CommandType.SUCCESS;
         }
 
         playerData.removeData(key);
         dataManager.autoSave();
-        message(this.sender, Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", player.getName());
+        message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", player.getName());
 
         return CommandType.SUCCESS;
     }

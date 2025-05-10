@@ -53,7 +53,7 @@ public class CommandMenuPlayersSet extends VCommand {
         dataManager.addData(player.getUniqueId(), data);
         dataManager.autoSave();
 
-        message(this.sender, Message.PLAYERS_DATA_SET, "%player%", player.getName(), "%key%", key);
+        message(plugin, this.sender, Message.PLAYERS_DATA_SET, "%player%", player.getName(), "%key%", key);
 
         return CommandType.SUCCESS;
     }

@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
@@ -21,6 +22,7 @@ import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
+import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.CraftEngineLoader;
 import fr.maxlego08.menu.hooks.EcoLoader;
 import fr.maxlego08.menu.hooks.HmccosmeticsLoader;
@@ -53,6 +55,8 @@ import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.meta.ClassicMeta;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
@@ -104,6 +108,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
 
+    private MetaUpdater metaUpdater = new ClassicMeta();
+
     public static boolean isFolia() {
         try {
             Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
@@ -135,7 +141,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.preEnable();
 
+        this.saveDefaultConfig();
         Config.getInstance().load();
+
+        this.loadMeta();
 
         List<String> files = new ArrayList<>();
         files.add("inventories/basic_inventory.yml");
@@ -382,11 +391,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandMenu;
     }
 
-    /**
-     * Return the class that will manage data
-     *
-     * @return the dataManager
-     */
+    @Override
     public DataManager getDataManager() {
         return dataManager;
     }
@@ -396,26 +401,37 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return scheduler;
     }
 
+    @Override
     public InventoriesPlayer getInventoriesPlayer() {
         return inventoriesPlayer;
     }
 
+    @Override
     public PatternManager getPatternManager() {
         return patternManager;
     }
 
+    @Override
     public DupeManager getDupeManager() {
         return dupeManager;
     }
 
+    @Override
     public Enchantments getEnchantments() {
         return enchantments;
     }
 
+    @Override
+    public MetaUpdater getMetaUpdater() {
+        return null;
+    }
+
+    @Override
     public FontImage getFontImage() {
         return this.fontImage;
     }
 
+    @Override
     public Map<String, Object> getGlobalPlaceholders() {
         return this.globalPlaceholders;
     }
@@ -460,5 +476,21 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public List<String> parse(OfflinePlayer offlinePlayer, List<String> strings) {
         return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings);
+    }
+
+    private void loadMeta() {
+        if (!Config.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
+            this.metaUpdater = new ClassicMeta();
+            getLogger().info("Use ClassicMeta");
+        } else {
+            try {
+                Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+                this.metaUpdater = new ComponentMeta(this);
+                getLogger().info("Use ComponentMeta");
+            } catch (Exception ignored) {
+                this.metaUpdater = new ClassicMeta();
+                getLogger().info("Use ClassicMeta");
+            }
+        }
     }
 }

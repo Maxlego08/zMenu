@@ -72,7 +72,7 @@ public class VInventoryManager extends ListenerAdapter {
         Optional<VInventory> optional = this.getInventory(id);
 
         if (!optional.isPresent()) {
-            message(player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -85,7 +85,7 @@ public class VInventoryManager extends ListenerAdapter {
         VInventory clonedInventory = inventory.clone();
 
         if (clonedInventory == null) {
-            message(player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -109,10 +109,10 @@ public class VInventoryManager extends ListenerAdapter {
                 clonedInventory.postOpen(this.plugin, player, page, objects);
             } else if (result == InventoryResult.ERROR) {
 
-                message(player, Message.VINVENTORY_ERROR, "%id%", id);
+                message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             }
         } catch (InventoryOpenException exception) {
-            message(player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             exception.printStackTrace();
         }
     }
@@ -150,7 +150,7 @@ public class VInventoryManager extends ListenerAdapter {
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
         if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
-            message(player, Message.CLICK_COOLDOWN);
+            message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
 
@@ -211,7 +211,7 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            this.plugin.getScheduler().runTaskLater(player.getLocation(), 20, () -> message(player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()));
+            this.plugin.getScheduler().runTaskLater(player.getLocation(), 20, () -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()));
         }
     }
 

@@ -60,35 +60,35 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     @Override
     public void login(CommandSender sender, String token) {
         if (token == null) {
-            message(sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
+            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }
 
         if (Token.token != null) {
-            message(sender, Message.WEBSITE_LOGIN_ERROR_ALREADY);
+            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_ALREADY);
             return;
         }
 
         String[] parts = token.split("\\|");
         if (parts.length != 2) {
-            message(sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
+            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }
 
         String code = parts[1];
         if (code.length() < 40) {
-            message(sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
+            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }
 
         if (this.isLogin) {
-            message(sender, Message.WEBSITE_LOGIN_PROCESS);
+            message(this.plugin, sender, Message.WEBSITE_LOGIN_PROCESS);
             return;
         }
 
         this.isLogin = true;
 
-        message(sender, Message.WEBSITE_LOGIN_PROCESS);
+        message(this.plugin, sender, Message.WEBSITE_LOGIN_PROCESS);
 
         JsonObject data = new JsonObject();
         HttpRequest request = new HttpRequest(this.API_URL + "auth/test", data);
@@ -99,9 +99,9 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             if (status) {
                 Token.token = token;
                 Token.getInstance().save(this.plugin.getPersist());
-                message(sender, Message.WEBSITE_LOGIN_SUCCESS);
+                message(this.plugin, sender, Message.WEBSITE_LOGIN_SUCCESS);
             } else {
-                message(sender, Message.WEBSITE_LOGIN_ERROR_INFO);
+                message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_INFO);
             }
         });
 
@@ -111,13 +111,13 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void disconnect(CommandSender sender) {
 
         if (Token.token == null) {
-            message(sender, Message.WEBSITE_DISCONNECT_ERROR);
+            message(this.plugin, sender, Message.WEBSITE_DISCONNECT_ERROR);
             return;
         }
 
         Token.token = null;
         Token.getInstance().save(this.plugin.getPersist());
-        message(sender, Message.WEBSITE_DISCONNECT_SUCCESS);
+        message(this.plugin, sender, Message.WEBSITE_DISCONNECT_SUCCESS);
 
     }
 
@@ -125,7 +125,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void openMarketplace(Player player) {
 
         if (Token.token == null) {
-            message(player, Message.WEBSITE_NOT_CONNECT);
+            message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
             return;
         }
 
@@ -136,7 +136,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             openMarketplaceInventory(player);
         } else {
 
-            message(player, Message.WEBSITE_MARKETPLACE_WAIT);
+            message(this.plugin, player, Message.WEBSITE_MARKETPLACE_WAIT);
 
             if (this.isDownloadResource) return;
             this.isDownloadResource = true;
@@ -226,7 +226,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void fetchInventories(Player player) {
 
         if (Token.token == null) {
-            message(player, Message.WEBSITE_NOT_CONNECT);
+            message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
             return;
         }
 
@@ -235,7 +235,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             return;
         }
 
-        message(player, Message.WEBSITE_MARKETPLACE_WAIT);
+        message(this.plugin, player, Message.WEBSITE_MARKETPLACE_WAIT);
 
         JsonObject data = new JsonObject();
         HttpRequest request = new HttpRequest(this.API_URL + "inventories", data);
@@ -257,7 +257,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
                 this.plugin.getScheduler().runTask(player.getLocation(), () -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
             } else {
-                message(player, Message.WEBSITE_MARKETPLACE_ERROR);
+                message(this.plugin, player, Message.WEBSITE_MARKETPLACE_ERROR);
             }
         });
     }
@@ -321,12 +321,12 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         File file = new File(folder, inventory.getFileName() + ".yml");
 
         if (file.exists() && !forceDownload) {
-            message(player, Message.WEBSITE_INVENTORY_EXIST);
+            message(this.plugin, player, Message.WEBSITE_INVENTORY_EXIST);
             return;
         }
 
         player.closeInventory();
-        message(player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
+        message(this.plugin, player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
 
         HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.getId()), new JsonObject());
         request.setBearer(Token.token);
@@ -334,7 +334,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         folder.mkdirs();
 
-        request.submitForFileDownload(this.plugin, file, isSuccess -> message(player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
+        request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
     }
 
     public void refreshInventories(Player player) {
@@ -362,7 +362,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     @Override
     public void downloadFromUrl(CommandSender sender, String baseUrl, boolean force) {
 
-        message(sender, Message.WEBSITE_DOWNLOAD_START);
+        message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
         plugin.getScheduler().runTaskAsynchronously(() -> {
 
             try {
@@ -375,12 +375,12 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 String fileName = getFileNameFromContentDisposition(httpURLConnection);
 
                 if (fileName == null) {
-                    message(sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
+                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
                     return;
                 }
 
                 if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
-                    message(sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
                     return;
                 }
 
@@ -389,17 +389,17 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 File file = new File(folder, fileName);
 
                 if (file.exists() && !force) {
-                    message(sender, Message.WEBSITE_INVENTORY_EXIST);
+                    message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
                     return;
                 }
 
                 HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
                 request.setMethod("GET");
 
-                request.submitForFileDownload(this.plugin, file, isSuccess -> message(sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
+                request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
             } catch (IOException exception) {
                 exception.printStackTrace();
-                message(sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+                message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
             }
         });
     }

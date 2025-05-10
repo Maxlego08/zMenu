@@ -9,7 +9,6 @@ import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -70,12 +69,12 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
 
     protected void createMetaInventory(String name, int size) {
         this.guiName = name;
-        this.inventory = Meta.meta.createInventory(name, size, this);
+        this.inventory = this.plugin.getMetaUpdater().createInventory(name, size, this);
     }
 
     protected void createMetaInventory(String name, InventoryType inventoryType) {
         this.guiName = name;
-        this.inventory = Meta.meta.createInventory(name, inventoryType, this);
+        this.inventory = this.plugin.getMetaUpdater().createInventory(name, inventoryType, this);
     }
 
     private void createDefaultInventory() {

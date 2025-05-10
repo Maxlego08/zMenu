@@ -21,9 +21,9 @@ public class CommandMenuDocumentation extends VCommand {
 
         String word = this.argAsString(0, null);
         if (word == null) {
-            message(sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.zmenu.dev/");
+            message(plugin, sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.zmenu.dev/");
         } else {
-            message(sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.zmenu.dev/?q=" + word);
+            message(plugin, sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.zmenu.dev/?q=" + word);
         }
 
         return CommandType.SUCCESS;

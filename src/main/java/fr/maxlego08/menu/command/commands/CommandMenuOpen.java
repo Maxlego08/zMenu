@@ -4,8 +4,8 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -43,22 +43,22 @@ public class CommandMenuOpen extends VCommand {
         Player player = this.argAsPlayer(1, this.player);
         boolean displayMessage = this.argAsBoolean(2, Config.enableOpenMessage);
         if (player == null) {
-            message(this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
+            message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
 
         Optional<Inventory> optional = findInventory(inventoryName, inventoryManager);
 
         if (!optional.isPresent()) {
-            message(this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+            message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
             return CommandType.DEFAULT;
         }
 
         if (displayMessage) {
             if (this.sender == player) {
-                message(this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
+                message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
             } else {
-                message(this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
+                message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
             }
         }
 

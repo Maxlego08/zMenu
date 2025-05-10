@@ -25,7 +25,6 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFromItemStack;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -333,11 +332,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (itemName != null) {
-            Meta.meta.updateDisplayName(itemMeta, itemName, offlinePlayer == null ? player : offlinePlayer);
+            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, offlinePlayer == null ? player : offlinePlayer);
         }
 
         if (!itemLore.isEmpty()) {
-            Meta.meta.updateLore(itemMeta, itemLore, this.loreType);
+            this.inventoryManager.getMeta().updateLore(itemMeta, itemLore, this.loreType);
         }
     }
 

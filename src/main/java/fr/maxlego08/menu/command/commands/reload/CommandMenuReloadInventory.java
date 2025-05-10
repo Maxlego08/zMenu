@@ -41,7 +41,7 @@ public class CommandMenuReloadInventory extends VCommand {
             }
 
             if (!optional.isPresent()) {
-                message(this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+                message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
                 return CommandType.DEFAULT;
             }
 
@@ -51,7 +51,7 @@ public class CommandMenuReloadInventory extends VCommand {
                 return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(inventory);
             });
             inventoryManager.reloadInventory(inventory);
-            message(this.sender, Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
+            message(plugin, this.sender, Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
 
             return CommandType.SUCCESS;
         }
@@ -61,7 +61,7 @@ public class CommandMenuReloadInventory extends VCommand {
         inventoryManager.deleteInventories(plugin);
         inventoryManager.loadInventories();
 
-        message(this.sender, Message.RELOAD_INVENTORY, "%inventories%", inventoryManager.getInventories(plugin).size());
+        message(plugin, this.sender, Message.RELOAD_INVENTORY, "%inventories%", inventoryManager.getInventories(plugin).size());
 
         return CommandType.SUCCESS;
     }

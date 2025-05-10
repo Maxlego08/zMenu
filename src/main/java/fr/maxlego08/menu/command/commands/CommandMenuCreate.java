@@ -29,7 +29,7 @@ public class CommandMenuCreate extends VCommand {
         int inventorySize = this.argAsInteger(1);
 
         if (inventorySize % 9 != 0 || inventorySize < 9 || inventorySize > 54) {
-            message(sender, Message.INVENTORY_CREATE_ERROR_SIZE);
+            message(plugin, sender, Message.INVENTORY_CREATE_ERROR_SIZE);
             return CommandType.DEFAULT;
         }
 

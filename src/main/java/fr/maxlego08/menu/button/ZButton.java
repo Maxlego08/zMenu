@@ -1,9 +1,8 @@
 package fr.maxlego08.menu.button;
 
-import fr.maxlego08.menu.ZMenuItemStack;
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -20,7 +19,6 @@ import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.zcore.utils.inventory.Pagination;
-import fr.maxlego08.menu.zcore.utils.meta.Meta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,7 +35,7 @@ import java.util.function.BiConsumer;
 
 public abstract class ZButton extends ZPlaceholderButton implements Button {
 
-    private ZMenuPlugin plugin;
+    private MenuPlugin plugin;
     private String buttonName;
     private MenuItemStack itemStack;
     private boolean isPermanent = false;
@@ -241,7 +239,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 this.openLink.send(player, this.messages);
             } else {
 
-                this.messages.forEach(message -> Meta.meta.sendMessage(player, this.papi(placeholders.parse(message.replace("%player%", player.getName())), player, true)));
+                this.messages.forEach(message -> plugin.getMetaUpdater().sendMessage(player, this.papi(placeholders.parse(message.replace("%player%", player.getName())), player, true)));
             }
         }
 
@@ -324,7 +322,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.datas = datas;
     }
 
-    public void setPlugin(ZMenuPlugin plugin) {
+    public void setPlugin(MenuPlugin plugin) {
         this.plugin = plugin;
     }
 
