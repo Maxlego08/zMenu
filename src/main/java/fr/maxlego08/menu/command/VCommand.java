@@ -4,7 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.Arguments;
 import fr.maxlego08.menu.zcore.utils.commands.CollectionBiConsumer;

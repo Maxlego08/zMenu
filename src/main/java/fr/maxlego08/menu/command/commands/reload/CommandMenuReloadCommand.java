@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 

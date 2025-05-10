@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.button;
+package fr.maxlego08.menu.api.buttons;
 
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;

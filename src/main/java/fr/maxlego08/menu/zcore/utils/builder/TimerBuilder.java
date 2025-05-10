@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.builder;
 
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 
 public class TimerBuilder {
 

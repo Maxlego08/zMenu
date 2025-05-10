@@ -1,24 +1,24 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
-import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.ZRequirement;
-import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Button> {
 
@@ -170,9 +171,16 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setPriority(configuration.getInt(path + "priority", -1));
 
         List<String> permissions = configuration.getStringList(path + "permission");
-        button.setPermissions(permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions, configuration.getString(path + "permission", null));
+        permissions = permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions;
+        if (permissions.isEmpty()) {
+            String permission = configuration.getString(path + "permission", null);
+            if (permission != null) {
+                permissions.add(permission);
+            }
+        }
+        button.setPermissions(permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
         List<String> orPermissions = configuration.getStringList(path + "orPermission");
-        button.setOrPermissionsString(orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions);
+        button.setOrPermissions((orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions).stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
 
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
         if (Config.enableFastEvent) {

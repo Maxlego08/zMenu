@@ -1,10 +1,9 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.buttons.ZButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.website.Folder;
 import fr.maxlego08.menu.website.Inventory;
 import fr.maxlego08.menu.website.ZWebsiteManager;
@@ -39,7 +38,7 @@ public class ButtonInventoryNext extends ZButton {
         List<Inventory> inventories = folder.getInventories();
 
         int inventoryPage = manager.getInventoryPage();
-        int maxPage = getMaxPage(inventories, 34);
+        int maxPage = (inventories.size() / 34) + 1;
 
         if (inventoryPage < maxPage) {
             manager.openInventoriesInventory(player, inventoryPage + 1, manager.getFolderPage(), folder.getId());

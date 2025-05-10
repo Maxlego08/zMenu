@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.buttons.ZButton;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -11,6 +12,7 @@ import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -520,4 +522,7 @@ public interface InventoryManager extends Listener {
 
     List<InventoryListener> getInventoryListeners();
 
+    ItemStack postProcessSkullItemStack(ItemStack itemStack, ZButton button, Player player);
+
+    void sendMessage(CommandSender sender, Message message, Object... args);
 }

@@ -2,7 +2,7 @@ package fr.maxlego08.menu.command;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.commands.CommandInventory;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;

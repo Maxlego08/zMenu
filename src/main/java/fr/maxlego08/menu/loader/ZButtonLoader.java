@@ -9,8 +9,13 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.buttons.ZPermissibleButton;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
+import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -18,19 +23,15 @@ import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.button.ZPermissibleButton;
-import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
+import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -224,7 +225,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setDatas(actionPlayerDatas);
 
         List<String> permissions = configuration.getStringList(path + "permission");
-        button.setPermissions(permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions, configuration.getString(path + "permission", null));
+        if (permissions.isEmpty()) permissions = configuration.getStringList(path + "permissions");
+        if (!permissions.isEmpty()) {
+            button.setPermissions(permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+        }
+        String permission = configuration.getString(path + "permission", null);
+        button.getPermissions().add(new ZPermissionPermissible(permission));
+
         List<String> orPermissions = configuration.getStringList(path + "orPermission");
         if (orPermissions.isEmpty()) {
             orPermissions = configuration.getStringList(path + "or-permission");
@@ -235,7 +242,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (orPermissions.isEmpty()) {
             orPermissions = configuration.getStringList(path + "or-permissions");
         }
-        button.setOrPermissionsString(orPermissions);
+        button.setOrPermissions(orPermissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
 
         if (configuration.contains(path + "else")) {
 

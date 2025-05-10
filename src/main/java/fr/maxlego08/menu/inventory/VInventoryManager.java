@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import org.bukkit.Bukkit;

@@ -19,7 +19,7 @@ import fr.maxlego08.menu.website.buttons.ButtonInventoryNext;
 import fr.maxlego08.menu.website.buttons.ButtonInventoryPrevious;
 import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
 import fr.maxlego08.menu.website.request.HttpRequest;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.command.CommandSender;

@@ -2,7 +2,7 @@ package fr.maxlego08.menu.save;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.enums.MessageType;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

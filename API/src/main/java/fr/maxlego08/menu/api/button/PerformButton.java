@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.button;
 
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -54,13 +54,7 @@ public interface PerformButton {
      */
     String getConsolePermission();
 
-    /**
-     * Executes commands based on the player and click type.
-     *
-     * @param player    The player who will execute the commands.
-     * @param type      The click type.
-     * @param scheduler The ZScheduler used to schedule the command executions.
-     */
-    void execute(Player player, ClickType type, ZScheduler scheduler, Placeholders placeholders);
+
+    void execute(MenuPlugin plugin, ClickType type, Placeholders placeholders, Player player);
 
 }

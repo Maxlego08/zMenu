@@ -1,12 +1,11 @@
-package fr.maxlego08.menu.button;
+package fr.maxlego08.menu.api.buttons;
 
 import fr.maxlego08.menu.api.button.SlotButton;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 import java.util.Collection;
 import java.util.List;
 
-public abstract class ZSlotButton extends ZUtils implements SlotButton {
+public abstract class ZSlotButton implements SlotButton {
 
     protected List<Integer> slots;
     protected int page;
@@ -20,12 +19,12 @@ public abstract class ZSlotButton extends ZUtils implements SlotButton {
         this.slots = slots;
     }
 
-    public void setPage(int page) {
-        this.page = page;
-    }
-
     @Override
     public int getPage() {
         return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 }

@@ -1,0 +1,35 @@
+# Enables detailed information display in the console.
+# If you encounter an issue, enable this option and send the errors to support.
+enable-debug: true
+
+# Enables execution time debugging to measure plugin performance.
+# Useful for identifying bottlenecks and optimizing performance.
+enable-debug-time: true
+
+# Storage:
+# SQLITE - For the launch of the plugin only.
+# HIKARICP - RECOMMENDED - HikariCP is a fast and lightweight JDBC connection pool. It optimizes database connections, ensuring quick acquisition and low latency. This improves performance and reliability, making it ideal for high-demand applications.
+#
+# We advise you to use HIKARICP, the SQLITE storage is only there to install the plugin and do some tests, not all features are available with SQLITE yet.
+# The plugin will work, but some features like sanctions update when launching the plugin will not work.
+# This will be fixed in future plugin updates
+storage-type: SQLITE
+
+# Configuration of your database, it is recommended to use the database to store your data.
+database-configuration:
+  # The prefix that will be applied to all tables,
+  # if you have several plugins with the same database, you must have one.
+  # It is advisable not to change this value
+  table-prefix: "zmenu_"
+  # IP Address of the machine the database is hosted on
+  host: 192.168.10.10
+  # Port of the database, by default, MYSQL's port is 3306
+  port: 3306
+  # Database username
+  user: homestead
+  # Database password
+  password: 'secret'
+  # Database
+  database: zmenu
+  # Enable of not the SQL debug mode
+  debug: true

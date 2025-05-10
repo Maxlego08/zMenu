@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.zcore.utils.interfaces.ReturnConsumer;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;

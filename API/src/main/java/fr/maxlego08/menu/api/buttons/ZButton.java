@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.button;
+package fr.maxlego08.menu.api.buttons;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.engine.Pagination;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
@@ -14,14 +15,6 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZRequirement;
-import fr.maxlego08.menu.zcore.utils.PlayerSkin;
-import fr.maxlego08.menu.zcore.utils.ZOpenLink;
-import fr.maxlego08.menu.zcore.utils.inventory.Pagination;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -44,7 +37,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private List<String> messages = new ArrayList<>();
     private SoundOption soundOption;
     private String playerHead;
-    private OpenLink openLink = new ZOpenLink();
+    private OpenLink openLink;
     private boolean isUpdated = false;
     private boolean isMasterButtonUpdated = false;
     private boolean refreshOnClick = false;
@@ -52,7 +45,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     private boolean updateOnClick = false;
     private boolean isOpenAsync = false;
     private List<Requirement> clickRequirements = new ArrayList<>();
-    private Requirement viewRequirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    private Requirement viewRequirement;
     private List<Action> actions = new ArrayList<>();
     private List<ButtonOption> options = new ArrayList<>();
     private RefreshRequirement refreshRequirement;
@@ -77,7 +70,6 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         return this;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public ItemStack getCustomItemStack(Player player) {
         if (this.itemStack == null) return null;
@@ -85,32 +77,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         ItemStack itemStack = this.itemStack.build(player, this.useCache);
 
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
-
-            String name = papi(this.playerHead.replace("%player%", player.getName()), player, false);
-
-            if (!isMinecraftName(name)) {
-                return itemStack;
-            }
-
-            if (NMSUtils.isNewHeadApi()) {
-
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-                if (offlinePlayer != null) {
-                    SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                    skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());
-                    itemStack.setItemMeta(skullMeta);
-                }
-            } else {
-                String texture = PlayerSkin.getTexture(name);
-                if (texture == null) {
-
-                    SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                    skullMeta.setOwner(name);
-                    itemStack.setItemMeta(skullMeta);
-                } else {
-                    this.applyTexture(itemStack, texture);
-                }
-            }
+            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player);
         }
 
         return itemStack;
@@ -233,13 +200,10 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         }
 
         if (!this.messages.isEmpty()) {
-
             if (this.openLink != null) {
-
                 this.openLink.send(player, this.messages);
             } else {
-
-                this.messages.forEach(message -> plugin.getMetaUpdater().sendMessage(player, this.papi(placeholders.parse(message.replace("%player%", player.getName())), player, true)));
+                this.messages.forEach(message -> plugin.getMetaUpdater().sendMessage(player, this.plugin.parse(player, placeholders.parse(message.replace("%player%", player.getName())))));
             }
         }
 
@@ -258,7 +222,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(player, event.getClick(), inventory.getPlugin().getScheduler(), placeholders);
+        this.execute(this.plugin, event.getClick(), placeholders, player);
     }
 
     @Override
@@ -471,7 +435,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
      *                  itself
      * @param <T>       the type of the elements
      */
-    protected <T> void paginate(List<T> elements, InventoryDefault inventory, BiConsumer<Integer, T> consumer) {
+    protected <T> void paginate(List<T> elements, InventoryEngine inventory, BiConsumer<Integer, T> consumer) {
         Pagination<T> pagination = new Pagination<>();
         elements = pagination.paginate(elements, this.slots.size(), inventory.getPage());
 

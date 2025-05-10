@@ -1,10 +1,9 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.buttons.ZButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.website.Folder;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import org.bukkit.entity.Player;
@@ -38,7 +37,7 @@ public class ButtonFolderNext extends ZButton {
         List<Folder> folders = manager.getFolders(folder);
 
         int folderPage = manager.getFolderPage();
-        int maxPage = getMaxPage(folders, 5);
+        int maxPage = (folders.size() / 5) + 1;
 
         if (folderPage < maxPage) {
             manager.openInventoriesInventory(player, manager.getInventoryPage(), folderPage + 1, folder.getId());

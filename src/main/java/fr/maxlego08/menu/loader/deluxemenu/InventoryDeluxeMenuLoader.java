@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.button.ZButton;
+import fr.maxlego08.menu.api.buttons.ZButton;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;

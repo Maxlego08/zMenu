@@ -2,7 +2,7 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
-import fr.maxlego08.menu.zcore.enums.Message;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

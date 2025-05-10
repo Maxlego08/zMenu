@@ -1,8 +1,6 @@
-package fr.maxlego08.menu.zcore.enums;
+package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.api.enums.MessageType;
-import fr.maxlego08.menu.api.utils.IMessage;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -199,7 +197,7 @@ public enum Message implements IMessage {
     }
 
     public MessageType getType() {
-        return type.equals(MessageType.ACTION) && NMSUtils.isVeryOldVersion() ? MessageType.TCHAT : type;
+        return this.type;
     }
 
     public void setType(MessageType type) {

@@ -1,9 +1,10 @@
-package fr.maxlego08.menu.button;
+package fr.maxlego08.menu.api.buttons;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.PerformButton;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.configuration.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     private List<String> consoleRightCommands = new ArrayList<>();
     private List<String> consoleLeftCommands = new ArrayList<>();
     private List<String> consolePermissionCommands = new ArrayList<>();
-    private String consolePermission ;
+    private String consolePermission;
 
     @Override
     public List<String> getCommands() {
@@ -39,16 +40,15 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
         return this.leftCommands;
     }
 
-
-    public List<String> getRightCommands() {
-        return this.rightCommands;
-    }
-    
     /**
      * @param leftCommands the left click commands to set
      */
     public void setLeftCommands(List<String> leftCommands) {
         this.leftCommands = leftCommands;
+    }
+
+    public List<String> getRightCommands() {
+        return this.rightCommands;
     }
 
     /**
@@ -58,7 +58,6 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
         this.rightCommands = rightCommands;
     }
 
-    
 
     @Override
     public List<String> getConsoleCommands() {
@@ -121,43 +120,46 @@ public abstract class ZPerformButton extends ZSlotButton implements PerformButto
     }
 
     @Override
-    public void execute(Player player, ClickType type, ZScheduler scheduler, Placeholders placeholders) {
+    public void execute(MenuPlugin plugin, ClickType type, Placeholders placeholders, Player player) {
+        ZScheduler scheduler = plugin.getScheduler();
+
         if (type.isRightClick()) {
-            this.execute(player, player, this.rightCommands, scheduler, placeholders);
-            this.execute(player, player, this.consoleRightCommands, scheduler, placeholders);
+            this.execute(plugin, player, this.rightCommands, scheduler, placeholders, player);
+            this.execute(plugin, player, this.consoleRightCommands, scheduler, placeholders, player);
         }
 
         if (type.isLeftClick()) {
-            this.execute(player, player, this.leftCommands, scheduler, placeholders);
-            this.execute(player, player, this.consoleLeftCommands, scheduler, placeholders);
+            this.execute(plugin, player, this.leftCommands, scheduler, placeholders, player);
+            this.execute(plugin, player, this.consoleLeftCommands, scheduler, placeholders, player);
         }
 
-        this.execute(player, player, this.commands, scheduler, placeholders);
-        this.execute(Bukkit.getConsoleSender(), player, this.consoleCommands, scheduler, placeholders);
+        this.execute(plugin, player, this.commands, scheduler, placeholders, player);
+        this.execute(plugin, player, this.consoleCommands, scheduler, placeholders, Bukkit.getConsoleSender());
 
         if (this.consolePermission == null || player.hasPermission(this.consolePermission)) {
-            this.execute(Bukkit.getConsoleSender(), player, this.consolePermissionCommands, scheduler, placeholders);
+            this.execute(plugin, player, this.consolePermissionCommands, scheduler, placeholders, Bukkit.getConsoleSender());
         }
     }
 
     /**
      * Executes a list of commands on behalf of the specified executor and player, using a scheduler to run the commands.
      *
-     * @param executor  the CommandSender executing the commands
+     * @param plugin    the plugin
      * @param player    the Player for whom the commands are executed
      * @param strings   the list of commands to be executed
      * @param scheduler the ZScheduler used to schedule the command executions
+     * @param executor  the CommandSender executing the commands
      */
-    private void execute(CommandSender executor, Player player, List<String> strings, ZScheduler scheduler, Placeholders placeholders) {
+    private void execute(MenuPlugin plugin, Player player, List<String> strings, ZScheduler scheduler, Placeholders placeholders, CommandSender executor) {
         strings.forEach(command -> {
             command = placeholders.parse(command.replace("%player%", player.getName()));
             try {
                 if (executor instanceof Player && Config.enablePlayerCommandInChat) {
-                    player.chat("/" + papi(command, player, true));
+                    player.chat("/" + plugin.parse(player, command));
                 } else {
 
                     String finalCommand = command;
-                    Runnable runnable = () -> Bukkit.dispatchCommand(executor, papi(finalCommand, player, true));
+                    Runnable runnable = () -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
                     if (scheduler.isFolia()) {
                         if (executor instanceof Player) scheduler.runTask(((Player) executor).getLocation(), runnable);
                         else scheduler.runTask(null, runnable);

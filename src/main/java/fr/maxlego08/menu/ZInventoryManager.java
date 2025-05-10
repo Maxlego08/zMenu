@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.buttons.ZButton;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.configuration.Config;
@@ -23,6 +24,7 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -73,11 +75,12 @@ import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
+import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
@@ -93,6 +96,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -853,5 +857,40 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public List<InventoryListener> getInventoryListeners() {
         return inventoryListeners;
+    }
+
+    @Override
+    public ItemStack postProcessSkullItemStack(ItemStack itemStack, ZButton button, Player player) {
+        String name = this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName()));
+
+        if (!isMinecraftName(name)) {
+            return itemStack;
+        }
+
+        if (NMSUtils.isNewHeadApi()) {
+
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            if (offlinePlayer != null) {
+                SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+                skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());
+                itemStack.setItemMeta(skullMeta);
+            }
+        } else {
+            String texture = PlayerSkin.getTexture(name);
+            if (texture == null) {
+
+                SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+                skullMeta.setOwner(name);
+                itemStack.setItemMeta(skullMeta);
+            } else {
+                this.applyTexture(itemStack, texture);
+            }
+        }
+        return itemStack;
+    }
+
+    @Override
+    public void sendMessage(CommandSender sender, Message message, Object... args) {
+        message(this.plugin, sender, message, args);
     }
 }

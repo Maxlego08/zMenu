@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.inventory;
+package fr.maxlego08.menu.api.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;

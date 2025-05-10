@@ -3,7 +3,7 @@ package fr.maxlego08.menu.button.loader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.button.ZButton;
+import fr.maxlego08.menu.api.buttons.ZButton;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
