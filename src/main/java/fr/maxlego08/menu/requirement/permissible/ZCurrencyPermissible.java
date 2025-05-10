@@ -1,18 +1,18 @@
 package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.CurrencyPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.traqueur.currencies.Currencies;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class ZCurrencyPermissible extends ZPermissible implements CurrencyPermissible {
+public class ZCurrencyPermissible extends Permissible implements CurrencyPermissible {
 
     private final Currencies currencies;
     private final String amount;
@@ -36,8 +36,8 @@ public class ZCurrencyPermissible extends ZPermissible implements CurrencyPermis
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        String result = papi(placeholders.parse(this.amount), player, false);
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+        String result = inventory.getPlugin().parse(player, placeholders.parse(this.amount));
         BigDecimal bigDecimal = new BigDecimal(result);
         BigDecimal amount = this.currencies.getBalance(player, this.economyName == null ? "default" : this.economyName);
         return amount.compareTo(bigDecimal) >= 0;

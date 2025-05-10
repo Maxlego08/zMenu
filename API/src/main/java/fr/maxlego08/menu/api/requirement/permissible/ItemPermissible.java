@@ -1,12 +1,11 @@
 package fr.maxlego08.menu.api.requirement.permissible;
 
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.requirement.Permissible;
 
 /**
  * Represents a condition where a player is required to have a specific item.
  */
-public interface ItemPermissible extends Permissible {
+public interface ItemPermissible {
 
     /**
      * Gets the MenuItemStack that the player must have.

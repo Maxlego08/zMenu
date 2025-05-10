@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks;
+package fr.maxlego08.menu.hooks.luckperms;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;

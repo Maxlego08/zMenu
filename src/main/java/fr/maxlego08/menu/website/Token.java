@@ -2,7 +2,7 @@ package fr.maxlego08.menu.website;
 
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 
-public class Token implements Savable {
+public class Token {
 
     public static String token;
 
@@ -32,12 +32,10 @@ public class Token implements Savable {
         return instance;
     }
 
-    @Override
     public void save(Persist persist) {
         persist.save(this, "token");
     }
 
-    @Override
     public void load(Persist persist) {
         persist.loadOrSaveDefault(this, Token.class, "token");
     }

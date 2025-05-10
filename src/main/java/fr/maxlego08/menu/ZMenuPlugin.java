@@ -30,6 +30,7 @@ import fr.maxlego08.menu.hooks.NovaLoader;
 import fr.maxlego08.menu.hooks.OraxenLoader;
 import fr.maxlego08.menu.hooks.SlimeFunLoader;
 import fr.maxlego08.menu.hooks.ZHeadLoader;
+import fr.maxlego08.menu.hooks.ZItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
@@ -39,7 +40,6 @@ import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
-import fr.maxlego08.menu.hooks.ZItemsLoader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.placeholder.Placeholder;
@@ -48,6 +48,7 @@ import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.scheduler.BukkitScheduler;
 import fr.maxlego08.menu.scheduler.FoliaScheduler;
+import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
@@ -57,6 +58,7 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
@@ -273,8 +275,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) {
-            System.out.println("ToDo, rework token");
-            // Token.getInstance().load(this.getPersist());
+            Token.getInstance().load(this.getPersist());
         }
 
         // Must register after config loads
@@ -317,10 +318,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.vinventoryManager.close();
 
         // ToDo, update
-        /*this.getSavers().forEach(saver -> saver.save(this.getPersist()));
+        // this.getSavers().forEach(saver -> saver.save(this.getPersist()));
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
-        }*/
+        }
         // this.packetUtils.onDisable();
         this.inventoriesPlayer.save();
 
@@ -447,7 +448,17 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     @Override
+    public String parse(OfflinePlayer offlinePlayer, String string) {
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, string);
+    }
+
+    @Override
     public List<String> parse(Player player, List<String> strings) {
         return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings);
+    }
+
+    @Override
+    public List<String> parse(OfflinePlayer offlinePlayer, List<String> strings) {
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings);
     }
 }

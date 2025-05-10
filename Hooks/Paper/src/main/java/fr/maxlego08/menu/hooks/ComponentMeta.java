@@ -1,10 +1,9 @@
-package fr.maxlego08.menu.zcore.utils.meta;
+package fr.maxlego08.menu.hooks;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.zcore.utils.SimpleCache;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.api.utils.SimpleCache;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
@@ -34,9 +33,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ComponentMeta extends ZUtils implements MetaUpdater {
-    private static final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
+public class ComponentMeta implements MetaUpdater {
 
+    private final MenuPlugin plugin;
+    private final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = new HashMap<>();
     private final SimpleCache<String, Component> cache = new SimpleCache<>();
@@ -46,7 +46,8 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
     private final Method inventoryMethod;
     private final Method inventoryTypeMethod;
 
-    public ComponentMeta() throws Exception {
+    public ComponentMeta(MenuPlugin plugin) throws Exception {
+        this.plugin = plugin;
         this.COLORS_MAPPINGS.put("0", "black");
         this.COLORS_MAPPINGS.put("1", "dark_blue");
         this.COLORS_MAPPINGS.put("2", "dark_green");
@@ -131,7 +132,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             //From GitHub issue #62
             return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
         })).collect(Collectors.toList());
-        
+
         if (loreType != LoreType.REPLACE && itemMeta.hasLore()) {
             try {
                 List<Component> currentLore = (List<Component>) getLoreMethod.invoke(itemMeta);
@@ -171,9 +172,9 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
             exception.printStackTrace();
         }
         if (inventoryTypeOrSize instanceof Integer) {
-            return Bukkit.createInventory(inventoryHolder, (int) inventoryTypeOrSize, color(inventoryName));
+            return Bukkit.createInventory(inventoryHolder, (int) inventoryTypeOrSize, inventoryName);
         } else {
-            return Bukkit.createInventory(inventoryHolder, (InventoryType) inventoryTypeOrSize, color(inventoryName));
+            return Bukkit.createInventory(inventoryHolder, (InventoryType) inventoryTypeOrSize, inventoryName);
         }
     }
 
@@ -192,15 +193,13 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
 
         String newMessage = message;
 
-        if (NMSUtils.isHexColor()) {
-            Pattern pattern = Pattern.compile("(?<!<)(?<!:)#[a-fA-F0-9]{6}");
-            Matcher matcher = pattern.matcher(message);
-            while (matcher.find()) {
-                String color = message.substring(matcher.start(), matcher.end());
-                newMessage = newMessage.replace(color, "<" + color + ">");
-                message = message.replace(color, "");
-                matcher = pattern.matcher(message);
-            }
+        Pattern pattern = Pattern.compile("(?<!<)(?<!:)#[a-fA-F0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String color = message.substring(matcher.start(), matcher.end());
+            newMessage = newMessage.replace(color, "<" + color + ">");
+            message = message.replace(color, "");
+            matcher = pattern.matcher(message);
         }
 
         for (Entry<String, String> entry : this.COLORS_MAPPINGS.entrySet()) {
@@ -248,7 +247,7 @@ public class ComponentMeta extends ZUtils implements MetaUpdater {
         Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
         Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(author)));
         List<Component> linesComponent = lines.stream().map(text -> {
-            String result = papi(text, player, true);
+            String result = plugin.parse(player, text);
             return this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(result)));
         }).collect(Collectors.toList());
 

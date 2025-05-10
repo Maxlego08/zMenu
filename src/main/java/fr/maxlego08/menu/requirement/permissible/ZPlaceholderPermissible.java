@@ -1,12 +1,14 @@
 package fr.maxlego08.menu.requirement.permissible;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
@@ -19,7 +21,7 @@ import java.util.List;
  * Implementation of the {@link PlaceholderPermissible} interface that checks player permissions
  * based on specified placeholder values and actions.
  */
-public class ZPlaceholderPermissible extends ZPermissible implements PlaceholderPermissible {
+public class ZPlaceholderPermissible extends Permissible implements PlaceholderPermissible {
 
     private final PlaceholderAction action;
     private final String placeholder;
@@ -50,20 +52,21 @@ public class ZPlaceholderPermissible extends ZPermissible implements Placeholder
      */
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
 
+        MenuPlugin plugin = inventoryEngine.getPlugin();
         String valueAsString;
         String resultAsString;
 
         if (this.targetPlayer == null || this.targetPlayer.equalsIgnoreCase("null")) {
 
-            valueAsString = papi(placeholders.parse(this.placeholder), player, false);
-            resultAsString = papi(placeholders.parse(this.value), player, false);
+            valueAsString = plugin.parse(player, placeholders.parse(this.placeholder));
+            resultAsString = plugin.parse(player, placeholders.parse(this.value));
         } else {
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player, false));
-            valueAsString = papi(placeholders.parse(this.placeholder), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, false);
-            resultAsString = papi(placeholders.parse(this.value), offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, false);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(plugin.parse(player, placeholders.parse(this.targetPlayer)));
+            valueAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.placeholder));
+            resultAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.value));
         }
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {

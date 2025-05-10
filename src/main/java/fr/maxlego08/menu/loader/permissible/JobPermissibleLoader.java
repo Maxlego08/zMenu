@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.loader.ZPermissibleLoader;
-import fr.maxlego08.menu.requirement.permissible.ZJobPermissible;
+import fr.maxlego08.menu.hooks.jobs.ZJobPermissible;
 
 import java.io.File;
 import java.util.List;

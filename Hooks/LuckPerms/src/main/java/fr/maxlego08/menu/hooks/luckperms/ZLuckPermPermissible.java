@@ -1,11 +1,11 @@
-package fr.maxlego08.menu.requirement.permissible;
+package fr.maxlego08.menu.hooks.luckperms;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.LuckpermPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZPermissible;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ZLuckPermPermissible extends ZPermissible implements LuckpermPermissible {
+public class ZLuckPermPermissible extends Permissible implements LuckpermPermissible {
 
     private final String groupName;
 
@@ -23,7 +23,7 @@ public class ZLuckPermPermissible extends ZPermissible implements LuckpermPermis
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().getUser(player.getUniqueId());
         if (user == null) return false;

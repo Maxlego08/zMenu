@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.requirement.Permissible;
 /**
  * Represents a condition where a player is required to have a specific permission.
  */
-public interface PermissionPermissible extends Permissible {
+public interface PermissionPermissible {
 
     /**
      * Gets the permission that the player must have.

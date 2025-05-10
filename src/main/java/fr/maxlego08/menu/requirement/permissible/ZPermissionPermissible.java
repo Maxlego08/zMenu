@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
@@ -16,7 +16,7 @@ import java.util.List;
  * Implementation of the {@link PermissionPermissible} interface that checks player permissions
  * based on a specific permission node and an optional reverse flag.
  */
-public class ZPermissionPermissible extends ZPermissible implements PermissionPermissible {
+public class ZPermissionPermissible extends Permissible implements PermissionPermissible {
 
     private final String permission;
     private final boolean isReverse;
@@ -46,16 +46,9 @@ public class ZPermissionPermissible extends ZPermissible implements PermissionPe
         return new String[]{permission, String.valueOf(isReverse)};
     }
 
-    /**
-     * Checks whether the player has the necessary permission based on the specified permission node and reverse flag.
-     *
-     * @param player       The player whose permission is being checked.
-     * @param placeholders
-     * @return {@code true} if the player has the necessary permission, otherwise {@code false}.
-     */
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        return this.isReverse != player.hasPermission(papi(placeholders.parse(this.permission), player, false));
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+        return this.isReverse != player.hasPermission(inventory.getPlugin().parse(player, placeholders.parse(this.permission)));
     }
 
     /**

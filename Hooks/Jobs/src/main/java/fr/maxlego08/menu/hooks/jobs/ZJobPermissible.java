@@ -1,19 +1,19 @@
-package fr.maxlego08.menu.requirement.permissible;
+package fr.maxlego08.menu.hooks.jobs;
 
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.container.Job;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.JobPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZPermissible;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ZJobPermissible extends ZPermissible implements JobPermissible {
+public class ZJobPermissible extends Permissible implements JobPermissible {
 
     private final String jobName;
 
@@ -23,10 +23,11 @@ public class ZJobPermissible extends ZPermissible implements JobPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        Job job = Jobs.getJob(papi(placeholders.parse(this.jobName), player, false));
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+        MenuPlugin plugin = inventory.getPlugin();
+        Job job = Jobs.getJob(plugin.parse(player, placeholders.parse(this.jobName)));
         if (job == null) {
-            Logger.info("Job " + this.jobName +" was not found !", Logger.LogType.ERROR);
+            plugin.getLogger().severe("Job " + this.jobName + " was not found !");
             return true;
         }
         return Jobs.getPlayerManager().getJobsPlayer(player.getUniqueId()).isInJob(job);

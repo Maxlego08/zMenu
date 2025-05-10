@@ -1,18 +1,17 @@
 package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.requirement.ZPermissible;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ZRegexPermissible extends ZPermissible implements Permissible {
+public class ZRegexPermissible extends Permissible {
 
     private final Pattern pattern;
     private final String placeholder;
@@ -24,8 +23,8 @@ public class ZRegexPermissible extends ZPermissible implements Permissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryDefault inventory, Placeholders placeholders) {
-        return pattern.matcher(papi(placeholders.parse(this.placeholder), player, false)).find();
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+        return pattern.matcher(inventory.getPlugin().parse(player, placeholders.parse(this.placeholder))).find();
     }
 
     @Override

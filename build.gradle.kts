@@ -38,16 +38,18 @@ allprojects {
 
         implementation("com.github.cryptomorin:XSeries:13.2.0")
         implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
+        implementation("com.github.technicallycoded:FoliaLib:main-SNAPSHOT")
     }
 }
 
 repositories {
-
+    maven(url = "https://repo.codemc.io/repository/maven-public/")
 }
 
 dependencies {
 
     api(project(":API"))
+    implementation("de.tr7zw:item-nbt-api:2.15.0")
 
     rootProject.subprojects.filter { it.path.startsWith(":Hooks:") }.forEach { subproject ->
         api(project(subproject.path))
@@ -57,8 +59,9 @@ dependencies {
 tasks {
     shadowJar {
 
-        // relocate("com.tcoded.folialib", "fr.maxlego08.essentials.libs.folialib")
-        relocate("fr.traqueur.currencies", "fr.maxlego08.menu.libs.currencies")
+        relocate("com.tcoded.folialib", "fr.maxlego08.menu.hooks.folialib")
+        relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
+        relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
 
         archiveClassifier = ""
 

@@ -3,7 +3,7 @@ package fr.maxlego08.menu.loader.actions;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.hooks.LuckPermissionSet;
+import fr.maxlego08.menu.hooks.luckperms.LuckPermissionSet;
 
 import java.io.File;
 
