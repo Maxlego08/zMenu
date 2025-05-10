@@ -40,6 +40,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
 
     private boolean isClose = false;
 
+    @Override
     public boolean isClose() {
         return isClose;
     }
@@ -83,26 +84,27 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         }
     }
 
+    @Override
     public ItemButton addItem(int slot, Material material, String name) {
         return addItem(slot, new ItemBuilder(material, name).build());
     }
 
-    public ItemButton addItem(int slot, ItemBuilder item) {
-        return addItem(slot, item.build());
-    }
-
+    @Override
     public ItemButton addItem(int slot, ItemStack itemStack) {
         return addItem(false, slot, itemStack, true);
     }
 
+    @Override
     public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack) {
         return addItem(inPlayerInventory, slot, itemStack, true);
     }
 
+    @Override
     public ItemButton addItem(int slot, ItemStack itemStack, Boolean enableAntiDupe) {
         return addItem(false, slot, itemStack, enableAntiDupe);
     }
 
+    @Override
     public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, Boolean enableAntiDupe) {
 
         createDefaultInventory();
@@ -137,47 +139,58 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
         return button;
     }
 
+    @Override
     public void removeItem(int slot) {
         this.items.remove(slot);
     }
 
+    @Override
     public void removePlayerItem(int slot) {
         this.playerInventoryItems.remove(slot);
     }
 
+    @Override
     public void clearItem() {
         this.items.clear();
         this.playerInventoryItems.clear();
     }
 
+    @Override
     public Map<Integer, ItemButton> getItems() {
         return items;
     }
 
+    @Override
     public Map<Integer, ItemButton> getPlayerInventoryItems() {
         return playerInventoryItems;
     }
 
+    @Override
     public boolean isDisableClick() {
         return disableClick;
     }
 
+    @Override
     public void setDisableClick(boolean disableClick) {
         this.disableClick = disableClick;
     }
 
+    @Override
     public Player getPlayer() {
         return player;
     }
 
+    @Override
     public int getPage() {
         return page;
     }
 
+    @Override
     public Object[] getArgs() {
         return args;
     }
 
+    @Override
     public Inventory getSpigotInventory() {
         return inventory;
     }

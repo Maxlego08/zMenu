@@ -10,4 +10,16 @@ public interface InventoryEngine extends BaseInventory {
     List<Inventory> getOldInventories();
 
     List<Button> getButtons();
+
+    void buildButton(Button button);
+
+    void displayButton(Button button);
+
+    void displayFinalButton(Button button, int... slots);
+
+    Inventory getMenuInventory();
+
+    int getMaxPage();
+
+    void setMaxPage(int maxPage);
 }

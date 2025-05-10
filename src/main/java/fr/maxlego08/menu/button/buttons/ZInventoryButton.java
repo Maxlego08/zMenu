@@ -4,9 +4,9 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Message;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
@@ -48,7 +48,7 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
+    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
 
         Inventory fromInventory = inventory.getMenuInventory();
@@ -57,8 +57,7 @@ public class ZInventoryButton extends ZButton implements InventoryButton {
         Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.getInventory(this.inventoryName) : this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
         if (!optional.isPresent()) {
             player.closeInventory();
-            message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%",
-                    this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
+            message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
             return;
         }
 

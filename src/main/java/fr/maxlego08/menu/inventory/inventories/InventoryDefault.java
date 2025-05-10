@@ -137,6 +137,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      *
      * @param button The button
      */
+    @Override
     public void buildButton(Button button) {
 
         if (button.hasCustomRender()) {
@@ -173,7 +174,8 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     /**
      * Allows displaying the button in the inventory
      */
-    private void displayButton(Button button) {
+    @Override
+    public void displayButton(Button button) {
 
         if (button.hasSpecialRender()) {
 
@@ -196,6 +198,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     /**
      * Allows displaying the button and putting the actions on the clicks
      */
+    @Override
     public void displayFinalButton(Button button, int... slots) {
 
         ItemStack itemStack = button.getCustomItemStack(this.player);
@@ -278,9 +281,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
     }
 
-    /**
-     * @return the inventory
-     */
+    @Override
     public Inventory getMenuInventory() {
         return inventory;
     }
@@ -290,17 +291,17 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         return this.oldInventories == null ? new ArrayList<>() : this.oldInventories;
     }
 
-    /**
-     * @return the maxPage
-     */
+    @Override
     public int getMaxPage() {
         return maxPage;
     }
 
+    @Override
     public void setMaxPage(int maxPage) {
         this.maxPage = maxPage;
     }
 
+    @Override
     public List<Button> getButtons() {
         return buttons;
     }

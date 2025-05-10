@@ -3,9 +3,9 @@ package fr.maxlego08.menu.button.buttons;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.button.ZButton;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -13,16 +13,13 @@ public class ZPreviousButton extends ZButton implements HomeButton {
 
     private final InventoryManager inventoryManager;
 
-    /**
-     * @param inventoryManager the inventory manager
-     */
     public ZPreviousButton(InventoryManager inventoryManager) {
         super();
         this.inventoryManager = inventoryManager;
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
+    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
         if (inventory.getPage() != 1) {
             Inventory toInventory = inventory.getMenuInventory();
@@ -36,8 +33,7 @@ public class ZPreviousButton extends ZButton implements HomeButton {
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean checkPermission(Player player, InventoryEngine inventory, Placeholders placeholders) {
         return inventory.getPage() != 1;
     }
-
 }

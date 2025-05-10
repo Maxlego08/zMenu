@@ -5,6 +5,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
@@ -185,10 +186,10 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public void onRender(Player player, InventoryDefault inventory) {
-        if (inventory.getPage() == this.getPage() || this.isPermanent()) {
+    public void onRender(Player player, InventoryEngine inventoryEngine) {
+        if (inventoryEngine.getPage() == this.getPage() || this.isPermanent()) {
 
-            int inventorySize = this.isPlayerInventory() ? 36 : inventory.getInventory().getSize();
+            int inventorySize = this.isPlayerInventory() ? 36 : inventoryEngine.getInventory().getSize();
 
             int[] slots = this.getSlots().stream().map(slot -> {
                 if (!this.isPermanent) {
@@ -196,29 +197,29 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
                 }
                 return slot;
             }).mapToInt(Integer::intValue).toArray();
-            inventory.displayFinalButton(this, slots);
+            inventoryEngine.displayFinalButton(this, slots);
         }
     }
 
     @Override
-    public void onLeftClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    public void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
     }
 
     @Override
-    public void onRightClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    public void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
     }
 
     @Override
-    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot) {
+    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
     }
 
     @Override
-    public void onInventoryClose(Player player, InventoryDefault inventory) {
+    public void onInventoryClose(Player player, InventoryEngine inventory) {
 
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryDefault inventory, int slot, Placeholders placeholders) {
+    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
 
         if (this.closeInventory()) {
             player.closeInventory();
@@ -262,7 +263,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public void onInventoryOpen(Player player, InventoryDefault inventory, Placeholders placeholders) {
+    public void onInventoryOpen(Player player, InventoryEngine inventory, Placeholders placeholders) {
 
     }
 
@@ -346,7 +347,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public void onBackClick(Player player, InventoryClickEvent event, InventoryDefault inventory, List<Inventory> oldInventories, Inventory toInventory, int slot) {
+    public void onBackClick(Player player, InventoryClickEvent event, InventoryEngine inventory, List<Inventory> oldInventories, Inventory toInventory, int slot) {
     }
 
     @Override
@@ -373,7 +374,7 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean checkPermission(Player player, InventoryEngine inventory, Placeholders placeholders) {
         return super.checkPermission(player, inventory, placeholders) && (this.viewRequirement == null || this.viewRequirement.execute(player, this, inventory, placeholders));
     }
 
@@ -387,12 +388,12 @@ public abstract class ZButton extends ZPlaceholderButton implements Button {
     }
 
     @Override
-    public void onDrag(InventoryDragEvent event, Player player, InventoryDefault inventoryDefault) {
+    public void onDrag(InventoryDragEvent event, Player player, InventoryEngine inventoryDefault) {
 
     }
 
     @Override
-    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryDefault inventoryDefault) {
+    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine inventoryDefault) {
 
     }
 
