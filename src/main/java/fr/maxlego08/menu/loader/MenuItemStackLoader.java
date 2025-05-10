@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.Attribute;
 import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -11,10 +12,10 @@ import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.Banner;
-import fr.maxlego08.menu.zcore.utils.Firework;
-import fr.maxlego08.menu.zcore.utils.LeatherArmor;
-import fr.maxlego08.menu.zcore.utils.Potion;
+import fr.maxlego08.menu.api.itemstack.Banner;
+import fr.maxlego08.menu.api.itemstack.Firework;
+import fr.maxlego08.menu.api.itemstack.LeatherArmor;
+import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -43,7 +44,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
-public class MenuItemStackLoader extends ZUtils implements Loader<ZMenuItemStack> {
+public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack> {
 
     private final InventoryManager manager;
 
@@ -58,7 +59,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<ZMenuItemStack
     /**
      * Load ItemStack
      */
-    public ZMenuItemStack load(YamlConfiguration configuration, String path, Object... objects) {
+    public MenuItemStack load(YamlConfiguration configuration, String path, Object... objects) {
 
         File file = (File) objects[0];
 
@@ -531,7 +532,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<ZMenuItemStack
      * @param file          the file in which to save the configuration
      * @param objects       additional objects for potential future use
      */
-    public void save(ZMenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
 
         configuration.set(path + "material", item.getMaterial());
 

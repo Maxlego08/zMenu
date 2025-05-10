@@ -19,7 +19,7 @@ public class CommandMenuReloadConfig extends VCommand {
     protected CommandType perform(ZMenuPlugin plugin) {
 
         plugin.getMessageLoader().load();
-        Config.getInstance().load(plugin.getPersist());
+        Config.getInstance().load();
 
         plugin.getPatternManager().loadPatterns();
 

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils;
+package fr.maxlego08.menu.api.itemstack;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

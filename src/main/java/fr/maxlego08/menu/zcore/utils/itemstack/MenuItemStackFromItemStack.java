@@ -2,8 +2,8 @@ package fr.maxlego08.menu.zcore.utils.itemstack;
 
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.zcore.utils.Firework;
-import fr.maxlego08.menu.zcore.utils.Potion;
+import fr.maxlego08.menu.api.itemstack.Firework;
+import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.FireworkEffect;
 import org.bukkit.inventory.ItemStack;

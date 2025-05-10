@@ -257,4 +257,8 @@ public abstract class ZPlugin extends JavaPlugin {
     public Persist getPersist() {
         return persist;
     }
+
+    public Gson getGson() {
+        return gson;
+    }
 }

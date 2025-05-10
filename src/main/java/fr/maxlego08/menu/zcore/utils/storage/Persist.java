@@ -11,10 +11,10 @@ import java.lang.reflect.Type;
 
 public class Persist extends ZUtils {
 
-    private final ZPlugin p;
+    private final ZPlugin plugin;
 
-    public Persist(ZPlugin p) {
-        this.p = p;
+    public Persist(ZPlugin plugin) {
+        this.plugin = plugin;
     }
 
     // ------------------------------------------------------------ //
@@ -38,7 +38,7 @@ public class Persist extends ZUtils {
     // ------------------------------------------------------------ //
 
     public File getFile(String name) {
-        return new File(p.getDataFolder(), name + ".json");
+        return new File(plugin.getDataFolder(), name + ".json");
     }
 
     public File getFile(Class<?> clazz) {
@@ -69,7 +69,7 @@ public class Persist extends ZUtils {
 
     public <T> T loadOrSaveDefault(T def, Class<T> clazz, File file) {
         if (!file.exists()) {
-            p.getLog().log("Creating default: " + file, LogType.SUCCESS);
+            plugin.getLog().log("Creating default: " + file, LogType.SUCCESS);
             this.save(def, file);
             return def;
         }
@@ -77,7 +77,7 @@ public class Persist extends ZUtils {
         T loaded = this.load(clazz, file);
 
         if (loaded == null) {
-            p.getLog().log("Using default as I failed to load: " + file, LogType.WARNING);
+            plugin.getLog().log("Using default as I failed to load: " + file, LogType.WARNING);
 
             /*
              * Create new config backup
@@ -86,7 +86,7 @@ public class Persist extends ZUtils {
             File backup = new File(file.getPath() + "_bad");
             if (backup.exists())
                 backup.delete();
-            p.getLog().log("Backing up copy of bad file to: " + backup, LogType.WARNING);
+            plugin.getLog().log("Backing up copy of bad file to: " + backup, LogType.WARNING);
 
             file.renameTo(backup);
 
@@ -94,7 +94,7 @@ public class Persist extends ZUtils {
         } else {
 
             if (Config.enableLogStorageFile) {
-                p.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
+                plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
             }
 
         }
@@ -120,14 +120,14 @@ public class Persist extends ZUtils {
 
         try {
 
-            boolean b = DiscUtils.writeCatch(file, p.getGson().toJson(instance));
+            boolean b = DiscUtils.writeCatch(file, plugin.getGson().toJson(instance));
             if (Config.enableLogStorageFile) {
-                p.getLog().log(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
+                plugin.getLog().log(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
             }
             return b;
 
         } catch (Exception e) {
-            p.getLog().log("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
+            plugin.getLog().log("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
             e.printStackTrace();
 
             return false;
@@ -151,11 +151,11 @@ public class Persist extends ZUtils {
         }
 
         try {
-            return p.getGson().fromJson(content, clazz);
+            return plugin.getGson().fromJson(content, clazz);
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely
-            p.getLog().log(ex.getMessage(), LogType.ERROR);
+            plugin.getLog().log(ex.getMessage(), LogType.ERROR);
         }
 
         return null;
@@ -175,11 +175,11 @@ public class Persist extends ZUtils {
         }
 
         try {
-            return p.getGson().fromJson(content, typeOfT);
+            return plugin.getGson().fromJson(content, typeOfT);
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely
-            p.getLog().log(ex.getMessage(), LogType.ERROR);
+            plugin.getLog().log(ex.getMessage(), LogType.ERROR);
         }
 
         return null;
