@@ -62,6 +62,7 @@ tasks {
         relocate("com.tcoded.folialib", "fr.maxlego08.menu.hooks.folialib")
         relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
         relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
+        relocate("com.cryptomorin.xseries", "fr.maxlego08.menu.hooks.xseries")
 
         archiveClassifier = ""
 
