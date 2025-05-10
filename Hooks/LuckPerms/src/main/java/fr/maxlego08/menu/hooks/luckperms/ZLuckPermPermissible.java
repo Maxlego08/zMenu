@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ZLuckPermPermissible extends Permissible implements LuckpermPermissible {
+public class ZLuckPermPermissible extends LuckpermPermissible {
 
     private final String groupName;
 

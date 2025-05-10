@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.button;
 
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 
 import java.util.List;

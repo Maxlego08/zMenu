@@ -65,8 +65,8 @@ public interface PermissibleButton {
     /**
      * Checks if the player has the required permission to interact with the button.
      *
-     * @param player    The player who will be checked for permission.
-     * @param inventory The inventory associated with the button.
+     * @param player       The player who will be checked for permission.
+     * @param inventory    The inventory associated with the button.
      * @param placeholders The placeholders
      * @return `true` if the player has the required permission, otherwise `false`.
      */

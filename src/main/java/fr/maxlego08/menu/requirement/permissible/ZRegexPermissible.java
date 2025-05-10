@@ -3,7 +3,7 @@ package fr.maxlego08.menu.requirement.permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.api.requirement.permissible.RegexPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ZRegexPermissible extends Permissible {
+public class ZRegexPermissible extends RegexPermissible {
 
     private final Pattern pattern;
     private final String placeholder;
@@ -32,5 +32,15 @@ public class ZRegexPermissible extends Permissible {
         if (this.pattern == null) Logger.info("Regex is null !", Logger.LogType.WARNING);
         if (this.placeholder == null) Logger.info("Input is null !", Logger.LogType.WARNING);
         return this.pattern != null && this.placeholder != null;
+    }
+
+    @Override
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    @Override
+    public String getPlaceholder() {
+        return placeholder;
     }
 }

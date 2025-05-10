@@ -16,7 +16,7 @@ import java.util.List;
  * Implementation of the {@link PermissionPermissible} interface that checks player permissions
  * based on a specific permission node and an optional reverse flag.
  */
-public class ZPermissionPermissible extends Permissible implements PermissionPermissible {
+public class ZPermissionPermissible extends PermissionPermissible {
 
     private final String permission;
     private final boolean isReverse;

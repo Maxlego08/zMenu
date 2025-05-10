@@ -21,7 +21,7 @@ import java.util.List;
  * Implementation of the {@link PlaceholderPermissible} interface that checks player permissions
  * based on specified placeholder values and actions.
  */
-public class ZPlaceholderPermissible extends Permissible implements PlaceholderPermissible {
+public class ZPlaceholderPermissible extends PlaceholderPermissible {
 
     private final PlaceholderAction action;
     private final String placeholder;

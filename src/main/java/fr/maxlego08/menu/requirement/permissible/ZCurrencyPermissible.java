@@ -3,7 +3,6 @@ package fr.maxlego08.menu.requirement.permissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.CurrencyPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.traqueur.currencies.Currencies;
@@ -12,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class ZCurrencyPermissible extends Permissible implements CurrencyPermissible {
+public class ZCurrencyPermissible extends CurrencyPermissible {
 
     private final Currencies currencies;
     private final String amount;

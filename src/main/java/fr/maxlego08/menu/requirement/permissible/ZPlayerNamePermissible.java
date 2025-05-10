@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ZPlayerNamePermissible extends Permissible implements PlayerNamePermissible {
+public class ZPlayerNamePermissible extends PlayerNamePermissible {
 
     private final String playerName;
 

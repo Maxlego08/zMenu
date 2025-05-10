@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ZJobPermissible extends Permissible implements JobPermissible {
+public class ZJobPermissible extends JobPermissible {
 
     private final String jobName;
 

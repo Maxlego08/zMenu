@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class ZItemPermissible extends Permissible implements ItemPermissible {
+public class ZItemPermissible extends ItemPermissible {
 
     private final ItemVerification itemVerification;
     private final ZMenuItemStack menuItemStack;

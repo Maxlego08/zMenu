@@ -1,7 +1,16 @@
 package fr.maxlego08.menu.api.requirement.permissible;
 
-public interface LuckpermPermissible {
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 
-    String getGroupName();
+import java.util.List;
+
+public abstract class LuckpermPermissible extends Permissible {
+
+    public LuckpermPermissible(List<Action> denyActions, List<Action> successActions) {
+        super(denyActions, successActions);
+    }
+
+    public abstract String getGroupName();
 
 }

@@ -1,11 +1,12 @@
 package fr.maxlego08.menu.button;
 
-import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
-import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -24,9 +25,6 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
         return this.elseButton;
     }
 
-    /**
-     * @param elseButton the elseButton to set
-     */
     public ZPermissibleButton setElseButton(Button elseButton) {
         this.elseButton = elseButton;
         return this;
@@ -43,14 +41,14 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryDefault inventory, Placeholders placeholders) {
+    public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
 
         if (!this.orPermissions.isEmpty()) {
-            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player, null, inventory, placeholders));
+            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player, null, inventoryEngine, placeholders));
         }
 
         if (!this.permissions.isEmpty()) {
-            return this.permissions.stream().allMatch(p -> p.hasPermission(player, null, inventory, placeholders));
+            return this.permissions.stream().allMatch(p -> p.hasPermission(player, null, inventoryEngine, placeholders));
         }
 
         return true;
@@ -86,6 +84,10 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
         return this.permissions;
     }
 
+    public void setPermissions(List<PermissionPermissible> permissions) {
+        this.permissions = permissions;
+    }
+
     public void setPermissions(List<String> permissions, String permission) {
         this.permissions = permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList());
         if (permission != null) this.permissions.add(new ZPermissionPermissible(permission));
@@ -93,10 +95,6 @@ public abstract class ZPermissibleButton extends ZPerformButton implements Permi
 
     public void setOrPermissionsString(List<String> orPermissions) {
         this.orPermissions = orPermissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList());
-    }
-
-    public void setPermissions(List<PermissionPermissible> permissions) {
-        this.permissions = permissions;
     }
 
     public void setOrPermissions(List<PermissionPermissible> orPermissions) {
