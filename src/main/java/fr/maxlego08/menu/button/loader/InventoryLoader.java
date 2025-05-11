@@ -1,42 +1,25 @@
 package fr.maxlego08.menu.button.loader;
 
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZInventoryButton;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-public class InventoryLoader implements ButtonLoader {
+public class InventoryLoader extends ButtonLoader {
 
-    private final Plugin plugin;
     private final InventoryManager manager;
     private final CommandManager commandManager;
 
-    public InventoryLoader(Plugin plugin, InventoryManager manager, CommandManager commandManager) {
-        super();
-        this.plugin = plugin;
-        this.manager = manager;
-        this.commandManager = commandManager;
-    }
-
-    @Override
-    public Class<? extends Button> getButton() {
-        return fr.maxlego08.menu.api.button.buttons.InventoryButton.class;
-    }
-
-    @Override
-    public String getName() {
-        return "inventory";
-    }
-
-    @Override
-    public Plugin getPlugin() {
-        return this.plugin;
+    public InventoryLoader(MenuPlugin plugin) {
+        super(plugin, "inventory");
+        this.manager = plugin.getInventoryManager();
+        this.commandManager = plugin.getCommandManager();
     }
 
     @Override
@@ -47,5 +30,4 @@ public class InventoryLoader implements ButtonLoader {
         List<String> arguments = configuration.getStringList(path + "arguments");
         return new ZInventoryButton(this.manager, this.commandManager, inventoryName, pluginName, arguments, toPage);
     }
-
 }

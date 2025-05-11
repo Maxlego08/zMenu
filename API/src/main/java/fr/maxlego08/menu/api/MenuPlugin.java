@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -48,4 +49,6 @@ public interface MenuPlugin extends Plugin {
     Enchantments getEnchantments();
 
     MetaUpdater getMetaUpdater();
+
+    CommandManager getCommandManager();
 }

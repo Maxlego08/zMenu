@@ -24,7 +24,15 @@ import java.util.stream.IntStream;
  * For example, if your plugin is called "test" and your button is called "magic", the name should be 'test_magic'.
  * You can then return a new instance of your button with the essential elements initialized.
  */
-public interface ButtonLoader {
+public abstract class ButtonLoader {
+
+    protected final Plugin plugin;
+    protected final String name;
+
+    public ButtonLoader(Plugin plugin, String name) {
+        this.plugin = plugin;
+        this.name = name;
+    }
 
     /**
      * Loads a list of strings and transforms it into integers, supporting various slot formats.
@@ -33,17 +41,16 @@ public interface ButtonLoader {
      * @param slotsAsString List of slot strings
      * @return List of slots as integers
      */
-    static List<Integer> loadSlot(List<String> slotsAsString) {
+    protected List<Integer> loadSlot(List<String> slotsAsString) {
         List<Integer> slots = new ArrayList<>();
-        if (slotsAsString.size() > 0) {
+        if (!slotsAsString.isEmpty()) {
             for (String line : slotsAsString) {
                 if (line.contains("-")) {
                     try {
                         String[] values = line.split("-");
                         int from = Integer.parseInt(values[0]);
                         int to = Integer.parseInt(values[1]) + 1;
-                        slots.addAll(IntStream.range(Math.min(from, to), Math.max(from, to)).boxed()
-                                .collect(Collectors.toList()));
+                        slots.addAll(IntStream.range(Math.min(from, to), Math.max(from, to)).boxed().collect(Collectors.toList()));
                     } catch (Exception ignored) {
                     }
                 } else {
@@ -58,25 +65,22 @@ public interface ButtonLoader {
     }
 
     /**
-     * Gets the class that will be used for the button.
-     *
-     * @return The button class.
-     */
-    Class<? extends Button> getButton();
-
-    /**
      * Gets the name of the button.
      *
      * @return The button name.
      */
-    String getName();
+    public String getName() {
+        return this.name;
+    }
 
     /**
      * Gets the plugin from which the button loader originates.
      *
      * @return The plugin.
      */
-    Plugin getPlugin();
+    public Plugin getPlugin() {
+        return this.plugin;
+    }
 
     /**
      * Loads a button based on the provided configuration.
@@ -86,5 +90,5 @@ public interface ButtonLoader {
      * @param defaultButtonValue Default button values.
      * @return The loaded button.
      */
-    Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue);
+    public abstract Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue);
 }
