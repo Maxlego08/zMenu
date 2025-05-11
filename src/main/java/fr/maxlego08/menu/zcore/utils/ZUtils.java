@@ -6,15 +6,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.SimpleCache;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.builder.CooldownBuilder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
@@ -24,16 +23,13 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -41,8 +37,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
@@ -177,26 +171,6 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * Allows to encode an itemStack in base64
-     *
-     * @param item - ItemStack
-     * @return the encoded item
-     */
-    protected String encode(ItemStack item) {
-        return ItemStackUtils.serializeItemStack(item);
-    }
-
-    /**
-     * Allows to decode a string in ItemStack
-     *
-     * @param item - the encoded itemStack
-     * @return the decoded item
-     */
-    protected ItemStack decode(String item) {
-        return ItemStackUtils.deserializeItemStack(item);
-    }
-
-    /**
      * Allows to obtain a random number between a and b
      *
      * @param first  First number
@@ -223,25 +197,11 @@ public abstract class ZUtils extends MessageUtils {
         return slot == 0;
     }
 
-    /**
-     * Gives an item to the player, if the player's inventory is full then the
-     * item will drop to the ground
-     *
-     * @param player
-     * @param item
-     */
     protected void give(Player player, ItemStack item) {
         if (hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
         else player.getInventory().addItem(item);
     }
 
-    /**
-     * Allows to return a material according to its ID Works only for plugins
-     * from 1.8 to 1.12
-     *
-     * @param id
-     * @return the material according to his id
-     */
     protected Material getMaterial(int id) {
         return byId.length > id && id >= 0 ? byId[id] : Material.AIR;
     }
@@ -255,24 +215,10 @@ public abstract class ZUtils extends MessageUtils {
         return itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName();
     }
 
-    /**
-     * Check if the item name is the same as the given string
-     *
-     * @param itemStack
-     * @param name
-     * @return true if the item name is the same as string
-     */
     protected boolean same(ItemStack itemStack, String name) {
         return this.hasDisplayName(itemStack) && itemStack.getItemMeta().getDisplayName().equals(name);
     }
 
-    /**
-     * Check if the item name contains the given string
-     *
-     * @param itemStack
-     * @param name
-     * @return true if the item name contains the string
-     */
     protected boolean contains(ItemStack itemStack, String name) {
         return this.hasDisplayName(itemStack) && itemStack.getItemMeta().getDisplayName().contains(name);
     }
@@ -401,16 +347,6 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected String name(ItemStack itemStack) {
         return this.getItemName(itemStack);
-    }
-
-    /**
-     * Calculates the maximum number of pages needed to display a collection of items with each page containing up to 45 items.
-     *
-     * @param items the collection of items
-     * @return the maximum number of pages
-     */
-    protected int getMaxPage(Collection<?> items) {
-        return (items.size() / 45) + 1;
     }
 
     /**
@@ -589,18 +525,13 @@ public abstract class ZUtils extends MessageUtils {
         return task;
     }
 
-
     protected <T> T randomElement(List<T> element) {
-        if (element.size() == 0) return null;
-        if (element.size() == 1) return element.get(0);
+        if (element.isEmpty()) return null;
+        if (element.size() == 1) return element.getFirst();
         Random random = new Random();
         return element.get(random.nextInt(element.size() - 1));
     }
 
-    /**
-     * @param message
-     * @return
-     */
     protected String color(String message) {
         if (message == null) return null;
         if (NMSUtils.isHexColor()) {
@@ -644,31 +575,12 @@ public abstract class ZUtils extends MessageUtils {
         return null;
     }
 
-    protected <T> List<T> reverse(List<T> list) {
-        List<T> tmpList = new ArrayList<>();
-        for (int index = list.size() - 1; index != -1; index--)
-            tmpList.add(list.get(index));
-        return tmpList;
-    }
-
-    protected String price(long price) {
-        return String.format("%,d", price);
-    }
-
     protected String generateRandomString(int length) {
         return new RandomString(length).nextString();
     }
 
     protected TextComponent buildTextComponent(String message) {
         return new TextComponent(message);
-    }
-
-    protected TextComponent setHoverMessage(TextComponent component, String... messages) {
-        BaseComponent[] list = new BaseComponent[messages.length];
-        for (int a = 0; a != messages.length; a++)
-            list[a] = new TextComponent(messages[a] + (messages.length - 1 == a ? "" : "\n"));
-        component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, list));
-        return component;
     }
 
     protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
@@ -687,135 +599,14 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    protected String getDisplayBalance(double value) {
-        if (value < 10000) return format(value, "#.#");
-        else if (value < 1000000) return Integer.valueOf((int) (value / 1000)) + "k ";
-        else if (value < 1000000000) return format((value / 1000) / 1000, "#.#") + "m ";
-        else if (value < 1000000000000L) return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
-        else return "to much";
-    }
-
-    /**
-     * @param value
-     * @return
-     */
-    protected String getDisplayBalance(long value) {
-        if (value < 10000) return format(value, "#.#");
-        else if (value < 1000000) return Integer.valueOf((int) (value / 1000)) + "k ";
-        else if (value < 1000000000) return format((value / 1000) / 1000, "#.#") + "m ";
-        else if (value < 1000000000000L) return Integer.valueOf((int) (((value / 1000) / 1000) / 1000)) + "M ";
-        else return "to much";
-    }
-
-    /**
-     * Allows you to count the number of items in inventory
-     *
-     * @param inventory
-     * @param material
-     * @return
-     * @return
-     */
-    protected int count(org.bukkit.inventory.Inventory inventory, Material material) {
-        int count = 0;
-        for (ItemStack itemStack : inventory.getContents())
-            if (itemStack != null && itemStack.getType().equals(material)) count += itemStack.getAmount();
-        return count;
-    }
-
-    protected Enchantment enchantFromString(String str) {
-        for (Enchantment enchantment : Enchantment.values())
-            if (enchantment.getName().equalsIgnoreCase(str)) return enchantment;
-        return null;
-    }
-
-    /**
-     * @param direction
-     * @return
-     */
-    protected BlockFace getClosestFace(float direction) {
-
-        direction = direction % 360;
-
-        if (direction < 0) direction += 360;
-
-        direction = Math.round(direction / 45);
-
-        switch ((int) direction) {
-            case 0:
-                return BlockFace.WEST;
-            case 1:
-                return BlockFace.NORTH_WEST;
-            case 2:
-                return BlockFace.NORTH;
-            case 3:
-                return BlockFace.NORTH_EAST;
-            case 4:
-                return BlockFace.EAST;
-            case 5:
-                return BlockFace.SOUTH_EAST;
-            case 6:
-                return BlockFace.SOUTH;
-            case 7:
-                return BlockFace.SOUTH_WEST;
-            default:
-                return BlockFace.WEST;
-        }
-    }
-
-    /**
-     * @param price
-     * @return
-     */
-    protected String betterPrice(long price) {
-        String betterPrice = "";
-        String[] splitPrice = String.valueOf(price).split("");
-        int current = 0;
-        for (int a = splitPrice.length - 1; a > -1; a--) {
-            current++;
-            if (current > 3) {
-                betterPrice = betterPrice.concat(".");
-                current = 1;
-            }
-            betterPrice = betterPrice.concat(splitPrice[a]);
-        }
-        StringBuilder builder = new StringBuilder().append(betterPrice);
-        builder.reverse();
-        return builder.toString();
-    }
-
-    /**
-     * @param enchantment
-     * @param itemStack
-     * @return
-     */
-    protected boolean hasEnchant(Enchantment enchantment, ItemStack itemStack) {
-        return itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants() && itemStack.getItemMeta().hasEnchant(enchantment);
-    }
-
-    /**
-     * @param player
-     * @param cooldown
-     * @return
-     */
     protected String timerFormat(Player player, String cooldown) {
         return TimerBuilder.getStringTime(CooldownBuilder.getCooldownPlayer(cooldown, player) / 1000);
     }
 
-    /**
-     * @param player
-     * @param cooldown
-     * @return
-     */
     protected boolean isCooldown(Player player, String cooldown) {
         return isCooldown(player, cooldown, 0);
     }
 
-    /**
-     * @param player
-     * @param cooldown
-     * @param timer
-     * @return
-     */
     protected boolean isCooldown(Player player, String cooldown, int timer) {
         if (CooldownBuilder.isCooldown(cooldown, player)) {
             ActionBar.sendActionBar(player, String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.", timerFormat(player, cooldown)));
@@ -825,28 +616,14 @@ public abstract class ZUtils extends MessageUtils {
         return false;
     }
 
-    /**
-     * @param list
-     * @return
-     */
     protected String toList(Stream<String> list) {
         return toList(list.collect(Collectors.toList()), "§e", "§6");
     }
 
-    /**
-     * @param list
-     * @return
-     */
     protected String toList(List<String> list) {
         return toList(list, "§e", "§6§n");
     }
 
-    /**
-     * @param list
-     * @param color
-     * @param color2
-     * @return
-     */
     protected String toList(List<String> list, String color, String color2) {
         if (list == null || list.size() == 0) return null;
         if (list.size() == 1) return list.get(0);
@@ -859,29 +636,10 @@ public abstract class ZUtils extends MessageUtils {
         return str;
     }
 
-    /**
-     * @param message
-     * @return
-     */
-    protected String removeColor(String message) {
-        for (ChatColor color : ChatColor.values())
-            message = message.replace("§" + color.getChar(), "").replace("&" + color.getChar(), "");
-        return message;
-    }
-
-    /**
-     * @param l
-     * @return
-     */
     protected String format(long l) {
         return format(l, ' ');
     }
 
-    /**
-     * @param l
-     * @param c
-     * @return
-     */
     protected String format(long l, char c) {
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
@@ -890,14 +648,6 @@ public abstract class ZUtils extends MessageUtils {
         return formatter.format(l);
     }
 
-    /**
-     * Permet d'obtenir la tête d'un joueur en utilisation le système de
-     * configuration des inventaires
-     *
-     * @param itemStack
-     * @param player
-     * @return itemstack
-     */
     public ItemStack playerHead(ItemStack itemStack, OfflinePlayer player) {
 
         String name = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : null;
@@ -939,59 +689,6 @@ public abstract class ZUtils extends MessageUtils {
         return NmsVersion.nmsVersion.isNewMaterial() ? new ItemStack(Material.PLAYER_HEAD) : new ItemStack(getMaterial(397), 1, (byte) 3);
     }
 
-    /**
-     * Allows to obtain a class according to the provider
-     *
-     * @param plugin
-     * @param classz
-     * @return T
-     */
-    protected <T> T getProvider(Plugin plugin, Class<T> classz) {
-        RegisteredServiceProvider<T> provider = plugin.getServer().getServicesManager().getRegistration(classz);
-        if (provider == null) return null;
-        return provider.getProvider();
-    }
-
-    /**
-     * @param configuration
-     * @return
-     */
-    protected PotionEffectType getPotion(String configuration) {
-        for (PotionEffectType effectType : PotionEffectType.values()) {
-            if (effectType.getName().equalsIgnoreCase(configuration)) {
-                return effectType;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Allows to execute a runnable in an asynmetrical way
-     *
-     * @param runnable
-     */
-    protected void runAsync(Plugin plugin, Runnable runnable) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
-    }
-
-    /**
-     * Turns back time for a human
-     *
-     * @param second
-     * @return string
-     */
-    protected String getStringTime(long second) {
-        return TimerBuilder.getStringTime(second);
-    }
-
-    // Source: https://blog.jeff-media.com/creating-custom-heads-in-spigot-1-18-1/
-
-    /**
-     * Allows you to create a head from a URL
-     *
-     * @param url
-     * @return itemstack
-     */
     protected ItemStack createSkull(String url) {
 
         if (url == null) return null;
@@ -1066,27 +763,12 @@ public abstract class ZUtils extends MessageUtils {
         itemStack.setItemMeta(headMeta);
     }
 
-    /**
-     * Allows to check if an itemstack and a head
-     *
-     * @param itemStack
-     * @return boolean
-     */
     protected boolean isPlayerHead(ItemStack itemStack) {
         Material material = itemStack.getType();
         if (NmsVersion.nmsVersion.isNewMaterial()) return material.equals(Material.PLAYER_HEAD);
         return (material.equals(getMaterial(397))) && (itemStack.getDurability() == 3);
     }
 
-    /**
-     * @param object
-     * @param field
-     * @return
-     * @throws SecurityException
-     * @throws NoSuchFieldException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     */
     protected Object getPrivateField(Object object, String field) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class<?> clazz = object.getClass();
         Field objectField = field.equals("commandMap") ? clazz.getDeclaredField(field) : field.equals("knownCommands") ? NmsVersion.nmsVersion.isNewMaterial() ? clazz.getSuperclass().getDeclaredField(field) : clazz.getDeclaredField(field) : null;
@@ -1096,12 +778,6 @@ public abstract class ZUtils extends MessageUtils {
         return result;
     }
 
-    /**
-     * Unregister a bukkit command
-     *
-     * @param plugin
-     * @param command
-     */
     protected void unRegisterBukkitCommand(Plugin plugin, PluginCommand command) {
         try {
             Object result = getPrivateField(plugin.getServer().getPluginManager(), "commandMap");
@@ -1122,18 +798,6 @@ public abstract class ZUtils extends MessageUtils {
         }
     }
 
-    /**
-     * Create a progress bar
-     * https://www.spigotmc.org/threads/progress-bars-and-percentages.276020/
-     *
-     * @param current
-     * @param max
-     * @param totalBars
-     * @param symbol
-     * @param completedColor
-     * @param notCompletedColor
-     * @return string
-     */
     public String getProgressBar(int current, int max, int totalBars, char symbol, String completedColor, String notCompletedColor) {
         float percent = (float) current / max;
         int progressBars = (int) (totalBars * percent);
@@ -1141,24 +805,6 @@ public abstract class ZUtils extends MessageUtils {
         return Strings.repeat(completedColor + symbol, progressBars) + Strings.repeat(notCompletedColor + symbol, totalBars - progressBars);
     }
 
-    /**
-     * Create a progress bar
-     *
-     * @param current
-     * @param max
-     * @param progressBar
-     * @return string
-     */
-    public String getProgressBar(int current, int max, ProgressBar progressBar) {
-        return this.getProgressBar(current, max, progressBar.getLenght(), progressBar.getSymbol(), progressBar.getCompletedColor(), progressBar.getNotCompletedColor());
-    }
-
-    /**
-     * Allows you to check if an inventory will contain armor or items
-     *
-     * @param player
-     * @return boolean
-     */
     protected boolean inventoryHasItem(Player player) {
 
         ItemStack itemStack = player.getInventory().getBoots();

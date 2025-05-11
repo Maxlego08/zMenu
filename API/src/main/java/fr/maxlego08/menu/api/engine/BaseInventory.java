@@ -16,15 +16,13 @@ public interface BaseInventory {
 
     boolean isClose();
 
-    ItemButton addItem(int slot, Material material, String name);
-
     ItemButton addItem(int slot, ItemStack itemStack);
 
-    ItemButton addItem(int slot, ItemStack itemStack, Boolean enableAntiDupe);
+    ItemButton addItem(int slot, ItemStack itemStack, boolean enableAntiDupe);
 
     ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack);
 
-    ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, Boolean enableAntiDupe);
+    ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, boolean enableAntiDupe);
 
     String getGuiName();
 

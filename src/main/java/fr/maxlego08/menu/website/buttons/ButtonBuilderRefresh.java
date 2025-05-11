@@ -1,15 +1,19 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.LoreType;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.website.ZWebsiteManager;
-import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+
+import java.util.List;
 
 public class ButtonBuilderRefresh extends Button {
 
@@ -31,8 +35,11 @@ public class ButtonBuilderRefresh extends Button {
         if (!this.canUse) return;
         this.canUse = false;
 
-        ItemBuilder itemBuilder = new ItemBuilder(Material.BARRIER, "§cPlease wait");
-        inventory.getSpigotInventory().setItem(slot, itemBuilder.build());
+        ItemStack itemStack = new ItemStack(Material.BARRIER);
+        ItemMeta meta = itemStack.getItemMeta();
+        plugin.getMetaUpdater().updateLore(meta, List.of("&cPlease wait"), LoreType.APPEND);
+        itemStack.setItemMeta(meta);
+        inventory.getSpigotInventory().setItem(slot, itemStack);
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         manager.refreshInventories(player);

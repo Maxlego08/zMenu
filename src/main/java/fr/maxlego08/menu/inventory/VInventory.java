@@ -8,9 +8,7 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -84,11 +82,6 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     }
 
     @Override
-    public ItemButton addItem(int slot, Material material, String name) {
-        return addItem(slot, new ItemBuilder(material, name).build());
-    }
-
-    @Override
     public ItemButton addItem(int slot, ItemStack itemStack) {
         return addItem(false, slot, itemStack, true);
     }
@@ -99,17 +92,17 @@ public abstract class VInventory extends ZUtils implements Cloneable, InventoryH
     }
 
     @Override
-    public ItemButton addItem(int slot, ItemStack itemStack, Boolean enableAntiDupe) {
+    public ItemButton addItem(int slot, ItemStack itemStack, boolean enableAntiDupe) {
         return addItem(false, slot, itemStack, enableAntiDupe);
     }
 
     @Override
-    public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, Boolean enableAntiDupe) {
+    public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, boolean enableAntiDupe) {
 
         createDefaultInventory();
 
         if (itemStack == null) {
-            plugin.getLogger().severe("Attention, a null itemstack was found in slot " + slot + " ! > " + this.toString());
+            plugin.getLogger().severe("Attention, a null itemstack was found in slot " + slot + " ! > " + this);
             return null;
         }
 
