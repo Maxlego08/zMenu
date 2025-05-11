@@ -105,6 +105,7 @@ public class Config {
 
         enableDebug = configuration.getBoolean("enable-debug");
         enableDebugTime = configuration.getBoolean("enable-debug-time");
+        enableInformationMessage = configuration.getBoolean("enable-information-message");
     }
 
 }

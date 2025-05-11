@@ -6,6 +6,8 @@ enable-debug: true
 # Useful for identifying bottlenecks and optimizing performance.
 enable-debug-time: true
 
+enable-information-message: true
+
 # Storage:
 # SQLITE - For the launch of the plugin only.
 # HIKARICP - RECOMMENDED - HikariCP is a fast and lightweight JDBC connection pool. It optimizes database connections, ensuring quick acquisition and low latency. This improves performance and reliability, making it ideal for high-demand applications.
