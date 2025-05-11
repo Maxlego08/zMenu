@@ -6,8 +6,8 @@ import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.configuration.Config;
@@ -82,7 +82,6 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
-import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -140,16 +139,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin = plugin;
     }
 
-    public void save(Persist persist) {
-        // TODO
-    }
-
-    public void load(Persist persist) {
-
+    @Override
+    public void load() {
         this.loadButtons();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
-
     }
 
     @Override

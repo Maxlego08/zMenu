@@ -525,4 +525,6 @@ public interface InventoryManager extends Listener {
     ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player);
 
     void sendMessage(CommandSender sender, Message message, Object... args);
+
+    void load();
 }

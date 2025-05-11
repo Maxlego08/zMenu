@@ -13,10 +13,6 @@ public class BackLoader implements ButtonLoader {
     private final Plugin plugin;
     private final InventoryManager manager;
 
-    /**
-     * @param plugin
-     * @param manager
-     */
     public BackLoader(Plugin plugin, InventoryManager manager) {
         super();
         this.plugin = plugin;

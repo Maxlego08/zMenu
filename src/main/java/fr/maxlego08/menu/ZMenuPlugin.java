@@ -200,12 +200,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(this.inventoriesPlayer);
         this.addSimpleListener(this.inventoryManager);
 
-        /* Add Saver */
-        // ToDo
-        /*this.addSave(this.inventoryManager);
-        this.addSave(this.commandManager);
-        this.addSave(this.dataManager);*/
-
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
         this.inventoryManager.registerMaterialLoader(new ArmorLoader());
         if (this.isActive(Plugins.HEADDATABASE)) {
@@ -248,8 +242,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         // ToDo
-        System.out.println("ToDo, rewrok save");
-        // this.getSavers().forEach(saver -> saver.load(this.getPersist()));
+        System.out.println("ToDo, rework save");
+        this.inventoryManager.load();
+        this.commandManager.loadCommands();
+        ((ZDataManager) this.dataManager).load(getPersist()); // ToDo, DATABASE
         this.messageLoader.load();
         this.inventoriesPlayer.load();
 
@@ -326,8 +322,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.vinventoryManager.close();
 
-        // ToDo, update
-        // this.getSavers().forEach(saver -> saver.save(this.getPersist()));
+        ((ZDataManager) this.dataManager).save(getPersist());
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
@@ -423,7 +418,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public MetaUpdater getMetaUpdater() {
-        return null;
+        return this.metaUpdater;
     }
 
     @Override

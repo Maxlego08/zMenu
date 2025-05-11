@@ -15,9 +15,6 @@ public class PluginLoader implements ButtonLoader {
     private final Class<? extends Button> classz;
     private final String name;
 
-    /**
-     * @param plugin
-     */
     public PluginLoader(Plugin plugin, Class<? extends Button> classz, String name) {
         super();
         this.plugin = plugin;

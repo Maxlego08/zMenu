@@ -13,10 +13,6 @@ public class NextLoader implements ButtonLoader {
     private final Plugin plugin;
     private final InventoryManager manager;
 
-    /**
-     * @param plugin
-     * @param manager
-     */
     public NextLoader(Plugin plugin, InventoryManager manager) {
         super();
         this.plugin = plugin;

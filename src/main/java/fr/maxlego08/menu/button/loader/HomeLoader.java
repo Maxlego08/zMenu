@@ -14,10 +14,6 @@ public class HomeLoader implements ButtonLoader {
     private final Plugin plugin;
     private final InventoryManager manager;
 
-    /**
-     * @param plugin
-     * @param manager
-     */
     public HomeLoader(Plugin plugin, InventoryManager manager) {
         super();
         this.plugin = plugin;

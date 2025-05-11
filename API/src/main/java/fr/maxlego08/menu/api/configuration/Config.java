@@ -14,7 +14,7 @@ public class Config {
     // Enable debug time, allows you to display the code execution time in nanosecond, perfect for testing the effectiveness of the plugin.
     public static boolean enableDebugTime = false;
 
-    // Enable information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
+    // Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
     public static boolean enableInformationMessage = true;
 
     // Enable save or load file log in console
