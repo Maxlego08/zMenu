@@ -35,3 +35,109 @@ database-configuration:
   database: zmenu
   # Enable of not the SQL debug mode
   debug: true
+
+# Enable file storage logging.
+# When true, messages will be printed to the console when files are saved or loaded.
+enable-log-storage-file: false
+
+# Enable open inventory messages.
+# If enabled, the command "/zm open <inventory> <player> <display>" will show a message to the player.
+enable-open-message: true
+
+# Enable MiniMessage format.
+# Allows the use of MiniMessage formatting (colors, gradients, etc.). Requires Minecraft 1.17+.
+# More info: https://docs.advntr.dev/minimessage/index.html
+enable-mini-message-format: true
+
+# Enable player command in chat only.
+# Prevents players from executing commands from the console. Useful for "fake" commands not registered in Spigot.
+enable-player-command-in-chat: false
+
+# Enable FastEvent system.
+# Replaces some Bukkit events with a faster alternative. Enables better performance at the cost of API changes.
+# Refer to documentation before enabling this.
+enable-fast-event: false
+
+# Auto-save player data interval (in seconds).
+# Determines how often the player's data is automatically saved.
+seconds-save-player-data: 600
+
+# Auto-save inventories data interval (in seconds).
+# Determines how often the inventories are automatically saved.
+seconds-save-player-inventories: 600
+
+# Enable auto-save inventory files on update.
+# When set to true, any change to a player's inventory is immediately saved to disk.
+auto-save-file-inventory-on-update: true
+
+# Default menu name.
+# The name of the default menu to be opened if no specific one is defined.
+main-menu: "example"
+
+# Use swap offhand key to open main menu.
+# Allows opening the default menu when the player presses the offhand (F) key.
+use-swap-item-off-hand-key-to-open-main-menu: false
+
+# Require shift + offhand key to open menu.
+# The main menu will only open when the player presses shift + offhand key together.
+use-swap-item-off-hand-key-to-open-main-menu-needs-shift: false
+
+# Specific inventories to load at plugin start.
+# Add the paths to specific menus you want loaded manually.
+specify-path-menus: []
+
+# Generate default configuration files.
+# When enabled, the plugin will create default configuration files if they don't exist.
+generate-default-file: true
+
+# Disable double-click detection.
+# Prevents interactions from being triggered by double-clicking.
+disable-double-click-event: true
+
+# Enable anti-dupe system.
+# Automatically detects and prevents item duplication exploits.
+enable-anti-dupe: true
+
+# Notify Discord when a dupe attempt is detected.
+# Sends a message to a specified Discord webhook.
+enable-anti-dupe-discord-notification: false
+
+# Webhook URL for anti-dupe Discord notifications.
+# Replace with your actual Discord webhook URL.
+anti-dupe-discord-webhook-url: "https://discord.com/api/webhooks/<your discord webhook url>"
+
+# Message sent to Discord when a dupe is detected.
+# Placeholders: %player%, %amount%, %itemname%.
+anti-dupe-message: "**%player%** used %amount% %itemname% from zMenu. It has been removed!"
+
+# List of click types supported.
+# You can customize which click types are allowed or handled in your menus.
+all-clicks-type:
+  - MIDDLE
+  - RIGHT
+  - LEFT
+  - SHIFT_RIGHT
+  - SHIFT_LEFT
+
+# Enable caching of ItemStacks.
+# Caching helps improve performance by reducing object creation.
+enable-cache-item-stack: true
+
+# Enable click cooldown.
+# Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.
+enable-cooldown-click: true
+
+# Cooldown duration in milliseconds between clicks.
+cooldown-click-milliseconds: 100
+
+# PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
+# Defines how often placeholders should be refreshed.
+cache-placeholder-api: 20
+
+# Enable PlaceholderAPI caching.
+# Reduces the number of calls to PlaceholderAPI by caching values for a short period.
+enable-cache-placeholder-api: false
+
+# Enable download command.
+# Allows the use of the plugin's download feature (if applicable).
+enable-download-command: false

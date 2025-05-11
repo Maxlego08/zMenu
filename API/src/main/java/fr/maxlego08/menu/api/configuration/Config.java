@@ -1,11 +1,14 @@
 package fr.maxlego08.menu.api.configuration;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Config {
 
@@ -106,6 +109,49 @@ public class Config {
         enableDebug = configuration.getBoolean("enable-debug");
         enableDebugTime = configuration.getBoolean("enable-debug-time");
         enableInformationMessage = configuration.getBoolean("enable-information-message");
+        enableLogStorageFile = configuration.getBoolean("enable-log-storage-file");
+        enableOpenMessage = configuration.getBoolean("enable-open-message");
+        enableMiniMessageFormat = configuration.getBoolean("enable-mini-message-format");
+        enablePlayerCommandInChat = configuration.getBoolean("enable-player-command-in-chat");
+        enableFastEvent = configuration.getBoolean("enable-fast-event");
+
+        secondsSavePlayerData = configuration.getInt("seconds-save-player-data");
+        secondsSavePlayerInventories = configuration.getInt("seconds-save-player-inventories");
+
+        autoSaveFileInventoryOnUpdate = configuration.getBoolean("auto-save-file-inventory-on-update");
+        mainMenu = configuration.getString("main-menu");
+        useSwapItemOffHandKeyToOpenMainMenu = configuration.getBoolean("use-swap-item-off-hand-key-to-open-main-menu");
+        useSwapItemOffHandKeyToOpenMainMenuNeedsShift = configuration.getBoolean("use-swap-item-off-hand-key-to-open-main-menu-needs-shift");
+
+        specifyPathMenus = configuration.getStringList("specify-path-menus");
+        generateDefaultFile = configuration.getBoolean("generate-default-file");
+        disableDoubleClickEvent = configuration.getBoolean("disable-double-click-event");
+
+        enableAntiDupe = configuration.getBoolean("enable-anti-dupe");
+        enableAntiDupeDiscordNotification = configuration.getBoolean("enable-anti-dupe-discord-notification");
+        antiDupeDiscordWebhookUrl = configuration.getString("anti-dupe-discord-webhook-url");
+        antiDupeMessage = configuration.getString("anti-dupe-message");
+
+        allClicksType = configuration.getStringList("all-clicks-type").stream()
+                .map(name -> {
+                    try {
+                        return ClickType.valueOf(name);
+                    } catch (IllegalArgumentException e) {
+                        Bukkit.getLogger().warning("[zMenu] Invalid click type in config: " + name);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        enableCacheItemStack = configuration.getBoolean("enable-cache-item-stack");
+        enableCooldownClick = configuration.getBoolean("enable-cooldown-click");
+        cooldownClickMilliseconds = configuration.getLong("cooldown-click-milliseconds");
+
+        cachePlaceholderAPI = configuration.getLong("cache-placeholder-api");
+        enableCachePlaceholderAPI = configuration.getBoolean("enable-cache-placeholder-api");
+
+        enableDownloadCommand = configuration.getBoolean("enable-download-command");
     }
 
 }
