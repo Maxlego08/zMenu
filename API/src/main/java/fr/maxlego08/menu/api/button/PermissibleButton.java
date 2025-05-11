@@ -48,13 +48,8 @@ public abstract class PermissibleButton extends PerformButton {
         return this.parentButton;
     }
 
-    /**
-     * @param parentButton The parent button
-     * @return button
-     */
-    public PermissibleButton setParentButton(Button parentButton) {
+    public void setParentButton(Button parentButton) {
         this.parentButton = parentButton;
-        return this;
     }
 
     public Button getMasterParentButton() {
@@ -65,7 +60,7 @@ public abstract class PermissibleButton extends PerformButton {
     public List<PermissionPermissible> getOrPermission() {
         return this.orPermissions;
     }
-    
+
     public List<PermissionPermissible> getPermissions() {
         return this.permissions;
     }

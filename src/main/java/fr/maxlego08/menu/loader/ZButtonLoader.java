@@ -6,9 +6,9 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
@@ -229,7 +229,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             button.setPermissions(permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
         }
         String permission = configuration.getString(path + "permission", null);
-        button.getPermissions().add(new ZPermissionPermissible(permission));
+        if (permission != null) {
+            button.getPermissions().add(new ZPermissionPermissible(permission));
+        }
 
         List<String> orPermissions = configuration.getStringList(path + "orPermission");
         if (orPermissions.isEmpty()) {
