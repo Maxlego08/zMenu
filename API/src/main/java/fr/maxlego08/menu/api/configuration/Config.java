@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.configuration;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
@@ -100,8 +101,10 @@ public class Config {
         return instance;
     }
 
-    public void load() {
-        System.out.println("TODO LOAD CONFIG.YML");
+    public void load(FileConfiguration configuration) {
+
+        enableDebug = configuration.getBoolean("enable-debug");
+        enableDebugTime = configuration.getBoolean("enable-debug-time");
     }
 
 }

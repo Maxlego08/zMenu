@@ -142,7 +142,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.preEnable();
 
         this.saveDefaultConfig();
-        Config.getInstance().load();
+        Config.getInstance().load(getConfig());
 
         this.loadMeta();
 

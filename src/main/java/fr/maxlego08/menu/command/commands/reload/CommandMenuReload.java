@@ -28,7 +28,8 @@ public class CommandMenuReload extends VCommand {
 
         plugin.loadGlobalPlaceholders();
         plugin.getMessageLoader().load();
-        Config.getInstance().load();
+        plugin.reloadConfig();
+        Config.getInstance().load(plugin.getConfig());
 
         plugin.getVInventoryManager().close();
         plugin.getPatternManager().loadPatterns();

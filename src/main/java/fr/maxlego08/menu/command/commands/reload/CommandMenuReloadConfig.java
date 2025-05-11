@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.command.commands.reload;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
@@ -19,7 +19,8 @@ public class CommandMenuReloadConfig extends VCommand {
     protected CommandType perform(ZMenuPlugin plugin) {
 
         plugin.getMessageLoader().load();
-        Config.getInstance().load();
+        plugin.reloadConfig();
+        Config.getInstance().load(plugin.getConfig());
 
         plugin.getPatternManager().loadPatterns();
 
