@@ -319,14 +319,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new ItemPermissibleLoader(this.plugin));
         buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new PlayerNamePermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
         if (this.plugin.isEnable(Plugins.JOBS)) {
             buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
         }
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
-        }
-        if (this.plugin.isEnable(Plugins.VAULT)) {
-            buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
         }
 
         // Load actions
@@ -350,10 +348,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new DiscordLoader());
         buttonManager.registerAction(new DiscordComponentV2Loader());
         buttonManager.registerAction(new TeleportLoader(this.plugin));
-        if (this.plugin.isEnable(Plugins.VAULT)) {
-            buttonManager.registerAction(new CurrencyWithdrawLoader());
-            buttonManager.registerAction(new CurrencyDepositLoader());
-        }
+        buttonManager.registerAction(new CurrencyWithdrawLoader());
+        buttonManager.registerAction(new CurrencyDepositLoader());
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
@@ -365,13 +361,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
-        buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin, this, this.plugin.getCommandManager()));
-        buttonManager.register(new BackLoader(this.plugin, this));
-        buttonManager.register(new HomeLoader(this.plugin, this));
-        buttonManager.register(new NextLoader(this.plugin, this));
-        buttonManager.register(new PreviousLoader(this.plugin, this));
-        buttonManager.register(new MainMenuLoader(this.plugin, this));
-        buttonManager.register(new JumpLoader(this.plugin, this));
+        buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin));
+        buttonManager.register(new BackLoader(this.plugin));
+        buttonManager.register(new HomeLoader(this.plugin));
+        buttonManager.register(new NextLoader(this.plugin));
+        buttonManager.register(new PreviousLoader(this.plugin));
+        buttonManager.register(new MainMenuLoader(this.plugin));
+        buttonManager.register(new JumpLoader(this.plugin));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());
@@ -392,7 +388,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.playerMaxPages.clear();
         this.playerPages.clear();
 
-        // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {
             folder.mkdir();

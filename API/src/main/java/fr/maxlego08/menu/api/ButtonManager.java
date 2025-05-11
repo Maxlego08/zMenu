@@ -63,14 +63,6 @@ public interface ButtonManager {
     Collection<ButtonLoader> getLoaders(Plugin plugin);
 
     /**
-     * Retrieves a {@link ButtonLoader} based on the class type of the associated {@link Button}.
-     *
-     * @param classz The class type of {@link Button}.
-     * @return An {@link Optional} containing the {@link ButtonLoader}, if found.
-     */
-    Optional<ButtonLoader> getLoader(Class<? extends Button> classz);
-
-    /**
      * Retrieves a {@link ButtonLoader} based on the name of the associated {@link Button}.
      *
      * @param name The name of the {@link ButtonLoader}.

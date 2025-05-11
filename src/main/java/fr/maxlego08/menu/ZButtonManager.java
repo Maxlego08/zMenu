@@ -3,13 +3,13 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
+import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,12 +39,10 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public void register(ButtonLoader button) {
 
-        Optional<ButtonLoader> optional = this.getLoader(button.getButton());
+        var optional = loaders.entrySet().stream().flatMap(e -> e.getValue().stream()).filter(e -> e.getName().equalsIgnoreCase(button.getName())).findFirst();
         if (optional.isPresent()) {
-            ButtonLoader loader = optional.get();
-            if (loader.getName().equals(button.getName())) {
-                throw new ButtonAlreadyRegisterException("Button " + button.getButton().getName() + " was already register in the " + loader.getPlugin().getName());
-            }
+            var loader = optional.get();
+            throw new ButtonAlreadyRegisterException("Button " + button.getName() + " was already register in the " + loader.getPlugin().getName());
         }
 
         Plugin plugin = button.getPlugin();
@@ -76,11 +74,6 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public Collection<ButtonLoader> getLoaders(Plugin plugin) {
         return this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
-    }
-
-    @Override
-    public Optional<ButtonLoader> getLoader(Class<? extends Button> classz) {
-        return this.getLoaders().stream().filter(e -> e.getButton().isAssignableFrom(classz)).findFirst();
     }
 
     @Override

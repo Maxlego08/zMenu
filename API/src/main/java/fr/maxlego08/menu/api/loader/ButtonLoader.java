@@ -41,7 +41,7 @@ public abstract class ButtonLoader {
      * @param slotsAsString List of slot strings
      * @return List of slots as integers
      */
-    protected List<Integer> loadSlot(List<String> slotsAsString) {
+    public static List<Integer> loadSlot(List<String> slotsAsString) {
         List<Integer> slots = new ArrayList<>();
         if (!slotsAsString.isEmpty()) {
             for (String line : slotsAsString) {
