@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.ItemPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;

@@ -5,71 +5,76 @@ import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The PermissibleButton interface manages permissions for buttons.
- */
-public interface PermissibleButton {
+public abstract class PermissibleButton extends PerformButton {
+
+    private List<PermissionPermissible> permissions = new ArrayList<>();
+    private List<PermissionPermissible> orPermissions = new ArrayList<>();
+    private Button elseButton;
+    private Button parentButton;
+
+    public Button getElseButton() {
+        return this.elseButton;
+    }
+
+    public void setElseButton(Button elseButton) {
+        this.elseButton = elseButton;
+    }
+
+    public boolean hasPermission() {
+        return !this.permissions.isEmpty() || !this.orPermissions.isEmpty();
+    }
+
+    public boolean hasElseButton() {
+        return this.elseButton != null;
+    }
+
+    public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
+
+        if (!this.orPermissions.isEmpty()) {
+            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player, null, inventoryEngine, placeholders));
+        }
+
+        if (!this.permissions.isEmpty()) {
+            return this.permissions.stream().allMatch(p -> p.hasPermission(player, null, inventoryEngine, placeholders));
+        }
+
+        return true;
+    }
+
+    public Button getParentButton() {
+        return this.parentButton;
+    }
 
     /**
-     * Returns the button that will be used if the permission condition does not pass.
-     *
-     * @return The button to be used if the permission condition fails.
+     * @param parentButton The parent button
+     * @return button
      */
-    Button getElseButton();
+    public PermissibleButton setParentButton(Button parentButton) {
+        this.parentButton = parentButton;
+        return this;
+    }
 
-    /**
-     * Returns the parent button.
-     *
-     * @return The parent button.
-     */
-    Button getParentButton();
+    public Button getMasterParentButton() {
+        Button button = this.getParentButton();
+        return button == null ? (Button) this : button.getMasterParentButton();
+    }
 
-    /**
-     * Returns the real parent button.
-     *
-     * @return The real parent button.
-     */
-    Button getMasterParentButton();
+    public List<PermissionPermissible> getOrPermission() {
+        return this.orPermissions;
+    }
+    
+    public List<PermissionPermissible> getPermissions() {
+        return this.permissions;
+    }
 
-    /**
-     * Returns a list of permissions that the player must have.
-     *
-     * @return The list of required permissions.
-     */
-    List<PermissionPermissible> getPermissions();
+    public void setPermissions(List<PermissionPermissible> permissions) {
+        this.permissions = permissions;
+    }
 
-    /**
-     * Returns a list of permissions. The player must have at least one permission from the list.
-     *
-     * @return The list of optional permissions.
-     */
-    List<PermissionPermissible> getOrPermission();
-
-    /**
-     * Checks if the player has the required permissions.
-     *
-     * @return `true` if the player has the required permissions, otherwise `false`.
-     */
-    boolean hasPermission();
-
-    /**
-     * Checks if there is an alternative button to display when the permission condition fails.
-     *
-     * @return `true` if there is an alternative button, otherwise `false`.
-     */
-    boolean hasElseButton();
-
-
-    /**
-     * Checks if the player has the required permission to interact with the button.
-     *
-     * @param player       The player who will be checked for permission.
-     * @param inventory    The inventory associated with the button.
-     * @param placeholders The placeholders
-     * @return `true` if the player has the required permission, otherwise `false`.
-     */
-    boolean checkPermission(Player player, InventoryEngine inventory, Placeholders placeholders);
-
+    public void setOrPermissions(List<PermissionPermissible> orPermissions) {
+        this.orPermissions = orPermissions;
+    }
 }

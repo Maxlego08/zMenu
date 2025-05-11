@@ -6,11 +6,10 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.buttons.ZButton;
-import fr.maxlego08.menu.api.buttons.ZPermissibleButton;
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
@@ -104,7 +103,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
-        ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
+        Button button = (Button) loader.load(configuration, path, defaultButtonValue);
         button.setPlugin(this.plugin);
 
         int slot;
@@ -260,7 +259,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             button.setElseButton(elseButton);
 
             if (elseButton != null) {
-                ZPermissibleButton elsePermissibleButton = (ZPermissibleButton) elseButton;
+                PermissibleButton elsePermissibleButton = (PermissibleButton) elseButton;
                 elsePermissibleButton.setParentButton(button);
             }
         }
@@ -361,7 +360,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadClickRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+    private void loadClickRequirements(Button button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
         ConfigurationSection section = null;
         String sectionString = "";
@@ -389,7 +388,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param path          current path in configuration
      * @throws InventoryException if the configuration does not contain the "view_requirement" section
      */
-    private void loadViewRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+    private void loadViewRequirements(Button button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         String requirementPath = configuration.isConfigurationSection(path + "view_requirement.") ? "view_requirement." : configuration.isConfigurationSection(path + "view-requirement.") ? "view-requirement." : null;
         if (requirementPath == null) return;
@@ -405,7 +404,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadRefreshRequirements(ZButton button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+    private void loadRefreshRequirements(Button button, YamlConfiguration configuration, String path, File file) throws InventoryException {
         Loader<RefreshRequirement> loader = new RefreshRequiementLoader(this.plugin);
         String requirementPath = configuration.isConfigurationSection(path + "refresh_requirements.") ? "refresh_requirements." : configuration.isConfigurationSection(path + "refresh-requirements.") ? "refresh-requirements." : null;
         if (requirementPath == null) return;

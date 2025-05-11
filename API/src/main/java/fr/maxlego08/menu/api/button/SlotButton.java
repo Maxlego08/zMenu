@@ -1,26 +1,26 @@
 package fr.maxlego08.menu.api.button;
 
 import java.util.Collection;
+import java.util.List;
 
-/**
- * <p>The SlotButton interface allows a single button to occupy multiple slots in an inventory.</p>
- */
-public interface SlotButton {
+public abstract class SlotButton {
 
-    /**
-     * Returns the list of slots where the button will be placed.
-     *
-     * @return The collection of slots.
-     */
-    Collection<Integer> getSlots();
+    protected List<Integer> slots;
+    protected int page;
 
-    /**
-     * Returns the page of the button in the inventory. The page is
-     * used to determine which elements should be displayed when the
-     * button is placed in an inventory that supports pagination.
-     *
-     * @return The page of the button.
-     */
-    int getPage();
+    public Collection<Integer> getSlots() {
+        return this.slots;
+    }
 
+    public void setSlots(List<Integer> slots) {
+        this.slots = slots;
+    }
+    
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 }

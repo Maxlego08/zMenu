@@ -19,6 +19,6 @@ import fr.maxlego08.menu.api.button.Button;
  * include basic navigation, confirmation actions, or triggers for non-complex operations.
  * </p>
  */
-public interface NoneButton extends Button {
+public abstract class NoneButton extends Button {
 
 }

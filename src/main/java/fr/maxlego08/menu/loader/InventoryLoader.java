@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;

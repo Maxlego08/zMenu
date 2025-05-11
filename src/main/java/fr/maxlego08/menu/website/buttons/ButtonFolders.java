@@ -4,7 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.website.Folder;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.api.engine.Pagination;
@@ -15,7 +15,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 import java.util.Optional;
 
-public class ButtonFolders extends ZButton {
+public class ButtonFolders extends Button {
 
     private final ZMenuPlugin plugin;
 

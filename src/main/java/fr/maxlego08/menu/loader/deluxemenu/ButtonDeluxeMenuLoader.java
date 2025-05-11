@@ -4,9 +4,8 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
@@ -61,7 +60,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
-        ZButton button = (ZButton) loader.load(configuration, path, defaultButtonValue);
+        Button button = (Button) loader.load(configuration, path, defaultButtonValue);
         button.setPlugin(this.plugin);
 
         int slot;

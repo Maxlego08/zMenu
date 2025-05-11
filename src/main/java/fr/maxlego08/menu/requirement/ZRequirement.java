@@ -6,7 +6,6 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 

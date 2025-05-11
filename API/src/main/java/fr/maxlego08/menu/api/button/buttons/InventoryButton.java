@@ -16,7 +16,7 @@ import java.util.List;
  * the behavior or content of the inventory to be opened.
  * </p>
  */
-public interface InventoryButton extends Button {
+public abstract class InventoryButton extends Button {
 
     /**
      * Returns the unique identifier of the inventory to be opened when this button is interacted with.
@@ -25,7 +25,7 @@ public interface InventoryButton extends Button {
      *
      * @return The unique identifier of the target inventory as a {@code String}.
      */
-    String getInventory();
+    public abstract String getInventory();
 
     /**
      * Provides a list of arguments that may be required for opening the inventory.
@@ -35,7 +35,7 @@ public interface InventoryButton extends Button {
      *
      * @return A list of {@code String} arguments that are associated with the inventory to be opened.
      */
-    List<String> getArguments();
+    public abstract List<String> getArguments();
 
     /**
      * Retrieves the page number of the inventory to be opened if the inventory supports pagination.
@@ -44,7 +44,7 @@ public interface InventoryButton extends Button {
      *
      * @return The page number as an {@code int} indicating which page of the inventory should be shown.
      */
-    int getToPage();
+    public abstract int getToPage();
 
 }
 

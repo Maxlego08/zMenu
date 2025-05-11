@@ -3,7 +3,6 @@ package fr.maxlego08.menu.button.loader;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.buttons.InventoryButton;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZInventoryButton;
@@ -27,7 +26,7 @@ public class InventoryLoader implements ButtonLoader {
 
     @Override
     public Class<? extends Button> getButton() {
-        return InventoryButton.class;
+        return fr.maxlego08.menu.api.button.buttons.InventoryButton.class;
     }
 
     @Override

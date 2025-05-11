@@ -1,22 +1,21 @@
 package fr.maxlego08.menu.button.loader;
 
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 public class NoneLoader implements ButtonLoader {
 
     private final Plugin plugin;
-    private final Class<? extends ZButton> classz;
+    private final Class<? extends Button> classz;
     private final String name;
 
     /**
      * @param plugin
      */
-    public NoneLoader(Plugin plugin, Class<? extends ZButton> classz, String name) {
+    public NoneLoader(Plugin plugin, Class<? extends Button> classz, String name) {
         super();
         this.plugin = plugin;
         this.classz = classz;

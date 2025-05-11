@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.ButtonOption;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.configuration.Config;
@@ -860,7 +860,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public ItemStack postProcessSkullItemStack(ItemStack itemStack, ZButton button, Player player) {
+    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
         String name = this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName()));
 
         if (!isMinecraftName(name)) {

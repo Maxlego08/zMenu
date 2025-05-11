@@ -19,6 +19,6 @@ import fr.maxlego08.menu.api.button.Button;
  * ensuring a seamless and intuitive user experience.
  * </p>
  */
-public interface NextButton extends Button {
+public abstract class NextButton extends Button {
 
 }

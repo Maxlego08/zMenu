@@ -3,7 +3,7 @@ package fr.maxlego08.menu.website.buttons;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.utils.builder.ItemBuilder;
 import org.bukkit.Material;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 
-public class ButtonBuilderRefresh extends ZButton {
+public class ButtonBuilderRefresh extends Button {
 
     private final ZMenuPlugin plugin;
     private boolean canUse = true;

@@ -3,7 +3,6 @@ package fr.maxlego08.menu.hooks.luckperms;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.permissible.LuckpermPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import net.luckperms.api.LuckPerms;

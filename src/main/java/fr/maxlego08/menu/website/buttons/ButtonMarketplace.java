@@ -4,7 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.website.Resource;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
 import fr.maxlego08.menu.api.engine.Pagination;
@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ButtonMarketplace extends ZButton {
+public class ButtonMarketplace extends Button {
 
     private final ZMenuPlugin plugin;
 

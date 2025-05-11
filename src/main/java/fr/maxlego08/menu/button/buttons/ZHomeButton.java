@@ -11,10 +11,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZHomeButton extends ZBackButton implements HomeButton {
+// ToDo, vérifier le bon fonctionnement de cette class parce que je suis pas sur que c'est une bonne idée de stocker la variable pour tout le monde
+
+public class ZHomeButton extends HomeButton {
+
+    private final InventoryManager inventoryManager;
+    protected Inventory inventory;
 
     public ZHomeButton(InventoryManager inventoryManager) {
-        super(inventoryManager);
+        this.inventoryManager = inventoryManager;
     }
 
     @Override

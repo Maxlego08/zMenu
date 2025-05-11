@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 
 import java.util.List;

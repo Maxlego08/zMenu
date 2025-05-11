@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.button.buttons;
 
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 
-public class ZNoneButton extends ZButton {
+public class ZNoneButton extends Button {
 
 }

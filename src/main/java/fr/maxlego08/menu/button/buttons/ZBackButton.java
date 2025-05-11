@@ -5,13 +5,15 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.BackButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.List;
 
-public class ZBackButton extends ZButton implements BackButton {
+// ToDo, vérifier le bon fonctionnement de cette class parce que je suis pas sur que c'est une bonne idée de stocker la variable pour tout le monde
+
+public class ZBackButton extends BackButton {
 
     protected final InventoryManager inventoryManager;
     protected Inventory inventory;

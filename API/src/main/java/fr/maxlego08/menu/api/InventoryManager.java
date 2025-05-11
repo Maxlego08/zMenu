@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.button.ButtonOption;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -522,7 +522,7 @@ public interface InventoryManager extends Listener {
 
     List<InventoryListener> getInventoryListeners();
 
-    ItemStack postProcessSkullItemStack(ItemStack itemStack, ZButton button, Player player);
+    ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player);
 
     void sendMessage(CommandSender sender, Message message, Object... args);
 }

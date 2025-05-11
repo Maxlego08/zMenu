@@ -3,11 +3,10 @@ package fr.maxlego08.menu.loader.deluxemenu;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.buttons.ZButton;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
@@ -83,7 +82,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
             Button lastButton = queue.poll(); // On récupère le dernier bouton
             while (!queue.isEmpty()) {
                 Button currentButton = queue.poll();
-                ((ZButton) currentButton).setElseButton(lastButton);
+                ((Button) currentButton).setElseButton(lastButton);
                 lastButton = currentButton;
             }
 

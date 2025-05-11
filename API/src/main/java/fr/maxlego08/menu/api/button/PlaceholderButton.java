@@ -1,28 +1,42 @@
 package fr.maxlego08.menu.api.button;
 
-import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The `PlaceholderButton` interface allows you to perform checks using placeholders. It requires the PlaceholderAPI plugin
- * (available at: <a href="https://www.spigotmc.org/resources/placeholderapi.6245/">PlaceholderAPI</a>).
- */
-public interface PlaceholderButton {
+public abstract class PlaceholderButton extends PermissibleButton {
 
-    /**
-     * Returns the list of placeholders used in the button.
-     *
-     * @return The list of placeholder permissions.
-     */
-    List<PlaceholderPermissible> getPlaceholders();
+    private List<PlaceholderPermissible> placeholders = new ArrayList<>();
 
-    /**
-     * Checks if the button uses any placeholders.
-     *
-     * @return `true` if placeholders are used, otherwise `false`.
-     */
-    boolean hasPlaceHolder();
+    public List<PlaceholderPermissible> getPlaceholders() {
+        return this.placeholders;
+    }
 
+    public void setPlaceholders(List<PlaceholderPermissible> placeholders) {
+        this.placeholders = placeholders;
+    }
+
+    public boolean hasPlaceHolder() {
+        return this.placeholders != null && !this.placeholders.isEmpty();
+    }
+
+    @Override
+    public boolean hasPermission() {
+        return this.hasPlaceHolder() || super.hasPermission();
+    }
+
+    @Override
+    public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
+        // First check if player has permission
+        if (!super.checkPermission(player, inventoryEngine, placeholders)) {
+            return false;
+        }
+
+        // Then we will check if the player to all valid placeholders
+        return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player, null, inventoryEngine, placeholders));
+    }
 }
