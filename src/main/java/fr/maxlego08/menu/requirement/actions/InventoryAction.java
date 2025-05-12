@@ -4,8 +4,9 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 
@@ -36,7 +37,7 @@ public class InventoryAction extends ActionHelper {
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
 
-        inventory.getPlugin().getScheduler().runTask(null, () -> {
+        inventory.getPlugin().getScheduler().runNextTick(w -> {
 
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
@@ -53,9 +54,7 @@ public class InventoryAction extends ActionHelper {
                 this.inventoryManager.openInventory(player, optional.get(), page, oldInventories);
 
             } else {
-                // ToDo
-                System.out.println("TODO, update inventory not found message");
-                // message(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }

@@ -1,5 +1,7 @@
 package fr.maxlego08.menu;
 
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -11,7 +13,7 @@ import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.website.WebsiteManager;
@@ -48,8 +50,7 @@ import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.save.MessageLoader;
-import fr.maxlego08.menu.scheduler.BukkitScheduler;
-import fr.maxlego08.menu.scheduler.FoliaScheduler;
+import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
@@ -92,6 +93,7 @@ import java.util.Optional;
 public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     private static ZMenuPlugin instance;
+    private final StorageManager storageManager = new ZStorageManager(this);
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
@@ -101,23 +103,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
-    // private final PacketUtils packetUtils = new PacketUtils(this);
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private CommandMenu commandMenu;
-    private ZScheduler scheduler;
+    private PlatformScheduler scheduler;
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
-
     private MetaUpdater metaUpdater = new ClassicMeta();
-
-    public static boolean isFolia() {
-        try {
-            Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
+    private FoliaLib foliaLib;
+    // private final PacketUtils packetUtils = new PacketUtils(this);
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -134,7 +127,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         instance = this;
         // this.packetUtils.onEnable();
 
-        this.scheduler = isFolia() ? new FoliaScheduler(this) : new BukkitScheduler(this);
+        this.scheduler = (this.foliaLib = new FoliaLib(this)).getScheduler();
 
         this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
@@ -143,6 +136,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.saveDefaultConfig();
         Config.getInstance().load(getConfig());
+        this.storageManager.loadDatabase();
+        this.addListener(this.storageManager);
 
         this.loadMeta();
 
@@ -266,8 +261,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
                 Player player = playeofflinePlayer.getPlayer();
                 if (player == null) return "0";
                 InventoryHolder inventoryHolder = CompatibilityUtil.getTopInventory(player).getHolder();
-                if (inventoryHolder instanceof InventoryDefault) {
-                    InventoryDefault inventoryDefault = (InventoryDefault) inventoryHolder;
+                if (inventoryHolder instanceof InventoryDefault inventoryDefault) {
                     return String.valueOf(inventoryDefault.getOldInventories().size());
                 }
             }
@@ -293,12 +287,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         if (Config.enableAntiDupe) {
-            this.addListener(new DupeListener(this.scheduler, this.dupeManager));
-        }
-
-        if (Config.enableDebug) {
-            Logger.info("Scheduler: " + this.scheduler);
-            Logger.info("DupeManager: " + this.dupeManager);
+            this.addListener(new DupeListener(this.dupeManager));
         }
 
         Logger.info("");
@@ -320,7 +309,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.preDisable();
 
-        this.vinventoryManager.close();
+        if (this.vinventoryManager != null) this.vinventoryManager.close();
 
         ((ZDataManager) this.dataManager).save(getPersist());
         if (Token.token != null) {
@@ -368,6 +357,16 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandManager;
     }
 
+    @Override
+    public StorageManager getStorageManager() {
+        return this.storageManager;
+    }
+
+    @Override
+    public boolean isFolia() {
+        return this.foliaLib.isFolia();
+    }
+
     /**
      * Returns the class that will manage the website
      *
@@ -392,7 +391,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     @Override
-    public ZScheduler getScheduler() {
+    public PlatformScheduler getScheduler() {
         return scheduler;
     }
 

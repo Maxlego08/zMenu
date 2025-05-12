@@ -1,7 +1,8 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.button.ButtonOption;
+import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -11,7 +12,6 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import org.bukkit.OfflinePlayer;
@@ -410,7 +410,7 @@ public interface InventoryManager extends Listener {
      *
      * @return The ZScheduler associated with this button option.
      */
-    ZScheduler getScheduler();
+    PlatformScheduler getScheduler();
 
     /**
      * Registers a new button option class with the plugin.

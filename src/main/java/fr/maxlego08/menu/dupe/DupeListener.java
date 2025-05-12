@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.dupe;
 
+import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.dupe.DupeItem;
 import fr.maxlego08.menu.api.dupe.DupeManager;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -18,11 +18,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class DupeListener implements Listener {
 
-    private final ZScheduler schedule;
     private final DupeManager dupeManager;
 
-    public DupeListener(ZScheduler schedule, DupeManager dupeManager) {
-        this.schedule = schedule;
+    public DupeListener(DupeManager dupeManager) {
         this.dupeManager = dupeManager;
     }
 

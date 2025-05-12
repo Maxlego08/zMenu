@@ -1,19 +1,19 @@
 package fr.maxlego08.menu.inventory.inventories;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
+import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.api.engine.ItemButton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -70,8 +71,8 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         InventoryManager manager = this.plugin.getInventoryManager();
         manager.setPlayerPage(player, page, maxPage);
 
-        ZScheduler scheduler = this.plugin.getScheduler();
-        Runnable runnable = () -> {
+        var scheduler = this.plugin.getScheduler();
+        Consumer<WrappedTask> runnable = w -> {
             Placeholders placeholders = new Placeholders();
             this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
 
@@ -92,19 +93,17 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             this.buttons.forEach(this::buildButton);
 
             if (isAsync) {
-                scheduler.runTask(player.getLocation(), () -> {
-                    player.openInventory(this.getSpigotInventory());
-                });
+                scheduler.runAtLocation(player.getLocation(), w2 -> player.openInventory(this.getSpigotInventory()));
             }
         };
 
         if (isAsync) {
 
-            scheduler.runTaskAsynchronously(runnable);
+            scheduler.runAsync(runnable);
             return InventoryResult.SUCCESS_ASYNC;
         } else {
 
-            runnable.run();
+            runnable.accept(null);
             return InventoryResult.SUCCESS;
         }
     }
@@ -178,19 +177,19 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
         if (button.hasSpecialRender()) {
 
-            Runnable runnable = () -> button.onRender(player, this);
-            if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
-            else runnable.run();
+            Consumer<WrappedTask> runnable = w -> button.onRender(player, this);
+            if (isAsync) plugin.getScheduler().runAtLocation(player.getLocation(), runnable);
+            else runnable.accept(null);
 
         } else {
 
-            Runnable runnable = () -> {
+            Consumer<WrappedTask> runnable = w -> {
                 int slot = button.getRealSlot(button.isPlayerInventory() ? 36 : this.inventory.size(), this.page);
                 this.displayFinalButton(button, slot);
             };
 
-            if (isAsync) plugin.getScheduler().runTask(player.getLocation(), runnable);
-            else runnable.run();
+            if (isAsync) plugin.getScheduler().runAtLocation(player.getLocation(), runnable);
+            else runnable.accept(null);
         }
     }
 

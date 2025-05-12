@@ -4,11 +4,12 @@ import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.button.loader.NoneLoader;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
 import fr.maxlego08.menu.website.buttons.ButtonFolderBack;
 import fr.maxlego08.menu.website.buttons.ButtonFolderNext;
@@ -19,7 +20,6 @@ import fr.maxlego08.menu.website.buttons.ButtonInventoryNext;
 import fr.maxlego08.menu.website.buttons.ButtonInventoryPrevious;
 import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
 import fr.maxlego08.menu.website.request.HttpRequest;
-import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.command.CommandSender;
@@ -154,7 +154,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
                 this.resources = maps.stream().map(Resource::new).collect(Collectors.toList());
 
-                this.plugin.getScheduler().runTask(player.getLocation(), () -> openMarketplaceInventory(player));
+                this.plugin.getScheduler().runAtLocation(player.getLocation(), w -> openMarketplaceInventory(player));
             });
         }
     }
@@ -255,7 +255,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
                 this.baseFolderId = this.folders.stream().filter(e -> e.getParentId() == -1).map(Folder::getId).findFirst().orElse(-1);
 
-                this.plugin.getScheduler().runTask(player.getLocation(), () -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
+                this.plugin.getScheduler().runAtLocation(player.getLocation(), w -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
             } else {
                 message(this.plugin, player, Message.WEBSITE_MARKETPLACE_ERROR);
             }
@@ -363,7 +363,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void downloadFromUrl(CommandSender sender, String baseUrl, boolean force) {
 
         message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
-        plugin.getScheduler().runTaskAsynchronously(() -> {
+        plugin.getScheduler().runAsync(w -> {
 
             try {
                 String finalUrl = followRedirection(baseUrl);

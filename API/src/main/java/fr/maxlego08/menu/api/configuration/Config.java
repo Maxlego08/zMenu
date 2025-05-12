@@ -77,6 +77,7 @@ public class Config {
     public static long cachePlaceholderAPI = 20;
     public static boolean enableCachePlaceholderAPI = false;
     public static boolean enableDownloadCommand = false;
+    public static boolean enablePlayerOpenInventoryLogs = true;
 
     /**
      * static Singleton instance.
@@ -152,6 +153,7 @@ public class Config {
         enableCachePlaceholderAPI = configuration.getBoolean("enable-cache-placeholder-api");
 
         enableDownloadCommand = configuration.getBoolean("enable-download-command");
+        enablePlayerOpenInventoryLogs = configuration.getBoolean("enable-player-open-inventory-logs");
     }
 
 }

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -7,7 +8,7 @@ import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
+import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 public interface MenuPlugin extends Plugin {
 
-    ZScheduler getScheduler();
+    PlatformScheduler getScheduler();
 
     InventoryManager getInventoryManager();
 
@@ -51,4 +52,8 @@ public interface MenuPlugin extends Plugin {
     MetaUpdater getMetaUpdater();
 
     CommandManager getCommandManager();
+
+    StorageManager getStorageManager();
+
+    boolean isFolia();
 }

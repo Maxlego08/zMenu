@@ -1,10 +1,9 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
-import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfiguration;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordWebhook;
 import org.bukkit.entity.Player;
@@ -20,11 +19,11 @@ public class DiscordAction extends ActionHelper {
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
 
-        ZScheduler scheduler = inventory.getPlugin().getScheduler();
+        var scheduler = inventory.getPlugin().getScheduler();
         DiscordWebhook discordWebhook = new DiscordWebhook(configuration.getWebhookUrl());
         configuration.apply(text -> text == null ? null : player == null ? text : papi(placeholders.parse(text), player), discordWebhook);
 
-        scheduler.runTaskAsynchronously(() -> {
+        scheduler.runAsync(w -> {
             try {
                 discordWebhook.execute();
             } catch (Exception exception) {

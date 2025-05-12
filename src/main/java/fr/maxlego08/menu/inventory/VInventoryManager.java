@@ -1,15 +1,15 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
-import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
-import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
+import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
+import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.listener.ListenerAdapter;
+import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -211,7 +211,7 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            this.plugin.getScheduler().runTaskLater(player.getLocation(), 20, () -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()));
+            this.plugin.getScheduler().runAtLocationLater(player.getLocation(), w -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
         }
     }
 

@@ -40,7 +40,7 @@ public class HttpRequest {
     }
 
     public void submit(ZMenuPlugin plugin, Consumer<Response> consumer) {
-        plugin.getScheduler().runTaskAsynchronously(() -> {
+        plugin.getScheduler().runAsync(w -> {
             Map<String, Object> map = new HashMap<>();
             HttpURLConnection connection;
             int responseCode = -1;
@@ -90,7 +90,7 @@ public class HttpRequest {
     }
 
     public void submitForFileDownload(ZMenuPlugin plugin, File fileOut, Consumer<Boolean> consumer) {
-        plugin.getScheduler().runTaskAsynchronously(() -> {
+        plugin.getScheduler().runAsync(w -> {
             HttpURLConnection connection;
 
             try {

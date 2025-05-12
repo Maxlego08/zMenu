@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -68,10 +69,10 @@ public class VersionChecker extends ZUtils implements Listener {
     public void onConnect(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (!useLastVersion && event.getPlayer().hasPermission("zplugin.notifs")) {
-            plugin.getScheduler().runTaskLater(player.getLocation(), 20 * 2, () -> {
+            plugin.getScheduler().runAtLocationLater(player.getLocation(), () -> {
                 message(this.plugin, player, "&cYou do not use the latest version of the plugin! Thank you for taking the latest version to avoid any risk of problem!");
                 message(this.plugin, player, "&fDownload plugin here: &a" + String.format(URL_RESOURCE, pluginID));
-            });
+            }, 20 * 2);
         }
     }
 
@@ -81,10 +82,10 @@ public class VersionChecker extends ZUtils implements Listener {
      * @param consumer - Do something after
      */
     public void getVersion(Consumer<String> consumer) {
-        plugin.getScheduler().runTaskAsynchronously(() -> {
+        plugin.getScheduler().runAsync(w -> {
             final String apiURL = String.format(URL_API, this.pluginID);
             try {
-                URL url = new URL(apiURL);
+                URL url = URI.create(apiURL).toURL();
                 URLConnection hc = url.openConnection();
                 hc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
                 Scanner scanner = new Scanner(hc.getInputStream());

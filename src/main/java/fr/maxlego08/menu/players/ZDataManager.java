@@ -115,7 +115,7 @@ public class ZDataManager implements DataManager {
     @Override
     public void autoSave() {
         if (System.currentTimeMillis() > this.lastSave) {
-            this.plugin.getScheduler().runTaskAsynchronously(() -> {
+            this.plugin.getScheduler().runAsync(w -> {
                 this.save(this.plugin.getPersist());
                 this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000L);
             });

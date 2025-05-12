@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.button;
 
+import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -113,7 +113,7 @@ public abstract class PerformButton extends SlotButton {
     }
 
     public void execute(MenuPlugin plugin, ClickType type, Placeholders placeholders, Player player) {
-        ZScheduler scheduler = plugin.getScheduler();
+        var scheduler = plugin.getScheduler();
 
         if (type.isRightClick()) {
             this.execute(plugin, player, this.rightCommands, scheduler, placeholders, player);
@@ -139,10 +139,10 @@ public abstract class PerformButton extends SlotButton {
      * @param plugin    the plugin
      * @param player    the Player for whom the commands are executed
      * @param strings   the list of commands to be executed
-     * @param scheduler the ZScheduler used to schedule the command executions
+     * @param scheduler the PlatformScheduler used to schedule the command executions
      * @param executor  the CommandSender executing the commands
      */
-    private void execute(MenuPlugin plugin, Player player, List<String> strings, ZScheduler scheduler, Placeholders placeholders, CommandSender executor) {
+    private void execute(MenuPlugin plugin, Player player, List<String> strings, PlatformScheduler scheduler, Placeholders placeholders, CommandSender executor) {
         strings.forEach(command -> {
             command = placeholders.parse(command.replace("%player%", player.getName()));
             try {
@@ -152,9 +152,9 @@ public abstract class PerformButton extends SlotButton {
 
                     String finalCommand = command;
                     Runnable runnable = () -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
-                    if (scheduler.isFolia()) {
-                        if (executor instanceof Player) scheduler.runTask(((Player) executor).getLocation(), runnable);
-                        else scheduler.runTask(null, runnable);
+                    if (plugin.isFolia()) {
+                        if (executor instanceof Player) scheduler.runAtLocation(((Player) executor).getLocation(), w -> runnable.run());
+                        else scheduler.runNextTick(w -> runnable.run());
                     } else runnable.run();
                 }
             } catch (Exception exception) {

@@ -11,6 +11,7 @@ enable-information-message: true
 # Storage:
 # SQLITE - For the launch of the plugin only.
 # HIKARICP - RECOMMENDED - HikariCP is a fast and lightweight JDBC connection pool. It optimizes database connections, ensuring quick acquisition and low latency. This improves performance and reliability, making it ideal for high-demand applications.
+# NONE - If you do not need a database, you can disable it.
 #
 # We advise you to use HIKARICP, the SQLITE storage is only there to install the plugin and do some tests, not all features are available with SQLITE yet.
 # The plugin will work, but some features like sanctions update when launching the plugin will not work.
@@ -35,6 +36,13 @@ database-configuration:
   database: zmenu
   # Enable of not the SQL debug mode
   debug: true
+
+# Time in seconds for saving data in batches.
+# Instead of making an SQL query for each update, a single query will be executed every 10 seconds
+batch-task: 10
+
+# Allows saving it in the database the inventories opened by the players.
+enable-player-open-inventory-logs: true
 
 # Enable file storage logging.
 # When true, messages will be printed to the console when files are saved or loaded.
@@ -84,7 +92,7 @@ use-swap-item-off-hand-key-to-open-main-menu-needs-shift: false
 
 # Specific inventories to load at plugin start.
 # Add the paths to specific menus you want loaded manually.
-specify-path-menus: []
+specify-path-menus: [ ]
 
 # Generate default configuration files.
 # When enabled, the plugin will create default configuration files if they don't exist.

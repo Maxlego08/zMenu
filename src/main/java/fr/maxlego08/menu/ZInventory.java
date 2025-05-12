@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
@@ -14,7 +15,6 @@ import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.engine.InventoryResult;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -207,7 +207,7 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public void closeInventory(Player player, InventoryEngine inventoryDefault) {
 
-        ZMenuPlugin.getInstance().getScheduler().runTaskLater(player.getLocation(), 1, () -> {
+        ZMenuPlugin.getInstance().getScheduler().runAtLocationLater(player.getLocation(), () -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
 
@@ -218,7 +218,7 @@ public class ZInventory extends ZUtils implements Inventory {
                     inventoriesPlayer.giveInventory(player);
                 }
             }
-        });
+        }, 1);
     }
 
     @Override

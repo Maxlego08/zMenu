@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.SimpleCache;
@@ -60,6 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -72,6 +72,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
 
+    private static final Timer TIMER = new Timer();
     private static final UUID RANDOM_UUID = UUID.fromString("92864445-51c5-4c3b-9039-517c9927d1b4"); // We reuse the same "random" UUID all the time
     private static final SimpleCache<String, Object> cache = new SimpleCache<>();
     // For plugin support from 1.8 to 1.12
@@ -307,16 +308,6 @@ public abstract class ZUtils extends MessageUtils {
         player.updateInventory();
     }
 
-    protected void schedule(long delay, Runnable runnable) {
-        ZScheduler.TIMER.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                if (runnable != null) runnable.run();
-            }
-        }, delay);
-    }
-
     /**
      * Converts a string to a properly formatted name by replacing underscores with spaces and capitalizing the first letter.
      *
@@ -381,38 +372,6 @@ public abstract class ZUtils extends MessageUtils {
      */
     protected double percentNum(double total, double percent) {
         return total * (percent / 100);
-    }
-
-    /**
-     * Schedules a repetitive task to run at a fixed rate for a specific count.
-     *
-     * @param plugin   the Plugin for which the task is scheduled
-     * @param delay    the delay in milliseconds between successive task executions
-     * @param count    the number of times the task should be executed
-     * @param runnable the Runnable task to be executed
-     */
-    protected void schedule(Plugin plugin, long delay, int count, Runnable runnable) {
-        ZScheduler.TIMER.scheduleAtFixedRate(new TimerTask() {
-            int tmpCount = 0;
-
-            @Override
-            public void run() {
-
-                if (!plugin.isEnabled()) {
-                    this.cancel();
-                    return;
-                }
-
-                if (tmpCount > count) {
-                    this.cancel();
-                    return;
-                }
-
-                tmpCount++;
-                Bukkit.getScheduler().runTask(plugin, runnable);
-
-            }
-        }, 0, delay);
     }
 
     /**
@@ -518,10 +477,10 @@ public abstract class ZUtils extends MessageUtils {
                     consumer.accept(this, false);
                     return;
                 }
-                plugin.getScheduler().runTask(null, () -> consumer.accept(this, true));
+                plugin.getScheduler().runNextTick(w -> consumer.accept(this, true));
             }
         };
-        ZScheduler.TIMER.scheduleAtFixedRate(task, startAt, delay);
+        TIMER.scheduleAtFixedRate(task, startAt, delay);
         return task;
     }
 

@@ -20,6 +20,6 @@ public class TeleportAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        this.plugin.getScheduler().runTask(player.getLocation(), () -> player.teleport(location));
+        this.plugin.getScheduler().runAtLocation(player.getLocation(), w -> player.teleport(location));
     }
 }

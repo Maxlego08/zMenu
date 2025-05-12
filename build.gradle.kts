@@ -21,6 +21,7 @@ allprojects {
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        maven(url = "https://libraries.minecraft.net/")
     }
 
     tasks.compileJava {
@@ -39,6 +40,7 @@ allprojects {
         implementation("com.github.cryptomorin:XSeries:13.2.0")
         implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
         implementation("com.github.technicallycoded:FoliaLib:main-SNAPSHOT")
+        implementation("com.github.Maxlego08:Sarah:1.17")
     }
 }
 
@@ -89,6 +91,7 @@ tasks {
         relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
         relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
         relocate("com.cryptomorin.xseries", "fr.maxlego08.menu.hooks.xseries")
+        relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
 
         archiveClassifier = ""
 

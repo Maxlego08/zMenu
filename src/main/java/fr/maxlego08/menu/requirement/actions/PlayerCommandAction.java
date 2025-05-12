@@ -1,9 +1,8 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -21,8 +20,8 @@ public class PlayerCommandAction extends ActionHelper {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        ZScheduler scheduler = inventory.getPlugin().getScheduler();
-        scheduler.runTask(player.getLocation(), () -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
+        var scheduler = inventory.getPlugin().getScheduler();
+        scheduler.runAtLocation(player.getLocation(), w -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
             command = command.replace("%player%", player.getName());
             if (this.inChat) {
                 player.chat("/" + command);

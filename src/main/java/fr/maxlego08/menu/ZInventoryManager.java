@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryListener;
@@ -21,7 +22,6 @@ import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.api.scheduler.ZScheduler;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Message;
@@ -274,8 +274,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventoryWithOldInventories(Player player, Inventory inventory, int page) {
-        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault) {
-            InventoryDefault inventoryDefault = (InventoryDefault) player.getOpenInventory().getTopInventory().getHolder();
+        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault inventoryDefault) {
 
             Inventory fromInventory = inventoryDefault.getMenuInventory();
             List<Inventory> oldInventories = inventoryDefault.getOldInventories();
@@ -609,8 +608,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void updateInventory(Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault) {
-            InventoryDefault inventoryDefault = (InventoryDefault) holder;
+        if (holder instanceof InventoryDefault inventoryDefault) {
             this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
         }
     }
@@ -618,8 +616,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void updateInventory(Player player, Plugin plugin) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault) {
-            InventoryDefault inventoryDefault = (InventoryDefault) holder;
+        if (holder instanceof InventoryDefault inventoryDefault) {
             if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
                 this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
             }
@@ -721,7 +718,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public ZScheduler getScheduler() {
+    public PlatformScheduler getScheduler() {
         return this.plugin.getScheduler();
     }
 
