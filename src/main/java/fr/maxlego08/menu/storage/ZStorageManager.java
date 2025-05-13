@@ -4,8 +4,11 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.Tables;
+import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
 import fr.maxlego08.menu.zcore.utils.GlobalDatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConfiguration;
@@ -24,7 +27,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -44,6 +49,7 @@ public class ZStorageManager implements StorageManager {
 
         MigrationManager.setMigrationTableName("zmenu_migrations");
         MigrationManager.registerMigration(new PlayerOpenInventoryMigration());
+        MigrationManager.registerMigration(new PlayerDataMigration());
 
         GlobalDatabaseConfiguration globalDatabaseConfiguration = new GlobalDatabaseConfiguration(this.plugin.getConfig());
         String user = globalDatabaseConfiguration.getUser();
@@ -92,7 +98,7 @@ public class ZStorageManager implements StorageManager {
         boolean enableTask = Config.enablePlayerOpenInventoryLogs;
         if (!enableTask) return;
 
-        this.plugin.getScheduler().runTimer(() -> {
+        this.plugin.getScheduler().runTimerAsync(() -> {
             List<Schema> schemas = new ArrayList<>();
             var iterator = this.inventoryEvents.iterator();
             while (iterator.hasNext()) {
@@ -114,6 +120,40 @@ public class ZStorageManager implements StorageManager {
     @Override
     public boolean isEnable() {
         return this.isEnable;
+    }
+
+    @Override
+    public void upsertData(UUID uuid, Data data) {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.PLAYER_DATAS, table -> {
+            table.uuid("player_id", uuid).primary();
+            table.string("key", data.getKey()).primary();
+            table.string("data", data.getValue().toString());
+            table.object("expired_at", data.getExpiredAt() == 0 ? "NULL" : new Date(data.getExpiredAt()));
+        }));
+    }
+
+    @Override
+    public void clearData() {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
+        }));
+    }
+
+    @Override
+    public void clearData(UUID uniqueId) {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
+    }
+
+    @Override
+    public void removeData(UUID uuid, String key) {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
+            table.where("player_id", uuid);
+            table.where("key", key);
+        }));
+    }
+
+    @Override
+    public List<DataDTO> loadPlayers() {
+        return this.requestHelper.selectAll(Tables.PLAYER_DATAS, DataDTO.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

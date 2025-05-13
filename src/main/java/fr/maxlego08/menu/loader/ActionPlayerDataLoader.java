@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,6 +12,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
+
+    private final StorageManager storageManager;
+
+    public ActionPlayerDataLoader(StorageManager storageManager) {
+        this.storageManager = storageManager;
+    }
 
     @Override
     public ActionPlayerData load(YamlConfiguration configuration, String path, Object... objects)
@@ -21,7 +28,7 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
         Object object = configuration.get(path + "value", true);
         long seconds = configuration.getLong(path + "seconds", 0);
 
-        return new ZActionPlayerData(key, type, object, seconds);
+        return new ZActionPlayerData(storageManager, key, type, object, seconds);
     }
 
     @Override

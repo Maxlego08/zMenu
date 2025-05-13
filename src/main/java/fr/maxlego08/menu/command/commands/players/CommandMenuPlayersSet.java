@@ -3,12 +3,14 @@ package fr.maxlego08.menu.command.commands.players;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.players.ZData;
-import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.OfflinePlayer;
+
+import java.util.Arrays;
 
 public class CommandMenuPlayersSet extends VCommand {
 
@@ -18,8 +20,8 @@ public class CommandMenuPlayersSet extends VCommand {
         this.setDescription(Message.DESCRIPTION_PLAYERS_SET);
         this.addSubCommand("set");
         this.addRequireArg("player");
-        this.addRequireArg("key");
-        this.addRequireArg("expire after");
+        this.addRequireArg("key", (a, b) -> plugin.getDataManager().getKeys());
+        this.addRequireArg("expire after", (a, b) -> Arrays.asList("0", "60", "120", "300", "600", "900", "1800", "3600"));
         this.addRequireArg("value");
         this.setExtendedArgs(true);
     }
@@ -51,7 +53,6 @@ public class CommandMenuPlayersSet extends VCommand {
 
         DataManager dataManager = plugin.getDataManager();
         dataManager.addData(player.getUniqueId(), data);
-        dataManager.autoSave();
 
         message(plugin, this.sender, Message.PLAYERS_DATA_SET, "%player%", player.getName(), "%key%", key);
 

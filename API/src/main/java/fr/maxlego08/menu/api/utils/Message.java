@@ -99,7 +99,7 @@ public enum Message implements IMessage {
             "&fValue&8: &7%value%"
     ),
     PLAYERS_DATA_GET_ERROR("&cCannot find the key &f%key%&c."),
-    PLAYERS_DATA_REMOVE_SUCCESS("&aYou have just deleted the &f%key% &for the &b%player%&a."),
+    PLAYERS_DATA_REMOVE_SUCCESS("&aYou have just deleted the key &f%key% &ffor &b%player%&a."),
     PLAYERS_DATA_REMOVE_ERROR("&cCannot find the key &f%key%&c."),
 
     WEBSITE_LOGIN_ERROR_TOKEN("&cYour token seems invalid, please try again."),

@@ -2,19 +2,25 @@ package fr.maxlego08.menu.players;
 
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.PlayerData;
+import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.storage.dto.DataDTO;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ZPlayerData implements PlayerData {
 
+    private final StorageManager storageManager;
     private final UUID uniqueId;
     private final Map<String, Data> datas = new HashMap<>();
 
-    /**
-     * @param uniqueId
-     */
-    public ZPlayerData(UUID uniqueId) {
+    public ZPlayerData(StorageManager storageManager, UUID uniqueId) {
         super();
+        this.storageManager = storageManager;
         this.uniqueId = uniqueId;
     }
 
@@ -31,6 +37,7 @@ public class ZPlayerData implements PlayerData {
     @Override
     public void addData(Data data) {
         this.datas.put(data.getKey(), data);
+        this.storageManager.upsertData(uniqueId, data);
     }
 
     @Override
@@ -41,6 +48,7 @@ public class ZPlayerData implements PlayerData {
     @Override
     public void removeData(String key) {
         this.datas.remove(key);
+        this.storageManager.removeData(uniqueId, key);
     }
 
     @Override
@@ -56,8 +64,16 @@ public class ZPlayerData implements PlayerData {
     }
 
     private void clearExpiredData() {
-        this.datas.values().removeIf(Data::isExpired);
+        this.datas.values().removeIf(key -> {
+            if (key.isExpired()) {
+                this.storageManager.removeData(uniqueId, key.getKey());
+                return true;
+            }
+            return false;
+        });
     }
 
-
+    public void setData(DataDTO dto) {
+        this.datas.put(dto.key(), new ZData(dto));
+    }
 }

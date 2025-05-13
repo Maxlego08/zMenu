@@ -1,18 +1,25 @@
 package fr.maxlego08.menu.players;
 
 import fr.maxlego08.menu.api.players.Data;
+import fr.maxlego08.menu.api.storage.dto.DataDTO;
 
 public class ZData implements Data {
 
     private final String key;
-    private Object value;
     private final long expiredAt;
+    private Object value;
 
     public ZData(String key, Object value, long expiredAt) {
         super();
         this.key = key;
         this.value = value;
         this.expiredAt = expiredAt;
+    }
+
+    public ZData(DataDTO dto) {
+        this.key = dto.key();
+        this.value = dto.data();
+        this.expiredAt = dto.expired_at() == null ? 0 : dto.expired_at().getTime();
     }
 
     @Override
@@ -45,7 +52,6 @@ public class ZData implements Data {
     public void remove(int amount) {
         int value = safeStringToInt(this.value.toString());
         this.value = value - amount;
-
     }
 
     private int safeStringToInt(String str) {

@@ -27,14 +27,24 @@ public interface Data {
     long getExpiredAt();
 
     /**
-     * Allows to know if a data is expired
+     * Determines if the data is expired.
      *
-     * @return boolean
+     * @return true if expired, false if not
      */
     boolean isExpired();
 
+    /**
+     * Adds the specified amount to the current value.
+     *
+     * @param amount the amount to add
+     */
     void add(int amount);
 
+    /**
+     * Removes the specified amount from the current value.
+     *
+     * @param amount the amount to remove
+     */
     void remove(int amount);
 
 }

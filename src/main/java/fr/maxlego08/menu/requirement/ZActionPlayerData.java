@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
+import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.players.ZData;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.OfflinePlayer;
@@ -14,13 +15,15 @@ import java.util.Optional;
 
 public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
+    private final StorageManager storageManager;
     private final String key;
     private final ActionPlayerDataType type;
     private final Object value;
     private final long seconds;
 
-    public ZActionPlayerData(String key, ActionPlayerDataType type, Object value, long seconds) {
+    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, long seconds) {
         super();
+        this.storageManager = storageManager;
         this.key = key;
         this.type = type;
         this.value = value;
@@ -77,6 +80,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             if (optional.isPresent()) {
                 Data data = optional.get();
                 data.add(Integer.parseInt(papi(this.value.toString(), player, false)));
+                storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 dataManager.addData(player.getUniqueId(), this.toData(player));
             }
@@ -86,6 +90,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             if (optional.isPresent()) {
                 Data data = optional.get();
                 data.remove(Integer.parseInt(papi(this.value.toString(), player, false)));
+                storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
                 dataManager.addData(player.getUniqueId(), new ZData(this.papi(this.key, player, false), -(int) this.value, expiredAt));
@@ -93,7 +98,5 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
         } else if (this.type == ActionPlayerDataType.SET) {
             dataManager.addData(player.getUniqueId(), this.toData(player));
         }
-
-        dataManager.autoSave();
     }
 }

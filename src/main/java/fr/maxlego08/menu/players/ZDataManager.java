@@ -4,12 +4,11 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
-import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.zcore.utils.interfaces.ReturnConsumer;
-import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,34 +17,33 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ZDataManager implements DataManager {
 
-    private static Map<UUID, ZPlayerData> players = new HashMap<>();
-    private final transient ZMenuPlugin plugin;
-    private transient Map<String, String> defaultValues = new HashMap<>();
-    private transient long lastSave;
+    private final Map<UUID, ZPlayerData> players = new HashMap<>();
+    private final ZMenuPlugin plugin;
+    private final Map<String, String> defaultValues = new HashMap<>();
+    private long lastSave;
 
     public ZDataManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
-        this.defaultValues = new HashMap<>();
     }
 
-
-    public void save(Persist persist) {
+    /*public void save(Persist persist) {
         persist.save(this, "players");
     }
 
-
     public void load(Persist persist) {
         persist.loadOrSaveDefault(this, ZDataManager.class, "players");
-    }
+    }*/
 
     @Override
     public Optional<PlayerData> getPlayer(UUID uniqueId) {
@@ -60,10 +58,8 @@ public class ZDataManager implements DataManager {
             return optional.get();
         }
 
-        ZPlayerData data = new ZPlayerData(uniqueId);
+        ZPlayerData data = new ZPlayerData(this.plugin.getStorageManager(), uniqueId);
         players.put(uniqueId, data);
-
-        this.autoSave();
 
         return data;
     }
@@ -109,23 +105,13 @@ public class ZDataManager implements DataManager {
     @Override
     public void clearAll() {
         players.clear();
-        this.save(this.plugin.getPersist());
-    }
-
-    @Override
-    public void autoSave() {
-        if (System.currentTimeMillis() > this.lastSave) {
-            this.plugin.getScheduler().runAsync(w -> {
-                this.save(this.plugin.getPersist());
-                this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerData * 1000L);
-            });
-        }
+        this.plugin.getStorageManager().clearData();
     }
 
     @Override
     public void clearPlayer(UUID uniqueId) {
         players.remove(uniqueId);
-        this.autoSave();
+        this.plugin.getStorageManager().clearData(uniqueId);
     }
 
     @Override
@@ -141,6 +127,23 @@ public class ZDataManager implements DataManager {
 
         this.defaultValues.clear();
         configurationSection.getKeys(false).forEach(key -> this.defaultValues.put(key, configuration.getString("values." + key)));
+    }
+
+    @Override
+    public void loadPlayers() {
+        var playerDatas = this.plugin.getStorageManager().loadPlayers();
+        for (DataDTO dto : playerDatas) {
+            ZPlayerData playerData = this.players.computeIfAbsent(dto.player_id(), uuid -> new ZPlayerData(this.plugin.getStorageManager(), uuid));
+            playerData.setData(dto);
+        }
+    }
+
+    @Override
+    public List<String> getKeys() {
+        Set<String> strings = new HashSet<>();
+        strings.addAll(this.defaultValues.keySet());
+        strings.addAll(this.players.values().stream().flatMap(playerData -> playerData.getDatas().stream().map(Data::getKey)).toList());
+        return new ArrayList<>(strings);
     }
 
     public void registerPlaceholder(LocalPlaceholder localPlaceholder) {

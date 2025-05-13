@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
@@ -12,9 +12,9 @@ import java.io.File;
 
 public class DataLoader implements ActionLoader {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public DataLoader(ZMenuPlugin plugin) {
+    public DataLoader(MenuPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -29,6 +29,6 @@ public class DataLoader implements ActionLoader {
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
         long seconds = accessor.getLong("seconds", 0L);
-        return new DataAction(new ZActionPlayerData(key, type, object, seconds), plugin);
+        return new DataAction(new ZActionPlayerData(plugin.getStorageManager(), key, type, object, seconds), plugin);
     }
 }

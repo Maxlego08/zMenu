@@ -240,9 +240,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         System.out.println("ToDo, rework save");
         this.inventoryManager.load();
         this.commandManager.loadCommands();
-        ((ZDataManager) this.dataManager).load(getPersist()); // ToDo, DATABASE
         this.messageLoader.load();
         this.inventoriesPlayer.load();
+        this.dataManager.loadPlayers();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
@@ -311,7 +311,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
 
-        ((ZDataManager) this.dataManager).save(getPersist());
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
