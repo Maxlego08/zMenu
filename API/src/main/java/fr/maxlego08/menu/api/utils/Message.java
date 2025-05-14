@@ -69,6 +69,7 @@ public enum Message implements IMessage {
     DESCRIPTION_PLAYERS_ADD("Add a number to a value, works only for numbers."),
     DESCRIPTION_PLAYERS_SUBTRACT("Subtract a number to a value, works only for numbers."),
     DESCRIPTION_PLAYERS_REMOVE("Remove player data"),
+    DESCRIPTION_PLAYERS_REMOVE_ALL("Remove all player data from a key"),
     DESCRIPTION_PLAYERS_GET("Get player data"),
     DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player"),
     DESCRIPTION_PLAYERS_CLEAR_ALL("Clear all player's data"),
@@ -100,6 +101,7 @@ public enum Message implements IMessage {
     ),
     PLAYERS_DATA_GET_ERROR("&cCannot find the key &f%key%&c."),
     PLAYERS_DATA_REMOVE_SUCCESS("&aYou have just deleted the key &f%key% &ffor &b%player%&a."),
+    PLAYERS_DATA_REMOVE_ALL_SUCCESS("&aYou have just deleted all key's &b%key%&a."),
     PLAYERS_DATA_REMOVE_ERROR("&cCannot find the key &f%key%&c."),
 
     WEBSITE_LOGIN_ERROR_TOKEN("&cYour token seems invalid, please try again."),

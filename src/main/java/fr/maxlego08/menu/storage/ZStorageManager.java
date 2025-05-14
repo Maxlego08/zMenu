@@ -144,6 +144,11 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
+    public void clearData(String key) {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
+    }
+
+    @Override
     public void removeData(UUID uuid, String key) {
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
             table.where("player_id", uuid);

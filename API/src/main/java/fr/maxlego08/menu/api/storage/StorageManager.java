@@ -22,4 +22,6 @@ public interface StorageManager extends Listener {
     void removeData(UUID uuid, String key);
 
     List<DataDTO> loadPlayers();
+
+    void clearData(String key);
 }

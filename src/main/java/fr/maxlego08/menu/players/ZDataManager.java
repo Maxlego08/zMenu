@@ -146,6 +146,12 @@ public class ZDataManager implements DataManager {
         return new ArrayList<>(strings);
     }
 
+    @Override
+    public void clearKey(String key) {
+        this.players.values().forEach(e -> e.removeData(key));
+        this.plugin.getStorageManager().clearData(key);
+    }
+
     public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
 
         localPlaceholder.register("player_key_exist_", (offlinePlayer, key) -> {

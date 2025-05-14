@@ -67,4 +67,6 @@ public interface DataManager {
      * @return a list of all keys that are used in the player data.
      */
     List<String> getKeys();
+
+    void clearKey(String key);
 }
