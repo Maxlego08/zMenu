@@ -1,0 +1,38 @@
+name: "pattern_cookies"
+type: BUTTON
+button:
+  click-requirement:
+    purchase:
+      clicks:
+        - ALL
+      requirements:
+        - type: placeholder
+          math: true
+          placeholder: "%zmenu_player_value_cookie%"
+          value: "%price%+(%price%*%zmenu_player_value_%key%%*1.15)"
+          action: SUPERIOR_OR_EQUAL
+      success:
+        - type: data
+          action: SUBTRACT
+          key: 'cookie'
+          value: '%price%+(%price%*%zmenu_player_value_%key%%*1.15)'
+          math: true
+        - type: data
+          action: ADD
+          key: '%key%'
+          value: '1'
+        - type: inventory
+          inventory: 'cookies'
+      deny:
+        - type: message
+          messages:
+            - '&cYou don’t have enough cookies'
+  slot: '%slot%'
+  item:
+    material: '%material%'
+    name: "&a%name% #353535(&7%zmenu_player_value_%key%%#353535)"
+    lore:
+      - ""
+      - "&fPrice&8: &b%zmenu_formatted_math_%price%+(%price%*{zmenu_player_value_%key%}*1.15)% cookies"
+      - ""
+      - "&aClick to buy"

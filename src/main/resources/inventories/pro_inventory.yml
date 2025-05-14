@@ -34,7 +34,7 @@ size: 45
 # Color code and placeholders are supported.
 # If you are on Paper, Purpur or PufferFish you have access to the color code of MiniMessage (https://docs.advntr.dev/minimessage/format.html)
 #
-name: "&7Shop"
+name: "#454545sʜᴏᴘ"
 
 # View Requirement (https://docs.zmenu.dev/configurations/requirements#view-requirement)
 #
@@ -74,8 +74,7 @@ items:
     # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#is-permanent)
     is-permanent: true
     item:
-      material: STAINED_GLASS_PANE
-      data: 15
+      material: GRAY_STAINED_GLASS_PANE
       name: "&e"
     slots:
       - 0-9 # slot 0 to 9

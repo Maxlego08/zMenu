@@ -74,8 +74,7 @@ items:
     # Specifies whether the button should appear on all pages (https://docs.zmenu.dev/configurations/buttons#is-permanent)
     is-permanent: true
     item:
-      material: STAINED_GLASS_PANE
-      data: 14
+      material: RED_STAINED_GLASS_PANE
       name: "&e"
     slots:
       - 2-6 # From slot 2 to slot 6
@@ -118,10 +117,11 @@ items:
     plugin: "zMenu"
     item:
       material: COMPASS
-      name: "&fOpen basic inventory"
+      name: "&fOpen basic inventory &8- &7%example-a%" # Use of global placeholder
       lore:
         - "&7Click here for open"
         - "&7the &fbasic inventory"
+        - "%example-b%" # Use of global placeholder
 
   # PREVIOUS (https://docs.zmenu.dev/configurations/buttons#previous)
   #

@@ -14,7 +14,6 @@ import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
@@ -46,7 +45,7 @@ import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.placeholder.MathPlaceholders;
+import fr.maxlego08.menu.placeholder.MenuPlaceholders;
 import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
@@ -67,7 +66,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -142,18 +140,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.loadMeta();
 
-        List<String> files = new ArrayList<>();
-        files.add("inventories/basic_inventory.yml");
-        files.add("inventories/advanced_inventory.yml");
-        files.add("inventories/pro_inventory.yml");
-        files.add("inventories/example_punish.yml");
-
-        files.add("commands/commands.yml");
-        files.add("commands/punish/punish.yml");
-
-        files.add("patterns/pattern_example.yml");
-        files.add("readme.txt");
-
+        List<String> files = getInventoriesFiles();
         File folder = new File(this.getDataFolder(), "inventories");
 
         if (!folder.exists()) folder.mkdirs();
@@ -161,12 +148,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Config.generateDefaultFile) {
             files.forEach(filePath -> {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
-
-                    if (NmsVersion.nmsVersion.isNewMaterial()) {
-                        saveResource(filePath.replace("inventories/", "inventories/1_13/"), filePath, false);
-                    } else {
-                        saveResource(filePath, false);
-                    }
+                    saveResource(filePath, false);
                 }
             });
         }
@@ -198,47 +180,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
         this.inventoryManager.registerMaterialLoader(new ArmorLoader());
-        if (this.isActive(Plugins.HEADDATABASE)) {
-            this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-        }
-        if (this.isActive(Plugins.ZHEAD)) {
-            this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
-        }
-        if (this.isActive(Plugins.ORAXEN)) {
-            this.inventoryManager.registerMaterialLoader(new OraxenLoader());
-        }
-        if (this.isActive(Plugins.CRAFTENGINE)) {
-            this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
-        }
-        if (this.isActive(Plugins.NEXO)) {
-            this.inventoryManager.registerMaterialLoader(new NexoLoader());
-        }
-        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
-            this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
-        }
-        if (this.isEnable(Plugins.HMCCOSMETICS)) {
-            this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
-        }
-        if (this.isEnable(Plugins.ITEMSADDER)) {
-            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
-            this.fontImage = new ItemsAdderFont();
-        }
-        if (this.isActive(Plugins.SLIMEFUN)) {
-            this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
-        }
-        if (this.isActive(Plugins.NOVA)) {
-            this.inventoryManager.registerMaterialLoader(new NovaLoader());
-        }
-        if (this.isActive(Plugins.ECO)) {
-            this.inventoryManager.registerMaterialLoader(new EcoLoader());
-        }
+        this.registerHooks();
 
-        if (this.isActive(Plugins.ZITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
-        }
-
-        // ToDo
-        System.out.println("ToDo, rework save");
         this.inventoryManager.load();
         this.commandManager.loadCommands();
         this.messageLoader.load();
@@ -252,23 +195,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         });
 
         this.websiteManager.registerPlaceholders();
-        localPlaceholder.register("test", (a, b) -> "&ctest");
-        localPlaceholder.register("player_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player)));
-        localPlaceholder.register("player_next_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player) + 1));
-        localPlaceholder.register("player_previous_page", (player, s) -> String.valueOf(this.inventoryManager.getPage(player) - 1));
-        localPlaceholder.register("player_max_page", (player, s) -> String.valueOf(this.inventoryManager.getMaxPage(player)));
-        localPlaceholder.register("player_previous_inventories", (playeofflinePlayer, s) -> {
-            if (playeofflinePlayer.isOnline()) {
-                Player player = playeofflinePlayer.getPlayer();
-                if (player == null) return "0";
-                InventoryHolder inventoryHolder = CompatibilityUtil.getTopInventory(player).getHolder();
-                if (inventoryHolder instanceof InventoryDefault inventoryDefault) {
-                    return String.valueOf(inventoryDefault.getOldInventories().size());
-                }
-            }
-            return "0";
-        });
-        new MathPlaceholders().register(this);
+        new MenuPlaceholders().register(this);
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
@@ -304,6 +231,68 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         // this.inventoryManager.registerInventoryListener(this.packetUtils);
 
         this.postEnable();
+    }
+
+    /**
+     * Registers all the hooks for the plugins that are present.
+     * This method is called at the end of {@link #onEnable()} and it will
+     * register all the material loaders for the plugins that are present.
+     * This method will be called only once, after the plugin has been enabled.
+     */
+    private void registerHooks() {
+        if (this.isActive(Plugins.HEADDATABASE)) {
+            this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
+        }
+        if (this.isActive(Plugins.ZHEAD)) {
+            this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
+        }
+        if (this.isActive(Plugins.ORAXEN)) {
+            this.inventoryManager.registerMaterialLoader(new OraxenLoader());
+        }
+        if (this.isActive(Plugins.CRAFTENGINE)) {
+            this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
+        }
+        if (this.isActive(Plugins.NEXO)) {
+            this.inventoryManager.registerMaterialLoader(new NexoLoader());
+        }
+        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
+            this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
+        }
+        if (this.isEnable(Plugins.HMCCOSMETICS)) {
+            this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
+        }
+        if (this.isEnable(Plugins.ITEMSADDER)) {
+            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
+            this.fontImage = new ItemsAdderFont();
+        }
+        if (this.isActive(Plugins.SLIMEFUN)) {
+            this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
+        }
+        if (this.isActive(Plugins.NOVA)) {
+            this.inventoryManager.registerMaterialLoader(new NovaLoader());
+        }
+        if (this.isActive(Plugins.ECO)) {
+            this.inventoryManager.registerMaterialLoader(new EcoLoader());
+        }
+        if (this.isActive(Plugins.ZITEMS)) {
+            this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
+        }
+    }
+
+    private List<String> getInventoriesFiles() {
+        List<String> files = new ArrayList<>();
+        files.add("inventories/basic_inventory.yml");
+        files.add("inventories/advanced_inventory.yml");
+        files.add("inventories/pro_inventory.yml");
+        files.add("inventories/example_punish.yml");
+        files.add("inventories/examples/cookies.yml");
+
+        files.add("commands/commands.yml");
+        files.add("commands/punish/punish.yml");
+
+        files.add("patterns/pattern_example.yml");
+        files.add("patterns/pattern_cookies.yml");
+        return files;
     }
 
     @Override

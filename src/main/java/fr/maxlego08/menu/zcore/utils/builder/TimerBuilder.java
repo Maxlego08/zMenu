@@ -7,9 +7,9 @@ public class TimerBuilder {
     public static String getFormatLongDays(long temps) {
         long totalSecs = temps / 1000L;
 
-        long days = totalSecs % 86400L / 3600L;
-        long hours = totalSecs / 3600L;
-        long minutes = totalSecs % 3600L / 60L;
+        long days = totalSecs / 86400L;
+        long hours = (totalSecs % 86400L) / 3600L;
+        long minutes = (totalSecs % 3600L) / 60L;
         long seconds = totalSecs % 60L;
 
         String message = Message.TIME_DAY.msg();
@@ -59,9 +59,9 @@ public class TimerBuilder {
     public static String getStringTime(long second) {
         if (second < 60) {
             return (TimerBuilder.getFormatLongSecondes(second * 1000L));
-        } else if (second >= 60 && second < 3600) {
+        } else if (second < 3600) {
             return (TimerBuilder.getFormatLongMinutes(second * 1000L));
-        } else if (second >= 3600 && second < 86400) {
+        } else if (second < 86400) {
             return (TimerBuilder.getFormatLongHours(second * 1000L));
         } else {
             return (TimerBuilder.getFormatLongDays(second * 1000L));

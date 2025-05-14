@@ -1,0 +1,51 @@
+name: "&8Cookies"
+size: 36
+items:
+  cookie:
+    slot: 13
+    item:
+      material: COOKIE
+      name: "#77ff77Cookies#353535: &f%zmenu_player_value_cookie%"
+      lore:
+        - ""
+        - "&fCookie per click&8: &b%zmenu_formatted_math_1+({zmenu_player_value_grandma}*2)+({zmenu_player_value_factory}*5)+({zmenu_player_value_mine}*10)%"
+        - ""
+        - "&7Click on me !"
+    actions:
+      - type: data
+        action: ADD
+        key: 'cookie'
+        value: '1+(%zmenu_player_value_grandma%*2)+(%zmenu_player_value_factory%*5)+(%zmenu_player_value_mine%*10)'
+        math: true
+      - type: refresh
+
+  grandma:
+    pattern:
+      file-name: "pattern_cookies"
+      plugin-name: "zMenu"
+      slot: 20
+      material: CAKE
+      name: "Grand Ma"
+      key: "grandma"
+      price: 10
+
+  factory:
+    pattern:
+      file-name: "pattern_cookies"
+      plugin-name: "zMenu"
+      slot: 22
+      material: WHEAT
+      name: "Factory"
+      key: "factory"
+      price: 20
+
+  mine:
+    pattern:
+      file-name: "pattern_cookies"
+      plugin-name: "zMenu"
+      slot: 24
+      material: IRON_PICKAXE
+      name: "Mine"
+      key: "mine"
+      price: 50
+

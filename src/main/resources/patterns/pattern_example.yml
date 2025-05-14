@@ -32,7 +32,6 @@
 #   - /zm convert » Convert other plugin to zMenu - zmenu.convert
 #   - /<command> » Open specific file - Custom permission
 #
-#
 #########################################################################################################################################
 
 name: "pattern_example"

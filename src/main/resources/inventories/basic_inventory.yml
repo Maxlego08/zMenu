@@ -34,7 +34,16 @@ size: 18
 # Color code and placeholders are supported.
 # If you are on Paper, Purpur or PufferFish you have access to the color code of MiniMessage (https://docs.advntr.dev/minimessage/format.html)
 #
-name: "&7Basics Menu"
+name: "&7Basics Inventory"
+
+# Translate the inventory name into multiple languages
+# You must define the language and the country used
+# The vanilla Minecraft client will use lowercase language / country pairs separated by an underscore, but custom resource packs may use any format they wish.
+translatedName:
+  - locale: "fr_fr" # Allows to define the language in French
+    name: "&aInventaire Basique"
+  - locale: "es_es" # Allows to define the language in Spanish
+    name: "&aInventario Básico"
 
 # Matrix https://docs.zmenu.dev/configurations/inventories#matrix
 #
@@ -65,16 +74,22 @@ items:
     type: NONE
     # Slots that you want to put the item. Starts from 0 (https://docs.zmenu.dev/configurations/buttons#slot)
     slot: 4
+
+    sound: BLOCK_TRIPWIRE_CLICK_ON
+    pitch: 1.0
+    volume: 2.0
+
     # You will now specify the content of your item. The item will include all configuration items that will be displayed in the inventory, name, lore etc.
     # https://docs.zmenu.dev/configurations/items
     item:
       # Let’s start with a block of grass
       # To find the list of materials you must go to the spigot documentation: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
       # You can also set a material from another plugin, such as ItemAdder for example. All information here: https://docs.zmenu.dev/configurations/items#material
-      material: GRASS
+      material: GRASS_BLOCK
       # Here we will name this item (https://docs.zmenu.dev/configurations/items#name)
       # Color code, mini message and placeholders are supported
       name: "&aThis is a very nice grass block"
+
       # This is the lore. (https://docs.zmenu.dev/configurations/items#lore)
       # You must put several lines to the lore.
       # Color code, mini message and placeholders are supported
@@ -83,6 +98,32 @@ items:
         - "&eMy first button with &fzMenu"
         - "&7Congratulations, you will now discover"
         - "&7all the possibilities of zMenu."
+
+      # Translate the item name into multiple languages
+      # You must define the language and the country used
+      # The vanilla Minecraft client will use lowercase language / country pairs separated by an underscore, but custom resource packs may use any format they wish.
+      translatedName:
+        - locale: "fr_fr" # Allows to define the language in French
+          name: "&aC’est un très beau bloc d’herbe !"
+        - locale: "es_es" # Allows to define the language in Spanish
+          name: "&a¡Es un hermoso bloque de hierba!"
+
+      # Translate the item lore into multiple languages
+      # You must define the language and the country used
+      # The vanilla Minecraft client will use lowercase language / country pairs separated by an underscore, but custom resource packs may use any format they wish.
+      translatedLore:
+        - locale: "fr_fr" # Allows to define the language in French
+          lore:
+            - "" # empty line to put space between name and lore
+            - "&eMon premier bouton avec &fzMenu"
+            - "&7Félicitations, vous allez maintenant découvrir"
+            - "&7toutes les possibilités de zMenu."
+        - locale: "es_es" # Allows to define the language in Spanish
+          lore:
+            - "" # empty line to put space between name and lore
+            - "&eMi primer botón con &fzMenu"
+            - "&7Felicidades, ahora vas a descubrir"
+            - "&7todas las posibilidades de zMenu."
 
   # Create a second button, but this time let’s show your head. This will also be a NONE button, so we won’t specify it.
   mySecondButton:
@@ -117,12 +158,6 @@ items:
       # This will add an enchantment to the item as well as the HIDE_ENCHANTS flag.
       # https://docs.zmenu.dev/configurations/items#glow
       glow: true
-      attributes:
-        # attribute: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/attribute/Attribute.html
-        # slot: HEAD, CHEST, LEGS, FEET, HAND, OFF_HAND
-        - attribute: GENERIC_ARMOR
-          amount: 2.5
-          slot: HEAD # Optional
     # We now want the console to execute the command /say %player% is great !
     consoleCommands:
       - "say %player% is great (message from zMenu / Basic Inventory file)"
