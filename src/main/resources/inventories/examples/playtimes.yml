@@ -1,0 +1,138 @@
+name: "#3f3f3fᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴠᴇʟs (%page%/%maxPage%)"
+size: 27
+updateInterval: 1000
+
+items:
+
+  decoration:
+    isPermanent: true
+    slots:
+      - 0-26
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: ""
+
+  informations:
+    isPermanent: true
+    slot: 22
+    update: true
+    item:
+      playerHead: "%player%"
+      name: '#4cd5ff&lᴘʟᴀʏᴛɪᴍᴇ ʟᴇᴠᴇʟs'
+      lore:
+        - ''
+        - '#ffd353ℹ Informations#3f3f3f:'
+        - '#3f3f3f• &7Achievement tiers based on playtime offer'
+        - '#3f3f3f• &7rewards for simply engaging in the game.'
+        - "#3f3f3f• &7The greater your playtime, the higher the"
+        - "#3f3f3f• &7rewards you'll collect"
+        - ''
+        - '#ffd353⛃ Statistics#3f3f3f:'
+        - '#3f3f3f• &fLevel#3f3f3f: #4cd5ff%zmenu_player_value_playtime_level%'
+        - '#3f3f3f• &fPlay Time#3f3f3f: #4cd5ff%zmenu_statistic_time_played%'
+        - ''
+
+  btn-10:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 10
+      level: 1
+      hour: 1
+      color: "#7f7f7f"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU2NDZkODc4NTkxYzU4YzM5ZjJkN2ExZGFmMDFlMTE0NDU0NGQ0NjU5NzdlYmE1YzNmZTc0M2I5ZmNmMTQwIn19fQ==
+      rewards:
+        - '#3f3f3f• &f50$'
+        - '#3f3f3f• &fx4 Iron Ingots'
+      commands:
+        - 'eco give %player% 50'
+        - 'give %player% iron_ingot 4'
+
+  btn-11:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 11
+      level: 2
+      hour: 2
+      color: "#b68562"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAyZWE0MWRhZjQyZDViYTEzMzU3MGNiZmI1YjQyYTI2OGQzNmYwNWM0ODU1Zjk5YTgwZTg0MWFkOGNiMCJ9fX0=
+      rewards:
+        - '#3f3f3f• &f100$'
+        - '#3f3f3f• &fx8 Iron Ingots'
+      commands:
+        - 'eco give %player% 100'
+        - 'give %player% iron_ingot 8'
+
+  btn-12:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 12
+      level: 3
+      hour: 3
+      color: "#805e36"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjYxNDc0Y2E1ZDQ2MWUwZjE5ZGEyYzVhOGNlYTNmMTg0NDI1OTBiOTM5ZDFkOTk1Nzg1NTczYzg0YWExNiJ9fX0=
+      rewards:
+        - '#3f3f3f• &f150$'
+        - '#3f3f3f• &fx12 Iron Ingots'
+      commands:
+        - 'eco give %player% 150'
+        - 'give %player% iron_ingot 12'
+
+  btn-13:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 13
+      level: 4
+      hour: 4
+      color: "#8a6243"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAzNmJmOTc5MjZjMDJhNmRhNTI0YmY0ODdkYjViOTc0MmQ1YmM1ODg0YWEyZmFmOTRlNTc2ZmM4NjkifX19
+      rewards:
+        - '#3f3f3f• &f200$'
+        - '#3f3f3f• &fx12 Iron Ingots'
+      commands:
+        - 'eco give %player% 200'
+        - 'give %player% iron_ingot 12'
+
+  btn-14:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 14
+      level: 5
+      hour: 6
+      color: "#977849"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQzMDFhYThhODdlMjE4OGNlODY3MDQwMjUzZjc2NjYzYjNlNDdmNmM4NmZkZDZjZGI2NzBjOTk4NDY1MyJ9fX0=
+      rewards:
+        - '#3f3f3f• &f500$'
+        - '#3f3f3f• &fx32 Iron Ingots'
+      commands:
+        - 'eco give %player% 500'
+        - 'give %player% iron_ingot 32'
+
+  btn-15:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 15
+      level: 6
+      hour: 8
+      color: "#eceae3"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzcyMzcwNGE5ZDU5MTBiOWNkNTA1ZGM5OWM3NzliZjUwMzc5Y2I4NDc0NWNjNzE5ZTlmNzg0ZGQ4YyJ9fX0=
+      rewards:
+        - '#3f3f3f• &f750$'
+        - '#3f3f3f• &fx48 Iron Ingots'
+      commands:
+        - 'eco give %player% 750'
+        - 'give %player% iron_ingot 48'
+
+  btn-16:
+    pattern:
+      fileName: "playtime_reward"
+      slot: 16
+      level: 7
+      hour: 10
+      color: "#eae1a3"
+      head: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdmOWNlMmFmY2Q4OTc4YmI0YmRhZmEyYmE5Yjc3YjE4YmFmNDIzMzA1ZTYyZmRiMGM3YmQ4YmQ1YjFiZCJ9fX0=
+      rewards:
+        - '#3f3f3f• &f1.000$'
+        - '#3f3f3f• &fx64 Iron Ingots'
+      commands:
+        - 'eco give %player% 1000'
+        - 'give %player% iron_ingot 64'
