@@ -46,6 +46,7 @@ import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.placeholder.MathPlaceholders;
 import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
@@ -267,6 +268,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             }
             return "0";
         });
+        new MathPlaceholders().register(this);
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 

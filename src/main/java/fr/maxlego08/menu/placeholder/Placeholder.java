@@ -8,14 +8,14 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-import static fr.maxlego08.menu.zcore.logger.Logger.getLogger;
-
 public interface Placeholder {
 
     String setPlaceholders(Player player, String string);
+
     String setPlaceholders(OfflinePlayer player, String string);
 
     List<String> setPlaceholders(Player player, List<String> list);
+
     List<String> setPlaceholders(OfflinePlayer player, List<String> list);
 
     class Api implements Placeholder {
@@ -65,6 +65,7 @@ public interface Placeholder {
         public List<String> setPlaceholders(Player player, List<String> list) {
             return LocalPlaceholder.getInstance().setPlaceholders(player, list);
         }
+
         @Override
         public List<String> setPlaceholders(OfflinePlayer player, List<String> list) {
             return LocalPlaceholder.getInstance().setPlaceholders(player, list);
@@ -77,9 +78,8 @@ public interface Placeholder {
         private static Placeholder placeholder;
 
         public static Placeholder getPlaceholder() {
-            return placeholder == null ? (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local()) : placeholder;
+            return placeholder == null ? placeholder = (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null ? new Api() : new Local()) : placeholder;
         }
-
     }
 
 }

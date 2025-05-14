@@ -8,9 +8,6 @@ public class DistantPlaceholder extends PlaceholderExpansion {
 
     private final LocalPlaceholder placeholder;
 
-    /**
-     * @param placeholder
-     */
     public DistantPlaceholder(LocalPlaceholder placeholder) {
         super();
         this.placeholder = placeholder;

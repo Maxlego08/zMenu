@@ -42,7 +42,6 @@ public class InventoryAction extends ActionHelper {
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
 
-
             String inventoryName = this.papi(placeholders.parse(this.inventory), player);
             Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
             if (optional.isPresent()) {

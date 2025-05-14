@@ -215,7 +215,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Inventory> getInventory(String name) {
-        return this.getInventories().stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name)).findFirst();
+        var inventories = this.getInventories();
+        return inventories.stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name)).findFirst();
     }
 
     @Override
@@ -226,7 +227,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Optional<Inventory> getInventory(String pluginName, String name) {
         Optional<Plugin> optional = this.getPluginIgnoreCase(pluginName);
-        return !optional.isPresent() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
+        return optional.isEmpty() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
     }
 
     @Override
