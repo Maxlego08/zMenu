@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.players.ZData;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -20,14 +21,16 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     private final ActionPlayerDataType type;
     private final Object value;
     private final long seconds;
+    private final boolean enableMathExpression;
 
-    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, long seconds) {
+    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, long seconds, boolean enableMathExpression) {
         super();
         this.storageManager = storageManager;
         this.key = key;
         this.type = type;
         this.value = value;
         this.seconds = seconds;
+        this.enableMathExpression = enableMathExpression;
     }
 
     @Override
@@ -79,7 +82,8 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                data.add(Integer.parseInt(papi(this.value.toString(), player, false)));
+                String result = papi(this.value.toString(), player, false);
+                data.add(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
                 storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 dataManager.addData(player.getUniqueId(), this.toData(player));
@@ -89,7 +93,8 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                data.remove(Integer.parseInt(papi(this.value.toString(), player, false)));
+                String result = papi(this.value.toString(), player, false);
+                data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
                 storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);

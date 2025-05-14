@@ -30,10 +30,11 @@ public class PlaceholderPermissibleLoader extends ZPermissibleLoader {
         String placeholder = accessor.getString("placeholder", accessor.getString("placeHolder"));
         String value = accessor.getString("value");
         String targetPlayer = accessor.getString("target", null);
+        boolean mathExpression = accessor.getBoolean("math", false);
 
         List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
 
-        return new ZPlaceholderPermissible(action, placeholder, value, targetPlayer, denyActions, successActions);
+        return new ZPlaceholderPermissible(action, placeholder, value, targetPlayer, denyActions, successActions, mathExpression);
     }
 }

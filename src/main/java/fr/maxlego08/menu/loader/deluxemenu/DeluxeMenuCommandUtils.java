@@ -226,7 +226,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
     private ZPlaceholderPermissible createPlaceholderPermissible(ConfigurationSection section, List<Action> denyActions, PlaceholderAction action) {
         String input = section.getString("input");
         String output = section.getString("output");
-        return new ZPlaceholderPermissible(action, input, output, null, denyActions, new ArrayList<>());
+        return new ZPlaceholderPermissible(action, input, output, null, denyActions, new ArrayList<>(), false);
     }
 
     private static class CommandDelayResult {

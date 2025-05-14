@@ -27,8 +27,9 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
         String key = configuration.getString(path + "key");
         Object object = configuration.get(path + "value", true);
         long seconds = configuration.getLong(path + "seconds", 0);
+        boolean mathExpression = configuration.getBoolean(path + "math", false);
 
-        return new ZActionPlayerData(storageManager, key, type, object, seconds);
+        return new ZActionPlayerData(storageManager, key, type, object, seconds, mathExpression);
     }
 
     @Override

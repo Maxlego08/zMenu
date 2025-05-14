@@ -2,13 +2,14 @@ package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
     private final String placeholder;
     private final String value;
     private final String targetPlayer;
+    private final boolean enableMathExpression;
 
     /**
      * Constructs a ZPlaceholderPermissible with the specified placeholder action, placeholder key, and value.
@@ -33,12 +35,13 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
      * @param placeholder The placeholder key to evaluate.
      * @param value       The value associated with the placeholder.
      */
-    public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value, String targetPlayer, List<Action> denyActions, List<Action> successActions) {
+    public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value, String targetPlayer, List<Action> denyActions, List<Action> successActions, boolean enableMathExpression) {
         super(denyActions, successActions);
         this.action = action;
         this.placeholder = placeholder;
         this.value = value;
         this.targetPlayer = targetPlayer;
+        this.enableMathExpression = enableMathExpression;
     }
 
     /**
@@ -77,40 +80,37 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
 
         } else if (this.action.isString()) {
 
-            switch (this.action) {
-                case EQUALS_STRING:
-                    return valueAsString.equals(resultAsString);
-                case DIFFERENT_STRING:
-                    return !valueAsString.equals(resultAsString);
-                case EQUALSIGNORECASE_STRING:
-                    return valueAsString.equalsIgnoreCase(resultAsString);
-                case CONTAINS_STRING:
-                    return valueAsString.contains(resultAsString);
-                default:
-                    return false;
-            }
+            return switch (this.action) {
+                case EQUALS_STRING -> valueAsString.equals(resultAsString);
+                case DIFFERENT_STRING -> !valueAsString.equals(resultAsString);
+                case EQUALSIGNORECASE_STRING -> valueAsString.equalsIgnoreCase(resultAsString);
+                case CONTAINS_STRING -> valueAsString.contains(resultAsString);
+                default -> false;
+            };
 
         } else {
 
             try {
 
-                double value = Double.parseDouble(valueAsString.replace(",", "."));
-                double currentValue = Double.parseDouble(resultAsString.replace(",", "."));
+                double value;
+                double currentValue;
 
-                switch (this.action) {
-                    case EQUAL_TO:
-                        return value == currentValue;
-                    case LOWER:
-                        return value < currentValue;
-                    case LOWER_OR_EQUAL:
-                        return value <= currentValue;
-                    case SUPERIOR:
-                        return value > currentValue;
-                    case SUPERIOR_OR_EQUAL:
-                        return value >= currentValue;
-                    default:
-                        return true;
+                if (this.enableMathExpression) {
+                    value = new ExpressionBuilder(valueAsString).build().evaluate();
+                    currentValue = new ExpressionBuilder(resultAsString).build().evaluate();
+                } else {
+                    value = Double.parseDouble(valueAsString.replace(",", "."));
+                    currentValue = Double.parseDouble(resultAsString.replace(",", "."));
                 }
+
+                return switch (this.action) {
+                    case EQUAL_TO -> value == currentValue;
+                    case LOWER -> value < currentValue;
+                    case LOWER_OR_EQUAL -> value <= currentValue;
+                    case SUPERIOR -> value > currentValue;
+                    case SUPERIOR_OR_EQUAL -> value >= currentValue;
+                    default -> true;
+                };
 
             } catch (Exception exception) {
                 if (Config.enableDebug) {

@@ -41,6 +41,7 @@ allprojects {
         implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
         implementation("com.github.technicallycoded:FoliaLib:main-SNAPSHOT")
         implementation("com.github.Maxlego08:Sarah:1.17")
+        implementation("net.objecthunter:exp4j:0.4.8")
     }
 }
 
@@ -92,6 +93,7 @@ tasks {
         relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
         relocate("com.cryptomorin.xseries", "fr.maxlego08.menu.hooks.xseries")
         relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
+        relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")
 
         archiveClassifier = ""
 

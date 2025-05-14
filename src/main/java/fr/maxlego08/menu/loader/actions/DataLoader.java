@@ -29,6 +29,7 @@ public class DataLoader implements ActionLoader {
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
         long seconds = accessor.getLong("seconds", 0L);
-        return new DataAction(new ZActionPlayerData(plugin.getStorageManager(), key, type, object, seconds), plugin);
+        boolean mathExpression = accessor.getBoolean("math", false);
+        return new DataAction(new ZActionPlayerData(this.plugin.getStorageManager(), key, type, object, seconds, mathExpression), this.plugin);
     }
 }

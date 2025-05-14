@@ -128,7 +128,7 @@ public class ZStorageManager implements StorageManager {
             table.uuid("player_id", uuid).primary();
             table.string("key", data.getKey()).primary();
             table.string("data", data.getValue().toString());
-            table.object("expired_at", data.getExpiredAt() == 0 ? "NULL" : new Date(data.getExpiredAt()));
+            table.object("expired_at", data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt()));
         }));
     }
 
