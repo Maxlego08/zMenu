@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
 import fr.maxlego08.menu.zcore.utils.GlobalDatabaseConfiguration;
+import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
 import fr.maxlego08.sarah.DatabaseConfiguration;
 import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.HikariDatabaseConnection;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 public class ZStorageManager implements StorageManager {
 
     private final MenuPlugin plugin;
-    private final List<PlayerOpenInventoryEvent> inventoryEvents = new ArrayList<>();
+    private final TypeSafeCache cache = new TypeSafeCache();
     private RequestHelper requestHelper;
     private boolean isEnable = true;
 
@@ -99,22 +100,47 @@ public class ZStorageManager implements StorageManager {
         if (!enableTask) return;
 
         this.plugin.getScheduler().runTimerAsync(() -> {
-            List<Schema> schemas = new ArrayList<>();
-            var iterator = this.inventoryEvents.iterator();
-            while (iterator.hasNext()) {
-                var event = iterator.next();
-                schemas.add(SchemaBuilder.insert(Tables.PLAYER_OPEN_INVENTORIES, table -> {
-                    table.uuid("player_id", event.getPlayer().getUniqueId());
-                    table.string("plugin", event.getInventory().getPlugin().getName());
-                    table.string("inventory", event.getInventory().getFileName());
-                    table.bigInt("page", event.getPage());
-                    table.string("old_inventories", event.getOldInventories().stream().map(Inventory::getFileName).collect(Collectors.joining(",")));
-                }));
-                iterator.remove();
-            }
-            this.requestHelper.insertMultiple(schemas);
+            this.storeOpenInventories();
+            this.storePlayerData();
+            this.cache.clearAll();
 
         }, seconds, seconds, TimeUnit.SECONDS);
+    }
+
+    private void storePlayerData() {
+
+        List<Schema> schemas = new ArrayList<>();
+
+        var iterator = this.cache.get(DataDTO.class).iterator();
+        while (iterator.hasNext()) {
+            var dto = iterator.next();
+            schemas.add(SchemaBuilder.upsert(Tables.PLAYER_DATAS, table -> {
+                table.uuid("player_id", dto.player_id()).primary();
+                table.string("key", dto.key()).primary();
+                table.string("data", dto.data());
+                table.object("expired_at", dto.expired_at() == null ? null : dto.expired_at());
+            }));
+            iterator.remove();
+        }
+
+        this.requestHelper.upsertMultiple(schemas);
+    }
+
+    private void storeOpenInventories() {
+        List<Schema> schemas = new ArrayList<>();
+        var iterator = this.cache.get(PlayerOpenInventoryEvent.class).iterator();
+        while (iterator.hasNext()) {
+            var event = iterator.next();
+            schemas.add(SchemaBuilder.insert(Tables.PLAYER_OPEN_INVENTORIES, table -> {
+                table.uuid("player_id", event.getPlayer().getUniqueId());
+                table.string("plugin", event.getInventory().getPlugin().getName());
+                table.string("inventory", event.getInventory().getFileName());
+                table.bigInt("page", event.getPage());
+                table.string("old_inventories", event.getOldInventories().stream().map(Inventory::getFileName).collect(Collectors.joining(",")));
+            }));
+            iterator.remove();
+        }
+        this.requestHelper.insertMultiple(schemas);
     }
 
     @Override
@@ -124,32 +150,32 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void upsertData(UUID uuid, Data data) {
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.PLAYER_DATAS, table -> {
-            table.uuid("player_id", uuid).primary();
-            table.string("key", data.getKey()).primary();
-            table.string("data", data.getValue().toString());
-            table.object("expired_at", data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt()));
-        }));
+        this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()));
+        this.cache.add(new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt())));
     }
 
     @Override
     public void clearData() {
+        this.cache.clear(DataDTO.class);
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
         }));
     }
 
     @Override
     public void clearData(UUID uniqueId) {
+        this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uniqueId));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
     }
 
     @Override
     public void clearData(String key) {
+        this.cache.get(DataDTO.class).removeIf(e -> e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
     }
 
     @Override
     public void removeData(UUID uuid, String key) {
+        this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
             table.where("player_id", uuid);
             table.where("key", key);
@@ -166,6 +192,6 @@ public class ZStorageManager implements StorageManager {
 
         if (!isEnable() || !Config.enablePlayerOpenInventoryLogs) return;
 
-        this.inventoryEvents.add(event);
+        this.cache.add(event);
     }
 }
