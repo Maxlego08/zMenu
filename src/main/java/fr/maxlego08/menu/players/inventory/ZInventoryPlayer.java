@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ZInventoryPlayer implements InventoryPlayer {
 
-    private final Map<Integer, String> inventories = new HashMap<>();
+    private final Map<Integer, String> items = new HashMap<>();
 
     @Override
     public void storeInventory(Player player) {
@@ -29,7 +29,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content) {
         ItemStack itemStack = content[slot];
         if (itemStack != null) {
-            inventories.put(slot, ItemStackUtils.serializeItemStack(itemStack));
+            items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
         }
         playerInventory.clear(slot);
     }
@@ -37,6 +37,21 @@ public class ZInventoryPlayer implements InventoryPlayer {
     @Override
     public void giveInventory(Player player) {
         PlayerInventory playerInventory = player.getInventory();
-        inventories.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(encodedItemStack)));
+        items.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(encodedItemStack)));
+    }
+
+    @Override
+    public String toInventoryString() {
+        StringBuilder builder = new StringBuilder();
+        this.items.forEach((slot, itemStack) -> {
+            builder.append(slot).append(":").append(itemStack).append(";");
+        });
+        String result = builder.toString();
+        return result.isEmpty() ? result : result.substring(0, result.length() - 1);
+    }
+
+    @Override
+    public Map<Integer, String> getItems() {
+        return this.items;
     }
 }

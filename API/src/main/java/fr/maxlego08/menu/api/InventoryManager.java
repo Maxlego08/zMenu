@@ -201,6 +201,13 @@ public interface InventoryManager extends Listener {
      */
     void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
 
+    /**
+     * Opens an inventory for a player on a specific page with its old inventories.
+     *
+     * @param player    Player to whom the inventory must be opened.
+     * @param inventory The inventory to be opened.
+     * @param page      Inventory page.
+     */
     void openInventoryWithOldInventories(Player player, Inventory inventory, int page);
 
     /**
@@ -266,6 +273,16 @@ public interface InventoryManager extends Listener {
     void openInventory(Player player, String pluginName, String inventoryName);
 
     /**
+     * Opens an inventory based on its name and the plugin name.
+     *
+     * @param player        Player who will open the inventory.
+     * @param pluginName    The plugin where the inventory comes from.
+     * @param inventoryName Name of the inventory to be opened.
+     * @param page          The page number of the inventory to open.
+     */
+    void openInventory(Player player, String pluginName, String inventoryName, int page);
+
+    /**
      * Opens an inventory based on its name. Note that
      * this method searches in all inventories; it is more appropriate to use
      * the method {@link #openInventory(Player, Plugin, String)}.
@@ -274,6 +291,17 @@ public interface InventoryManager extends Listener {
      * @param inventoryName Name of the inventory to be opened.
      */
     void openInventory(Player player, String inventoryName);
+
+    /**
+     * Opens an inventory based on its name and a specific page number.
+     * This method allows a player to view a particular page of an inventory,
+     * facilitating navigation through multi-page inventories.
+     *
+     * @param player        Player who will open the inventory.
+     * @param inventoryName Name of the inventory to be opened.
+     * @param page          The page number of the inventory to open.
+     */
+    void openInventory(Player player, String inventoryName, int page);
 
     /**
      * Returns an optional of a plugin based on its name.

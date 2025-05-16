@@ -42,9 +42,6 @@ public class Config {
     // Seconds save player data: The time in seconds for automatic backup of inventories data.
     public static int secondsSavePlayerInventories = 600;
 
-    // Auto save file inventory on update: allows you to save the file of players inventories automatically.
-    public static boolean autoSaveFileInventoryOnUpdate = true;
-
     // Default menu name
     public static String mainMenu = "example";
 
@@ -118,8 +115,7 @@ public class Config {
 
         secondsSavePlayerData = configuration.getInt("seconds-save-player-data");
         secondsSavePlayerInventories = configuration.getInt("seconds-save-player-inventories");
-
-        autoSaveFileInventoryOnUpdate = configuration.getBoolean("auto-save-file-inventory-on-update");
+        
         mainMenu = configuration.getString("main-menu");
         useSwapItemOffHandKeyToOpenMainMenu = configuration.getBoolean("use-swap-item-off-hand-key-to-open-main-menu");
         useSwapItemOffHandKeyToOpenMainMenuNeedsShift = configuration.getBoolean("use-swap-item-off-hand-key-to-open-main-menu-needs-shift");

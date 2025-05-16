@@ -74,10 +74,6 @@ seconds-save-player-data: 600
 # Determines how often the inventories are automatically saved.
 seconds-save-player-inventories: 600
 
-# Enable auto-save inventory files on update.
-# When set to true, any change to a player's inventory is immediately saved to disk.
-auto-save-file-inventory-on-update: true
-
 # Default menu name.
 # The name of the default menu to be opened if no specific one is defined.
 main-menu: "example"

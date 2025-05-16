@@ -5,10 +5,13 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.players.Data;
+import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
+import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
 import fr.maxlego08.menu.zcore.utils.GlobalDatabaseConfiguration;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
@@ -51,6 +54,7 @@ public class ZStorageManager implements StorageManager {
         MigrationManager.setMigrationTableName("zmenu_migrations");
         MigrationManager.registerMigration(new PlayerOpenInventoryMigration());
         MigrationManager.registerMigration(new PlayerDataMigration());
+        MigrationManager.registerMigration(new PlayerInventoriesMigration());
 
         GlobalDatabaseConfiguration globalDatabaseConfiguration = new GlobalDatabaseConfiguration(this.plugin.getConfig());
         String user = globalDatabaseConfiguration.getUser();
@@ -64,7 +68,7 @@ public class ZStorageManager implements StorageManager {
         String storageType = this.plugin.getConfig().getString("storage-type", "SQLITE");
         if (storageType.equalsIgnoreCase("NONE")) {
             this.plugin.getLogger().info("You are not using a database.");
-            isEnable = false;
+            this.isEnable = false;
             return;
         }
 
@@ -96,8 +100,7 @@ public class ZStorageManager implements StorageManager {
 
         if (seconds <= 0) return;
 
-        boolean enableTask = Config.enablePlayerOpenInventoryLogs;
-        if (!enableTask) return;
+        if (!isEnable()) return;
 
         this.plugin.getScheduler().runTimerAsync(() -> {
             this.storeOpenInventories();
@@ -150,12 +153,16 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void upsertData(UUID uuid, Data data) {
+        if (!isEnable()) return;
+
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()));
         this.cache.add(new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt())));
     }
 
     @Override
     public void clearData() {
+        if (!isEnable()) return;
+
         this.cache.clear(DataDTO.class);
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
         }));
@@ -163,18 +170,24 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void clearData(UUID uniqueId) {
+        if (!isEnable()) return;
+
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uniqueId));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
     }
 
     @Override
     public void clearData(String key) {
+        if (!isEnable()) return;
+
         this.cache.get(DataDTO.class).removeIf(e -> e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
     }
 
     @Override
     public void removeData(UUID uuid, String key) {
+        if (!isEnable()) return;
+
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
             table.where("player_id", uuid);
@@ -187,11 +200,29 @@ public class ZStorageManager implements StorageManager {
         return this.requestHelper.selectAll(Tables.PLAYER_DATAS, DataDTO.class);
     }
 
+    @Override
+    public List<InventoryDTO> loadInventories() {
+        return this.requestHelper.selectAll(Tables.PLAYER_INVENTORIES, InventoryDTO.class);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onIslandQuit(PlayerOpenInventoryEvent event) {
+    public void onPlayerOpenInventory(PlayerOpenInventoryEvent event) {
 
         if (!isEnable() || !Config.enablePlayerOpenInventoryLogs) return;
 
         this.cache.add(event);
+    }
+
+    @Override
+    public void removeInventory(UUID uuid) {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
+    }
+
+    @Override
+    public void storeInventory(UUID uuid, InventoryPlayer inventoryPlayer) {
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.insert(Tables.PLAYER_INVENTORIES, table -> {
+            table.uuid("player_id", uuid);
+            table.string("inventory", inventoryPlayer.toInventoryString());
+        }));
     }
 }

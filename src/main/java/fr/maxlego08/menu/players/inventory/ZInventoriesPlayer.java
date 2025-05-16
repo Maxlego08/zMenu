@@ -1,37 +1,29 @@
 package fr.maxlego08.menu.players.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
-import org.bukkit.Bukkit;
+import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ZInventoriesPlayer implements InventoriesPlayer {
 
-    private static Map<UUID, ZInventoryPlayer> inventories = new HashMap<>();
-    private transient final ZMenuPlugin plugin;
-    private transient long lastSave;
+    private final Map<UUID, InventoryPlayer> inventories = new HashMap<>();
+    private final ZMenuPlugin plugin;
+    private long lastSave;
 
     public ZInventoriesPlayer(ZMenuPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    public void autoSave() {
-        if (System.currentTimeMillis() > this.lastSave) {
-            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-                this.save();
-                this.lastSave = System.currentTimeMillis() + (Config.secondsSavePlayerInventories * 1000L);
-            });
-        }
     }
 
     @Override
@@ -46,9 +38,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         inventoryPlayer.storeInventory(player);
         inventories.put(player.getUniqueId(), inventoryPlayer);
 
-        if (Config.autoSaveFileInventoryOnUpdate) {
-            autoSave();
-        }
+        this.plugin.getStorageManager().storeInventory(player.getUniqueId(), inventoryPlayer);
     }
 
     @Override
@@ -59,9 +49,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
             inventoryPlayer.giveInventory(player);
             inventories.remove(player.getUniqueId());
 
-            if (Config.autoSaveFileInventoryOnUpdate) {
-                autoSave();
-            }
+            this.plugin.getStorageManager().removeInventory(player.getUniqueId());
         }
     }
 
@@ -73,14 +61,6 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     @Override
     public Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId) {
         return Optional.ofNullable(inventories.getOrDefault(uniqueId, null));
-    }
-
-    public void save() {
-        this.plugin.getPersist().save(this, "players-inventory");
-    }
-
-    public void load() {
-        this.plugin.getPersist().loadOrSaveDefault(this, ZInventoriesPlayer.class, "players-inventory");
     }
 
     @EventHandler
@@ -97,5 +77,14 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         if (hasSavedInventory(player.getUniqueId())) {
             this.giveInventory(player);
         }
+    }
+
+    @Override
+    public void loadInventories() {
+        this.inventories.putAll(this.plugin.getStorageManager().loadInventories().stream().collect(Collectors.toMap(InventoryDTO::player_id, inventory -> {
+            var inventoryPlayer = new ZInventoryPlayer();
+            inventoryPlayer.getItems().putAll(Arrays.stream(inventory.inventory().split(";")).collect(Collectors.toMap(s -> Integer.parseInt(s.split(":")[0]), s -> s.split(":")[1])));
+            return inventoryPlayer;
+        })));
     }
 }

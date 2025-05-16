@@ -185,7 +185,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.inventoryManager.load();
         this.commandManager.loadCommands();
         this.messageLoader.load();
-        this.inventoriesPlayer.load();
+        this.inventoriesPlayer.loadInventories();
         this.dataManager.loadPlayers();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
@@ -308,7 +308,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             Token.getInstance().save(this.getPersist());
         }
         // this.packetUtils.onDisable();
-        this.inventoriesPlayer.save();
 
         this.postDisable();
     }

@@ -49,7 +49,7 @@ public class CommandMenuOpen extends VCommand {
 
         Optional<Inventory> optional = findInventory(inventoryName, inventoryManager);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
             return CommandType.DEFAULT;
         }

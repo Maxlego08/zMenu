@@ -398,8 +398,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
                 try {
                     this.loadInventory(this.plugin, file);
-                } catch (InventoryException e1) {
-                    e1.printStackTrace();
+                } catch (InventoryException exception) {
+                    exception.printStackTrace();
                 }
             });
         } catch (IOException exception) {
@@ -414,8 +414,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 if (file.getName().endsWith(".yml")) {
                     try {
                         this.loadInventory(this.plugin, file);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 }
             }
@@ -451,7 +451,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             player.closeInventory();
             message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
             return;
@@ -462,30 +462,39 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventory(Player player, String pluginName, String inventoryName) {
+        openInventory(player, pluginName, inventoryName, 1);
+    }
 
+    @Override
+    public void openInventory(Player player, String pluginName, String inventoryName, int page) {
         Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             player.closeInventory();
             message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
             return;
         }
 
-        this.openInventory(player, optional.get());
+        this.openInventory(player, optional.get(), page);
     }
 
     @Override
-    public void openInventory(Player player, String inventoryName) {
+    public void openInventory(Player player, String inventoryName, int page) {
 
         Optional<Inventory> optional = this.getInventory(inventoryName);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             player.closeInventory();
             message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
             return;
         }
 
-        this.openInventory(player, optional.get());
+        this.openInventory(player, optional.get(), page);
+    }
+
+    @Override
+    public void openInventory(Player player, String inventoryName) {
+        openInventory(player, inventoryName, 1);
     }
 
     @Override
