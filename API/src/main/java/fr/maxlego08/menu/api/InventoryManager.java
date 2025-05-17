@@ -555,4 +555,6 @@ public interface InventoryManager extends Listener {
     void sendMessage(CommandSender sender, Message message, Object... args);
 
     void load();
+
+    MenuPlugin getPlugin();
 }

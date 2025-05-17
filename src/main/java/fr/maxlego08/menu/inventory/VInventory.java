@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class VInventory extends ZUtils implements Cloneable, InventoryHolder, BaseInventory {
+public abstract class VInventory extends ZUtils implements Cloneable, BaseInventory {
 
     protected int id;
     protected ZMenuPlugin plugin;

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.players;
 
-import fr.maxlego08.menu.zcore.utils.interfaces.StringConsumer;
+import fr.maxlego08.menu.api.interfaces.StringConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;

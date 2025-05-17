@@ -1,26 +1,22 @@
 package fr.maxlego08.menu.loader.permissible;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.loader.ZPermissibleLoader;
 import fr.maxlego08.menu.hooks.luckperms.ZLuckPermPermissible;
 
 import java.io.File;
 import java.util.List;
 
-public class LuckPermPermissibleLoader extends ZPermissibleLoader {
+public class LuckPermPermissibleLoader extends PermissibleLoader {
 
     private final ButtonManager buttonManager;
 
     public LuckPermPermissibleLoader(ButtonManager buttonManager) {
+        super("luckperm");
         this.buttonManager = buttonManager;
-    }
-
-    @Override
-    public String getKey() {
-        return "luckperm";
     }
 
     @Override

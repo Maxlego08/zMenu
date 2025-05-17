@@ -4,26 +4,22 @@ import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.enums.ItemVerification;
+import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.loader.ZPermissibleLoader;
 import fr.maxlego08.menu.requirement.permissible.ZItemPermissible;
 
 import java.io.File;
 import java.util.List;
 
-public class ItemPermissibleLoader extends ZPermissibleLoader {
+public class ItemPermissibleLoader extends PermissibleLoader {
 
     private final ZMenuPlugin plugin;
 
     public ItemPermissibleLoader(ZMenuPlugin plugin) {
+        super("item");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "item";
     }
 
     @Override

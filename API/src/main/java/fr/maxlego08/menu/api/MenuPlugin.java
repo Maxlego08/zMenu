@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
+import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
@@ -56,4 +57,6 @@ public interface MenuPlugin extends Plugin {
     StorageManager getStorageManager();
 
     boolean isFolia();
+
+    void registerPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer);
 }

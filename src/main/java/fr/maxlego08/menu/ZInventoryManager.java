@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
@@ -144,6 +145,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.loadButtons();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
+    }
+
+    @Override
+    public MenuPlugin getPlugin() {
+        return this.plugin;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.placeholder;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.zcore.utils.interfaces.ReturnBiConsumer;
+import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;

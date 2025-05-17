@@ -10,7 +10,6 @@ import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
-import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
@@ -357,11 +356,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public boolean isFolia() {
         return this.foliaLib.isFolia();
-    }
-
-    @Override
-    public void registerPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer) {
-        LocalPlaceholder.getInstance().register(startWith, biConsumer);
     }
 
     /**

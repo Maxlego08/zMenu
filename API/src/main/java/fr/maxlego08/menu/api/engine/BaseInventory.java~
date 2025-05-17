@@ -4,12 +4,11 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public interface BaseInventory extends InventoryHolder {
+public interface BaseInventory {
 
     MenuPlugin getPlugin();
 

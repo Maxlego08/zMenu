@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.interfaces;
+package fr.maxlego08.menu.api.interfaces;
 
 @FunctionalInterface
 public interface ReturnBiConsumer<T, G, C> {
