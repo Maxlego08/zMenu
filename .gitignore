@@ -48,3 +48,4 @@ bin/
 target
 target-api
 *.java~
+*.kts~
