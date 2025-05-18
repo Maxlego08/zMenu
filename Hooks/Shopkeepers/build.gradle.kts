@@ -6,5 +6,5 @@ repositories {
 
 dependencies {
     compileOnly(project(":API"))
-    compileOnly("com.nisovin.shopkeepers:ShopkeepersAPI:2.15.1")
+    compileOnly(files("libs/ShopkeepersAPI-2.15.1.jar"))
 }
