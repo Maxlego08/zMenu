@@ -9,17 +9,13 @@ import fr.maxlego08.menu.requirement.actions.InventoryAction;
 import java.io.File;
 import java.util.List;
 
-public class InventoryLoader implements ActionLoader {
+public class InventoryLoader extends ActionLoader {
 
     private final ZMenuPlugin plugin;
 
     public InventoryLoader(ZMenuPlugin plugin) {
+        super("inventory", "inv");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "inventory";
     }
 
     @Override

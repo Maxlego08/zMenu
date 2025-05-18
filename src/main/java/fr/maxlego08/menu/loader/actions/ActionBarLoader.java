@@ -7,11 +7,10 @@ import fr.maxlego08.menu.requirement.actions.ActionBarAction;
 
 import java.io.File;
 
-public class ActionBarLoader implements ActionLoader {
+public class ActionBarLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "action,actionbar";
+    public ActionBarLoader() {
+        super("action", "actionbar");
     }
 
     @Override

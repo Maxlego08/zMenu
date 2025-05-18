@@ -7,11 +7,10 @@ import fr.maxlego08.menu.requirement.actions.RefreshAction;
 
 import java.io.File;
 
-public class RefreshLoader implements ActionLoader {
+public class RefreshLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "refresh";
+    public RefreshLoader() {
+        super("refresh");
     }
 
     @Override

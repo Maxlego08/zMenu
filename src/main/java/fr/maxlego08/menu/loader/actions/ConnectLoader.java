@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -8,17 +8,13 @@ import fr.maxlego08.menu.requirement.actions.ConnectAction;
 
 import java.io.File;
 
-public class ConnectLoader implements ActionLoader {
+public class ConnectLoader extends ActionLoader {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public ConnectLoader(ZMenuPlugin plugin) {
+    public ConnectLoader(MenuPlugin plugin) {
+        super("connect");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "connect";
     }
 
     @Override

@@ -21,7 +21,8 @@ public enum Plugins {
 	LUCKPERMS("LuckPerms"),
 	CRAFTENGINE("CraftEngine"),
 	NEXO("Nexo"),
-	MAGICCOSMETICS("MagicCosmetics");
+	MAGICCOSMETICS("MagicCosmetics"),
+	ZMENUPLUS("zMenuPlus");
 
 	private final String name;
 

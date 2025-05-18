@@ -11,17 +11,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Optional;
 
-public class ZItemsLoader implements MaterialLoader {
+public class ZItemsLoader extends MaterialLoader {
 
     private final Plugin plugin;
 
     public ZItemsLoader(Plugin plugin) {
+        super("zitems");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "zitems";
     }
 
     @Override

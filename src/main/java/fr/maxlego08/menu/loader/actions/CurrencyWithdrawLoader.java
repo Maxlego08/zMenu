@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -9,11 +8,10 @@ import fr.traqueur.currencies.Currencies;
 
 import java.io.File;
 
-public class CurrencyWithdrawLoader implements ActionLoader {
+public class CurrencyWithdrawLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "withdraw,money remove";
+    public CurrencyWithdrawLoader() {
+        super("withdraw", "money remove");
     }
 
     @Override

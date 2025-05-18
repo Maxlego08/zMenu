@@ -8,9 +8,8 @@ import java.io.File;
 
 public class BroadcastSoundLoader extends SoundLoader {
 
-    @Override
-    public String getKey() {
-        return "broadcast_sound,broadcast sound";
+    public BroadcastSoundLoader() {
+        super("broadcast_sound", "broadcast sound");
     }
 
     @Override

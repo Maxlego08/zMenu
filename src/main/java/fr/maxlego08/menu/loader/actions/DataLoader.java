@@ -10,17 +10,13 @@ import fr.maxlego08.menu.requirement.actions.DataAction;
 
 import java.io.File;
 
-public class DataLoader implements ActionLoader {
+public class DataLoader extends ActionLoader {
 
     private final MenuPlugin plugin;
 
     public DataLoader(MenuPlugin plugin) {
+        super("data");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "data";
     }
 
     @Override

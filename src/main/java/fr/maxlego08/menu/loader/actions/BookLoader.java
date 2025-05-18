@@ -11,11 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BookLoader implements ActionLoader {
+public class BookLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "book";
+    public BookLoader() {
+        super("book");
     }
 
     @Override

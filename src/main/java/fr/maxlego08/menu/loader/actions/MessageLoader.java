@@ -9,11 +9,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageLoader implements ActionLoader {
+public class MessageLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "message,messages";
+    public MessageLoader() {
+        super("message", "messages");
     }
 
     @Override

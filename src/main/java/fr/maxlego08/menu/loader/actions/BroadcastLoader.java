@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
@@ -12,18 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BroadcastLoader implements ActionLoader {
+public class BroadcastLoader extends ActionLoader {
 
+    private final MenuPlugin plugin;
 
-    private final ZMenuPlugin plugin;
-
-    public BroadcastLoader(ZMenuPlugin plugin) {
+    public BroadcastLoader(MenuPlugin plugin) {
+        super("broadcast");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "broadcast";
     }
 
     @Override

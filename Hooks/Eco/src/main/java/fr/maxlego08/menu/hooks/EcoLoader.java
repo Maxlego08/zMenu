@@ -6,10 +6,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class EcoLoader implements MaterialLoader {
-    @Override
-    public String getKey() {
-        return "eco";
+public class EcoLoader extends MaterialLoader {
+    
+    public EcoLoader() {
+        super("eco");
     }
 
     @Override

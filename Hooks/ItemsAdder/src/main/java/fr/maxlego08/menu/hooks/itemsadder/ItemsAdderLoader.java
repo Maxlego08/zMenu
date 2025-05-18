@@ -7,17 +7,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-public class ItemsAdderLoader implements MaterialLoader {
+public class ItemsAdderLoader extends MaterialLoader {
 
     private final Plugin plugin;
 
     public ItemsAdderLoader(Plugin plugin) {
+        super("itemsadder");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "itemsadder";
     }
 
     @Override

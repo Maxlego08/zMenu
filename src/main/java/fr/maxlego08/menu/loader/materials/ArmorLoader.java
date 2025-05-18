@@ -6,10 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-public class ArmorLoader implements MaterialLoader {
-    @Override
-    public String getKey() {
-        return "armor";
+public class ArmorLoader extends MaterialLoader {
+
+    public ArmorLoader() {
+        super("armor");
     }
 
     @Override

@@ -8,14 +8,22 @@ import org.bukkit.inventory.ItemStack;
  * Documentation: <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
  * <p>The MaterialLoader interface defines methods for loading an {@link ItemStack} from a configuration.</p>
  */
-public interface MaterialLoader {
+public abstract class MaterialLoader {
+
+    private final String key;
+
+    public MaterialLoader(String key) {
+        this.key = key;
+    }
 
     /**
      * Returns the key used to load the ItemStack.
      *
      * @return The key.
      */
-    String getKey();
+    public String getKey() {
+        return this.key;
+    }
 
     /**
      * Loads an ItemStack based on the provided configuration.
@@ -26,6 +34,6 @@ public interface MaterialLoader {
      * @param materialString The material as a String.
      * @return The loaded ItemStack.
      */
-    ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString);
+    public abstract ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString);
 
 }

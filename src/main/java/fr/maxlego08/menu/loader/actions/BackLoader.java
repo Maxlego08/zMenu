@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -8,17 +8,13 @@ import fr.maxlego08.menu.requirement.actions.BackAction;
 
 import java.io.File;
 
-public class BackLoader implements ActionLoader {
+public class BackLoader extends ActionLoader {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public BackLoader(ZMenuPlugin plugin) {
+    public BackLoader(MenuPlugin plugin) {
+        super("back");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "back";
     }
 
     @Override

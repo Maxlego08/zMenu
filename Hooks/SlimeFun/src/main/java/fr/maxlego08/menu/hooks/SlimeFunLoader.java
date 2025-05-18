@@ -6,10 +6,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class SlimeFunLoader implements MaterialLoader {
-    @Override
-    public String getKey() {
-        return "slimefun";
+public class SlimeFunLoader extends MaterialLoader {
+    public SlimeFunLoader() {
+        super("slimefun");
     }
 
     @Override

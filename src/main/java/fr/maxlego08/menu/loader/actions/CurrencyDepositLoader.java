@@ -8,11 +8,10 @@ import fr.traqueur.currencies.Currencies;
 
 import java.io.File;
 
-public class CurrencyDepositLoader implements ActionLoader {
+public class CurrencyDepositLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "deposit,money add";
+    public CurrencyDepositLoader() {
+        super("deposit", "money add");
     }
 
     @Override

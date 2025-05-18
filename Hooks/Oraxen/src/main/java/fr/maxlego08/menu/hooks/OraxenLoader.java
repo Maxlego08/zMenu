@@ -6,11 +6,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class OraxenLoader implements MaterialLoader {
+public class OraxenLoader extends MaterialLoader {
 
-    @Override
-    public String getKey() {
-        return "oraxen";
+    public OraxenLoader() {
+        super("oraxen");
     }
 
     @Override

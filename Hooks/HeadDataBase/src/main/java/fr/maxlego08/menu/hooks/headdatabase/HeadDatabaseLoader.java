@@ -6,11 +6,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class HeadDatabaseLoader implements MaterialLoader {
+public class HeadDatabaseLoader extends MaterialLoader {
 
-    @Override
-    public String getKey() {
-        return "hdb";
+    public HeadDatabaseLoader() {
+        super("hdb");
     }
 
     @Override

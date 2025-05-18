@@ -10,23 +10,26 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
-public class DiscordComponentV2Loader implements ActionLoader {
+public class DiscordComponentV2Loader extends ActionLoader {
 
     private static final Map<String, Boolean> webhookUrlCache = new HashMap<>();
 
-    @Override
-    public String getKey() {return "discord component,discord_component,discord webhook component,discordwebhookcomponent";}
+    public DiscordComponentV2Loader() {
+        super("discord", "discord_component", "discord webhook component", "discordwebhookcomponent");
+    }
 
     @Override
-    public Action load(String path, TypedMapAccessor accessor, File file){
+    public Action load(String path, TypedMapAccessor accessor, File file) {
         String webhookUrl = accessor.getString("webhook");
         String avatarUrl = accessor.getString("avatar_url", null);
         String username = accessor.getString("username", null);
         List<?> json = accessor.getList("component");
-        if (checkWebhookExists(webhookUrl)){
+        if (checkWebhookExists(webhookUrl)) {
             DiscordConfigurationComponent config = new DiscordConfigurationComponent(webhookUrl, avatarUrl, username, json);
             return new DiscordComponentAction(config);
         } else {
@@ -34,7 +37,8 @@ public class DiscordComponentV2Loader implements ActionLoader {
         }
         return null;
     }
-    private boolean checkWebhookExists(String webhookUrl){
+
+    private boolean checkWebhookExists(String webhookUrl) {
         if (webhookUrlCache.containsKey(webhookUrl)) {
             return webhookUrlCache.get(webhookUrl);
         }

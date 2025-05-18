@@ -16,13 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DiscordLoader implements ActionLoader {
+public class DiscordLoader extends ActionLoader {
 
     private static final Map<String, Boolean> webhookUrlCache = new HashMap<>();
 
-    @Override
-    public String getKey() {
-        return "discord,send discord,discord webhook,discordwebhook";
+    public DiscordLoader() {
+        super("discord", "send discord", "discord webhook", "discordwebhook");
     }
 
     @Override

@@ -8,11 +8,10 @@ import fr.maxlego08.menu.requirement.actions.PlayerCommandAction;
 import java.io.File;
 import java.util.List;
 
-public class PlayerCommandLoader implements ActionLoader {
+public class PlayerCommandLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "player_command,player_commands,player command,player commands,player-command,player-commands";
+    public PlayerCommandLoader() {
+        super("player_command", "player_commands", "player command", "player commands", "player-command,player-commands");
     }
 
     @Override

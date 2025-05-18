@@ -220,10 +220,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.addListener(new DupeListener(this.dupeManager));
         }
 
-        Logger.info("");
-        Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
-        Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
-        Logger.info("");
+        if (!isActive(Plugins.ZMENUPLUS)) {
+            Logger.info("");
+            Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
+            Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
+            Logger.info("");
+        }
 
 
         this.websiteManager.loadPlaceholders();

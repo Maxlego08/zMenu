@@ -8,11 +8,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class CraftEngineLoader implements MaterialLoader {
+public class CraftEngineLoader extends MaterialLoader {
 
-    @Override
-    public String getKey() {
-        return "craftengine";
+    public CraftEngineLoader() {
+        super("craftengine");
     }
 
     @Override

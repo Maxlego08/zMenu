@@ -10,11 +10,10 @@ import org.bukkit.inventory.ItemStack;
 /*
 * If you have problems compiling this class, delete it there; At the moment, it is impossible to access the nexo API.
 * */
-public class NexoLoader implements MaterialLoader {
+public class NexoLoader extends MaterialLoader {
 
-    @Override
-    public String getKey() {
-        return "nexo";
+    public NexoLoader() {
+        super("nexo");
     }
 
     @Override

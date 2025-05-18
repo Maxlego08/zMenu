@@ -8,11 +8,10 @@ import fr.maxlego08.menu.requirement.actions.PlayerChatAction;
 import java.io.File;
 import java.util.List;
 
-public class ChatLoader implements ActionLoader {
+public class ChatLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "chat";
+    public ChatLoader() {
+        super("chat");
     }
 
     @Override

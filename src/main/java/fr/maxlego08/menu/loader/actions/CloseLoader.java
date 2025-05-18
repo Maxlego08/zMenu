@@ -7,11 +7,10 @@ import fr.maxlego08.menu.requirement.actions.CloseAction;
 
 import java.io.File;
 
-public class CloseLoader implements ActionLoader {
+public class CloseLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "close";
+    public CloseLoader() {
+        super("close");
     }
 
     @Override

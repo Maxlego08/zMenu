@@ -6,10 +6,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class Base64Loader implements MaterialLoader {
-    @Override
-    public String getKey() {
-        return "base64";
+public class Base64Loader extends MaterialLoader {
+    
+    public Base64Loader() {
+        super("base64");
     }
 
     @Override

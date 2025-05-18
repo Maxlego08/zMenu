@@ -10,11 +10,14 @@ import fr.maxlego08.menu.sound.ZSoundOption;
 
 import java.io.File;
 
-public class SoundLoader implements ActionLoader {
+public class SoundLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "sound";
+    public SoundLoader(String... keys) {
+        super(keys);
+    }
+
+    public SoundLoader() {
+        super("sound");
     }
 
     @Override

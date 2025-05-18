@@ -7,11 +7,10 @@ import fr.maxlego08.menu.requirement.actions.TitleAction;
 
 import java.io.File;
 
-public class TitleLoader implements ActionLoader {
+public class TitleLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "title";
+    public TitleLoader() {
+        super("title");
     }
 
     @Override

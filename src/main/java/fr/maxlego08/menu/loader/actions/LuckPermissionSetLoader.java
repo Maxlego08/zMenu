@@ -7,11 +7,10 @@ import fr.maxlego08.menu.hooks.luckperms.LuckPermissionSet;
 
 import java.io.File;
 
-public class LuckPermissionSetLoader implements ActionLoader {
+public class LuckPermissionSetLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "permission-set,permission set,set permission,set-permission";
+    public LuckPermissionSetLoader() {
+        super("permission-set", "permission set", "set permission", "set-permission");
     }
 
     @Override

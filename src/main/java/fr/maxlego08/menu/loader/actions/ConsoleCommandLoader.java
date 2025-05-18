@@ -8,11 +8,10 @@ import fr.maxlego08.menu.requirement.actions.ConsoleCommandAction;
 import java.io.File;
 import java.util.List;
 
-public class ConsoleCommandLoader implements ActionLoader {
+public class ConsoleCommandLoader extends ActionLoader {
 
-    @Override
-    public String getKey() {
-        return "console_command,console_commands,console commands,console command,command,commands,console-commands,console-command";
+    public ConsoleCommandLoader() {
+        super("console_command", "console_commands", "console commands", "console command", "command", "commands", "console-commands", "console-command");
     }
 
     @Override

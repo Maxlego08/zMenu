@@ -1,7 +1,6 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
@@ -99,15 +98,9 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void registerAction(ActionLoader actionLoader) {
-        String key = actionLoader.getKey().toLowerCase();
-        if (key.contains(",")) {
-            for (String value : key.split(",")) {
-                this.actionsLoader.put(value, actionLoader);
-                this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, value);
-            }
-        } else {
-            this.actionsLoader.put(key, actionLoader);
-            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, key);
+        for (String value : actionLoader.getKeys()) {
+            this.actionsLoader.put(value, actionLoader);
+            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, value);
         }
     }
 

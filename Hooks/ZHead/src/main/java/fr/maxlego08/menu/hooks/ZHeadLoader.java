@@ -7,17 +7,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ZHeadLoader implements MaterialLoader {
+public class ZHeadLoader extends MaterialLoader {
 
     private final HeadManager headManager;
 
     public ZHeadLoader(MenuPlugin plugin) {
+        super("zhd");
         this.headManager = plugin.getProvider(HeadManager.class);
-    }
-
-    @Override
-    public String getKey() {
-        return "zhd";
     }
 
     @Override

@@ -8,17 +8,13 @@ import fr.maxlego08.menu.hooks.ShopkeeperAction;
 
 import java.io.File;
 
-public class ShopkeeperLoader implements ActionLoader {
+public class ShopkeeperLoader extends ActionLoader {
 
     private final MenuPlugin plugin;
 
     public ShopkeeperLoader(MenuPlugin plugin) {
+        super("shopkeeper");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "shopkeeper";
     }
 
     @Override

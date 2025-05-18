@@ -7,11 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import com.francobm.magicosmetics.api.MagicAPI;
 
-public class MagicCosmeticsLoader implements MaterialLoader {
+public class MagicCosmeticsLoader extends MaterialLoader {
 
-    @Override
-    public String getKey() {
-        return "magic_cosmetics";
+    public MagicCosmeticsLoader() {
+        super("magic_cosmetics");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -10,17 +10,13 @@ import org.bukkit.Location;
 
 import java.io.File;
 
-public class TeleportLoader implements ActionLoader {
+public class TeleportLoader extends ActionLoader {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public TeleportLoader(ZMenuPlugin plugin) {
+    public TeleportLoader(MenuPlugin plugin) {
+        super("teleport", "tp");
         this.plugin = plugin;
-    }
-
-    @Override
-    public String getKey() {
-        return "teleport,tp";
     }
 
     @Override

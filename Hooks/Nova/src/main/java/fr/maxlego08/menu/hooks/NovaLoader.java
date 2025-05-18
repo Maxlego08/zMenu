@@ -10,10 +10,9 @@ import xyz.xenondevs.nova.api.item.NovaItemRegistry;
 
 import java.util.Objects;
 
-public class NovaLoader implements MaterialLoader {
-    @Override
-    public String getKey() {
-        return "nova";
+public class NovaLoader extends MaterialLoader {
+    public NovaLoader() {
+        super("nova");
     }
 
     @Override
