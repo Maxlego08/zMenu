@@ -2,7 +2,7 @@ name: Gradle Package
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ release/rework-gradle ]
   workflow_dispatch:
 
 concurrency:
