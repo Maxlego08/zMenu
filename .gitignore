@@ -47,3 +47,4 @@ bin/
 .gradle
 target
 target-api
+*.java~

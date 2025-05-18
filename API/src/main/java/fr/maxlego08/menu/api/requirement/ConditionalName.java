@@ -7,7 +7,17 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public interface ConditionalName {
+public class ConditionalName {
+
+    private final String name;
+    private final List<Permissible> permissibles;
+    private final int priority;
+
+    public ConditionalName(String name, List<Permissible> permissibles, int priority) {
+        this.name = name;
+        this.permissibles = permissibles;
+        this.priority = priority;
+    }
 
     /**
      * Retrieves the name of the conditional name.
@@ -16,7 +26,9 @@ public interface ConditionalName {
      *
      * @return the name of the conditional name.
      */
-    String getName();
+    public String getName() {
+        return this.name;
+    }
 
     /**
      * Retrieves a list of all permissibles associated with this conditional name.
@@ -26,7 +38,9 @@ public interface ConditionalName {
      *
      * @return a list of all permissibles associated with this conditional name.
      */
-    List<Permissible> getPermissibles();
+    public List<Permissible> getPermissibles() {
+        return this.permissibles;
+    }
 
     /**
      * Retrieves the priority of this conditional name.
@@ -36,7 +50,9 @@ public interface ConditionalName {
      *
      * @return the priority of this conditional name.
      */
-    int getPriority();
+    public int getPriority() {
+        return this.priority;
+    }
 
     /**
      * Checks if the given player has permission to access the given menu.
@@ -45,13 +61,15 @@ public interface ConditionalName {
      * has a conditional name. The method should return true if the player has
      * permission to access the menu, and false otherwise.</p>
      *
-     * @param player       the player who is trying to access the menu.
-     * @param button       the button that the player clicked to access the menu.
-     * @param inventoryEngine    the inventory that the button is located in.
-     * @param placeholders the placeholders to use when evaluating the conditional
-     *                     name.
+     * @param player          the player who is trying to access the menu.
+     * @param button          the button that the player clicked to access the menu.
+     * @param inventoryEngine the inventory that the button is located in.
+     * @param placeholders    the placeholders to use when evaluating the conditional
+     *                        name.
      * @return true if the player has permission to access the menu, and false
      * otherwise.
      */
-    boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders){
+        return this.permissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventoryEngine, placeholders));
+    }
 }

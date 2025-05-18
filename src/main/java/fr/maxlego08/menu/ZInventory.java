@@ -40,6 +40,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final String fileName;
     private final int size;
     private final List<Button> buttons;
+    private final List<ConditionalName> conditionalNames = new ArrayList<>();
     private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
@@ -49,7 +50,6 @@ public class ZInventory extends ZUtils implements Inventory {
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
-    private List<ConditionalName> conditionalNames = new ArrayList<>();
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -168,8 +168,7 @@ public class ZInventory extends ZUtils implements Inventory {
         InventoryHolder holder = topInventory.getHolder();
 
         if (holder != null) {
-            if (holder instanceof InventoryDefault) {
-                InventoryDefault inventoryHolder = (InventoryDefault) holder;
+            if (holder instanceof InventoryDefault inventoryHolder) {
 
                 clearPlayerInventoryButtons(player, inventoryHolder);
 
@@ -292,10 +291,6 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public List<ConditionalName> getConditionalNames() {
         return this.conditionalNames;
-    }
-
-    public void setConditionalNames(List<ConditionalName> conditionalNames) {
-        this.conditionalNames = conditionalNames;
     }
 
     public void setClearInventory(boolean clearInventory) {
