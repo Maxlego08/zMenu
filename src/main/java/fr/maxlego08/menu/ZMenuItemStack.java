@@ -656,14 +656,17 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.leatherArmor = leatherArmor;
     }
 
+    @Override
     public String getFilePath() {
         return filePath;
     }
 
+    @Override
     public String getPath() {
         return path;
     }
 
+    @Override
     public int parseAmount(Player player) {
         int amount = 1;
         try {
@@ -673,6 +676,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return amount;
     }
 
+    @Override
     public int parseAmount(Player player, Placeholders placeholders) {
         int amount = 1;
         try {
@@ -682,6 +686,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return amount;
     }
 
+    @Override
     public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {

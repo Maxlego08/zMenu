@@ -4,6 +4,7 @@ import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
@@ -39,7 +40,7 @@ import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
@@ -364,6 +365,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void registerPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer) {
         LocalPlaceholder.getInstance().register(startWith, biConsumer);
+    }
+
+    @Override
+    public MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
+        return this.inventoryManager.loadItemStack(configuration, path, file);
     }
 
     /**

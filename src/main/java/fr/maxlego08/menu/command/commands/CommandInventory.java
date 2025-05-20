@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 import java.util.List;

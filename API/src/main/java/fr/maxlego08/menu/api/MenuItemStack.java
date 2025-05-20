@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -106,4 +107,10 @@ public interface MenuItemStack {
     boolean isCenterName();
 
     LoreType getLoreType();
+
+    int parseAmount(Player player);
+
+    int parseAmount(Player player, Placeholders placeholders);
+
+    int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders);
 }

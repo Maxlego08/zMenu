@@ -13,7 +13,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

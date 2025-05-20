@@ -34,9 +34,9 @@ import fr.maxlego08.menu.button.loader.HomeLoader;
 import fr.maxlego08.menu.button.loader.JumpLoader;
 import fr.maxlego08.menu.button.loader.MainMenuLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
-import fr.maxlego08.menu.button.loader.NoneLoader;
+import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
-import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
 import fr.maxlego08.menu.itemstack.MaterialSimilar;
@@ -150,6 +150,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public MenuPlugin getPlugin() {
         return this.plugin;
+    }
+
+    @Override
+    public MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
+        return new MenuItemStackLoader(this).load(configuration, path, file);
     }
 
     @Override

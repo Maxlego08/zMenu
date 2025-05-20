@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.website.WebsiteManager;
-import fr.maxlego08.menu.button.loader.NoneLoader;
+import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
 import fr.maxlego08.menu.website.buttons.ButtonFolderBack;

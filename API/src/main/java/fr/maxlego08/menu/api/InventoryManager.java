@@ -557,4 +557,16 @@ public interface InventoryManager extends Listener {
     void load();
 
     MenuPlugin getPlugin();
+
+    /**
+     * Loads a menu item stack from a YAML configuration and applies global placeholders.
+     * This method loads the item stack using the given configuration and path, and
+     * applies any global placeholders that have been registered.
+     *
+     * @param configuration the YAML configuration containing the item stack settings.
+     * @param path          the path within the configuration to load from.
+     * @param file          the file from which the configuration was loaded, used for logging errors.
+     * @return the loaded menu item stack.
+     */
+    MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
 }

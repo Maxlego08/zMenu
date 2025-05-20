@@ -12,9 +12,11 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -59,4 +61,16 @@ public interface MenuPlugin extends Plugin {
     boolean isFolia();
 
     void registerPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer);
+
+    /**
+     * Loads a menu item stack from a YAML configuration and applies global placeholders.
+     * This method loads the item stack using the given configuration and path, and
+     * applies any global placeholders that have been registered.
+     *
+     * @param configuration the YAML configuration containing the item stack settings.
+     * @param path          the path within the configuration to load from.
+     * @param file          the file from which the configuration was loaded, used for logging errors.
+     * @return the loaded menu item stack.
+     */
+    MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
 }
