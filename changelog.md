@@ -95,7 +95,7 @@
 - Fixed custom heads with URLs
 - Fixed inventories that do not have a default type
 - Added sound category
-- Removed deprecated method ``onInventoryOpen(Player player, InventoryDefault inventory)``
+- Removed deprecated method ``onInventoryOpen(Player player, InventoryEngine inventory)``
 - Improved code, removed the ``slot`` variable to use only the list of ``slots`` for each button
 - Fixed actions withdraw, deposit and requirement money, now allowing lowercase
 - Added API code for use of slots in player inventory. Coming soon in[ zMenu+](https://www.spigotmc.org/resources/zmenu-premium-zmenu-addon.115533/) !
