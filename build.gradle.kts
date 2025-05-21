@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils.sha
+
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "9.0.0-beta11"
@@ -100,10 +102,11 @@ tasks {
         relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")
 
-        archiveClassifier = if (System.getProperty("github.commit") != null)
-            "${System.getProperty("archive.classifier")}-${System.getProperty("github.commit")}"
-        else
-            System.getProperty("archive.classifier")
+        rootProject.extra.properties["sha"]?.let { sha ->
+            archiveClassifier.set("${rootProject.extra.properties["classifier"]}-${sha}")
+        } ?: run {
+            archiveClassifier.set(rootProject.extra.properties["classifier"] as String?)
+        }
         destinationDirectory.set(rootProject.extra["targetFolder"] as File)
     }
 

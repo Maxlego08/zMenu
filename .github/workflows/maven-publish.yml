@@ -29,11 +29,16 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
+      - name: Make the short sha
+        id: short_sha
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
       - name: Build with Gradle
-        run: ./gradlew build -Darchive.classifier=DEV -Dgithub.sha=${{ github.sha }}
+        run: ./gradlew build -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
 
       - name: Publish on GCHR
-        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.sha=${{ github.sha }}
+        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -44,7 +49,7 @@ jobs:
           echo "Finding zMenu JAR..."
           jar_path=$(find target/ -name 'zMenu-*.jar' | head -n 1)
           echo "Found zMenu JAR at: $jar_path"
-          echo "::set-output name=jar_path::$jar_path"
+          echo "jar_path=$jar_path >> $GITHUB_OUTPUT"
 
       - name: Discord Webhook Action
         uses: tsickert/discord-webhook@v7.0.0

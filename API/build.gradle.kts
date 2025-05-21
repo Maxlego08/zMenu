@@ -2,7 +2,7 @@ plugins {
     `maven-publish`
 }
 
-extra.properties["sha"]?.let { sha ->
+rootProject.extra.properties["sha"]?.let { sha ->
     version = sha
 }
 
