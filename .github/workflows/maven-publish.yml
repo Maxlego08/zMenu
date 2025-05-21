@@ -56,6 +56,5 @@ jobs:
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
           content: "New development build of zMenu is available!"
-          avatar-url: https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png
           username: zMenu
           filename: ${{ steps.find_jar.outputs.JAR_PATH }}
