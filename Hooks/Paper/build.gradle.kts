@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":API"))
+    compileOnly(projects.api)
     compileOnly("net.kyori:adventure-text-minimessage:4.21.0")
 }

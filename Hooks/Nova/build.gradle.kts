@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":API"))
+    compileOnly(projects.api)
     compileOnly("xyz.xenondevs.nova:nova-api:0.14.10")
 }

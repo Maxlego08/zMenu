@@ -6,6 +6,6 @@ repositories {
 
 
 dependencies {
-    compileOnly(project(":API"))
+    compileOnly(projects.api)
     compileOnly("com.hibiscusmc:HMCCosmetics:2.7.7")
 }
