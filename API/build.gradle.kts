@@ -1,3 +1,5 @@
+import java.util.Locale
+
 plugins {
     `maven-publish`
 }
@@ -35,7 +37,8 @@ publishing {
 
     publications {
         register<MavenPublication>("gpr") {
-            artifactId = "${rootProject.name}-${project.name}"
+            // https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#publishing-a-package
+            artifactId = "${rootProject.name}-${project.name}".lowercase()
             artifact(tasks.shadowJar)
         }
     }
