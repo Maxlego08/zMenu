@@ -37,3 +37,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
+
+      - name: Find zMenu JAR
+        id: find_jar
+        run: |
+          echo "Finding zMenu JAR..."
+          jar_path=$(find target/ -name 'zMenu-*.jar' | head -n 1)
+          echo "Found zMenu JAR at: $jar_path"
+          echo "::set-output name=jar_path::$jar_path"
+
+      - name: Discord Webhook Action
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          filename: ${{ steps.find_jar.outputs.jar_path }}
