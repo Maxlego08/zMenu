@@ -30,10 +30,10 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Build with Gradle
-        run: ./gradlew build -Darchive.classifier=DEV -Dgithub.commit${{ github.sha }}
+        run: ./gradlew build -Darchive.classifier=DEV -Dgithub.sha={{ github.sha }}
 
       - name: Publish on GCHR
-        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.commit=${{ github.sha }}
+        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.sha=${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
