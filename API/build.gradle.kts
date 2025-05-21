@@ -1,5 +1,3 @@
-import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils.sha
-
 plugins {
     `maven-publish`
 }
@@ -27,7 +25,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Maxlego08/zMenu")
+            url = uri("https://maven.pkg.github.com/${System.getenv("GITHUB_ACTOR")}/zMenu")
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
@@ -38,7 +36,7 @@ publishing {
     publications {
         register<MavenPublication>("gpr") {
             artifactId = "${rootProject.name}-${project.name}"
-            from(components["java"])
+            artifact(tasks.shadowJar)
         }
     }
 }
