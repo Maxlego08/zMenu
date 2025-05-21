@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew build -Darchive.classifier=DEV -Dgithub.commit${{ github.sha }}
 
       - name: Publish on GCHR
-        run: ./gradlew publish -Darchive.classifier=DEV -Dgithub.commit=${{ github.sha }}
+        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.commit=${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
