@@ -56,5 +56,4 @@ jobs:
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
           content: "New development build of zMenu is available!"
-          username: zMenu
           filename: ${{ steps.find_jar.outputs.JAR_PATH }}
