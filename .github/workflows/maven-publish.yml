@@ -49,11 +49,13 @@ jobs:
           echo "Finding zMenu JAR..."
           jar_path=$(find target/ -name 'zMenu-*.jar' | head -n 1)
           echo "Found zMenu JAR at: $jar_path"
-          echo "JAR_PATH=$jar_path >> $GITHUB_OUTPUT"
+          echo "JAR_PATH=$jar_path" >> $GITHUB_OUTPUT
 
       - name: Discord Webhook Action
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
           content: "New development build of zMenu is available!"
-          filename: ${{ steps.find_jar.outputs.JAR_PATH }}
+          avatar-url: https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png
+          username: zMenu
+          filename: ${{ steps.find_jar.outputs.jar_path }}
