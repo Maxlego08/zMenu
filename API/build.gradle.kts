@@ -37,8 +37,8 @@ publishing {
             // https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#publishing-a-package
             pom {
                 groupId = project.group as String?
-                artifactId = rootProject.name.lowercase()
-                name = project.name
+                name = "${rootProject.name}-${project.name}"
+                artifactId = name.get().lowercase()
                 version = project.version as String?
             }
             artifact(tasks.shadowJar)
