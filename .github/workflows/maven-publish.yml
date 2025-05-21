@@ -29,5 +29,33 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
+      - name: Make the short sha
+        id: short_sha
+        run: |
+          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
+
+      - name: Publish on GCHR
+        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+
+      - name: Find zMenu JAR
+        id: find_jar
+        run: |
+          echo "Finding zMenu JAR..."
+          jar_path=$(find target/ -name 'zMenu-*.jar' | head -n 1)
+          echo "Found zMenu JAR at: $jar_path"
+          echo "JAR_PATH=$jar_path" >> $GITHUB_OUTPUT
+
+      - name: Discord Webhook Action
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          content: "New development build of zMenu is available!"
+          avatar-url: https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png
+          username: zMenu
+          filename: ${{ steps.find_jar.outputs.jar_path }}

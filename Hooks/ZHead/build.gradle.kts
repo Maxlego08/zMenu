@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":API"))
+    compileOnly(projects.api)
     compileOnly(files("libs/zHead-1.5.jar"))
 }

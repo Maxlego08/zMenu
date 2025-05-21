@@ -1,6 +1,6 @@
 group = "Hooks:LuckPerms"
 
 dependencies {
-    compileOnly(project(":API"))
+    compileOnly(projects.api)
     compileOnly("net.luckperms:api:5.4")
 }

@@ -1,20 +1,13 @@
 rootProject.name = "zMenu"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include("API")
-include("Hooks:ItemsAdder")
-include("Hooks:HeadDataBase")
-include("Hooks:CraftEngine")
-include("Hooks:Eco")
-include("Hooks:Hmccosmetics")
-include("Hooks:MagicCosmetics")
-include("Hooks:Nexo")
-include("Hooks:Nova")
-include("Hooks:Oraxen")
-include("Hooks:SlimeFun")
-include("Hooks:ZHead")
-include("Hooks:ZItems")
-include("Hooks:PacketEvents")
-include("Hooks:LuckPerms")
-include("Hooks:Shopkeepers")
-include("Hooks:Jobs")
-include("Hooks:Paper")
+
+file("Hooks").listFiles()?.forEach { file ->
+    if (file.isDirectory and !file.name.equals("build")) {
+        println("Include Hooks:${file.name}")
+        include(":Hooks:${file.name}")
+    }
+}
+
