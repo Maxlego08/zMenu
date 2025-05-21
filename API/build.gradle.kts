@@ -1,10 +1,7 @@
-import java.util.Locale
-
 plugins {
     `maven-publish`
 }
 
-group = "${rootProject.group}.api"
 extra.properties["sha"]?.let { sha ->
     version = sha
 }
@@ -38,7 +35,12 @@ publishing {
     publications {
         register<MavenPublication>("gpr") {
             // https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#publishing-a-package
-            artifactId = "${rootProject.name}-${project.name}".lowercase()
+            pom {
+                groupId = project.group as String?
+                artifactId = rootProject.name.lowercase()
+                name = project.name
+                version = project.version as String?
+            }
             artifact(tasks.shadowJar)
         }
     }
