@@ -102,11 +102,11 @@ public class MenuItemStackFromItemStack {
                 }
             } catch (Exception ignored) {
             }
-        }
 
-        if(!itemMeta.getPersistentDataContainer().getKeys().isEmpty()){
-            String base64 = ItemStackUtils.serializeItemStack(itemStack);
-            menuItemStack.setMaterial("base64:" + base64);
+            if(!itemMeta.getPersistentDataContainer().getKeys().isEmpty()){
+                String base64 = ItemStackUtils.serializeItemStack(itemStack);
+                menuItemStack.setMaterial("base64:" + base64);
+            }
         }
 
         return menuItemStack;
