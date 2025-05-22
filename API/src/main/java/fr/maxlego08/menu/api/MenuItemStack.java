@@ -102,6 +102,10 @@ public interface MenuItemStack {
 
     void setLeatherArmor(LeatherArmor leatherArmor);
 
+    String getToolTipStyle();
+
+    void setToolTipStyle(String toolTipStyle);
+
     Map<String, String> getTranslatedDisplayName();
 
     void setTranslatedDisplayName(Map<String, String> translatedDisplayName);
