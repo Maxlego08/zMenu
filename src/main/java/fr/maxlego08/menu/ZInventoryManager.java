@@ -37,6 +37,15 @@ import fr.maxlego08.menu.button.loader.NextLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.command.validators.BooleanArgumentValidator;
+import fr.maxlego08.menu.command.validators.DoubleArgumentValidator;
+import fr.maxlego08.menu.command.validators.EntityTypeArgumentValidator;
+import fr.maxlego08.menu.command.validators.IntArgumentValidator;
+import fr.maxlego08.menu.command.validators.LocationArgumentValidator;
+import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
+import fr.maxlego08.menu.command.validators.OnlinePlayerArgumentValidator;
+import fr.maxlego08.menu.command.validators.PlayerArgumentValidator;
+import fr.maxlego08.menu.command.validators.WorldArgumentValidator;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -391,7 +400,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
-        plugin.getWebsiteManager().loadButtons(buttonManager);
+        this.plugin.getWebsiteManager().loadButtons(buttonManager);
+
+        var commandManager = this.plugin.getCommandManager();
+        commandManager.registerArgumentValidator(new IntArgumentValidator());
+        commandManager.registerArgumentValidator(new DoubleArgumentValidator());
+        commandManager.registerArgumentValidator(new BooleanArgumentValidator());
+        commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
+        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
+        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
+        commandManager.registerArgumentValidator(new OnlinePlayerArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new PlayerArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new LocationArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new WorldArgumentValidator(plugin));
     }
 
     @Override

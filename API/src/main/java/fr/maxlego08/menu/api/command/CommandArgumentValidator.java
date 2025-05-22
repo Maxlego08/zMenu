@@ -17,4 +17,12 @@ public interface CommandArgumentValidator {
      * @return The error message.
      */
     Message getErrorMessage();
+
+    /**
+     * Gets the type of this argument validator. This is used to determine which
+     * argument validators can be used with which argument types.
+     *
+     * @return The type of this argument validator.
+     */
+    String getType();
 }

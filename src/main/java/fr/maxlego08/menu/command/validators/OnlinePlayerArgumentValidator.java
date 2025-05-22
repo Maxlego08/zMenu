@@ -21,4 +21,9 @@ public class OnlinePlayerArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_ONLINE_PLAYER;
     }
+
+    @Override
+    public String getType() {
+        return "online-player";
+    }
 }

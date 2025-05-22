@@ -21,4 +21,9 @@ public class PlayerArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_PLAYER;
     }
+
+    @Override
+    public String getType() {
+        return "player";
+    }
 }

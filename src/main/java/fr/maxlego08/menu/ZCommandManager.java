@@ -2,15 +2,16 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.command.Command;
+import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.command.VCommandManager;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.loader.CommandLoader;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.command.VCommandManager;
+import fr.maxlego08.menu.loader.CommandLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -37,8 +38,9 @@ import java.util.stream.Collectors;
 
 public class ZCommandManager extends ZUtils implements CommandManager {
 
-    private final Map<String, List<Command>> commands = new HashMap<String, List<Command>>();
+    private final Map<String, List<Command>> commands = new HashMap<>();
     private final Map<UUID, Map<String, String>> playerArguments = new HashMap<>();
+    private final List<CommandArgumentValidator> commandArgumentValidators = new ArrayList<>();
     private final ZMenuPlugin plugin;
 
     public ZCommandManager(ZMenuPlugin plugin) {
@@ -225,5 +227,25 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         }
 
         return true;
+    }
+
+    @Override
+    public void registerArgumentValidator(CommandArgumentValidator commandArgumentValidator) {
+        this.commandArgumentValidators.add(commandArgumentValidator);
+    }
+
+    @Override
+    public void unregisterArgumentValidator(CommandArgumentValidator commandArgumentValidator) {
+        this.commandArgumentValidators.remove(commandArgumentValidator);
+    }
+
+    @Override
+    public List<CommandArgumentValidator> getArgumentValidators() {
+        return this.commandArgumentValidators;
+    }
+
+    @Override
+    public Optional<CommandArgumentValidator> getArgumentValidator(String argumentTypeName) {
+        return this.commandArgumentValidators.stream().filter(e -> e.getType().equalsIgnoreCase(argumentTypeName)).findFirst();
     }
 }

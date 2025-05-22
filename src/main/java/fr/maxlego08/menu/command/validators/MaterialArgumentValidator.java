@@ -25,4 +25,9 @@ public class MaterialArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return this.message;
     }
+
+    @Override
+    public String getType() {
+        return "material";
+    }
 }

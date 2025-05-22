@@ -18,4 +18,9 @@ public class DoubleArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_DOUBLE;
     }
+
+    @Override
+    public String getType() {
+        return "double";
+    }
 }

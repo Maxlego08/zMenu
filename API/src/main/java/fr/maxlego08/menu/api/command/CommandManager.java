@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -113,4 +114,12 @@ public interface CommandManager {
      * @return {@code true} if the reload was successful, otherwise {@code false}.
      */
     boolean reload(Command command);
+
+    void registerArgumentValidator(CommandArgumentValidator commandArgumentValidator);
+
+    void unregisterArgumentValidator(CommandArgumentValidator commandArgumentValidator);
+
+    List<CommandArgumentValidator> getArgumentValidators();
+
+    Optional<CommandArgumentValidator> getArgumentValidator(String argumentTypeName);
 }

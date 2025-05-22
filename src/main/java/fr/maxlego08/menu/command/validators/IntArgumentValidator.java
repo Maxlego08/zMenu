@@ -18,4 +18,9 @@ public class IntArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_INTEGER;
     }
+
+    @Override
+    public String getType() {
+        return "integer";
+    }
 }

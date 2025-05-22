@@ -15,7 +15,7 @@ public interface CommandArgument {
      *
      * @return The CommandArgumentType of this argument.
      */
-    CommandArgumentType getType();
+    String getType();
 
     /**
      * Gets the command argument.
