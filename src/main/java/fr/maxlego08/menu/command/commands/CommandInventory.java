@@ -5,10 +5,11 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
+import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.command.validators.CommandArgumentValidatorFactory;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
@@ -81,7 +82,7 @@ public class CommandInventory extends VCommand {
                 lastArgument = argument;
                 String defaultValue = argument.getDefaultValue();
                 StringBuilder value = new StringBuilder(index < this.args.length ? this.args[index] : (defaultValue != null && !defaultValue.isEmpty() ? defaultValue : ""));
-                if (value.length() == 0 && argument.isRequired()) {
+                if (value.isEmpty() && argument.isRequired()) {
                     return CommandType.SYNTAX_ERROR;
                 }
 
@@ -104,10 +105,22 @@ public class CommandInventory extends VCommand {
                     optional = getInventoryByName(optionalInventory.get());
                 }
 
-                if (value.length() == 0 && !argument.isRequired()) {
+                if (value.isEmpty() && !argument.isRequired()) {
                     lastArgument = null;
                 } else {
-                    placeholders.register(argument.getArgument(), value.toString());
+
+                    String result = value.toString();
+                    Optional<CommandArgumentValidator> validatorOptional = CommandArgumentValidatorFactory.getValidator(plugin, argument.getType());
+
+                    if (validatorOptional.isPresent()) {
+                        CommandArgumentValidator validator = validatorOptional.get();
+                        if (!validator.isValid(result)) {
+                            message(this.plugin, sender, validator.getErrorMessage());
+                            return CommandType.DEFAULT;
+                        }
+                    }
+
+                    placeholders.register(argument.getArgument(), result);
                     commandManager.setPlayerArgument(this.player, argument.getArgument(), value.toString());
                 }
             }

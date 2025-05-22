@@ -5,6 +5,7 @@ import fr.maxlego08.menu.ZCommand;
 import fr.maxlego08.menu.ZCommandArgument;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
+import fr.maxlego08.menu.api.command.CommandArgumentType;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.utils.Loader;
@@ -53,13 +54,14 @@ public class CommandLoader implements Loader<Command> {
                 String inventoryName = map.containsKey("inventory") ? (String) map.get("name") : null;
                 boolean isRequired = map.containsKey("isRequired") ? (boolean) map.get("isRequired") : map.containsKey("is-required") ? (boolean) map.get("is-required") : true;
                 boolean performMainAction = map.containsKey("performMainAction") ? (boolean) map.get("performMainAction") : map.containsKey("perform-main-action") ? (boolean) map.get("perform-main-action") : true;
+                CommandArgumentType argumentType = map.containsKey("argument-type") ? CommandArgumentType.valueOf((String) map.get("argument-type")) : CommandArgumentType.STRING;
 
                 List<Map<String, Object>> elements = map.containsKey("actions") ? (List<Map<String, Object>>) map.get("actions") : new ArrayList<>();
                 List<Action> actions = menuPlugin.getButtonManager().loadActions(elements, path, file);
                 List<String> autoCompletions = map.containsKey("auto-completion") ? (List<String>) map.get("auto-completion") : new ArrayList<>();
                 String defaultValue = map.containsKey("defaultValue") ? (String) map.get("defaultValue") : map.containsKey("default-value") ? (String) map.get("default-value") : null;
 
-                return new ZCommandArgument(argument, inventoryName, isRequired, performMainAction, actions, autoCompletions, defaultValue);
+                return new ZCommandArgument(argumentType, argument, inventoryName, isRequired, performMainAction, actions, autoCompletions, defaultValue);
             }).collect(Collectors.toList());
         } else {
             List<String> strings = configuration.getStringList(path + "arguments");
@@ -76,7 +78,7 @@ public class CommandLoader implements Loader<Command> {
                         if (values.length >= 2) isRequired = Boolean.parseBoolean(values[1]);
                         if (values.length == 3) inventoryName = values[2];
                     }
-                    return new ZCommandArgument(argument, inventoryName, isRequired, performMainAction, new ArrayList<>(), new ArrayList<>(), null);
+                    return new ZCommandArgument(CommandArgumentType.STRING, argument, inventoryName, isRequired, performMainAction, new ArrayList<>(), new ArrayList<>(), null);
                 }).collect(Collectors.toList());
             }
         }

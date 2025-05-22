@@ -11,6 +11,13 @@ import java.util.Optional;
 public interface CommandArgument {
 
     /**
+     * Gets the type of this command argument.
+     *
+     * @return The CommandArgumentType of this argument.
+     */
+    CommandArgumentType getType();
+
+    /**
      * Gets the command argument.
      *
      * @return The command argument as a String.

@@ -140,6 +140,18 @@ public enum Message implements IMessage {
     SAVE_SUCCESS("&aYou just saved the item &f%name%&a."),
     CLICK_COOLDOWN(MessageType.ACTION, "&cPlease wait a little between two clicks."),
 
+    COMMAND_ARGUMENT_INTEGER("&cThe argument &f%argument%&c must be an integer."),
+    COMMAND_ARGUMENT_STRING("&cThe argument &f%argument%&c must be a string."),
+    COMMAND_ARGUMENT_BOOLEAN("&cThe argument &f%argument%&c must be a boolean."),
+    COMMAND_ARGUMENT_DOUBLE("&cThe argument &f%argument%&c must be a double."),
+    COMMAND_ARGUMENT_ONLINE_PLAYER("&cThe argument &f%argument%&c must be a player."),
+    COMMAND_ARGUMENT_PLAYER("&cThe argument &f%argument%&c must be a player."),
+    COMMAND_ARGUMENT_ENTITY("&cThe argument &f%argument%&c must be an entity."),
+    COMMAND_ARGUMENT_LOCATION("&cThe argument &f%argument%&c must be a location."),
+    COMMAND_ARGUMENT_MATERIAL("&cThe argument &f%argument%&c must be a material."),
+    COMMAND_ARGUMENT_BLOCK("&cThe argument &f%argument%&c must be a block."),
+    COMMAND_ARGUMENT_WORLD("&cThe argument &f%argument%&c must be a world.")
+
     ;
 
     private List<String> messages;
