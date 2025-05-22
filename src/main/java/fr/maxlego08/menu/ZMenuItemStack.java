@@ -26,11 +26,7 @@ import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
@@ -66,6 +62,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String amount;
     private String url;
     private String data;
+    private String tooltipstyle;
     private int durability;
     private Potion potion;
     private List<String> lore = new ArrayList<>();
@@ -397,6 +394,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             itemMeta.setRarity(this.itemRarity.getItemRarity());
         }
 
+        if (this.tooltipstyle != null) {
+            String[] tooltipstyleSplit = this.tooltipstyle.split(":", 2);
+            if (tooltipstyleSplit.length == 2) {
+                itemMeta.setTooltipStyle(new NamespacedKey(tooltipstyleSplit[0], tooltipstyleSplit[1]));
+            }
+        }
+
     }
 
     private void buildTrimAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
@@ -655,6 +659,17 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public void setLeatherArmor(LeatherArmor leatherArmor) {
         this.leatherArmor = leatherArmor;
     }
+
+    @Override
+    public String getToolTipStyle() {
+        return tooltipstyle;
+    }
+
+    @Override
+    public void setToolTipStyle(String toolTipStyle) {
+        this.tooltipstyle = toolTipStyle;
+    }
+
 
     @Override
     public String getFilePath() {

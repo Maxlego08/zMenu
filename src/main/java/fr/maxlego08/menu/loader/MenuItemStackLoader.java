@@ -439,7 +439,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (rarityString != null) {
             menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
         }
-
+        String tooltypestyleString = configuration.getString(path+"tooltip-style", null);
+        if (tooltypestyleString != null) {
+            menuItemStack.setToolTipStyle(tooltypestyleString);
+        }
 
     }
 
