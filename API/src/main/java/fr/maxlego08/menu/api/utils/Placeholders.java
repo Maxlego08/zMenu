@@ -77,14 +77,24 @@ public class Placeholders {
     public String parse(String string, String key, String value) {
         try {
 
-            string = string.replace("%" + key + "%", value);
-            string = string.replace("%upper_" + key + "%", value.toUpperCase());
-            string = string.replace("%lower_" + key + "%", value.toLowerCase());
-            String capitalize = value;
-            if (capitalize.length() > 1) {
-                capitalize = capitalize.substring(0, 1).toUpperCase() + capitalize.substring(1);
+            if (string.contains("%" + key + "%")) {
+                string = string.replace("%" + key + "%", value);
             }
-            string = string.replace("%capitalize_" + key + "%", capitalize);
+
+            if (string.contains("%upper_" + key + "%")) {
+                string = string.replace("%upper_" + key + "%", value.toUpperCase());
+            }
+
+            if (string.contains("%lower_" + key + "%")) {
+                string = string.replace("%lower_" + key + "%", value.toLowerCase());
+            }
+
+            if (string.contains("%capitalize_" + key + "%")) {
+                String capitalize = value.isEmpty()
+                        ? value
+                        : value.substring(0, 1).toUpperCase() + value.substring(1);
+                string = string.replace("%capitalize_" + key + "%", capitalize);
+            }
 
             if (string.contains("%add_one_" + key + "%")) {
                 try {
