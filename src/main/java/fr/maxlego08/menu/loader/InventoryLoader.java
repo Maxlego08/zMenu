@@ -108,6 +108,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setType(inventoryType);
         inventory.setUpdateInterval(configuration.getInt(path + "update-interval", configuration.getInt(path + "updateInterval", 1000)));
         inventory.setClearInventory(configuration.getBoolean(path + "clear-inventory", configuration.getBoolean(path + "clearInventory", false)));
+        inventory.setCancelItemPickup(configuration.getBoolean(path + "cancel-item-pickup", configuration.getBoolean(path + "cancelItemPickup", false)));
         inventory.setFile(file);
 
         this.loadFillItem(configuration, inventory, menuItemStackLoader, file);

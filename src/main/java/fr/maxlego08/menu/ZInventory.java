@@ -48,6 +48,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private int updateInterval;
     private File file;
     private boolean clearInventory;
+    private boolean cancelItemPickup;
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
@@ -101,6 +102,12 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setType(InventoryType type) {
         this.type = type;
+    }
+    @Override
+    public boolean isCancelItemPickup() {return cancelItemPickup;}
+
+    public void setCancelItemPickup(boolean cancelItemPickup) {
+        this.cancelItemPickup = cancelItemPickup;
     }
 
     @Override
