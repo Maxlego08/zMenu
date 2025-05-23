@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -126,9 +128,7 @@ public class VInventoryManager extends ListenerAdapter {
 
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
 
-        if (holder instanceof VInventory) {
-
-            VInventory inventory = (VInventory) holder;
+        if (holder instanceof VInventory inventory) {
 
             event.setCancelled(inventory.isDisableClick());
 
@@ -168,8 +168,7 @@ public class VInventoryManager extends ListenerAdapter {
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
-        if (holder instanceof VInventory) {
-            VInventory inventory = (VInventory) holder;
+        if (holder instanceof VInventory inventory) {
             this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryClose(player, inventory));
             inventory.onPreClose(event, this.plugin, player);
         }
@@ -183,6 +182,18 @@ public class VInventoryManager extends ListenerAdapter {
         }
     }
 
+    @Override
+    public void onPickUp(PlayerPickupItemEvent event, Player player) {
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+        if (holder instanceof VInventory vInventory) {
+            if (vInventory instanceof InventoryDefault inventoryDefault){
+                fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
+                if (menu != null && menu.isCancelItemPickup()) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
     /**
      * @param id - Inventory I'd
      * @return Optional - Allows returning the inventory in an optional
