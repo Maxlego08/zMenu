@@ -48,7 +48,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private int updateInterval;
     private File file;
     private boolean clearInventory;
-    private boolean cancelItemPickup;
+    private boolean ItemPickupDisabled;
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
@@ -104,10 +104,10 @@ public class ZInventory extends ZUtils implements Inventory {
         this.type = type;
     }
     @Override
-    public boolean isCancelItemPickup() {return cancelItemPickup;}
+    public boolean shouldCancelItemPickup() {return ItemPickupDisabled;}
 
-    public void setCancelItemPickup(boolean cancelItemPickup) {
-        this.cancelItemPickup = cancelItemPickup;
+    public void setCancelItemPickup(boolean ItemPickupDisabled) {
+        this.ItemPickupDisabled = ItemPickupDisabled;
     }
 
     @Override
@@ -198,9 +198,10 @@ public class ZInventory extends ZUtils implements Inventory {
     private void clearPlayerInventoryButtons(Player player, InventoryEngine inventoryDefault) {
         for (Button button : getButtons()) {
             if (button.isPlayerInventory()) {
-                int slot = button.getRealSlot(36, inventoryDefault.getPage());
-                if (slot >= 0 && slot <= 36) {
-                    player.getInventory().setItem(slot, new ItemStack(Material.AIR));
+                for (int slot : button.getSlots()){
+                    if (slot >= 0 && slot <= 36) {
+                        player.getInventory().setItem(slot, new ItemStack(Material.AIR));
+                    }
                 }
             }
         }

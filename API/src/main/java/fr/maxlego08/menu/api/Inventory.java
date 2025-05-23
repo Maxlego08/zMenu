@@ -58,7 +58,7 @@ public interface Inventory {
      * Indicates whether the inventory prevents the player from picking up items from the ground.
      * @return true if item pickup is blocked while this inventory is open, false otherwise.
      */
-    boolean isCancelItemPickup();
+    boolean shouldCancelItemPickup();
 
     /**
      * Returns the name of the file associated with the inventory.

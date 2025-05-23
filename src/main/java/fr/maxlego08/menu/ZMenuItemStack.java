@@ -72,6 +72,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
+    private String itemModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private List<IAttribute> attributes = new ArrayList<>();
     private Banner banner;
@@ -400,7 +401,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 itemMeta.setTooltipStyle(new NamespacedKey(tooltipstyleSplit[0], tooltipstyleSplit[1]));
             }
         }
-
+        if (this.itemModel != null) {
+            String[] itemModelSplit = this.itemModel.split(":", 2);
+            if (itemModelSplit.length == 2) {
+                itemMeta.setItemModel(new NamespacedKey(itemModelSplit[0], itemModelSplit[1]));
+            }
+        }
     }
 
     private void buildTrimAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
@@ -670,6 +676,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.tooltipstyle = toolTipStyle;
     }
 
+    @Override
+    public String getItemModel() {
+        return itemModel;
+    }
+
+    @Override
+    public void setItemModel(String itemModel) {
+        this.itemModel = itemModel;
+    }
 
     @Override
     public String getFilePath() {
