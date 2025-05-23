@@ -20,7 +20,7 @@ public class DiscordComponentV2Loader extends ActionLoader {
     private static final Map<String, Boolean> webhookUrlCache = new HashMap<>();
 
     public DiscordComponentV2Loader() {
-        super("discord", "discord_component", "discord webhook component", "discordwebhookcomponent");
+        super("discord component", "discord_component", "discord webhook component", "discordwebhookcomponent");
     }
 
     @Override
