@@ -31,10 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -141,7 +138,12 @@ public class ZStorageManager implements StorageManager {
                 table.string("plugin", event.getInventory().getPlugin().getName());
                 table.string("inventory", event.getInventory().getFileName());
                 table.bigInt("page", event.getPage());
-                table.string("old_inventories", event.getOldInventories().stream().map(Inventory::getFileName).collect(Collectors.joining(",")));
+                table.string("old_inventories",
+                        event.getOldInventories().stream()
+                                .filter(Objects::nonNull)
+                                .map(Inventory::getFileName)
+                                .collect(Collectors.joining(","))
+                );
             }));
             iterator.remove();
         }
