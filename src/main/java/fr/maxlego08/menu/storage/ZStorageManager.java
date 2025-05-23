@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
@@ -106,6 +107,7 @@ public class ZStorageManager implements StorageManager {
             this.storeOpenInventories();
             this.storePlayerData();
             this.cache.clearAll();
+            OfflinePlayerCache.clearCache();
 
         }, seconds, seconds, TimeUnit.SECONDS);
     }

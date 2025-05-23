@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -65,7 +66,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
             resultAsString = plugin.parse(player, placeholders.parse(this.value));
         } else {
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(plugin.parse(player, placeholders.parse(this.targetPlayer)));
+            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(plugin.parse(player, placeholders.parse(this.targetPlayer)));
             valueAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.placeholder));
             resultAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.value));
         }

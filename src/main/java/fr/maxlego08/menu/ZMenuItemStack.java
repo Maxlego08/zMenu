@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -156,7 +157,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             this.material = "STONE";
         }
 
-        OfflinePlayer offlinePlayer = this.targetPlayer != null ? Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
+        OfflinePlayer offlinePlayer = this.targetPlayer != null ? OfflinePlayerCache.get(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
 
         String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
