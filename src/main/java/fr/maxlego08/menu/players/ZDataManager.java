@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.api.interfaces.ReturnConsumer;
@@ -88,7 +89,7 @@ public class ZDataManager implements DataManager {
         }
         try {
             String playerName = args[2];
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(playerName);
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
             if (!optional.isPresent()) {
                 return new ArrayList<>();

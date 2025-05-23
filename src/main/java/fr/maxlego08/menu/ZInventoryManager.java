@@ -23,11 +23,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.HomeLoader;
@@ -890,15 +886,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        String name = this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName()));
-
+        String name = papi(this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName())), player, true);
         if (!isMinecraftName(name)) {
             return itemStack;
         }
 
         if (NMSUtils.isNewHeadApi()) {
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
             if (offlinePlayer != null) {
                 SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
                 skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());

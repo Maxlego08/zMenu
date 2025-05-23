@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.commands;
 
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -150,7 +151,7 @@ public abstract class Arguments extends ZUtils {
      * @return
      */
     protected OfflinePlayer argAsOfflinePlayer(int index) {
-        return Bukkit.getOfflinePlayer(argAsString(index));
+        return OfflinePlayerCache.get(argAsString(index));
     }
 
     /**
@@ -160,7 +161,7 @@ public abstract class Arguments extends ZUtils {
      */
     protected OfflinePlayer argAsOfflinePlayer(int index, OfflinePlayer defaultValue) {
         try {
-            return Bukkit.getOfflinePlayer(argAsString(index));
+            return OfflinePlayerCache.get(argAsString(index));
         } catch (Exception e) {
             return defaultValue;
         }
