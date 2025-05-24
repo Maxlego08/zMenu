@@ -121,6 +121,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -151,6 +152,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.loadButtons();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
+        this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
+    }
+
+    private void startOfflineTask(int seconds) {
+
+        if (seconds <= 0) return;
+
+        this.plugin.getScheduler().runTimerAsync(() -> {
+            OfflinePlayerCache.clearCache();
+        }, seconds, seconds, TimeUnit.SECONDS);
     }
 
     @Override
