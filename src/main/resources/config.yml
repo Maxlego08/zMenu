@@ -145,3 +145,7 @@ enable-cache-placeholder-api: false
 # Enable download command.
 # Allows the use of the plugin's download feature (if applicable).
 enable-download-command: false
+
+# Time in seconds for clean the OfflinePlayer cache
+# OfflinePlayer is a variable that represents an offline player
+cache-offline-player: 300

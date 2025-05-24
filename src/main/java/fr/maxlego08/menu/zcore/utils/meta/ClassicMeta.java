@@ -19,12 +19,12 @@ import java.util.List;
 public class ClassicMeta extends ZUtils implements MetaUpdater {
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
-        itemMeta.setDisplayName(color(papi(text, player, true)));
+        itemMeta.setDisplayName(color(text));
     }
 
     @Override
     public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
-        itemMeta.setDisplayName(color(papi(text, offlineplayer, true)));
+        itemMeta.setDisplayName(color(text));
     }
 
     @Override

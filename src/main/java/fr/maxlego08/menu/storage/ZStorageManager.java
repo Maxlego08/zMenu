@@ -104,8 +104,6 @@ public class ZStorageManager implements StorageManager {
             this.storeOpenInventories();
             this.storePlayerData();
             this.cache.clearAll();
-            OfflinePlayerCache.clearCache();
-
         }, seconds, seconds, TimeUnit.SECONDS);
     }
 
