@@ -196,4 +196,7 @@ public interface MenuItemStack {
 
     int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders);
 
+    String getItemModel();
+
+    void setItemModel(String itemModel);
 }

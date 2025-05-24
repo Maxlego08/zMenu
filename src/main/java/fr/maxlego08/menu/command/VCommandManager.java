@@ -172,10 +172,11 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             List<String> tabCompleter = new ArrayList<>();
             for (VCommand vCommand : this.commands) {
                 if ((vCommand.getParent() != null && vCommand.getParent() == command)) {
-                    String cmd = vCommand.getSubCommands().get(0);
-                    if (vCommand.getPermission() == null || sender.hasPermission(vCommand.getPermission())) {
-                        if (startWith.length() == 0 || cmd.startsWith(startWith)) {
-                            tabCompleter.add(cmd);
+                    for (String subCommand : vCommand.getSubCommands()) {
+                        if (vCommand.getPermission() == null || sender.hasPermission(vCommand.getPermission())) {
+                            if (startWith.isEmpty() || subCommand.startsWith(startWith)) {
+                                tabCompleter.add(subCommand);
+                            }
                         }
                     }
                 }

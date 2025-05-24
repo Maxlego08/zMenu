@@ -443,6 +443,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (tooltypestyleString != null) {
             menuItemStack.setToolTipStyle(tooltypestyleString);
         }
+        String itemModelString = configuration.getString(path + "item-model", null);
+        if (itemModelString != null) {
+            menuItemStack.setItemModel(itemModelString);
+        }
 
     }
 
