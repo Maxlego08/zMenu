@@ -12,6 +12,7 @@ public abstract class PermissibleButton extends PerformButton {
 
     private List<PermissionPermissible> permissions = new ArrayList<>();
     private List<PermissionPermissible> orPermissions = new ArrayList<>();
+    private SwitchButton switchButton;
     private Button elseButton;
     private Button parentButton;
 
@@ -23,12 +24,24 @@ public abstract class PermissibleButton extends PerformButton {
         this.elseButton = elseButton;
     }
 
+    public Button getSwitchButton(Player player) {
+        return this.switchButton.perform(player);
+    }
+
+    public void setSwitchButton(SwitchButton switchbutton) {
+        this.switchButton = switchbutton;
+    }
+
     public boolean hasPermission() {
         return !this.permissions.isEmpty() || !this.orPermissions.isEmpty();
     }
 
     public boolean hasElseButton() {
         return this.elseButton != null;
+    }
+
+    public boolean hasSwitchButton() {
+        return this.switchButton != null;
     }
 
     public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {

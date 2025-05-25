@@ -157,15 +157,25 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                     this.buildButton(elseButton);
                 }
             } else {
-
                 // If the player has the permission, the button
-                this.displayButton(button);
+                if (button.hasSwitchButton()) {
+                    // If there is an SwitchButton we will display it
+                    Button switchButton = button.getSwitchButton(this.player);
+                    this.buildButton(switchButton);
+                } else {
+                    this.displayButton(button);
+                }
             }
 
         } else {
-
             // If there is no permission, then the button
-            this.displayButton(button);
+            if (button.hasSwitchButton()) {
+                // If there is an SwitchButton we will display it
+                Button switchButton = button.getSwitchButton(this.player);
+                this.buildButton(switchButton);
+            } else {
+                this.displayButton(button);
+            }
         }
     }
 

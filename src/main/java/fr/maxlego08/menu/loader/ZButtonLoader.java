@@ -25,6 +25,7 @@ import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.button.ZSwitchButton;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
@@ -263,6 +264,35 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             if (elseButton != null) {
                 PermissibleButton elsePermissibleButton = (PermissibleButton) elseButton;
                 elsePermissibleButton.setParentButton(button);
+            }
+        }
+
+        if (configuration.contains(path + "switch")) {
+            ConfigurationSection switchSection = configuration.getConfigurationSection(path + "switch");
+            if (switchSection != null) {
+                Map<String, Button> allButton = new HashMap<>();
+                ConfigurationSection buttonsSwitchSection = switchSection.getConfigurationSection("buttons");
+                if (buttonsSwitchSection != null){
+                    for (String key : buttonsSwitchSection.getKeys(false)) {
+                        DefaultButtonValue switchDefaultButtonValue = new DefaultButtonValue();
+                        switchDefaultButtonValue.setSlot(slot);
+                        switchDefaultButtonValue.setSlots(slots);
+                        switchDefaultButtonValue.setPage(page);
+                        switchDefaultButtonValue.setPermanent(button.isPermanent());
+                        switchDefaultButtonValue.setUseCache(button.isUseCache());
+                        switchDefaultButtonValue.setUpdate(button.isUpdated());
+                        switchDefaultButtonValue.setUpdateMasterButton(button.isUpdatedMasterButton());
+                        switchDefaultButtonValue.setUpdateOnClick(button.updateOnClick());
+
+                        Button keyButton = this.load(configuration, path + "switch.buttons." + key+ ".", buttonName + ".switch.buttons" + key, switchDefaultButtonValue);
+                        if (keyButton != null) {
+                            allButton.put(key, keyButton);
+                            PermissibleButton switchPermissibleButton = (PermissibleButton) keyButton;
+                            switchPermissibleButton.setParentButton(button);
+                        }
+                    }
+                    button.setSwitchButton(new ZSwitchButton(switchSection.getString("key","") ,allButton));
+                }
             }
         }
 
