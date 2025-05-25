@@ -318,7 +318,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.displayName != null) {
             try {
                 String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                itemName = fontImage.replace(papi(placeholders.parse(displayName), player, useCache));
+                itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -326,12 +326,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (!this.lore.isEmpty()) {
-            List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
+            List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
             itemLore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).map(fontImage::replace).collect(Collectors.toList());
         }
 
         if (itemName != null) {
-            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, offlinePlayer == null ? player : offlinePlayer);
+            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, player);
         }
 
         if (!itemLore.isEmpty()) {
