@@ -1,8 +1,10 @@
-name: Gradle Package
+name: Build Action
 
 on:
   push:
     branches: [ release/rework-gradle ]
+  pull_request:
+    types: [ opened, reopened ]
   workflow_dispatch:
 
 concurrency:
@@ -11,51 +13,14 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build and Publish zMenu
+    uses: GroupeZ-dev/actions/.github/workflows/build.yml@main
     permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          server-id: github
-          settings-path: ${{ github.workspace }}
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-
-      - name: Make the short sha
-        id: short_sha
-        run: |
-          echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
-
-      - name: Build with Gradle
-        run: ./gradlew build -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
-
-      - name: Publish on GCHR
-        run: ./gradlew API:publish -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-
-      - name: Find zMenu JAR
-        id: find_jar
-        run: |
-          echo "Finding zMenu JAR..."
-          jar_path=$(find target/ -name 'zMenu-*.jar' | head -n 1)
-          echo "Found zMenu JAR at: $jar_path"
-          echo "JAR_PATH=$jar_path" >> $GITHUB_OUTPUT
-
-      - name: Discord Webhook Action
-        uses: tsickert/discord-webhook@v7.0.0
-        with:
-          webhook-url: ${{ secrets.WEBHOOK_URL }}
-          content: "New development build of zMenu is available!"
-          avatar-url: https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png
-          username: zMenu
-          filename: ${{ steps.find_jar.outputs.jar_path }}
+      pull-requests: write
+    with:
+      project-name: "zMenu"
+      publish: true
+      project-to-publish: "API:publish"
+      discord-avatar-url: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
