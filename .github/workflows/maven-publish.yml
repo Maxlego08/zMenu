@@ -18,4 +18,5 @@ jobs:
       publish: true
       project-to-publish: "API:publish"
       discord-avatar-url: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
-    secrets: inherit
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
