@@ -3,6 +3,8 @@ name: Build Action
 on:
   push:
     branches: [ release/rework-gradle ]
+  pull_request:
+    types: [ opened, reopened ]
   workflow_dispatch:
 
 concurrency:
