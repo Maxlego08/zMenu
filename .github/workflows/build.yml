@@ -4,7 +4,7 @@ on:
   push:
     branches: [ release/rework-gradle ]
   pull_request:
-    types: [ opened, reopened ]
+    types: [ opened, synchronize, reopened ]
   workflow_dispatch:
 
 concurrency:
@@ -15,8 +15,6 @@ jobs:
   build:
     name: Build and Publish zMenu
     uses: GroupeZ-dev/actions/.github/workflows/build.yml@main
-    permissions:
-      pull-requests: write
     with:
       project-name: "zMenu"
       publish: true
