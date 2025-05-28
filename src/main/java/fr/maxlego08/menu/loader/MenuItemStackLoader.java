@@ -251,8 +251,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             int level = configuration.getInt(path + "level", 1);
             boolean splash = configuration.getBoolean(path + "splash", false);
             boolean extended = configuration.getBoolean(path + "extended", false);
+            boolean arrow = configuration.getBoolean(path + "arrow", false);
 
-            Potion potion = new Potion(type, level, splash, extended);
+            Potion potion = new Potion(type, level, splash, extended, arrow);
             potion.setColor(potionColor);
             menuItemStack.setPotion(potion);
         }

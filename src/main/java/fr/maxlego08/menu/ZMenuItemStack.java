@@ -764,8 +764,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             int level = configuration.getInt("level", 1);
             boolean splash = configuration.getBoolean("splash", false);
             boolean extended = configuration.getBoolean("extended", false);
+            boolean arrow = configuration.getBoolean("arrow", false);
 
-            Potion potion = new Potion(type, level, splash, extended);
+            Potion potion = new Potion(type, level, splash, extended, arrow);
             potion.setColor(potionColor);
             setPotion(potion);
         }
