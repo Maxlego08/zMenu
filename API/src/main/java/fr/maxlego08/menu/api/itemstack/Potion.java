@@ -25,6 +25,7 @@ public class Potion {
     private static PotionBrewer brewer;
     private boolean extended = false;
     private boolean splash = false;
+    private boolean arrow = false;
     private int level = 1;
     private PotionType type;
     private Color color;
@@ -72,14 +73,16 @@ public class Potion {
      * @param type     The type of potion.
      * @param level    The potion's level.
      * @param splash   Whether it is a splash potion.
-     * @param extended Whether it has an extended duration. In favour of using
-     *                 {@link #Potion(PotionType)} with {@link #extend()} and
+     * @param extended Whether it has an extended duration.
+     *                 In favor of using {@link #Potion(PotionType)} with {@link #extend()} and
      *                 possibly {@link #splash()}.
+     * @param isArrow  Whether it is an arrow potion.
      */
 
-    public Potion(PotionType type, int level, boolean splash, boolean extended) {
+    public Potion(PotionType type, int level, boolean splash, boolean extended, boolean isArrow) {
         this(type, level, splash);
         this.extended = extended;
+        this.arrow = isArrow;
     }
 
     /**
@@ -90,53 +93,23 @@ public class Potion {
      */
 
     public static Potion fromDamage(int damage) {
-        PotionType type;
-        switch (damage & POTION_BIT) {
-            case 0:
-                type = PotionType.WATER;
-                break;
-            case 1:
-                type = PotionType.valueOf("REGEN");
-                break;
-            case 2:
-                type = PotionType.valueOf("SPEED");
-                break;
-            case 3:
-                type = PotionType.FIRE_RESISTANCE;
-                break;
-            case 4:
-                type = PotionType.POISON;
-                break;
-            case 5:
-                type = PotionType.valueOf("INSTANT_HEAL");
-                break;
-            case 6:
-                type = PotionType.NIGHT_VISION;
-                break;
-            case 8:
-                type = PotionType.WEAKNESS;
-                break;
-            case 9:
-                type = PotionType.STRENGTH;
-                break;
-            case 10:
-                type = PotionType.SLOWNESS;
-                break;
-            case 11:
-                type = PotionType.valueOf("JUMP");
-                break;
-            case 12:
-                type = PotionType.valueOf("INSTANT_DAMAGE");
-                break;
-            case 13:
-                type = PotionType.WATER_BREATHING;
-                break;
-            case 14:
-                type = PotionType.INVISIBILITY;
-                break;
-            default:
-                type = PotionType.WATER;
-        }
+        PotionType type = switch (damage & POTION_BIT) {
+//            case 0 -> PotionType.WATER;
+            case 1 -> PotionType.valueOf("REGEN");
+            case 2 -> PotionType.valueOf("SPEED");
+            case 3 -> PotionType.FIRE_RESISTANCE;
+            case 4 -> PotionType.POISON;
+            case 5 -> PotionType.valueOf("INSTANT_HEAL");
+            case 6 -> PotionType.NIGHT_VISION;
+            case 8 -> PotionType.WEAKNESS;
+            case 9 -> PotionType.STRENGTH;
+            case 10 -> PotionType.SLOWNESS;
+            case 11 -> PotionType.valueOf("JUMP");
+            case 12 -> PotionType.valueOf("INSTANT_DAMAGE");
+            case 13 -> PotionType.WATER_BREATHING;
+            case 14 -> PotionType.INVISIBILITY;
+            default -> PotionType.WATER;
+        };
         Potion potion;
         if (type == PotionType.WATER) {
             potion = new Potion(PotionType.WATER);
@@ -195,6 +168,17 @@ public class Potion {
 
     public Potion extend() {
         setHasExtendedDuration(true);
+        return this;
+    }
+
+    /**
+     * Chain this to the constructor to make the potion an arrow potion.
+     * Arrow potions are used in tipped arrows.
+     *
+     * @return The potion.
+     */
+    public Potion arrow() {
+        setArrow(true);
         return this;
     }
 
@@ -350,6 +334,25 @@ public class Potion {
     }
 
     /**
+     * Returns whether this potion is an arrow potion.
+     *
+     * @return Whether this is an arrow potion
+     */
+    public boolean isArrow() {
+        return arrow;
+    }
+
+    /**
+     * Sets whether this potion is an arrow potion.
+     * Arrow potions are tipped arrows.
+     *
+     * @param isArrow Whether this is an arrow potion
+     */
+    public void setArrow(boolean isArrow) {
+        this.arrow = isArrow;
+    }
+
+    /**
      * Converts this potion to a valid potion damage short, usable for potion
      * item stacks.
      *
@@ -370,14 +373,15 @@ public class Potion {
 
     public ItemStack toItemStack(int amount) {
         Material material;
-        if (isSplash()) {
+        if (isArrow())
+            material = Material.TIPPED_ARROW;
+        else if (isSplash())
             material = Material.SPLASH_POTION;
-        } else {
+        else
             material = Material.POTION;
-        }
         ItemStack itemStack = new ItemStack(material, amount);
         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
-        meta.setBasePotionData(new PotionData(type, level == 2, extended));
+        meta.setBasePotionData(new PotionData(type, extended, level == 2));
         if (color != null) meta.setColor(color);
         itemStack.setItemMeta(meta);
         return itemStack;
