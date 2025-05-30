@@ -1,10 +1,10 @@
 # Enables detailed information display in the console.
 # If you encounter an issue, enable this option and send the errors to support.
-enable-debug: true
+enable-debug: false
 
 # Enables execution time debugging to measure plugin performance.
 # Useful for identifying bottlenecks and optimizing performance.
-enable-debug-time: true
+enable-debug-time: false
 
 enable-information-message: true
 
@@ -35,7 +35,7 @@ database-configuration:
   # Database
   database: zmenu
   # Enable of not the SQL debug mode
-  debug: true
+  debug: false
 
 # Time in seconds for saving data in batches.
 # Instead of making an SQL query for each update, a single query will be executed every 10 seconds
