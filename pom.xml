@@ -110,21 +110,21 @@
     </build>
     <repositories>
         <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/maven-public/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>xenondevs</id>
-            <url>https://repo.xenondevs.xyz/releases</url>
+            <id>oraxen-releases</id>
+            <name>Oraxen Repository</name>
+            <url>https://repo.oraxen.com/releases/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
+            <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>xenondevs</id>
+            <url>https://repo.xenondevs.xyz/releases</url>
         </repository>
         <repository>
             <id>placeholderapi</id>
@@ -139,16 +139,27 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>devmart-other</id>
-            <url>https://nexuslite.gcnt.net/repos/other/</url>
-        </repository>
-        <repository>
             <id>auxilor-repo</id>
             <url>https://repo.auxilor.io/repository/maven-public/</url>
         </repository>
         <repository>
+            <id>nexomc</id>
+            <name>Reposilite Repository</name>
+            <url>https://repo.nexomc.com/releases</url>
+        </repository>
+        <repository>
             <id>shopkeepers-repo</id>
-            <url>https://nexus.lichtspiele.org/repository/releases/</url>
+            <url>https://raw.githubusercontent.com/Shopkeepers/Repository/main/releases/</url>
+        </repository>
+        <repository>
+            <id>hmc-repo-releases</id>
+            <name>HibiscusMC Repository</name>
+            <url>https://repo.hibiscusmc.com/releases</url>
+        </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+            <layout>default</layout>
         </repository>
         <repository>
             <id>codemc-releases</id>
@@ -225,11 +236,12 @@
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api</artifactId>
             <version>${item-nbt-api.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.oraxen</groupId>
+            <groupId>io.th0rgal</groupId>
             <artifactId>oraxen</artifactId>
-            <version>1.159.0</version>
+            <version>1.190.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -251,6 +263,10 @@
                 <exclusion>
                     <groupId>com.jeff_media</groupId>
                     <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dev.triumphteam</groupId>
+                    <artifactId>triumph-gui</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -275,24 +291,43 @@
         <dependency>
             <groupId>com.github.Zrips</groupId>
             <artifactId>Jobs</artifactId>
-            <version>5.2.2.3</version> <!-- Change the LATEST to the current version of jobs -->
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/Jobs5.2.2.3.jar</systemPath>
+            <version>v5.2.2.3</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>fr.maxlego08.items</groupId>
             <artifactId>zItems</artifactId>
-            <version>1.0.0</version> <!-- Change the LATEST to the current version of jobs -->
+            <version>1.0.0</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/zItems-1.0.0.jar</systemPath>
         </dependency>
-
         <dependency>
-            <groupId>nexo</groupId>
+            <groupId>com.nexomc</groupId>
             <artifactId>nexo</artifactId>
-            <version>0.5.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/nexo-0.5.jar</systemPath>
+            <version>1.7.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>team.unnamed</groupId>
+                    <artifactId>creative-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>team.unnamed</groupId>
+                    <artifactId>creative-server</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>team.unnamed</groupId>
+                    <artifactId>creative-serializer-minecraft</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.byteflux</groupId>
+                    <artifactId>libby-bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dev.triumphteam</groupId>
+                    <artifactId>triumph-gui</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.Maxlego08</groupId>
@@ -310,6 +345,7 @@
             <groupId>com.github.Traqueur-dev</groupId>
             <artifactId>CurrenciesAPI</artifactId>
             <version>1.0.8</version>
+            <scope>provided</scope>
         </dependency>
         <!-- MagicCosmetics -->
         <dependency>
@@ -318,7 +354,6 @@
             <version>2.2.8</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.github.retrooper</groupId>
             <artifactId>packetevents-spigot</artifactId>
@@ -328,9 +363,18 @@
         <dependency>
             <groupId>com.hibiscusmc</groupId>
             <artifactId>HMCCosmetics</artifactId>
-            <version>2.7.7</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/HMCCosmetics-2.7.7.jar</systemPath>
+            <version>2.7.8</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ticxo.playeranimator</groupId>
+                    <artifactId>PlayerAnimator</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>dev.triumphteam</groupId>
+                    <artifactId>triumph-gui</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
