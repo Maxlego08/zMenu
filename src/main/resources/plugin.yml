@@ -16,6 +16,7 @@ softdepend:
   - zHead
   - MagicCosmetics
   - packetevents
+  - HMCCosmetics
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

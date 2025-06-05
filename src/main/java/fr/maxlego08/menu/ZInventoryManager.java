@@ -36,7 +36,6 @@ import fr.maxlego08.menu.button.loader.MainMenuLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -632,6 +631,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryDefault inventoryDefault) {
             this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+        }
+    }
+
+    @Override
+    public void updateInventoryCurrentPage(Player player){
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+        if (holder instanceof InventoryDefault inventoryDefault) {
+            this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());
         }
     }
 
