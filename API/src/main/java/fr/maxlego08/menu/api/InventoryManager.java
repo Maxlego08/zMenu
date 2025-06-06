@@ -388,6 +388,12 @@ public interface InventoryManager extends Listener {
     void updateInventory(Player player, Plugin plugin);
 
     /**
+     * Opens the player's inventory with the Player's current page.
+     * @param player The player.
+     */
+    void updateInventoryCurrentPage(Player player);
+
+    /**
      * Save item in config file
      *
      * @param sender    Command Sender
