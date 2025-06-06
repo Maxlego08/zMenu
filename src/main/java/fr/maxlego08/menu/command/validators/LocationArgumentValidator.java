@@ -36,4 +36,9 @@ public class LocationArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_LOCATION;
     }
+
+    @Override
+    public String getType() {
+        return "location";
+    }
 }

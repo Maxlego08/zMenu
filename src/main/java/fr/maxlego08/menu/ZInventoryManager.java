@@ -23,11 +23,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.HomeLoader;
@@ -36,6 +32,18 @@ import fr.maxlego08.menu.button.loader.MainMenuLoader;
 import fr.maxlego08.menu.button.loader.NextLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
+
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.command.validators.BooleanArgumentValidator;
+import fr.maxlego08.menu.command.validators.DoubleArgumentValidator;
+import fr.maxlego08.menu.command.validators.EntityTypeArgumentValidator;
+import fr.maxlego08.menu.command.validators.IntArgumentValidator;
+import fr.maxlego08.menu.command.validators.LocationArgumentValidator;
+import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
+import fr.maxlego08.menu.command.validators.OnlinePlayerArgumentValidator;
+import fr.maxlego08.menu.command.validators.PlayerArgumentValidator;
+import fr.maxlego08.menu.command.validators.WorldArgumentValidator;
+
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.itemstack.LoreSimilar;
@@ -115,6 +123,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -145,6 +154,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.loadButtons();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
+        this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
+    }
+
+    private void startOfflineTask(int seconds) {
+
+        if (seconds <= 0) return;
+
+        this.plugin.getScheduler().runTimerAsync(() -> {
+            OfflinePlayerCache.clearCache();
+        }, seconds, seconds, TimeUnit.SECONDS);
     }
 
     @Override
@@ -390,7 +409,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
-        plugin.getWebsiteManager().loadButtons(buttonManager);
+        this.plugin.getWebsiteManager().loadButtons(buttonManager);
+
+        var commandManager = this.plugin.getCommandManager();
+        commandManager.registerArgumentValidator(new IntArgumentValidator());
+        commandManager.registerArgumentValidator(new DoubleArgumentValidator());
+        commandManager.registerArgumentValidator(new BooleanArgumentValidator());
+        commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
+        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
+        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
+        commandManager.registerArgumentValidator(new OnlinePlayerArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new PlayerArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new LocationArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new WorldArgumentValidator(plugin));
     }
 
     @Override
@@ -876,15 +907,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        String name = this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName()));
-
+        String name = papi(this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName())), player, true);
         if (!isMinecraftName(name)) {
             return itemStack;
         }
 
         if (NMSUtils.isNewHeadApi()) {
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
             if (offlinePlayer != null) {
                 SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
                 skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());

@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
@@ -30,10 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -106,7 +104,6 @@ public class ZStorageManager implements StorageManager {
             this.storeOpenInventories();
             this.storePlayerData();
             this.cache.clearAll();
-
         }, seconds, seconds, TimeUnit.SECONDS);
     }
 
@@ -139,7 +136,12 @@ public class ZStorageManager implements StorageManager {
                 table.string("plugin", event.getInventory().getPlugin().getName());
                 table.string("inventory", event.getInventory().getFileName());
                 table.bigInt("page", event.getPage());
-                table.string("old_inventories", event.getOldInventories().stream().map(Inventory::getFileName).collect(Collectors.joining(",")));
+                table.string("old_inventories",
+                        event.getOldInventories().stream()
+                                .filter(Objects::nonNull)
+                                .map(Inventory::getFileName)
+                                .collect(Collectors.joining(","))
+                );
             }));
             iterator.remove();
         }

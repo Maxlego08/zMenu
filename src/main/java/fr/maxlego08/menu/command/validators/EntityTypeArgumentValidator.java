@@ -19,4 +19,9 @@ public class EntityTypeArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_ENTITY;
     }
+
+    @Override
+    public String getType() {
+        return "entity-type";
+    }
 }

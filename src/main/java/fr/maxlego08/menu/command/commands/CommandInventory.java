@@ -9,7 +9,6 @@ import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.command.validators.CommandArgumentValidatorFactory;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
@@ -110,12 +109,12 @@ public class CommandInventory extends VCommand {
                 } else {
 
                     String result = value.toString();
-                    Optional<CommandArgumentValidator> validatorOptional = CommandArgumentValidatorFactory.getValidator(plugin, argument.getType());
+                    Optional<CommandArgumentValidator> validatorOptional = plugin.getCommandManager().getArgumentValidator(argument.getType());
 
                     if (validatorOptional.isPresent()) {
                         CommandArgumentValidator validator = validatorOptional.get();
                         if (!validator.isValid(result)) {
-                            message(this.plugin, sender, validator.getErrorMessage());
+                            message(this.plugin, sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
                             return CommandType.DEFAULT;
                         }
                     }

@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -157,7 +158,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             this.material = "STONE";
         }
 
-        OfflinePlayer offlinePlayer = this.targetPlayer != null ? Bukkit.getOfflinePlayer(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
+        OfflinePlayer offlinePlayer = this.targetPlayer != null ? OfflinePlayerCache.get(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
 
         String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
@@ -317,7 +318,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.displayName != null) {
             try {
                 String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                itemName = fontImage.replace(papi(placeholders.parse(displayName), player, useCache));
+                itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -325,12 +326,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (!this.lore.isEmpty()) {
-            List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), player, useCache);
+            List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
             itemLore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).map(fontImage::replace).collect(Collectors.toList());
         }
 
         if (itemName != null) {
-            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, offlinePlayer == null ? player : offlinePlayer);
+            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, player);
         }
 
         if (!itemLore.isEmpty()) {
@@ -763,8 +764,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             int level = configuration.getInt("level", 1);
             boolean splash = configuration.getBoolean("splash", false);
             boolean extended = configuration.getBoolean("extended", false);
+            boolean arrow = configuration.getBoolean("arrow", false);
 
-            Potion potion = new Potion(type, level, splash, extended);
+            Potion potion = new Potion(type, level, splash, extended, arrow);
             potion.setColor(potionColor);
             setPotion(potion);
         }

@@ -1,7 +1,6 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.command.CommandArgument;
-import fr.maxlego08.menu.api.command.CommandArgumentType;
 import fr.maxlego08.menu.api.requirement.Action;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.Optional;
 
 public class ZCommandArgument implements CommandArgument {
 
-    private final CommandArgumentType commandArgumentType;
+    private final String commandArgumentType;
     private final String argument;
     private final String inventory;
     private final boolean isRequired;
@@ -18,7 +17,7 @@ public class ZCommandArgument implements CommandArgument {
     private final List<String> autoCompletion;
     private final String defaultValue;
 
-    public ZCommandArgument(CommandArgumentType commandArgumentType, String argument, String inventory, boolean isRequired, boolean performMainAction, List<Action> actions, List<String> autoCompletion, String defaultValue) {
+    public ZCommandArgument(String commandArgumentType, String argument, String inventory, boolean isRequired, boolean performMainAction, List<Action> actions, List<String> autoCompletion, String defaultValue) {
         this.commandArgumentType = commandArgumentType;
         this.argument = argument;
         this.inventory = inventory;
@@ -55,7 +54,7 @@ public class ZCommandArgument implements CommandArgument {
     }
 
     @Override
-    public CommandArgumentType getType() {
+    public String getType() {
         return this.commandArgumentType;
     }
 

@@ -13,4 +13,9 @@ public class BooleanArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_BOOLEAN;
     }
+
+    @Override
+    public String getType() {
+        return "boolean";
+    }
 }

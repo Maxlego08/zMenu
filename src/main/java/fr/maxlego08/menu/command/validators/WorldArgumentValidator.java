@@ -21,4 +21,9 @@ public class WorldArgumentValidator implements CommandArgumentValidator {
     public Message getErrorMessage() {
         return Message.COMMAND_ARGUMENT_WORLD;
     }
+
+    @Override
+    public String getType() {
+        return "world";
+    }
 }
