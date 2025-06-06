@@ -368,6 +368,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new DataLoader(this.plugin));
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
         buttonManager.registerAction(new ChatLoader());
+        buttonManager.registerAction(new PlayerCommandAsOPLoader());
         buttonManager.registerAction(new PlayerCommandLoader());
         buttonManager.registerAction(new ConsoleCommandLoader());
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.BackLoader(this.plugin));
