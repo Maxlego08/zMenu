@@ -26,8 +26,6 @@ public class PlayerCommandAsOPAction extends ActionHelper {
             try {
                 attachment.setPermission("*", true);
                 Bukkit.dispatchCommand(player, command);
-                Bukkit.getLogger().info("Executed command as OP: " + command);
-
             } finally {
                 player.removeAttachment(attachment);
             }
