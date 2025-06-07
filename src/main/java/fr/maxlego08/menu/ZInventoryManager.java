@@ -88,6 +88,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
@@ -174,6 +175,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         return new MenuItemStackLoader(this).load(configuration, path, file);
+    }
+
+    @Override
+    public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
+        return MenuItemStackFormMap.fromMap(this, file, path, map);
     }
 
     @Override
