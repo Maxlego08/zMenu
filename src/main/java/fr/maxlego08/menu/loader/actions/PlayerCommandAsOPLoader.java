@@ -11,7 +11,7 @@ import java.util.List;
 public class PlayerCommandAsOPLoader extends ActionLoader {
 
     public PlayerCommandAsOPLoader() {
-        super("player_command_as_op", "player_commands_as_op", "player command as op", "player commands as op", "player-command-as-op", " layer-commands-as-op");
+        super("player_command_as_op", "player_commands_as_op", "player command as op", "player commands as op", "player-command-as-op", "player-commands-as-op");
     }
 
     @Override
