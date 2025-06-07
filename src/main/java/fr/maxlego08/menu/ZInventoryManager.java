@@ -68,6 +68,7 @@ import fr.maxlego08.menu.loader.actions.DiscordLoader;
 import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
+import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
