@@ -74,6 +74,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.io.File;
 import java.io.IOException;
@@ -283,6 +285,22 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         oldInventories = playerOpenInventoryEvent.getOldInventories();
 
         this.currentInventories.put(player.getUniqueId(), inventory);
+
+        // Vérifier si le joueur est un joueur Bedrock
+        FloodgateApi floodgateApi = FloodgateApi.getInstance();
+        if (floodgateApi != null && floodgateApi.isFloodgatePlayer(player.getUniqueId())) {
+            FloodgatePlayer floodgatePlayer = floodgateApi.getPlayer(player.getUniqueId());
+            // Construire et envoyer le formulaire Bedrock
+            // TODO: Implémenter la logique de construction du formulaire Bedrock ici en utilisant this.plugin.getBedrockFormBuilder()
+            // Exemple :
+            // org.geysermc.cumulus.form.SimpleForm.Builder form = this.plugin.getBedrockFormBuilder().createSimpleForm(floodgatePlayer, inventory.getName(player, null, null));
+            // inventory.getButtons().forEach(button -> {
+            // form.button(button.getName()); // Adapter cela à la façon dont les boutons sont gérés
+            // });
+            // floodgatePlayer.sendForm(form.build());
+            return; // Empêcher l'ouverture de l'inventaire Java
+        }
+
         this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
     }
 
