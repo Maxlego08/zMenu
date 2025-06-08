@@ -5,7 +5,7 @@ description: Inventory management plugin
 website: https://groupez.dev/resources/zmenu.253
 version: ${version}
 api-version: 1.13
-contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag ]
+contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag, Funasitien ]
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
@@ -17,6 +17,7 @@ softdepend:
   - MagicCosmetics
   - packetevents
   - HMCCosmetics
+  - floodgate
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

@@ -205,3 +205,28 @@ items:
 #  # - lore -> Allows to check only the lore
 #  # - modelid -> Allows to check only the Custom Model Id
 #  type: full
+
+
+floodgate:
+# If you want to use Floodgate, you can use this section to create a menu that will be displayed to players who do not have access to the plugin.
+# This menu will be displayed when the player does not have access to the plugin.
+  
+  # Title and content of the floodgate form. 
+  title: "Titre du Menu Floodgate"
+  content: "Description ou contenu du menu."
+
+  # Buttons that will be displayed in the floodgate form.
+  buttons:
+    # You can put as many buttons as you want, but you must specify the text of the button.
+    - text: "Bouton 1 (Texte seul)"
+
+    - text: "Bouton 2 (Image URL)"
+      # You can also put an image in the button, you must specify the type of image and the data of the image.
+      # The imageType can be either URL or PATH.
+      imageType: "URL"
+      # The imageData is the URL of the image of the image (if URL imageType is used).
+      imageData: "https://example.com/image.png"
+    - text: "Bouton 3 (Image Chemin)"
+      imageType: "PATH"
+      # The imageData is the path of the image (if PATH imageType is used).
+      imageData: "textures/items/diamond.png"
