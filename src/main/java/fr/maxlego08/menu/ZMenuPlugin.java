@@ -28,6 +28,7 @@ import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.CraftEngineLoader;
 import fr.maxlego08.menu.hooks.EcoLoader;
+import fr.maxlego08.menu.hooks.FloodgateListener;
 import fr.maxlego08.menu.hooks.HmccosmeticsLoader;
 import fr.maxlego08.menu.hooks.MagicCosmeticsLoader;
 import fr.maxlego08.menu.hooks.NexoLoader;
@@ -180,6 +181,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
         this.addSimpleListener(this.inventoryManager);
+
+        if (this.isActive(Plugins.FLOODGATE)) {
+            this.addListener(new FloodgateListener());
+        }
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
         this.inventoryManager.registerMaterialLoader(new ArmorLoader());
