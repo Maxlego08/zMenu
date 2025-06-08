@@ -1,4 +1,4 @@
-group = "Hooks:CraftEngine"
+group = "Hooks:Floodgate"
 
 repositories {
     maven("https://repo.opencollab.dev/main/")
