@@ -13,16 +13,26 @@ public abstract class ActionLoader {
 
     private final List<String> keys;
 
+    /**
+     * Creates an instance of {@link ActionLoader} with the specified keys.
+     *
+     * @param keys The keys that define the type of action.
+     */
     public ActionLoader(List<String> keys) {
         this.keys = keys;
     }
 
+    /**
+     * Creates an instance of {@link ActionLoader} with the specified keys.
+     *
+     * @param keys The keys that define the type of action.
+     */
     public ActionLoader(String... keys) {
         this.keys = List.of(keys);
     }
 
     /**
-     * Gets the key's that defines the type of action.
+     * Gets the key that defines the type of action.
      *
      * @return keys.
      */
