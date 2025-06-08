@@ -18,7 +18,7 @@ public class FloodgateBuilder {
      * @param player Player to whom the menu will be sent. This should be a Floodgate player.
      * @param menuConfig Menu YAML configuration section containing the Floodgate-specific settings.
      */
-    public void buildAndSendMenu(Player player, ConfigurationSection menuConfig) {
+    public SimpleForm.Builder buildSimpleForm(Player player, ConfigurationSection menuConfig) {
         ConfigurationSection floodgateConfig = menuConfig.getConfigurationSection("floodgate");
 
         String title = floodgateConfig.getString("title", "Menu");
@@ -50,11 +50,6 @@ public class FloodgateBuilder {
             formBuilder.content(content + "\n\n(No buttons configured)");
         }
         
-        FloodgateApi floodgateApi = FloodgateApi.getInstance();
-        FloodgatePlayer floodgatePlayer = floodgateApi.getPlayer(player.getUniqueId());
-
-        if (floodgatePlayer != null) {
-            floodgatePlayer.sendForm(formBuilder.build());
-        } 
+        return formBuilder;
     }
 }

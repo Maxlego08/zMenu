@@ -49,7 +49,9 @@ public class FloodgateListener extends FastEvent {
             }
             event.setCancelled(true);
             FloodgateBuilder floodgateBuilder = new FloodgateBuilder();
-            floodgateBuilder.buildAndSendMenu(player, floodgateConfig);
+            floodgateBuilder.buildSimpleForm(player, floodgateConfig).
+                    build()
+                    .sendTo(floodgateApi.getPlayer(playerUuid));
             return;
         }
     }
