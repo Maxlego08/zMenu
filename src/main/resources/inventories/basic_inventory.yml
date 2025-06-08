@@ -206,12 +206,18 @@ items:
 #  # - modelid -> Allows to check only the Custom Model Id
 #  type: full
 
-
-floodgate:
 # If you want to use Floodgate, you can use this section to create a menu that will be displayed to players who do not have access to the plugin.
 # This menu will be displayed when the player does not have access to the plugin.
+floodgate:
   
-  # Title and content of the floodgate form. 
+  # Type of the floodgate form.
+  # The type can be either SIMPLE or CUSTOM.ù
+  # If you use SIMPLE, the form will be a simple form with a title and content, with only buttons.
+  # If you use CUSTOM, the form will be a custom form with diffrent types of components,
+  # such as text fields, dropdowns, etc.
+  # Title and content of the floodgate form.
+  type: "SIMPLE"
+
   title: "Titre du Menu Floodgate"
   content: "Description ou contenu du menu."
 
@@ -223,10 +229,10 @@ floodgate:
     - text: "Button 2 (URL Image)"
       # You can also put an image in the button, you must specify the type of image and the data of the image.
       # The imageType can be either URL or PATH.
-      imageType: "URL"
+      image-type: "URL"
       # The imageData is the URL of the image of the image (if URL imageType is used).
-      imageData: "https://example.com/image.png"
+      image-data: "https://example.com/image.png"
     - text: "Button 3 (Texture PATH Image)"
-      imageType: "PATH"
+      image-type: "PATH"
       # The imageData is the path of the image (if PATH imageType is used).
-      imageData: "textures/items/diamond.png"
+      image-data: "textures/items/diamond.png"

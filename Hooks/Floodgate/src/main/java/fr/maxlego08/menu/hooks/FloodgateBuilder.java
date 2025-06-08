@@ -31,11 +31,11 @@ public class FloodgateBuilder {
         List<Map<?, ?>> buttonsConfig = floodgateConfig.getMapList("buttons");
         if (buttonsConfig != null && !buttonsConfig.isEmpty()) {
             for (Map<?, ?> buttonMap : buttonsConfig) {
-                String buttonText = buttonMap.get("text") instanceof String ? (String) buttonMap.get("text") : "Bouton";
+                String buttonText = buttonMap.get("text") instanceof String ? (String) buttonMap.get("text") : "Button";
 
-                if (buttonMap.containsKey("imageType") && buttonMap.containsKey("imageData")) {
-                    String imageTypeStr = String.valueOf(buttonMap.get("imageType"));
-                    String imageData = String.valueOf(buttonMap.get("imageData"));
+                if (buttonMap.containsKey("imageType") && buttonMap.containsKey("image-data")) {
+                    String imageTypeStr = String.valueOf(buttonMap.get("image-type"));
+                    String imageData = String.valueOf(buttonMap.get("image-data"));
                     try {
                         FormImage.Type imageType = FormImage.Type.valueOf(imageTypeStr.toUpperCase());
                         formBuilder.button(buttonText, imageType, imageData);
