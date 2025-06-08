@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.bedrock.BedrockFormBuilder;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
@@ -87,6 +88,7 @@ public class MenuPlugin extends ZPlugin {
     private ZScheduler scheduler;
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
+    private BedrockFormBuilder bedrockFormBuilder;
 
     public static boolean isFolia() {
         try {
@@ -116,6 +118,7 @@ public class MenuPlugin extends ZPlugin {
 
         this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
+        this.bedrockFormBuilder = new BedrockFormBuilder();
 
         this.preEnable();
 
@@ -382,6 +385,10 @@ public class MenuPlugin extends ZPlugin {
 
     public Enchantments getEnchantments() {
         return enchantments;
+    }
+
+    public BedrockFormBuilder getBedrockFormBuilder() {
+        return bedrockFormBuilder;
     }
 
     public FontImage getFontImage() {
