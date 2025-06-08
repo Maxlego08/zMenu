@@ -388,6 +388,13 @@ public interface InventoryManager extends Listener {
     void updateInventory(Player player, Plugin plugin);
 
     /**
+     * Opens the player's inventory with the Player's current page.
+     *
+     * @param player The player.
+     */
+    void updateInventoryCurrentPage(Player player);
+
+    /**
      * Save item in config file
      *
      * @param sender    Command Sender
@@ -569,4 +576,20 @@ public interface InventoryManager extends Listener {
      * @return the loaded menu item stack.
      */
     MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
+
+    /**
+     * Loads a menu item stack from a file, using the specified path and additional parameters.
+     * <p>
+     * This method reads the configuration data from the provided file and constructs
+     * a MenuItemStack object based on the specified path within the file. The map
+     * parameter allows for additional customization and overrides to be applied
+     * during the loading process.
+     *
+     * @param file The file containing the item stack configuration data.
+     * @param path The path within the file to locate the item stack data.
+     * @param map  A map of additional parameters or overrides for customizing the item stack.
+     * @return The loaded MenuItemStack object.
+     * <p>
+     */
+    MenuItemStack loadItemStack(File file, String path, Map<String, Object> map);
 }
