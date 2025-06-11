@@ -21,7 +21,7 @@ public class BookLoader extends ActionLoader {
     public Action load(String path, TypedMapAccessor accessor, File file) {
 
         String title = accessor.getString("title");
-        String author = accessor.getString("subtitle");
+        String author = accessor.getString("author");
         List<String> lines = new ArrayList<>();
 
         Map<?, List<String>> maps = (Map<?, List<String>>) accessor.getObject("lines", new HashMap<>());
