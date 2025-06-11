@@ -4,6 +4,8 @@ public enum Plugins {
 	
 	VAULT("Vault"),
 	ESSENTIALS("Essentials"),
+	EXECUTABLE_ITEMS("ExecutableItems"),
+	EXECUTABLE_BLOCKS("ExecutableBlocks"),
 	HEADDATABASE("HeadDatabase"), 
 	ZHEAD("zHead"),
 	PLACEHOLDER("PlaceholderAPI"),
