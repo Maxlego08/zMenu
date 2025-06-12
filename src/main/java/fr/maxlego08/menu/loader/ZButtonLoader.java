@@ -2,14 +2,13 @@ package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.ZMenuItemStack;
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.PermissibleButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
@@ -49,12 +48,12 @@ import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
     private final File file;
     private final int inventorySize;
     private final Map<Character, List<Integer>> matrix;
 
-    public ZButtonLoader(ZMenuPlugin plugin, File file, int inventorySize, Map<Character, List<Integer>> matrix) {
+    public ZButtonLoader(MenuPlugin plugin, File file, int inventorySize, Map<Character, List<Integer>> matrix) {
         super();
         this.plugin = plugin;
         this.file = file;
@@ -67,8 +66,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
-        DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue();
-        defaultButtonValue.setFile(file);
+        DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
 
         ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
 
@@ -103,7 +101,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
-        Button button = (Button) loader.load(configuration, path, defaultButtonValue);
+        Button button = loader.load(configuration, path, defaultButtonValue);
         button.setPlugin(this.plugin);
 
         int slot;
@@ -247,7 +245,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         if (configuration.contains(path + "else")) {
 
-            DefaultButtonValue elseDefaultButtonValue = new DefaultButtonValue();
+            DefaultButtonValue elseDefaultButtonValue = new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
             elseDefaultButtonValue.setSlot(slot);
             elseDefaultButtonValue.setSlots(slots);
             elseDefaultButtonValue.setPage(page);
@@ -261,8 +259,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             button.setElseButton(elseButton);
 
             if (elseButton != null) {
-                PermissibleButton elsePermissibleButton = (PermissibleButton) elseButton;
-                elsePermissibleButton.setParentButton(button);
+                elseButton.setParentButton(button);
             }
         }
 

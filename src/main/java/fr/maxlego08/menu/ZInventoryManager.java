@@ -34,6 +34,7 @@ import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
 
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.button.loader.SwitchLoader;
 import fr.maxlego08.menu.command.validators.BooleanArgumentValidator;
 import fr.maxlego08.menu.command.validators.DoubleArgumentValidator;
 import fr.maxlego08.menu.command.validators.EntityTypeArgumentValidator;
@@ -406,6 +407,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new PreviousLoader(this.plugin));
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
+        buttonManager.register(new SwitchLoader(this.plugin));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());

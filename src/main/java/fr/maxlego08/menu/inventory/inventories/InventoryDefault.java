@@ -143,6 +143,8 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return;
         }
 
+        button = button.getDisplayButton(this, this.player);
+
         // If the button has a permission or a placeholder to check
         if (button.hasPermission()) {
 

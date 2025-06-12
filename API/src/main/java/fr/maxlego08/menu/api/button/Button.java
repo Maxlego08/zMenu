@@ -419,4 +419,8 @@ public abstract class Button extends PlaceholderButton {
     public void setPlayerInventory(boolean inPlayerInventory) {
         isInPlayerInventory = inPlayerInventory;
     }
+
+    public Button getDisplayButton(InventoryEngine inventoryEngine, Player player) {
+        return this;
+    }
 }
