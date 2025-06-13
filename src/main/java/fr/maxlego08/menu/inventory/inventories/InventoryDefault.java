@@ -138,7 +138,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      */
     @Override
     public void buildButton(Button button) {
-        final Player targetPlayer = gettargetplayer();
+        final Player targetPlayer = getTargetPlayer();
         if (button.hasCustomRender()) {
             button.onRender(targetPlayer, this);
             return;
@@ -177,7 +177,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      */
     @Override
     public void displayButton(Button button) {
-        final Player targetPlayer = gettargetplayer();
+        final Player targetPlayer = getTargetPlayer();
         if (button.hasSpecialRender()) {
 
             Consumer<WrappedTask> runnable = w -> button.onRender(targetPlayer, this);
@@ -201,7 +201,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      */
     @Override
     public void displayFinalButton(Button button, int... slots) {
-        final Player targetPlayer = gettargetplayer();
+        final Player targetPlayer = getTargetPlayer();
         ItemStack itemStack = button.getCustomItemStack(targetPlayer);
         for (int slot : slots) {
 
@@ -309,7 +309,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot) {
-        final Player targetPlayer = gettargetplayer();
+        final Player targetPlayer = getTargetPlayer();
         ItemMeta itemMeta = itemStack.getItemMeta();
         List<String> lore = button.buildLore(targetPlayer);
         String displayName = button.buildDisplayName(targetPlayer);
@@ -331,7 +331,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     private void handleUpdatedButton(Button button, ItemStack itemStack, int slot) {
-        final Player targetPlayer = gettargetplayer();
+        final Player targetPlayer = getTargetPlayer();
         Button masterButton = button.getMasterParentButton();
 
         if (button.isUpdatedMasterButton()) {
@@ -355,7 +355,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         this.getSpigotInventory().setItem(slot, itemStack);
     }
 
-    private Player gettargetplayer(){
+    private Player getTargetPlayer(){
         if (inventory == null || player == null) {
             return this.player;
         }
