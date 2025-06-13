@@ -27,13 +27,14 @@ public class SwitchLoader extends ButtonLoader {
         var placeholder = configuration.getString(path + "key");
         var switchCaseButtons = new ArrayList<SwitchCaseButton>();
         var loader = new ZButtonLoader(this.plugin, defaultButtonValue.getFile(), defaultButtonValue.getInventorySize(), defaultButtonValue.getMatrix());
-        var section = configuration.getConfigurationSection(path + "buttons");
+        var section = configuration.getConfigurationSection(path + "buttons.");
 
         if (section != null) {
             for (String key : section.getKeys(false)) {
 
                 try {
                     var button = loader.load(configuration, path + "buttons." + key + ".", key, defaultButtonValue);
+                    switchCaseButtons.add(new SwitchCaseButton(key, button));
                 } catch (InventoryException exception) {
                     exception.printStackTrace();
                 }

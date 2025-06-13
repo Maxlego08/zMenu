@@ -35,9 +35,34 @@ public class ZSwitchButton extends SwitchButton {
 
         if (buttons.size() == 1) return buttons.getFirst().button();
 
-        // ToDo
+        String result = inventoryEngine.getPlugin().parse(player, this.placeholder);
 
-        System.out.println("Oui c'est en to do");
+        for (SwitchCaseButton button : this.buttons) {
+
+            String value = button.value();
+
+            if (value.startsWith(">=")) {
+
+                String newValue = value.substring(2);
+                if (Integer.parseInt(result) >= Integer.parseInt(newValue)) return button.button();
+
+            } else if (value.startsWith("<=")) {
+
+                String newValue = value.substring(2);
+                if (Integer.parseInt(result) <= Integer.parseInt(newValue)) return button.button();
+
+            } else if (value.startsWith(">")) {
+
+                String newValue = value.substring(1);
+                if (Integer.parseInt(result) > Integer.parseInt(newValue)) return button.button();
+
+            } else if (value.startsWith("<")) {
+
+                String newValue = value.substring(1);
+                if (Integer.parseInt(result) < Integer.parseInt(newValue)) return button.button();
+
+            } else if (value.equals(result)) return button.button();
+        }
 
         return super.getDisplayButton(inventoryEngine, player);
     }
