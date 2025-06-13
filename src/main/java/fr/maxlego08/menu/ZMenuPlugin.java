@@ -297,6 +297,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/example_punish.yml");
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
+        files.add("inventories/examples/switch.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");
