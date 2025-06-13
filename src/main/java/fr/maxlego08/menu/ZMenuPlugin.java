@@ -283,10 +283,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
         }
-        if (this.isActive(Plugins.EXECUTABLE_ITEMS))
+        if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
-        if (this.isActive(Plugins.EXECUTABLE_BLOCKS))
+        }
+        if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
+        }
     }
 
     private List<String> getInventoriesFiles() {
