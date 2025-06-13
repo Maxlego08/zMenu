@@ -34,6 +34,7 @@ import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.button.loader.PreviousLoader;
 
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.button.loader.SwitchLoader;
 import fr.maxlego08.menu.command.validators.BooleanArgumentValidator;
 import fr.maxlego08.menu.command.validators.DoubleArgumentValidator;
 import fr.maxlego08.menu.command.validators.EntityTypeArgumentValidator;
@@ -68,6 +69,8 @@ import fr.maxlego08.menu.loader.actions.DiscordLoader;
 import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
 import fr.maxlego08.menu.loader.actions.MessageLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
+import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
+import fr.maxlego08.menu.loader.actions.RefreshInventoryLoader;
 import fr.maxlego08.menu.loader.actions.RefreshLoader;
 import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
 import fr.maxlego08.menu.loader.actions.SoundLoader;
@@ -82,6 +85,7 @@ import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
 import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
+import fr.maxlego08.menu.requirement.actions.RefreshInventoryAction;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -374,6 +378,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new DataLoader(this.plugin));
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
         buttonManager.registerAction(new ChatLoader());
+        buttonManager.registerAction(new PlayerCommandAsOPLoader());
         buttonManager.registerAction(new PlayerCommandLoader());
         buttonManager.registerAction(new ConsoleCommandLoader());
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.BackLoader(this.plugin));
@@ -381,6 +386,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TitleLoader());
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
+        buttonManager.registerAction(new RefreshInventoryLoader());
         buttonManager.registerAction(new DiscordLoader());
         buttonManager.registerAction(new DiscordComponentV2Loader());
         buttonManager.registerAction(new TeleportLoader(this.plugin));
@@ -404,6 +410,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new PreviousLoader(this.plugin));
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
+        buttonManager.register(new SwitchLoader(this.plugin));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());

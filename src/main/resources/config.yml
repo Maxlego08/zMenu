@@ -6,6 +6,7 @@ enable-debug: false
 # Useful for identifying bottlenecks and optimizing performance.
 enable-debug-time: false
 
+# Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
 enable-information-message: true
 
 # Storage:

@@ -1,12 +1,12 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.requirement.ZRefreshRequirement;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.requirement.ZRefreshRequirement;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -16,9 +16,9 @@ import java.util.Map;
 
 public class RefreshRequiementLoader implements Loader<RefreshRequirement> {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public RefreshRequiementLoader(ZMenuPlugin plugin) {
+    public RefreshRequiementLoader(MenuPlugin plugin) {
         this.plugin = plugin;
     }
 

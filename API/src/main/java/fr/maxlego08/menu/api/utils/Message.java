@@ -14,6 +14,8 @@ public enum Message implements IMessage {
 
     VINVENTORY_ERROR("&cUnable to open inventory, internal error occurred. &8(&7Inventory ID: %id%&8)"),
 
+    TIME_YEAR("%02d %year% %02d %month% %02d %day% %02d %hour% %02d %minute% %02d %second%"),
+    TIME_MONTH("%02d %month% %02d %day% %02d %hour% %02d %minute% %02d %second%"),
     TIME_DAY("%02d %day% %02d %hour% %02d %minute% %02d %second%"),
     TIME_HOUR("%02d %hour% %02d minute(s) %02d %second%"),
     TIME_HOUR_SIMPLE("%02d:%02d:%02d"),
@@ -31,6 +33,12 @@ public enum Message implements IMessage {
 
     FORMAT_DAY("d"),
     FORMAT_DAYS("days"),
+
+    FORMAT_MONTH("m"),
+    FORMAT_MONTHS("months"),
+
+    FORMAT_YEAR("y"),
+    FORMAT_YEARS("years"),
 
     COMMAND_SYNTAX_ERROR("&cYou must execute the command like this&7: &a%syntax%"),
     COMMAND_NO_PERMISSION("&cYou do not have permission to run this command."),

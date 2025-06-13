@@ -36,11 +36,12 @@ import fr.maxlego08.menu.hooks.OraxenLoader;
 import fr.maxlego08.menu.hooks.SlimeFunLoader;
 import fr.maxlego08.menu.hooks.ZHeadLoader;
 import fr.maxlego08.menu.hooks.ZItemsLoader;
+import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
+import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
@@ -282,6 +283,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
         }
+        if (this.isActive(Plugins.EXECUTABLE_ITEMS))
+            this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
+        if (this.isActive(Plugins.EXECUTABLE_BLOCKS))
+            this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
     }
 
     private List<String> getInventoriesFiles() {
@@ -292,6 +297,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/example_punish.yml");
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
+        files.add("inventories/examples/switch.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");

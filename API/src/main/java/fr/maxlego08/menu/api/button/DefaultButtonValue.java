@@ -3,49 +3,41 @@ package fr.maxlego08.menu.api.button;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains the default values of the button. Allows changes before the button is loaded.
  */
 public class DefaultButtonValue {
 
+    private final int inventorySize;
+    private final Map<Character, List<Integer>> matrix;
+    private final File file;
     // Default slot value
     private int slot = 0;
-
     // Default page value
     private int page = 1;
-
     // Default list of slots
     private List<Integer> slots = new ArrayList<>();
-
     // Default isPermanent value
     private boolean isPermanent = false;
-
     // Default updateOnClick value
     private boolean updateOnClick = false;
-
     // Default closeInventory value
     private boolean closeInventory = false;
-
     // Default update value
     private boolean update = false;
     private boolean updateMasterButton = false;
-
     // Default refreshOnClick value
     private boolean refreshOnClick = false;
-
     // Default useCache value
     private boolean useCache = true;
-
     // Default playerHead value
     private String playerHead = null;
-    private File file;
 
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
+    public DefaultButtonValue(int inventorySize, Map<Character, List<Integer>> matrix, File file) {
+        this.inventorySize = inventorySize;
+        this.matrix = matrix;
         this.file = file;
     }
 
@@ -225,5 +217,17 @@ public class DefaultButtonValue {
 
     public void setUpdateMasterButton(boolean updateMasterButton) {
         this.updateMasterButton = updateMasterButton;
+    }
+
+    public int getInventorySize() {
+        return inventorySize;
+    }
+
+    public Map<Character, List<Integer>> getMatrix() {
+        return matrix;
+    }
+
+    public File getFile() {
+        return file;
     }
 }
