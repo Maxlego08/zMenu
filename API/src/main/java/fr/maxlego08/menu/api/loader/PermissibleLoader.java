@@ -48,6 +48,7 @@ public abstract class PermissibleLoader {
      * @param file          the file of the configuration file to read.
      * @return the list of loaded actions.
      */
+    @SuppressWarnings("unchecked")
     protected List<Action> loadAction(ButtonManager buttonManager, TypedMapAccessor accessor, String key, String path, File file) {
         return buttonManager.loadActions((List<Map<String, Object>>) accessor.getObject(key, new ArrayList<Map<String, Object>>()), path, file);
     }
@@ -62,6 +63,7 @@ public abstract class PermissibleLoader {
      * @param file          the file of the configuration.
      * @return a list of Permissible.
      */
+    @SuppressWarnings("unchecked")
     protected List<Permissible> loadPermissible(ButtonManager buttonManager, TypedMapAccessor accessor, String key, String path, File file) {
         return buttonManager.loadPermissible((List<Map<String, Object>>) accessor.getObject(key, new ArrayList<Map<String, Object>>()), path, file);
     }

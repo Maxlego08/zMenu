@@ -6,7 +6,7 @@ package fr.maxlego08.menu.api.font;
  * in a string with a character that represents the color.
  * </p>
  * <p>
- * For example, the string "&4Hello" will be replaced with the character
+ * For example, the string {@code "&4Hello"} will be replaced with the character
  * representing the color red, followed by the string "Hello".
  * </p>
  * <p>
@@ -25,7 +25,7 @@ public interface FontImage {
      * characters.
      * </p>
      * <p>
-     * For example, the string "&4Hello" will be replaced with the character
+     * For example, the string {@code "&4Hello"} will be replaced with the character
      * representing the color red, followed by the string "Hello".
      * </p>
      *

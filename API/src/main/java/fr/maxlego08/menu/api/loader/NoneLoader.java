@@ -7,20 +7,20 @@ import org.bukkit.plugin.Plugin;
 
 public class NoneLoader extends ButtonLoader {
 
-    private final Class<? extends Button> classz;
+    private final Class<? extends Button> clazz;
 
-    public NoneLoader(Plugin plugin, Class<? extends Button> classz, String name) {
+    public NoneLoader(Plugin plugin, Class<? extends Button> clazz, String name) {
         super(plugin, name);
-        this.classz = classz;
+        this.clazz = clazz;
     }
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         try {
-            return this.classz.getConstructor(Plugin.class).newInstance(this.plugin);
+            return this.clazz.getConstructor(Plugin.class).newInstance(this.plugin);
         } catch (Exception exception) {
             try {
-                return this.classz.newInstance();
+                return this.clazz.getDeclaredConstructor().newInstance();
             } catch (Exception exception2) {
                 exception.printStackTrace();
             }

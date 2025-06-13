@@ -19,10 +19,9 @@ import java.util.Map;
 
 /**
  * The `Inventory` interface defines the structure and behavior of inventory-related operations.
- * <p>
+ * <br>
  * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">Inventory documentation</a>
  * <p>This class encapsulates information about an inventory, including its size, buttons, patterns, and associated requirements.</p>
- * </p>
  */
 public interface Inventory {
 

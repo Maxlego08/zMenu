@@ -23,25 +23,35 @@ tasks {
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/${System.getenv("GITHUB_REPOSITORY_OWNER")}/zMenu")
+            name = "groupezSnapshots"
+            url = uri("https://repo.groupez.dev/snapshots")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = findProperty("${name}Username") as String? ?: System.getenv("MAVEN_USERNAME")
+                password = findProperty("${name}Password") as String? ?: System.getenv("MAVEN_PASSWORD")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }
 
     publications {
-        register<MavenPublication>("gpr") {
-            // https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#publishing-a-package
+        register<MavenPublication>("groupezSnapshots") {
             pom {
                 groupId = project.group as String?
                 name = "${rootProject.name}-${project.name}"
                 artifactId = name.get().lowercase()
                 version = project.version as String?
+
+                scm {
+                    connection = "scm:git:git://github.com/MaxLego08/${rootProject.name}.git"
+                    developerConnection = "scm:git:ssh://github.com/MaxLego08/${rootProject.name}.git"
+                    url = "https://github.com/MaxLego08/${rootProject.name}/"
+                }
             }
             artifact(tasks.shadowJar)
+            artifact(tasks.javadocJar)
+            artifact(tasks.sourcesJar)
         }
     }
 }

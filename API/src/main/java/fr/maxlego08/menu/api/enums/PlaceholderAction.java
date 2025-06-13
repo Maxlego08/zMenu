@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * @author Maxence
- * <p>
+ *
  * Action used for the Placeholder button, more information <a href="https://docs.zmenu.dev/configurations/buttons#placeholder">here</a>
  */
 public enum PlaceholderAction {

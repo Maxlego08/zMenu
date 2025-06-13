@@ -4,58 +4,43 @@
 package fr.maxlego08.menu.api.exceptions;
 
 /**
- * @author Maxlego08
- *
+ * Represents an exception thrown when there is an error related to item enchanting.
  */
 public class ItemEnchantException extends Exception {
-
     /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     *
+     * {@inheritDoc}
      */
     public ItemEnchantException() {
-        // TODO Auto-generated constructor stub
+        super();
     }
 
     /**
-     * @param message
+     * {@inheritDoc}
      */
     public ItemEnchantException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @param cause
+     * {@inheritDoc}
      */
     public ItemEnchantException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @param message
-     * @param cause
+     * {@inheritDoc}
      */
     public ItemEnchantException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @param message
-     * @param cause
-     * @param enableSuppression
-     * @param writableStackTrace
+     * {@inheritDoc}
      */
     public ItemEnchantException(String message, Throwable cause, boolean enableSuppression,
                                 boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
-        // TODO Auto-generated constructor stub
     }
 
 }

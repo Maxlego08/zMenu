@@ -14,13 +14,19 @@ import java.util.stream.Stream;
  */
 public abstract class Action {
 
+    /**
+     * The delay in ticks before the action is executed.
+     * A value of 0 means no delay.
+     */
     private int delay;
 
     /**
      * Executes the action for the specified player.
      *
-     * @param player       The player who triggers the action.
-     * @param placeholders Placeholders
+     * @param player          The player who triggers the action.
+     * @param button          The button associated with the action.
+     * @param inventoryEngine The inventory engine managing the inventory.
+     * @param placeholders    Placeholders
      */
     protected abstract void execute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 
@@ -39,6 +45,14 @@ public abstract class Action {
         this.delay = delay;
     }
 
+    /**
+     * Parses and flattens a list of commands by splitting each command by newline, replacing a
+     * placeholder with the player's name, and returning a flattened list of processed commands.
+     *
+     * @param liste  The list of command strings to process and flatten.
+     * @param player The player whose name will replace the "%player%" placeholder in the commands.
+     * @return A list of commands that have been processed and flattened with placeholders replaced.
+     */
     protected List<String> parseAndFlattenCommands(List<String> liste, Player player) {
         return liste.stream().flatMap(cmd -> Stream.of(cmd.split("\n"))).map(cmd -> cmd.replace("%player%", player.getName())).collect(Collectors.toList());
     }

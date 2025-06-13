@@ -1,4 +1,5 @@
 import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils.sha
+import org.gradle.kotlin.dsl.invoke
 
 plugins {
     `java-library`
@@ -24,10 +25,27 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
+        maven {
+            name = "groupezReleases"
+            url = uri("https://repo.groupez.dev/releases")
+        }
+        maven {
+            name = "groupezSnapshots"
+            url = uri("https://repo.groupez.dev/snapshots")
+        }
+        maven {
+            name = "groupezPrivate"
+            url = uri("https://repo.groupez.dev/private")
+        }
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven(url = "https://libraries.minecraft.net/")
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
     tasks.shadowJar {
@@ -68,6 +86,8 @@ allprojects {
 
     tasks.javadoc {
         options.encoding = "UTF-8"
+        if (JavaVersion.current().isJava9Compatible)
+            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
     }
 
     dependencies {
@@ -77,7 +97,7 @@ allprojects {
 
         implementation("com.github.cryptomorin:XSeries:13.2.0")
         implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
-        implementation("com.github.technicallycoded:FoliaLib:main-SNAPSHOT")
+        implementation("com.github.technicallycoded:FoliaLib:0.4.4")
         implementation("com.github.Maxlego08:Sarah:1.17")
         implementation("net.objecthunter:exp4j:0.4.8")
     }

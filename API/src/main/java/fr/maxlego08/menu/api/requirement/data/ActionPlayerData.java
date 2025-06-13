@@ -41,6 +41,7 @@ public interface ActionPlayerData {
     /**
      * Converts the action into player data.
      *
+     * @param player The player for whom the data is created.
      * @return The {@link Data}.
      */
     Data toData(OfflinePlayer player);
