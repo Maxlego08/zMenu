@@ -2,7 +2,7 @@ root = true
 
 [*]
 charset = utf-8
-end_of_line = crlf
+end_of_line = unset
 indent_size = 4
 indent_style = space
 insert_final_newline = false
@@ -15,6 +15,10 @@ ij_formatter_tags_enabled = true
 ij_smart_tabs = false
 ij_visual_guides = 
 ij_wrap_on_typing = false
+
+[{*.yml,*.yaml}]
+indent_size = 2
+tab_width = 2
 
 [*.java]
 ij_java_align_consecutive_assignments = false
