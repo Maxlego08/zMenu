@@ -25,17 +25,7 @@ import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
-import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.CraftEngineLoader;
-import fr.maxlego08.menu.hooks.EcoLoader;
-import fr.maxlego08.menu.hooks.HmccosmeticsLoader;
-import fr.maxlego08.menu.hooks.MagicCosmeticsLoader;
-import fr.maxlego08.menu.hooks.NexoLoader;
-import fr.maxlego08.menu.hooks.NovaLoader;
-import fr.maxlego08.menu.hooks.OraxenLoader;
-import fr.maxlego08.menu.hooks.SlimeFunLoader;
-import fr.maxlego08.menu.hooks.ZHeadLoader;
-import fr.maxlego08.menu.hooks.ZItemsLoader;
+import fr.maxlego08.menu.hooks.*;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
@@ -75,11 +65,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>

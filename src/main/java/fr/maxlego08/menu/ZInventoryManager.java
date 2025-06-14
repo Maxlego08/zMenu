@@ -1,13 +1,7 @@
 package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
-import fr.maxlego08.menu.api.ButtonManager;
-import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.InventoryListener;
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.InventoryOption;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
@@ -23,69 +17,19 @@ import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
-import fr.maxlego08.menu.button.loader.HomeLoader;
-import fr.maxlego08.menu.button.loader.JumpLoader;
-import fr.maxlego08.menu.button.loader.MainMenuLoader;
-import fr.maxlego08.menu.button.loader.NextLoader;
-import fr.maxlego08.menu.api.loader.NoneLoader;
-import fr.maxlego08.menu.button.loader.PreviousLoader;
-
-import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.button.loader.SwitchLoader;
-import fr.maxlego08.menu.command.validators.BooleanArgumentValidator;
-import fr.maxlego08.menu.command.validators.DoubleArgumentValidator;
-import fr.maxlego08.menu.command.validators.EntityTypeArgumentValidator;
-import fr.maxlego08.menu.command.validators.IntArgumentValidator;
-import fr.maxlego08.menu.command.validators.LocationArgumentValidator;
-import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
-import fr.maxlego08.menu.command.validators.OnlinePlayerArgumentValidator;
-import fr.maxlego08.menu.command.validators.PlayerArgumentValidator;
-import fr.maxlego08.menu.command.validators.WorldArgumentValidator;
-
+import fr.maxlego08.menu.button.loader.*;
+import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.itemstack.FullSimilar;
-import fr.maxlego08.menu.itemstack.LoreSimilar;
-import fr.maxlego08.menu.itemstack.MaterialSimilar;
-import fr.maxlego08.menu.itemstack.ModelIdSimilar;
-import fr.maxlego08.menu.itemstack.NameSimilar;
+import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.loader.actions.ActionBarLoader;
-import fr.maxlego08.menu.loader.actions.BookLoader;
-import fr.maxlego08.menu.loader.actions.BroadcastLoader;
-import fr.maxlego08.menu.loader.actions.BroadcastSoundLoader;
-import fr.maxlego08.menu.loader.actions.ChatLoader;
-import fr.maxlego08.menu.loader.actions.CloseLoader;
-import fr.maxlego08.menu.loader.actions.ConnectLoader;
-import fr.maxlego08.menu.loader.actions.ConsoleCommandLoader;
-import fr.maxlego08.menu.loader.actions.CurrencyDepositLoader;
-import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
-import fr.maxlego08.menu.loader.actions.DataLoader;
-import fr.maxlego08.menu.loader.actions.DiscordComponentV2Loader;
-import fr.maxlego08.menu.loader.actions.DiscordLoader;
-import fr.maxlego08.menu.loader.actions.LuckPermissionSetLoader;
-import fr.maxlego08.menu.loader.actions.MessageLoader;
-import fr.maxlego08.menu.loader.actions.PlayerCommandLoader;
-import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
-import fr.maxlego08.menu.loader.actions.RefreshInventoryLoader;
-import fr.maxlego08.menu.loader.actions.RefreshLoader;
-import fr.maxlego08.menu.loader.actions.ShopkeeperLoader;
-import fr.maxlego08.menu.loader.actions.SoundLoader;
-import fr.maxlego08.menu.loader.actions.TeleportLoader;
-import fr.maxlego08.menu.loader.actions.TitleLoader;
+import fr.maxlego08.menu.loader.actions.*;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
-import fr.maxlego08.menu.loader.permissible.CurrencyPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.ItemPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.JobPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.LuckPermPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.PermissionPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.PlayerNamePermissibleLoader;
-import fr.maxlego08.menu.loader.permissible.RegexPermissibleLoader;
-import fr.maxlego08.menu.requirement.actions.RefreshInventoryAction;
+import fr.maxlego08.menu.loader.permissible.*;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -117,17 +61,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -679,7 +613,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void updateInventoryCurrentPage(Player player){
+    public void updateInventoryCurrentPage(Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryDefault inventoryDefault) {
             this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());

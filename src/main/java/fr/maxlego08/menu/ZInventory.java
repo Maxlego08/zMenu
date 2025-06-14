@@ -13,7 +13,6 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Material;
@@ -24,14 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZInventory extends ZUtils implements Inventory {
@@ -104,8 +96,11 @@ public class ZInventory extends ZUtils implements Inventory {
     public void setType(InventoryType type) {
         this.type = type;
     }
+
     @Override
-    public boolean shouldCancelItemPickup() {return ItemPickupDisabled;}
+    public boolean shouldCancelItemPickup() {
+        return ItemPickupDisabled;
+    }
 
     public void setCancelItemPickup(boolean ItemPickupDisabled) {
         this.ItemPickupDisabled = ItemPickupDisabled;
@@ -145,12 +140,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
         final int maxPageFinal = Math.max(maxPageInventory, maxPagePlayerInventory);
 
-        return this.buttons.stream()
-                .filter(PaginateButton.class::isInstance)
-                .map(PaginateButton.class::cast)
-                .max(Comparator.comparingInt(button -> button.getPaginationSize(player)))
-                .map(paginateButton -> Math.max(maxPageFinal, (int) Math.ceil((double) paginateButton.getPaginationSize(player) / paginateButton.getSlots().size())))
-                .orElse(maxPageFinal);
+        return this.buttons.stream().filter(PaginateButton.class::isInstance).map(PaginateButton.class::cast).max(Comparator.comparingInt(button -> button.getPaginationSize(player))).map(paginateButton -> Math.max(maxPageFinal, (int) Math.ceil((double) paginateButton.getPaginationSize(player) / paginateButton.getSlots().size()))).orElse(maxPageFinal);
     }
 
     @Override
@@ -204,7 +194,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private void clearPlayerInventoryButtons(Player player, InventoryEngine inventoryDefault) {
         for (Button button : getButtons()) {
             if (button.isPlayerInventory()) {
-                for (int slot : button.getSlots()){
+                for (int slot : button.getSlots()) {
                     if (slot >= 0 && slot <= 36) {
                         player.getInventory().setItem(slot, new ItemStack(Material.AIR));
                     }
@@ -325,6 +315,7 @@ public class ZInventory extends ZUtils implements Inventory {
     public String getTargetPlayerNamePlaceholder() {
         return targetPlayerNamePlaceholder;
     }
+
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
         this.targetPlayerNamePlaceholder = targetPlaceholder;
     }

@@ -37,8 +37,7 @@ public class ZCommand implements Command {
      * @param path        file path
      * @param file        File
      */
-    public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory,
-                    List<CommandArgument> arguments, List<Action> actions, List<Command> subCommands, String denyMessage, String path, File file) {
+    public ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory, List<CommandArgument> arguments, List<Action> actions, List<Command> subCommands, String denyMessage, String path, File file) {
         super();
         this.plugin = plugin;
         this.command = command;
@@ -80,18 +79,7 @@ public class ZCommand implements Command {
 
     @Override
     public String toString() {
-        return "ZCommand{" +
-                "plugin=" + plugin +
-                ", command='" + command + '\'' +
-                ", aliases=" + aliases +
-                ", permission='" + permission + '\'' +
-                ", inventory='" + inventory + '\'' +
-                ", arguments=" + arguments +
-                ", actions=" + actions +
-                ", subCommands=" + subCommands +
-                ", path='" + path + '\'' +
-                ", file=" + file +
-                '}';
+        return "ZCommand{" + "plugin=" + plugin + ", command='" + command + '\'' + ", aliases=" + aliases + ", permission='" + permission + '\'' + ", inventory='" + inventory + '\'' + ", arguments=" + arguments + ", actions=" + actions + ", subCommands=" + subCommands + ", path='" + path + '\'' + ", file=" + file + '}';
     }
 
     @Override

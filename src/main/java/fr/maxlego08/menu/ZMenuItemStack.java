@@ -9,19 +9,15 @@ import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
+import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
-import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
+import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.api.itemstack.Banner;
-import fr.maxlego08.menu.api.itemstack.Firework;
-import fr.maxlego08.menu.api.itemstack.LeatherArmor;
-import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
@@ -34,23 +30,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ArmorMeta;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionType;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZMenuItemStack extends ZUtils implements MenuItemStack {
@@ -344,8 +330,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             itemMeta.setMaxStackSize(this.maxStackSize);
         }
 
-        if (itemMeta instanceof Damageable) {
-            Damageable damageable = (Damageable) itemMeta;
+        if (itemMeta instanceof Damageable damageable) {
 
             if (this.maxDamage > 0) {
                 damageable.setMaxDamage(this.maxDamage);
@@ -803,8 +788,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         List<String> lore = configuration.getStringList("lore");
         if (lore.isEmpty()) {
             Object object = configuration.getObject("lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
+            if (object instanceof String loreString) {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }
@@ -822,8 +806,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
                 String[] splitEnchant = enchantString.split(",");
 
-                if (splitEnchant.length == 1)
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
+                if (splitEnchant.length == 1) throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
 
                 int level;
                 String enchant = splitEnchant[0];

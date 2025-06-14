@@ -26,14 +26,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZCommandManager extends ZUtils implements CommandManager {
@@ -119,10 +112,9 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         }
 
         try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile)
-                    .filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-                        this.loadCommand(this.plugin, file);
-                    });
+            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
+                this.loadCommand(this.plugin, file);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,8 +167,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<Command> getCommand(Inventory inventory) {
-        return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.getInventory().equals(inventory))
-                .findFirst();
+        return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.getInventory().equals(inventory)).findFirst();
     }
 
     @Override
