@@ -52,6 +52,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
+    private String targetPlayerNamePlaceholder;
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -318,5 +319,13 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setPatterns(List<Pattern> patterns) {
         this.patterns = patterns;
+    }
+
+    @Override
+    public String getTargetPlayerNamePlaceholder() {
+        return targetPlayerNamePlaceholder;
+    }
+    public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
+        this.targetPlayerNamePlaceholder = targetPlaceholder;
     }
 }

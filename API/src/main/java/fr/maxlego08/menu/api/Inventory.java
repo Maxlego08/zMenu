@@ -209,4 +209,11 @@ public interface Inventory {
      * @return A list of all conditional names associated with this inventory.
      */
     List<ConditionalName> getConditionalNames();
+
+    /**
+     * Returns the player name placeholder used in the inventory.
+     * Placeholders are parsed by this player name.
+     * @return The player name placeholder.
+     */
+    String getTargetPlayerNamePlaceholder();
 }
