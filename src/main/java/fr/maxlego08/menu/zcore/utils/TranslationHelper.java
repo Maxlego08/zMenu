@@ -3,13 +3,7 @@ package fr.maxlego08.menu.zcore.utils;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class TranslationHelper {
-
-    /**
-     * Allows to translate the item name, if the zTranslator plugin is active, then the translated name will be retrieved
-     *
-     * @param itemStack
-     * @return item name
-     */
+    
     protected String getItemName(ItemStack itemStack) {
 
         if (itemStack == null) {

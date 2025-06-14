@@ -110,12 +110,10 @@ public abstract class MessageUtils extends LocationUtils {
 
     protected String getMessage(String message, Object... args) {
 
-        if (args.length % 2 != 0)
-            throw new IllegalArgumentException("Number of invalid arguments. Arguments must be in pairs.");
+        if (args.length % 2 != 0) throw new IllegalArgumentException("Number of invalid arguments. Arguments must be in pairs.");
 
         for (int i = 0; i < args.length; i += 2) {
-            if (args[i] == null || args[i + 1] == null)
-                throw new IllegalArgumentException("Keys and replacement values must not be null.");
+            if (args[i] == null || args[i + 1] == null) throw new IllegalArgumentException("Keys and replacement values must not be null.");
             message = message.replace(args[i].toString(), args[i + 1].toString());
         }
         return message;
@@ -130,16 +128,6 @@ public abstract class MessageUtils extends LocationUtils {
         return null;
     }
 
-    /**
-     * Send title to player
-     *
-     * @param player
-     * @param title
-     * @param subtitle
-     * @param fadeInTime
-     * @param showTime
-     * @param fadeOutTime
-     */
     protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
 
         if (NmsVersion.nmsVersion.isNewMaterial()) {
@@ -163,10 +151,6 @@ public abstract class MessageUtils extends LocationUtils {
         }
     }
 
-    /**
-     * @param player
-     * @param packet
-     */
     protected final void sendPacket(Player player, Object packet) {
         try {
             Object handle = player.getClass().getMethod("getHandle").invoke(player);
@@ -177,10 +161,6 @@ public abstract class MessageUtils extends LocationUtils {
         }
     }
 
-    /**
-     * @param message
-     * @return message
-     */
     protected String getCenteredMessage(String message) {
         if (message == null || message.equals("")) return "";
         message = ChatColor.translateAlternateColorCodes('&', message);

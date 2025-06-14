@@ -13,21 +13,17 @@ import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class VInventoryManager extends ListenerAdapter {
@@ -183,10 +179,10 @@ public class VInventoryManager extends ListenerAdapter {
     }
 
     @Override
-    public void onPickUp(PlayerPickupItemEvent event, Player player) {
+    public void onPickUp(EntityPickupItemEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof VInventory vInventory) {
-            if (vInventory instanceof InventoryDefault inventoryDefault){
+            if (vInventory instanceof InventoryDefault inventoryDefault) {
                 fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
                 if (menu != null && menu.shouldCancelItemPickup()) {
                     event.setCancelled(true);
@@ -194,6 +190,7 @@ public class VInventoryManager extends ListenerAdapter {
             }
         }
     }
+
     /**
      * @param id - Inventory I'd
      * @return Optional - Allows returning the inventory in an optional
