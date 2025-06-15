@@ -2,7 +2,7 @@ name: Linter Action
 
 on:
   push:
-    branches: [ release/rework-gradle ]
+    branches: [ main, develop ]
   pull_request:
     types: [ opened, synchronize, reopened ]
   workflow_dispatch:
