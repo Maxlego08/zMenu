@@ -40,8 +40,7 @@ size: 27
 items:
   '0':
     item:
-      material: STAINED_GLASS_PANE
-      data: 15
+      material: BLACK_STAINED_GLASS_PANE
       name: '&f'
     slots:
     - 0-0
@@ -50,8 +49,7 @@ items:
     - 26-26
   '1':
     item:
-      material: STAINED_GLASS_PANE
-      data: 7
+      material: GRAY_STAINED_GLASS_PANE
       name: '&f'
     slots:
     - 1-7

@@ -38,9 +38,33 @@
 - [ ] Can split a file into several and thus avoid having too large files
 - [ ] Add slot type for create pattern (Allows to fill slot areas as do the outline of the inventory)
 
-- [ ] Ajouter un syst�me qui permet de load un inventaire uniquement quand tout les requirements sont pr�sents
+- [ ] Ajouter un systéme qui permet de load un inventaire uniquement quand tout les requirements sont pr�sents
 
 # Unreleased
+
+# 1.1.0.0
+
+- Codebase structure overhaul: the project now uses Gradle. This major change has enabled numerous modifications and improvements to the API. The API is now cleaner, more efficient, and easier to use. **You will need to update all your plugins that use zMenu at the same time** to avoid compatibility issues.
+- Upgraded to Java 21, and the minimum supported Minecraft version is now 1.19. Since very few servers using zMenu were still on older versions, we decided to drop support for legacy Minecraft versions. This simplifies the codebase and opens the door to many new enhancements.
+- Added a `config.yml` file. You can now delete the old `config.json` file. New configuration options are also available.
+- Integrated database support. This allows logging of opened inventories by players and enables cleaner data storage compared to JSON files.
+- Added `/zm players removeall <key>` command, which removes a specific key from all players.
+- Added support for mathematical expressions in placeholder requirements and `player data` actions. To enable math operations, set `math: true`. See `cookie.yml` for examples on how to use math expressions.
+- Added `%zmenu_math_<expression>%` placeholder to perform math operations via a placeholder.
+- Added `%zmenu_formatted_math_<expression>%` placeholder to perform math operations and return a formatted value.
+- Introduced a validation system for command arguments. This lets you define the expected argument type to ensure correct values are used in your commands.
+- Added `tooltip-style: <style>` option.
+- Introduced a cache system for online players to improve performance by avoiding repeated lookups for offline player data.
+- Added `cancel-item-pickup: <true/false>`, which prevents players from picking up items while an inventory is open.
+- Added `item-model: <model>` option to customize the item’s model.
+- Added support for potion arrows using `arrow: true`.
+- Added `player command as op` action, which executes a command as if the player were OP. ⚠️ Be cautious: this gives the player all permissions during command execution.
+- Added support for **ExecutableItems** and **ExecutableBlocks**.
+- Added the **SWITCH** button. This displays a button based on the result of a placeholder, simplifying your configuration. See `switch.yml` for an example.
+- Added `refresh inventory` action to reload the inventory content.
+- Dates now include **month and year** in their display.
+- Fixed issues with the `book` action.
+
 
 # 1.0.4.1
 
@@ -95,7 +119,7 @@
 - Fixed custom heads with URLs
 - Fixed inventories that do not have a default type
 - Added sound category
-- Removed deprecated method ``onInventoryOpen(Player player, InventoryDefault inventory)``
+- Removed deprecated method ``onInventoryOpen(Player player, InventoryEngine inventory)``
 - Improved code, removed the ``slot`` variable to use only the list of ``slots`` for each button
 - Fixed actions withdraw, deposit and requirement money, now allowing lowercase
 - Added API code for use of slots in player inventory. Coming soon in[ zMenu+](https://www.spigotmc.org/resources/zmenu-premium-zmenu-addon.115533/) !
