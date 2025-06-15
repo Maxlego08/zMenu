@@ -1,3 +1,5 @@
+import java.util.Locale
+
 plugins {
     `maven-publish`
 }
@@ -21,10 +23,11 @@ tasks {
 }
 
 publishing {
+    var repository = System.getProperty("repository.name", "snapshots").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     repositories {
         maven {
-            name = "groupezSnapshots"
-            url = uri("https://repo.groupez.dev/snapshots")
+            name = "groupez${repository}"
+            url = uri("https://repo.groupez.dev/${repository.lowercase()}")
             credentials {
                 username = findProperty("${name}Username") as String? ?: System.getenv("MAVEN_USERNAME")
                 password = findProperty("${name}Password") as String? ?: System.getenv("MAVEN_PASSWORD")
@@ -36,7 +39,7 @@ publishing {
     }
 
     publications {
-        register<MavenPublication>("groupezSnapshots") {
+        register<MavenPublication>("groupez${repository}") {
             pom {
                 groupId = project.group as String?
                 name = "${rootProject.name}-${project.name}"
