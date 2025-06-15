@@ -43,6 +43,7 @@ commands:
     inventory: example_punish
     arguments:
       - name: target
+        type: online-player
       - name: reason
         auto-completion:
           - cheat

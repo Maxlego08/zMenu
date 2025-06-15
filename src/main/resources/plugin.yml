@@ -1,11 +1,11 @@
 name: zMenu
 authors: [ Maxlego08 ]
-main: fr.maxlego08.menu.MenuPlugin
+main: fr.maxlego08.menu.ZMenuPlugin
 description: Inventory management plugin
 website: https://groupez.dev/resources/zmenu.253
-version: ${project.version}
-api-version: 1.13
-contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag ]
+version: ${version}
+api-version: 1.19
+contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag, alwyn974 ]
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
@@ -16,6 +16,10 @@ softdepend:
   - zHead
   - MagicCosmetics
   - packetevents
+  - HMCCosmetics
+  - SCore
+  - ExecutableItems
+  - ExecutableBlocks
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

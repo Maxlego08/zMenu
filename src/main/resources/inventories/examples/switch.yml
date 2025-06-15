@@ -1,0 +1,77 @@
+# ╔════════════════════════════════════════════════════════════════╗
+# ║                 INVENTORY-SWITCH PROPERTIES                    ║
+# ╚════════════════════════════════════════════════════════════════╝
+
+name: "&8Test"           # Title shown at the top of the GUI.
+size: 9                  # Total slots (rows × 9). 9 = 1 row, 18 = 2 rows, 54 = double chest, etc.
+
+items: # Every entry under here is a “button” the player can interact with.
+  switch: # ► Unique ID of this button inside the YAML file.
+    # ─────────────────────────────────────────────────────────────
+    # BASIC BUTTON SETTINGS
+    # ─────────────────────────────────────────────────────────────
+    type: SWITCH         # Button type. SWITCH shows a different sub-button depending on a value.
+    slot: 4              # Slot index (0-8 on a 9-slot GUI).
+
+    # ─────────────────────────────────────────────────────────────
+    # DEFAULT APPEARANCE (shown if no sub-button matches)
+    # ─────────────────────────────────────────────────────────────
+    item:
+      material: PAPER    # What the icon looks like.
+      name: '&fTuto &7#1'  # Display name for the item (color codes allowed).
+      lore: # Lore = gray text under the name, each line is a list element.
+        - "&8This is the first page"
+        - ""             # Empty line for spacing.
+        - "&7Click for the next page"
+
+    # ─────────────────────────────────────────────────────────────
+    # ACTIONS TRIGGERED ON CLICK
+    # ─────────────────────────────────────────────────────────────
+    actions:
+      - type: data       # Store a value in the player’s personal data container.
+        action: SET      # SET replaces any previous value.
+        key: switch_value # Name of the stored field.
+        value: 2         # New value written.
+      - type: refresh inventory  # Redraw the whole GUI so the SWITCH checks the new value.
+
+    # ─────────────────────────────────────────────────────────────
+    # PLACEHOLDER USED BY THE SWITCH
+    # ─────────────────────────────────────────────────────────────
+    key: "%zmenu_player_value_switch_value%" # When this returns “2” or “3”, the matching sub-button below is shown.
+
+    # ─────────────────────────────────────────────────────────────
+    # SUB-BUTTONS (one per possible key value)
+    # ─────────────────────────────────────────────────────────────
+    buttons:
+
+      "2": # ⇢ Displayed when placeholder == "2"
+        slot: 4
+        item:
+          material: PAPER
+          name: '&fTuto &7#2'
+          lore:
+            - "&8This is the second page"
+            - ""
+            - "&7Click for the next page"
+        actions: # On click, advance to state “3” then refresh.
+          - type: data
+            action: SET
+            key: switch_value
+            value: 3
+          - type: refresh inventory
+
+      "3": # ⇢ Displayed when placeholder == "3"
+        slot: 4
+        item:
+          material: PAPER
+          name: '&fTuto &7#3'
+          lore:
+            - "&8This is the third page"
+            - ""
+            - "&7Click for the next page"
+        actions: # On click, loop back to state “1” then refresh.
+          - type: data
+            action: SET
+            key: switch_value
+            value: 1
+          - type: refresh inventory

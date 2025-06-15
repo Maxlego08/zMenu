@@ -1,0 +1,116 @@
+name: "playtime_reward"
+type: BUTTON
+button:
+  updateOnClick: true
+  page: '%page%'
+  slot: '%slot%'
+  view_requirement:
+    requirements:
+      - type: placeholder
+        placeholder: "%zmenu_player_value_playtime_level%"
+        value: '%level%'
+        action: SUPERIOR_OR_EQUAL
+  item:
+    url: '%head%'
+    name: '%color%ʟᴇᴠᴇʟ %level%'
+    lore:
+      - ''
+      - '#ffd353⚠ Requirement#3f3f3f:'
+      - '#3f3f3f• &f%hour% Hour of PlayTime'
+      - ''
+      - '#ffd353🌟 Rewards#3f3f3f:'
+      - '%rewards%'
+      - ''
+      - '#ff0000✘ ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍ ʏᴏᴜʀ ʀᴇᴡᴀʀᴅ'
+  actions:
+    - type: sound
+      sound: ENTITY_VILLAGER_NO
+  else:
+    updateOnClick: true
+    view_requirement:
+      requirements:
+        - type: placeholder
+          placeholder: "%zmenu_statistic_hours_played%"
+          value: '%hour%'
+          action: LOWER
+    actions:
+      - type: sound
+        sound: ENTITY_VILLAGER_NO
+    item:
+      url: '%head%'
+      name: '%color%ʟᴇᴠᴇʟ %level%'
+      lore:
+        - ''
+        - '#ffd353⚠ Requirement#3f3f3f:'
+        - '#3f3f3f• &f%hour% Hour of PlayTime'
+        - ''
+        - '#ffd353🌟 Rewards#3f3f3f:'
+        - '%rewards%'
+        - ''
+        - '#ff0000✘ ʏᴏᴜ ᴅᴏɴ’ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴘʟᴀʏ ᴛɪᴍᴇ'
+    else:
+      updateOnClick: true
+      view_requirement:
+        requirements:
+          - type: placeholder
+            placeholder: "%zmenu_player_value_playtime_level%"
+            value: '%remove_one_level%'
+            action: LOWER
+      item:
+        url: '%head%'
+        name: '%color%ʟᴇᴠᴇʟ %level%'
+        lore:
+          - ''
+          - '#ffd353⚠ Requirement#3f3f3f:'
+          - '#3f3f3f• &f%hour% Hour of PlayTime'
+          - ''
+          - '#ffd353🌟 Rewards#3f3f3f:'
+          - '%rewards%'
+          - ''
+          - '#ff0000✘ ʏᴏᴜ ᴍᴜsᴛ ᴄʟᴀɪᴍ ᴛʜᴇ ᴘʀᴇᴠɪᴏᴜs ʀᴇᴡᴀʀᴅ'
+      else:
+        updateOnClick: true
+        refreshOnClick: true
+
+        click_requirement:
+          right_click:
+            clicks:
+              - ALL
+            requirements:
+              - type: placeholder
+                placeholder: "%zmenu_player_value_playtime_level%"
+                value: '%remove_one_level%'
+                action: EQUAL_TO
+              - type: placeholder
+                placeholder: "%zmenu_statistic_hours_played%"
+                value: '%hour%'
+                action: SUPERIOR_OR_EQUAL
+            deny:
+              - type: sound
+                sound: VILLAGER_NO
+              - type: message
+                messages:
+                  - "#3f3f3f[#ff0000✘#3f3f3f] #ff0000An error has occurred, please re-open the inventory."
+              - type: close
+            success:
+              - type: data
+                action: SET
+                key: 'playtime_level'
+                value: '%level%'
+              - type: console_command
+                commands:
+                  - '%commands%'
+              - type: sound
+                sound: ENTITY_PLAYER_LEVELUP
+        item:
+          url: '%head%'
+          name: '%color%ʟᴇᴠᴇʟ %level%'
+          lore:
+            - ''
+            - '#ffd353⚠ Requirement#3f3f3f:'
+            - '#3f3f3f• &f%hour% Hour of PlayTime'
+            - ''
+            - '#ffd353🌟 Rewards#3f3f3f:'
+            - '%rewards%'
+            - ''
+            - '#ffd353➥ ᴄʟɪᴄᴋ ᴛᴏ ʀᴇᴅᴇᴍ'

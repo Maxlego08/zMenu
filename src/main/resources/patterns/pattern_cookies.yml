@@ -1,0 +1,79 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║            COOKIE-CLICKER UPGRADE PATTERN (BUTTON)           ║
+# ║  This file sits in /plugins/zMenu/patterns and is reused by  ║
+# ║  inventories via the “pattern:” section. Variables wrapped   ║
+# ║  in %…% are filled in by the inventory that calls the pattern║
+# ╚══════════════════════════════════════════════════════════════╝
+
+name: "pattern_cookies"   # Unique name for this pattern file. Inventories refer to it via “file-name”.
+type: BUTTON              # Pattern type. “BUTTON” means it represents a single clickable item.
+
+button:                   # Everything under here is copied into the final inventory button.
+  # ─────────────────────────────────────────────────────────────
+  # CLICK REQUIREMENT – checks before the click succeeds
+  # ─────────────────────────────────────────────────────────────
+  click-requirement:
+    purchase:            # You can have multiple named requirement blocks; here it’s called “purchase”.
+      clicks:
+        - ALL            # Apply this requirement to any kind of click (left, right, shift…).
+      requirements:
+        - type: placeholder        # Evaluate a placeholder value when the player clicks.
+          math: true               # Enable maths so the plugin can solve the formula below before comparing.
+          placeholder: "%zmenu_player_value_cookie%"  # Player’s current cookie balance.
+          # Cost formula: base price + (base price × current level × 1.15)
+          value: "%price%+(%price%*%zmenu_player_value_%key%%*1.15)"
+          action: SUPERIOR_OR_EQUAL # Click allowed if cookies ≥ cost. Other operators: <, >, ==, etc.
+      success:           # Actions executed **only if** the requirement passes.
+        - type: data
+          action: SUBTRACT        # Remove cookies equal to the cost. “math: true” evaluates the formula first.
+          key: 'cookie'
+          value: '%price%+(%price%*%zmenu_player_value_%key%%*1.15)'
+          math: true
+        - type: data              # Increase the upgrade level by 1.
+          action: ADD
+          key: '%key%'
+          value: '1'
+        - type: inventory         # Re-open (refresh) the main Cookies inventory so numbers update.
+          inventory: 'cookies'
+      deny:              # Actions run if the player does NOT have enough cookies.
+        - type: message
+          messages:
+            - '&cYou don’t have enough cookies'
+
+  # ─────────────────────────────────────────────────────────────
+  # SLOT AND ICON – variables come from the inventory file
+  # ─────────────────────────────────────────────────────────────
+  slot: '%slot%'          # Placeholder filled by the inventory (e.g. 20, 22, 24).
+
+  item:
+    material: '%material%'# Also set from the inventory (CAKE, WHEAT, …).
+    # Shows upgrade name and current level between brackets.
+    name: "&a%name% #353535(&7%zmenu_player_value_%key%%#353535)"
+    lore:
+      - ""
+      # Displays dynamic price: base + 15 % per level (formatted with commas).
+      - "&fPrice&8: &b%zmenu_formatted_math_%price%+(%price%*{zmenu_player_value_%key%}*1.15)% cookies"
+      - ""
+      - "&aClick to buy"
+
+# ══════════════════════════════════════════════════════════════
+# HOW VARIABLES WORK
+# ══════════════════════════════════════════════════════════════
+# • %slot%, %material%, %name%, %price%, %key% are defined in the
+#   inventory that calls the pattern. Example:
+#     factory:
+#       pattern:
+#         file-name: "pattern_cookies"
+#         slot: 22
+#         material: WHEAT
+#         name: "Factory"
+#         key: "factory"
+#         price: 20
+# • You can add your own variables—anything wrapped in %…% becomes
+#   editable from the inventory.
+# • `%zmenu_player_value_<key>%` pulls the player’s saved data,
+#   letting the button react to personal stats (levels, points…).
+# • `math: true` lets you write real formulas ( +  –  *  /  ^ ).
+#
+# Tip: remember to keep **name**, **type**, and **button** at the
+# root level of every pattern file—zMenu uses them to load it!

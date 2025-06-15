@@ -1,0 +1,152 @@
+# Enables detailed information display in the console.
+# If you encounter an issue, enable this option and send the errors to support.
+enable-debug: false
+
+# Enables execution time debugging to measure plugin performance.
+# Useful for identifying bottlenecks and optimizing performance.
+enable-debug-time: false
+
+# Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
+enable-information-message: true
+
+# Storage:
+# SQLITE - For the launch of the plugin only.
+# HIKARICP - RECOMMENDED - HikariCP is a fast and lightweight JDBC connection pool. It optimizes database connections, ensuring quick acquisition and low latency. This improves performance and reliability, making it ideal for high-demand applications.
+# NONE - If you do not need a database, you can disable it.
+#
+# We advise you to use HIKARICP, the SQLITE storage is only there to install the plugin and do some tests, not all features are available with SQLITE yet.
+# The plugin will work, but some features like sanctions update when launching the plugin will not work.
+# This will be fixed in future plugin updates
+storage-type: SQLITE
+
+# Configuration of your database, it is recommended to use the database to store your data.
+database-configuration:
+  # The prefix that will be applied to all tables,
+  # if you have several plugins with the same database, you must have one.
+  # It is advisable not to change this value
+  table-prefix: "zmenu_"
+  # IP Address of the machine the database is hosted on
+  host: 192.168.10.10
+  # Port of the database, by default, MYSQL's port is 3306
+  port: 3306
+  # Database username
+  user: homestead
+  # Database password
+  password: 'secret'
+  # Database
+  database: zmenu
+  # Enable of not the SQL debug mode
+  debug: false
+
+# Time in seconds for saving data in batches.
+# Instead of making an SQL query for each update, a single query will be executed every 10 seconds
+batch-task: 10
+
+# Allows saving it in the database the inventories opened by the players.
+enable-player-open-inventory-logs: true
+
+# Enable file storage logging.
+# When true, messages will be printed to the console when files are saved or loaded.
+enable-log-storage-file: false
+
+# Enable open inventory messages.
+# If enabled, the command "/zm open <inventory> <player> <display>" will show a message to the player.
+enable-open-message: true
+
+# Enable MiniMessage format.
+# Allows the use of MiniMessage formatting (colors, gradients, etc.). Requires Minecraft 1.17+.
+# More info: https://docs.advntr.dev/minimessage/index.html
+enable-mini-message-format: true
+
+# Enable player command in chat only.
+# Prevents players from executing commands from the console. Useful for "fake" commands not registered in Spigot.
+enable-player-command-in-chat: false
+
+# Enable FastEvent system.
+# Replaces some Bukkit events with a faster alternative. Enables better performance at the cost of API changes.
+# Refer to documentation before enabling this.
+enable-fast-event: false
+
+# Auto-save player data interval (in seconds).
+# Determines how often the player's data is automatically saved.
+seconds-save-player-data: 600
+
+# Auto-save inventories data interval (in seconds).
+# Determines how often the inventories are automatically saved.
+seconds-save-player-inventories: 600
+
+# Default menu name.
+# The name of the default menu to be opened if no specific one is defined.
+main-menu: "example"
+
+# Use swap offhand key to open main menu.
+# Allows opening the default menu when the player presses the offhand (F) key.
+use-swap-item-off-hand-key-to-open-main-menu: false
+
+# Require shift + offhand key to open menu.
+# The main menu will only open when the player presses shift + offhand key together.
+use-swap-item-off-hand-key-to-open-main-menu-needs-shift: false
+
+# Specific inventories to load at plugin start.
+# Add the paths to specific menus you want loaded manually.
+specify-path-menus: [ ]
+
+# Generate default configuration files.
+# When enabled, the plugin will create default configuration files if they don't exist.
+generate-default-file: true
+
+# Disable double-click detection.
+# Prevents interactions from being triggered by double-clicking.
+disable-double-click-event: true
+
+# Enable anti-dupe system.
+# Automatically detects and prevents item duplication exploits.
+enable-anti-dupe: true
+
+# Notify Discord when a dupe attempt is detected.
+# Sends a message to a specified Discord webhook.
+enable-anti-dupe-discord-notification: false
+
+# Webhook URL for anti-dupe Discord notifications.
+# Replace with your actual Discord webhook URL.
+anti-dupe-discord-webhook-url: "https://discord.com/api/webhooks/<your discord webhook url>"
+
+# Message sent to Discord when a dupe is detected.
+# Placeholders: %player%, %amount%, %itemname%.
+anti-dupe-message: "**%player%** used %amount% %itemname% from zMenu. It has been removed!"
+
+# List of click types supported.
+# You can customize which click types are allowed or handled in your menus.
+all-clicks-type:
+  - MIDDLE
+  - RIGHT
+  - LEFT
+  - SHIFT_RIGHT
+  - SHIFT_LEFT
+
+# Enable caching of ItemStacks.
+# Caching helps improve performance by reducing object creation.
+enable-cache-item-stack: true
+
+# Enable click cooldown.
+# Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.
+enable-cooldown-click: true
+
+# Cooldown duration in milliseconds between clicks.
+cooldown-click-milliseconds: 100
+
+# PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
+# Defines how often placeholders should be refreshed.
+cache-placeholder-api: 20
+
+# Enable PlaceholderAPI caching.
+# Reduces the number of calls to PlaceholderAPI by caching values for a short period.
+enable-cache-placeholder-api: false
+
+# Enable download command.
+# Allows the use of the plugin's download feature (if applicable).
+enable-download-command: false
+
+# Time in seconds for clean the OfflinePlayer cache
+# OfflinePlayer is a variable that represents an offline player
+cache-offline-player: 300

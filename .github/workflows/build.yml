@@ -1,0 +1,26 @@
+name: Build Action
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and Publish zMenu
+    uses: GroupeZ-dev/actions/.github/workflows/build.yml@main
+    with:
+      project-name: "zMenu"
+      publish: true
+      project-to-publish: "API:publish"
+      discord-avatar-url: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}

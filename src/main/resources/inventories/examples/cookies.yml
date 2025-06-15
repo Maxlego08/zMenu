@@ -1,0 +1,69 @@
+# ╔════════════════════════════════════════════════════════════════╗
+# ║            COOKIE-CLICKER-STYLE INVENTORY CONFIGURATION        ║
+# ╚════════════════════════════════════════════════════════════════╝
+
+# ──────────────────────────────────────────────────────────────
+# INVENTORY-LEVEL SETTINGS
+# ──────────────────────────────────────────────────────────────
+name: "&8Cookies"           # Title that appears on top of the GUI. Uses Minecraft color codes.
+size: 36                    # Number of slots (rows × 9). 36 = 4 rows.
+
+items:                      # Every child entry becomes a clickable “button”.
+
+  # ────────────────────────────────────────────────────────────
+  # MAIN “COOKIE” BUTTON – earns cookies when clicked
+  # ────────────────────────────────────────────────────────────
+  cookie:                   # Internal ID for this button
+    slot: 13                # Slot index (0 = top-left). 13 is the center of the second row.
+    item:
+      material: COOKIE      # Icon seen in the menu.
+      # Shows the player’s current cookie total.
+      name: "#77ff77Cookies#353535: &f%zmenu_player_value_cookie%"
+      lore:
+        - ""               # Blank line for spacing.
+        # Displays how many cookies the next click will give.
+        - "&fCookie per click&8: &b%zmenu_formatted_math_1+({zmenu_player_value_grandma}*2)+({zmenu_player_value_factory}*5)+({zmenu_player_value_mine}*10)%"
+        - ""
+        - "&7Click on me !"
+
+    actions:                # What happens when the player clicks.
+      - type: data          # Uses the player-data system to modify a value.
+        action: ADD         # ADD increases the stored number (must already be numeric).
+        key: 'cookie'       # Key that keeps the player’s total cookies.
+        # Formula: 1 base + bonuses from each upgrade
+        value: '1+(%zmenu_player_value_grandma%*2)+(%zmenu_player_value_factory%*5)+(%zmenu_player_value_mine%*10)'
+        math: true          # Tell zMenu to calculate the formula first.
+      - type: refresh       # Redraw the button so the numbers update instantly.
+
+  # ────────────────────────────────────────────────────────────
+  # UPGRADE BUTTONS – each one is inserted from a reusable pattern
+  # ────────────────────────────────────────────────────────────
+  grandma:
+    pattern:                # Calls a pattern file instead of writing the whole button here.
+      file-name: "pattern_cookies" # Name of the .yml file inside the /patterns folder.
+      plugin-name: "zMenu"         # Leave as-is unless your pattern comes from another plugin.
+      slot: 20                     # Replaces %slot% inside the pattern.
+      material: CAKE               # Replaces %material%.
+      name: "Grand Ma"             # Replaces %name%.
+      key: "grandma"               # Custom variable used by the pattern (e.g. placeholder key).
+      price: 10                    # Cost in cookies; becomes %price% or similar in the pattern.
+
+  factory:
+    pattern:
+      file-name: "pattern_cookies"
+      plugin-name: "zMenu"
+      slot: 22
+      material: WHEAT
+      name: "Factory"
+      key: "factory"
+      price: 20
+
+  mine:
+    pattern:
+      file-name: "pattern_cookies"
+      plugin-name: "zMenu"
+      slot: 24
+      material: IRON_PICKAXE
+      name: "Mine"
+      key: "mine"
+      price: 50
