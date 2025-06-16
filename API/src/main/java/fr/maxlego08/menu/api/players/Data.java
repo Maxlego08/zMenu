@@ -47,4 +47,9 @@ public interface Data {
      */
     void remove(int amount);
 
+    /**
+     * Negates the current value.
+     */
+    void negate();
+
 }

@@ -56,7 +56,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     @Override
     public Data toData(OfflinePlayer player) {
         long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
-        return new ZData(this.papi(this.key, player, false), this.papi(this.value, player, false), expiredAt);
+        String result = papi(this.value.toString(), player, false);
+        String dataValue = this.enableMathExpression ? String.valueOf((int) new ExpressionBuilder(result).build().evaluate()) : result;
+        return new ZData(this.papi(this.key, player, false), dataValue, expiredAt);
     }
 
     /* (non-Javadoc)
@@ -97,8 +99,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
                 data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
                 storageManager.upsertData(player.getUniqueId(), data);
             } else {
-                long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
-                dataManager.addData(player.getUniqueId(), new ZData(this.papi(this.key, player, false), -(int) this.value, expiredAt));
+                var data = this.toData(player);
+                data.negate();
+                dataManager.addData(player.getUniqueId(), data);
             }
         } else if (this.type == ActionPlayerDataType.SET) {
             dataManager.addData(player.getUniqueId(), this.toData(player));
