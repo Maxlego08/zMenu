@@ -54,6 +54,11 @@ public class ZData implements Data {
         this.value = value - amount;
     }
 
+    @Override
+    public void negate() {
+        this.value = -Integer.parseInt(this.value.toString());
+    }
+
     private int safeStringToInt(String str) {
         if (str.contains(".")) {
             double doubleValue = Double.parseDouble(str);
