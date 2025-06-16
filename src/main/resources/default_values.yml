@@ -2,3 +2,7 @@
 values:
   # %zmenu_player_value_playtime_level% will return 0 even if the player_level key does not exist for the player.
   playtime_level: 0
+  grandma: 0
+  factory: 0
+  mine: 0
+  cookie: 0
