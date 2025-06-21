@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.players;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.interfaces.ReturnConsumer;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
@@ -9,21 +10,14 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
-import fr.maxlego08.menu.api.interfaces.ReturnConsumer;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZDataManager implements DataManager {
@@ -201,4 +195,15 @@ public class ZDataManager implements DataManager {
         return this.defaultValues.containsKey(key) ? this.defaultValues.get(key) : "Key '" + key + "' doesn't exist for this player";
     }
 
+    @Override
+    public void convertOldDatas(CommandSender sender) {
+        var manager = plugin.getStorageManager();
+        try {
+            var datas = PlayerDataLoader.loadPlayerData(this.plugin.getDataFolder() + "/players.json");
+            datas.forEach((uuid, playerData) -> playerData.forEach(data -> manager.upsertData(uuid, data)));
+            this.plugin.getLogger().info("Loaded " + datas.size() + " players.");
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 }

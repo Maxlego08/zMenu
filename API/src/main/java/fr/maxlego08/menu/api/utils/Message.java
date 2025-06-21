@@ -81,6 +81,7 @@ public enum Message implements IMessage {
     DESCRIPTION_PLAYERS_GET("Get player data"),
     DESCRIPTION_PLAYERS_KEYS("Returns the list of keys of a player"),
     DESCRIPTION_PLAYERS_CLEAR_ALL("Clear all player's data"),
+    DESCRIPTION_PLAYERS_CONVERT("Convert old players data"),
     DESCRIPTION_PLAYERS_CLEAR_PLAYER("Clear player's data"),
     DESCRIPTION_OPEN_MAIN_MENU("Open the main menu"),
     DESCRIPTION_CREATE("Create a new config file"),
@@ -111,6 +112,8 @@ public enum Message implements IMessage {
     PLAYERS_DATA_REMOVE_SUCCESS("&aYou have just deleted the key &f%key% &ffor &b%player%&a."),
     PLAYERS_DATA_REMOVE_ALL_SUCCESS("&aYou have just deleted all key's &b%key%&a."),
     PLAYERS_DATA_REMOVE_ERROR("&cCannot find the key &f%key%&c."),
+    PLAYERS_DATA_CONVERT_SUCCESS("&aYou have just converted the datas&a."),
+    PLAYERS_DATA_CONVERT_CONFIRM("&cAre you sure you want to convert the datas ? Re-run the command to confirm."),
 
     WEBSITE_LOGIN_ERROR_TOKEN("&cYour token seems invalid, please try again."),
     WEBSITE_LOGIN_ERROR_ALREADY("&cYou are already connected to the site."),
@@ -158,9 +161,7 @@ public enum Message implements IMessage {
     COMMAND_ARGUMENT_LOCATION("&cThe argument &f%argument%&c must be a location."),
     COMMAND_ARGUMENT_MATERIAL("&cThe argument &f%argument%&c must be a material."),
     COMMAND_ARGUMENT_BLOCK("&cThe argument &f%argument%&c must be a block."),
-    COMMAND_ARGUMENT_WORLD("&cThe argument &f%argument%&c must be a world.")
-
-    ;
+    COMMAND_ARGUMENT_WORLD("&cThe argument &f%argument%&c must be a world.");
 
     private List<String> messages;
     private String message;
