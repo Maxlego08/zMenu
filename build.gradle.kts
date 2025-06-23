@@ -33,10 +33,6 @@ allprojects {
             name = "groupezSnapshots"
             url = uri("https://repo.groupez.dev/snapshots")
         }
-        maven {
-            name = "groupezPrivate"
-            url = uri("https://repo.groupez.dev/private")
-        }
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -98,7 +94,7 @@ allprojects {
         implementation("com.github.cryptomorin:XSeries:13.2.0")
         implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
         implementation("com.github.technicallycoded:FoliaLib:0.4.4")
-        implementation("com.github.Maxlego08:Sarah:1.17")
+        implementation("fr.maxlego08.sarah:sarah:1.18")
         implementation("net.objecthunter:exp4j:0.4.8")
     }
 }
