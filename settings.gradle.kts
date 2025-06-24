@@ -5,11 +5,10 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
         maven {
-            name = "groupez-releases"
+            name = "groupezReleases"
             url = uri("https://repo.groupez.dev/releases")
         }
         gradlePluginPortal()
-        mavenLocal()
     }
 }
 
