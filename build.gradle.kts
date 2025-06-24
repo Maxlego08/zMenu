@@ -3,7 +3,7 @@ import org.gradle.kotlin.dsl.invoke
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "9.0.0-beta11"
-    id("re.alwyn974.groupez.repository") version "1.0.0-SNAPSHOT"
+    id("re.alwyn974.groupez.repository") version "1.0.0"
 }
 
 group = "fr.maxlego08.menu"
