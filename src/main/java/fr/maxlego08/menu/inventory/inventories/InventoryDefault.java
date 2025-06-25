@@ -75,7 +75,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         var scheduler = this.plugin.getScheduler();
         Consumer<WrappedTask> runnable = w -> {
             Placeholders placeholders = new Placeholders();
-            this.buttons.forEach(button -> button.onInventoryOpen(player, this, placeholders));
+            for (Button button : this.buttons) {
+                button.onInventoryOpen(player, this, placeholders);
+            }
 
             String inventoryName = this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage);
             if (this.inventory.getType() == InventoryType.CHEST) {
@@ -91,7 +93,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             }
 
             // Display buttons
-            this.buttons.forEach(this::buildButton);
+            for (Button button : this.buttons) {
+                buildButton(button);
+            }
 
             if (isAsync) {
                 scheduler.runAtLocation(player.getLocation(), w2 -> player.openInventory(this.getSpigotInventory()));

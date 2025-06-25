@@ -22,37 +22,49 @@ public class AdapterListener extends ZUtils implements Listener {
 
     @EventHandler
     public void onConnect(PlayerJoinEvent event) {
-        this.plugin.getListenerAdapters().forEach(adapter -> adapter.onConnect(event, event.getPlayer()));
+        for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+            adapter.onConnect(event, event.getPlayer());
+        }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        this.plugin.getListenerAdapters().forEach(adapter -> adapter.onQuit(event, event.getPlayer()));
+        for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+            adapter.onQuit(event, event.getPlayer());
+        }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        this.plugin.getListenerAdapters().forEach(adapter -> adapter.onInventoryClick(event, (Player) event.getWhoClicked()));
+        for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+            adapter.onInventoryClick(event, (Player) event.getWhoClicked());
+        }
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         if (event.getWhoClicked() instanceof Player) {
-            this.plugin.getListenerAdapters().forEach(adapter -> adapter.onInventoryDrag(event, (Player) event.getWhoClicked()));
+            for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+                adapter.onInventoryDrag(event, (Player) event.getWhoClicked());
+            }
         }
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
         if (event.getPlayer() instanceof Player) {
-            this.plugin.getListenerAdapters().forEach(adapter -> adapter.onInventoryClose(event, (Player) event.getPlayer()));
+            for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+                adapter.onInventoryClose(event, (Player) event.getPlayer());
+            }
         }
     }
 
     @EventHandler
     public void onPick(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player player) {
-            this.plugin.getListenerAdapters().forEach(adapter -> adapter.onPickUp(event, player));
+            for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+                adapter.onPickUp(event, player);
+            }
         }
     }
 }
