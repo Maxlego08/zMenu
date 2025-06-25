@@ -1,9 +1,9 @@
-import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils.sha
 import org.gradle.kotlin.dsl.invoke
 
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "9.0.0-beta11"
+    id("re.alwyn974.groupez.repository") version "1.0.0"
 }
 
 group = "fr.maxlego08.menu"
@@ -17,6 +17,7 @@ extra.set("sha", System.getProperty("github.sha"))
 allprojects {
     apply(plugin = "java-library")
     apply(plugin = "com.gradleup.shadow")
+    apply(plugin = "re.alwyn974.groupez.repository")
 
     group = "fr.maxlego08.menu"
     version = rootProject.version
@@ -25,14 +26,6 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
-        maven {
-            name = "groupezReleases"
-            url = uri("https://repo.groupez.dev/releases")
-        }
-        maven {
-            name = "groupezSnapshots"
-            url = uri("https://repo.groupez.dev/snapshots")
-        }
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
