@@ -2,12 +2,15 @@ package fr.maxlego08.menu.zcore.utils;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.SimpleCache;
+import fr.maxlego08.menu.zcore.SkinUrlDecoder;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -46,6 +49,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -683,26 +687,14 @@ public abstract class ZUtils extends MessageUtils {
         URL urlObject;
         try {
             // urlObject = new URL(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
-            urlObject = getUrlFromBase64(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
-        } catch (MalformedURLException exception) {
+            urlObject = SkinUrlDecoder.extractSkinUrl(url).toURL(); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
+        } catch (URISyntaxException | MalformedURLException exception) {
             exception.printStackTrace();
             return null;
         }
         textures.setSkin(urlObject); // Set the skin of the player profile to the URL
         profile.setTextures(textures); // Set the textures back to the profile
         return profile;
-    }
-
-    public URL getUrlFromBase64(String base64) throws MalformedURLException {
-        String decoded;
-        try {
-            decoded = new String(Base64.getDecoder().decode(base64));
-            decoded = decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length());
-        } catch (IllegalArgumentException exception) {
-            // If the base64 is not valid, try to assume it's a simple URL
-            decoded = base64;
-        }
-        return new URL(decoded);
     }
 
     protected void applyTexture(ItemStack itemStack, String url) {
