@@ -20,7 +20,7 @@ public enum Permission {
 
     ZMENU_DOCUMENTATION;
 
-	private String permission;
+	private final String permission;
 
 	Permission() {
 		this.permission = this.name().toLowerCase().replace("_", ".");

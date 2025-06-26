@@ -60,7 +60,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         Loader<MenuItemStack> itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ButtonLoader loader = optional.get();
-        Button button = (Button) loader.load(configuration, path, defaultButtonValue);
+        Button button = loader.load(configuration, path, defaultButtonValue);
         button.setPlugin(this.plugin);
 
         int slot;

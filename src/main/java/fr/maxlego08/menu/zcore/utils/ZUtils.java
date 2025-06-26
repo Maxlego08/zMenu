@@ -543,7 +543,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected TextComponent setHoverMessage(TextComponent component, List<String> messages) {
-        if (messages.size() > 0) {
+        if (!messages.isEmpty()) {
             BaseComponent[] list = new BaseComponent[messages.size()];
             for (int a = 0; a != messages.size(); a++) {
                 list[a] = new TextComponent(messages.get(a) + (messages.size() - 1 == a ? "" : "\n"));
@@ -584,7 +584,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected String toList(List<String> list, String color, String color2) {
-        if (list == null || list.size() == 0) return null;
+        if (list == null || list.isEmpty()) return null;
         if (list.size() == 1) return list.get(0);
         String str = "";
         for (int a = 0; a != list.size(); a++) {
@@ -615,7 +615,7 @@ public abstract class ZUtils extends MessageUtils {
             if (itemStack.getType().equals(Material.PLAYER_HEAD) && name != null && name.startsWith("HEAD")) {
                 SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
                 name = name.replace("HEAD", "");
-                if (name.length() == 0) {
+                if (name.isEmpty()) {
                     meta.setDisplayName(null);
                 } else {
                     meta.setDisplayName(name);
@@ -627,7 +627,7 @@ public abstract class ZUtils extends MessageUtils {
             if (itemStack.getType().equals(getMaterial(397)) && itemStack.getData().getData() == 3 && name != null && name.startsWith("HEAD")) {
                 SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
                 name = name.replace("HEAD", "");
-                if (name.length() == 0) {
+                if (name.isEmpty()) {
                     meta.setDisplayName(null);
                 } else {
                     meta.setDisplayName(name);

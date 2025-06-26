@@ -54,21 +54,18 @@ public class MenuItemStackFromItemStack {
                 menuItemStack.setModelID(itemMeta.getCustomModelData());
             }
 
-            if (itemMeta instanceof SkullMeta) {
-                SkullMeta skullMeta = (SkullMeta) itemMeta;
+            if (itemMeta instanceof SkullMeta skullMeta) {
                 // ToDo, upgrade ItemMeta
             }
 
-            if (itemMeta instanceof EnchantmentStorageMeta) {
-                EnchantmentStorageMeta enchantmentStorageMeta = (EnchantmentStorageMeta) itemMeta;
+            if (itemMeta instanceof EnchantmentStorageMeta enchantmentStorageMeta) {
                 if (enchantmentStorageMeta.hasStoredEnchants()) {
                     menuItemStack.setEnchantments(enchantmentStorageMeta.getEnchants());
                 }
             }
 
             try {
-                if (itemMeta instanceof PotionMeta) {
-                    PotionMeta potionMeta = (PotionMeta) itemMeta;
+                if (itemMeta instanceof PotionMeta potionMeta) {
                     PotionType type = potionMeta.getBasePotionType();
                     if (type != null) {
                         Potion menuPotion = new Potion(type, 0);
@@ -80,8 +77,7 @@ public class MenuItemStackFromItemStack {
 
             try {
                 // ToDo, upgrade for multiple effect
-                if (itemMeta instanceof FireworkMeta) {
-                    FireworkMeta fireworkMeta = (FireworkMeta) itemMeta;
+                if (itemMeta instanceof FireworkMeta fireworkMeta) {
                     List<FireworkEffect> fireworkEffects = fireworkMeta.getEffects();
                     if (!fireworkEffects.isEmpty()) {
                         FireworkEffect effect = fireworkEffects.get(0);
@@ -94,8 +90,7 @@ public class MenuItemStackFromItemStack {
 
             try {
                 // ToDo, upgrade for multiple effect
-                if (itemMeta instanceof FireworkEffectMeta) {
-                    FireworkEffectMeta fireworkMeta = (FireworkEffectMeta) itemMeta;
+                if (itemMeta instanceof FireworkEffectMeta fireworkMeta) {
                     FireworkEffect effect = fireworkMeta.getEffect();
                     Firework menuFirework = new Firework(true, effect);
                     menuItemStack.setFirework(menuFirework);

@@ -82,7 +82,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
             Button lastButton = queue.poll(); // On récupère le dernier bouton
             while (!queue.isEmpty()) {
                 Button currentButton = queue.poll();
-                ((Button) currentButton).setElseButton(lastButton);
+                currentButton.setElseButton(lastButton);
                 lastButton = currentButton;
             }
 

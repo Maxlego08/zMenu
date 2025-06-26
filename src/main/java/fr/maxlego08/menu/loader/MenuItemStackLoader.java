@@ -117,8 +117,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         List<String> lore = configuration.getStringList(path + "lore");
         if (lore.isEmpty()) {
             Object object = configuration.get(path + "lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
+            if (object instanceof String loreString) {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }

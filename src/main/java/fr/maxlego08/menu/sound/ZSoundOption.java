@@ -63,8 +63,7 @@ public class ZSoundOption implements SoundOption {
 
         if (this.soundAsString != null && this.isCustom()) {
             Location location = entity.getLocation();
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
+            if (entity instanceof Player player) {
                 SoundCategory soundCategory = SoundCategory.valueOf(this.category.name());
                 player.playSound(location, soundAsString, soundCategory, this.volume, this.pitch);
             } else location.getWorld().playSound(location, soundAsString, this.volume, this.pitch);

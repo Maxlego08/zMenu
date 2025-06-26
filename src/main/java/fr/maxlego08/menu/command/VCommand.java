@@ -328,13 +328,13 @@ public abstract class VCommand extends Arguments {
 
         boolean update = syntax.equals("");
 
-        if (requireArgs.size() != 0 && update) {
+        if (!requireArgs.isEmpty() && update) {
             for (String requireArg : requireArgs) {
                 requireArg = "<" + requireArg + ">";
                 syntax += " " + requireArg;
             }
         }
-        if (optionalArgs.size() != 0 && update) {
+        if (!optionalArgs.isEmpty() && update) {
             for (String optionalArg : optionalArgs) {
                 optionalArg = "[<" + optionalArg + ">]";
                 syntax += " " + optionalArg;
@@ -508,13 +508,13 @@ public abstract class VCommand extends Arguments {
     protected List<String> generateList(List<String> defaultList, String startWith, Tab tab) {
         List<String> newList = new ArrayList<>();
         for (String str : defaultList) {
-            if (startWith.length() == 0
+            if (startWith.isEmpty()
                     || (tab.equals(Tab.START) ? str.toLowerCase().startsWith(startWith.toLowerCase())
                     : str.toLowerCase().contains(startWith.toLowerCase()))) {
                 newList.add(str);
             }
         }
-        return newList.size() == 0 ? null : newList;
+        return newList.isEmpty() ? null : newList;
     }
 
     /**

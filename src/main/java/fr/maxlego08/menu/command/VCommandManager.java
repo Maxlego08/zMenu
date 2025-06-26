@@ -181,7 +181,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                     }
                 }
             }
-            return tabCompleter.size() == 0 ? null : tabCompleter;
+            return tabCompleter.isEmpty() ? null : tabCompleter;
 
         } else if (type.equals(CommandType.SUCCESS)) {
             return command.toTab(this.plugin, sender, args);
@@ -218,9 +218,6 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {
 
         Optional<VCommand> optional = this.commands.stream().filter(e -> e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command)).findFirst();
-        if (optional.isPresent()) {
-            VCommand vCommand = optional.get();
-            this.commands.remove(vCommand);
-        }
+        optional.ifPresent(this.commands::remove);
     }
 }

@@ -50,9 +50,9 @@ public class CommandLoader implements Loader<Command> {
             arguments = configuration.getMapList(path + "arguments").stream().map(map -> {
 
                 String argument = (String) map.get("name");
-                String inventoryName = map.containsKey("inventory") ? (String) map.get("name") : null;
-                boolean isRequired = map.containsKey("isRequired") ? (boolean) map.get("isRequired") : map.containsKey("is-required") ? (boolean) map.get("is-required") : true;
-                boolean performMainAction = map.containsKey("performMainAction") ? (boolean) map.get("performMainAction") : map.containsKey("perform-main-action") ? (boolean) map.get("perform-main-action") : true;
+                String inventoryName = map.containsKey("inventory") ? (String) map.get("inventory") : null;
+                boolean isRequired = map.containsKey("isRequired") ? (boolean) map.get("isRequired") : !map.containsKey("is-required") || (boolean) map.get("is-required");
+                boolean performMainAction = map.containsKey("performMainAction") ? (boolean) map.get("performMainAction") : !map.containsKey("perform-main-action") || (boolean) map.get("perform-main-action");
                 String argumentType = map.containsKey("type") ? (String) map.get("type") : "STRING";
 
                 List<Map<String, Object>> elements = map.containsKey("actions") ? (List<Map<String, Object>>) map.get("actions") : new ArrayList<>();

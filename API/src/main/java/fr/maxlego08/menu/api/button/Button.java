@@ -79,7 +79,7 @@ public abstract class Button extends PlaceholderButton {
     }
 
     public int getSlot() {
-        return this.slots.get(0);
+        return this.slots.getFirst();
     }
 
     /**
@@ -153,18 +153,13 @@ public abstract class Button extends PlaceholderButton {
         }
     }
 
-    public void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
-    }
+    public void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {}
 
-    public void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
-    }
+    public void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {}
 
-    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
-    }
+    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {}
 
-    public void onInventoryClose(Player player, InventoryEngine inventory) {
-
-    }
+    public void onInventoryClose(Player player, InventoryEngine inventory) {}
 
     public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
 
@@ -323,14 +318,9 @@ public abstract class Button extends PlaceholderButton {
         this.actions = actions;
     }
 
+    public void onDrag(InventoryDragEvent event, Player player, InventoryEngine inventoryDefault) {}
 
-    public void onDrag(InventoryDragEvent event, Player player, InventoryEngine inventoryDefault) {
-
-    }
-
-    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine inventoryDefault) {
-
-    }
+    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine inventoryDefault) {}
 
     public boolean isUseCache() {
         return this.useCache;

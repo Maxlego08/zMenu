@@ -45,7 +45,7 @@ public class ZBackButton extends BackButton {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
         if (!oldInventories.isEmpty()) {
-            this.inventory = oldInventories.get(oldInventories.size() - 1);
+            this.inventory = oldInventories.getLast();
         }
     }
 

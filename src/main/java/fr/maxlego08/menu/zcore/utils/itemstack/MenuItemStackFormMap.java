@@ -43,8 +43,7 @@ public class MenuItemStackFormMap {
         List<String> lore = accessor.getStringList("lore");
         if (lore.isEmpty()) {
             Object object = accessor.getObject("lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
+            if (object instanceof String loreString) {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }
