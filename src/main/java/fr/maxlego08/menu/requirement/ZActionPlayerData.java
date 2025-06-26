@@ -75,10 +75,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
         if (this.type == ActionPlayerDataType.REMOVE) {
 
             Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
-            if (optional.isPresent()) {
-                PlayerData data = optional.get();
-                data.removeData(this.papi(this.key, player, false));
-            }
+            optional.ifPresent(data -> data.removeData(this.papi(this.key, player, false)));
         } else if (this.type == ActionPlayerDataType.ADD) {
 
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));

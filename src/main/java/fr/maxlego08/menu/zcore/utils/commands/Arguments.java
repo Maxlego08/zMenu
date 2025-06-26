@@ -37,7 +37,7 @@ public abstract class Arguments extends ZUtils {
 
     protected boolean argAsBoolean(int index, boolean defaultValue) {
         try {
-            return Boolean.valueOf(argAsString(index));
+            return Boolean.parseBoolean(argAsString(index));
         } catch (Exception e) {
             return defaultValue;
         }
@@ -49,7 +49,7 @@ public abstract class Arguments extends ZUtils {
 
     protected int argAsInteger(int index, int defaultValue) {
         try {
-            return Integer.valueOf(argAsString(index));
+            return Integer.parseInt(argAsString(index));
         } catch (Exception e) {
             return defaultValue;
         }

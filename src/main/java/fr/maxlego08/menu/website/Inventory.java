@@ -1,33 +1,12 @@
 package fr.maxlego08.menu.website;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-public class Inventory {
-    private final int id;
-    private final int folderId;
-    private final int userId;
-    private final String fileName;
-    private final String name;
-    private final int size;
-    private final int updateInterval;
-    private final int clearInventory;
-    private final String createdAt;
-    private final String updatedAt;
-
-    public Inventory(int id, int folderId, int userId, String fileName, String name, int size, int updateInterval, int clearInventory, String createdAt, String updatedAt) {
-        this.id = id;
-        this.folderId = folderId;
-        this.userId = userId;
-        this.fileName = fileName;
-        this.name = name;
-        this.size = size;
-        this.updateInterval = updateInterval;
-        this.clearInventory = clearInventory;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+public record Inventory(int id, int folderId, int userId, String fileName, String name, int size, int updateInterval, int clearInventory, String createdAt, String updatedAt) {
 
     public static Inventory fromMap(Map<String, Object> map) {
         int id = ((Number) map.get("id")).intValue();
@@ -44,48 +23,8 @@ public class Inventory {
         return new Inventory(id, folderId, userId, fileName, name, size, updateInterval, clearInventory, createdAt, updatedAt);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public int getFolderId() {
-        return folderId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public int getUpdateInterval() {
-        return updateInterval;
-    }
-
-    public int getClearInventory() {
-        return clearInventory;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Inventory{" + "id=" + id + ", folderId=" + folderId + ", userId=" + userId + ", fileName='" + fileName + '\'' + ", name='" + name + '\'' + ", size=" + size + ", updateInterval=" + updateInterval + ", clearInventory=" + clearInventory + ", createdAt='" + createdAt + '\'' + ", updatedAt='" + updatedAt + '\'' + '}';
     }
 

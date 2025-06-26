@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class PacketUtils implements InventoryListener {
 
-    public static Map<UUID, FakeInventory> fakeContents = new HashMap<>();
+    public static final Map<UUID, FakeInventory> fakeContents = new HashMap<>();
     private final MenuPlugin plugin;
 
     public PacketUtils(MenuPlugin plugin) {

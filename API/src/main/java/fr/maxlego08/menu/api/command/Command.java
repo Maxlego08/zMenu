@@ -16,42 +16,42 @@ public interface Command {
      *
      * @return The primary command name.
      */
-    String getCommand();
+    String command();
 
     /**
      * Gets the aliases for the command.
      *
      * @return The list of command aliases.
      */
-    List<String> getAliases();
+    List<String> aliases();
 
     /**
      * Gets the permission required to execute the command.
      *
      * @return The permission node required executing the command.
      */
-    String getPermission();
+    String permission();
 
     /**
      * Gets the name of the inventory to open when the command is executed.
      *
      * @return The name of the inventory.
      */
-    String getInventory();
+    String inventory();
 
     /**
      * Gets the plugin associated with the command.
      *
      * @return The plugin associated with the command.
      */
-    Plugin getPlugin();
+    Plugin plugin();
 
     /**
      * Gets the list of command arguments.
      *
      * @return The list of command arguments.
      */
-    List<CommandArgument> getArguments();
+    List<CommandArgument> arguments();
 
     /**
      * Gets the list of command arguments as strings.
@@ -72,33 +72,33 @@ public interface Command {
      *
      * @return The file associated with the command.
      */
-    File getFile();
+    File file();
 
     /**
      * Gets the path of the command in the configuration file.
      *
      * @return The path of the command in the configuration file.
      */
-    String getPath();
+    String path();
 
     /**
      * Gets the list of actions associated with the command.
      *
      * @return The list of actions associated with the command.
      */
-    List<Action> getActions();
+    List<Action> actions();
 
     /**
      * Gets the list of sub-commands associated with the command.
      *
      * @return The list of sub-commands associated with the command.
      */
-    List<Command> getSubCommands();
+    List<Command> subCommands();
 
     /**
      * Gets the message to display when the player does not have the required permission.
      *
      * @return The message to display when the player does not have the required permission.
      */
-    String getDenyMessage();
+    String denyMessage();
 }

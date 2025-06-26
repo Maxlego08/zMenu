@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.api.exceptions;
 
+import java.io.Serial;
+
 public class ListenerNullException extends Error {
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ListenerNullException() {

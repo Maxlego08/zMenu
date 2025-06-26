@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.exceptions.ListenerNullException;
 import fr.maxlego08.menu.api.players.Data;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.inventory.VInventory;
@@ -213,7 +212,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param replace      replace boolean
      */
     public void saveResource(String resourcePath, String toPath, boolean replace) {
-        if (resourcePath != null && !resourcePath.equals("")) {
+        if (resourcePath != null && !resourcePath.isEmpty()) {
             resourcePath = resourcePath.replace('\\', '/');
             InputStream in = this.getResource(resourcePath);
             if (in == null) {

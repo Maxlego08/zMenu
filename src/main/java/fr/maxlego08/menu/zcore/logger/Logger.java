@@ -2,10 +2,9 @@ package fr.maxlego08.menu.zcore.logger;
 
 import org.bukkit.Bukkit;
 
-public class Logger {
+public record Logger(String prefix) {
 
     private static Logger logger;
-    private final String prefix;
 
     public Logger(String prefix) {
         this.prefix = prefix;
@@ -22,10 +21,6 @@ public class Logger {
 
     public static void info(String message) {
         getLogger().log(message, LogType.INFO);
-    }
-
-    public String getPrefix() {
-        return prefix;
     }
 
     public void log(String message, LogType type) {

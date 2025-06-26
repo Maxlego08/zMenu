@@ -6,7 +6,6 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import org.bukkit.OfflinePlayer;
 
 public class CommandMenuPlayersRemoveAll extends VCommand {
 

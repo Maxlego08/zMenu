@@ -20,7 +20,7 @@ import java.util.zip.GZIPInputStream;
 public class ItemStackUtils {
 
     private static final NmsVersion NMS_VERSION = NmsVersion.nmsVersion;
-    private static final Map<ItemStack, String> itemStackSerialized = new HashMap<ItemStack, String>();
+    private static final Map<ItemStack, String> itemStackSerialized = new HashMap<>();
 
     public static String serializeItemStack(ItemStack paramItemStack) {
 

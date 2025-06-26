@@ -58,7 +58,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
     private void checkPatterns(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement) {
         for (String patternName : configuration.getStringList("patterns")) {
             Optional<Pattern> optional = patternManager.getPattern(patternName);
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 inventoryLoadRequirement.addRequirement(InventoryRequirementType.PATTERN, patternName);
             }
         }
@@ -144,7 +144,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
 
         // Check button
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             inventoryLoadRequirement.addRequirement(InventoryRequirementType.BUTTON, buttonType);
         }
 

@@ -117,8 +117,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         List<String> lore = configuration.getStringList(path + "lore");
         if (lore.isEmpty()) {
             Object object = configuration.get(path + "lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
+            if (object instanceof String loreString) {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }
@@ -211,11 +210,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 }
 
                 Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments(enchant);
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
                 }
 
-                enchantments.put(optional.get().getEnchantment(), level);
+                enchantments.put(optional.get().enchantment(), level);
 
             } catch (ItemEnchantException e) {
                 e.printStackTrace();

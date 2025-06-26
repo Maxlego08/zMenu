@@ -5,30 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DiscordEmbedConfiguration {
-
-    private final String title;
-    private final String description;
-    private final String url;
-    private final Color color;
-    private final Footer footer;
-    private final Thumbnail thumbnail;
-    private final Image image;
-    private final Author author;
-    private final List<Field> fields;
-
-    public DiscordEmbedConfiguration(String title, String description, String url, Color color, Footer footer,
-                                     Thumbnail thumbnail, Image image, Author author, List<Field> fields) {
-        this.title = title;
-        this.description = description;
-        this.url = url;
-        this.color = color;
-        this.footer = footer;
-        this.thumbnail = thumbnail;
-        this.image = image;
-        this.author = author;
-        this.fields = fields;
-    }
+public record DiscordEmbedConfiguration(String title, String description, String url, Color color,
+                                        DiscordEmbedConfiguration.Footer footer,
+                                        DiscordEmbedConfiguration.Thumbnail thumbnail,
+                                        DiscordEmbedConfiguration.Image image,
+                                        DiscordEmbedConfiguration.Author author, List<Field> fields) {
 
     public static List<DiscordEmbedConfiguration> convertToEmbedObjects(List<Map<?, ?>> data) {
         List<DiscordEmbedConfiguration> embedObjects = new ArrayList<>();
@@ -136,9 +117,9 @@ public class DiscordEmbedConfiguration {
         DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
 
         if (this.author != null) {
-            embedObject.setAuthor(consumer.accept(this.author.getName()),
-                    consumer.accept(this.author.getUrl()),
-                    consumer.accept(this.author.getIconUrl()));
+            embedObject.setAuthor(consumer.accept(this.author.name()),
+                    consumer.accept(this.author.url()),
+                    consumer.accept(this.author.iconUrl()));
         }
 
         if (this.description != null) {
@@ -154,150 +135,33 @@ public class DiscordEmbedConfiguration {
         }
 
         if (this.thumbnail != null) {
-            embedObject.setThumbnail(consumer.accept(this.thumbnail.getUrl()));
+            embedObject.setThumbnail(consumer.accept(this.thumbnail.url()));
         }
 
         if (this.image != null) {
-            embedObject.setImage(consumer.accept(this.image.getUrl()));
+            embedObject.setImage(consumer.accept(this.image.url()));
         }
 
         if (this.footer != null) {
-            embedObject.setFooter(consumer.accept(this.footer.getText()), consumer.accept(this.footer.getIconUrl()));
+            embedObject.setFooter(consumer.accept(this.footer.text()), consumer.accept(this.footer.iconUrl()));
         }
 
         if (!this.fields.isEmpty()) {
             for (Field field : this.fields) {
-                embedObject.addField(consumer.accept(field.getName()), consumer.accept(field.getValue()), field.isInline());
+                embedObject.addField(consumer.accept(field.name()), consumer.accept(field.value()), field.inline());
             }
         }
 
         discordWebhook.addEmbed(embedObject);
     }
 
-    // Getters
-    public String getTitle() {
-        return title;
-    }
+    public record Footer(String text, String iconUrl) {}
 
-    public String getDescription() {
-        return description;
-    }
+    public record Thumbnail(String url) {}
 
-    public String getUrl() {
-        return url;
-    }
+    public record Image(String url) {}
 
-    public Color getColor() {
-        return color;
-    }
+    public record Author(String name, String url, String iconUrl) {}
 
-    public Footer getFooter() {
-        return footer;
-    }
-
-    public Thumbnail getThumbnail() {
-        return thumbnail;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public List<Field> getFields() {
-        return fields;
-    }
-
-    public static class Footer {
-        private final String text;
-        private final String iconUrl;
-
-        public Footer(String text, String iconUrl) {
-            this.text = text;
-            this.iconUrl = iconUrl;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public String getIconUrl() {
-            return iconUrl;
-        }
-    }
-
-    public static class Thumbnail {
-        private final String url;
-
-        public Thumbnail(String url) {
-            this.url = url;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-    }
-
-    public static class Image {
-        private final String url;
-
-        public Image(String url) {
-            this.url = url;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-    }
-
-    public static class Author {
-        private final String name;
-        private final String url;
-        private final String iconUrl;
-
-        public Author(String name, String url, String iconUrl) {
-            this.name = name;
-            this.url = url;
-            this.iconUrl = iconUrl;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getIconUrl() {
-            return iconUrl;
-        }
-    }
-
-    public static class Field {
-        private final String name;
-        private final String value;
-        private final boolean inline;
-
-        public Field(String name, String value, boolean inline) {
-            this.name = name;
-            this.value = value;
-            this.inline = inline;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public boolean isInline() {
-            return inline;
-        }
-    }
+    public record Field(String name, String value, boolean inline) {}
 }

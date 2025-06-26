@@ -31,7 +31,7 @@ public class ButtonInventoryPrevious extends Button {
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         Optional<Folder> optional = manager.getCurrentFolder();
-        if (!optional.isPresent()) return;
+        if (optional.isEmpty()) return;
 
         Folder folder = optional.get();
         List<Folder> folders = manager.getFolders(folder);
@@ -39,7 +39,7 @@ public class ButtonInventoryPrevious extends Button {
         int inventoryPage = manager.getInventoryPage();
 
         if (inventoryPage > 1) {
-            manager.openInventoriesInventory(player, inventoryPage - 1, manager.getFolderPage(), folder.getId());
+            manager.openInventoriesInventory(player, inventoryPage - 1, manager.getFolderPage(), folder.id());
         }
     }
 }

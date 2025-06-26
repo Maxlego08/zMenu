@@ -146,8 +146,7 @@ public class TypedMapAccessor implements MapConfiguration {
     @Override
     public List<Integer> getIntList(String key) {
         Object value = map.get(key);
-        if (value instanceof List<?>) {
-            List<?> list = (List<?>) value;
+        if (value instanceof List<?> list) {
             return convertToIntegerList(list);
         }
         return Collections.emptyList();
@@ -165,8 +164,7 @@ public class TypedMapAccessor implements MapConfiguration {
     @Override
     public List<Integer> getIntList(String key, List<Integer> defaultValue) {
         Object value = map.get(key);
-        if (value instanceof List<?>) {
-            List<?> list = (List<?>) value;
+        if (value instanceof List<?> list) {
             return convertToIntegerList(list);
         }
         return defaultValue;

@@ -4,7 +4,6 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -41,7 +40,7 @@ public class CommandMenuReloadInventory extends VCommand {
                 optional = inventoryManager.getInventory(inventoryName);
             }
 
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
                 return CommandType.DEFAULT;
             }

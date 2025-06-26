@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
 import java.util.UUID;

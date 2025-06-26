@@ -40,10 +40,10 @@ public class ButtonInventories extends Button {
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         int inventoryPage = manager.getInventoryPage();
         Optional<Folder> optional = manager.getCurrentFolder();
-        if (!optional.isPresent()) return;
+        if (optional.isEmpty()) return;
 
         Folder folder = optional.get();
-        List<Inventory> inventories = folder.getInventories();
+        List<Inventory> inventories = folder.inventories();
         Pagination<Inventory> pagination = new Pagination<>();
         inventories = pagination.paginate(inventories, this.slots.size(), inventoryPage);
 
@@ -60,10 +60,10 @@ public class ButtonInventories extends Button {
 
         Placeholders placeholders = new Placeholders();
 
-        placeholders.register("fileName", inventory.getFileName());
-        placeholders.register("name", inventory.getName() == null ? "Inventory" : inventory.getName());
-        placeholders.register("id", String.valueOf(inventory.getId()));
-        placeholders.register("size", String.valueOf(inventory.getSize()));
+        placeholders.register("fileName", inventory.fileName());
+        placeholders.register("name", inventory.name() == null ? "Inventory" : inventory.name());
+        placeholders.register("id", String.valueOf(inventory.id()));
+        placeholders.register("size", String.valueOf(inventory.size()));
         placeholders.register("createdAt", inventory.toCreateDate());
         placeholders.register("updatedAt", inventory.toUpdateDate());
 

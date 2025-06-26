@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.api.engine;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public interface BaseInventory extends InventoryHolder {
 
     Inventory getSpigotInventory();
 
-    Inventory getInventory();
+    @NotNull Inventory getInventory();
 
     Object[] getArgs();
 

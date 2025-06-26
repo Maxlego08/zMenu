@@ -69,7 +69,7 @@ public class VInventoryManager extends ListenerAdapter {
     public void createInventory(int id, Player player, int page, Object... objects) {
         Optional<VInventory> optional = this.getInventory(id);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }

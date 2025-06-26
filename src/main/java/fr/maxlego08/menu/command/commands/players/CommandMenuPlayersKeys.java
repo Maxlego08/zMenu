@@ -32,7 +32,7 @@ public class CommandMenuPlayersKeys extends VCommand {
         OfflinePlayer player = this.argAsOfflinePlayer(0);
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", player.getName());
             return CommandType.SUCCESS;
         }

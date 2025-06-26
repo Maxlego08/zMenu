@@ -47,18 +47,18 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         VCommandManager manager = this.plugin.getVCommandManager();
         manager.registerCommand(command);
 
-        List<Command> commands = this.commands.getOrDefault(command.getPlugin().getName(), new ArrayList<>());
+        List<Command> commands = this.commands.getOrDefault(command.plugin().getName(), new ArrayList<>());
         commands.add(command);
-        this.commands.put(command.getPlugin().getName(), commands);
+        this.commands.put(command.plugin().getName(), commands);
 
         if (Config.enableInformationMessage) {
-            Logger.info("Command /" + command.getCommand() + " successfully register.", LogType.SUCCESS);
+            Logger.info("Command /" + command.command() + " successfully register.", LogType.SUCCESS);
         }
     }
 
     @Override
     public Collection<Command> getCommands(Plugin plugin) {
-        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
+        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<>());
         return Collections.unmodifiableCollection(commands);
     }
 
@@ -75,8 +75,8 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
             this.plugin.getVCommandManager().unregisterCommand(command);
 
-            JavaPlugin javaPlugin = (JavaPlugin) command.getPlugin();
-            PluginCommand pluginCommand = javaPlugin.getCommand(command.getCommand());
+            JavaPlugin javaPlugin = (JavaPlugin) command.plugin();
+            PluginCommand pluginCommand = javaPlugin.getCommand(command.command());
             if (pluginCommand != null) {
                 this.unRegisterBukkitCommand(javaPlugin, pluginCommand);
             }
@@ -87,14 +87,14 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public void unregisterCommands(Command command) {
-        JavaPlugin plugin = (JavaPlugin) command.getPlugin();
-        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
+        JavaPlugin plugin = (JavaPlugin) command.plugin();
+        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<>());
         commands.remove(command);
         this.commands.put(plugin.getName(), commands);
 
         this.plugin.getVCommandManager().unregisterCommand(command);
 
-        PluginCommand pluginCommand = plugin.getCommand(command.getCommand());
+        PluginCommand pluginCommand = plugin.getCommand(command.command());
         if (pluginCommand != null) {
             this.unRegisterBukkitCommand(plugin, pluginCommand);
         }
@@ -111,10 +111,11 @@ public class ZCommandManager extends ZUtils implements CommandManager {
             folder.mkdir();
         }
 
-        try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-                this.loadCommand(this.plugin, file);
-            });
+        try (var files = Files.walk(Paths.get(folder.getPath()))) {
+            files.skip(1).map(Path::toFile)
+                    .filter(File::isFile)
+                    .filter(e -> e.getName().endsWith(".yml"))
+                    .forEach(file -> this.loadCommand(this.plugin, file));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -167,7 +168,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<Command> getCommand(Inventory inventory) {
-        return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.getInventory().equals(inventory)).findFirst();
+        return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.inventory().equals(inventory)).findFirst();
     }
 
     @Override
@@ -192,21 +193,21 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<Command> getCommand(String commandName) {
-        return this.getCommands().stream().filter(e -> e.getCommand().equalsIgnoreCase(commandName)).findFirst();
+        return this.getCommands().stream().filter(e -> e.command().equalsIgnoreCase(commandName)).findFirst();
     }
 
     @Override
     public boolean reload(Command command) {
 
 
-        File file = command.getFile();
+        File file = command.file();
 
         if (!file.exists()) {
             return false;
         }
 
         this.unregisterCommands(command);
-        String path = command.getPath();
+        String path = command.path();
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
         Loader<Command> loader = new CommandLoader(this.plugin, this.plugin);

@@ -64,7 +64,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         this.maxPage = Math.max(1, this.inventory.getMaxPage(patterns, player, args));
 
         this.buttons = new ArrayList<>();
-        this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).collect(Collectors.toList()));
+        this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).toList());
         this.buttons.addAll(this.inventory.sortButtons(page, args));
 
         this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
