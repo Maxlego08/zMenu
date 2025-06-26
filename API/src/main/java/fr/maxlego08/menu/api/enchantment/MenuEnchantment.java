@@ -15,7 +15,7 @@ public interface MenuEnchantment {
      *
      * @return the {@link Enchantment} associated with this custom enchantment
      */
-    Enchantment getEnchantment();
+    Enchantment enchantment();
 
     /**
      * Retrieves the list of aliases for this custom enchantment.
@@ -23,5 +23,5 @@ public interface MenuEnchantment {
      *
      * @return a list of aliases for the enchantment
      */
-    List<String> getAliases();
+    List<String> aliases();
 }

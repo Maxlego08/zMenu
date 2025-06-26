@@ -49,18 +49,14 @@ public class PapiUtils extends TranslationHelper {
         return placeHolders.stream().map(placeHolder -> papi(placeHolder, player, useCache)).collect(Collectors.toList());
     }
 
-    private static class CacheEntry {
-        final String value;
-        final long timeStamp; // Time when the cache entry was created
-
-        public CacheEntry(String value, long timeStamp) {
-            this.value = value;
-            this.timeStamp = timeStamp;
-        }
+    /**
+     * @param timeStamp Time when the cache entry was created
+     */
+    private record CacheEntry(String value, long timeStamp) {
 
         public boolean isValid() {
-            // Check if the cache entry is still valid (not older than 1000 milliseconds)
-            return System.currentTimeMillis() - timeStamp < Config.cachePlaceholderAPI;
+                // Check if the cache entry is still valid (not older than 1000 milliseconds)
+                return System.currentTimeMillis() - timeStamp < Config.cachePlaceholderAPI;
+            }
         }
-    }
 }

@@ -74,10 +74,10 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
     @Override
     public void save(Pattern object, YamlConfiguration configuration, String path, File file, Object... objects) {
 
-        configuration.set("name", object.getName());
-        configuration.set("size", object.getInventorySize());
+        configuration.set("name", object.name());
+        configuration.set("size", object.inventorySize());
 
-        for (Button button : object.getButtons()) {
+        for (Button button : object.buttons()) {
             //TODO: SAVE BUTTONS
         }
 

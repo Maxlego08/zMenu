@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.Attribute;
@@ -236,7 +237,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments("power");
                 if (optional.isPresent()) {
                     MenuEnchantment menuEnchantment = optional.get();
-                    itemMeta.addEnchant(menuEnchantment.getEnchantment(), 1, true);
+                    itemMeta.addEnchant(menuEnchantment.enchantment(), 1, true);
                     itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 }
             }

@@ -214,7 +214,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
                 }
 
-                enchantments.put(optional.get().getEnchantment(), level);
+                enchantments.put(optional.get().enchantment(), level);
 
             } catch (ItemEnchantException e) {
                 e.printStackTrace();

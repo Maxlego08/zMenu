@@ -16,7 +16,7 @@ public class ZEnchantments implements Enchantments {
 
     @Override
     public Optional<MenuEnchantment> getEnchantments(String enchantment) {
-        return essentialsEnchantments.stream().filter(menuEnchantment -> menuEnchantment.getAliases().stream().anyMatch(e -> e.equalsIgnoreCase(enchantment))).findFirst();
+        return essentialsEnchantments.stream().filter(menuEnchantment -> menuEnchantment.aliases().stream().anyMatch(e -> e.equalsIgnoreCase(enchantment))).findFirst();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ZEnchantments implements Enchantments {
 
     @Override
     public List<String> getEnchantments() {
-        return this.essentialsEnchantments.stream().map(MenuEnchantment::getAliases).flatMap(List::stream).collect(Collectors.toList());
+        return this.essentialsEnchantments.stream().map(MenuEnchantment::aliases).flatMap(List::stream).collect(Collectors.toList());
     }
 
     private Enchantment valueOf(String... names) {

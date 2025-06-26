@@ -87,7 +87,7 @@ public class CommandLoader implements Loader<Command> {
         if (configurationSection != null) {
             for (String key : configurationSection.getKeys(false)) {
                 Command subCommand = load(configuration, path + "sub-commands." + key + ".", args);
-                if (subCommand != null && subCommand.getCommand() != null) {
+                if (subCommand != null && subCommand.command() != null) {
                     subCommands.add(subCommand);
                 }
             }
@@ -99,12 +99,12 @@ public class CommandLoader implements Loader<Command> {
     @Override
     public void save(Command object, YamlConfiguration configuration, String path, File file, Object... objects) {
 
-        configuration.set(path + "command", object.getCommand());
-        configuration.set(path + "permission", object.getPermission());
-        configuration.set(path + "inventory", object.getInventory());
-        configuration.set(path + "aliases", object.getAliases());
-        configuration.set(path + "arguments", object.getArguments());
-        configuration.set(path + "deny-message", object.getDenyMessage());
+        configuration.set(path + "command", object.command());
+        configuration.set(path + "permission", object.permission());
+        configuration.set(path + "inventory", object.inventory());
+        configuration.set(path + "aliases", object.aliases());
+        configuration.set(path + "arguments", object.arguments());
+        configuration.set(path + "deny-message", object.denyMessage());
 
         try {
             configuration.save(file);

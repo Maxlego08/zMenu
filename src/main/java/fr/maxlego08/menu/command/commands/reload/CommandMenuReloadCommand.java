@@ -18,7 +18,7 @@ public class CommandMenuReloadCommand extends VCommand {
         super(plugin);
         this.addSubCommand("command", "cmd");
         this.setPermission(Permission.ZMENU_RELOAD);
-        this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> e.getCommand().toLowerCase()).collect(Collectors.toList()));
+        this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> e.command().toLowerCase()).collect(Collectors.toList()));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CommandMenuReloadCommand extends VCommand {
             Command command = optional.get();
             plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
-                return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(command.getInventory());
+                return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(command.inventory());
             });
 
             Message message = commandManager.reload(command) ? Message.RELOAD_COMMAND_FILE

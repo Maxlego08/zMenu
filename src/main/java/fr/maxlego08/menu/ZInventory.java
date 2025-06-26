@@ -76,11 +76,11 @@ public class ZInventory extends ZUtils implements Inventory {
     public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
 
         if (!this.conditionalNames.isEmpty()) {
-            Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::getPriority));
+            Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
 
             if (optional.isPresent()) {
                 ConditionalName conditionalName = optional.get();
-                return conditionalName.getName();
+                return conditionalName.name();
             }
         }
 
@@ -130,7 +130,7 @@ public class ZInventory extends ZUtils implements Inventory {
     public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
 
         List<Button> buttons = new ArrayList<>(this.buttons);
-        patterns.forEach(pattern -> buttons.addAll(pattern.getButtons()));
+        patterns.forEach(pattern -> buttons.addAll(pattern.buttons()));
 
         int maxSlotInventory = buttons.stream().filter(button -> !button.isPlayerInventory()).mapToInt(Button::getSlot).max().orElse(-1);
         int maxPageInventory = (maxSlotInventory >= 0) ? (maxSlotInventory / this.size) + 1 : 1;
@@ -154,8 +154,8 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public List<Button> sortPatterns(Pattern pattern, int page, Object... objects) {
-        if (!pattern.enableMultiPage()) return new ArrayList<>(pattern.getButtons());
-        return pattern.getButtons().stream().filter(button -> {
+        if (!pattern.enableMultiPage()) return new ArrayList<>(pattern.buttons());
+        return pattern.buttons().stream().filter(button -> {
             int slot = button.getRealSlot(this.size, page);
             return slot >= 0 && slot < this.size;
         }).collect(Collectors.toList());
