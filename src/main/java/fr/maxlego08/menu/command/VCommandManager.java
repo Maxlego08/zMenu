@@ -16,6 +16,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -57,7 +58,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, String[] args) {
         for (VCommand command : this.commands) {
             if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
                 if ((args.length == 0 || command.isIgnoreParent()) && command.getParent() == null) {
@@ -145,7 +146,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String str, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, String[] args) {
 
         for (VCommand command : commands) {
 

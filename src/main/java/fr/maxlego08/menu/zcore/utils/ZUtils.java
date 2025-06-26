@@ -585,7 +585,7 @@ public abstract class ZUtils extends MessageUtils {
 
     protected String toList(List<String> list, String color, String color2) {
         if (list == null || list.isEmpty()) return null;
-        if (list.size() == 1) return list.get(0);
+        if (list.size() == 1) return list.getFirst();
         String str = "";
         for (int a = 0; a != list.size(); a++) {
             if (a == list.size() - 1) str = str.concat(color + " " + Message.AND.getMessage() + " " + color2);

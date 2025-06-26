@@ -212,7 +212,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param replace      replace boolean
      */
     public void saveResource(String resourcePath, String toPath, boolean replace) {
-        if (resourcePath != null && !resourcePath.equals("")) {
+        if (resourcePath != null && !resourcePath.isEmpty()) {
             resourcePath = resourcePath.replace('\\', '/');
             InputStream in = this.getResource(resourcePath);
             if (in == null) {

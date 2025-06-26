@@ -143,7 +143,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (this.matrix.containsKey(currentChar)) {
             slots = this.matrix.get(currentChar);
             if (slots.size() == 1) {
-                slot = slots.get(0);
+                slot = slots.getFirst();
                 slots = new ArrayList<>();
             }
         }

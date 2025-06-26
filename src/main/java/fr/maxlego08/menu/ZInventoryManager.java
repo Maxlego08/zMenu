@@ -100,9 +100,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (seconds <= 0) return;
 
-        this.plugin.getScheduler().runTimerAsync(() -> {
-            OfflinePlayerCache.clearCache();
-        }, seconds, seconds, TimeUnit.SECONDS);
+        this.plugin.getScheduler().runTimerAsync(OfflinePlayerCache::clearCache, seconds, seconds, TimeUnit.SECONDS);
     }
 
     @Override

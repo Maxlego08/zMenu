@@ -58,7 +58,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Collection<Command> getCommands(Plugin plugin) {
-        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
+        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<>());
         return Collections.unmodifiableCollection(commands);
     }
 
@@ -88,7 +88,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     @Override
     public void unregisterCommands(Command command) {
         JavaPlugin plugin = (JavaPlugin) command.getPlugin();
-        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<Command>());
+        List<Command> commands = this.commands.getOrDefault(plugin.getName(), new ArrayList<>());
         commands.remove(command);
         this.commands.put(plugin.getName(), commands);
 
@@ -112,9 +112,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         }
 
         try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-                this.loadCommand(this.plugin, file);
-            });
+            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> this.loadCommand(this.plugin, file));
         } catch (IOException e) {
             e.printStackTrace();
         }

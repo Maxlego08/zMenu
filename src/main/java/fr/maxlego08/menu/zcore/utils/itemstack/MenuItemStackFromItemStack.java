@@ -80,7 +80,7 @@ public class MenuItemStackFromItemStack {
                 if (itemMeta instanceof FireworkMeta fireworkMeta) {
                     List<FireworkEffect> fireworkEffects = fireworkMeta.getEffects();
                     if (!fireworkEffects.isEmpty()) {
-                        FireworkEffect effect = fireworkEffects.get(0);
+                        FireworkEffect effect = fireworkEffects.getFirst();
                         Firework menuFirework = new Firework(false, effect);
                         menuItemStack.setFirework(menuFirework);
                     }

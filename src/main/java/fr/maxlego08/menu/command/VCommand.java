@@ -258,7 +258,7 @@ public abstract class VCommand extends Arguments {
      * @return first command
      */
     public String getFirst() {
-        return this.subCommands.get(0);
+        return this.subCommands.getFirst();
     }
 
     //
@@ -324,21 +324,25 @@ public abstract class VCommand extends Arguments {
      */
     private String generateDefaultSyntax(String syntax) {
 
-        String tmpString = subCommands.get(0);
+        String tmpString = subCommands.getFirst();
 
-        boolean update = syntax.equals("");
+        boolean update = syntax.isEmpty();
 
         if (!requireArgs.isEmpty() && update) {
+            StringBuilder syntaxBuilder = new StringBuilder(syntax);
             for (String requireArg : requireArgs) {
                 requireArg = "<" + requireArg + ">";
-                syntax += " " + requireArg;
+                syntaxBuilder.append(" ").append(requireArg);
             }
+            syntax = syntaxBuilder.toString();
         }
         if (!optionalArgs.isEmpty() && update) {
+            StringBuilder syntaxBuilder = new StringBuilder(syntax);
             for (String optionalArg : optionalArgs) {
                 optionalArg = "[<" + optionalArg + ">]";
-                syntax += " " + optionalArg;
+                syntaxBuilder.append(" ").append(optionalArg);
             }
+            syntax = syntaxBuilder.toString();
         }
 
         tmpString += syntax;

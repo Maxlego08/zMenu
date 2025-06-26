@@ -64,8 +64,6 @@ public class ButtonFolders extends Button {
         placeholders.register("id", String.valueOf(folder.getId()));
 
         ItemStack itemStack = menuItemStack.build(player, false, placeholders);
-        inventoryDefault.addItem(slot, itemStack).setClick(event -> {
-            manager.openInventoriesInventory(player, 1, 1, folder.getId());
-        });
+        inventoryDefault.addItem(slot, itemStack).setClick(event -> manager.openInventoriesInventory(player, 1, 1, folder.getId()));
     }
 }
