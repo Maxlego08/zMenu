@@ -1,6 +1,5 @@
 package fr.maxlego08.menu;
 
-import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.Attribute;

@@ -19,10 +19,10 @@ public abstract class VCommand extends Arguments {
 
     protected final ZMenuPlugin plugin;
     protected VCommand parent;
-    protected List<VCommand> subVCommands = new ArrayList<>();
+    protected final List<VCommand> subVCommands = new ArrayList<>();
     protected CommandSender sender;
     protected Player player;
-    protected Map<Integer, CollectionBiConsumer> tabCompletions = new HashMap<>();
+    protected final Map<Integer, CollectionBiConsumer> tabCompletions = new HashMap<>();
     private String permission;
     private String denyMessage;
     private final List<String> subCommands = new ArrayList<>();

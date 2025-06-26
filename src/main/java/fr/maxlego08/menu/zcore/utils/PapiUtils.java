@@ -50,8 +50,8 @@ public class PapiUtils extends TranslationHelper {
     }
 
     private static class CacheEntry {
-        String value;
-        long timeStamp; // Time when the cache entry was created
+        final String value;
+        final long timeStamp; // Time when the cache entry was created
 
         public CacheEntry(String value, long timeStamp) {
             this.value = value;

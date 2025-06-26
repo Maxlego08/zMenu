@@ -25,8 +25,8 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     protected int id;
     protected ZMenuPlugin plugin;
-    protected Map<Integer, ItemButton> items = new HashMap<>();
-    protected Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
+    protected final Map<Integer, ItemButton> items = new HashMap<>();
+    protected final Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
     protected Player player;
     protected int page;
     protected Object[] args;

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class CooldownBuilder {
 
-    public static Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
+    public static final Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
 
     public static Map<UUID, Long> getCooldownMap(String key) {
         return cooldowns.getOrDefault(key, null);
