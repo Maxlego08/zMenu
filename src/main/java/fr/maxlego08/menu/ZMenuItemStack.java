@@ -267,9 +267,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
 
 
-            if (!attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
-                itemMeta.setAttributeModifiers(ArrayListMultimap.create());
-            }
+//             if (!attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+//                 itemMeta.setAttributeModifiers(ArrayListMultimap.create());
+//             }
 
             itemStack.setItemMeta(itemMeta);
         }
