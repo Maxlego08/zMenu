@@ -38,7 +38,7 @@ public class CooldownBuilder {
         createCooldown(key);
 
         long next = System.currentTimeMillis() + seconds * 1000L;
-        getCooldownMap(key).put(uuid, Long.valueOf(next));
+        getCooldownMap(key).put(uuid, next);
     }
 
     public static void addCooldown(String key, Player player, int seconds) {
@@ -50,7 +50,7 @@ public class CooldownBuilder {
         createCooldown(key);
         Map<UUID, Long> map = cooldowns.get(key);
 
-        return (map.containsKey(uuid)) && (System.currentTimeMillis() <= map.get(uuid).longValue());
+        return (map.containsKey(uuid)) && (System.currentTimeMillis() <= map.get(uuid));
     }
 
     public static boolean isCooldown(String key, Player player) {
@@ -62,7 +62,7 @@ public class CooldownBuilder {
         createCooldown(key);
         Map<UUID, Long> map = cooldowns.get(key);
 
-        return map.getOrDefault(uuid, 0L).longValue() - System.currentTimeMillis();
+        return map.getOrDefault(uuid, 0L) - System.currentTimeMillis();
     }
 
     public static long getCooldownPlayer(String key, Player player) {

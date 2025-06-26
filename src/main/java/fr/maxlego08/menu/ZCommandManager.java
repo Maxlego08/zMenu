@@ -111,8 +111,11 @@ public class ZCommandManager extends ZUtils implements CommandManager {
             folder.mkdir();
         }
 
-        try {
-            Files.walk(Paths.get(folder.getPath())).skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> this.loadCommand(this.plugin, file));
+        try (var files = Files.walk(Paths.get(folder.getPath()))) {
+            files.skip(1).map(Path::toFile)
+                    .filter(File::isFile)
+                    .filter(e -> e.getName().endsWith(".yml"))
+                    .forEach(file -> this.loadCommand(this.plugin, file));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -13,7 +13,7 @@ public class ItemsAdderFont implements FontImage {
     @Override
     public String replace(String string) {
         Matcher matcher = pattern.matcher(string);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         while (matcher.find()) {
             String replacement = FontImageWrapper.replaceFontImages(matcher.group(0));
             matcher.appendReplacement(result, replacement);

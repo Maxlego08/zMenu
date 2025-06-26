@@ -109,7 +109,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                     int level = 0;
                     String enchant = splitEnchant[0];
                     try {
-                        level = Integer.valueOf(splitEnchant[1]);
+                        level = Integer.parseInt(splitEnchant[1]);
                     } catch (NumberFormatException e) {
                         throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
                     }
