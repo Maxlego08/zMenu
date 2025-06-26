@@ -50,7 +50,7 @@ public abstract class ButtonLoader {
                         String[] values = line.split("-");
                         int from = Integer.parseInt(values[0]);
                         int to = Integer.parseInt(values[1]) + 1;
-                        slots.addAll(IntStream.range(Math.min(from, to), Math.max(from, to)).boxed().collect(Collectors.toList()));
+                        slots.addAll(IntStream.range(Math.min(from, to), Math.max(from, to)).boxed().toList());
                     } catch (Exception ignored) {
                     }
                 } else {

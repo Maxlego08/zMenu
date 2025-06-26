@@ -40,7 +40,7 @@ public class CommandMenuReloadInventory extends VCommand {
                 optional = inventoryManager.getInventory(inventoryName);
             }
 
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
                 return CommandType.DEFAULT;
             }

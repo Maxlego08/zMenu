@@ -30,12 +30,12 @@ public class ButtonFolderBack extends Button {
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         Optional<Folder> optional = manager.getCurrentFolder();
-        if (!optional.isPresent()) return;
+        if (optional.isEmpty()) return;
 
         Folder folder = optional.get();
 
-        if (folder.getParentId() != -1) {
-            manager.openInventoriesInventory(player, manager.getInventoryPage(), 1, folder.getParentId());
+        if (folder.parentId() != -1) {
+            manager.openInventoriesInventory(player, manager.getInventoryPage(), 1, folder.parentId());
         }
     }
 }

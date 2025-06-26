@@ -35,7 +35,7 @@ public class CommandMenuPlayersRemove extends VCommand {
         String key = this.argAsString(1);
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
             return CommandType.SUCCESS;
         }

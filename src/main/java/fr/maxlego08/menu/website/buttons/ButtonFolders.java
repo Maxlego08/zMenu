@@ -39,7 +39,7 @@ public class ButtonFolders extends Button {
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         int folderPage = manager.getFolderPage();
         Optional<Folder> optional = manager.getCurrentFolder();
-        if (!optional.isPresent()) return;
+        if (optional.isEmpty()) return;
 
         Folder folder = optional.get();
         List<Folder> folders = manager.getFolders(folder);
@@ -59,11 +59,11 @@ public class ButtonFolders extends Button {
 
         Placeholders placeholders = new Placeholders();
 
-        placeholders.register("quantity", String.valueOf(folder.getInventories().size()));
-        placeholders.register("name", folder.getName());
-        placeholders.register("id", String.valueOf(folder.getId()));
+        placeholders.register("quantity", String.valueOf(folder.inventories().size()));
+        placeholders.register("name", folder.name());
+        placeholders.register("id", String.valueOf(folder.id()));
 
         ItemStack itemStack = menuItemStack.build(player, false, placeholders);
-        inventoryDefault.addItem(slot, itemStack).setClick(event -> manager.openInventoriesInventory(player, 1, 1, folder.getId()));
+        inventoryDefault.addItem(slot, itemStack).setClick(event -> manager.openInventoriesInventory(player, 1, 1, folder.id()));
     }
 }

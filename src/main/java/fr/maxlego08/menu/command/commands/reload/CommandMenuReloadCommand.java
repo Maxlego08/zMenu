@@ -30,7 +30,7 @@ public class CommandMenuReloadCommand extends VCommand {
         if (commandName != null) {
             Optional<Command> optional = commandManager.getCommand(commandName);
 
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_COMMAND, "%name%", commandName);
                 return CommandType.DEFAULT;
             }

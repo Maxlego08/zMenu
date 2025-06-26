@@ -54,7 +54,7 @@ public class ZInventoryButton extends InventoryButton {
         List<Inventory> oldInventories = inventory.getOldInventories();
 
         Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.getInventory(this.inventoryName) : this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             player.closeInventory();
             inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
             return;
