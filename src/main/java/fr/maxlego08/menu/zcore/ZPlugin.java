@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.exceptions.ListenerNullException;
 import fr.maxlego08.menu.api.players.Data;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.inventory.VInventory;

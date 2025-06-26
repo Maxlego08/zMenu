@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.api.engine;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
