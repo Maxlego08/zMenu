@@ -34,7 +34,7 @@ public class PDCDupeManager implements DupeManager {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta == null) return itemStack;
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
-            persistentDataContainer.set(namespacedKey, PersistentDataType.INTEGER, 1);
+            persistentDataContainer.set(namespacedKey, PersistentDataType.BOOLEAN, true);
             itemStack.setItemMeta(itemMeta);
             return itemStack;
         } catch (Exception exception) {
@@ -57,6 +57,6 @@ public class PDCDupeManager implements DupeManager {
         if (itemMeta == null) return false;
 
         PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
-        return persistentDataContainer.has(this.namespacedKey, PersistentDataType.INTEGER);
+        return persistentDataContainer.has(this.namespacedKey, PersistentDataType.BOOLEAN);
     }
 }
