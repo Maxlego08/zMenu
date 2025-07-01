@@ -33,7 +33,7 @@ public abstract class Action {
     public void preExecute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
         if (delay == 0) execute(player, button, inventoryEngine, placeholders);
         else {
-            inventoryEngine.getPlugin().getScheduler().runAtLocationLater(player.getLocation(), () -> execute(player, button, inventoryEngine, placeholders), this.delay);
+            inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> execute(player, button, inventoryEngine, placeholders), this.delay);
         }
     }
 
