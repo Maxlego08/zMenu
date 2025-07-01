@@ -75,7 +75,7 @@ public class PacketUtils implements InventoryListener {
 
     @Override
     public void onInventoryClose(Player player, BaseInventory inventory) {
-        this.plugin.getScheduler().runAtLocationLater(player.getLocation(), () -> {
+        this.plugin.getScheduler().runAtEntityLater(player, () -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (newHolder != null && !(newHolder instanceof InventoryEngine)) {
                 fakeContents.remove(player.getUniqueId());
