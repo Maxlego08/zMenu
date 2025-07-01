@@ -21,7 +21,7 @@ public class PlayerCommandAction extends ActionHelper {
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
-        scheduler.runAtLocation(player.getLocation(), w -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
+        scheduler.runAtEntity(player, w -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
             command = command.replace("%player%", player.getName());
             if (this.inChat) {
                 player.chat("/" + command);
