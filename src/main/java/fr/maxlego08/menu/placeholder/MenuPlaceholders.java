@@ -2,7 +2,6 @@ package fr.maxlego08.menu.placeholder;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.placeholder;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class DistantPlaceholder extends PlaceholderExpansion {
 
@@ -14,17 +15,17 @@ public class DistantPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String getAuthor() {
-        return this.placeholder.getPlugin().getDescription().getAuthors().get(0);
+    public @NotNull String getAuthor() {
+        return this.placeholder.getPlugin().getDescription().getAuthors().getFirst();
     }
 
     @Override
-    public String getIdentifier() {
+    public @NotNull String getIdentifier() {
         return this.placeholder.getPrefix();
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return this.placeholder.getPlugin().getDescription().getVersion();
     }
 
@@ -34,12 +35,12 @@ public class DistantPlaceholder extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer offlinePlayer, String params) {
+    public String onRequest(OfflinePlayer offlinePlayer, @NotNull String params) {
         return this.placeholder.onRequest(offlinePlayer, params);
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String params) {
+    public String onPlaceholderRequest(Player player, @NotNull String params) {
         return this.placeholder.onRequest(player, params);
     }
 

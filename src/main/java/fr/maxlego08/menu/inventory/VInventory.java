@@ -15,8 +15,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +25,8 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     protected int id;
     protected ZMenuPlugin plugin;
-    protected Map<Integer, ItemButton> items = new HashMap<>();
-    protected Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
+    protected final Map<Integer, ItemButton> items = new HashMap<>();
+    protected final Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
     protected Player player;
     protected int page;
     protected Object[] args;
@@ -236,7 +236,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return this.inventory;
     }
 

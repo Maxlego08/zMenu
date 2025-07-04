@@ -1,11 +1,6 @@
 package fr.maxlego08.menu.zcore.utils;
 
-public class ProgressBar {
-
-    private final int lenght;
-    private final char symbol;
-    private final String completedColor;
-    private final String notCompletedColor;
+public record ProgressBar(int lenght, char symbol, String completedColor, String notCompletedColor) {
 
     /**
      * @param lenght
@@ -13,39 +8,38 @@ public class ProgressBar {
      * @param completedColor
      * @param notCompletedColor
      */
-    public ProgressBar(int lenght, char symbol, String completedColor, String notCompletedColor) {
-        super();
-        this.lenght = lenght;
-        this.symbol = symbol;
-        this.completedColor = completedColor;
-        this.notCompletedColor = notCompletedColor;
+    public ProgressBar {
     }
 
     /**
      * @return the lenght
      */
-    public int getLenght() {
+    @Override
+    public int lenght() {
         return lenght;
     }
 
     /**
      * @return the symbol
      */
-    public char getSymbol() {
+    @Override
+    public char symbol() {
         return symbol;
     }
 
     /**
      * @return the completedColor
      */
-    public String getCompletedColor() {
+    @Override
+    public String completedColor() {
         return completedColor;
     }
 
     /**
      * @return the notCompletedColor
      */
-    public String getNotCompletedColor() {
+    @Override
+    public String notCompletedColor() {
         return notCompletedColor;
     }
 

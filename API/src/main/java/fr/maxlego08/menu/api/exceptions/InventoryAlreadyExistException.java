@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.api.exceptions;
 
+import java.io.Serial;
+
 public class InventoryAlreadyExistException extends Error {
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -5611455794293458580L;
 
     public InventoryAlreadyExistException() {

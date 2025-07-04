@@ -43,12 +43,12 @@ public class ZPatternManager implements PatternManager {
 
     @Override
     public void registerPattern(Pattern pattern) {
-        patterns.put(pattern.getName(), pattern);
+        patterns.put(pattern.name(), pattern);
     }
 
     @Override
     public void unregisterPattern(Pattern pattern) {
-        patterns.remove(pattern.getName());
+        patterns.remove(pattern.name());
     }
 
     @Override
@@ -60,13 +60,13 @@ public class ZPatternManager implements PatternManager {
         Pattern pattern = loader.load(yamlConfiguration, "", file);
 
         if (pattern != null) {
-            this.patterns.put(pattern.getName(), pattern);
+            this.patterns.put(pattern.name(), pattern);
 
             if (Config.enableInformationMessage) {
                 Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
             }
 
-            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.PATTERN, pattern.getName());
+            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.PATTERN, pattern.name());
         }
 
         return pattern;

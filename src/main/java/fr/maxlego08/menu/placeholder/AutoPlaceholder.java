@@ -3,32 +3,28 @@ package fr.maxlego08.menu.placeholder;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import org.bukkit.OfflinePlayer;
 
-public class AutoPlaceholder {
-
-    private final String startWith;
-    private final ReturnBiConsumer<OfflinePlayer, String, String> biConsumer;
+public record AutoPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer) {
 
     /**
      * @param startWith
      * @param biConsumer
      */
-    public AutoPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer) {
-        super();
-        this.startWith = startWith;
-        this.biConsumer = biConsumer;
+    public AutoPlaceholder {
     }
 
     /**
      * @return the startWith
      */
-    public String getStartWith() {
+    @Override
+    public String startWith() {
         return startWith;
     }
 
     /**
      * @return the biConsumer
      */
-    public ReturnBiConsumer<OfflinePlayer, String, String> getBiConsumer() {
+    @Override
+    public ReturnBiConsumer<OfflinePlayer, String, String> biConsumer() {
         return biConsumer;
     }
 

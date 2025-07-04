@@ -1,33 +1,31 @@
 package fr.maxlego08.menu.website.request;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
-public class Response {
-
-    private final int httpCode;
-    private final Map<String, Object> datas;
+public record Response(int httpCode, Map<String, Object> datas) {
 
     /**
      * @param httpCode
      * @param datas
      */
-    public Response(int httpCode, Map<String, Object> datas) {
-        super();
-        this.httpCode = httpCode;
-        this.datas = datas;
+    public Response {
     }
 
     /**
      * @return the httpCode
      */
-    public int getHttpCode() {
+    @Override
+    public int httpCode() {
         return this.httpCode;
     }
 
     /**
      * @return the datas
      */
-    public Map<String, Object> getDatas() {
+    @Override
+    public Map<String, Object> datas() {
         return this.datas;
     }
 
@@ -49,7 +47,7 @@ public class Response {
      * @see java.lang.Object#toString()
      */
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Response [httpCode=" + httpCode + ", datas=" + datas + "]";
     }
 

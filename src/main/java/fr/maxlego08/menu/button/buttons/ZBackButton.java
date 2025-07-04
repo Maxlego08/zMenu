@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.BackButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.button.Button;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -45,7 +44,7 @@ public class ZBackButton extends BackButton {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
         if (!oldInventories.isEmpty()) {
-            this.inventory = oldInventories.get(oldInventories.size() - 1);
+            this.inventory = oldInventories.getLast();
         }
     }
 

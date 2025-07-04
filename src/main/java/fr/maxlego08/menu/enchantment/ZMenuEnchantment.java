@@ -5,21 +5,6 @@ import org.bukkit.enchantments.Enchantment;
 
 import java.util.List;
 
-public class ZMenuEnchantment implements MenuEnchantment {
+public record ZMenuEnchantment(Enchantment enchantment, List<String> aliases) implements MenuEnchantment {
 
-    private final Enchantment enchantment;
-    private final List<String> aliases;
-
-    public ZMenuEnchantment(Enchantment enchantment, List<String> aliases) {
-        this.enchantment = enchantment;
-        this.aliases = aliases;
-    }
-
-    public Enchantment getEnchantment() {
-        return enchantment;
-    }
-
-    public List<String> getAliases() {
-        return aliases;
-    }
 }

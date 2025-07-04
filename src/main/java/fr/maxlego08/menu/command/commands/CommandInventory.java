@@ -27,19 +27,19 @@ public class CommandInventory extends VCommand {
         super(plugin);
         this.command = command;
 
-        this.setPermission(command.getPermission());
-        this.setDenyMessage(command.getDenyMessage());
+        this.setPermission(command.permission());
+        this.setDenyMessage(command.denyMessage());
         this.setConsoleCanUse(false);
 
         if (isSubCommands) {
-            this.addSubCommand(command.getCommand());
-            this.addSubCommand(command.getAliases());
+            this.addSubCommand(command.command());
+            this.addSubCommand(command.aliases());
         }
 
         if (command.hasArgument()) {
 
             this.setExtendedArgs(true);
-            for (CommandArgument argument : command.getArguments()) {
+            for (CommandArgument argument : command.arguments()) {
                 if (argument.isRequired()) {
                     this.addRequireArg(argument.getArgument(), (a, b) -> argument.getAutoCompletion());
                 } else {
@@ -48,7 +48,7 @@ public class CommandInventory extends VCommand {
             }
         }
 
-        command.getSubCommands().forEach(subCommand -> this.addSubCommand(new CommandInventory(plugin, subCommand, true)));
+        command.subCommands().forEach(subCommand -> this.addSubCommand(new CommandInventory(plugin, subCommand, true)));
     }
 
     private Optional<Inventory> getInventoryByName(String inventoryName) {
@@ -64,7 +64,7 @@ public class CommandInventory extends VCommand {
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
 
-        String inventoryName = this.command.getInventory();
+        String inventoryName = this.command.inventory();
         InventoryManager manager = plugin.getInventoryManager();
         Optional<Inventory> optional = getInventoryByName(inventoryName);
         CommandArgument lastArgument = null;
@@ -74,7 +74,7 @@ public class CommandInventory extends VCommand {
 
             CommandManager commandManager = plugin.getCommandManager();
 
-            List<CommandArgument> arguments = this.command.getArguments();
+            List<CommandArgument> arguments = this.command.arguments();
             for (int index = 0; index < arguments.size(); index++) {
 
                 CommandArgument argument = arguments.get(index);
@@ -135,7 +135,7 @@ public class CommandInventory extends VCommand {
         }
 
         if (performMainActions) {
-            this.command.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+            this.command.actions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
             optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
         }
 

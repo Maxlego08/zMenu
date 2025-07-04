@@ -44,7 +44,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-.gradle
 target
 target-api
 *.java~

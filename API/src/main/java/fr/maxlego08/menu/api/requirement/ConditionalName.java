@@ -7,17 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ConditionalName {
-
-    private final String name;
-    private final List<Permissible> permissibles;
-    private final int priority;
-
-    public ConditionalName(String name, List<Permissible> permissibles, int priority) {
-        this.name = name;
-        this.permissibles = permissibles;
-        this.priority = priority;
-    }
+public record ConditionalName(String name, List<Permissible> permissibles, int priority) {
 
     /**
      * Retrieves the name of the conditional name.
@@ -26,7 +16,8 @@ public class ConditionalName {
      *
      * @return the name of the conditional name.
      */
-    public String getName() {
+    @Override
+    public String name() {
         return this.name;
     }
 
@@ -38,7 +29,8 @@ public class ConditionalName {
      *
      * @return a list of all permissibles associated with this conditional name.
      */
-    public List<Permissible> getPermissibles() {
+    @Override
+    public List<Permissible> permissibles() {
         return this.permissibles;
     }
 
@@ -50,7 +42,8 @@ public class ConditionalName {
      *
      * @return the priority of this conditional name.
      */
-    public int getPriority() {
+    @Override
+    public int priority() {
         return this.priority;
     }
 
@@ -69,7 +62,7 @@ public class ConditionalName {
      * @return true if the player has permission to access the menu, and false
      * otherwise.
      */
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders){
+    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
         return this.permissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventoryEngine, placeholders));
     }
 }

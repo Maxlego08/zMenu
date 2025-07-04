@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.api.exceptions;
 
+import java.io.Serial;
+
 public class InventoryFileNotFound extends InventoryException {
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = 5794114572465101305L;
 
     /**

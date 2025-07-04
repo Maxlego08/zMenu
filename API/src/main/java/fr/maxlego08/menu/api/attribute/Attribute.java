@@ -84,8 +84,8 @@ public class Attribute implements IAttribute {
 	}
 
 	public static final class Builder {
-		Attribute.Type type;
-		double amount;
+		final Attribute.Type type;
+		final double amount;
 		UUID uuid = java.util.UUID.randomUUID();
 		String name = "zmenu:modifier";
 		EquipmentSlot slot = null;

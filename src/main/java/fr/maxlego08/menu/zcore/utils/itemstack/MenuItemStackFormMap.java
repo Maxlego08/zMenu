@@ -43,8 +43,7 @@ public class MenuItemStackFormMap {
         List<String> lore = accessor.getStringList("lore");
         if (lore.isEmpty()) {
             Object object = accessor.getObject("lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
+            if (object instanceof String loreString) {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }
@@ -75,11 +74,11 @@ public class MenuItemStackFormMap {
                 }
 
                 Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments(enchant);
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
                 }
 
-                enchantments.put(optional.get().getEnchantment(), level);
+                enchantments.put(optional.get().enchantment(), level);
 
             } catch (ItemEnchantException e) {
                 e.printStackTrace();
