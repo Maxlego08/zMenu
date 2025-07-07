@@ -42,6 +42,14 @@
 
 # Unreleased
 
+# 1.1.0.1
+
+- Added player target with inventory name [#169](https://github.com/Maxlego08/zMenu/pull/169)
+- Added player data convert with ``/zm player convert``, convert old JSON data to SQL
+- Update to last [CurrenciesAPI](https://github.com/GroupeZ-dev/CurrenciesAPI) version
+- Use EntityScheduler instead of RegionScheduler [#168](https://github.com/Maxlego08/zMenu/pull/168)
+- Fix items attributes
+
 # 1.1.0.0
 
 - Codebase structure overhaul: the project now uses Gradle. This major change has enabled numerous modifications and improvements to the API. The API is now cleaner, more efficient, and easier to use. **You will need to update all your plugins that use zMenu at the same time** to avoid compatibility issues.
