@@ -80,10 +80,12 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             }
 
             String inventoryName = this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage);
+            Player targetPlayer = getTargetPlayer();
+
             if (this.inventory.getType() == InventoryType.CHEST) {
-                super.createMetaInventory(super.papi(placeholders.parse(inventoryName), player, false), this.inventory.size());
+                super.createMetaInventory(super.papi(placeholders.parse(inventoryName), targetPlayer, false), this.inventory.size());
             } else {
-                super.createMetaInventory(super.papi(placeholders.parse(inventoryName), player, false), this.inventory.getType());
+                super.createMetaInventory(super.papi(placeholders.parse(inventoryName), targetPlayer, false), this.inventory.getType());
             }
             // Display fill items
             if (this.inventory.getFillItemStack() != null) {
