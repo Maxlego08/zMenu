@@ -153,7 +153,7 @@ public abstract class PerformButton extends SlotButton {
                     String finalCommand = command;
                     Runnable runnable = () -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
                     if (plugin.isFolia()) {
-                        if (executor instanceof Player) scheduler.runAtLocation(((Player) executor).getLocation(), w -> runnable.run());
+                        if (executor instanceof Player) scheduler.runAtEntity(((Player) executor), w -> runnable.run());
                         else scheduler.runNextTick(w -> runnable.run());
                     } else runnable.run();
                 }
