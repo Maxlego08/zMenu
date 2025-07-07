@@ -108,6 +108,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         inventory.setUpdateInterval(configuration.getInt(path + "update_interval", 1) * 1000);
         inventory.setClearInventory(false);
         inventory.setFile(file);
+        inventory.setTargetPlayerNamePlaceholder("%player_name%");
 
         // Open requirement
         List<Action> actions = new ArrayList<>();
