@@ -16,6 +16,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -57,7 +58,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, String[] args) {
         for (VCommand command : this.commands) {
             if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
                 if ((args.length == 0 || command.isIgnoreParent()) && command.getParent() == null) {
@@ -145,7 +146,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String str, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, String[] args) {
 
         for (VCommand command : commands) {
 
@@ -181,7 +182,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                     }
                 }
             }
-            return tabCompleter.size() == 0 ? null : tabCompleter;
+            return tabCompleter.isEmpty() ? null : tabCompleter;
 
         } else if (type.equals(CommandType.SUCCESS)) {
             return command.toTab(this.plugin, sender, args);
@@ -212,15 +213,12 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public void registerCommand(fr.maxlego08.menu.api.command.Command command) {
-        this.registerCommand(command.getPlugin(), command.getCommand(), new CommandInventory(this.plugin, command, false), command.getAliases());
+        this.registerCommand(command.plugin(), command.command(), new CommandInventory(this.plugin, command, false), command.aliases());
     }
 
     public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {
 
         Optional<VCommand> optional = this.commands.stream().filter(e -> e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command)).findFirst();
-        if (optional.isPresent()) {
-            VCommand vCommand = optional.get();
-            this.commands.remove(vCommand);
-        }
+        optional.ifPresent(this.commands::remove);
     }
 }

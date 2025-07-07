@@ -23,7 +23,7 @@ public class BackAction extends Action {
         List<Inventory> oldInventories = inventory.getOldInventories();
 
         if (!oldInventories.isEmpty()) {
-            Inventory currentInventory = oldInventories.get(oldInventories.size() - 1);
+            Inventory currentInventory = oldInventories.getLast();
             oldInventories.remove(currentInventory);
 
             inventory.getButtons().forEach(btn -> btn.onBackClick(player, null, inventory, oldInventories, currentInventory, 0));

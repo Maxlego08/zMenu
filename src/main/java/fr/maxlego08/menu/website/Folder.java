@@ -1,27 +1,12 @@
 package fr.maxlego08.menu.website;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Folder {
-    private final int id;
-    private final String name;
-    private final int userId;
-    private final Integer parentId;
-    private final String createdAt;
-    private final String updatedAt;
-    private final List<Inventory> inventories;
-
-    public Folder(int id, String name, int userId, Integer parentId, String createdAt, String updatedAt, List<Inventory> inventories) {
-        this.id = id;
-        this.name = name;
-        this.userId = userId;
-        this.parentId = parentId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.inventories = inventories;
-    }
+public record Folder(int id, String name, int userId, Integer parentId, String createdAt, String updatedAt, List<Inventory> inventories) {
 
     public static Folder fromMap(Map<String, Object> map) {
         int id = ((Number) map.get("id")).intValue();
@@ -42,36 +27,8 @@ public class Folder {
         return new Folder(id, name, userId, parentId, createdAt, updatedAt, inventories);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public Integer getParentId() {
-        return parentId;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public List<Inventory> getInventories() {
-        return inventories;
-    }
-
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Folder{" +
                 "id=" + id +
                 ", name='" + name + '\'' +

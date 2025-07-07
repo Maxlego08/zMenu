@@ -19,10 +19,10 @@ public abstract class VCommand extends Arguments {
 
     protected final ZMenuPlugin plugin;
     protected VCommand parent;
-    protected List<VCommand> subVCommands = new ArrayList<>();
+    protected final List<VCommand> subVCommands = new ArrayList<>();
     protected CommandSender sender;
     protected Player player;
-    protected Map<Integer, CollectionBiConsumer> tabCompletions = new HashMap<>();
+    protected final Map<Integer, CollectionBiConsumer> tabCompletions = new HashMap<>();
     private String permission;
     private String denyMessage;
     private final List<String> subCommands = new ArrayList<>();
@@ -258,7 +258,7 @@ public abstract class VCommand extends Arguments {
      * @return first command
      */
     public String getFirst() {
-        return this.subCommands.get(0);
+        return this.subCommands.getFirst();
     }
 
     //
@@ -324,21 +324,25 @@ public abstract class VCommand extends Arguments {
      */
     private String generateDefaultSyntax(String syntax) {
 
-        String tmpString = subCommands.get(0);
+        String tmpString = subCommands.getFirst();
 
-        boolean update = syntax.equals("");
+        boolean update = syntax.isEmpty();
 
-        if (requireArgs.size() != 0 && update) {
+        if (!requireArgs.isEmpty() && update) {
+            StringBuilder syntaxBuilder = new StringBuilder(syntax);
             for (String requireArg : requireArgs) {
                 requireArg = "<" + requireArg + ">";
-                syntax += " " + requireArg;
+                syntaxBuilder.append(" ").append(requireArg);
             }
+            syntax = syntaxBuilder.toString();
         }
-        if (optionalArgs.size() != 0 && update) {
+        if (!optionalArgs.isEmpty() && update) {
+            StringBuilder syntaxBuilder = new StringBuilder(syntax);
             for (String optionalArg : optionalArgs) {
                 optionalArg = "[<" + optionalArg + ">]";
-                syntax += " " + optionalArg;
+                syntaxBuilder.append(" ").append(optionalArg);
             }
+            syntax = syntaxBuilder.toString();
         }
 
         tmpString += syntax;
@@ -508,13 +512,13 @@ public abstract class VCommand extends Arguments {
     protected List<String> generateList(List<String> defaultList, String startWith, Tab tab) {
         List<String> newList = new ArrayList<>();
         for (String str : defaultList) {
-            if (startWith.length() == 0
+            if (startWith.isEmpty()
                     || (tab.equals(Tab.START) ? str.toLowerCase().startsWith(startWith.toLowerCase())
                     : str.toLowerCase().contains(startWith.toLowerCase()))) {
                 newList.add(str);
             }
         }
-        return newList.size() == 0 ? null : newList;
+        return newList.isEmpty() ? null : newList;
     }
 
     /**

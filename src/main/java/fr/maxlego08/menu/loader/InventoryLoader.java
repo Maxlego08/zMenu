@@ -122,7 +122,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         String loadString;
         inventory.setTranslatedNames(translatedDisplayName);*/
 
-        List<InventoryOption> inventoryOptions = this.plugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).collect(Collectors.toList());
+        List<InventoryOption> inventoryOptions = this.plugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
         for (InventoryOption inventoryOption : inventoryOptions) {
             inventoryOption.loadInventory(inventory, file, configuration, this.plugin.getInventoryManager(), this.plugin.getButtonManager());
         }

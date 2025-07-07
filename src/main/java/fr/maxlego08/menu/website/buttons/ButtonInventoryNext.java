@@ -32,16 +32,16 @@ public class ButtonInventoryNext extends Button {
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         Optional<Folder> optional = manager.getCurrentFolder();
-        if (!optional.isPresent()) return;
+        if (optional.isEmpty()) return;
 
         Folder folder = optional.get();
-        List<Inventory> inventories = folder.getInventories();
+        List<Inventory> inventories = folder.inventories();
 
         int inventoryPage = manager.getInventoryPage();
         int maxPage = (inventories.size() / 34) + 1;
 
         if (inventoryPage < maxPage) {
-            manager.openInventoriesInventory(player, inventoryPage + 1, manager.getFolderPage(), folder.getId());
+            manager.openInventoriesInventory(player, inventoryPage + 1, manager.getFolderPage(), folder.id());
         }
     }
 }

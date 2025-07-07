@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.api.exceptions;
 
+import java.io.Serial;
+
 public class ButtonAlreadyRegisterException extends Error {
 
     /**
      *
      */
+    @Serial
     private static final long serialVersionUID = -2426306444018640211L;
 
     /**

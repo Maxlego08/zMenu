@@ -39,7 +39,7 @@ public class ZHomeButton extends HomeButton {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
         if (!oldInventories.isEmpty()) {
-            this.inventory = oldInventories.get(0);
+            this.inventory = oldInventories.getFirst();
         }
     }
 

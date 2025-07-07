@@ -54,7 +54,7 @@ public class LocationAdapter extends TypeAdapter<Location> {
     }
 
     private String getRaw(Location location) {
-        Map<String, Object> serial = new HashMap<String, Object>();
+        Map<String, Object> serial = new HashMap<>();
         serial.put(NAME, location.getWorld().getName());
         serial.put(X, Double.toString(location.getX()));
         serial.put(Y, Double.toString(location.getY()));
