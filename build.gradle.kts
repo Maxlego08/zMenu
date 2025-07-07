@@ -1,13 +1,13 @@
-import org.gradle.internal.impldep.org.apache.commons.codec.digest.DigestUtils.sha
 import org.gradle.kotlin.dsl.invoke
 
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "9.0.0-beta11"
+    id("re.alwyn974.groupez.repository") version "1.0.0"
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.0.0"
+version = "1.1.0.1"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -17,6 +17,7 @@ extra.set("sha", System.getProperty("github.sha"))
 allprojects {
     apply(plugin = "java-library")
     apply(plugin = "com.gradleup.shadow")
+    apply(plugin = "re.alwyn974.groupez.repository")
 
     group = "fr.maxlego08.menu"
     version = rootProject.version
@@ -25,18 +26,6 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
-        maven {
-            name = "groupezReleases"
-            url = uri("https://repo.groupez.dev/releases")
-        }
-        maven {
-            name = "groupezSnapshots"
-            url = uri("https://repo.groupez.dev/snapshots")
-        }
-        maven {
-            name = "groupezPrivate"
-            url = uri("https://repo.groupez.dev/private")
-        }
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -95,10 +84,11 @@ allprojects {
         compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
 
-        implementation("com.github.cryptomorin:XSeries:13.2.0")
-        implementation("com.github.GroupeZ-dev:CurrenciesAPI:1.0.8")
+        implementation("fr.maxlego08.sarah:sarah:1.18")
+        implementation("fr.traqueur.currencies:currenciesapi:1.0.9")
         implementation("com.github.technicallycoded:FoliaLib:0.4.4")
-        implementation("com.github.Maxlego08:Sarah:1.17")
+
+        implementation("com.github.cryptomorin:XSeries:13.2.0")
         implementation("net.objecthunter:exp4j:0.4.8")
     }
 }

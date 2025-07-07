@@ -10,19 +10,12 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
-import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
 import fr.maxlego08.menu.zcore.utils.GlobalDatabaseConfiguration;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
-import fr.maxlego08.sarah.DatabaseConfiguration;
-import fr.maxlego08.sarah.DatabaseConnection;
-import fr.maxlego08.sarah.HikariDatabaseConnection;
-import fr.maxlego08.sarah.MigrationManager;
-import fr.maxlego08.sarah.RequestHelper;
-import fr.maxlego08.sarah.SchemaBuilder;
-import fr.maxlego08.sarah.SqliteConnection;
+import fr.maxlego08.sarah.*;
 import fr.maxlego08.sarah.database.DatabaseType;
 import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.logger.JULogger;
@@ -131,18 +124,20 @@ public class ZStorageManager implements StorageManager {
         var iterator = this.cache.get(PlayerOpenInventoryEvent.class).iterator();
         while (iterator.hasNext()) {
             var event = iterator.next();
-            schemas.add(SchemaBuilder.insert(Tables.PLAYER_OPEN_INVENTORIES, table -> {
-                table.uuid("player_id", event.getPlayer().getUniqueId());
-                table.string("plugin", event.getInventory().getPlugin().getName());
-                table.string("inventory", event.getInventory().getFileName());
-                table.bigInt("page", event.getPage());
-                table.string("old_inventories",
-                        event.getOldInventories().stream()
-                                .filter(Objects::nonNull)
-                                .map(Inventory::getFileName)
-                                .collect(Collectors.joining(","))
-                );
-            }));
+            if (event != null) {
+                schemas.add(SchemaBuilder.insert(Tables.PLAYER_OPEN_INVENTORIES, table -> {
+                    table.uuid("player_id", event.getPlayer().getUniqueId());
+                    table.string("plugin", event.getInventory().getPlugin().getName());
+                    table.string("inventory", event.getInventory().getFileName());
+                    table.bigInt("page", event.getPage());
+                    table.string("old_inventories",
+                            event.getOldInventories().stream()
+                                    .filter(Objects::nonNull)
+                                    .map(Inventory::getFileName)
+                                    .collect(Collectors.joining(","))
+                    );
+                }));
+            }
             iterator.remove();
         }
         this.requestHelper.insertMultiple(schemas);

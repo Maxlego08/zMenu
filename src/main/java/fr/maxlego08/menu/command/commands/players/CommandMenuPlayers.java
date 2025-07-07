@@ -22,6 +22,7 @@ public class CommandMenuPlayers extends VCommand {
         this.addSubCommand(new CommandMenuPlayersSubtract(plugin));
         this.addSubCommand(new CommandMenuPlayersAdd(plugin));
         this.addSubCommand(new CommandMenuPlayersRemoveAll(plugin));
+        this.addSubCommand(new CommandMenuPlayersConvert(plugin));
     }
 
     @Override

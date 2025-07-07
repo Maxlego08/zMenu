@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.players;
 
+import org.bukkit.command.CommandSender;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,4 +71,6 @@ public interface DataManager {
     List<String> getKeys();
 
     void clearKey(String key);
+
+    void convertOldDatas(CommandSender sender);
 }
