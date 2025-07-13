@@ -158,11 +158,11 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public List<String> getEmptyActions(List<Map<String, Object>> elements) {
-        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> !getActionLoader(type).isPresent()).collect(Collectors.toList());
+        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getActionLoader(type).isEmpty()).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getEmptyPermissible(List<Map<String, Object>> elements) {
-        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> !getPermission(type).isPresent()).collect(Collectors.toList());
+        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getPermission(type).isEmpty()).collect(Collectors.toList());
     }
 }

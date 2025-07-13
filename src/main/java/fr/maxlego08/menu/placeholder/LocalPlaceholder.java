@@ -79,11 +79,11 @@ public class LocalPlaceholder {
 
     public String onRequest(OfflinePlayer offlinePlayer, String string) {
 
-        Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream().filter(e -> string.startsWith(e.getStartWith())).findFirst();
+        Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream().filter(e -> string.startsWith(e.startWith())).findFirst();
         if (optional.isPresent()) {
 
             AutoPlaceholder autoPlaceholder = optional.get();
-            String value = string.replace(autoPlaceholder.getStartWith(), "");
+            String value = string.replace(autoPlaceholder.startWith(), "");
             return autoPlaceholder.accept(offlinePlayer, value);
 
         }

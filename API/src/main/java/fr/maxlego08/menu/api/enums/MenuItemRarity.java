@@ -10,17 +10,12 @@ public enum MenuItemRarity {
     EPIC;
 
     public ItemRarity getItemRarity() {
-        switch (this) {
-            case COMMON:
-                return ItemRarity.COMMON;
-            case UNCOMMON:
-                return ItemRarity.UNCOMMON;
-            case RARE:
-                return ItemRarity.RARE;
-            case EPIC:
-                return ItemRarity.EPIC;
-        }
-        return ItemRarity.COMMON;
+        return switch (this) {
+            case COMMON -> ItemRarity.COMMON;
+            case UNCOMMON -> ItemRarity.UNCOMMON;
+            case RARE -> ItemRarity.RARE;
+            case EPIC -> ItemRarity.EPIC;
+        };
     }
 
 }
