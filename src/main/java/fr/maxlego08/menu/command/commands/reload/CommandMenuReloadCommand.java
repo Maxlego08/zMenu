@@ -38,7 +38,7 @@ public class CommandMenuReloadCommand extends VCommand {
             Command command = optional.get();
             plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
-                return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().getFileName().equals(command.getInventory());
+                return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().getFileName().equals(command.inventory());
             });
 
             Message message = commandManager.reload(command) ? Message.RELOAD_COMMAND_FILE
