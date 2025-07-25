@@ -197,7 +197,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         // Must register after config loads
-        if (!Bukkit.getVersion().contains("1.8")) {
+        if (!Bukkit.getVersion().contains("*")) {
             this.addListener(new SwapKeyListener());
         }
 
