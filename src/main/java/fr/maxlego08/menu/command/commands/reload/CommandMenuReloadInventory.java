@@ -48,7 +48,7 @@ public class CommandMenuReloadInventory extends VCommand {
             Inventory inventory = optional.get();
             plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
-                return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(inventory);
+                return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().equals(inventory);
             });
             inventoryManager.reloadInventory(inventory);
             message(plugin, this.sender, Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
