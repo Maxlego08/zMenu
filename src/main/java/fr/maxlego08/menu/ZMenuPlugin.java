@@ -163,6 +163,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
         /* Add Listener */
+        this.addListener(new SwapKeyListener());
         this.addListener(new AdapterListener(this));
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
@@ -194,11 +195,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) {
             Token.getInstance().load(this.getPersist());
-        }
-
-        // Must register after config loads
-        if (!Bukkit.getVersion().contains("*")) {
-            this.addListener(new SwapKeyListener());
         }
 
         new VersionChecker(this, 253).useLastVersion();
