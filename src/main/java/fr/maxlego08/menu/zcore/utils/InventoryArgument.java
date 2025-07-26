@@ -19,12 +19,14 @@ public class InventoryArgument extends ZUtils {
         if (!this.arguments.isEmpty()) {
             for (int i = 0; i < this.arguments.size(); i++) {
                 String name = String.valueOf(i - 4);
-                String argument = this.arguments.get(i);
+                String argument = papi(this.arguments.get(i), player, true);
 
                 if (argument.contains(":")) {
                     String[] values = argument.split(":", 2);
-                    name = values[0];
-                    argument = values[1];
+                    //name = values[0];
+                    name = papi(values[0], player, true);
+                    //argument = values[1];
+                    argument = papi(values[1], player, true);
                 }
 
                 this.commandManager.setPlayerArgument(player, name, argument);

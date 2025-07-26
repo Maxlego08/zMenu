@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.event;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 public class MenuEvent extends Event {
 
@@ -31,7 +32,7 @@ public class MenuEvent extends Event {
     /**
      * @return the handlers
      */
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlers;
     }
 

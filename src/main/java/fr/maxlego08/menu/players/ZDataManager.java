@@ -69,7 +69,7 @@ public class ZDataManager implements DataManager {
     public Optional<Data> getData(UUID uniqueId, String key) {
 
         Optional<PlayerData> optional = this.getPlayer(uniqueId);
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             return Optional.empty();
         }
 
@@ -85,7 +85,7 @@ public class ZDataManager implements DataManager {
             String playerName = args[2];
             OfflinePlayer offlinePlayer = OfflinePlayerCache.get(playerName);
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 return new ArrayList<>();
             }
 
@@ -152,7 +152,7 @@ public class ZDataManager implements DataManager {
         localPlaceholder.register("player_key_exist_", (offlinePlayer, key) -> {
 
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) return "false";
+            if (optional.isEmpty()) return "false";
 
             PlayerData playerData = optional.get();
             return String.valueOf(playerData.containsKey(key));
@@ -174,7 +174,7 @@ public class ZDataManager implements DataManager {
         localPlaceholder.register("player_is_expired_", (offlinePlayer, key) -> {
 
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (!optional.isPresent()) return "true";
+            if (optional.isEmpty()) return "true";
 
             PlayerData playerData = optional.get();
             Optional<Data> optionalData = playerData.getData(key);
@@ -184,7 +184,7 @@ public class ZDataManager implements DataManager {
 
     private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, ReturnConsumer<Data, String> consumer) {
         Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-        if (!optional.isPresent()) return getDefaultKey(key);
+        if (optional.isEmpty()) return getDefaultKey(key);
 
         PlayerData playerData = optional.get();
         Optional<Data> optionalData = playerData.getData(key);

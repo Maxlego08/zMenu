@@ -253,7 +253,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                     this.folders.add(folder);
                 }
 
-                this.baseFolderId = this.folders.stream().filter(e -> e.getParentId() == -1).map(Folder::getId).findFirst().orElse(-1);
+                this.baseFolderId = this.folders.stream().filter(e -> e.parentId() == -1).map(Folder::id).findFirst().orElse(-1);
 
                 this.plugin.getScheduler().runAtEntity(player, w -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
             } else {
@@ -279,46 +279,46 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     public Optional<Folder> getCurrentFolder() {
-        return this.folders.stream().filter(e -> e.getId() == currentFolderId).findFirst();
+        return this.folders.stream().filter(e -> e.id() == currentFolderId).findFirst();
     }
 
     public Optional<Folder> getFolder(int id) {
-        return this.folders.stream().filter(e -> e.getId() == id).findFirst();
+        return this.folders.stream().filter(e -> e.id() == id).findFirst();
     }
 
     public List<Folder> getFolders(Folder folder) {
-        return this.folders.stream().filter(e -> e.getParentId() == folder.getId()).collect(Collectors.toList());
+        return this.folders.stream().filter(e -> e.parentId() == folder.id()).collect(Collectors.toList());
     }
 
     public void loadPlaceholders() {
         LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
         placeholder.register("folder_name", (player, args) -> {
             Optional<Folder> optional = getCurrentFolder();
-            return optional.isPresent() ? optional.get().getName() : "Not found";
+            return optional.isPresent() ? optional.get().name() : "Not found";
         });
     }
 
     private String getFolderPath(Folder folder, String path) {
-        if (folder.getParentId() == -1) {
+        if (folder.parentId() == -1) {
             return path;
         }
-        Optional<Folder> optional = getFolder(folder.getParentId());
+        Optional<Folder> optional = getFolder(folder.parentId());
         if (optional.isPresent()) {
             Folder parrentFolder = optional.get();
-            return getFolderPath(parrentFolder, folder.getName() + "/" + path);
+            return getFolderPath(parrentFolder, folder.name() + "/" + path);
         }
-        return folder.getName() + "/" + path;
+        return folder.name() + "/" + path;
     }
 
     private File getFolderPath(Inventory inventory) {
-        Optional<Folder> optional = getFolder(inventory.getFolderId());
+        Optional<Folder> optional = getFolder(inventory.folderId());
         return optional.map(folder -> new File(this.plugin.getDataFolder(), "inventories/" + getFolderPath(folder, ""))).orElseGet(() -> new File(this.plugin.getDataFolder(), "inventories"));
     }
 
     public void downloadInventory(Player player, Inventory inventory, boolean forceDownload) {
 
         File folder = getFolderPath(inventory);
-        File file = new File(folder, inventory.getFileName() + ".yml");
+        File file = new File(folder, inventory.fileName() + ".yml");
 
         if (file.exists() && !forceDownload) {
             message(this.plugin, player, Message.WEBSITE_INVENTORY_EXIST);
@@ -326,15 +326,15 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         }
 
         player.closeInventory();
-        message(this.plugin, player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.getFileName());
+        message(this.plugin, player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.fileName());
 
-        HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.getId()), new JsonObject());
+        HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.id()), new JsonObject());
         request.setBearer(Token.token);
         request.setMethod("GET");
 
         folder.mkdirs();
 
-        request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.getFileName()));
+        request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.fileName()));
     }
 
     public void refreshInventories(Player player) {

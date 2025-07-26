@@ -256,4 +256,8 @@ public interface MenuItemStack {
     String getItemModel();
 
     void setItemModel(String itemModel);
+
+    void setEquippedModel(String equippedModel);
+
+    String getEquippedModel();
 }

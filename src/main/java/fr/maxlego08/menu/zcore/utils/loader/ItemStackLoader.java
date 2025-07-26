@@ -79,7 +79,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         ItemMeta meta = item.getItemMeta();
 
         List<String> tmpLore = configuration.getStringList(path + "lore");
-        if (tmpLore.size() != 0) {
+        if (!tmpLore.isEmpty()) {
             List<String> lore = meta.getLore() == null ? new ArrayList<>() : meta.getLore();
             lore.addAll(color(tmpLore));
             meta.setLore(lore);
@@ -95,7 +95,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         if (modelID > 0) meta.setCustomModelData(modelID);
 
         // Permet de charger l'enchantement de l'item
-        if (enchants.size() != 0) {
+        if (!enchants.isEmpty()) {
 
             for (String enchantString : enchants) {
 
@@ -109,7 +109,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                     int level = 0;
                     String enchant = splitEnchant[0];
                     try {
-                        level = Integer.valueOf(splitEnchant[1]);
+                        level = Integer.parseInt(splitEnchant[1]);
                     } catch (NumberFormatException e) {
                         throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
                     }
@@ -134,7 +134,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         List<String> flags = configuration.getStringList(path + "flags");
 
         // Permet de charger les diffÃ©rents flags
-        if (flags.size() != 0) {
+        if (!flags.isEmpty()) {
 
             for (String flagString : flags) {
 
@@ -188,7 +188,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                 configuration.set(path + "lore", colorReverse(Objects.requireNonNull(meta.getLore())));
             }
 
-            if (meta.getItemFlags().size() != 0) {
+            if (!meta.getItemFlags().isEmpty()) {
                 configuration.set(path + "flags", meta.getItemFlags().stream().map(Enum::name).collect(Collectors.toList()));
             }
 

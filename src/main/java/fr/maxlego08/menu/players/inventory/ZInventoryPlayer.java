@@ -43,9 +43,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     @Override
     public String toInventoryString() {
         StringBuilder builder = new StringBuilder();
-        this.items.forEach((slot, itemStack) -> {
-            builder.append(slot).append(":").append(itemStack).append(";");
-        });
+        this.items.forEach((slot, itemStack) -> builder.append(slot).append(":").append(itemStack).append(";"));
         String result = builder.toString();
         return result.isEmpty() ? result : result.substring(0, result.length() - 1);
     }

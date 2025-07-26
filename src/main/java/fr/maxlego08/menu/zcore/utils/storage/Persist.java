@@ -162,12 +162,10 @@ public class Persist extends ZUtils {
     }
 
     // LOAD BY TYPE
-    @SuppressWarnings("unchecked")
     public <T> T load(Type typeOfT, String name) {
         return load(typeOfT, getFile(name));
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T load(Type typeOfT, File file) {
         String content = DiscUtils.readCatch(file);
         if (content == null) {

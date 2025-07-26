@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.dupe;
 
-import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.dupe.DupeItem;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import org.bukkit.Material;

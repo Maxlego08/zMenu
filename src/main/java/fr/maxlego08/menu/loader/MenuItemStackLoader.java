@@ -8,22 +8,14 @@ import fr.maxlego08.menu.api.attribute.IAttribute;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
-import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
+import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
+import fr.maxlego08.menu.api.itemstack.*;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
-import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.api.itemstack.Banner;
-import fr.maxlego08.menu.api.itemstack.Firework;
-import fr.maxlego08.menu.api.itemstack.LeatherArmor;
-import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,12 +27,7 @@ import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -117,8 +104,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         List<String> lore = configuration.getStringList(path + "lore");
         if (lore.isEmpty()) {
             Object object = configuration.get(path + "lore", null);
-            if (object instanceof String) {
-                String loreString = (String) object;
+            if (object instanceof String loreString) {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }
@@ -211,11 +197,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 }
 
                 Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments(enchant);
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
                 }
 
-                enchantments.put(optional.get().getEnchantment(), level);
+                enchantments.put(optional.get().enchantment(), level);
 
             } catch (ItemEnchantException e) {
                 e.printStackTrace();
@@ -440,7 +426,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (rarityString != null) {
             menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
         }
-        String tooltypestyleString = configuration.getString(path+"tooltip-style", null);
+        String tooltypestyleString = configuration.getString(path + "tooltip-style", null);
         if (tooltypestyleString != null) {
             menuItemStack.setToolTipStyle(tooltypestyleString);
         }
@@ -448,7 +434,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (itemModelString != null) {
             menuItemStack.setItemModel(itemModelString);
         }
-
+        String equippedModel = configuration.getString(path + "equipped-model", null);
+        if (equippedModel != null) {
+            menuItemStack.setEquippedModel(equippedModel);
+        }
     }
 
     private void loadTrims(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
