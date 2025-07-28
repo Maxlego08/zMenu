@@ -204,15 +204,13 @@ public class VInventoryManager extends ListenerAdapter {
     }
 
     public void close(Predicate<VInventory> predicate) {
-        Bukkit.getOnlinePlayers().stream().filter(player -> {
+        Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-            return holder instanceof VInventory;
-        }).map(player -> (VInventory) CompatibilityUtil.getTopInventory(player).getHolder()).filter(predicate).filter(Objects::nonNull).forEach(vInventory -> {
-            Player player = vInventory.getPlayer();
-            if (player.isOnline()) {
-                player.closeInventory();
+            if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
+                if (player.isOnline())
+                    player.closeInventory();
             }
-        });
+        }));
     }
 
     @Override
