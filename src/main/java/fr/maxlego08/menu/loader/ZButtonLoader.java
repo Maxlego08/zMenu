@@ -102,6 +102,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         ButtonLoader loader = optional.get();
         Button button = loader.load(configuration, path, defaultButtonValue);
+
+        if (button == null) {
+            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
+        }
+
         button.setPlugin(this.plugin);
 
         int slot;
