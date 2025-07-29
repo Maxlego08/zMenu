@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -153,13 +154,17 @@ public abstract class Button extends PlaceholderButton {
         }
     }
 
-    public void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {}
+    public void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
+    }
 
-    public void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {}
+    public void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
+    }
 
-    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {}
+    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
+    }
 
-    public void onInventoryClose(Player player, InventoryEngine inventory) {}
+    public void onInventoryClose(Player player, InventoryEngine inventory) {
+    }
 
     public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
 
@@ -318,9 +323,11 @@ public abstract class Button extends PlaceholderButton {
         this.actions = actions;
     }
 
-    public void onDrag(InventoryDragEvent event, Player player, InventoryEngine inventoryDefault) {}
+    public void onDrag(InventoryDragEvent event, Player player, InventoryEngine inventoryDefault) {
+    }
 
-    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine inventoryDefault) {}
+    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine inventoryDefault) {
+    }
 
     public boolean isUseCache() {
         return this.useCache;
@@ -402,15 +409,51 @@ public abstract class Button extends PlaceholderButton {
     }
 
 
+    /**
+     * Returns whether this button is displayed in the player's inventory.
+     *
+     * @return true if this button is displayed in the player's inventory, false otherwise
+     */
     public boolean isPlayerInventory() {
         return this.isInPlayerInventory;
     }
 
+    /**
+     * Sets whether this button is displayed in the player's inventory.
+     *
+     * @param inPlayerInventory true if this button is displayed in the player's inventory, false otherwise
+     */
     public void setPlayerInventory(boolean inPlayerInventory) {
         isInPlayerInventory = inPlayerInventory;
     }
 
+    /**
+     * Returns the button to display in the inventory. This method is called every
+     * time the inventory is updated.
+     * The default implementation of this method returns the button itself.
+     *
+     * @param inventoryEngine the inventory engine
+     * @param player          the player to display the button for
+     * @return the button to display
+     */
     public Button getDisplayButton(InventoryEngine inventoryEngine, Player player) {
         return this;
+    }
+
+    /**
+     * Builds the item stack for the given player, with the owner of the skull
+     * being the given offline player, and the given placeholders.
+     *
+     * @param player       the player to build the item stack for
+     * @param owner        the owner of the skull
+     * @param placeholders the placeholders to use
+     * @return the built item stack
+     */
+    protected ItemStack buildAsOwner(Player player, OfflinePlayer owner, Placeholders placeholders) {
+        ItemStack itemStack = getItemStack().build(player, false, placeholders);
+        SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+        skullMeta.setOwningPlayer(owner);
+        itemStack.setItemMeta(skullMeta);
+        return itemStack;
     }
 }
