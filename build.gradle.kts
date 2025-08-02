@@ -30,6 +30,10 @@ allprojects {
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven(url = "https://libraries.minecraft.net/")
+        maven {
+            name = "tcoded-releases"
+            url = uri("https://repo.tcoded.com/releases")
+        }
     }
 
     java {
@@ -80,13 +84,13 @@ allprojects {
     }
 
     dependencies {
-        compileOnly("org.spigotmc:spigot-api:1.21.5-R0.1-SNAPSHOT")
+        compileOnly("org.spigotmc:spigot-api:1.21.8-R0.1-SNAPSHOT")
         compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
 
         implementation("fr.maxlego08.sarah:sarah:1.18")
         implementation("fr.traqueur.currencies:currenciesapi:1.0.9")
-        implementation("com.github.technicallycoded:FoliaLib:0.4.4")
+        implementation("com.tcoded:FoliaLib:0.5.1")
 
         implementation("com.github.cryptomorin:XSeries:13.2.0")
         implementation("net.objecthunter:exp4j:0.4.8")
