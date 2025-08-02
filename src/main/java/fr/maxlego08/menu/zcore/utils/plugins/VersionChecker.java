@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.plugins;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Bukkit;
@@ -45,7 +46,6 @@ public class VersionChecker extends ZUtils implements Listener {
      */
     public void useLastVersion() {
 
-        Bukkit.getPluginManager().registerEvents(this, this.plugin); // Register
         // event
 
         String pluginVersion = plugin.getDescription().getVersion();
@@ -58,6 +58,8 @@ public class VersionChecker extends ZUtils implements Listener {
             this.useLastVersion = atomicBoolean.get();
             if (atomicBoolean.get()) Logger.info("No update available.");
             else {
+                if (!Config.enableUpdateCheck) return;
+                Bukkit.getPluginManager().registerEvents(this, this.plugin); // Register
                 Logger.info("New update available. Your version: " + pluginVersion + ", latest version: " + version);
                 Logger.info("Download plugin here: " + String.format(URL_RESOURCE, this.pluginID));
             }
