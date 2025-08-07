@@ -85,7 +85,7 @@ allprojects {
         compileOnly("me.clip:placeholderapi:2.11.6")
 
         implementation("fr.maxlego08.sarah:sarah:1.18")
-        implementation("fr.traqueur.currencies:currenciesapi:1.0.9")
+        implementation("fr.traqueur.currencies:currenciesapi:1.0.10")
         implementation("com.github.technicallycoded:FoliaLib:0.4.4")
 
         implementation("com.github.cryptomorin:XSeries:13.2.0")
