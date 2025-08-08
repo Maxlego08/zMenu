@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.api.configuration;
 
+
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,10 +18,10 @@ public class Config {
     public static boolean enableDebug = false;
 
     // Enable debug time, allows you to display the code execution time in nanosecond, perfect for testing the effectiveness of the plugin.
-    public static boolean enableDebugTime = false;
+    public static boolean enableDebugTime= false;
 
     // Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
-    public static boolean enableInformationMessage = true;
+    public static boolean enableInformationMessage= true;
 
     // Enable save or load file log in console
     public static boolean enableLogStorageFile = false;
@@ -76,6 +78,10 @@ public class Config {
     public static boolean enableDownloadCommand = false;
     public static boolean enablePlayerOpenInventoryLogs = true;
 
+    public static boolean enableUpdateCheck = true;
+
+    public boolean isUpdated = false;
+
     /**
      * static Singleton instance.
      */
@@ -102,34 +108,37 @@ public class Config {
         return instance;
     }
 
-    public void load(FileConfiguration configuration) {
+    public void load(YamlConfiguration config, File file) {
 
-        enableDebug = configuration.getBoolean("enable-debug");
-        enableDebugTime = configuration.getBoolean("enable-debug-time");
-        enableInformationMessage = configuration.getBoolean("enable-information-message");
-        enableLogStorageFile = configuration.getBoolean("enable-log-storage-file");
-        enableOpenMessage = configuration.getBoolean("enable-open-message");
-        enableMiniMessageFormat = configuration.getBoolean("enable-mini-message-format");
-        enablePlayerCommandInChat = configuration.getBoolean("enable-player-command-in-chat");
-        enableFastEvent = configuration.getBoolean("enable-fast-event");
+        enableDebug = getOrAdd(config,"enable-debug",false);
 
-        secondsSavePlayerData = configuration.getInt("seconds-save-player-data");
-        secondsSavePlayerInventories = configuration.getInt("seconds-save-player-inventories");
+        enableDebugTime = getOrAdd(config,"enable-debug-time",false);
+
+        enableInformationMessage = getOrAdd(config,"enable-information-message",true);
+
+        enableLogStorageFile = getOrAdd(config, "enable-log-storage-file", false);
+        enableOpenMessage = getOrAdd(config, "enable-open-message",true);
+        enableMiniMessageFormat = getOrAdd(config,"enable-mini-message-format", true);
+        enablePlayerCommandInChat = getOrAdd(config, "enable-player-command-in-chat", false);
+        enableFastEvent = getOrAdd(config,"enable-fast-event", false);
+
+        secondsSavePlayerData = getOrAdd(config,"seconds-save-player-data",600);
+        secondsSavePlayerInventories = getOrAdd(config, "seconds-save-player-inventories", 600);
         
-        mainMenu = configuration.getString("main-menu");
-        useSwapItemOffHandKeyToOpenMainMenu = configuration.getBoolean("use-swap-item-off-hand-key-to-open-main-menu");
-        useSwapItemOffHandKeyToOpenMainMenuNeedsShift = configuration.getBoolean("use-swap-item-off-hand-key-to-open-main-menu-needs-shift");
+        mainMenu = getOrAdd(config, "main-menu", "example");
+        useSwapItemOffHandKeyToOpenMainMenu = getOrAdd(config,"use-swap-item-off-hand-key-to-open-main-menu", false);
+        useSwapItemOffHandKeyToOpenMainMenuNeedsShift = getOrAdd(config,"use-swap-item-off-hand-key-to-open-main-menu-needs-shift", false);
 
-        specifyPathMenus = configuration.getStringList("specify-path-menus");
-        generateDefaultFile = configuration.getBoolean("generate-default-file");
-        disableDoubleClickEvent = configuration.getBoolean("disable-double-click-event");
+        specifyPathMenus = getOrAdd(config,"specify-path-menus", new ArrayList<>());
+        generateDefaultFile = getOrAdd(config,"generate-default-file", true);
+        disableDoubleClickEvent = getOrAdd(config,"disable-double-click-event", true);
 
-        enableAntiDupe = configuration.getBoolean("enable-anti-dupe");
-        enableAntiDupeDiscordNotification = configuration.getBoolean("enable-anti-dupe-discord-notification");
-        antiDupeDiscordWebhookUrl = configuration.getString("anti-dupe-discord-webhook-url");
-        antiDupeMessage = configuration.getString("anti-dupe-message");
+        enableAntiDupe = getOrAdd(config,"enable-anti-dupe", true);
+        enableAntiDupeDiscordNotification = getOrAdd(config,"enable-anti-dupe-discord-notification", false);
+        antiDupeDiscordWebhookUrl = getOrAdd(config,"anti-dupe-discord-webhook-url", "https://discord.com/api/webhooks/<your discord webhook url>");
+        antiDupeMessage = getOrAdd(config,"anti-dupe-message", "**%player%** use %amount% %itemname% which comes from zMenu. Removing it !");
 
-        allClicksType = configuration.getStringList("all-clicks-type").stream()
+        allClicksType = getOrAdd(config,"all-clicks-type",Arrays.asList("MIDDLE","RIGHT","LEFT","SHIFT_RIGHT","SHIFT_LEFT")).stream()
                 .map(name -> {
                     try {
                         return ClickType.valueOf(name);
@@ -141,15 +150,39 @@ public class Config {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        enableCacheItemStack = configuration.getBoolean("enable-cache-item-stack");
-        enableCooldownClick = configuration.getBoolean("enable-cooldown-click");
-        cooldownClickMilliseconds = configuration.getLong("cooldown-click-milliseconds");
+        enableCacheItemStack = getOrAdd(config,"enable-cache-item-stack", true);
+        enableCooldownClick = getOrAdd(config,"enable-cooldown-click", true);
+        cooldownClickMilliseconds = getOrAdd(config,"cooldown-click-milliseconds", (long) 100);
 
-        cachePlaceholderAPI = configuration.getLong("cache-placeholder-api");
-        enableCachePlaceholderAPI = configuration.getBoolean("enable-cache-placeholder-api");
+        cachePlaceholderAPI = getOrAdd(config, "cache-placeholder-api",(long) 20);
+        enableCachePlaceholderAPI = getOrAdd(config,"enable-cache-placeholder-api", false);
 
-        enableDownloadCommand = configuration.getBoolean("enable-download-command");
-        enablePlayerOpenInventoryLogs = configuration.getBoolean("enable-player-open-inventory-logs");
+        enableDownloadCommand = getOrAdd(config,"enable-download-command", false);
+        enablePlayerOpenInventoryLogs = getOrAdd(config,"enable-player-open-inventory-logs", true);
+
+        enableUpdateCheck = getOrAdd(config,"enable-update-check", true);
+
+        if (isUpdated){
+            try {
+                config.save(file);
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("[zMenu] Failed to save config file: " + file.getName()+ ". Exception: " + e.getMessage());
+            }
+        }
+        isUpdated = false;
     }
 
+
+    private <T> T getOrAdd(YamlConfiguration yamlConfiguration, String path, T defaultValue) {
+        if (!yamlConfiguration.contains(path)) {
+            yamlConfiguration.set(path, defaultValue);
+            isUpdated = true;
+            return defaultValue;
+        }
+        Object value = yamlConfiguration.get(path);
+        if (defaultValue != null && defaultValue.getClass().isInstance(value)) {
+            return (T) value;
+        }
+        return defaultValue;
+    }
 }

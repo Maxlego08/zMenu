@@ -127,7 +127,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.preEnable();
 
         this.saveDefaultConfig();
-        Config.getInstance().load(getConfig());
+        this.reloadFileConfiguration();
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
@@ -439,6 +439,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         configuration.getKeys(false).forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
+    }
+
+    public void reloadFileConfiguration(){
+        File configFile = new File(this.getDataFolder(), "config.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        Config.getInstance().load(config, configFile);
     }
 
     @Override
