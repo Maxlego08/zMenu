@@ -17,6 +17,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
@@ -56,6 +57,7 @@ import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
+import fr.maxlego08.menu.zcore.utils.toast.ToastManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -93,6 +95,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
+    private final ToastHelper toastHelper = new ToastManager(this);
     private CommandMenu commandMenu;
     private PlatformScheduler scheduler;
     private DupeManager dupeManager;
@@ -439,10 +442,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     @Override
-    public <T> T getProvider(Class<T> classz) {
-        RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classz);
+    public <T> T getProvider(Class<T> classPath) {
+        RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classPath);
         if (provider == null) {
-            getLogger().info("Unable to retrieve the provider " + classz);
+            getLogger().info("Unable to retrieve the provider " + classPath);
             return null;
         }
         return provider.getProvider();
@@ -482,5 +485,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
                 getLogger().info("Use ClassicMeta");
             }
         }
+    }
+
+    @Override
+    public ToastHelper getToastHelper() {
+        return this.toastHelper;
     }
 }
