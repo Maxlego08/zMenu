@@ -162,7 +162,7 @@ public abstract class MessageUtils extends LocationUtils {
     }
 
     protected String getCenteredMessage(String message) {
-        if (message == null || message.equals("")) return "";
+        if (message == null || message.isEmpty()) return "";
         message = ChatColor.translateAlternateColorCodes('&', message);
 
         int messagePxSize = 0;

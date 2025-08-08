@@ -45,9 +45,7 @@ public class ButtonMarketplace extends Button {
                 OpenLink openLink = new ZOpenLink(this.plugin, ClickEvent.Action.OPEN_URL, "§7" + resource.getName(), resource.getLink(), resource.getName(), Collections.singletonList("§7Click here"));
                 openLink.send(player, Collections.singletonList("§fResource§8: §7" + resource.getName()));
 
-            }).setRightClick(event -> {
-                System.out.println("TODO");
-            });
+            }).setRightClick(event -> System.out.println("TODO"));
         });
 
     }

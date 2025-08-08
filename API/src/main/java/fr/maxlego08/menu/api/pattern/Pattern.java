@@ -17,7 +17,7 @@ public interface Pattern {
      *
      * @return The name of this pattern.
      */
-    String getName();
+    String name();
 
     /**
      * Gets the size of the inventory that this pattern is intended for.
@@ -28,7 +28,7 @@ public interface Pattern {
      *
      * @return The size of the inventory that this pattern is intended for.
      */
-    int getInventorySize();
+    int inventorySize();
 
     /**
      * Gets the buttons that are a part of this pattern.
@@ -37,14 +37,14 @@ public interface Pattern {
      *
      * @return The buttons that make up this pattern.
      */
-    Collection<Button> getButtons();
+    Collection<Button> buttons();
 
     /**
      * Indicates whether the pattern supports multi-page inventories.
      * <p>
      * If this method returns true, the pattern will be able to be used in inventories of any size, and the buttons will be distributed across as many pages as necessary.
      * <p>
-     * Otherwise, the pattern can only be used in inventories of the size returned by {@link #getInventorySize()}.
+     * Otherwise, the pattern can only be used in inventories of the size returned by {@link #inventorySize()}.
      *
      * @return Whether the pattern supports multi-page inventories.
      */

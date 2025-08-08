@@ -100,9 +100,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (seconds <= 0) return;
 
-        this.plugin.getScheduler().runTimerAsync(() -> {
-            OfflinePlayerCache.clearCache();
-        }, seconds, seconds, TimeUnit.SECONDS);
+        this.plugin.getScheduler().runTimerAsync(OfflinePlayerCache::clearCache, seconds, seconds, TimeUnit.SECONDS);
     }
 
     @Override
@@ -329,6 +327,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
+        buttonManager.registerAction(new ToastLoader(this.plugin));
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each

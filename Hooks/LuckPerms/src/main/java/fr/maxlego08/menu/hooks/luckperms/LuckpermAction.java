@@ -12,39 +12,42 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class LuckPermissionSet extends Action {
+public class LuckpermAction extends Action {
 
     private final String permission;
+    private final boolean value;
 
-    public LuckPermissionSet(String permission) {
+    public LuckpermAction(String permission, boolean value) {
         this.permission = permission;
+        this.value = value;
     }
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        this.addPermissionToPlayer(player, this.permission);
+        this.setPermissionForPlayer(player, this.permission, this.value);
     }
 
-    public void addPermissionToPlayer(Player player, String permission) {
-
+    public void setPermissionForPlayer(Player player, String permission, boolean value) {
         LuckPerms luckPerms = LuckPermsProvider.get();
         UUID playerUUID = player.getUniqueId();
+
         User user = luckPerms.getUserManager().getUser(playerUUID);
 
         if (user == null) {
-            luckPerms.getUserManager().loadUser(playerUUID).thenAcceptAsync(loadedUser -> assignPermission(loadedUser, permission));
+            luckPerms.getUserManager().loadUser(playerUUID).thenAcceptAsync(loadedUser -> assignPermission(loadedUser, permission, value));
         } else {
-            assignPermission(user, permission);
+            assignPermission(user, permission, value);
         }
     }
 
-    private void assignPermission(User user, String permission) {
+    private void assignPermission(User user, String permission, boolean value) {
+        LuckPerms luckPerms = LuckPermsProvider.get();
 
-        Node node = Node.builder(permission).value(true).build();
+        user.data().clear(n -> n.getKey().equals(permission));
+
+        Node node = Node.builder(permission).value(value).build();
         user.data().add(node);
 
-        LuckPerms luckPerms = LuckPermsProvider.get();
         luckPerms.getUserManager().saveUser(user);
     }
-
 }

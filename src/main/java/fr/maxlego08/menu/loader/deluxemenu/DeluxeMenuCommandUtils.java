@@ -69,8 +69,8 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
 
         for (String command : commands) {
             CommandDelayResult result = extractAndRemoveDelay(command);
-            String cleanedCommand = result.getCommand();
-            int delay = result.getDelay();
+            String cleanedCommand = result.command();
+            int delay = result.delay();
 
             for (Map.Entry<String, Function<String, Action>> entry : actionMap.entrySet()) {
                 if (cleanedCommand.startsWith(entry.getKey())) {
@@ -229,22 +229,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         return new ZPlaceholderPermissible(action, input, output, null, denyActions, new ArrayList<>(), false);
     }
 
-    private static class CommandDelayResult {
-        private final String command;
-        private final int delay;
-
-        public CommandDelayResult(String command, int delay) {
-            this.command = command;
-            this.delay = delay;
-        }
-
-        public String getCommand() {
-            return command;
-        }
-
-        public int getDelay() {
-            return delay;
-        }
+    private record CommandDelayResult(String command, int delay) {
     }
 
 

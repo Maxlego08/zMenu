@@ -94,7 +94,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         ButtonManager buttonManager = this.plugin.getButtonManager();
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
         }
 
@@ -102,6 +102,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         ButtonLoader loader = optional.get();
         Button button = loader.load(configuration, path, defaultButtonValue);
+
+        if (button == null) {
+            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
+        }
+
         button.setPlugin(this.plugin);
 
         int slot;
@@ -143,7 +148,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (this.matrix.containsKey(currentChar)) {
             slots = this.matrix.get(currentChar);
             if (slots.size() == 1) {
-                slot = slots.get(0);
+                slot = slots.getFirst();
                 slots = new ArrayList<>();
             }
         }

@@ -10,7 +10,6 @@ import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.OfflinePlayer;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class CommandMenuPlayersRemove extends VCommand {
@@ -36,7 +35,7 @@ public class CommandMenuPlayersRemove extends VCommand {
         String key = this.argAsString(1);
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
             return CommandType.SUCCESS;
         }

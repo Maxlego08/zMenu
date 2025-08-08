@@ -38,7 +38,7 @@ public class CommandMenuPlayersAdd extends VCommand {
 
         DataManager dataManager = plugin.getDataManager();
         Optional<Data> optional = dataManager.getData(offlinePlayer.getUniqueId(), key);
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             Data data = new ZData(key, value, 0);
             dataManager.addData(offlinePlayer.getUniqueId(), data);
         } else {

@@ -82,7 +82,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
             Button lastButton = queue.poll(); // On récupère le dernier bouton
             while (!queue.isEmpty()) {
                 Button currentButton = queue.poll();
-                ((Button) currentButton).setElseButton(lastButton);
+                currentButton.setElseButton(lastButton);
                 lastButton = currentButton;
             }
 
@@ -108,6 +108,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         inventory.setUpdateInterval(configuration.getInt(path + "update_interval", 1) * 1000);
         inventory.setClearInventory(false);
         inventory.setFile(file);
+        inventory.setTargetPlayerNamePlaceholder("%player_name%");
 
         // Open requirement
         List<Action> actions = new ArrayList<>();

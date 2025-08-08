@@ -4,7 +4,6 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -19,7 +18,7 @@ public class CommandMenuReloadCommand extends VCommand {
         super(plugin);
         this.addSubCommand("command", "cmd");
         this.setPermission(Permission.ZMENU_RELOAD);
-        this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> e.getCommand().toLowerCase()).collect(Collectors.toList()));
+        this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> e.command().toLowerCase()).collect(Collectors.toList()));
     }
 
     @Override
@@ -31,7 +30,7 @@ public class CommandMenuReloadCommand extends VCommand {
         if (commandName != null) {
             Optional<Command> optional = commandManager.getCommand(commandName);
 
-            if (!optional.isPresent()) {
+            if (optional.isEmpty()) {
                 message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_COMMAND, "%name%", commandName);
                 return CommandType.DEFAULT;
             }
@@ -39,7 +38,7 @@ public class CommandMenuReloadCommand extends VCommand {
             Command command = optional.get();
             plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
-                return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(command.getInventory());
+                return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().getFileName().equals(command.inventory());
             });
 
             Message message = commandManager.reload(command) ? Message.RELOAD_COMMAND_FILE

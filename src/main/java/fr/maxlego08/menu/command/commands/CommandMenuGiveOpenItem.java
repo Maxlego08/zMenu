@@ -41,7 +41,7 @@ public class CommandMenuGiveOpenItem extends VCommand {
         InventoryManager inventoryManager = plugin.getInventoryManager();
         Optional<Inventory> optional = findInventory(inventoryName, inventoryManager);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
             return CommandType.DEFAULT;
         }

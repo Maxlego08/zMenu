@@ -44,7 +44,7 @@ public class CommandMenuOpenMainMenu extends VCommand {
 
         Optional<Inventory> optional = inventoryManager.getInventory(mainMenu);
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);
             return CommandType.DEFAULT;
         }

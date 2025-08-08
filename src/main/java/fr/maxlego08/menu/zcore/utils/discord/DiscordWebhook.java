@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils.discord;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
@@ -61,7 +62,7 @@ public class DiscordWebhook {
         }
 
         JsonObject json = new JsonObject();
-        
+
         if (this.content != null) json.addProperty("content", this.content);
         if (this.username != null) json.addProperty("username", this.username);
         if (this.avatarUrl != null) json.addProperty("avatar_url", this.avatarUrl);
@@ -71,64 +72,44 @@ public class DiscordWebhook {
             JsonArray embedArray = new JsonArray();
 
             for (EmbedObject embed : this.embeds) {
-                JsonObject jsonEmbed = new JsonObject();
-
-                if (embed.getTitle() != null) jsonEmbed.addProperty("title", embed.getTitle());
-                if (embed.getDescription() != null) jsonEmbed.addProperty("description", embed.getDescription());
-                if (embed.getUrl() != null) jsonEmbed.addProperty("url", embed.getUrl());
-
-                if (embed.getColor() != null) {
-                    Color color = embed.getColor();
-                    int rgb = (color.getRed() << 16) + (color.getGreen() << 8) + color.getBlue();
-                    jsonEmbed.addProperty("color", rgb);
-                }
+                JsonObject jsonEmbed = getJsonEmbed(embed);
 
                 EmbedObject.Footer footer = embed.getFooter();
-                if (footer != null && (footer.getText() != null || footer.getIconUrl() != null)) {
+                if (footer != null && (footer.text() != null || footer.iconUrl() != null)) {
                     JsonObject jsonFooter = new JsonObject();
-                    if (footer.getText() != null) jsonFooter.addProperty("text", footer.getText());
-                    if (footer.getIconUrl() != null) jsonFooter.addProperty("icon_url", footer.getIconUrl());
+                    if (footer.text() != null) jsonFooter.addProperty("text", footer.text());
+                    if (footer.iconUrl() != null) jsonFooter.addProperty("icon_url", footer.iconUrl());
                     jsonEmbed.add("footer", jsonFooter);
                 }
 
                 EmbedObject.Image image = embed.getImage();
-                if (image != null && image.getUrl() != null) {
+                if (image != null && image.url() != null) {
                     JsonObject jsonImage = new JsonObject();
-                    jsonImage.addProperty("url", image.getUrl());
+                    jsonImage.addProperty("url", image.url());
                     jsonEmbed.add("image", jsonImage);
                 }
 
                 EmbedObject.Thumbnail thumbnail = embed.getThumbnail();
-                if (thumbnail != null && thumbnail.getUrl() != null) {
+                if (thumbnail != null && thumbnail.url() != null) {
                     JsonObject jsonThumbnail = new JsonObject();
-                    jsonThumbnail.addProperty("url", thumbnail.getUrl());
+                    jsonThumbnail.addProperty("url", thumbnail.url());
                     jsonEmbed.add("thumbnail", jsonThumbnail);
                 }
 
                 EmbedObject.Author author = embed.getAuthor();
-                if (author != null && (author.getName() != null || author.getUrl() != null || author.getIconUrl() != null)) {
+                if (author != null && (author.name() != null || author.url() != null || author.iconUrl() != null)) {
                     JsonObject jsonAuthor = new JsonObject();
-                    if (author.getName() != null) jsonAuthor.addProperty("name", author.getName());
-                    if (author.getUrl() != null) jsonAuthor.addProperty("url", author.getUrl());
-                    if (author.getIconUrl() != null) jsonAuthor.addProperty("icon_url", author.getIconUrl());
+                    if (author.name() != null) jsonAuthor.addProperty("name", author.name());
+                    if (author.url() != null) jsonAuthor.addProperty("url", author.url());
+                    if (author.iconUrl() != null) jsonAuthor.addProperty("icon_url", author.iconUrl());
                     jsonEmbed.add("author", jsonAuthor);
                 }
 
                 List<EmbedObject.Field> fields = embed.getFields();
                 if (fields != null && !fields.isEmpty()) {
-                    JsonArray jsonFields = new JsonArray();
-                    for (EmbedObject.Field field : fields) {
-                        if (field.getName() != null && field.getValue() != null) {
-                            JsonObject jsonField = new JsonObject();
-                            jsonField.addProperty("name", field.getName());
-                            jsonField.addProperty("value", field.getValue());
-                            jsonField.addProperty("inline", field.isInline());
-                            jsonFields.add(jsonField);
-                        }
-                    }
-                    if (!jsonFields.isEmpty()) {
+                    JsonArray jsonFields = getJsonArrayFields(fields);
+                    if (!jsonFields.isEmpty())
                         jsonEmbed.add("fields", jsonFields);
-                    }
                 }
 
                 embedArray.add(jsonEmbed);
@@ -154,6 +135,35 @@ public class DiscordWebhook {
 
         connection.getInputStream().close();
         connection.disconnect();
+    }
+
+    private static @NotNull JsonArray getJsonArrayFields(List<EmbedObject.Field> fields) {
+        JsonArray jsonFields = new JsonArray();
+        for (EmbedObject.Field field : fields) {
+            if (field.name() != null && field.value() != null) {
+                JsonObject jsonField = new JsonObject();
+                jsonField.addProperty("name", field.name());
+                jsonField.addProperty("value", field.value());
+                jsonField.addProperty("inline", field.inline());
+                jsonFields.add(jsonField);
+            }
+        }
+        return jsonFields;
+    }
+
+    private static @NotNull JsonObject getJsonEmbed(EmbedObject embed) {
+        JsonObject jsonEmbed = new JsonObject();
+
+        if (embed.getTitle() != null) jsonEmbed.addProperty("title", embed.getTitle());
+        if (embed.getDescription() != null) jsonEmbed.addProperty("description", embed.getDescription());
+        if (embed.getUrl() != null) jsonEmbed.addProperty("url", embed.getUrl());
+
+        if (embed.getColor() != null) {
+            Color color = embed.getColor();
+            int rgb = (color.getRed() << 16) + (color.getGreen() << 8) + color.getBlue();
+            jsonEmbed.addProperty("color", rgb);
+        }
+        return jsonEmbed;
     }
 
 
@@ -249,94 +259,14 @@ public class DiscordWebhook {
             return this;
         }
 
-        private class Footer {
-            private final String text;
-            private final String iconUrl;
+        public record Footer(String text, String iconUrl) {}
 
-            private Footer(String text, String iconUrl) {
-                this.text = text;
-                this.iconUrl = iconUrl;
-            }
+        public record Thumbnail(String url) {}
 
-            private String getText() {
-                return text;
-            }
+        public record Image(String url) {}
 
-            private String getIconUrl() {
-                return iconUrl;
-            }
-        }
+        public record Author(String name, String url, String iconUrl) {}
 
-        private class Thumbnail {
-            private final String url;
-
-            private Thumbnail(String url) {
-                this.url = url;
-            }
-
-            private String getUrl() {
-                return url;
-            }
-        }
-
-        private class Image {
-            private final String url;
-
-            private Image(String url) {
-                this.url = url;
-            }
-
-            private String getUrl() {
-                return url;
-            }
-        }
-
-        private class Author {
-            private final String name;
-            private final String url;
-            private final String iconUrl;
-
-            private Author(String name, String url, String iconUrl) {
-                this.name = name;
-                this.url = url;
-                this.iconUrl = iconUrl;
-            }
-
-            private String getName() {
-                return name;
-            }
-
-            private String getUrl() {
-                return url;
-            }
-
-            private String getIconUrl() {
-                return iconUrl;
-            }
-        }
-
-        private class Field {
-            private final String name;
-            private final String value;
-            private final boolean inline;
-
-            private Field(String name, String value, boolean inline) {
-                this.name = name;
-                this.value = value;
-                this.inline = inline;
-            }
-
-            private String getName() {
-                return name;
-            }
-
-            private String getValue() {
-                return value;
-            }
-
-            private boolean isInline() {
-                return inline;
-            }
-        }
+        public record Field(String name, String value, boolean inline) {}
     }
 }
