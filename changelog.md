@@ -42,6 +42,19 @@
 
 # Unreleased
 
+# 1.1.0.2
+
+- Added [toast](https://docs.zmenu.dev/configurations/actions#toast) action
+- Added more API methods
+- Added equipped model, for custom armor
+- Fixed error if button is not found
+- Fixed luckperm action
+- Fixed discord parsing
+- Fixed inventory reloading issues [#173](https://github.com/Maxlego08/zMenu/pull/173)
+- Updated source code to java 21 [#166](https://github.com/Maxlego08/zMenu/pull/166)
+- Updated to last CurrenciesAPI version
+- Some fixs [#170](https://github.com/Maxlego08/zMenu/pull/170)
+
 # 1.1.0.1
 
 - Added player target with inventory name [#169](https://github.com/Maxlego08/zMenu/pull/169)
