@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 /**
  * @author Maxlego08
  */
-public class VersionChecker extends ZUtils implements Listener {
+public class VersionChecker extends ZUtils {
 
     private final String URL_API = "https://groupez.dev/api/v1/resource/version/%s";
     private final String URL_RESOURCE = "https://groupez.dev/resources/%s";
