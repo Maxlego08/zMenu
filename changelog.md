@@ -42,6 +42,10 @@
 
 # Unreleased
 
+- Fixed withdraw and deposit action with zEssentials
+- Added reason for withdraw and deposit action
+- Improve update checker [#183](https://github.com/Maxlego08/zMenu/pull/183)
+
 # 1.1.0.2
 
 - Added [toast](https://docs.zmenu.dev/configurations/actions#toast) action
