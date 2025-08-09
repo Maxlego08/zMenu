@@ -31,6 +31,7 @@ public abstract class Action {
     protected abstract void execute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 
     public void preExecute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+        placeholders.register("player", player.getName());
         if (delay == 0) execute(player, button, inventoryEngine, placeholders);
         else {
             inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> execute(player, button, inventoryEngine, placeholders), this.delay);

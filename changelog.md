@@ -42,8 +42,9 @@
 
 # Unreleased
 
-- Fixed withdraw and deposit action with zEssentials
+- Added ``%player%`` placeholder for each action
 - Added reason for withdraw and deposit action
+- Fixed withdraw and deposit action with zEssentials
 - Improve update checker [#183](https://github.com/Maxlego08/zMenu/pull/183)
 
 # 1.1.0.2
