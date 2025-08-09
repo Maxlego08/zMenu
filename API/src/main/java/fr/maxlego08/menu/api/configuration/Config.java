@@ -24,6 +24,9 @@ public class Config {
     // Enable save or load file log in console
     public static boolean enableLogStorageFile = false;
 
+    // Skip update check
+    public static boolean skipUpdateCheck = false;
+
     // Enable open message, default value for the command /zm open <inventory name> <player> <display message>
     public static boolean enableOpenMessage = true;
 
@@ -108,6 +111,7 @@ public class Config {
         enableDebugTime = configuration.getBoolean("enable-debug-time");
         enableInformationMessage = configuration.getBoolean("enable-information-message");
         enableLogStorageFile = configuration.getBoolean("enable-log-storage-file");
+        skipUpdateCheck = configuration.getBoolean("skip-update-check");
         enableOpenMessage = configuration.getBoolean("enable-open-message");
         enableMiniMessageFormat = configuration.getBoolean("enable-mini-message-format");
         enablePlayerCommandInChat = configuration.getBoolean("enable-player-command-in-chat");

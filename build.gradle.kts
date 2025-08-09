@@ -2,7 +2,7 @@ import org.gradle.kotlin.dsl.invoke
 
 plugins {
     `java-library`
-    id("com.gradleup.shadow") version "9.0.0-beta11"
+    id("com.gradleup.shadow") version "9.0.0"
     id("re.alwyn974.groupez.repository") version "1.0.0"
 }
 
@@ -26,6 +26,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
+        maven(url = "https://repo.tcoded.com/releases")
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -86,9 +87,9 @@ allprojects {
 
         implementation("fr.maxlego08.sarah:sarah:1.18")
         implementation("fr.traqueur.currencies:currenciesapi:1.0.10")
-        implementation("com.github.technicallycoded:FoliaLib:0.4.4")
+        implementation("com.tcoded:FoliaLib:0.5.1")
 
-        implementation("com.github.cryptomorin:XSeries:13.2.0")
+        implementation("com.github.cryptomorin:XSeries:13.3.0")
         implementation("net.objecthunter:exp4j:0.4.8")
     }
 }
