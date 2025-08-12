@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ItemModelSimilar implements ItemStackSimilar {
     @Override
     public String getName() {
-        return "itemmodel";
+        return "itemModel";
     }
 
     @Override
