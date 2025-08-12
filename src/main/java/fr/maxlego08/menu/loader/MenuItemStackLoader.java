@@ -87,6 +87,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
             loadTrims(menuItemStack, configuration, path, file);
         }
+        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
+            menuItemStack.setItemModel(configuration.getString(path + "item-model"));
+        }
         return menuItemStack;
     }
 

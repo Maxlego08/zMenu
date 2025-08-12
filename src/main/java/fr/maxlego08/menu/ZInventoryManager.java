@@ -351,6 +351,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         registerItemStackVerification(new MaterialSimilar());
         registerItemStackVerification(new ModelIdSimilar());
         registerItemStackVerification(new NameSimilar());
+        registerItemStackVerification(new ItemModelSimilar()); // 1.21.4+
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();

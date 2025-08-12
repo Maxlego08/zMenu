@@ -205,4 +205,7 @@ public enum NmsVersion {
         return version >= V_1_21.version;
     }
 
+    public boolean isNewItemModelAPI() {
+        return version >= V_1_21_4.version;
+    }
 }
