@@ -20,8 +20,8 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.*;
+import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
@@ -327,6 +327,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
+        buttonManager.registerAction(new ToastLoader(this.plugin));
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each

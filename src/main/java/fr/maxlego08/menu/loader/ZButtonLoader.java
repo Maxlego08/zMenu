@@ -38,12 +38,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
@@ -102,6 +97,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         ButtonLoader loader = optional.get();
         Button button = loader.load(configuration, path, defaultButtonValue);
+
+        if (button == null) {
+            throw new InventoryButtonException("Impossible to find the type " + buttonType + " for the button " + path + " in inventory " + this.file.getAbsolutePath());
+        }
+
         button.setPlugin(this.plugin);
 
         int slot;

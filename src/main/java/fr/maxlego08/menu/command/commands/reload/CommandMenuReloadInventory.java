@@ -3,8 +3,8 @@ package fr.maxlego08.menu.command.commands.reload;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
@@ -48,7 +48,7 @@ public class CommandMenuReloadInventory extends VCommand {
             Inventory inventory = optional.get();
             plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
-                return !inventoryDefault.isClose() && inventoryDefault.getInventory().equals(inventory);
+                return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().equals(inventory);
             });
             inventoryManager.reloadInventory(inventory);
             message(plugin, this.sender, Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
