@@ -1,30 +1,26 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.ZRequirement;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
@@ -62,7 +58,9 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
                 }
             }
         } else {
-            Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            if (Config.enableDebug) {
+                Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            }
         }
 
         // Sort buttons with priority id
@@ -146,6 +144,6 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
             itemStackLoader.save(object.getFillItemStack(), configuration, "fillItem.", file);
         }
 
-        //TODO: FINISH THE SAVE METHOD
+        // TODO: FINISH THE SAVE METHOD
     }
 }

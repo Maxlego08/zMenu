@@ -2,14 +2,15 @@ package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.pattern.ZPattern;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -65,7 +66,9 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
                 buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
             }
         } else {
-            Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            if (Config.enableDebug) {
+                Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            }
         }
 
         return new ZPattern(name, buttons, size, enableMultiPage);
@@ -78,7 +81,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
         configuration.set("size", object.inventorySize());
 
         for (Button button : object.buttons()) {
-            //TODO: SAVE BUTTONS
+            // TODO: SAVE BUTTONS
         }
 
         try {

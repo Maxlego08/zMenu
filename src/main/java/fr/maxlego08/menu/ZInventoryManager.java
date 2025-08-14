@@ -292,6 +292,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new PlayerNamePermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new CuboidPermissibleLoader(buttonManager));
         if (this.plugin.isEnable(Plugins.JOBS)) {
             buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
         }
