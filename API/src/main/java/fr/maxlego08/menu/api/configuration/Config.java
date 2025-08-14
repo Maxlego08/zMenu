@@ -165,6 +165,7 @@ public class Config {
         if (isUpdated){
             try {
                 config.save(file);
+                Bukkit.getLogger().info("[zMenu] Config file " + file.getName() + " has been updated successfully.");
             } catch (Exception e) {
                 Bukkit.getLogger().warning("[zMenu] Failed to save config file: " + file.getName()+ ". Exception: " + e.getMessage());
             }

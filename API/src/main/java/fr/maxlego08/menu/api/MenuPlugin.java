@@ -58,6 +58,8 @@ public interface MenuPlugin extends Plugin {
 
     StorageManager getStorageManager();
 
+    boolean isPaper();
+
     boolean isFolia();
 
     void registerPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer);

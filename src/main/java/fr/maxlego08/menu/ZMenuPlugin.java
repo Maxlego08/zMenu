@@ -26,6 +26,7 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
@@ -85,6 +86,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final StorageManager storageManager = new ZStorageManager(this);
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
+    private ZDialogManager zDialogManager;
     private final CommandManager commandManager = new ZCommandManager(this);
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
@@ -148,6 +150,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.zCommandManager = new VCommandManager(this);
         this.vinventoryManager = new VInventoryManager(this);
 
+
         ServicesManager servicesManager = this.getServer().getServicesManager();
         servicesManager.register(InventoryManager.class, this.inventoryManager, this, ServicePriority.Highest);
         servicesManager.register(ButtonManager.class, this.buttonManager, this, ServicePriority.Highest);
@@ -158,6 +161,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
+        if (this.foliaLib.isPaper()) {
+            Logger.info("Paper server detected, loading Dialogs support");
+            zDialogManager = new ZDialogManager(this);
+            zDialogManager.load();
+//             DialogUsageExample dialogUsageExample = new DialogUsageExample(this, zDialogManager);
+//                 this.registerCommand("dialog", new CommandDialog(this, zDialogManager), "dialogs");
+        }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -329,6 +339,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return this.inventoryManager;
     }
 
+    public ZDialogManager getZDialogManager() {
+        return this.zDialogManager;
+    }
+
     /**
      * Returns the class that will load the message file
      *
@@ -355,6 +369,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public boolean isFolia() {
         return this.foliaLib.isFolia();
+    }
+
+    @Override
+    public boolean isPaper() {
+        return this.foliaLib.isPaper();
     }
 
     @Override
