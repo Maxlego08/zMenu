@@ -2,6 +2,7 @@ package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
@@ -35,6 +36,10 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuDisconnect(plugin));
         this.addSubCommand(new CommandMenuInventories(plugin));
         // this.addSubCommand(new CommandMenuMarketplace(plugin));
+
+        if (plugin.isPaper()) {
+            this.addSubCommand(new CommandDialog(plugin));
+        }
     }
 
     @Override

@@ -1,0 +1,331 @@
+package fr.maxlego08.menu.hooks.dialogs;
+
+import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
+import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
+import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
+import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
+import io.papermc.paper.registry.data.dialog.DialogBase;
+import io.papermc.paper.registry.data.dialog.body.DialogBody;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ZDialogInventory implements ZDialogs {
+
+    private final Plugin plugin;
+    private final String fileName;
+    private File file;
+
+    private final String name;
+    private final String externalTitle;
+    private boolean canCloseWithEscape = true;
+    private boolean pause = false;
+    private DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.CLOSE;
+    private DialogType dialogType = DialogType.NOTICE;
+    private List<BodyButton> bodyButtons = new ArrayList<>();
+    private List<InputButton> inputButtons = new ArrayList<>();
+
+    // Notice
+    private final List<DialogAction> actions = new ArrayList<>();
+    private String label;
+    private String labelTooltip;
+    private int labelWidth = 200;
+
+    // When {@link DialogType#CONFIRM} is used
+    private final List<DialogAction> yesActions = new ArrayList<>();
+    private String yesText = "Yes";
+    private String yesTooltip = null;
+    private int yesWidth = 100;
+
+    private final List<DialogAction> noActions = new ArrayList<>();
+    private String noText = "No";
+    private String noTooltip = null;
+    private int noWidth = 100;
+
+    public ZDialogInventory(Plugin plugin, String name, String fileName, String externalTitle) {
+        this.plugin = plugin;
+        this.name = name;
+        this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
+        this.externalTitle = externalTitle;
+    }
+
+
+    @Override
+    public String getName(Player player) {
+        return PlaceholderAPI.setPlaceholders(player, name);
+    }
+
+    @Override
+    public String getFileName() {
+        return fileName;
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    @Override
+    public File getFile() {
+        return file;
+    }
+
+    @Override
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    @Override
+    public boolean isPause() {
+        return pause;
+    }
+
+    @Override
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    @Override
+    public boolean canCloseWithEscape() {
+        return canCloseWithEscape;
+    }
+
+    @Override
+    public void setCanCloseWithEscape(boolean canCloseWithEscape) {
+        this.canCloseWithEscape = canCloseWithEscape;
+    }
+    @Override
+    public String getExternalTitle() {
+        return externalTitle;
+    }
+    @Override
+    public void setDialogType(DialogType dialogType) {
+        this.dialogType = dialogType;
+    }
+    @Override
+    public DialogType getDialogType() {
+        return dialogType;
+    }
+
+    @Override
+    public List<BodyButton> getBodyButtons() {
+        return bodyButtons;
+    }
+
+    @Override
+    public List<InputButton> getInputButtons() {
+        return inputButtons;
+    }
+
+
+    @Override
+    public void setBodyButtons(List<BodyButton> bodyButtons) {
+        this.bodyButtons = bodyButtons != null ? bodyButtons : new ArrayList<>();
+    }
+
+    @Override
+    public void setInputButtons(List<InputButton> inputButtons) {
+        this.inputButtons = inputButtons != null ? inputButtons : new ArrayList<>();
+    }
+
+    @Override
+    public DialogBase.DialogAfterAction getAfterAction() {
+        return afterAction;
+    }
+
+    @Override
+    public void setAfterAction(DialogBase.DialogAfterAction afterAction) {
+        this.afterAction = afterAction;
+    }
+
+    @Override
+    public ZDialogInventoryBuild getBuild(Player player) {
+        return new ZDialogInventoryBuild(parsePlaceholders(player, name),parsePlaceholders(player,externalTitle), canCloseWithEscape);
+    }
+
+    @Override
+    public List<DialogBody> getDialogBodies(Player player) {
+        List<DialogBody> dialogBodies = new ArrayList<>();
+        for (BodyButton bodyButton : bodyButtons) {
+            DialogBody dialogBody = bodyButton.build(player);
+            if (dialogBody != null) {
+                dialogBodies.add(dialogBody);
+            }
+        }
+        return dialogBodies;
+    }
+
+    @Override
+    public List<DialogInput> getDialogInputs(Player player) {
+        List<DialogInput> dialogInputs = new ArrayList<>();
+        for (InputButton inputButton : inputButtons) {
+            DialogInput dialogInput = inputButton.build(player);
+            if (dialogInput != null) {
+                dialogInputs.add(dialogInput);
+            }
+        }
+        return dialogInputs;
+    }
+
+    public String parsePlaceholders(Player player, String text) {
+        if (text == null || text.isEmpty()) return "";
+        return PlaceholderAPI.setPlaceholders(player, text);
+    }
+
+    @Override
+    public List<DialogAction> getYesActions() {
+        return yesActions;
+    }
+
+    @Override
+    public List<DialogAction> getNoActions() {
+        return noActions;
+    }
+
+    @Override
+    public void addYesAction(DialogAction action) {
+        if (action != null) {
+            this.yesActions.add(action);
+        }
+    }
+    @Override
+    public void addNoAction(DialogAction action) {
+        if (action != null) {
+            this.noActions.add(action);
+        }
+    }
+    @Override
+    public String getYesText() {
+        return yesText;
+    }
+
+    @Override
+    public String getYesText(Player player) {
+        return parsePlaceholders(player, yesText);
+    }
+
+    @Override
+    public void setYesText(String yesText) {
+        this.yesText = yesText;
+    }
+    @Override
+    public String getNoText() {
+        return noText;
+    }
+
+    @Override
+    public String getNoText(Player player) {
+        return parsePlaceholders(player, noText);
+    }
+
+    @Override
+    public void setNoText(String noText) {
+        this.noText = noText;
+    }
+    @Override
+    public String getYesTooltip() {
+        return yesTooltip;
+    }
+
+    @Override
+    public String getYesTooltip(Player player) {
+        return parsePlaceholders(player, yesTooltip);
+    }
+
+    @Override
+    public void setYesTooltip(String yesTooltip) {
+        this.yesTooltip = yesTooltip;
+    }
+    @Override
+    public String getNoTooltip() {
+        return noTooltip;
+    }
+
+    @Override
+    public String getNoTooltip(Player player) {
+        return parsePlaceholders(player, noTooltip);
+    }
+
+    @Override
+    public int getYesWidth() {
+        return yesWidth;
+    }
+
+    @Override
+    public int getNoWidth() {
+        return noWidth;
+    }
+
+    @Override
+    public void setYesWidth(int yesWidth) {
+        this.yesWidth = yesWidth;
+    }
+
+    @Override
+    public void setNoWidth(int noWidth) {
+        this.noWidth = noWidth;
+    }
+
+    @Override
+    public String getLabel() {
+        return label != null ? label : "";
+    }
+
+    @Override
+    public String getLabel(Player player) {
+        return parsePlaceholders(player, label);
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabelTooltip() {
+        return labelTooltip != null ? labelTooltip : "";
+    }
+
+    @Override
+    public String getLabelTooltip(Player player) {
+        return parsePlaceholders(player, labelTooltip);
+    }
+
+    @Override
+    public void setLabelTooltip(String labelTooltip) {
+        this.labelTooltip = labelTooltip;
+    }
+
+    @Override
+    public int getLabelWidth() {
+        return labelWidth;
+    }
+
+    @Override
+    public void setLabelWidth(int labelWidth) {
+        this.labelWidth = labelWidth;
+    }
+
+    @Override
+    public void addAction(DialogAction action) {
+        if (action != null) {
+            this.actions.add(action);
+        }
+    }
+
+    @Override
+    public List<DialogAction> getActions() {
+        return actions;
+    }
+
+    @Override
+    public void setNoTooltip(String noTooltip) {
+        this.noTooltip = noTooltip;
+    }
+}

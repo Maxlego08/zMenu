@@ -27,6 +27,7 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
@@ -88,6 +89,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
+    private ZDialogManager zDialogManager;
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
@@ -161,6 +163,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
+
+        if (isPaper()){
+            Logger.info("Paper server detected, loading Dialogs support");
+            zDialogManager = new ZDialogManager(this);
+            zDialogManager.load();
+        }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -346,6 +354,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandManager;
     }
 
+    /**
+     * Returns the class that will manager the dialogs
+     *
+     * @return the zDialogManager
+     */
+    public ZDialogManager getZDialogManager() {return this.zDialogManager;}
+
     @Override
     public StorageManager getStorageManager() {
         return this.storageManager;
@@ -354,6 +369,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public boolean isFolia() {
         return this.foliaLib.isFolia();
+    }
+
+    @Override
+    public boolean isPaper() {
+        return this.foliaLib.isPaper();
     }
 
     @Override
