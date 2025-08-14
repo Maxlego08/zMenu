@@ -1,14 +1,19 @@
+# Enhanced Dialog Configuration Example
+# This file demonstrates all available options for creating dialogs
+
+# Basic dialog information
 name: "&6&lServer Information Dialog"
-external_title: "Welcome to our server!"
-type: notice # Available: notice, confirmation, multi_action, server_links, dialog_list
+external-title: "Welcome to our server!"
+type: confirmation # Available: notice, confirmation, multi_action, server_links, dialog_list
 
 # Dialog behavior settings
 can-close-with-escape: true  # Allow players to close with ESC key
 pause: false                 # Pause the game while dialog is open
-after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
+after-action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
 
 # Dialog body content - can contain multiple sections
 body:
+  # Plain message section
   plain_message:
     type: plain_message
     messages:
@@ -20,10 +25,9 @@ body:
       - ""
       - "&eEnjoy your stay and have fun!"
     width: 400  # Width in pixels (1-1024)
-  item:
-    # Item display section
+  # Item display section
+  item_display:
     type: item
-    # Item configuration (same format as zMenu items)
     item:
       material: DIAMOND_SWORD
       name: "&b&lLegendary Sword of Testing"
@@ -38,7 +42,15 @@ body:
         - "&e✦ Fire Aspect III"
         - ""
         - "&c&lNOTE: &7This is just for display!"
+      enchantments:
+        - SHARPNESS:10
+        - UNBREAKING:5
+        - FIRE_ASPECT:3
+      flags:
+        - HIDE_ENCHANTS
+        - HIDE_ATTRIBUTES
       glowing: true
+
     # Item description (separate from item lore)
     description:
       messages:
@@ -46,13 +58,15 @@ body:
         - "&7our server's custom item system."
         - "&eClick to learn more about our features!"
       width: 350  # Width for description (1-1024)
+
     # Item display settings
     show-decoration: true   # Show count and damage bar
     show-tooltip: true     # Show item tooltip on hover
     width: 200            # Item display width (1-256)
     height: 150           # Item display height (1-256)
+
+  # Another message section
   server_rules:
-    # Another message section
     type: plain_message
     messages:
       - "&a&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -66,12 +80,11 @@ body:
       - ""
       - "&eFor more information, visit: &b/rules"
     width: 450
-
-# Input fields (optional) - for interactive dialogs
 inputs:
   # Text input example
   text:
     type: text
+    key: "player_feedback"
     label: "&6Share your thoughts about our server:"
     width: 400
     label-visible: true
@@ -80,17 +93,18 @@ inputs:
     multiline:
       max-lines: 4
       height: 80
-  booleen:
+  boolean:
     # Boolean choice example
     type: boolean
+    key: "newsletter_subscribe"
     label: "&eWould you like to receive server updates?"
     initial-value: true
     text-true: "&a&lYES, keep me updated!"
     text-false: "&c&lNo, thanks."
-
   # Single option selection
   single_option:
     type: single_option
+    key: "favorite_gamemode"
     label: "&6What's your favorite game mode?"
     label-visible: true
     options:
@@ -110,20 +124,27 @@ inputs:
         id: "pvp"
         display: "&c⚡ PvP Arena"
         initial: false
-
   # Number range selection
   number_range:
     type: number_range
     label: "&eHow many hours do you play per day?"
+    label-format: "options.generic_value"
     width: 350
     start: 1
     end: 12
     step: 1
     initial-value: 3
-actions:
+
+confirmation:
+  yes-text: "Thank you for your feedback!"
+  yes-tooltip: "Thank you for your feedback!"
+  yes-width: 200
+  no-text: "We're sorry to hear that! Please let us know how we can improve."
+  no-tooltip: "We're sorry to hear that! Please let us know how we can improve."
+  no-width: 200
+yes-actions:
   - type: message
     message: "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
-notice:
-  text: "<green>Accept the rules to continue"
-  tooltip: "<green>Click to accept the rules"
-  width: 300
+no-actions:
+  - type: message
+    message: "&cWe're sorry to hear that! Please let us know how we can improve."
