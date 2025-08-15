@@ -13,6 +13,7 @@ import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.exception.DialogException;
 import fr.maxlego08.menu.hooks.dialogs.exception.DialogFileNotFound;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.actions.BroadcastLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.actions.MessageLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
@@ -76,6 +77,7 @@ public class ZDialogManager implements DialogManager {
         this.registerInputLoader(new SingleOptionInputLoader());
 
         this.registerActions(new MessageLoader());
+        this.registerActions(new BroadcastLoader());
         loadDialogs();
     }
 
@@ -430,10 +432,5 @@ public class ZDialogManager implements DialogManager {
             return inventoryManager.loadItemStack(configuration, path, file);
         }
     }
-
-    public static void log(String message){
-        Bukkit.getLogger().log(Level.INFO, message);
-    }
-
 
 }

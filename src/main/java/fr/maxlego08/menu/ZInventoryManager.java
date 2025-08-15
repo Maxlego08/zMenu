@@ -329,6 +329,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
         buttonManager.registerAction(new ToastLoader(this.plugin));
+        if (this.plugin.isPaper()) {
+            buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getZDialogManager()));
+        }
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each

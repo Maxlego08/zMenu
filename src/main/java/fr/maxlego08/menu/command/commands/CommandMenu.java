@@ -11,6 +11,7 @@ import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 
 public class CommandMenu extends VCommand {
 
@@ -37,7 +38,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuInventories(plugin));
         // this.addSubCommand(new CommandMenuMarketplace(plugin));
 
-        if (plugin.isPaper()) {
+        if (plugin.isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             this.addSubCommand(new CommandDialog(plugin));
         }
     }

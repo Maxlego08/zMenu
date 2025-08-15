@@ -208,4 +208,8 @@ public enum NmsVersion {
     public boolean isNewItemModelAPI() {
         return version >= V_1_21_4.version;
     }
+
+    public boolean isDialogsVersion() {
+        return version >= V_1_21_6.version;
+    }
 }

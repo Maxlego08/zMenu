@@ -184,17 +184,11 @@ public class DialogLoader implements Loader<ZDialogs> {
             }
             case CONFIRMATION -> {
                 String yesText = configuration.getString("confirmation.yes-text");
-                plugin.getLogger().log(Level.INFO, "Yes text: " + yesText);
                 String yesTooltip = configuration.getString("confirmation.yes-tooltip");
-                plugin.getLogger().log(Level.INFO, "Yes tooltip: " + yesTooltip);
                 int yesWidth = configuration.getInt("confirmation.yes-width", 100);
-                plugin.getLogger().log(Level.INFO, "Yes width: " + yesWidth);
                 String noText = configuration.getString("confirmation.no-text");
-                plugin.getLogger().log(Level.INFO, "No text: " + noText);
                 String noTooltip = configuration.getString("confirmation.no-tooltip");
-                plugin.getLogger().log(Level.INFO, "No tooltip: " + noTooltip);
                 int noWidth = configuration.getInt("confirmation.no-width", 100);
-                plugin.getLogger().log(Level.INFO, "No width: " + noWidth);
                 dialogInventory.setYesText(yesText);
                 dialogInventory.setNoText(noText);
                 dialogInventory.setYesTooltip(yesTooltip);

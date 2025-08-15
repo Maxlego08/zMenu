@@ -14,6 +14,8 @@ public abstract class DialogAction {
         return papi(placeholders.parse(message), player);
     }
 
+    public String parse(String message, Player player){return papi(message, player);}
+
 
     private String papi(String message, Player player) {
         return PlaceholderAPI.setPlaceholders(player, message);
