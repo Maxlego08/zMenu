@@ -81,7 +81,9 @@ allprojects {
     }
 
     dependencies {
-        compileOnly("org.spigotmc:spigot-api:1.21.5-R0.1-SNAPSHOT")
+        if (project.name != "Paper") {
+            compileOnly("org.spigotmc:spigot-api:1.21.8-R0.1-SNAPSHOT")
+        }
         compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
 
