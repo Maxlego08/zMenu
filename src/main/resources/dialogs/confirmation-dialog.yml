@@ -4,7 +4,7 @@
 # Basic dialog information
 name: "&6&lServer Information Dialog"
 external-title: "Welcome to our server!"
-type: confirmation # Available: notice, confirmation, multi_action, server_links, dialog_list
+type: confirmation # Available: notice, confirmation, multi_action, server_links
 
 # Dialog behavior settings
 can-close-with-escape: true  # Allow players to close with ESC key

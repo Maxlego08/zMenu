@@ -300,6 +300,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("patterns/pattern_example.yml");
         files.add("patterns/pattern_cookies.yml");
         files.add("patterns/playtime_reward.yml");
+
+        files.add("dialogs/confirmation-dialog.yml");
+        files.add("dialogs/default-dialog.yml");
+        files.add("dialogs/multi_action-dialog.yml");
+        files.add("dialogs/server_link-dialog.yml");
+
         return files;
     }
 

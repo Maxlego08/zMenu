@@ -1,11 +1,34 @@
 name: "&6&lServer Information Dialog"
 external_title: "Welcome to our server!"
-type: notice # Available: notice, confirmation, multi_action, server_links,
+type: multi_action # Available: notice, confirmation, multi_action, server_links
 
 # Dialog behavior settings
 can-close-with-escape: true  # Allow players to close with ESC key
 pause: false                 # Pause the game while dialog is open
 after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
+number-of-columns: 2 # Number of button can be displayed in a row
+multi-action:
+  button1:
+    text: "&a&lJoin Survival Mode"
+    tooltip: "&7Click to join the Survival world"
+    width: 200
+    actions:
+      - type: message
+        message: "&aYou have joined the Survival world!"
+  button2:
+    text: "&b&lVisit Creative World"
+    tooltip: "&7Explore the Creative world"
+    width: 200
+    actions:
+      - type: message
+        message: "&bYou are now in the Creative world!"
+  button3:
+    text: "&c&lPvP Arena"
+    tooltip: "&7Enter the PvP Arena for battles"
+    width: 200
+    actions:
+      - type: message
+        message: "&cGet ready for some PvP action!"
 
 # Dialog body content - can contain multiple sections
 body:
@@ -120,10 +143,3 @@ inputs:
     end: 12
     step: 1
     initial-value: 3
-actions:
-  - type: message
-    message: "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
-notice:
-  text: "<green>Accept the rules to continue"
-  tooltip: "<green>Click to accept the rules"
-  width: 300
