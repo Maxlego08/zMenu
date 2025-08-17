@@ -13,6 +13,7 @@ import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public class DialogLoader implements Loader<ZDialogs> {
     private final Plugin plugin;
@@ -87,7 +87,6 @@ public class DialogLoader implements Loader<ZDialogs> {
         ConfigurationSection bodySection = configuration.getConfigurationSection("body");
 
         if (bodySection == null) {
-            plugin.getLogger().warning("No body section found in configuration");
             return bodyButtons;
         }
 
@@ -97,7 +96,7 @@ public class DialogLoader implements Loader<ZDialogs> {
             String type = configuration.getString(path + ".type");
 
             if (type == null) {
-                plugin.getLogger().warning("No type found for body element: " + bodyKey);
+                Logger.info("No type found for body element: " + bodyKey, Logger.LogType.WARNING);
                 continue;
             }
 
@@ -111,7 +110,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                 button.setBodyType(loader.getBodyType());
                 bodyButtons.add(button);
             } else {
-                plugin.getLogger().warning("No body loader found for type: " + type);
+                Logger.info("No body loader found for type: " + type, Logger.LogType.WARNING);
             }
         }
         return bodyButtons;
@@ -122,7 +121,6 @@ public class DialogLoader implements Loader<ZDialogs> {
         ConfigurationSection inputSection = configuration.getConfigurationSection("inputs");
 
         if (inputSection == null) {
-            plugin.getLogger().warning("No inputs section found in configuration");
             return inputButtons;
         }
 
@@ -131,7 +129,7 @@ public class DialogLoader implements Loader<ZDialogs> {
 
             String type = configuration.getString(path + ".type");
             if (type == null) {
-                plugin.getLogger().warning("No type found for input element: " + inputKey);
+                Logger.info("No type found for input element: " + inputKey, Logger.LogType.WARNING);
                 continue;
             }
 
@@ -147,7 +145,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                 inputButtons.add(button);
 
             } else {
-                plugin.getLogger().warning("No input loader found for type: " + type);
+                Logger.info("No input loader found for type: " + type, Logger.LogType.WARNING);
             }
 
         }
@@ -171,7 +169,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                         DialogActionIntLoader actionIntLoader = actionLoader.get();
                         dialogInventory.addAction(actionIntLoader.load("actions", accessor, file));
                     } else {
-                        plugin.getLogger().warning("No action loader found for type: " + actionType);
+                        Logger.info("No action loader found for type: " + actionType, Logger.LogType.WARNING);
                     }
                 }
                 String noticeText = configuration.getString("notice.text","");
@@ -204,7 +202,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                         DialogActionIntLoader actionIntLoader = actionLoader.get();
                         dialogInventory.addYesAction(actionIntLoader.load("yes-actions", accessor, file));
                     } else {
-                        plugin.getLogger().warning("No action loader found for type: " + yesActionType);
+                        Logger.info("No action loader found for type: " + yesActionType, Logger.LogType.WARNING);
                     }
                 }
                 List<Map<?, ?>> noActions = configuration.getMapList("no-actions");
@@ -217,7 +215,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                         DialogActionIntLoader actionIntLoader = actionLoader.get();
                         dialogInventory.addNoAction(actionIntLoader.load("no-actions", accessor, file));
                     } else {
-                        plugin.getLogger().warning("No action loader found for type: " + noActionType);
+                        Logger.info("No action loader found for type: " + noActionType, Logger.LogType.WARNING);
                     }
                 }
             }

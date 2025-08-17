@@ -8,11 +8,11 @@ import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogBooleanInputBui
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogInputTextBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogSingleOptionInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
+import fr.maxlego08.menu.zcore.logger.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public class DialogBuilderClass {
     private static final Map<DialogBodyType, DialogBuilder> dialogBuilders = new HashMap<>();
@@ -36,19 +36,17 @@ public class DialogBuilderClass {
 
     public void registerBuilder(DialogBuilder builder) {
         if (dialogBuilders.containsKey(builder.getBodyType())) {
-            plugin.getLogger().log(Level.WARNING, "DialogBuilder " + builder.getBodyType() + " is already registered!");
+            Logger.info("DialogBuilder " + builder.getBodyType() + " is already registered!", Logger.LogType.WARNING);
         } else {
             dialogBuilders.put(builder.getBodyType(), builder);
-            plugin.getLogger().log(Level.INFO, "DialogBuilder " + builder.getBodyType() + " registered successfully!");
         }
     }
 
     public void registerInputBuilder(DialogInputBuilderInt builder) {
         if (dialogInputBuilders.containsKey(builder.getBodyType())) {
-            plugin.getLogger().log(Level.WARNING, "DialogInputBuilder " + builder.getBodyType() + " is already registered!");
+            Logger.info("DialogInputBuilder " + builder.getBodyType() + " is already registered!", Logger.LogType.WARNING);
         } else {
             dialogInputBuilders.put(builder.getBodyType(), builder);
-            plugin.getLogger().log(Level.INFO, "DialogInputBuilder " + builder.getBodyType() + " registered successfully!");
         }
     }
 

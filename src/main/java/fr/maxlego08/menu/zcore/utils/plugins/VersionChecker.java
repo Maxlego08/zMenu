@@ -4,7 +4,6 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import org.bukkit.event.Listener;
 
 import java.io.IOException;
 import java.net.URI;

@@ -19,7 +19,7 @@ public class BroadcastAction extends DialogAction {
 
     @Override
     public void execute(DialogResponseView view, Audience audience, Placeholders placeholders, Player player) {
-           Audience serverAudience = Audience.audience(Bukkit.getServer().getOnlinePlayers());
+        Audience serverAudience = Audience.audience(Bukkit.getServer().getOnlinePlayers());
         PaperComponent component = PaperComponent.getInstance();
         for (String msg : message) {
             String parsedMessage = parse(msg, player, placeholders);

@@ -27,6 +27,7 @@ import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.DialogBase;
@@ -426,7 +427,7 @@ public class ZDialogManager implements DialogManager {
 
     public static MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         if (inventoryManager == null){
-            Bukkit.getLogger().log(Level.WARNING, "InventoryManager is not initialized. Please ensure it is set before calling loadItemStack.");
+            Logger.info("InventoryManager is not initialized. Please ensure it is set before calling loadItemStack.", Logger.LogType.WARNING);
             return null;
         } else {
             return inventoryManager.loadItemStack(configuration, path, file);
