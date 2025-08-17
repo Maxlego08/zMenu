@@ -35,11 +35,9 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.event.ClickCallback;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +60,7 @@ public class ZDialogManager implements DialogManager {
 
     public ZDialogManager(final Plugin plugin) {
         this.plugin = (MenuPlugin) plugin;
-        this.dialogBuilders = new DialogBuilderClass(this.plugin);
+        this.dialogBuilders = new DialogBuilderClass();
         inventoryManager = ((MenuPlugin) plugin).getInventoryManager();
 
     }
@@ -419,11 +417,6 @@ public class ZDialogManager implements DialogManager {
         return Optional.ofNullable(this.dialogActionLoaders.get(name));
     }
 
-
-    private <T> T getProvider(Class<T> classProvider) {
-        RegisteredServiceProvider<T> provider = Bukkit.getServer().getServicesManager().getRegistration(classProvider);
-        return provider == null ? null : provider.getProvider();
-    }
 
     public static MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         if (inventoryManager == null){

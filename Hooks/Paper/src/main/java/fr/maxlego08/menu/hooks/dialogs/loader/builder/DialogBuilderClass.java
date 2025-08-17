@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogNumberRangeInputBuilder;
@@ -17,10 +16,8 @@ import java.util.Optional;
 public class DialogBuilderClass {
     private static final Map<DialogBodyType, DialogBuilder> dialogBuilders = new HashMap<>();
     private static final Map<DialogInputType, DialogInputBuilderInt> dialogInputBuilders = new HashMap<>();
-    private final MenuPlugin plugin;
 
-    public DialogBuilderClass(MenuPlugin plugin) {
-        this.plugin = plugin;
+    public DialogBuilderClass() {
         this.loadBuilders();
     }
 

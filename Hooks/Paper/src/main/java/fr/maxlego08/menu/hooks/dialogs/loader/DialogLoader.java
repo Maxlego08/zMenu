@@ -81,7 +81,7 @@ public class DialogLoader implements Loader<ZDialogs> {
     /**
      * Loads body buttons from the configuration
      */
-    private List<BodyButton> loadBodyButtons(YamlConfiguration configuration, File file) throws InventoryException {
+    private List<BodyButton> loadBodyButtons(YamlConfiguration configuration, File file) {
         List<BodyButton> bodyButtons = new ArrayList<>();
 
         ConfigurationSection bodySection = configuration.getConfigurationSection("body");
@@ -115,7 +115,7 @@ public class DialogLoader implements Loader<ZDialogs> {
         }
         return bodyButtons;
     }
-    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) throws InventoryException {
+    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) {
         List<InputButton> inputButtons = new ArrayList<>();
 
         ConfigurationSection inputSection = configuration.getConfigurationSection("inputs");
