@@ -232,25 +232,40 @@ public class DialogLoader implements Loader<ZDialogs> {
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
                     int width = configuration.getInt(path + ".width", 100);
-                    List<DialogAction> actions = new ArrayList<>();
-                    List<Map<?, ?>> actionMaps = configuration.getMapList(path + ".actions");
-                    for (Map<?, ?> actionMap : actionMaps) {
-                        TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) actionMap);
-                        String actionType = accessor.getString("type");
-                        Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(actionType);
-                        if (actionLoader.isPresent()) {
-                            DialogActionIntLoader actionIntLoader = actionLoader.get();
-                            actions.add(actionIntLoader.load(path + ".actions", accessor, file));
-                        } else {
-                            Logger.info("No action loader found for type: " + actionType, Logger.LogType.WARNING);
-                        }
-                    }
+                    List<DialogAction> actions = loadActions(configuration, path, file);
                     ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
                     dialogInventory.addActionButton(record);
                 }
                 dialogInventory.setNumberOfColumns(numberOfColumns);
             }
+            case SERVER_LINKS -> {
+                String text = configuration.getString("server-links.text", "");
+                String tooltip = configuration.getString("server-links.tooltip", "");
+                int width = configuration.getInt("server-links.width", 100);
+                List<DialogAction> actions = loadActions(configuration, "server-links", file);
+                int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
+                ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
+                dialogInventory.setActionButtonServerLink(record);
+                dialogInventory.setNumberOfColumns(numberOfColumns);
+            }
         }
+    }
+
+    public List<DialogAction> loadActions(YamlConfiguration configuration, String path, File file) {
+        List<DialogAction> actions = new ArrayList<>();
+        List<Map<?, ?>> actionMaps = configuration.getMapList(path + ".actions");
+        for (Map<?, ?> actionMap : actionMaps) {
+            TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) actionMap);
+            String actionType = accessor.getString("type");
+            Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(actionType);
+            if (actionLoader.isPresent()) {
+                DialogActionIntLoader actionIntLoader = actionLoader.get();
+                actions.add(actionIntLoader.load(path + ".actions", accessor, file));
+            } else {
+                Logger.info("No action loader found for type: " + actionType, Logger.LogType.WARNING);
+            }
+        }
+        return actions;
     }
 
 

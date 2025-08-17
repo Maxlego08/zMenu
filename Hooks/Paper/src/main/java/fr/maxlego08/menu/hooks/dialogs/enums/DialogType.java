@@ -5,5 +5,5 @@ public enum DialogType {
     CONFIRMATION,
     MULTI_ACTION,
     SERVER_LINKS,
-    DIALOG_LIST
+//    DIALOG_LIST
 }

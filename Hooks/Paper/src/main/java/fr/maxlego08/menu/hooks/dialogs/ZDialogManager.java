@@ -319,15 +319,16 @@ public class ZDialogManager implements DialogManager {
                     );
 
             case SERVER_LINKS ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(null, 100, 100)).base(dialogBase.body(bodies).build())
+                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(createActionButton(zDialog.getActionButtonServerLink(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
                     );
 
-            case DIALOG_LIST ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.dialogList(null).build()).base(dialogBase.body(bodies).build())
-                    );
+//             case DIALOG_LIST ->
+//                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.dialogList(createDialogList(zDialog.getDialogList(),player)).build()).base(dialogBase.body(bodies).inputs(inputs).build())
+//                     );
+            // Impossible beacause we need the dialogs to register on the server and this required the plugin to be a PaperPlugin
         };
     }
-    public List<ActionButton> createActionButtons(ZDialogs zDialogs, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {
+    private List<ActionButton> createActionButtons(ZDialogs zDialogs, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {
         if (zDialogs == null) {
             return Collections.emptyList();
         }

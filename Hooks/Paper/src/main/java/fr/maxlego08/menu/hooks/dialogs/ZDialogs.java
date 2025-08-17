@@ -127,4 +127,10 @@ public interface ZDialogs {
     void setNumberOfColumns(int numberOfColumns);
 
     ZDialogInventoryBuild getBuild(Player player);
+
+    void setActionButtonServerLink(ActionButtonRecord actionButtonRecord);
+
+    ActionButtonRecord getActionButtonServerLink(Player player);
+
+    ActionButtonRecord getActionButtonServerLink();
 }

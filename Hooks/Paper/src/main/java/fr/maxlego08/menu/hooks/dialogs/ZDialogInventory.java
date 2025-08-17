@@ -51,6 +51,10 @@ public class ZDialogInventory implements ZDialogs {
 
     // MultiAction
     private final List<ActionButtonRecord> actionButtons = new ArrayList<>();
+    // Use numberOfColums
+
+    // Server link
+    private ActionButtonRecord actionButtonRecordServerLink;
     private int numberOfColumns = 1;
 
     public ZDialogInventory(Plugin plugin, String name, String fileName, String externalTitle) {
@@ -152,6 +156,24 @@ public class ZDialogInventory implements ZDialogs {
     @Override
     public ZDialogInventoryBuild getBuild(Player player) {
         return new ZDialogInventoryBuild(parsePlaceholders(player, name),parsePlaceholders(player,externalTitle), canCloseWithEscape);
+    }
+
+    @Override
+    public void setActionButtonServerLink(ActionButtonRecord actionButtonRecord) {
+        this.actionButtonRecordServerLink = actionButtonRecord;
+    }
+
+    @Override
+    public ActionButtonRecord getActionButtonServerLink(Player player) {
+        if (actionButtonRecordServerLink != null) {
+            return actionButtonRecordServerLink.parse(player);
+        }
+        return null;
+    }
+
+    @Override
+    public ActionButtonRecord getActionButtonServerLink() {
+        return actionButtonRecordServerLink;
     }
 
     @Override
