@@ -4,6 +4,7 @@ import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
+import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -114,6 +115,16 @@ public interface ZDialogs {
     int getLabelWidth();
 
     void setLabelWidth(int labelWidth);
+
+    List<ActionButtonRecord> getActionButtons(Player player);
+
+    List<ActionButtonRecord> getActionButtons();
+
+    void addActionButton(ActionButtonRecord actionButton);
+
+    int getNumberOfColumns();
+
+    void setNumberOfColumns(int numberOfColumns);
 
     ZDialogInventoryBuild getBuild(Player player);
 }

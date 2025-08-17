@@ -4,6 +4,7 @@ import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
+import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -47,6 +48,10 @@ public class ZDialogInventory implements ZDialogs {
     private String noText = "No";
     private String noTooltip = null;
     private int noWidth = 100;
+
+    // MultiAction
+    private final List<ActionButtonRecord> actionButtons = new ArrayList<>();
+    private int numberOfColumns = 1;
 
     public ZDialogInventory(Plugin plugin, String name, String fileName, String externalTitle) {
         this.plugin = plugin;
@@ -310,6 +315,41 @@ public class ZDialogInventory implements ZDialogs {
     @Override
     public void setLabelWidth(int labelWidth) {
         this.labelWidth = labelWidth;
+    }
+
+    @Override
+    public List<ActionButtonRecord> getActionButtons(Player player) {
+        List<ActionButtonRecord> actionButtonsParse = new ArrayList<>();
+        for (ActionButtonRecord actionButtonRecord : actionButtons) {
+            actionButtonsParse.add(actionButtonRecord.parse(player));
+        }
+        return actionButtonsParse;
+    }
+
+    @Override
+    public List<ActionButtonRecord> getActionButtons() {
+        return actionButtons;
+    }
+
+    @Override
+    public void addActionButton(ActionButtonRecord actionButton) {
+        if (actionButton != null) {
+            this.actionButtons.add(actionButton);
+        }
+    }
+
+    @Override
+    public int getNumberOfColumns() {
+        return numberOfColumns;
+    }
+
+    @Override
+    public void setNumberOfColumns(int numberOfColumns) {
+        if (numberOfColumns > 0) {
+            this.numberOfColumns = numberOfColumns;
+        } else {
+            throw new IllegalArgumentException("Number of columns must be greater than 0");
+        }
     }
 
     @Override

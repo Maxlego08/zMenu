@@ -10,9 +10,11 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogs;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
+import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import org.bukkit.configuration.ConfigurationSection;
@@ -218,6 +220,35 @@ public class DialogLoader implements Loader<ZDialogs> {
                         Logger.info("No action loader found for type: " + noActionType, Logger.LogType.WARNING);
                     }
                 }
+            }
+            case MULTI_ACTION -> {
+                int numberOfColumns = configuration.getInt("number-of-columns", 3);
+                ConfigurationSection multiSection = configuration.getConfigurationSection("multi-actions");
+                if (multiSection == null) {
+                    return;
+                }
+                for (String key : multiSection.getKeys(false)) {
+                    String path = "multi-actions."+key;
+                    String text = configuration.getString(path + ".text", "");
+                    String tooltip = configuration.getString(path + ".tooltip", "");
+                    int width = configuration.getInt(path + ".width", 100);
+                    List<DialogAction> actions = new ArrayList<>();
+                    List<Map<?, ?>> actionMaps = configuration.getMapList(path + ".actions");
+                    for (Map<?, ?> actionMap : actionMaps) {
+                        TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) actionMap);
+                        String actionType = accessor.getString("type");
+                        Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(actionType);
+                        if (actionLoader.isPresent()) {
+                            DialogActionIntLoader actionIntLoader = actionLoader.get();
+                            actions.add(actionIntLoader.load(path + ".actions", accessor, file));
+                        } else {
+                            Logger.info("No action loader found for type: " + actionType, Logger.LogType.WARNING);
+                        }
+                    }
+                    ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
+                    dialogInventory.addActionButton(record);
+                }
+                dialogInventory.setNumberOfColumns(numberOfColumns);
             }
         }
     }

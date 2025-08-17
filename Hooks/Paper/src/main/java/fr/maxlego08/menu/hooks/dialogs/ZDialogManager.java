@@ -26,6 +26,7 @@ import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
+import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
@@ -45,7 +46,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class ZDialogManager implements DialogManager {
@@ -58,8 +58,11 @@ public class ZDialogManager implements DialogManager {
     private final Map<String, DialogActionIntLoader> dialogActionLoaders = new HashMap<>();
     private final DialogBuilderClass dialogBuilders;
 
+    private final PaperComponent paperComponent;
+
     public ZDialogManager(final Plugin plugin) {
         this.plugin = (MenuPlugin) plugin;
+        this.paperComponent = PaperComponent.getInstance();
         this.dialogBuilders = new DialogBuilderClass();
         inventoryManager = ((MenuPlugin) plugin).getInventoryManager();
 
@@ -161,12 +164,12 @@ public class ZDialogManager implements DialogManager {
                         try {
                             this.loadInventory(this.plugin, file);
                         } catch (DialogException | InventoryException exception) {
-                            plugin.getLogger().log(Level.SEVERE,
-                                    "Failed to load dialog from file: " + file.getName(), exception);
+                            Logger.info("Failed to load dialog from file: " + file.getName(), Logger.LogType.WARNING);
+
                         }
                     });
         } catch (IOException exception) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to load dialogs", exception);
+            Logger.info("Failed to load dialogs", Logger.LogType.WARNING);
         }
     }
 
@@ -203,7 +206,7 @@ public class ZDialogManager implements DialogManager {
         dialogsList.add(dialog);
 
         if (Config.enableInformationMessage) {
-            plugin.getLogger().log(Level.INFO, file.getPath() + " loaded successfully!");
+            Logger.info(file.getPath() + " loaded successfully!");
         }
 
         return dialog;
@@ -212,20 +215,18 @@ public class ZDialogManager implements DialogManager {
     @Override
     public void registerBodyLoader(BodyLoader loader) {
         if (this.bodyLoader.containsKey(loader.getKey())) {
-            plugin.getLogger().log(Level.WARNING, "BodyLoader " + loader.getKey() + " is already registered!");
+            Logger.info("BodyLoader " + loader.getKey() + " is already registered!", Logger.LogType.WARNING);
         } else {
             this.bodyLoader.put(loader.getKey(), loader);
-            plugin.getLogger().log(Level.INFO, "BodyLoader " + loader.getKey() + " registered successfully!");
         }
     }
 
     @Override
     public void registerInputLoader(InputLoader inputLoader) {
         if (this.inputLoader.containsKey(inputLoader.getKey())) {
-            plugin.getLogger().log(Level.WARNING, "InputLoader " + inputLoader.getKey() + " is already registered!");
+            Logger.info("InputLoader " + inputLoader.getKey() + " is already registered!", Logger.LogType.WARNING);
         } else {
             this.inputLoader.put(inputLoader.getKey(), inputLoader);
-            plugin.getLogger().log(Level.INFO, "InputLoader " + inputLoader.getKey() + " registered successfully!");
         }
     }
 
@@ -239,10 +240,9 @@ public class ZDialogManager implements DialogManager {
         if (action != null ){
             for (String name : action.getActionNames()){
                 if (dialogActionLoaders.containsKey(name)) {
-                    plugin.getLogger().log(Level.WARNING, "DialogActionIntLoader " + name + " is already registered!");
+                    Logger.info("DialogActionIntLoader " + name + " is already registered!", Logger.LogType.WARNING);
                 } else {
                     dialogActionLoaders.put(name, action);
-                    plugin.getLogger().log(Level.INFO, "DialogActionIntLoader " + name + " registered successfully!");
                 }
             }
         }
@@ -255,7 +255,7 @@ public class ZDialogManager implements DialogManager {
 
         loadDialogs();
 
-        plugin.getLogger().log(Level.INFO, "Dialogs reloaded successfully!");
+        Logger.info("Dialogs reloaded successfully!");
     }
 
     /**
@@ -265,8 +265,7 @@ public class ZDialogManager implements DialogManager {
     public void openDialog(Player player, String dialogName) {
         Optional<ZDialogs> optionalDialog = this.getDialog(dialogName);
         if (optionalDialog.isEmpty()) {
-            plugin.getLogger().log(Level.WARNING,
-                    "Attempted to open non-existent dialog: " + dialogName + " for player: " + player.getName());
+            Logger.info("Attempted to open non-existent dialog: " + dialogName + " for player: " + player.getName(), Logger.LogType.WARNING);
             return;
         }
 
@@ -278,7 +277,6 @@ public class ZDialogManager implements DialogManager {
      * Opens a specific dialog for the specified player
      */
     public void openDialog(Player player, ZDialogs zDialog) {
-        PaperComponent paperComponent = PaperComponent.getInstance();
         try {
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
             List<DialogBody> bodies = zDialog.getDialogBodies(player);
@@ -297,8 +295,9 @@ public class ZDialogManager implements DialogManager {
             player.showDialog(dialog);
 
         } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE,
-                    "Failed to open dialog for player: " + player.getName(), e);
+            if (Config.enableDebug){
+                Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
+            }
         }
     }
 
@@ -306,7 +305,6 @@ public class ZDialogManager implements DialogManager {
      * Creates a dialog based on the dialog type
      */
     private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, ZDialogs zDialog, Player player) {
-        PaperComponent paperComponent = PaperComponent.getInstance();
         return switch (dialogType) {
             case NOTICE ->
                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(ActionButton.create(paperComponent.getComponent(zDialog.getLabel(player)),paperComponent.getComponent(zDialog.getLabelTooltip(player)), zDialog.getLabelWidth(), createAction(inputs,zDialog.getActions())))).base(dialogBase.body(bodies).inputs(inputs).build())
@@ -317,7 +315,7 @@ public class ZDialogManager implements DialogManager {
                     );
 
             case MULTI_ACTION ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(List.of(ActionButton.create(paperComponent.getComponent("Test"), paperComponent.getComponent("Tooltype"), 100, null))).build()).base(dialogBase.body(bodies).inputs(inputs).build())
+                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(createActionButtons(zDialog,inputs,zDialog.getActionButtons(player))).build()).base(dialogBase.body(bodies).inputs(inputs).build())
                     );
 
             case SERVER_LINKS ->
@@ -329,6 +327,20 @@ public class ZDialogManager implements DialogManager {
                     );
         };
     }
+    public List<ActionButton> createActionButtons(ZDialogs zDialogs, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {
+        if (zDialogs == null) {
+            return Collections.emptyList();
+        }
+        List<ActionButton> actionButtons = new ArrayList<>();
+        for (ActionButtonRecord actionButtonRecord : actionButtonRecords) {
+            actionButtons.add(createActionButton(actionButtonRecord, inputs));
+        }
+        return actionButtons;
+    }
+    private ActionButton createActionButton(ActionButtonRecord actionButtonRecord, List<DialogInput> inputs) {
+        return ActionButton.create(paperComponent.getComponent(actionButtonRecord.label()), paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), createAction(inputs,actionButtonRecord.actions()));
+    }
+
     public DialogAction createAction(List<DialogInput> inputs, List<fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction> actions) {
         return DialogAction.customClick((view,audience)-> {
             Placeholders placeholders = new Placeholders();
