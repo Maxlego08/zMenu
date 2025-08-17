@@ -23,7 +23,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class VInventoryManager extends ListenerAdapter {
@@ -204,11 +207,23 @@ public class VInventoryManager extends ListenerAdapter {
     }
 
     public void close(Predicate<VInventory> predicate) {
+        if (!this.plugin.isEnabled()) {
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+                if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
+                    if (player.isOnline()) {
+                        player.closeInventory();
+                    }
+                }
+            });
+            return;
+        }
         Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
-                if (player.isOnline())
+                if (player.isOnline()) {
                     player.closeInventory();
+                }
             }
         }));
     }
