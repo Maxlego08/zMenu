@@ -3,7 +3,7 @@ package fr.maxlego08.menu.hooks.dialogs;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
-import fr.maxlego08.menu.hooks.dialogs.exception.DialogException;
+import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
@@ -47,17 +47,13 @@ public interface DialogManager {
 
     void registerBuilder(DialogBuilder builder);
 
-    void registerActions(DialogActionIntLoader action);
-
-    void openDialog(Player player, String dialogName);
+    void openDialog(Player player, ZDialogs dialog);
 
     Optional<BodyLoader> getBodyLoader(String name);
 
     Optional<InputLoader> getInputLoader(String name);
 
     Optional<DialogBuilder> getDialogBuilder(DialogBodyType type);
-
-    Optional<DialogActionIntLoader> getDialogAction(String name);
 
     Collection<ZDialogs> getDialogs();
 

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.command.commands.dialogs;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogs;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -17,8 +18,8 @@ public class CommandDialogOpen extends VCommand {
     public CommandDialogOpen(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("open", "o");
-        ZDialogManager zDialogInventory = plugin.getZDialogManager();
-        this.addRequireArg("dialog name", (a,b)-> zDialogInventory.getDialogs().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase())).toList());
+        DialogManager dialogManager = plugin.getDialogManager();
+        this.addRequireArg("dialog name", (a,b)-> dialogManager.getDialogs().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase())).toList());
 
         this.addOptionalArg("player");
         this.addOptionalArg("display message", (a,b)-> Arrays.asList("true", "false"));
@@ -29,7 +30,7 @@ public class CommandDialogOpen extends VCommand {
     }
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
-        ZDialogManager zDialogInventory = plugin.getZDialogManager();
+        DialogManager dialogManager = plugin.getDialogManager();
         String dialogName = this.argAsString(0);
         Player targetPlayer = this.argAsPlayer(1,this.player);
         boolean displayMessage = this.argAsBoolean(1, true);
@@ -37,7 +38,7 @@ public class CommandDialogOpen extends VCommand {
             message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.DIALOG_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
-        Optional<ZDialogs> optional = zDialogInventory.getDialog(dialogName);
+        Optional<ZDialogs> optional = dialogManager.getDialog(dialogName);
 
         if (optional.isEmpty()) {
             message(plugin, this.sender, Message.DIALOG_OPEN_ERROR_NOT_FOUND,"%name%", dialogName);
@@ -53,7 +54,7 @@ public class CommandDialogOpen extends VCommand {
         }
 
         ZDialogs zDialogs = optional.get();
-        zDialogInventory.openDialog(targetPlayer, zDialogs);
+        dialogManager.openDialog(targetPlayer, zDialogs);
 
 
         return CommandType.SUCCESS;
