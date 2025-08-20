@@ -23,6 +23,7 @@ import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.command.validators.*;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -93,6 +94,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.loadButtons();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
+        DialogManager dialogManager = this.plugin.getDialogManager();
+        if (dialogManager != null) {
+            dialogManager.loadDialogs();
+        }
         this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
     }
 
@@ -329,8 +334,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
         buttonManager.registerAction(new ToastLoader(this.plugin));
-        if (this.plugin.isPaper()) {
-            buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getZDialogManager()));
+        if (this.plugin.getDialogManager() != null) {
+            buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
 
         // Loading ButtonLoader
