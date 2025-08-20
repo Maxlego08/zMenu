@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ZDialogInventory implements ZDialogs {
 
-    private final Plugin plugin;
+    private final MenuPlugin menuPlugin;
     private final String fileName;
     private File file;
 
@@ -58,8 +58,8 @@ public class ZDialogInventory implements ZDialogs {
     private ActionButtonRecord actionButtonRecordServerLink;
     private int numberOfColumns = 1;
 
-    public ZDialogInventory(Plugin plugin, String name, String fileName, String externalTitle) {
-        this.plugin = plugin;
+    public ZDialogInventory(MenuPlugin plugin, String name, String fileName, String externalTitle) {
+        this.menuPlugin = plugin;
         this.name = name;
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
         this.externalTitle = externalTitle;
@@ -77,8 +77,8 @@ public class ZDialogInventory implements ZDialogs {
     }
 
     @Override
-    public Plugin getPlugin() {
-        return plugin;
+    public MenuPlugin getPlugin() {
+        return menuPlugin;
     }
 
     @Override

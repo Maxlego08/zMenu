@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
@@ -23,7 +24,7 @@ public interface ZDialogs {
 
     String getFileName();
 
-    Plugin getPlugin();
+    MenuPlugin getPlugin();
 
     File getFile();
 
