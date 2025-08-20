@@ -5,16 +5,15 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.PaperComponent;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.exception.DialogException;
-import fr.maxlego08.menu.hooks.dialogs.exception.DialogFileNotFound;
+import fr.maxlego08.menu.api.exceptions.DialogException;
+import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.actions.BroadcastLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.actions.MessageLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
@@ -49,22 +48,21 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class ZDialogManager implements DialogManager {
-    private final MenuPlugin plugin;
+    private final MenuPlugin menuPlugin;
     private static InventoryManager inventoryManager;
     private final Map<String, List<ZDialogs>> dialogs = new HashMap<>();
     private final Map<UUID, ZDialogs> activeDialogs = new HashMap<>();
     private final Map<String, BodyLoader> bodyLoader = new HashMap<>();
     private final Map<String, InputLoader> inputLoader = new HashMap<>();
-    private final Map<String, DialogActionIntLoader> dialogActionLoaders = new HashMap<>();
     private final DialogBuilderClass dialogBuilders;
 
     private final PaperComponent paperComponent;
 
-    public ZDialogManager(final Plugin plugin) {
-        this.plugin = (MenuPlugin) plugin;
+    public ZDialogManager(final MenuPlugin menuPlugin) {
+        this.menuPlugin = menuPlugin;
         this.paperComponent = PaperComponent.getInstance();
         this.dialogBuilders = new DialogBuilderClass();
-        inventoryManager = ((MenuPlugin) plugin).getInventoryManager();
+        inventoryManager = menuPlugin.getInventoryManager();
 
     }
 
@@ -77,10 +75,6 @@ public class ZDialogManager implements DialogManager {
         this.registerInputLoader(new BooleanInputLoader());
         this.registerInputLoader(new NumberRangeInputLoader());
         this.registerInputLoader(new SingleOptionInputLoader());
-
-        this.registerActions(new MessageLoader());
-        this.registerActions(new BroadcastLoader());
-        loadDialogs();
     }
 
     @Override
@@ -149,7 +143,7 @@ public class ZDialogManager implements DialogManager {
 
     @Override
     public void loadDialogs() {
-        File folder = new File(plugin.getDataFolder(), "dialogs");
+        File folder = new File(menuPlugin.getDataFolder(), "dialogs");
         if (!folder.exists()) {
             folder.mkdirs();
             return;
@@ -162,7 +156,7 @@ public class ZDialogManager implements DialogManager {
                     .filter(file -> file.getName().endsWith(".yml"))
                     .forEach(file -> {
                         try {
-                            this.loadInventory(this.plugin, file);
+                            this.loadInventory(this.menuPlugin, file);
                         } catch (DialogException | InventoryException exception) {
                             Logger.info("Failed to load dialog from file: " + file.getName(), Logger.LogType.WARNING);
 
@@ -199,7 +193,7 @@ public class ZDialogManager implements DialogManager {
             throws DialogException, InventoryException {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        Loader<ZDialogs> loader = new DialogLoader(this.plugin, this);
+        Loader<ZDialogs> loader = new DialogLoader(this.menuPlugin, this);
         ZDialogs dialog = loader.load(configuration, "", file, dialogClass, plugin);
 
         List<ZDialogs> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
@@ -236,19 +230,6 @@ public class ZDialogManager implements DialogManager {
     }
 
     @Override
-    public void registerActions(DialogActionIntLoader action) {
-        if (action != null ){
-            for (String name : action.getActionNames()){
-                if (dialogActionLoaders.containsKey(name)) {
-                    Logger.info("DialogActionIntLoader " + name + " is already registered!", Logger.LogType.WARNING);
-                } else {
-                    dialogActionLoaders.put(name, action);
-                }
-            }
-        }
-    }
-
-    @Override
     public void reloadDialogs() {
         dialogs.clear();
         activeDialogs.clear();
@@ -259,23 +240,9 @@ public class ZDialogManager implements DialogManager {
     }
 
     /**
-     * Opens a dialog for the specified player
-     */
-    @Override
-    public void openDialog(Player player, String dialogName) {
-        Optional<ZDialogs> optionalDialog = this.getDialog(dialogName);
-        if (optionalDialog.isEmpty()) {
-            Logger.info("Attempted to open non-existent dialog: " + dialogName + " for player: " + player.getName(), Logger.LogType.WARNING);
-            return;
-        }
-
-        ZDialogs dialog = optionalDialog.get();
-        openDialog(player, dialog);
-    }
-
-    /**
      * Opens a specific dialog for the specified player
      */
+    @Override
     public void openDialog(Player player, ZDialogs zDialog) {
         try {
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
@@ -342,7 +309,7 @@ public class ZDialogManager implements DialogManager {
         return ActionButton.create(paperComponent.getComponent(actionButtonRecord.label()), paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), createAction(inputs,actionButtonRecord.actions()));
     }
 
-    public DialogAction createAction(List<DialogInput> inputs, List<fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction> actions) {
+    public DialogAction createAction(List<DialogInput> inputs, List<Action> actions) {
         return DialogAction.customClick((view,audience)-> {
             Placeholders placeholders = new Placeholders();
             for (DialogInput input : inputs) {
@@ -370,8 +337,8 @@ public class ZDialogManager implements DialogManager {
                 placeholders.register(key, value);
             }
 
-            for (fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction action : actions) {
-                action.execute(view,audience, placeholders, (Player) audience);
+            for (Action action : actions) {
+                action.preExecute((Player) audience, null, inventoryManager.getFakeInventory(), placeholders);
             }
 
         }, ClickCallback.Options.builder().uses(-1).build());
@@ -424,12 +391,6 @@ public class ZDialogManager implements DialogManager {
     public Optional<DialogBuilder> getDialogBuilder(DialogBodyType type) {
         return DialogBuilderClass.getDialogBuilder(type);
     }
-
-    @Override
-    public Optional<DialogActionIntLoader> getDialogAction(String name) {
-        return Optional.ofNullable(this.dialogActionLoaders.get(name));
-    }
-
 
     public static MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         if (inventoryManager == null){

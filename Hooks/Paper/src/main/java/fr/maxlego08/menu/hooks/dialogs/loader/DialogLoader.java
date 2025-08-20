@@ -2,6 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
@@ -19,7 +20,6 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public class DialogLoader implements Loader<ZDialogs> {
-    private final Plugin plugin;
+    private final MenuPlugin menuPlugin;
     private final ZDialogManager manager;
 
-    public DialogLoader(Plugin plugin, ZDialogManager manager) {
-        this.plugin = plugin;
+    public DialogLoader(MenuPlugin menuPlugin, ZDialogManager manager) {
+        this.menuPlugin = menuPlugin;
         this.manager = manager;
     }
 
@@ -43,7 +43,7 @@ public class DialogLoader implements Loader<ZDialogs> {
         String name = configuration.getString("name", "");
         String externalTitle = configuration.getString("external-title", "");
 
-        ZDialogInventory dialogInventory = new ZDialogInventory(plugin, name, file.getName(), externalTitle);
+        ZDialogInventory dialogInventory = new ZDialogInventory(menuPlugin, name, file.getName(), externalTitle);
 
         boolean canCloseWithEscape = configuration.getBoolean("can-close-with-escape", true);
         dialogInventory.setCanCloseWithEscape(canCloseWithEscape);
@@ -108,7 +108,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                 BodyLoader loader = optionalLoader.get();
 
                 BodyButton button = loader.load(path, file, configuration);
-                button.setPlugin((MenuPlugin) plugin);
+                button.setPlugin((MenuPlugin) menuPlugin);
                 button.setBodyType(loader.getBodyType());
                 bodyButtons.add(button);
             } else {
@@ -140,7 +140,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                 InputLoader loader = optionalInputType.get();
 
                 InputButton button = loader.load(path, file, configuration);
-                button.setPlugin((MenuPlugin) plugin);
+                button.setPlugin((MenuPlugin) menuPlugin);
                 button.setInputType(loader.getInputType());
                 button.setKey(inputKey);
 
@@ -163,17 +163,7 @@ public class DialogLoader implements Loader<ZDialogs> {
         switch (dialogType) {
             case NOTICE -> {
                 List<Map<?, ?>> actions = configuration.getMapList("actions");
-                for (Map<?, ?> action : actions) {
-                    TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) action);
-                    String actionType = accessor.getString("type");
-                    Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(actionType);
-                    if (actionLoader.isPresent()) {
-                        DialogActionIntLoader actionIntLoader = actionLoader.get();
-                        dialogInventory.addAction(actionIntLoader.load("actions", accessor, file));
-                    } else {
-                        Logger.info("No action loader found for type: " + actionType, Logger.LogType.WARNING);
-                    }
-                }
+                dialogInventory.addAction(loadActions(configuration, "actions", file));
                 String noticeText = configuration.getString("notice.text","");
                 String noticeTooltip = configuration.getString("notice.tooltip","");
                 int noticeWidth = configuration.getInt("notice.width", 200);
@@ -195,31 +185,8 @@ public class DialogLoader implements Loader<ZDialogs> {
                 dialogInventory.setNoTooltip(noTooltip);
                 dialogInventory.setYesWidth(yesWidth);
                 dialogInventory.setNoWidth(noWidth);
-                List<Map<?, ?>> yesActions = configuration.getMapList("yes-actions");
-                for (Map<?, ?> yesAction : yesActions) {
-                    TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) yesAction);
-                    String yesActionType = accessor.getString("type");
-                    Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(yesActionType);
-                    if (actionLoader.isPresent()) {
-                        DialogActionIntLoader actionIntLoader = actionLoader.get();
-                        dialogInventory.addYesAction(actionIntLoader.load("yes-actions", accessor, file));
-                    } else {
-                        Logger.info("No action loader found for type: " + yesActionType, Logger.LogType.WARNING);
-                    }
-                }
-                List<Map<?, ?>> noActions = configuration.getMapList("no-actions");
-                for (Map<?, ?> noAction : noActions) {
-                    TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) noAction);
-                    String noActionType = accessor.getString("type");
-                    Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(noActionType);
-
-                    if (actionLoader.isPresent()) {
-                        DialogActionIntLoader actionIntLoader = actionLoader.get();
-                        dialogInventory.addNoAction(actionIntLoader.load("no-actions", accessor, file));
-                    } else {
-                        Logger.info("No action loader found for type: " + noActionType, Logger.LogType.WARNING);
-                    }
-                }
+                dialogInventory.addYesAction(loadActions(configuration, "yes-actions", file));
+                dialogInventory.addNoAction(loadActions(configuration, "no-actions", file));
             }
             case MULTI_ACTION -> {
                 int numberOfColumns = configuration.getInt("number-of-columns", 3);
@@ -232,7 +199,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
                     int width = configuration.getInt(path + ".width", 100);
-                    List<DialogAction> actions = loadActions(configuration, path, file);
+                    List<Action> actions = loadActions(configuration, path, file);
                     ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
                     dialogInventory.addActionButton(record);
                 }
@@ -242,7 +209,7 @@ public class DialogLoader implements Loader<ZDialogs> {
                 String text = configuration.getString("server-links.text", "");
                 String tooltip = configuration.getString("server-links.tooltip", "");
                 int width = configuration.getInt("server-links.width", 100);
-                List<DialogAction> actions = loadActions(configuration, "server-links", file);
+                List<Action> actions = loadActions(configuration, "server-links", file);
                 int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
                 ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
                 dialogInventory.setActionButtonServerLink(record);
@@ -251,22 +218,7 @@ public class DialogLoader implements Loader<ZDialogs> {
         }
     }
 
-    public List<DialogAction> loadActions(YamlConfiguration configuration, String path, File file) {
-        List<DialogAction> actions = new ArrayList<>();
-        List<Map<?, ?>> actionMaps = configuration.getMapList(path + ".actions");
-        for (Map<?, ?> actionMap : actionMaps) {
-            TypedMapAccessor accessor = new TypedMapAccessor((Map<String, Object>) actionMap);
-            String actionType = accessor.getString("type");
-            Optional<DialogActionIntLoader> actionLoader = manager.getDialogAction(actionType);
-            if (actionLoader.isPresent()) {
-                DialogActionIntLoader actionIntLoader = actionLoader.get();
-                actions.add(actionIntLoader.load(path + ".actions", accessor, file));
-            } else {
-                Logger.info("No action loader found for type: " + actionType, Logger.LogType.WARNING);
-            }
-        }
-        return actions;
+    public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
+        return menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path, new ArrayList<>()), path, file);
     }
-
-
 }
