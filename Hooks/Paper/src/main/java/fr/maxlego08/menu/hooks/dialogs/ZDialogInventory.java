@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
@@ -33,18 +34,18 @@ public class ZDialogInventory implements ZDialogs {
     private List<InputButton> inputButtons = new ArrayList<>();
 
     // Notice
-    private final List<DialogAction> actions = new ArrayList<>();
+    private final List<Action> actions = new ArrayList<>();
     private String label;
     private String labelTooltip;
     private int labelWidth = 200;
 
     // When {@link DialogType#CONFIRM} is used
-    private final List<DialogAction> yesActions = new ArrayList<>();
+    private final List<Action> yesActions = new ArrayList<>();
     private String yesText = "Yes";
     private String yesTooltip = null;
     private int yesWidth = 100;
 
-    private final List<DialogAction> noActions = new ArrayList<>();
+    private final List<Action> noActions = new ArrayList<>();
     private String noText = "No";
     private String noTooltip = null;
     private int noWidth = 100;
@@ -206,26 +207,22 @@ public class ZDialogInventory implements ZDialogs {
     }
 
     @Override
-    public List<DialogAction> getYesActions() {
+    public List<Action> getYesActions() {
         return yesActions;
     }
 
     @Override
-    public List<DialogAction> getNoActions() {
+    public List<Action> getNoActions() {
         return noActions;
     }
 
     @Override
-    public void addYesAction(DialogAction action) {
-        if (action != null) {
-            this.yesActions.add(action);
-        }
+    public void addYesAction(List<Action> actions) {
+        this.yesActions.addAll(actions);
     }
     @Override
-    public void addNoAction(DialogAction action) {
-        if (action != null) {
-            this.noActions.add(action);
-        }
+    public void addNoAction(List<Action> actions) {
+        this.noActions.addAll(actions);
     }
     @Override
     public String getYesText() {
@@ -375,14 +372,12 @@ public class ZDialogInventory implements ZDialogs {
     }
 
     @Override
-    public void addAction(DialogAction action) {
-        if (action != null) {
-            this.actions.add(action);
-        }
+    public void addAction(List<Action> actions) {
+        this.actions.addAll(actions);
     }
 
     @Override
-    public List<DialogAction> getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
@@ -56,17 +57,17 @@ public interface ZDialogs {
 
     List<DialogInput> getDialogInputs(Player player);
 
-    List<DialogAction> getYesActions();
+    List<Action> getYesActions();
 
-    List<DialogAction> getNoActions();
+    List<Action> getNoActions();
 
-    void addYesAction(DialogAction action);
+    void addYesAction(List<Action> action);
 
-    void addNoAction(DialogAction action);
+    void addNoAction(List<Action> action);
 
-    void addAction(DialogAction action);
+    void addAction(List<Action> action);
 
-    List<DialogAction> getActions();
+    List<Action> getActions();
 
     void setYesText(String yesText);
 
