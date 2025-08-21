@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.utils.record;
 
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 

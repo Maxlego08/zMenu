@@ -4,8 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.hooks.dialogs.DialogManager;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogs;
+import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.command.ConsoleCommandSender;
@@ -38,7 +37,7 @@ public class CommandDialogOpen extends VCommand {
             message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.DIALOG_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
-        Optional<ZDialogs> optional = dialogManager.getDialog(dialogName);
+        Optional<DialogInventory> optional = dialogManager.getDialog(dialogName);
 
         if (optional.isEmpty()) {
             message(plugin, this.sender, Message.DIALOG_OPEN_ERROR_NOT_FOUND,"%name%", dialogName);
@@ -53,8 +52,8 @@ public class CommandDialogOpen extends VCommand {
             }
         }
 
-        ZDialogs zDialogs = optional.get();
-        dialogManager.openDialog(targetPlayer, zDialogs);
+        DialogInventory dialogInventory = optional.get();
+        dialogManager.openDialog(targetPlayer, dialogInventory);
 
 
         return CommandType.SUCCESS;

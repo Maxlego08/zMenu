@@ -4,16 +4,13 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogs;
+import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -27,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class DialogLoader implements Loader<ZDialogs> {
+public class DialogLoader implements Loader<DialogInventory> {
     private final MenuPlugin menuPlugin;
     private final ZDialogManager manager;
 
@@ -37,7 +34,7 @@ public class DialogLoader implements Loader<ZDialogs> {
     }
 
     @Override
-    public ZDialogs load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public DialogInventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
         String name = configuration.getString("name", "");
@@ -155,7 +152,7 @@ public class DialogLoader implements Loader<ZDialogs> {
     }
 
     @Override
-    public void save(ZDialogs object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(DialogInventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
         //TODO: Implement save logic if needed
     }
 

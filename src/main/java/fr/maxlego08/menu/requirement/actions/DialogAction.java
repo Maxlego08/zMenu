@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.dialogs.DialogManager;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogs;
+import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 
@@ -35,7 +35,7 @@ public class DialogAction extends ActionHelper {
             List<Inventory> oldInventories = inventory.getOldInventories();
 
             String dialogName = this.papi(placeholders.parse(this.dialog), player);
-            Optional<ZDialogs> optional = this.plugin == null ? this.dialogManager.getDialog(dialogName) : this.dialogManager.getDialog(this.plugin, dialogName);
+            Optional<DialogInventory> optional = this.plugin == null ? this.dialogManager.getDialog(dialogName) : this.dialogManager.getDialog(this.plugin, dialogName);
             if (optional.isPresent()) {
                 //oldInventories.add(fromInventory); SOON
 

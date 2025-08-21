@@ -12,13 +12,12 @@ import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZDialogInventory implements ZDialogs {
+public class ZDialogInventory implements DialogInventory {
 
     private final MenuPlugin menuPlugin;
     private final String fileName;

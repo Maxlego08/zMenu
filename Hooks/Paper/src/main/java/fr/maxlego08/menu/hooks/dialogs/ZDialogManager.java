@@ -23,7 +23,6 @@ import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
@@ -50,8 +49,8 @@ import java.util.stream.Stream;
 public class ZDialogManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private static InventoryManager inventoryManager;
-    private final Map<String, List<ZDialogs>> dialogs = new HashMap<>();
-    private final Map<UUID, ZDialogs> activeDialogs = new HashMap<>();
+    private final Map<String, List<DialogInventory>> dialogs = new HashMap<>();
+    private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
     private final Map<String, BodyLoader> bodyLoader = new HashMap<>();
     private final Map<String, InputLoader> inputLoader = new HashMap<>();
     private final DialogBuilderClass dialogBuilders;
@@ -78,7 +77,7 @@ public class ZDialogManager implements DialogManager {
     }
 
     @Override
-    public ZDialogs loadDialog(Plugin plugin, String fileName) throws DialogException {
+    public DialogInventory loadDialog(Plugin plugin, String fileName) throws DialogException {
         try {
             return loadInventory(plugin, fileName);
         } catch (InventoryException e) {
@@ -87,8 +86,8 @@ public class ZDialogManager implements DialogManager {
     }
 
     @Override
-    public Optional<ZDialogs> getDialog(String dialogName) {
-        Optional<ZDialogs> dialogs;
+    public Optional<DialogInventory> getDialog(String dialogName) {
+        Optional<DialogInventory> dialogs;
         if (dialogName.contains(":")){
             String[] values = dialogName.split(":",2);
             dialogs = getDialog(values[0], values[1]);
@@ -97,9 +96,9 @@ public class ZDialogManager implements DialogManager {
         }
         return dialogs;
     }
-    public Optional<ZDialogs> getDialogOptional(String name) {
-        for (List<ZDialogs> dialogList : dialogs.values()) {
-            for (ZDialogs dialog : dialogList) {
+    public Optional<DialogInventory> getDialogOptional(String name) {
+        for (List<DialogInventory> dialogList : dialogs.values()) {
+            for (DialogInventory dialog : dialogList) {
                 if (dialog.getFileName().equals(name) || dialog.getName(null).equals(name)) {
                     return Optional.of(dialog);
                 }
@@ -108,8 +107,8 @@ public class ZDialogManager implements DialogManager {
         return Optional.empty();
     }
     @Override
-    public Optional<ZDialogs> getDialog(String pluginName, String fileName) {
-        List<ZDialogs> pluginDialogs = dialogs.get(pluginName);
+    public Optional<DialogInventory> getDialog(String pluginName, String fileName) {
+        List<DialogInventory> pluginDialogs = dialogs.get(pluginName);
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
@@ -118,8 +117,8 @@ public class ZDialogManager implements DialogManager {
     }
 
     @Override
-    public Optional<ZDialogs> getDialog(Plugin plugin, String fileName) {
-        List<ZDialogs> pluginDialogs = dialogs.get(plugin.getName());
+    public Optional<DialogInventory> getDialog(Plugin plugin, String fileName) {
+        List<DialogInventory> pluginDialogs = dialogs.get(plugin.getName());
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
@@ -129,7 +128,7 @@ public class ZDialogManager implements DialogManager {
 
     @Override
     public void deleteDialog(String name) {
-        for (List<ZDialogs> dialogList : dialogs.values()) {
+        for (List<DialogInventory> dialogList : dialogs.values()) {
             dialogList.removeIf(dialog ->
                     dialog.getFileName().equals(name) || dialog.getName(null).equals(name)
             );
@@ -168,17 +167,17 @@ public class ZDialogManager implements DialogManager {
     }
 
     @Override
-    public ZDialogs loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException {
+    public DialogInventory loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException {
         return this.loadInventory(plugin, fileName, ZDialogInventory.class);
     }
 
     @Override
-    public ZDialogs loadInventory(Plugin plugin, File file) throws DialogException, InventoryException {
+    public DialogInventory loadInventory(Plugin plugin, File file) throws DialogException, InventoryException {
         return this.loadInventory(plugin, file, ZDialogInventory.class);
     }
 
     @Override
-    public ZDialogs loadInventory(Plugin plugin, String fileName, Class<? extends ZDialogs> dialogClass)
+    public DialogInventory loadInventory(Plugin plugin, String fileName, Class<? extends DialogInventory> dialogClass)
             throws DialogException, InventoryException {
         File file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
@@ -189,14 +188,14 @@ public class ZDialogManager implements DialogManager {
     }
 
     @Override
-    public ZDialogs loadInventory(Plugin plugin, File file, Class<? extends ZDialogs> dialogClass)
+    public DialogInventory loadInventory(Plugin plugin, File file, Class<? extends DialogInventory> dialogClass)
             throws DialogException, InventoryException {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        Loader<ZDialogs> loader = new DialogLoader(this.menuPlugin, this);
-        ZDialogs dialog = loader.load(configuration, "", file, dialogClass, plugin);
+        Loader<DialogInventory> loader = new DialogLoader(this.menuPlugin, this);
+        DialogInventory dialog = loader.load(configuration, "", file, dialogClass, plugin);
 
-        List<ZDialogs> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
+        List<DialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
         if (Config.enableInformationMessage) {
@@ -243,7 +242,7 @@ public class ZDialogManager implements DialogManager {
      * Opens a specific dialog for the specified player
      */
     @Override
-    public void openDialog(Player player, ZDialogs zDialog) {
+    public void openDialog(Player player, DialogInventory zDialog) {
         try {
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
             List<DialogBody> bodies = zDialog.getDialogBodies(player);
@@ -271,7 +270,7 @@ public class ZDialogManager implements DialogManager {
     /**
      * Creates a dialog based on the dialog type
      */
-    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, ZDialogs zDialog, Player player) {
+    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, DialogInventory zDialog, Player player) {
         return switch (dialogType) {
             case NOTICE ->
                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(ActionButton.create(paperComponent.getComponent(zDialog.getLabel(player)),paperComponent.getComponent(zDialog.getLabelTooltip(player)), zDialog.getLabelWidth(), createAction(inputs,zDialog.getActions())))).base(dialogBase.body(bodies).inputs(inputs).build())
@@ -295,8 +294,8 @@ public class ZDialogManager implements DialogManager {
             // Impossible beacause we need the dialogs to register on the server and this required the plugin to be a PaperPlugin
         };
     }
-    private List<ActionButton> createActionButtons(ZDialogs zDialogs, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {
-        if (zDialogs == null) {
+    private List<ActionButton> createActionButtons(DialogInventory dialogInventory, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {
+        if (dialogInventory == null) {
             return Collections.emptyList();
         }
         List<ActionButton> actionButtons = new ArrayList<>();
@@ -346,7 +345,7 @@ public class ZDialogManager implements DialogManager {
     /**
      * Gets the active dialog for a player
      */
-    public Optional<ZDialogs> getActiveDialog(Player player) {
+    public Optional<DialogInventory> getActiveDialog(Player player) {
         return Optional.ofNullable(activeDialogs.get(player.getUniqueId()));
     }
 
@@ -358,7 +357,7 @@ public class ZDialogManager implements DialogManager {
     }
 
     public boolean openDialogByName(Player player, String dialogName) {
-        Optional<ZDialogs> dialog = getDialog(dialogName);
+        Optional<DialogInventory> dialog = getDialog(dialogName);
         if (dialog.isPresent()) {
             openDialog(player, dialog.get());
             return true;
@@ -366,9 +365,9 @@ public class ZDialogManager implements DialogManager {
         return false;
     }
     @Override
-    public Collection<ZDialogs> getDialogs() {
-        List<ZDialogs> allDialogs = new ArrayList<>();
-        for (List<ZDialogs> dialogList : dialogs.values()) {
+    public Collection<DialogInventory> getDialogs() {
+        List<DialogInventory> allDialogs = new ArrayList<>();
+        for (List<DialogInventory> dialogList : dialogs.values()) {
             allDialogs.addAll(dialogList);
         }
         return Collections.unmodifiableCollection(allDialogs);
