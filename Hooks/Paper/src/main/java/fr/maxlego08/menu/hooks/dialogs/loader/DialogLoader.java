@@ -9,7 +9,7 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
+import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;

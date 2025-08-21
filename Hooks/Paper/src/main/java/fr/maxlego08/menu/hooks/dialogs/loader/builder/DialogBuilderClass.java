@@ -2,6 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogNumberRangeInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogBooleanInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogInputTextBuilder;
@@ -17,18 +18,18 @@ public class DialogBuilderClass {
     private static final Map<DialogBodyType, DialogBuilder> dialogBuilders = new HashMap<>();
     private static final Map<DialogInputType, DialogInputBuilderInt> dialogInputBuilders = new HashMap<>();
 
-    public DialogBuilderClass() {
-        this.loadBuilders();
+    public DialogBuilderClass(DialogManager dialogManager) {
+        this.loadBuilders(dialogManager);
     }
 
-    private void loadBuilders() {
-        this.registerBuilder(new PlainMessageDialogBuilder());
-        this.registerBuilder(new ItemDialogBuilder());
+    private void loadBuilders(DialogManager dialogManager) {
+        this.registerBuilder(new PlainMessageDialogBuilder(dialogManager));
+        this.registerBuilder(new ItemDialogBuilder(dialogManager));
 
-        this.registerInputBuilder(new DilogInputTextBuilder());
-        this.registerInputBuilder(new DilogBooleanInputBuilder());
-        this.registerInputBuilder(new DilogSingleOptionInputBuilder());
-        this.registerInputBuilder(new DialogNumberRangeInputBuilder());
+        this.registerInputBuilder(new DilogInputTextBuilder(dialogManager));
+        this.registerInputBuilder(new DilogBooleanInputBuilder(dialogManager));
+        this.registerInputBuilder(new DilogSingleOptionInputBuilder(dialogManager));
+        this.registerInputBuilder(new DialogNumberRangeInputBuilder(dialogManager));
     }
 
     public void registerBuilder(DialogBuilder builder) {

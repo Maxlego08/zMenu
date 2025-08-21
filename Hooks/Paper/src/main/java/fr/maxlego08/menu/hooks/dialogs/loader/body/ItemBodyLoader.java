@@ -3,7 +3,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.body;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 

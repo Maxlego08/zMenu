@@ -1,8 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
-import fr.maxlego08.menu.hooks.PaperComponent;
+import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.SingleOption;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -15,6 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DilogSingleOptionInputBuilder implements DialogInputBuilderInt {
+    private final DialogManager dialogManager;
+    public DilogSingleOptionInputBuilder(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
+
     @Override
     public DialogInputType getBodyType() {
         return DialogInputType.SINGLE_OPTION;
@@ -22,7 +28,7 @@ public class DilogSingleOptionInputBuilder implements DialogInputBuilderInt {
 
     @Override
     public DialogInput build(Player player, InputButton button) {
-        PaperComponent paperComponent = PaperComponent.getInstance();
+        ComponentMeta paperComponent = this.dialogManager.getPaperComponent();
         
         String key = button.getKey();
         int width = button.getWidth();

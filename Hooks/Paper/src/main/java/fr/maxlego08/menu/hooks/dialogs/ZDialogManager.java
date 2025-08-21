@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.hooks.PaperComponent;
+import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
@@ -55,12 +55,12 @@ public class ZDialogManager implements DialogManager {
     private final Map<String, InputLoader> inputLoader = new HashMap<>();
     private final DialogBuilderClass dialogBuilders;
 
-    private final PaperComponent paperComponent;
+    private final ComponentMeta paperComponent;
 
     public ZDialogManager(final MenuPlugin menuPlugin) {
         this.menuPlugin = menuPlugin;
-        this.paperComponent = PaperComponent.getInstance();
-        this.dialogBuilders = new DialogBuilderClass();
+        this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
+        this.dialogBuilders = new DialogBuilderClass(this);
         inventoryManager = menuPlugin.getInventoryManager();
 
     }
@@ -400,4 +400,8 @@ public class ZDialogManager implements DialogManager {
         }
     }
 
+    @Override
+    public ComponentMeta getPaperComponent() {
+        return paperComponent;
+    }
 }
