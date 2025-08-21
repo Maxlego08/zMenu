@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
 import fr.maxlego08.menu.hooks.PaperComponent;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogNumberRangeInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogBooleanInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogInputTextBuilder;

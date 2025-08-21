@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.dialogs.enums;
+package fr.maxlego08.menu.api.enums;
 
 public enum DialogType {
     NOTICE,

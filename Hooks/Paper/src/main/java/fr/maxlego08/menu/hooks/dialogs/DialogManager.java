@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
