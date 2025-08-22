@@ -34,7 +34,7 @@ import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
-import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import io.papermc.paper.registry.data.dialog.input.*;
 import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -351,17 +351,25 @@ public class ZDialogManager implements DialogManager {
 
                 Object rawValue;
 
-                if (view.getText(key) != null) {
-                    rawValue = view.getText(key);
-                    value = (String) rawValue;
-                }
-                else if (view.getFloat(key) != null) {
-                    rawValue = view.getFloat(key);
-                    value = String.valueOf(rawValue);
-                }
-                else if (view.getBoolean(key) != null) {
-                    rawValue = view.getBoolean(key);
-                    value = String.valueOf(rawValue);
+                switch (input) {
+                    case NumberRangeDialogInput numberRangeDialogInput -> {
+                        rawValue = view.getFloat(key);
+                        value = String.valueOf(rawValue);
+                    }
+                    case TextDialogInput textDialogInput -> {
+                        rawValue = view.getText(key);
+                        value = (String) rawValue;
+                    }
+                    case BooleanDialogInput booleanDialogInput -> {
+                        rawValue = view.getBoolean(key);
+                        value = String.valueOf(rawValue);
+                    }
+                    case SingleOptionDialogInput singleOptionDialogInput -> {
+                        rawValue = view.getText(key);
+                        value = (String) rawValue;
+                    }
+                    default -> {
+                    }
                 }
                 if (value == null) {
                     continue;
