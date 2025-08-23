@@ -167,7 +167,7 @@ public abstract class Button extends PlaceholderButton {
     }
 
     public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
-
+        placeholders.register("player", player.getName());
         if (this.closeInventory()) {
             player.closeInventory();
         }
@@ -184,7 +184,7 @@ public abstract class Button extends PlaceholderButton {
             if (this.openLink != null) {
                 this.openLink.send(player, this.messages);
             } else {
-                this.messages.forEach(message -> plugin.getMetaUpdater().sendMessage(player, this.plugin.parse(player, placeholders.parse(message.replace("%player%", player.getName())))));
+                this.messages.forEach(message -> plugin.getMetaUpdater().sendMessage(player, this.plugin.parse(player, placeholders.parse(message))));
             }
         }
 
