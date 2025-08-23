@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.dupe;
 
 import fr.maxlego08.menu.api.dupe.DupeManager;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,9 @@ public class PDCDupeManager implements DupeManager {
                 Bukkit.getLogger().severe("Attention, you have a null ItemStack on protectItem method !");
                 return null;
             }
+            if (itemStack.getType().isAir()) {
+                return itemStack;
+            }
 
             if (!itemStack.hasItemMeta()) {
                 return itemStack;
@@ -38,8 +42,8 @@ public class PDCDupeManager implements DupeManager {
             itemStack.setItemMeta(itemMeta);
             return itemStack;
         } catch (Exception exception) {
-            System.out.println("Error with the item " + itemStack);
-            exception.printStackTrace();
+            Logger.info("Error with the item " + itemStack, Logger.LogType.ERROR);
+            Logger.info("Error: " + exception.getMessage(), Logger.LogType.ERROR);
             return itemStack;
         }
     }
