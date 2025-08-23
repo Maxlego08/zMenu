@@ -144,7 +144,9 @@ confirmation:
   no-width: 200
 yes-actions:
   - type: message
-    message: "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
+    messages:
+      - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
 no-actions:
   - type: message
-    message: "&cWe're sorry to hear that! Please let us know how we can improve."
+    messages:
+      - "&cWe're sorry to hear that! Please let us know how we can improve."

@@ -196,7 +196,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
                     int width = configuration.getInt(path + ".width", 100);
-                    List<Action> actions = loadActions(configuration, path, file);
+                    List<Action> actions = loadActions(configuration, path+".actions", file);
                     ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
                     dialogInventory.addActionButton(record);
                 }

@@ -80,7 +80,7 @@ inputs:
     multiline:
       max-lines: 4
       height: 80
-  booleen:
+  boolean:
     # Boolean choice example
     type: boolean
     label: "&eWould you like to receive server updates?"
@@ -122,7 +122,8 @@ inputs:
     initial-value: 3
 actions:
   - type: message
-    message: "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
+    messages:
+      - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
 notice:
   text: "<green>Accept the rules to continue"
   tooltip: "<green>Click to accept the rules"

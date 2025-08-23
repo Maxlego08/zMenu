@@ -7,28 +7,31 @@ can-close-with-escape: true  # Allow players to close with ESC key
 pause: false                 # Pause the game while dialog is open
 after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
 number-of-columns: 2 # Number of button can be displayed in a row
-multi-action:
+multi-actions:
   button1:
     text: "&a&lJoin Survival Mode"
     tooltip: "&7Click to join the Survival world"
     width: 200
     actions:
       - type: message
-        message: "&aYou have joined the Survival world!"
+        messages:
+          - "&aYou have joined the Survival world!"
   button2:
     text: "&b&lVisit Creative World"
     tooltip: "&7Explore the Creative world"
     width: 200
     actions:
       - type: message
-        message: "&bYou are now in the Creative world!"
+        messages:
+          - "&bYou are now in the Creative world!"
   button3:
     text: "&c&lPvP Arena"
     tooltip: "&7Enter the PvP Arena for battles"
     width: 200
     actions:
       - type: message
-        message: "&cGet ready for some PvP action!"
+        messages:
+          - "&cGet ready for some PvP action!"
 
 # Dialog body content - can contain multiple sections
 body:
