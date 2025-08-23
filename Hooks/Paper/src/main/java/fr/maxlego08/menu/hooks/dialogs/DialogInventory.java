@@ -1,28 +1,28 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
+import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.List;
 
-public interface ZDialogs {
+public interface DialogInventory {
     String getName(Player player);
 
     String getExternalTitle();
 
     String getFileName();
 
-    Plugin getPlugin();
+    MenuPlugin getPlugin();
 
     File getFile();
 
@@ -56,17 +56,17 @@ public interface ZDialogs {
 
     List<DialogInput> getDialogInputs(Player player);
 
-    List<DialogAction> getYesActions();
+    List<Action> getYesActions();
 
-    List<DialogAction> getNoActions();
+    List<Action> getNoActions();
 
-    void addYesAction(DialogAction action);
+    void addYesAction(List<Action> action);
 
-    void addNoAction(DialogAction action);
+    void addNoAction(List<Action> action);
 
-    void addAction(DialogAction action);
+    void addAction(List<Action> action);
 
-    List<DialogAction> getActions();
+    List<Action> getActions();
 
     void setYesText(String yesText);
 

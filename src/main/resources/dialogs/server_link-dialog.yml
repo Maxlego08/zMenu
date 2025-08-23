@@ -14,7 +14,8 @@ server-links:
   number-of-columns: 2 # Number of buttons displayed in a row
   actions:
     - type: message
-      message: "&aYou clicked a server link!"
+      messages:
+        - "&aYou clicked a server link!"
 
 # Dialog body content - can contain multiple sections
 body:
@@ -89,7 +90,7 @@ inputs:
     multiline:
       max-lines: 4
       height: 80
-  booleen:
+  boolean:
     # Boolean choice example
     type: boolean
     label: "&eWould you like to receive server updates?"

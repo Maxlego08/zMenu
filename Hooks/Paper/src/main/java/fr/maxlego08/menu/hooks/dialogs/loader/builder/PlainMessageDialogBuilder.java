@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
-import fr.maxlego08.menu.hooks.PaperComponent;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
@@ -12,6 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlainMessageDialogBuilder implements DialogBuilder{
+    private final DialogManager dialogManager;
+    public PlainMessageDialogBuilder(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
+
     @Override
     public DialogBodyType getBodyType() {
         return DialogBodyType.PLAIN_MESSAGE;
@@ -19,7 +24,6 @@ public class PlainMessageDialogBuilder implements DialogBuilder{
 
     @Override
     public DialogBody build(Player player, BodyButton button) {
-        PaperComponent paperComponent = PaperComponent.getInstance();
         List<String> messages = button.getMessages();
         if (messages.isEmpty()) {
             return null;
@@ -27,7 +31,7 @@ public class PlainMessageDialogBuilder implements DialogBuilder{
         List<Component> components = new ArrayList<>();
         for (String message : messages) {
             String parsedMessage = PlaceholderAPI.setPlaceholders(player, message);
-            components.add(paperComponent.getComponent(parsedMessage));
+            components.add(this.dialogManager.getPaperComponent().getComponent(parsedMessage));
         }
         Component finalComponent;
         if (components.size() == 1) {

@@ -1,9 +1,10 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.action.DialogAction;
+import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
@@ -11,15 +12,14 @@ import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZDialogInventory implements ZDialogs {
+public class ZDialogInventory implements DialogInventory {
 
-    private final Plugin plugin;
+    private final MenuPlugin menuPlugin;
     private final String fileName;
     private File file;
 
@@ -33,18 +33,18 @@ public class ZDialogInventory implements ZDialogs {
     private List<InputButton> inputButtons = new ArrayList<>();
 
     // Notice
-    private final List<DialogAction> actions = new ArrayList<>();
+    private final List<Action> actions = new ArrayList<>();
     private String label;
     private String labelTooltip;
     private int labelWidth = 200;
 
     // When {@link DialogType#CONFIRM} is used
-    private final List<DialogAction> yesActions = new ArrayList<>();
+    private final List<Action> yesActions = new ArrayList<>();
     private String yesText = "Yes";
     private String yesTooltip = null;
     private int yesWidth = 100;
 
-    private final List<DialogAction> noActions = new ArrayList<>();
+    private final List<Action> noActions = new ArrayList<>();
     private String noText = "No";
     private String noTooltip = null;
     private int noWidth = 100;
@@ -57,8 +57,8 @@ public class ZDialogInventory implements ZDialogs {
     private ActionButtonRecord actionButtonRecordServerLink;
     private int numberOfColumns = 1;
 
-    public ZDialogInventory(Plugin plugin, String name, String fileName, String externalTitle) {
-        this.plugin = plugin;
+    public ZDialogInventory(MenuPlugin plugin, String name, String fileName, String externalTitle) {
+        this.menuPlugin = plugin;
         this.name = name;
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
         this.externalTitle = externalTitle;
@@ -76,8 +76,8 @@ public class ZDialogInventory implements ZDialogs {
     }
 
     @Override
-    public Plugin getPlugin() {
-        return plugin;
+    public MenuPlugin getPlugin() {
+        return menuPlugin;
     }
 
     @Override
@@ -206,26 +206,22 @@ public class ZDialogInventory implements ZDialogs {
     }
 
     @Override
-    public List<DialogAction> getYesActions() {
+    public List<Action> getYesActions() {
         return yesActions;
     }
 
     @Override
-    public List<DialogAction> getNoActions() {
+    public List<Action> getNoActions() {
         return noActions;
     }
 
     @Override
-    public void addYesAction(DialogAction action) {
-        if (action != null) {
-            this.yesActions.add(action);
-        }
+    public void addYesAction(List<Action> actions) {
+        this.yesActions.addAll(actions);
     }
     @Override
-    public void addNoAction(DialogAction action) {
-        if (action != null) {
-            this.noActions.add(action);
-        }
+    public void addNoAction(List<Action> actions) {
+        this.noActions.addAll(actions);
     }
     @Override
     public String getYesText() {
@@ -375,14 +371,12 @@ public class ZDialogInventory implements ZDialogs {
     }
 
     @Override
-    public void addAction(DialogAction action) {
-        if (action != null) {
-            this.actions.add(action);
-        }
+    public void addAction(List<Action> actions) {
+        this.actions.addAll(actions);
     }
 
     @Override
-    public List<DialogAction> getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 

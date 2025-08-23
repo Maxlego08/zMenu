@@ -27,6 +27,7 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
@@ -89,7 +90,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
-    private ZDialogManager zDialogManager;
+    private DialogManager dialogManager;
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
@@ -166,8 +167,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
             Logger.info("Paper server detected, loading Dialogs support");
-            zDialogManager = new ZDialogManager(this);
-            zDialogManager.load();
+            this.dialogManager = new ZDialogManager(this);
+            servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
+            this.dialogManager.load();
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -365,7 +367,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      *
      * @return the zDialogManager
      */
-    public ZDialogManager getZDialogManager() {return this.zDialogManager;}
+    public DialogManager getDialogManager() {return this.dialogManager;}
 
     @Override
     public StorageManager getStorageManager() {

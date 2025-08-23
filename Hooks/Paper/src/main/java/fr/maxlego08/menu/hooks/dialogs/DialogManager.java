@@ -2,11 +2,11 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogBodyType;
-import fr.maxlego08.menu.hooks.dialogs.exception.DialogException;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.exceptions.DialogException;
+import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogActionIntLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -19,13 +19,13 @@ public interface DialogManager {
 
     void load();
 
-    ZDialogs loadDialog(Plugin plugin, String fileName) throws DialogException;
+    DialogInventory loadDialog(Plugin plugin, String fileName) throws DialogException;
 
-    Optional<ZDialogs> getDialog(String name);
+    Optional<DialogInventory> getDialog(String name);
 
-    Optional<ZDialogs> getDialog(String pluginName, String fileName);
+    Optional<DialogInventory> getDialog(String pluginName, String fileName);
 
-    Optional<ZDialogs> getDialog(Plugin plugin, String fileName);
+    Optional<DialogInventory> getDialog(Plugin plugin, String fileName);
 
     void deleteDialog(String name);
 
@@ -33,13 +33,13 @@ public interface DialogManager {
 
     void loadDialogs();
 
-    ZDialogs loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException;
+    DialogInventory loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException;
 
-    ZDialogs loadInventory(Plugin plugin, File file) throws DialogException, InventoryException;
+    DialogInventory loadInventory(Plugin plugin, File file) throws DialogException, InventoryException;
 
-    ZDialogs loadInventory(Plugin plugin, String fileName, Class<? extends ZDialogs> dialogClass) throws DialogException, InventoryException;
+    DialogInventory loadInventory(Plugin plugin, String fileName, Class<? extends DialogInventory> dialogClass) throws DialogException, InventoryException;
 
-    ZDialogs loadInventory(Plugin plugin, File file, Class<? extends ZDialogs> dialogClass) throws DialogException, InventoryException;
+    DialogInventory loadInventory(Plugin plugin, File file, Class<? extends DialogInventory> dialogClass) throws DialogException, InventoryException;
 
     void registerBodyLoader(BodyLoader bodyLoader);
 
@@ -47,9 +47,7 @@ public interface DialogManager {
 
     void registerBuilder(DialogBuilder builder);
 
-    void registerActions(DialogActionIntLoader action);
-
-    void openDialog(Player player, String dialogName);
+    void openDialog(Player player, DialogInventory dialog);
 
     Optional<BodyLoader> getBodyLoader(String name);
 
@@ -57,11 +55,11 @@ public interface DialogManager {
 
     Optional<DialogBuilder> getDialogBuilder(DialogBodyType type);
 
-    Optional<DialogActionIntLoader> getDialogAction(String name);
-
-    Collection<ZDialogs> getDialogs();
+    Collection<DialogInventory> getDialogs();
 
     InventoryManager getInventoryManager();
 
     void reloadDialogs();
+
+    ComponentMeta getPaperComponent();
 }

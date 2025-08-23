@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
-import fr.maxlego08.menu.hooks.PaperComponent;
+import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.hooks.dialogs.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
@@ -10,6 +10,11 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 
 public class DilogInputTextBuilder implements DialogInputBuilderInt {
+    private final DialogManager dialogManager;
+
+    public DilogInputTextBuilder(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
 
     @Override
     public DialogInputType getBodyType() {
@@ -18,7 +23,6 @@ public class DilogInputTextBuilder implements DialogInputBuilderInt {
 
     @Override
     public DialogInput build(Player player, InputButton button) {
-        PaperComponent paperComponent = PaperComponent.getInstance();
         String key = button.getKey();
 
         int width = button.getWidth();
@@ -33,6 +37,6 @@ public class DilogInputTextBuilder implements DialogInputBuilderInt {
             multilineOptions = TextDialogInput.MultilineOptions.create(multilineMaxLines, multilineHeight);
         }
 
-        return DialogInput.text(key,width, paperComponent.getComponent(label), labelVisible, defaultText, maxLength, multilineOptions);
+        return DialogInput.text(key,width, this.dialogManager.getPaperComponent().getComponent(label), labelVisible, defaultText, maxLength, multilineOptions);
     }
 }
