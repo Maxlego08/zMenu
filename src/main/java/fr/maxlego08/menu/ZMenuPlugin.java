@@ -27,7 +27,7 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
+import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;

@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Loader;
+<<<<<<< Updated upstream
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
@@ -13,8 +14,17 @@ import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
+=======
+import fr.maxlego08.menu.api.DialogInventory;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
+import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+>>>>>>> Stashed changes
 import fr.maxlego08.menu.zcore.logger.Logger;
-import io.papermc.paper.registry.data.dialog.DialogBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -59,8 +69,7 @@ public class DialogLoader implements Loader<DialogInventory> {
 
         String afterActionString = configuration.getString("after-action", "CLOSE");
         try {
-            DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.valueOf(afterActionString.toUpperCase());
-            dialogInventory.setAfterAction(afterAction);
+            dialogInventory.setAfterAction(afterActionString.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid after action: " + afterActionString);
         }

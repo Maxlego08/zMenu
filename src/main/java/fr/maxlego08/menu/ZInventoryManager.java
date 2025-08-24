@@ -23,7 +23,7 @@ import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.command.validators.*;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
+import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;

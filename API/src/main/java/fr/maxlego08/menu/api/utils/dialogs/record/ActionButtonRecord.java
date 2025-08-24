@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.dialogs.utils.record;
+package fr.maxlego08.menu.api.utils.dialogs.record;
 
 import fr.maxlego08.menu.api.requirement.Action;
 import me.clip.placeholderapi.PlaceholderAPI;

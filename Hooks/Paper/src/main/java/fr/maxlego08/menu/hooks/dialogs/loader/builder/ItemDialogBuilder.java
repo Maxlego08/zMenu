@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
-import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.body.PlainMessageDialogBody;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDialogBuilder implements DialogBuilder{
-    private final DialogManager dialogManager;
+    private final ZDialogManager dialogManager;
 
-    public ItemDialogBuilder(DialogManager dialogManager) {
+    public ItemDialogBuilder(ZDialogManager dialogManager) {
         this.dialogManager = dialogManager;
     }
 

@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
-import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.SingleOption;
+import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

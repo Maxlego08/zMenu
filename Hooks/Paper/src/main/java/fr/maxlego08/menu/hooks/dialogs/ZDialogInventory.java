@@ -1,7 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.requirement.Action;
+<<<<<<< Updated upstream
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.api.enums.DialogType;
@@ -10,6 +12,12 @@ import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
+=======
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
+>>>>>>> Stashed changes
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 
@@ -27,7 +35,7 @@ public class ZDialogInventory implements DialogInventory {
     private final String externalTitle;
     private boolean canCloseWithEscape = true;
     private boolean pause = false;
-    private DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.CLOSE;
+    private String afterAction = "CLOSE";
     private DialogType dialogType = DialogType.NOTICE;
     private List<BodyButton> bodyButtons = new ArrayList<>();
     private List<InputButton> inputButtons = new ArrayList<>();
@@ -144,12 +152,12 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public DialogBase.DialogAfterAction getAfterAction() {
+    public String getAfterAction() {
         return afterAction;
     }
 
     @Override
-    public void setAfterAction(DialogBase.DialogAfterAction afterAction) {
+    public void setAfterAction(String afterAction) {
         this.afterAction = afterAction;
     }
 
@@ -177,27 +185,13 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public List<DialogBody> getDialogBodies(Player player) {
-        List<DialogBody> dialogBodies = new ArrayList<>();
-        for (BodyButton bodyButton : bodyButtons) {
-            DialogBody dialogBody = bodyButton.build(player);
-            if (dialogBody != null) {
-                dialogBodies.add(dialogBody);
-            }
-        }
-        return dialogBodies;
+    public List<BodyButton> getDialogBodies() {
+        return this.bodyButtons;
     }
 
     @Override
-    public List<DialogInput> getDialogInputs(Player player) {
-        List<DialogInput> dialogInputs = new ArrayList<>();
-        for (InputButton inputButton : inputButtons) {
-            DialogInput dialogInput = inputButton.build(player);
-            if (dialogInput != null) {
-                dialogInputs.add(dialogInput);
-            }
-        }
-        return dialogInputs;
+    public List<InputButton> getDialogInputs() {
+        return this.inputButtons;
     }
 
     public String parsePlaceholders(Player player, String text) {

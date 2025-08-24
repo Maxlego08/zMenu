@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogNumberRangeInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogBooleanInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogInputTextBuilder;
@@ -18,11 +18,11 @@ public class DialogBuilderClass {
     private static final Map<DialogBodyType, DialogBuilder> dialogBuilders = new HashMap<>();
     private static final Map<DialogInputType, DialogInputBuilderInt> dialogInputBuilders = new HashMap<>();
 
-    public DialogBuilderClass(DialogManager dialogManager) {
+    public DialogBuilderClass(ZDialogManager dialogManager) {
         this.loadBuilders(dialogManager);
     }
 
-    private void loadBuilders(DialogManager dialogManager) {
+    private void loadBuilders(ZDialogManager dialogManager) {
         this.registerBuilder(new PlainMessageDialogBuilder(dialogManager));
         this.registerBuilder(new ItemDialogBuilder(dialogManager));
 

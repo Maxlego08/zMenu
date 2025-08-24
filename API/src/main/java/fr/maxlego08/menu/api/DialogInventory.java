@@ -1,15 +1,11 @@
-package fr.maxlego08.menu.hooks.dialogs;
+package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
-import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
-import io.papermc.paper.registry.data.dialog.DialogBase;
-import io.papermc.paper.registry.data.dialog.body.DialogBody;
-import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -32,9 +28,9 @@ public interface DialogInventory {
 
     void setCanCloseWithEscape(boolean canCloseWithEscape);
 
-    DialogBase.DialogAfterAction getAfterAction();
+    String getAfterAction();
 
-    void setAfterAction(DialogBase.DialogAfterAction afterAction);
+    void setAfterAction(String afterAction);
 
     boolean isPause();
 
@@ -52,9 +48,9 @@ public interface DialogInventory {
 
     void setInputButtons(List<InputButton> inputButtons);
 
-    List<DialogBody> getDialogBodies(Player player);
+    List<BodyButton> getDialogBodies();
 
-    List<DialogInput> getDialogInputs(Player player);
+    List<InputButton> getDialogInputs();
 
     List<Action> getYesActions();
 
