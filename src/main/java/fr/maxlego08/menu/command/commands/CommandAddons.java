@@ -18,7 +18,7 @@ public class CommandAddons extends VCommand {
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
         message(plugin, this.sender, Message.ADDONS_INFORMATION);
-        String messageType = plugin.isSpigot() ? "§f - §e%pluginName%§f: made by §e%authorName% §a%url%§f (%price%)" : "<white> - <yellow>%pluginName%<white>: made by <yellow>%authorName% <click:open_url:'%url%'><green>%url%</green></click><white> (%price%)";
+        String messageType = plugin.isSpigot() ? "§f - §e%pluginName%§f: made by §c%authorName% §a%url%§f (%price%)" : "<white> - <yellow>%pluginName%<white>: made by <red>%authorName% <click:open_url:'%url%'><green>%url%</green></click><white> (%price%)";
         for (Addons addon : Addons.values()) {
             message(plugin, this.sender, messageType, "%pluginName%", addon.getPluginName(), "%authorName%", addon.getAuthorName(), "%url%", addon.getUrl(), "%price%", addon.getPrice());
         }

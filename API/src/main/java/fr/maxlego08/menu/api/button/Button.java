@@ -167,7 +167,6 @@ public abstract class Button extends PlaceholderButton {
     }
 
     public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
-        placeholders.register("player", player.getName());
         if (this.closeInventory()) {
             player.closeInventory();
         }

@@ -142,6 +142,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 Action action = actionLoader.load(path, accessor, file);
                 if (action != null) {
                     action.setDelay(accessor.getInt("delay", 0));
+                    action.setChance(accessor.getFloat("chance", 100));
                 }
                 return action;
             }
