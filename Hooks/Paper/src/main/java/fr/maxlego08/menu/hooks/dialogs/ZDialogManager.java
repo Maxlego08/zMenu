@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.ComponentMeta;
@@ -309,7 +310,7 @@ public class ZDialogManager implements DialogManager {
         return ActionButton.create(paperComponent.getComponent(actionButtonRecord.label()), paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), createAction(inputs,actionButtonRecord.actions()));
     }
 
-    public DialogAction createAction(List<DialogInput> inputs, List<Action> actions) {
+    public DialogAction createAction(List<DialogInput> inputs, List<Requirement> requirements) {
         return DialogAction.customClick((view,audience)-> {
             Placeholders placeholders = new Placeholders();
             for (DialogInput input : inputs) {
@@ -345,8 +346,8 @@ public class ZDialogManager implements DialogManager {
                 placeholders.register(key, value);
             }
 
-            for (Action action : actions) {
-                action.preExecute((Player) audience, null, inventoryManager.getFakeInventory(), placeholders);
+            for (Requirement requirement : requirements) {
+                requirement.execute((Player) audience, null, inventoryManager.getFakeInventory(), placeholders);
             }
 
         }, ClickCallback.Options.builder().uses(-1).build());

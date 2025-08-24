@@ -143,10 +143,14 @@ confirmation:
   no-tooltip: "We're sorry to hear that! Please let us know how we can improve."
   no-width: 200
 yes-actions:
-  - type: message
-    messages:
-      - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
+  1:
+    success:
+      - type: message
+        messages:
+          - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
 no-actions:
-  - type: message
-    messages:
-      - "&cWe're sorry to hear that! Please let us know how we can improve."
+  1:
+    success:
+      - type: message
+        messages:
+          - "&cWe're sorry to hear that! Please let us know how we can improve."

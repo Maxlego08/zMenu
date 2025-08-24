@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
@@ -52,17 +53,17 @@ public interface DialogInventory {
 
     List<InputButton> getDialogInputs();
 
-    List<Action> getYesActions();
+    List<Requirement> getYesActions();
 
-    List<Action> getNoActions();
+    List<Requirement> getNoActions();
 
-    void addYesAction(List<Action> action);
+    void addYesAction(List<Requirement> action);
 
-    void addNoAction(List<Action> action);
+    void addNoAction(List<Requirement> action);
 
-    void addAction(List<Action> action);
+    void addAction(List<Requirement> action);
 
-    List<Action> getActions();
+    List<Requirement> getActions();
 
     void setYesText(String yesText);
 

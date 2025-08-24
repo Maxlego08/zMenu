@@ -1,12 +1,13 @@
 package fr.maxlego08.menu.api.utils.dialogs.record;
 
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public record ActionButtonRecord(String label, String tooltip, int width, List<Action> actions) {
+public record ActionButtonRecord(String label, String tooltip, int width, List<Requirement> actions) {
     public ActionButtonRecord parse(Player player) {
         return new ActionButtonRecord(parsePlaceholder(label,player), parsePlaceholder(tooltip,player), width, actions);
     }

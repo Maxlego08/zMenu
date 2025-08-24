@@ -2,22 +2,16 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.requirement.Action;
-<<<<<<< Updated upstream
-import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
-import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
 import fr.maxlego08.menu.api.enums.DialogType;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
-=======
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
->>>>>>> Stashed changes
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 
@@ -41,18 +35,18 @@ public class ZDialogInventory implements DialogInventory {
     private List<InputButton> inputButtons = new ArrayList<>();
 
     // Notice
-    private final List<Action> actions = new ArrayList<>();
+    private final List<Requirement> actions = new ArrayList<>();
     private String label;
     private String labelTooltip;
     private int labelWidth = 200;
 
     // When {@link DialogType#CONFIRM} is used
-    private final List<Action> yesActions = new ArrayList<>();
+    private final List<Requirement> yesActions = new ArrayList<>();
     private String yesText = "Yes";
     private String yesTooltip = null;
     private int yesWidth = 100;
 
-    private final List<Action> noActions = new ArrayList<>();
+    private final List<Requirement> noActions = new ArrayList<>();
     private String noText = "No";
     private String noTooltip = null;
     private int noWidth = 100;
@@ -200,21 +194,21 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public List<Action> getYesActions() {
+    public List<Requirement> getYesActions() {
         return yesActions;
     }
 
     @Override
-    public List<Action> getNoActions() {
+    public List<Requirement> getNoActions() {
         return noActions;
     }
 
     @Override
-    public void addYesAction(List<Action> actions) {
+    public void addYesAction(List<Requirement> actions) {
         this.yesActions.addAll(actions);
     }
     @Override
-    public void addNoAction(List<Action> actions) {
+    public void addNoAction(List<Requirement> actions) {
         this.noActions.addAll(actions);
     }
     @Override
@@ -365,12 +359,12 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public void addAction(List<Action> actions) {
+    public void addAction(List<Requirement> actions) {
         this.actions.addAll(actions);
     }
 
     @Override
-    public List<Action> getActions() {
+    public List<Requirement> getActions() {
         return actions;
     }
 
