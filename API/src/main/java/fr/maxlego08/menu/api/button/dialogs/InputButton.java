@@ -1,15 +1,10 @@
-package fr.maxlego08.menu.hooks.dialogs.buttons;
+package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.SingleOption;
-import io.papermc.paper.registry.data.dialog.input.DialogInput;
-import org.bukkit.entity.Player;
+import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 
 import java.util.List;
-import java.util.Optional;
 
 public class InputButton {
     private MenuPlugin plugin;
@@ -213,21 +208,5 @@ public class InputButton {
         this.labelFormat = labelFormat;
         return this;
     }
-
-    public DialogInput build(Player player) {
-        if (inputType == null) {
-            return null;
-        }
-        Optional<DialogInputBuilderInt> dialogInputBuilderOptional = DialogBuilderClass.getDialogInputBuilder(inputType);
-        if (dialogInputBuilderOptional.isEmpty()){
-            return null;
-        }
-        DialogInputBuilderInt dialogInputBuilder = dialogInputBuilderOptional.get();
-        return dialogInputBuilder.build(player, this);
-
-    }
-
-
-
 }
 

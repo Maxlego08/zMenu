@@ -121,9 +121,11 @@ inputs:
     step: 1
     initial-value: 3
 actions:
-  - type: message
-    messages:
-      - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
+  1:
+    success:
+      - type: message
+        messages:
+          - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
 notice:
   text: "<green>Accept the rules to continue"
   tooltip: "<green>Click to accept the rules"

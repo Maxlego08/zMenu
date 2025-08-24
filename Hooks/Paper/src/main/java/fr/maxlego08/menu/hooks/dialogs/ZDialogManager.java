@@ -1,11 +1,10 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.ComponentMeta;
@@ -13,6 +12,8 @@ import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
@@ -22,10 +23,10 @@ import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
+import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -44,6 +45,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ZDialogManager implements DialogManager {
@@ -223,7 +226,6 @@ public class ZDialogManager implements DialogManager {
         }
     }
 
-    @Override
     public void registerBuilder(DialogBuilder builder) {
         this.dialogBuilders.registerBuilder(builder);
     }
@@ -245,14 +247,14 @@ public class ZDialogManager implements DialogManager {
     public void openDialog(Player player, DialogInventory zDialog) {
         try {
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogBody> bodies = zDialog.getDialogBodies(player);
-            List<DialogInput> inputs = zDialog.getDialogInputs(player);
+            List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies());
+            List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs());
 
             DialogBase.Builder dialogBase = DialogBase.builder(paperComponent.getComponent(dialogBuild.name()))
                     .externalTitle(paperComponent.getComponent(dialogBuild.externalTitle()))
                     .canCloseWithEscape(dialogBuild.canCloseWithEscape())
                     .pause(zDialog.isPause())
-                    .afterAction(zDialog.getAfterAction());
+                    .afterAction(DialogBase.DialogAfterAction.valueOf(zDialog.getAfterAction()));
 
             Dialog dialog = createDialogByType(zDialog.getDialogType(), dialogBase, bodies, inputs, zDialog, player);
 
@@ -308,7 +310,7 @@ public class ZDialogManager implements DialogManager {
         return ActionButton.create(paperComponent.getComponent(actionButtonRecord.label()), paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), createAction(inputs,actionButtonRecord.actions()));
     }
 
-    public DialogAction createAction(List<DialogInput> inputs, List<Action> actions) {
+    public DialogAction createAction(List<DialogInput> inputs, List<Requirement> requirements) {
         return DialogAction.customClick((view,audience)-> {
             Placeholders placeholders = new Placeholders();
             for (DialogInput input : inputs) {
@@ -344,8 +346,8 @@ public class ZDialogManager implements DialogManager {
                 placeholders.register(key, value);
             }
 
-            for (Action action : actions) {
-                action.preExecute((Player) audience, null, inventoryManager.getFakeInventory(), placeholders);
+            for (Requirement requirement : requirements) {
+                requirement.execute((Player) audience, null, inventoryManager.getFakeInventory(), placeholders);
             }
 
         }, ClickCallback.Options.builder().uses(-1).build());
@@ -394,9 +396,48 @@ public class ZDialogManager implements DialogManager {
         return Optional.ofNullable(this.inputLoader.get(name));
     }
 
-    @Override
     public Optional<DialogBuilder> getDialogBuilder(DialogBodyType type) {
         return DialogBuilderClass.getDialogBuilder(type);
+    }
+
+    protected List<DialogBody> getDialogBodies(Player player, List<BodyButton> bodyButtons) {
+        return buildDialogs(
+                player,
+                bodyButtons,
+                BodyButton::getBodyType,
+                DialogBuilderClass::getDialogBuilder,
+                (builder, button) -> builder.build(player, button)
+        );
+    }
+
+    protected List<DialogInput> getDialogInputs(Player player, List<InputButton> inputButtons) {
+        return buildDialogs(
+                player,
+                inputButtons,
+                InputButton::getInputType,
+                DialogBuilderClass::getDialogInputBuilder,
+                (builder, button) -> builder.build(player, button)
+        );
+    }
+
+    protected <B, T, TYPE, BUILDER> List<T> buildDialogs(
+            Player player,
+            List<B> buttons,
+            Function<B, TYPE> typeExtractor,
+            Function<TYPE, Optional<BUILDER>> builderResolver,
+            BiFunction<BUILDER, B, T> builderExecutor
+    ) {
+        return buttons.stream()
+                .map(button -> {
+                    TYPE type = typeExtractor.apply(button);
+                    if (type == null) return null;
+
+                    return builderResolver.apply(type)
+                            .map(builder -> builderExecutor.apply(builder, button))
+                            .orElse(null);
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     public static MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
@@ -408,7 +449,6 @@ public class ZDialogManager implements DialogManager {
         }
     }
 
-    @Override
     public ComponentMeta getPaperComponent() {
         return paperComponent;
     }

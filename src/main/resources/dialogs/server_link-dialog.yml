@@ -1,6 +1,6 @@
 name: "&6&lServer Information Dialog"
 external_title: "Welcome to our server!"
-type: notice # Available: notice, confirmation, multi_action, server_links
+type: server_links # Available: notice, confirmation, multi_action, server_links
 
 # Dialog behavior settings
 can-close-with-escape: true  # Allow players to close with ESC key
@@ -13,9 +13,11 @@ server-links:
   width: 300
   number-of-columns: 2 # Number of buttons displayed in a row
   actions:
-    - type: message
-      messages:
-        - "&aYou clicked a server link!"
+    1:
+      success:
+      - type: message
+        messages:
+          - "&aYou clicked a server link!"
 
 # Dialog body content - can contain multiple sections
 body:

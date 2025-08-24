@@ -1,17 +1,12 @@
-package fr.maxlego08.menu.hooks.dialogs.buttons;
+package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
-import io.papermc.paper.registry.data.dialog.body.DialogBody;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class BodyButton extends PlaceholderButton {
     private MenuPlugin plugin;
@@ -136,17 +131,5 @@ public class BodyButton extends PlaceholderButton {
     public BodyButton setMessageWidth(int messageWidth) {
         this.messageWidth = Math.max(1, Math.min(messageWidth, 1024));
         return this;
-    }
-
-    public DialogBody build(Player player) {
-        if (bodyType == null) {
-            return null;
-        }
-        Optional<DialogBuilder> dialogBuilderOptional = DialogBuilderClass.getDialogBuilder(bodyType);
-        if (dialogBuilderOptional.isEmpty()) {
-            return null;
-        }
-        DialogBuilder dialogBuilder = dialogBuilderOptional.get();
-        return dialogBuilder.build(player, this);
     }
 }

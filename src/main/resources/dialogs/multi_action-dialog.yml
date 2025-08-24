@@ -13,25 +13,31 @@ multi-actions:
     tooltip: "&7Click to join the Survival world"
     width: 200
     actions:
-      - type: message
-        messages:
-          - "&aYou have joined the Survival world!"
+      1:
+        success:
+          - type: message
+            messages:
+              - "&aYou have joined the Survival world!"
   button2:
     text: "&b&lVisit Creative World"
     tooltip: "&7Explore the Creative world"
     width: 200
     actions:
-      - type: message
-        messages:
-          - "&bYou are now in the Creative world!"
+      1:
+        success:
+          - type: message
+            messages:
+              - "&bYou are now in the Creative world!"
   button3:
     text: "&c&lPvP Arena"
     tooltip: "&7Enter the PvP Arena for battles"
     width: 200
     actions:
-      - type: message
-        messages:
-          - "&cGet ready for some PvP action!"
+      1:
+        success:
+          - type: message
+            messages:
+              - "&cGet ready for some PvP action!"
 
 # Dialog body content - can contain multiple sections
 body:

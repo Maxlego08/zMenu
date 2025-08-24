@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
-import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlainMessageDialogBuilder implements DialogBuilder{
-    private final DialogManager dialogManager;
-    public PlainMessageDialogBuilder(DialogManager dialogManager) {
+    private final ZDialogManager dialogManager;
+    public PlainMessageDialogBuilder(ZDialogManager dialogManager) {
         this.dialogManager = dialogManager;
     }
 

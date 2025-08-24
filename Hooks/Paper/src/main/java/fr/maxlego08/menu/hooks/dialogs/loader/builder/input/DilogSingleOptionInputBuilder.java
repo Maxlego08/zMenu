@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
 import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
-import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.SingleOption;
+import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DilogSingleOptionInputBuilder implements DialogInputBuilderInt {
-    private final DialogManager dialogManager;
-    public DilogSingleOptionInputBuilder(DialogManager dialogManager) {
+    private final ZDialogManager dialogManager;
+    public DilogSingleOptionInputBuilder(ZDialogManager dialogManager) {
         this.dialogManager = dialogManager;
     }
 
