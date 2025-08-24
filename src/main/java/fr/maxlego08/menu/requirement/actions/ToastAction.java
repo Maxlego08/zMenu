@@ -33,8 +33,21 @@ public class ToastAction extends Action {
     protected void execute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
 
         String finalMaterial = this.plugin.parse(player, placeholders.parse(this.material));
-        int finalModelId = Integer.parseInt(this.plugin.parse(player, placeholders.parse(this.modelId)));
-
+        String finalModelParsed = this.plugin.parse(player, placeholders.parse(this.modelId));
+        Object finalModel;
+        try {
+            finalModel = Integer.parseInt(finalModelParsed);
+        } catch (NumberFormatException e) {
+            try {
+                finalModel = Double.parseDouble(finalModelParsed);
+            } catch (NumberFormatException ex) {
+                try {
+                    finalModel = Float.parseFloat(finalModelParsed);
+                } catch (NumberFormatException exc) {
+                    finalModel = finalModelParsed;
+                }
+            }
+        }
         if (finalMaterial.contains(":")) {
             String[] values = finalMaterial.split(":", 2);
 
@@ -49,12 +62,12 @@ public class ToastAction extends Action {
                     var itemStack = loader.load(player, null, "", value);
                     finalMaterial = itemStack.getType().toString();
                     if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasCustomModelData()) {
-                        finalModelId = itemStack.getItemMeta().getCustomModelData();
+                        finalModel = itemStack.getItemMeta().getCustomModelData();
                     }
                 }
             }
         }
 
-        this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.parse(player, placeholders.parse(this.message)), this.toastType, finalModelId, this.glowing, player);
+        this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.parse(player, placeholders.parse(this.message)), this.toastType, finalModel, this.glowing, player);
     }
 }

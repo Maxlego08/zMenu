@@ -2,11 +2,11 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.requirement.Action;
 <<<<<<< Updated upstream
 import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
 import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.utils.record.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
@@ -195,7 +195,7 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     public String parsePlaceholders(Player player, String text) {
-        if (text == null || text.isEmpty()) return "";
+        if (text == null || !text.contains("%")) return "";
         return PlaceholderAPI.setPlaceholders(player, text);
     }
 
