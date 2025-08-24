@@ -4,9 +4,9 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.body.PlainMessageDialogBody;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemDialogBuilder implements DialogBuilder{
+public class ItemDialogBuilder extends BuilderHelper implements DialogBuilder{
     private final ZDialogManager dialogManager;
 
     public ItemDialogBuilder(ZDialogManager dialogManager) {
@@ -42,7 +42,7 @@ public class ItemDialogBuilder implements DialogBuilder{
         if (!descriptionMessages.isEmpty()) {
             List<Component> descComponents = new ArrayList<>();
             for (String descMessage : descriptionMessages) {
-                String parsedMessage = PlaceholderAPI.setPlaceholders(player, descMessage);
+                String parsedMessage = papi(descMessage, player);
                 descComponents.add(this.dialogManager.getPaperComponent().getComponent(parsedMessage));
             }
 

@@ -3,13 +3,13 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 
-public class DilogInputTextBuilder implements DialogInputBuilderInt {
+public class DilogInputTextBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
 
     public DilogInputTextBuilder(ZDialogManager dialogManager) {
@@ -26,9 +26,9 @@ public class DilogInputTextBuilder implements DialogInputBuilderInt {
         String key = button.getKey();
 
         int width = button.getWidth();
-        String label = PlaceholderAPI.setPlaceholders(player, button.getLabel());
+        String label = papi(button.getLabel(), player);
         boolean labelVisible = button.isLabelVisible();
-        String defaultText = PlaceholderAPI.setPlaceholders(player, button.getDefaultText());
+        String defaultText = papi(button.getDefaultText(), player);
         int maxLength = button.getMaxLength();
         int multilineMaxLines = button.getMultilineMaxLines();
         int multilineHeight = button.getMultilineHeight();

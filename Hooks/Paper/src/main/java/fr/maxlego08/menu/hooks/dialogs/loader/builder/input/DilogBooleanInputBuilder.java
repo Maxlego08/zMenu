@@ -3,13 +3,14 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class DilogBooleanInputBuilder implements DialogInputBuilderInt {
+public class DilogBooleanInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
 
     public DilogBooleanInputBuilder(ZDialogManager dialogManager) {
@@ -26,8 +27,8 @@ public class DilogBooleanInputBuilder implements DialogInputBuilderInt {
         String key = button.getKey();
         Component label = this.dialogManager.getPaperComponent().getComponent(PlaceholderAPI.setPlaceholders(player, button.getLabel()));
         boolean initialValue = Boolean.parseBoolean(PlaceholderAPI.setPlaceholders(player, button.getInitialValueBool()));
-        String onTrueText = PlaceholderAPI.setPlaceholders(player, button.getTextTrue());
-        String onFalseText = PlaceholderAPI.setPlaceholders(player, button.getTextFalse());
+        String onTrueText = papi(button.getTextTrue(), player);
+        String onFalseText = papi(button.getTextFalse(), player);
 
         return DialogInput.bool(key,label,initialValue,onTrueText,onFalseText);
     }

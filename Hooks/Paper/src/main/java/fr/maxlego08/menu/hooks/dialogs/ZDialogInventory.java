@@ -2,24 +2,20 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.enums.DialogType;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Requirement;
-import io.papermc.paper.registry.data.dialog.DialogBase;
-import io.papermc.paper.registry.data.dialog.body.DialogBody;
-import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
-import me.clip.placeholderapi.PlaceholderAPI;
+import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZDialogInventory implements DialogInventory {
+public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     private final MenuPlugin menuPlugin;
     private final String fileName;
@@ -69,7 +65,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public String getName(Player player) {
-        return PlaceholderAPI.setPlaceholders(player, name);
+        return papi(name, player);
     }
 
     @Override
@@ -190,7 +186,7 @@ public class ZDialogInventory implements DialogInventory {
 
     public String parsePlaceholders(Player player, String text) {
         if (text == null || text.isEmpty()) return "";
-        return PlaceholderAPI.setPlaceholders(player, text);
+        return papi(text, player);
     }
 
     @Override

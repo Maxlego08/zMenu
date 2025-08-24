@@ -1,19 +1,22 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
-import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
+import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
@@ -23,10 +26,6 @@ import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
-import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
-import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -289,11 +288,6 @@ public class ZDialogManager implements DialogManager {
             case SERVER_LINKS ->
                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(createActionButton(zDialog.getActionButtonServerLink(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
                     );
-
-//             case DIALOG_LIST ->
-//                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.dialogList(createDialogList(zDialog.getDialogList(),player)).build()).base(dialogBase.body(bodies).inputs(inputs).build())
-//                     );
-            // Impossible beacause we need the dialogs to register on the server and this required the plugin to be a PaperPlugin
         };
     }
     private List<ActionButton> createActionButtons(DialogInventory dialogInventory, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {

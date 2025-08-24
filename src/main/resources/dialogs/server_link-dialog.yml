@@ -14,10 +14,19 @@ server-links:
   number-of-columns: 2 # Number of buttons displayed in a row
   actions:
     1:
+      requirements:
+        - type: placeholder
+          placeholder: "%boolean%"
+          value: "true"
+          action: BOOLEAN
       success:
-      - type: message
-        messages:
-          - "&aYou clicked a server link!"
+        - type: message
+          messages:
+            - "&aYou have opted in to receive server updates!"
+      deny:
+        - type: message
+          messages:
+            - "&cYou have opted out of server updates."
 
 # Dialog body content - can contain multiple sections
 body:
