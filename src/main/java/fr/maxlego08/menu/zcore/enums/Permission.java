@@ -20,6 +20,7 @@ public enum Permission {
     ZMENU_OPEN_DIALOG,
     ZMENU_RELOAD_DIALOG,
 
+    ZMENU_ADDONS,
     ZMENU_DOCUMENTATION;
 
 	private final String permission;

@@ -47,6 +47,7 @@ public enum Message implements IMessage {
     COMMAND_SYNTAX_HELP("&f%syntax% &7» &7%description%"),
     DOCUMENTATION_INFORMATION("&7Documentation&8: &fhttps://docs.zmenu.dev/"),
     DOCUMENTATION_INFORMATION_LINK("&7Documentation&8: &f%link%"),
+    ADDONS_INFORMATION("&7Official addons :"),
 
     INVENTORY_NOT_FOUND("&cUnable to find the &f%toName% &cinventory in the &f%name%&c inventory."),
     INVENTORY_OPEN_OTHER("&aYou have just opened the inventory &f%name%&a to the &3%player%&a."),
@@ -93,6 +94,7 @@ public enum Message implements IMessage {
     DESCRIPTION_DIALOGS("Open dialogs builder"),
     DESCRIPTION_DIALOGS_OPEN("Allows you to open a dialog"),
     DESCRIPTION_DIALOGS_RELOAD("Allows you to reload dialogs files configuration"),
+    DESCRIPTION_ADDONS("List of official addons"),
 
     RELOAD("&aYou have just reloaded the configuration files. &8(&7%inventories% inventories&8)"),
     RELOAD_INVENTORY("&aYou have just reloaded the inventories files. &8(&7%inventories% inventories&8)"),
