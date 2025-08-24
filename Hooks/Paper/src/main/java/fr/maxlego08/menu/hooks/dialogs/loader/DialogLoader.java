@@ -1,26 +1,28 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
+import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.DialogInventory;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
 import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class DialogLoader implements Loader<DialogInventory> {
     private final MenuPlugin menuPlugin;
@@ -219,7 +221,6 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     protected List<Requirement> loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
-        Logger.info("Print path: "+path);
         return menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
     }
 }
