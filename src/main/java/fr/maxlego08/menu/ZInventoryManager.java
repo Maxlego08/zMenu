@@ -20,8 +20,8 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.*;
+import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.hooks.dialogs.DialogManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -148,6 +148,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
         YamlConfiguration configuration = loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+
+        boolean enableInventoryLoad = configuration.getBoolean("enable", true);
+        if (!enableInventoryLoad) {
+            if (Config.enableInformationMessage) {
+                Logger.info("The inventory " + file.getPath() + " is disabled, so it will not be loaded.", LogType.WARNING);
+            }
+            return null;
+        }
 
         InventoryRequirementChecker checker = new InventoryRequirementChecker(this.plugin);
         Optional<InventoryLoadRequirement> optional = checker.canLoadInventory(configuration, plugin, file, classz);

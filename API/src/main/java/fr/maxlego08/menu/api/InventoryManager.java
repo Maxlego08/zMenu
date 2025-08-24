@@ -47,7 +47,7 @@ public interface InventoryManager extends Listener {
      *
      * @param plugin   The plugin loading the inventory.
      * @param fileName Name of the file where the inventory is located.
-     * @return New {@link Inventory}.
+     * @return New {@link Inventory}. Null if the loading of the inventory has been disabled in the config.
      * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventoryOrSaveResource(Plugin plugin, String fileName) throws InventoryException;
@@ -60,7 +60,7 @@ public interface InventoryManager extends Listener {
      * @param plugin   The plugin loading the inventory.
      * @param fileName Name of the file where the inventory is located.
      * @param classz   Class that will be used for the inventory; by default, it will be ZInventory.
-     * @return New {@link Inventory}.
+     * @return New {@link Inventory}. Null if the loading of the inventory has been disabled in the config.
      * @throws InventoryException Error loading inventory.
      */
     Inventory loadInventoryOrSaveResource(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
