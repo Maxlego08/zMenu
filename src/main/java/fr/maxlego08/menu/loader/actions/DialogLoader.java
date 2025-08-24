@@ -1,13 +1,11 @@
 package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
+import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.requirement.actions.DialogAction;
-import fr.maxlego08.menu.requirement.actions.InventoryAction;
 
 import java.io.File;
 import java.util.List;

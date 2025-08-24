@@ -1,6 +1,6 @@
-package fr.maxlego08.menu.hooks.dialogs.utils.loader;
+package fr.maxlego08.menu.api.utils.dialogs.loader;
 
-import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import org.bukkit.configuration.file.YamlConfiguration;
 

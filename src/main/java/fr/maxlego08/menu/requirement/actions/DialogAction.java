@@ -6,8 +6,8 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.hooks.dialogs.DialogManager;
-import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
+import fr.maxlego08.menu.api.DialogManager;
+import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 

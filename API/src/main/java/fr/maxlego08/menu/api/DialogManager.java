@@ -1,13 +1,9 @@
-package fr.maxlego08.menu.hooks.dialogs;
+package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
-import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
+import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
+import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -45,7 +41,7 @@ public interface DialogManager {
 
     void registerInputLoader(InputLoader inputLoader);
 
-    void registerBuilder(DialogBuilder builder);
+    //void registerBuilder(DialogBuilder builder);
 
     void openDialog(Player player, DialogInventory dialog);
 
@@ -53,13 +49,11 @@ public interface DialogManager {
 
     Optional<InputLoader> getInputLoader(String name);
 
-    Optional<DialogBuilder> getDialogBuilder(DialogBodyType type);
+    //Optional<DialogBuilder> getDialogBuilder(DialogBodyType type);
 
     Collection<DialogInventory> getDialogs();
 
     InventoryManager getInventoryManager();
 
     void reloadDialogs();
-
-    ComponentMeta getPaperComponent();
 }

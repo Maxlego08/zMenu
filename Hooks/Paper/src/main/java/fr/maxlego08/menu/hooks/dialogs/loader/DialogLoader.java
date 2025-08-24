@@ -5,17 +5,17 @@ import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.hooks.dialogs.DialogInventory;
+import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.buttons.BodyButton;
-import fr.maxlego08.menu.hooks.dialogs.buttons.InputButton;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.BodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.loader.InputLoader;
-import fr.maxlego08.menu.hooks.dialogs.utils.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
+import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import io.papermc.paper.registry.data.dialog.DialogBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -57,8 +57,7 @@ public class DialogLoader implements Loader<DialogInventory> {
 
         String afterActionString = configuration.getString("after-action", "CLOSE");
         try {
-            DialogBase.DialogAfterAction afterAction = DialogBase.DialogAfterAction.valueOf(afterActionString.toUpperCase());
-            dialogInventory.setAfterAction(afterAction);
+            dialogInventory.setAfterAction(afterActionString.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid after action: " + afterActionString);
         }
@@ -154,11 +153,10 @@ public class DialogLoader implements Loader<DialogInventory> {
         //TODO: Implement save logic if needed
     }
 
-    private void loadSpecificItems(DialogType dialogType, YamlConfiguration configuration, ZDialogInventory dialogInventory, File file) {
+    private void loadSpecificItems(DialogType dialogType, YamlConfiguration configuration, ZDialogInventory dialogInventory, File file) throws InventoryException {
         switch (dialogType) {
             case NOTICE -> {
-                List<Map<?, ?>> actions = configuration.getMapList("actions");
-                dialogInventory.addAction(loadActions(configuration, "actions", file));
+                dialogInventory.addAction(loadRequirement(configuration, "actions", file));
                 String noticeText = configuration.getString("notice.text","");
                 String noticeTooltip = configuration.getString("notice.tooltip","");
                 int noticeWidth = configuration.getInt("notice.width", 200);
@@ -180,8 +178,8 @@ public class DialogLoader implements Loader<DialogInventory> {
                 dialogInventory.setNoTooltip(noTooltip);
                 dialogInventory.setYesWidth(yesWidth);
                 dialogInventory.setNoWidth(noWidth);
-                dialogInventory.addYesAction(loadActions(configuration, "yes-actions", file));
-                dialogInventory.addNoAction(loadActions(configuration, "no-actions", file));
+                dialogInventory.addYesAction(loadRequirement(configuration, "yes-actions", file));
+                dialogInventory.addNoAction(loadRequirement(configuration, "no-actions", file));
             }
             case MULTI_ACTION -> {
                 int numberOfColumns = configuration.getInt("number-of-columns", 3);
@@ -201,8 +199,8 @@ public class DialogLoader implements Loader<DialogInventory> {
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
                     int width = configuration.getInt(path + ".width", 100);
-                    List<Action> actions = loadActions(configuration, path+".actions", file);
-                    ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
+                    List<Requirement> requirement = loadRequirement(configuration, path+".actions", file);
+                    ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
                     dialogInventory.addActionButton(record);
                 }
                 dialogInventory.setNumberOfColumns(numberOfColumns);
@@ -211,16 +209,17 @@ public class DialogLoader implements Loader<DialogInventory> {
                 String text = configuration.getString("server-links.text", "");
                 String tooltip = configuration.getString("server-links.tooltip", "");
                 int width = configuration.getInt("server-links.width", 100);
-                List<Action> actions = loadActions(configuration, "server-links", file);
+                List<Requirement> requirement = loadRequirement(configuration, "server-links.actions", file);
                 int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
-                ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, actions);
+                ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
                 dialogInventory.setActionButtonServerLink(record);
                 dialogInventory.setNumberOfColumns(numberOfColumns);
             }
         }
     }
 
-    public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
-        return menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path, new ArrayList<>()), path, file);
+    protected List<Requirement> loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
+        Logger.info("Print path: "+path);
+        return menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
     }
 }
