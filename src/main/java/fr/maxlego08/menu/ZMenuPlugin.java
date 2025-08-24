@@ -385,6 +385,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     @Override
+    public boolean isSpigot() {
+        return this.foliaLib.isSpigot();
+    }
+
+    @Override
     public void registerPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, String, String> biConsumer) {
         LocalPlaceholder.getInstance().register(startWith, biConsumer);
     }

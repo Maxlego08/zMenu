@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -19,10 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class DialogLoader implements Loader<DialogInventory> {
     private final MenuPlugin menuPlugin;
@@ -189,7 +187,14 @@ public class DialogLoader implements Loader<DialogInventory> {
                 if (multiSection == null) {
                     return;
                 }
-                for (String key : multiSection.getKeys(false)) {
+                Set<String> keys = multiSection.getKeys(false);
+                if (keys.isEmpty()) {
+                    if (Config.enableDebug){
+                        Logger.info("A minimum of one action button is required for multi-action dialogs.", Logger.LogType.WARNING);
+                    }
+                    return;
+                }
+                for (String key : keys) {
                     String path = "multi-actions."+key;
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
