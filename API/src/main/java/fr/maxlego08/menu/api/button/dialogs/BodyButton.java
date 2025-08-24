@@ -4,11 +4,15 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.PlaceholderButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.ViewRequirementDialogs;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
-public class BodyButton extends PlaceholderButton {
+public class BodyButton extends PlaceholderButton implements ViewRequirementDialogs {
     private MenuPlugin plugin;
     private DialogBodyType bodyType;
     private MenuItemStack itemStack;
@@ -24,6 +28,8 @@ public class BodyButton extends PlaceholderButton {
     private int descriptionWidth = 300;
 
     private int messageWidth = 300;
+
+    private Requirement viewRequirement;
 
     public MenuItemStack getItemStack() {
         return itemStack;
@@ -130,6 +136,15 @@ public class BodyButton extends PlaceholderButton {
 
     public BodyButton setMessageWidth(int messageWidth) {
         this.messageWidth = Math.max(1, Math.min(messageWidth, 1024));
+        return this;
+    }
+    @Override
+    public Requirement getViewRequirement() {
+        Bukkit.getLogger().log(Level.INFO,"View requirement null ? " + (viewRequirement == null)+ " for button " + this);
+        return viewRequirement;
+    }
+    public BodyButton setViewRequirement(Requirement viewRequirement) {
+        this.viewRequirement = viewRequirement;
         return this;
     }
 }

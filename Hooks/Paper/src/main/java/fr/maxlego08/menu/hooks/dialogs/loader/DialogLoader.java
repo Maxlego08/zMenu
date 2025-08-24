@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class DialogLoader implements Loader<DialogInventory> {
     private final MenuPlugin menuPlugin;
@@ -106,6 +107,8 @@ public class DialogLoader implements Loader<DialogInventory> {
                 BodyButton button = loader.load(path, file, configuration);
                 button.setPlugin((MenuPlugin) menuPlugin);
                 button.setBodyType(loader.getBodyType());
+                applyViewRequirement(configuration, path, file, button::setViewRequirement, "body element: " + bodyKey);
+
                 bodyButtons.add(button);
             } else {
                 Logger.info("No body loader found for type: " + type, Logger.LogType.WARNING);
@@ -113,7 +116,7 @@ public class DialogLoader implements Loader<DialogInventory> {
         }
         return bodyButtons;
     }
-    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) {
+    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) throws InventoryException {
         List<InputButton> inputButtons = new ArrayList<>();
 
         ConfigurationSection inputSection = configuration.getConfigurationSection("inputs");
@@ -139,6 +142,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                 button.setPlugin((MenuPlugin) menuPlugin);
                 button.setInputType(loader.getInputType());
                 button.setKey(inputKey);
+                applyViewRequirement(configuration, path, file, button::setViewRequirement, "input element: " + inputKey);
 
                 inputButtons.add(button);
 
@@ -158,7 +162,7 @@ public class DialogLoader implements Loader<DialogInventory> {
     private void loadSpecificItems(DialogType dialogType, YamlConfiguration configuration, ZDialogInventory dialogInventory, File file) throws InventoryException {
         switch (dialogType) {
             case NOTICE -> {
-                dialogInventory.addAction(loadRequirement(configuration, "actions", file));
+                dialogInventory.addAction(loadRequirements(configuration, "actions", file));
                 String noticeText = configuration.getString("notice.text","");
                 String noticeTooltip = configuration.getString("notice.tooltip","");
                 int noticeWidth = configuration.getInt("notice.width", 200);
@@ -180,8 +184,8 @@ public class DialogLoader implements Loader<DialogInventory> {
                 dialogInventory.setNoTooltip(noTooltip);
                 dialogInventory.setYesWidth(yesWidth);
                 dialogInventory.setNoWidth(noWidth);
-                dialogInventory.addYesAction(loadRequirement(configuration, "yes-actions", file));
-                dialogInventory.addNoAction(loadRequirement(configuration, "no-actions", file));
+                dialogInventory.addYesAction(loadRequirements(configuration, "yes-actions", file));
+                dialogInventory.addNoAction(loadRequirements(configuration, "no-actions", file));
             }
             case MULTI_ACTION -> {
                 int numberOfColumns = configuration.getInt("number-of-columns", 3);
@@ -201,7 +205,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
                     int width = configuration.getInt(path + ".width", 100);
-                    List<Requirement> requirement = loadRequirement(configuration, path+".actions", file);
+                    List<Requirement> requirement = loadRequirements(configuration, path+".actions", file);
                     ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
                     dialogInventory.addActionButton(record);
                 }
@@ -211,7 +215,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                 String text = configuration.getString("server-links.text", "");
                 String tooltip = configuration.getString("server-links.tooltip", "");
                 int width = configuration.getInt("server-links.width", 100);
-                List<Requirement> requirement = loadRequirement(configuration, "server-links.actions", file);
+                List<Requirement> requirement = loadRequirements(configuration, "server-links.actions", file);
                 int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
                 ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
                 dialogInventory.setActionButtonServerLink(record);
@@ -220,7 +224,19 @@ public class DialogLoader implements Loader<DialogInventory> {
         }
     }
 
-    protected List<Requirement> loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
+    protected List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException {
         return menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
+    }
+    protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
+        return menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
+    }
+    protected void applyViewRequirement(YamlConfiguration configuration, String path, File file, Consumer<Requirement> requirementConsumer, String elementName) {
+        if (configuration.isConfigurationSection(path + ".view-requirement")) {
+            try {
+                requirementConsumer.accept(loadRequirement(configuration, path + ".view-requirement.", file));
+            } catch (InventoryException e) {
+                Logger.info("Failed to load view requirement for " + elementName + ": " + e.getMessage(), Logger.LogType.WARNING);
+            }
+        }
     }
 }

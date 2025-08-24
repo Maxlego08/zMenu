@@ -2,11 +2,13 @@ package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.ViewRequirementDialogs;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 
 import java.util.List;
 
-public class InputButton {
+public class InputButton implements ViewRequirementDialogs {
     private MenuPlugin plugin;
     private DialogInputType inputType;
     private String key; // Unique identifier for the input button
@@ -38,6 +40,8 @@ public class InputButton {
     private float step = (float) 1; // Default step value
     private String initialValueRange = String.valueOf(50); // Default initial value
     private String labelFormat = "options.generic_value"; // Default label format
+
+    private Requirement viewRequirement;
 
     public MenuPlugin getPlugin() {
         return plugin;
@@ -206,6 +210,15 @@ public class InputButton {
     }
     public InputButton setLabelFormat(String labelFormat) {
         this.labelFormat = labelFormat;
+        return this;
+    }
+    @Override
+    public Requirement getViewRequirement() {
+        return viewRequirement;
+    }
+
+    public InputButton setViewRequirement(Requirement viewRequirement) {
+        this.viewRequirement = viewRequirement;
         return this;
     }
 }

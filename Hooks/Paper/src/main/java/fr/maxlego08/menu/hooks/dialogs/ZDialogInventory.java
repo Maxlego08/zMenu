@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
@@ -180,8 +182,18 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
     }
 
     @Override
+    public List<BodyButton> getDialogBodies(Player player) {
+        return filterByViewRequirement(bodyButtons, player, BodyButton::getViewRequirement);
+    }
+
+    @Override
     public List<InputButton> getDialogInputs() {
         return this.inputButtons;
+    }
+    @Override
+    public List<InputButton> getDialogInputs(Player player) {
+        return filterByViewRequirement(inputButtons, player, InputButton::getViewRequirement);
+
     }
 
     public String parsePlaceholders(Player player, String text) {
@@ -367,5 +379,15 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
     @Override
     public void setNoTooltip(String noTooltip) {
         this.noTooltip = noTooltip;
+    }
+
+    private <T> List<T> filterByViewRequirement(List<T> buttons, Player player, Function<T, Requirement> getter) {
+        var fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
+        return buttons.stream()
+                .filter(button -> {
+                    Requirement requirement = getter.apply(button);
+                    return requirement == null || requirement.execute(player, null, fakeInventory, new Placeholders());
+                })
+                .toList();
     }
 }

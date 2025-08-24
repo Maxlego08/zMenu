@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogType;
@@ -51,7 +50,16 @@ public interface DialogInventory {
 
     List<BodyButton> getDialogBodies();
 
+    List<BodyButton> getDialogBodies(Player player);
+
     List<InputButton> getDialogInputs();
+
+    /**
+     * Return the list of body buttons for a specific player with the view requirement applied
+     * @param player the player to check
+     * @return the list of body buttons
+     */
+    List<InputButton> getDialogInputs(Player player);
 
     List<Requirement> getYesActions();
 

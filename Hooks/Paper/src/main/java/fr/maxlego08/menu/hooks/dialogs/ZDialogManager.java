@@ -246,8 +246,8 @@ public class ZDialogManager implements DialogManager {
     public void openDialog(Player player, DialogInventory zDialog) {
         try {
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies());
-            List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs());
+            List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies(player));
+            List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
 
             DialogBase.Builder dialogBase = DialogBase.builder(paperComponent.getComponent(dialogBuild.name()))
                     .externalTitle(paperComponent.getComponent(dialogBuild.externalTitle()))
