@@ -11,7 +11,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -29,7 +28,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -249,7 +247,7 @@ public class ComponentMeta implements MetaUpdater {
         }
     }
 
-    private static @NotNull String convertLegacyHex(String message) {
+    private @NotNull String convertLegacyHex(String message) {
         Matcher matcher = LEGACY_HEX_PATTERN.matcher(message);
         StringBuilder sb = new StringBuilder();
 
@@ -262,7 +260,7 @@ public class ComponentMeta implements MetaUpdater {
         return sb.toString();
     }
 
-    private static @NotNull String convertShorLegacyHex(String message) {
+    private @NotNull String convertShorLegacyHex(String message) {
         Matcher matcher = HEX_SHORT_PATTERN.matcher(message);
         StringBuilder sb = new StringBuilder();
 
@@ -276,7 +274,7 @@ public class ComponentMeta implements MetaUpdater {
     private String replaceLegacyColors(String message) {
         for (var entry : this.COLORS_MAPPINGS.entrySet()) {
             String key = entry.getKey();
-            String value = "<"+entry.getValue()+">";
+            String value = "<" + entry.getValue() + ">";
 
             message = message.replace("&" + key, value)
                     .replace("§" + key, value)
@@ -284,5 +282,5 @@ public class ComponentMeta implements MetaUpdater {
                     .replace("§" + key.toUpperCase(), value);
         }
         return message;
-
+    }
 }
