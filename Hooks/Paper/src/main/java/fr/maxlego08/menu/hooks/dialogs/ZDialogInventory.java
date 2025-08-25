@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
@@ -382,11 +384,18 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
     }
 
     private <T> List<T> filterByViewRequirement(List<T> buttons, Player player, Function<T, Requirement> getter) {
-        var fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
+        InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
+        Placeholders placeholder = new Placeholders();
         return buttons.stream()
                 .filter(button -> {
                     Requirement requirement = getter.apply(button);
-                    return requirement == null || requirement.execute(player, null, fakeInventory, new Placeholders());
+                    if (requirement == null) return true;
+                    boolean canView = requirement.execute(player, null, fakeInventory, placeholder);
+                    List<Action> actions = canView ? requirement.getSuccessActions() : requirement.getDenyActions();
+                    for (Action action : actions) {
+                        action.preExecute(player, null, fakeInventory, placeholder);
+                    }
+                    return canView;
                 })
                 .toList();
     }
