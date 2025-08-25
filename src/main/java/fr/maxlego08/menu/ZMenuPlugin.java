@@ -2,12 +2,10 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
-import fr.maxlego08.menu.api.ButtonManager;
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -21,13 +19,13 @@ import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
-import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
@@ -98,6 +96,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
+    private ConfigManagerInt configManager;
     private final ToastHelper toastHelper = new ToastManager(this);
     private CommandMenu commandMenu;
     private PlatformScheduler scheduler;
@@ -170,6 +169,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.dialogManager = new ZDialogManager(this);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
             this.dialogManager.load();
+            this.configManager = new ConfigManager(this);
+            configManager.registerConfig(Config.class, this);
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -362,11 +363,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandManager;
     }
 
+    public ConfigManagerInt getConfigManager() {
+        return configManager;
+    }
     /**
      * Returns the class that will manager the dialogs
      *
      * @return the zDialogManager
      */
+    @Override
     public DialogManager getDialogManager() {return this.dialogManager;}
 
     @Override

@@ -6,7 +6,6 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
@@ -25,8 +24,15 @@ public class DilogBooleanInputBuilder extends BuilderHelper implements DialogInp
     @Override
     public DialogInput build(Player player, InputButton button) {
         String key = button.getKey();
-        Component label = this.dialogManager.getPaperComponent().getComponent(PlaceholderAPI.setPlaceholders(player, button.getLabel()));
-        boolean initialValue = Boolean.parseBoolean(PlaceholderAPI.setPlaceholders(player, button.getInitialValueBool()));
+        Component label = this.dialogManager.getPaperComponent().getComponent(papi(button.getLabel(),player));
+        Object object = button.getInitialValueSupplier();
+        boolean initialValue;
+        if( object instanceof Boolean){
+            initialValue = (boolean) object;
+        } else {
+            initialValue = Boolean.parseBoolean(papi(button.getInitialValueBool(),player));
+        }
+
         String onTrueText = papi(button.getTextTrue(), player);
         String onFalseText = papi(button.getTextFalse(), player);
 

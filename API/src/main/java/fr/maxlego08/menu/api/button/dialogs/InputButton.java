@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.ViewRequirementDialogs;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class InputButton implements ViewRequirementDialogs {
     private MenuPlugin plugin;
@@ -30,6 +31,7 @@ public class InputButton implements ViewRequirementDialogs {
 
     // Boolean input properties
     private String initialValueBool = String.valueOf(true);
+    private Supplier<Boolean> initialValueSupplier;
     private String textTrue = "";
     private String textFalse = "";
 
@@ -212,6 +214,17 @@ public class InputButton implements ViewRequirementDialogs {
         this.labelFormat = labelFormat;
         return this;
     }
+    public Object getInitialValueSupplier() {
+        if (initialValueSupplier != null) {;
+            return initialValueSupplier.get();
+        }
+        return null;
+    }
+    public InputButton setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
+        this.initialValueSupplier = initialValueSupplier;
+        return this;
+    }
+
     @Override
     public Requirement getViewRequirement() {
         return viewRequirement;

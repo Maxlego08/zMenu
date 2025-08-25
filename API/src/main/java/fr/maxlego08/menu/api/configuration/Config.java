@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.configuration;
 
+import fr.maxlego08.menu.api.enums.DialogInputType;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.ClickType;
@@ -10,9 +11,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@ConfigDialog(
+        name = "zMenu Config",
+        externalTitle = "zMenu Configuration"
+)
 public class Config {
 
     // Enable debug, allows you to display errors in the console that would normally be hidden.
+    @ConfigOption(
+            key = "enableDebug",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable debug",
+            width = 100
+    )
     public static boolean enableDebug = false;
 
     // Enable debug time, allows you to display the code execution time in nanosecond, perfect for testing the effectiveness of the plugin.

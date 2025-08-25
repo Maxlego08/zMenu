@@ -2,7 +2,6 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogType;
@@ -44,11 +43,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ZDialogManager implements DialogManager {
+public class ZDialogManager extends AbstractDialogManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private static InventoryManager inventoryManager;
     private final Map<String, List<DialogInventory>> dialogs = new HashMap<>();
@@ -60,6 +57,7 @@ public class ZDialogManager implements DialogManager {
     private final ComponentMeta paperComponent;
 
     public ZDialogManager(final MenuPlugin menuPlugin) {
+        super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
         this.dialogBuilders = new DialogBuilderClass(this);
@@ -254,12 +252,7 @@ public class ZDialogManager implements DialogManager {
             List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies(player));
             List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
 
-            DialogBase.Builder dialogBase = DialogBase.builder(paperComponent.getComponent(dialogBuild.name()))
-                    .externalTitle(paperComponent.getComponent(dialogBuild.externalTitle()))
-                    .canCloseWithEscape(dialogBuild.canCloseWithEscape())
-                    .pause(zDialog.isPause())
-                    .afterAction(DialogBase.DialogAfterAction.valueOf(zDialog.getAfterAction()));
-
+            DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), zDialog.isPause(), zDialog.getAfterAction());
             Dialog dialog = createDialogByType(zDialog.getDialogType(), dialogBase, bodies, inputs, zDialog, player);
 
             activeDialogs.put(player.getUniqueId(), zDialog);
@@ -409,36 +402,6 @@ public class ZDialogManager implements DialogManager {
         );
     }
 
-    protected List<DialogInput> getDialogInputs(Player player, List<InputButton> inputButtons) {
-        return buildDialogs(
-                player,
-                inputButtons,
-                InputButton::getInputType,
-                DialogBuilderClass::getDialogInputBuilder,
-                (builder, button) -> builder.build(player, button)
-        );
-    }
-
-    protected <B, T, TYPE, BUILDER> List<T> buildDialogs(
-            Player player,
-            List<B> buttons,
-            Function<B, TYPE> typeExtractor,
-            Function<TYPE, Optional<BUILDER>> builderResolver,
-            BiFunction<BUILDER, B, T> builderExecutor
-    ) {
-        return buttons.stream()
-                .map(button -> {
-                    TYPE type = typeExtractor.apply(button);
-                    if (type == null) return null;
-
-                    return builderResolver.apply(type)
-                            .map(builder -> builderExecutor.apply(builder, button))
-                            .orElse(null);
-                })
-                .filter(Objects::nonNull)
-                .toList();
-    }
-
     public static MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         if (inventoryManager == null){
             Logger.info("InventoryManager is not initialized. Please ensure it is set before calling loadItemStack.", Logger.LogType.WARNING);
@@ -446,9 +409,5 @@ public class ZDialogManager implements DialogManager {
         } else {
             return inventoryManager.loadItemStack(configuration, path, file);
         }
-    }
-
-    public ComponentMeta getPaperComponent() {
-        return paperComponent;
     }
 }

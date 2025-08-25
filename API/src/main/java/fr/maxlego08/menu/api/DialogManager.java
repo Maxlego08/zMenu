@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.DialogException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
 import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
 import org.bukkit.entity.Player;

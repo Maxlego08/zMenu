@@ -13,6 +13,7 @@ public class CommandDialog extends VCommand {
         this.setDescription(Message.DESCRIPTION_DIALOGS);
         this.addSubCommand(new CommandDialogOpen(plugin));
         this.addSubCommand(new CommandDialogReload(plugin));
+        this.addSubCommand(new CommandDialogOpenConfig(plugin));
     }
 
     @Override
