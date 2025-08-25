@@ -59,6 +59,8 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
     private ActionButtonRecord actionButtonRecordServerLink;
     private int numberOfColumns = 1;
 
+    private Requirement openRequirement;
+
     public ZDialogInventory(MenuPlugin plugin, String name, String fileName, String externalTitle) {
         this.menuPlugin = plugin;
         this.name = name;
@@ -176,6 +178,21 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
     @Override
     public ActionButtonRecord getActionButtonServerLink() {
         return actionButtonRecordServerLink;
+    }
+
+    @Override
+    public void setOpenRequirement(Requirement openRequirement) {
+        this.openRequirement = openRequirement;
+    }
+
+    @Override
+    public Requirement getOpenRequirement() {
+        return this.openRequirement;
+    }
+
+    @Override
+    public boolean hasOpenRequirement(Player player) {
+        return checkRequirement(this.openRequirement, player);
     }
 
     @Override
@@ -383,20 +400,24 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
         this.noTooltip = noTooltip;
     }
 
-    private <T> List<T> filterByViewRequirement(List<T> buttons, Player player, Function<T, Requirement> getter) {
-        InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
-        Placeholders placeholder = new Placeholders();
+    protected  <T> List<T> filterByViewRequirement(List<T> buttons, Player player, Function<T, Requirement> getter) {
         return buttons.stream()
                 .filter(button -> {
                     Requirement requirement = getter.apply(button);
-                    if (requirement == null) return true;
-                    boolean canView = requirement.execute(player, null, fakeInventory, placeholder);
-                    List<Action> actions = canView ? requirement.getSuccessActions() : requirement.getDenyActions();
-                    for (Action action : actions) {
-                        action.preExecute(player, null, fakeInventory, placeholder);
-                    }
-                    return canView;
+                    return checkRequirement(requirement, player);
                 })
                 .toList();
+    }
+
+    protected boolean checkRequirement(Requirement requirement, Player player) {
+        if (requirement == null) return true;
+        InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
+        Placeholders placeholder = new Placeholders();
+        boolean result = requirement.execute(player, null, fakeInventory, placeholder);
+        List<Action> actions = result ? requirement.getSuccessActions() : requirement.getDenyActions();
+        for (Action action : actions) {
+            action.preExecute(player, null, fakeInventory, placeholder);
+        }
+        return result;
     }
 }

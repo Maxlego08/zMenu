@@ -64,6 +64,15 @@ public class DialogLoader implements Loader<DialogInventory> {
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid after action: " + afterActionString);
         }
+        if (configuration.isConfigurationSection("open-requirement")){
+            try {
+                Requirement openRequirement = loadRequirement(configuration, "open-requirement.", file);
+                dialogInventory.setOpenRequirement(openRequirement);
+            } catch (InventoryException e) {
+                Logger.info("Failed to load open requirement: " + e.getMessage(), Logger.LogType.WARNING);
+            }
+        }
+
         loadSpecificItems(dialogType, configuration, dialogInventory, file);
 
         List<BodyButton> bodyButtons = loadBodyButtons(configuration, file);

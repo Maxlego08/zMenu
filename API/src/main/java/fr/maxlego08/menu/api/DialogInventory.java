@@ -138,4 +138,10 @@ public interface DialogInventory {
     ActionButtonRecord getActionButtonServerLink(Player player);
 
     ActionButtonRecord getActionButtonServerLink();
+
+    void setOpenRequirement(Requirement openRequirement);
+
+    Requirement getOpenRequirement();
+
+    boolean hasOpenRequirement(Player player);
 }

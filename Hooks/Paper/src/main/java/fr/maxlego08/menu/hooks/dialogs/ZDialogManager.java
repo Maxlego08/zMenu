@@ -245,6 +245,11 @@ public class ZDialogManager implements DialogManager {
     @Override
     public void openDialog(Player player, DialogInventory zDialog) {
         try {
+            boolean canOpen = zDialog.hasOpenRequirement(player);
+            if (!canOpen){
+                return;
+            }
+
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
             List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies(player));
             List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
