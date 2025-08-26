@@ -8,7 +8,6 @@ import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.ConfigOption;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.api.enums.DialogType;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.AbstractDialogManager;
@@ -24,10 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class ConfigManager extends AbstractDialogManager implements ConfigManagerInt {
@@ -49,6 +45,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         String configName = plugin.getName()+":"+configClass.getSimpleName();
         ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(this.menuPlugin, configDialog.name(), configName, configDialog.externalTitle());
         dialogInventory.setDialogType(DialogType.CONFIRMATION);
+        dialogInventory.setBooleanConfirmText(configDialog.booleanConfirmText());
         dialogInventory.setYesText(configDialog.yesText());
         dialogInventory.setNoText(configDialog.noText());
         dialogInventory.setYesWidth(configDialog.yesWidth());
@@ -57,11 +54,13 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         dialogInventory.setCanCloseWithEscape(false);
         List<InputButton> inputButtons = new ArrayList<>();
         Map<String, Consumer<Boolean>> consumerMap = new HashMap<>();
+        Map<String, Consumer<Float>> consumerMapFloat = new HashMap<>();
+        Map<String, Consumer<Integer>> consumerMapInt = new HashMap<>();
         for (Field field : configClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(ConfigOption.class)){
                 ConfigOption configOption = field.getAnnotation(ConfigOption.class);
                 field.setAccessible(true);
-                switch (configOption.type()) {
+                switch (Objects.requireNonNull(configOption).type()) {
                     case BOOLEAN -> {
                         InputButton inputButton = new InputButton();
                         inputButton.setInputType(DialogInputType.BOOLEAN);
@@ -86,10 +85,54 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                         }));
                         inputButtons.add(inputButton);
                     }
+                    case NUMBER_RANGE -> {
+                        InputButton inputButton = new InputButton();
+                        inputButton.setInputType(DialogInputType.NUMBER_RANGE);
+                        inputButton.setLabel(configOption.label());
+                        String key = configOption.key();
+                        inputButton.setKey(key);
+                        inputButton.setStart(configOption.startRange());
+                        inputButton.setEnd(configOption.endRange());
+                        inputButton.setStep(configOption.stepRange());
+                        if (field.getType() == int.class) {
+                            inputButton.setInitialValueRangeSupplier(() -> {
+                                try {
+                                    return (float) field.getInt(null);
+                                } catch (IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                            consumerMapInt.put(key, value -> {
+                                try {
+                                    field.setInt(null, value);
+                                } catch (IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                        } else {
+                            inputButton.setInitialValueRangeSupplier(() -> {
+                                try {
+                                    return field.getFloat(null);
+                                } catch (IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                            consumerMapFloat.put(key, value -> {
+                                try {
+                                    field.setFloat(null, value);
+                                } catch (IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                        }
+                        inputButtons.add(inputButton);
+                    }
                 }
             }
         }
         dialogInventory.setConsumerMap(consumerMap);
+        dialogInventory.setFloatConsumerMap(consumerMapFloat);
+        dialogInventory.setIntegerConsumerMap(consumerMapInt);
         dialogInventory.setInputButtons(inputButtons);
         zDialogInventoryDev.put(plugin.getName(), dialogInventory);
 
@@ -110,7 +153,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
             List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
             DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), zDialog.isPause(), zDialog.getAfterAction());
-            Dialog dialog = Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(ActionButton.create(paperComponent.getComponent(zDialog.getYesText(player)),paperComponent.getComponent(zDialog.getYesTooltip(player)),zDialog.getYesWidth(), createAction(inputs,zDialog.getConsumerMap())), ActionButton.create(paperComponent.getComponent(zDialog.getNoText(player)),paperComponent.getComponent(zDialog.getNoTooltip(player)),zDialog.getNoWidth(), createAction(inputs,new HashMap<>())))).base(dialogBase.inputs(inputs).build())
+            Dialog dialog = Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(ActionButton.create(paperComponent.getComponent(zDialog.getYesText(player)),paperComponent.getComponent(zDialog.getYesTooltip(player)),zDialog.getYesWidth(), createAction(inputs,zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),zDialog.getFloatConsumerMap(),zDialog.getIntegerConsumerMap())), ActionButton.create(paperComponent.getComponent(zDialog.getNoText(player)),paperComponent.getComponent(zDialog.getNoTooltip(player)),zDialog.getNoWidth(), createAction(new ArrayList<>(),new HashMap<>(),"",new HashMap<>(),new HashMap<>())))).base(dialogBase.inputs(inputs).build())
             );
             player.showDialog(dialog);
         } catch (Exception e) {
@@ -119,45 +162,55 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
             }
         }
     }
-    private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap) {
+    private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap, String booleanText, Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt) {
         return DialogAction.customClick((view,audience)-> {
-            Placeholders placeholders = new Placeholders();
+            if (inputs.isEmpty()) return;
+            StringBuilder sb = new StringBuilder("Config Input Results:\n");
             for (DialogInput input : inputs) {
                 String key = input.key();
-                String value = null;
 
                 Object rawValue;
 
                 switch (input) {
                     case NumberRangeDialogInput numberRangeDialogInput -> {
-                        rawValue = view.getFloat(key);
-                        value = String.valueOf(rawValue);
-                    }
-                    case TextDialogInput textDialogInput -> {
-                        rawValue = view.getText(key);
-                        value = (String) rawValue;
-                    }
-                    case BooleanDialogInput booleanDialogInput -> {
-                        rawValue = view.getBoolean(key);
-                        value = String.valueOf(rawValue);
-                        if (consumerMap.containsKey(key)) {
-                            consumerMap.get(key).accept((Boolean) rawValue);
+                        if (consumerMapInt.containsKey(key)) {
+                            int intValue = view.getFloat(key) == null ? 0 : (int) view.getFloat(key).floatValue();
+                            consumerMapInt.get(key).accept(intValue);
+                            Config.updated = true;
+                        } else if (floatMap.containsKey(key)) {
+                            float floatValue = view.getFloat(key);
+                            floatMap.get(key).accept(floatValue);
                             Config.updated = true;
                         }
                     }
+                    case TextDialogInput textDialogInput -> {
+                        rawValue = view.getText(key);
+                    }
+                    case BooleanDialogInput booleanDialogInput -> {
+                        rawValue = view.getBoolean(key);
+                        boolean booleanValue = (Boolean) rawValue;
+                        if (consumerMap.containsKey(key)) {
+                            consumerMap.get(key).accept(booleanValue);
+                            Config.updated = true;
+                        }
+                        String valueIcon = booleanValue
+                                ? "<green>✔<gray> |<red> ❌"
+                                : "<red>✔<gray> |<green> ❌";
+                        String text = booleanValue ? booleanDialogInput.onTrue() : booleanDialogInput.onFalse();
+                        String line = booleanText
+                                .replace("%key%", key)
+                                .replace("%text%", text)
+                                .replace("%value%", valueIcon);
+                        sb.append(line).append("\n");
+                    }
                     case SingleOptionDialogInput singleOptionDialogInput -> {
                         rawValue = view.getText(key);
-                        value = (String) rawValue;
                     }
                     default -> {
                     }
                 }
-                if (value == null) {
-                    continue;
-                }
-                placeholders.register(key, value);
             }
-
+            getPaperComponent().sendMessage((Player) audience, sb.toString());
         }, ClickCallback.Options.builder().uses(-1).build());
     }
     @Override

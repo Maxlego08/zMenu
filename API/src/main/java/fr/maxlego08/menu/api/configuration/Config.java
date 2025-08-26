@@ -110,6 +110,14 @@ public class Config {
     public static boolean enableFastEvent = false;
 
     // Seconds save player data: The time in seconds for automatic backup of player data.
+    @ConfigOption(
+        key = "secondsSavePlayerData",
+        type = DialogInputType.NUMBER_RANGE,
+        label = "Seconds save player data",
+        startRange = 60,
+        endRange = 3600,
+        stepRange = 5
+    )
     public static int secondsSavePlayerData = 600;
 
     // Seconds save player data: The time in seconds for automatic backup of inventories data.

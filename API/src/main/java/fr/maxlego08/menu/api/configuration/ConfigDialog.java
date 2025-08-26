@@ -14,4 +14,5 @@ public @interface ConfigDialog {
     String noText() default "<red>Cancel";
     int yesWidth() default 150;
     int noWidth() default 150;
+    String booleanConfirmText() default "<white>%key% :</white> %value% <gray>|</gray> %text%";
 }

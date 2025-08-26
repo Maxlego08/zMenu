@@ -41,6 +41,7 @@ public class InputButton implements ViewRequirementDialogs {
     private float end = (float) 100; // Default end value
     private float step = (float) 1; // Default step value
     private String initialValueRange = String.valueOf(50); // Default initial value
+    private Supplier<Float> initialValueRangeSupplier;
     private String labelFormat = "options.generic_value"; // Default label format
 
     private Requirement viewRequirement;
@@ -222,6 +223,18 @@ public class InputButton implements ViewRequirementDialogs {
     }
     public InputButton setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
         this.initialValueSupplier = initialValueSupplier;
+        return this;
+    }
+
+    public Object getInitialValueRangeSupplier() {
+        if (initialValueRangeSupplier != null) {;
+            return initialValueRangeSupplier.get();
+        }
+        return null;
+    }
+
+    public InputButton setInitialValueRangeSupplier(Supplier<Float> initialValueRangeSupplier) {
+        this.initialValueRangeSupplier = initialValueRangeSupplier;
         return this;
     }
 

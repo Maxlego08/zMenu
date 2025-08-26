@@ -29,12 +29,17 @@ public class DialogNumberRangeInputBuilder extends BuilderHelper implements Dial
         String labelFormat = papi(button.getLabelFormat(),player);
         float start = button.getStart();
         float end = button.getEnd();
-        String initialValue = papi(button.getInitialValueRange(),player);
+        Object o = button.getInitialValueRangeSupplier();
         float initialValueFloat;
-        try {
-            initialValueFloat = Float.parseFloat(initialValue);
-        } catch (NumberFormatException e) {
-            initialValueFloat = (start + end) / 2;
+        if (o  instanceof Float) {
+             initialValueFloat = (Float) o;
+        } else {
+            String initialValue = papi(button.getInitialValueRange(),player);
+            try {
+                initialValueFloat = Float.parseFloat(initialValue);
+            } catch (NumberFormatException e) {
+                initialValueFloat = (start + end) / 2;
+            }
         }
         float step = button.getStep();
 
