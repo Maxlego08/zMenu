@@ -104,6 +104,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private FoliaLib foliaLib;
+    private final File configFile = new File(getDataFolder(), "config.yml");
     // private final PacketUtils packetUtils = new PacketUtils(this);
 
     public static ZMenuPlugin getInstance() {
@@ -319,6 +320,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
 
+        Config.getInstance().save(getConfig(), this.configFile);
+
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
@@ -528,5 +531,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public ToastHelper getToastHelper() {
         return this.toastHelper;
+    }
+
+    public File getConfigFile() {
+        return this.configFile;
     }
 }

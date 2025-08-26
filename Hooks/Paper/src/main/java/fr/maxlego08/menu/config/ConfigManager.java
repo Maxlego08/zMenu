@@ -142,6 +142,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                         value = String.valueOf(rawValue);
                         if (consumerMap.containsKey(key)) {
                             consumerMap.get(key).accept((Boolean) rawValue);
+                            Config.updated = true;
                         }
                     }
                     case SingleOptionDialogInput singleOptionDialogInput -> {
