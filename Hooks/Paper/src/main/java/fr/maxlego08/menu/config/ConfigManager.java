@@ -216,6 +216,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
             }
         }
     }
+    @SuppressWarnings("Experimental")
     private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap, String booleanText, Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt, String numberRangeText, Map<String, Consumer<String>> stringMap, String stringText) {
         return DialogAction.customClick((view,audience)-> {
             if (inputs.isEmpty()) return;
