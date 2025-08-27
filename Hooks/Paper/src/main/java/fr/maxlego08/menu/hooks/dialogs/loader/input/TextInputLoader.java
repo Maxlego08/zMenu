@@ -1,25 +1,25 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.loader.ButtonLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
-import java.io.File;
+public class TextInputLoader extends ButtonLoader {
 
-public class TextInputLoader implements InputLoader {
-    @Override
-    public String getKey() {
-        return "text";
+    public TextInputLoader(Plugin plugin, String  name) {
+        super(plugin, name);
+    }
+
+    public TextInputLoader(Plugin plugin) {
+        super(plugin, "text");
     }
 
     @Override
-    public DialogInputType getInputType() {
-        return DialogInputType.TEXT;
-    }
-
-    @Override
-    public InputButton load(String path, File file, YamlConfiguration configuration) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         InputButton inputButton = new InputButton();
         String label = configuration.getString(path + ".label", "");
         int width = configuration.getInt(path + ".width",200);
@@ -40,7 +40,7 @@ public class TextInputLoader implements InputLoader {
         if (multilineHeight > 0) {
             inputButton.setMultilineHeight(multilineHeight);
         }
-
+        inputButton.setInputType(DialogInputType.TEXT);
         return inputButton;
     }
 }

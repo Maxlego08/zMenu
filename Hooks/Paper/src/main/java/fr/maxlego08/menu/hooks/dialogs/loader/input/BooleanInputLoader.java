@@ -1,26 +1,25 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.loader.ButtonLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
-import java.io.File;
+public class BooleanInputLoader extends ButtonLoader {
 
-public class BooleanInputLoader implements InputLoader {
+    public BooleanInputLoader(Plugin plugin, String  name) {
+        super(plugin, name);
+    }
 
-    @Override
-    public String getKey() {
-        return "boolean";
+    public BooleanInputLoader(Plugin plugin) {
+        super(plugin, "boolean");
     }
 
     @Override
-    public DialogInputType getInputType() {
-        return DialogInputType.BOOLEAN;
-    }
-
-    @Override
-    public InputButton load(String path, File file, YamlConfiguration configuration) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         InputButton inputButton = new InputButton();
         String label = configuration.getString(path + ".label", "");
         String defaultValue = configuration.getString(path + ".initial-value", String.valueOf(true));
@@ -31,6 +30,7 @@ public class BooleanInputLoader implements InputLoader {
         inputButton.setInitialValueBool(defaultValue);
         inputButton.setTextTrue(textTrue);
         inputButton.setTextFalse(textFalse);
+        inputButton.setInputType(DialogInputType.BOOLEAN);
 
         return inputButton;
     }
