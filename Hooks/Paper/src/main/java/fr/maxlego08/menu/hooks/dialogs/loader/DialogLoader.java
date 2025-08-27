@@ -2,15 +2,15 @@ package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
-import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
@@ -20,10 +20,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class DialogLoader implements Loader<DialogInventory> {
     private final MenuPlugin menuPlugin;
@@ -98,34 +97,20 @@ public class DialogLoader implements Loader<DialogInventory> {
             return bodyButtons;
         }
 
+        Loader<Button> loader = this.menuPlugin.getButtonManager().getLoaderButton(this.menuPlugin, file, 54, new HashMap<>());
         for (String bodyKey : bodySection.getKeys(false)) {
-            String path = "body." + bodyKey;
-
-            String type = configuration.getString(path + ".type");
-
-            if (type == null) {
-                Logger.info("No type found for body element: " + bodyKey, Logger.LogType.WARNING);
-                continue;
-            }
-
-            Optional<BodyLoader> optionalLoader = manager.getBodyLoader(type.toLowerCase());
-
-            if (optionalLoader.isPresent()) {
-                BodyLoader loader = optionalLoader.get();
-
-                BodyButton button = loader.load(path, file, configuration);
-                button.setPlugin((MenuPlugin) menuPlugin);
-                button.setBodyType(loader.getBodyType());
-                applyViewRequirement(configuration, path, file, button::setViewRequirement, "body element: " + bodyKey);
-
-                bodyButtons.add(button);
-            } else {
-                Logger.info("No body loader found for type: " + type, Logger.LogType.WARNING);
+            String path = "body." + bodyKey + ".";
+            try {
+                Button button = loader.load(configuration, path, bodyKey);
+                BodyButton bodyButton = getButtonType(button, BodyButton.class, path, file);
+                bodyButtons.add(bodyButton);
+            } catch (Exception exception) {
+                Logger.info(exception.getMessage(), Logger.LogType.ERROR);
             }
         }
         return bodyButtons;
     }
-    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) throws InventoryException {
+    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) {
         List<InputButton> inputButtons = new ArrayList<>();
 
         ConfigurationSection inputSection = configuration.getConfigurationSection("inputs");
@@ -134,31 +119,17 @@ public class DialogLoader implements Loader<DialogInventory> {
             return inputButtons;
         }
 
+        Loader<Button> loader = this.menuPlugin.getButtonManager().getLoaderButton(this.menuPlugin, file, 54, new HashMap<>());
         for (String inputKey : inputSection.getKeys(false)) {
-            String path = "inputs." + inputKey;
-
-            String type = configuration.getString(path + ".type");
-            if (type == null) {
-                Logger.info("No type found for input element: " + inputKey, Logger.LogType.WARNING);
-                continue;
+            String path = "inputs." + inputKey + ".";
+            try {
+                Button button = loader.load(configuration, path, inputKey);
+                InputButton inputButton = getButtonType(button, InputButton.class, path, file);
+                inputButton.setKey(inputKey);
+                inputButtons.add(inputButton);
+            } catch (Exception exception) {
+                Logger.info(exception.getMessage(), Logger.LogType.ERROR);
             }
-
-            Optional<InputLoader> optionalInputType = manager.getInputLoader(type.toLowerCase());
-            if (optionalInputType.isPresent()) {
-                InputLoader loader = optionalInputType.get();
-
-                InputButton button = loader.load(path, file, configuration);
-                button.setPlugin((MenuPlugin) menuPlugin);
-                button.setInputType(loader.getInputType());
-                button.setKey(inputKey);
-                applyViewRequirement(configuration, path, file, button::setViewRequirement, "input element: " + inputKey);
-
-                inputButtons.add(button);
-
-            } else {
-                Logger.info("No input loader found for type: " + type, Logger.LogType.WARNING);
-            }
-
         }
         return inputButtons;
     }
@@ -239,13 +210,16 @@ public class DialogLoader implements Loader<DialogInventory> {
     protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
         return menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }
-    protected void applyViewRequirement(YamlConfiguration configuration, String path, File file, Consumer<Requirement> requirementConsumer, String elementName) {
-        if (configuration.isConfigurationSection(path + ".view-requirement")) {
-            try {
-                requirementConsumer.accept(loadRequirement(configuration, path + ".view-requirement.", file));
-            } catch (InventoryException e) {
-                Logger.info("Failed to load view requirement for " + elementName + ": " + e.getMessage(), Logger.LogType.WARNING);
+
+    @SuppressWarnings("unchecked")
+    protected <T extends Button> T getButtonType(Button button, Class<T> verifClass, String path, File file) throws InventoryButtonException {
+        if (verifClass.isInstance(button)) {
+            if (button.getElseButton() != null){
+                return getButtonType(button.getElseButton(), verifClass, path, file);
             }
+            return (T) button;
+        } else {
+            throw new InventoryButtonException("The type " + button.getName() + " for the button " + path + " is not valid for this section" + file.getAbsolutePath());
         }
     }
 }

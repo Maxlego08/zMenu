@@ -169,7 +169,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             Logger.info("Paper server detected, loading Dialogs support");
             this.dialogManager = new ZDialogManager(this);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-            this.dialogManager.load();
             this.configManager = new ConfigManager(this);
             configManager.registerConfig(Config.class, this);
         }

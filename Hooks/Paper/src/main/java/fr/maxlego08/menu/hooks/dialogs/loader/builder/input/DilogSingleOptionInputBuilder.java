@@ -34,7 +34,7 @@ public class DilogSingleOptionInputBuilder extends BuilderHelper implements Dial
         int width = button.getWidth();
         Component label = paperComponent.getComponent(papi(button.getLabel(),player));
         boolean labelVisible = button.isLabelVisible();
-        List<SingleOption> optionList = button.getOptions();
+        List<SingleOption> optionList = button.getSigleOptions();
         List<SingleOptionDialogInput.OptionEntry> finalOptions = new ArrayList<>();
         for (SingleOption option : optionList) {
             finalOptions.add(SingleOptionDialogInput.OptionEntry.create(option.id(),paperComponent.getComponent(option.diplay()),option.initialValue()));

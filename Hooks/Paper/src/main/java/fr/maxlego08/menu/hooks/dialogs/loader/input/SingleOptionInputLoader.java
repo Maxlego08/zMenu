@@ -1,28 +1,29 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
+import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SingleOptionInputLoader implements InputLoader {
-    @Override
-    public String getKey() {
-        return "single_option";
+public class SingleOptionInputLoader extends ButtonLoader {
+
+    public SingleOptionInputLoader(Plugin plugin, String  name) {
+        super(plugin, name);
+    }
+
+    public SingleOptionInputLoader(Plugin plugin) {
+        super(plugin, "single_option");
     }
 
     @Override
-    public DialogInputType getInputType() {
-        return DialogInputType.SINGLE_OPTION;
-    }
-
-    @Override
-    public InputButton load(String path, File file, YamlConfiguration configuration) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         InputButton inputButton = new InputButton();
 
         String label = configuration.getString(path + ".label", "");
@@ -51,8 +52,8 @@ public class SingleOptionInputLoader implements InputLoader {
 
         inputButton.setLabel(label);
         inputButton.setLabelVisible(labelVisible);
-        inputButton.setOptions(singleOptionList);
-
+        inputButton.setSigleOptions(singleOptionList);
+        inputButton.setInputType(DialogInputType.SINGLE_OPTION);
         return inputButton;
     }
 }

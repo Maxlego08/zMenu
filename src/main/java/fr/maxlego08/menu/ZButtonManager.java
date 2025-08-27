@@ -1,6 +1,8 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -13,6 +15,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.loader.RequirementLoader;
+import fr.maxlego08.menu.loader.ZButtonLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -190,5 +193,10 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public List<String> getEmptyPermissible(List<Map<String, Object>> elements) {
         return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getPermission(type).isEmpty()).collect(Collectors.toList());
+    }
+
+    @Override
+    public Loader<Button> getLoaderButton(MenuPlugin menuPlugin, File file, int size, Map<Character, List<Integer>> matrix) {
+        return new ZButtonLoader(menuPlugin, file, size, matrix);
     }
 }
