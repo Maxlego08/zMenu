@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.DialogInventory;
+import fr.maxlego08.menu.api.DialogManager;
+import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
@@ -284,6 +287,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
                     case BooleanDialogInput booleanDialogInput -> {
                         rawValue = view.getBoolean(key);
                         value = String.valueOf(rawValue);
+                        placeholders.register(key+"_text", (Boolean) rawValue ? booleanDialogInput.onTrue() : booleanDialogInput.onFalse());
                     }
                     case SingleOptionDialogInput singleOptionDialogInput -> {
                         rawValue = view.getText(key);

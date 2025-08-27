@@ -127,6 +127,7 @@ public class ComponentMeta implements MetaUpdater {
         updateLore(itemMeta, lore, LoreType.REPLACE);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
         List<Component> components = lore.stream().map(text -> this.cache.get(text, () -> {
