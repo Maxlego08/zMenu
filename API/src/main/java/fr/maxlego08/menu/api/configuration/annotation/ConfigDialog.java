@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.configuration;
+package fr.maxlego08.menu.api.configuration.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

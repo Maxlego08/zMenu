@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import org.bukkit.entity.Player;
@@ -44,4 +45,6 @@ public interface DialogManager {
     InventoryManager getInventoryManager();
 
     void reloadDialogs();
+
+    ConfigManagerInt getConfigManager();
 }

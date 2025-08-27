@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.configuration;
+package fr.maxlego08.menu.api.configuration.annotation;
 
 import fr.maxlego08.menu.api.enums.DialogInputType;
 

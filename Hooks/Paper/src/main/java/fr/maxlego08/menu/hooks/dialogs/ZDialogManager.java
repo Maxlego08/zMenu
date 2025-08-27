@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
 
 public class ZDialogManager extends AbstractDialogManager implements DialogManager {
     private final MenuPlugin menuPlugin;
+    private final ConfigManagerInt configManager;
     private static InventoryManager inventoryManager;
     private final Map<String, List<DialogInventory>> dialogs = new HashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
@@ -49,13 +51,13 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
 
     private final ComponentMeta paperComponent;
 
-    public ZDialogManager(final MenuPlugin menuPlugin) {
+    public ZDialogManager(final MenuPlugin menuPlugin, final ConfigManagerInt configManager) {
         super(menuPlugin);
         this.menuPlugin = menuPlugin;
+        this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
         this.dialogBuilders = new DialogBuilderClass(this);
         inventoryManager = menuPlugin.getInventoryManager();
-
     }
 
     @Override
@@ -342,6 +344,11 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
     @Override
     public InventoryManager getInventoryManager() {
         return inventoryManager;
+    }
+
+    @Override
+    public ConfigManagerInt getConfigManager(){
+        return this.configManager;
     }
 
     public Optional<DialogBuilder> getDialogBuilder(DialogBodyType type) {

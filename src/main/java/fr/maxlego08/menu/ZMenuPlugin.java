@@ -5,7 +5,6 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -96,7 +95,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
-    private ConfigManagerInt configManager;
     private final ToastHelper toastHelper = new ToastManager(this);
     private CommandMenu commandMenu;
     private PlatformScheduler scheduler;
@@ -167,9 +165,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
             Logger.info("Paper server detected, loading Dialogs support");
-            this.dialogManager = new ZDialogManager(this);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-            this.configManager = new ConfigManager(this);
+            ConfigManager configManager = new ConfigManager(this);
+            this.dialogManager = new ZDialogManager(this, configManager);
             configManager.registerConfig(Config.class, this);
         }
 
@@ -365,9 +363,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandManager;
     }
 
-    public ConfigManagerInt getConfigManager() {
-        return configManager;
-    }
     /**
      * Returns the class that will manager the dialogs
      *

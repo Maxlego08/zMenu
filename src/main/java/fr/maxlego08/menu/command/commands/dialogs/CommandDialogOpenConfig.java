@@ -11,13 +11,13 @@ public class CommandDialogOpenConfig extends VCommand {
     public CommandDialogOpenConfig(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("config");
-        ConfigManagerInt configManager = plugin.getConfigManager();
+        ConfigManagerInt configManager = plugin.getDialogManager().getConfigManager();
         this.addRequireArg("plugin name",(a,b)-> configManager.getRegisteredConfigs());
         this.addOptionalArg("player");
     }
     @Override
     protected CommandType perform(ZMenuPlugin plugin){
-        ConfigManagerInt configManager = plugin.getConfigManager();
+        ConfigManagerInt configManager = plugin.getDialogManager().getConfigManager();
         String pluginName = this.argAsString(0);
         Player targetPlayer = this.argAsPlayer(1,this.player);
         if (targetPlayer == null){
