@@ -11,20 +11,12 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
-import fr.maxlego08.menu.api.utils.dialogs.loader.InputLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -50,8 +42,6 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
     private static InventoryManager inventoryManager;
     private final Map<String, List<DialogInventory>> dialogs = new HashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
-    private final Map<String, BodyLoader> bodyLoader = new HashMap<>();
-    private final Map<String, InputLoader> inputLoader = new HashMap<>();
     private final DialogBuilderClass dialogBuilders;
 
     private final ComponentMeta paperComponent;
@@ -63,17 +53,6 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         this.dialogBuilders = new DialogBuilderClass(this);
         inventoryManager = menuPlugin.getInventoryManager();
 
-    }
-
-    @Override
-    public void load() {
-        this.registerBodyLoader(new ItemBodyLoader());
-        this.registerBodyLoader(new PlainMessageBodyLoader());
-
-        this.registerInputLoader(new TextInputLoader());
-        this.registerInputLoader(new BooleanInputLoader());
-        this.registerInputLoader(new NumberRangeInputLoader());
-        this.registerInputLoader(new SingleOptionInputLoader());
     }
 
     @Override
@@ -203,24 +182,6 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         }
 
         return dialog;
-    }
-
-    @Override
-    public void registerBodyLoader(BodyLoader loader) {
-        if (this.bodyLoader.containsKey(loader.getKey())) {
-            Logger.info("BodyLoader " + loader.getKey() + " is already registered!", Logger.LogType.WARNING);
-        } else {
-            this.bodyLoader.put(loader.getKey(), loader);
-        }
-    }
-
-    @Override
-    public void registerInputLoader(InputLoader inputLoader) {
-        if (this.inputLoader.containsKey(inputLoader.getKey())) {
-            Logger.info("InputLoader " + inputLoader.getKey() + " is already registered!", Logger.LogType.WARNING);
-        } else {
-            this.inputLoader.put(inputLoader.getKey(), inputLoader);
-        }
     }
 
     public void registerBuilder(DialogBuilder builder) {
@@ -378,15 +339,6 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
     public InventoryManager getInventoryManager() {
         return inventoryManager;
     }
-    @Override
-    public Optional<BodyLoader> getBodyLoader(String name) {
-        return Optional.ofNullable(this.bodyLoader.get(name));
-    }
-
-    @Override
-    public Optional<InputLoader> getInputLoader(String name) {
-        return Optional.ofNullable(this.inputLoader.get(name));
-    }
 
     public Optional<DialogBuilder> getDialogBuilder(DialogBodyType type) {
         return DialogBuilderClass.getDialogBuilder(type);
@@ -400,14 +352,5 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
                 DialogBuilderClass::getDialogBuilder,
                 (builder, button) -> builder.build(player, button)
         );
-    }
-
-    public static MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
-        if (inventoryManager == null){
-            Logger.info("InventoryManager is not initialized. Please ensure it is set before calling loadItemStack.", Logger.LogType.WARNING);
-            return null;
-        } else {
-            return inventoryManager.loadItemStack(configuration, path, file);
-        }
     }
 }

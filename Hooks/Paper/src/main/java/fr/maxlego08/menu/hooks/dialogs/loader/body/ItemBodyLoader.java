@@ -1,38 +1,36 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.body;
 
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
-import fr.maxlego08.menu.api.utils.dialogs.loader.BodyLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
-import java.io.File;
 import java.util.List;
 
-public class ItemBodyLoader implements BodyLoader {
+public class ItemBodyLoader extends ButtonLoader {
 
-    @Override
-    public String getKey() {
-        return "item";
+    public ItemBodyLoader(Plugin plugin, String  name) {
+        super(plugin, name);
+    }
+
+    public ItemBodyLoader(Plugin plugin) {
+        super(plugin, "item");
     }
 
     @Override
-    public DialogBodyType getBodyType() {
-        return DialogBodyType.ITEM;
-    }
-
-    @Override
-    public BodyButton load(String path, File file, YamlConfiguration configuration) {
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         BodyButton bodyButton = new BodyButton();
-        ZDialogManager.loadItemStack(configuration, path, file);
         int width = configuration.getInt(path+".width", 128);
         int height = configuration.getInt(path+".height", 128);
         boolean showDecoration = configuration.getBoolean(path+".show-decoration", true);
         boolean showTooltip = configuration.getBoolean(path+".show-tooltip", true);
         List<String> descriptionMessages = configuration.getStringList(path+".description.messages");
         int descriptionWidth = configuration.getInt(path+".description.width", 512);
-        MenuItemStack itemStack = ZDialogManager.loadItemStack(configuration, path+".item.", file);
         boolean useCache = configuration.getBoolean(path+".use-cache", true);
         bodyButton.setUseCache(useCache);
         bodyButton.setWidth(width);
@@ -41,7 +39,7 @@ public class ItemBodyLoader implements BodyLoader {
         bodyButton.setShowTooltip(showTooltip);
         bodyButton.setDescriptionMessages(descriptionMessages);
         bodyButton.setDescriptionWidth(descriptionWidth);
-        bodyButton.setItemStack(itemStack);
+        bodyButton.setBodyType(DialogBodyType.ITEM);
         return bodyButton;
     }
 }

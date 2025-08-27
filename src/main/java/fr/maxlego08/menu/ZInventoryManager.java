@@ -24,6 +24,12 @@ import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.api.DialogManager;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -361,6 +367,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
         buttonManager.register(new SwitchLoader(this.plugin));
+
+        // Loading Button Dialog
+        // Register Button Dialog Body
+        buttonManager.register(new ItemBodyLoader(this.plugin));
+        buttonManager.register(new PlainMessageBodyLoader(this.plugin));
+        // Register Button Dialog Input
+        buttonManager.register(new TextInputLoader(this.plugin));
+        buttonManager.register(new BooleanInputLoader(this.plugin));
+        buttonManager.register(new NumberRangeInputLoader(this.plugin));
+        buttonManager.register(new SingleOptionInputLoader(this.plugin));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());

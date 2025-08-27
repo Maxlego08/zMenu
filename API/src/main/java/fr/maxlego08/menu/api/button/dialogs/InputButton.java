@@ -1,17 +1,15 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.requirement.ViewRequirementDialogs;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-public class InputButton implements ViewRequirementDialogs {
-    private MenuPlugin plugin;
-    private DialogInputType inputType;
+public class InputButton extends Button {
+    private DialogInputType inputType = DialogInputType.BOOLEAN;
     private String key; // Unique identifier for the input button
     private String label;
 
@@ -25,7 +23,7 @@ public class InputButton implements ViewRequirementDialogs {
     private int multilineHeight; // Value between 1 and 512 — Height of input.
 
     // Single option input properties
-    private List<SingleOption> options;
+    private List<SingleOption> singleOptions;
 
     // Don't use Label Visible
 
@@ -44,15 +42,6 @@ public class InputButton implements ViewRequirementDialogs {
     private String labelFormat = "options.generic_value"; // Default label format
 
     private Requirement viewRequirement;
-
-    public MenuPlugin getPlugin() {
-        return plugin;
-    }
-
-    public InputButton setPlugin(MenuPlugin plugin) {
-        this.plugin = plugin;
-        return this;
-    }
 
     public DialogInputType getInputType() {
         return inputType;
@@ -126,12 +115,12 @@ public class InputButton implements ViewRequirementDialogs {
         return this;
     }
 
-    public List<SingleOption> getOptions() {
-        return options;
+    public List<SingleOption> getSigleOptions() {
+        return singleOptions;
     }
 
-    public InputButton setOptions(List<SingleOption> options) {
-        this.options = options;
+    public InputButton setSigleOptions(List<SingleOption> options) {
+        this.singleOptions = options;
         return this;
     }
 
@@ -222,16 +211,6 @@ public class InputButton implements ViewRequirementDialogs {
     }
     public InputButton setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
         this.initialValueSupplier = initialValueSupplier;
-        return this;
-    }
-
-    @Override
-    public Requirement getViewRequirement() {
-        return viewRequirement;
-    }
-
-    public InputButton setViewRequirement(Requirement viewRequirement) {
-        this.viewRequirement = viewRequirement;
         return this;
     }
 }
