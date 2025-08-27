@@ -15,4 +15,6 @@ public @interface ConfigDialog {
     int yesWidth() default 150;
     int noWidth() default 150;
     String booleanConfirmText() default "<white>%key% :</white> %value% <gray>|</gray> %text%";
+    String numberRangeConfirmText() default "<white>%key% :</white> %value%";
+    String textConfirmText() default "<white>%key% : <gray>%text%";
 }

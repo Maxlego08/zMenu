@@ -46,6 +46,8 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(this.menuPlugin, configDialog.name(), configName, configDialog.externalTitle());
         dialogInventory.setDialogType(DialogType.CONFIRMATION);
         dialogInventory.setBooleanConfirmText(configDialog.booleanConfirmText());
+        dialogInventory.setNumberRangeConfirmText(configDialog.numberRangeConfirmText());
+        dialogInventory.setStringConfirmText(configDialog.textConfirmText());
         dialogInventory.setYesText(configDialog.yesText());
         dialogInventory.setNoText(configDialog.noText());
         dialogInventory.setYesWidth(configDialog.yesWidth());
@@ -56,6 +58,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         Map<String, Consumer<Boolean>> consumerMap = new HashMap<>();
         Map<String, Consumer<Float>> consumerMapFloat = new HashMap<>();
         Map<String, Consumer<Integer>> consumerMapInt = new HashMap<>();
+        Map<String, Consumer<String>> consumerMapString = new HashMap<>();
         for (Field field : configClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(ConfigOption.class)){
                 ConfigOption configOption = field.getAnnotation(ConfigOption.class);
@@ -65,6 +68,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                         InputButton inputButton = new InputButton();
                         inputButton.setInputType(DialogInputType.BOOLEAN);
                         inputButton.setLabel(configOption.label());
+                        inputButton.setLabelVisible(configOption.labelVisible());
                         String key = configOption.key();
                         inputButton.setKey(key);
                         inputButton.setInitialValueSupplier(()-> {
@@ -89,6 +93,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                         InputButton inputButton = new InputButton();
                         inputButton.setInputType(DialogInputType.NUMBER_RANGE);
                         inputButton.setLabel(configOption.label());
+                        inputButton.setLabelVisible(configOption.labelVisible());
                         String key = configOption.key();
                         inputButton.setKey(key);
                         inputButton.setStart(configOption.startRange());
@@ -105,6 +110,21 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                             consumerMapInt.put(key, value -> {
                                 try {
                                     field.setInt(null, value);
+                                } catch (IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                        } else if (field.getType() == long.class){
+                            inputButton.setInitialValueRangeSupplier(() -> {
+                                try {
+                                    return (float) field.getLong(null);
+                                } catch (IllegalAccessException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                            consumerMapInt.put(key, value -> {
+                                try {
+                                    field.setLong(null, value);
                                 } catch (IllegalAccessException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -127,12 +147,46 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                         }
                         inputButtons.add(inputButton);
                     }
+                    case TEXT -> {
+                        InputButton inputButton = new InputButton();
+                        inputButton.setInputType(DialogInputType.TEXT);
+                        inputButton.setLabel(configOption.label());
+                        inputButton.setLabelVisible(configOption.labelVisible());
+                        String key = configOption.key();
+                        inputButton.setKey(key);
+                        inputButton.setWidth(configOption.width());
+                        inputButton.setMaxLength(configOption.maxLength());
+                        int multilineMaxLines = configOption.multilineMaxLines();
+                        if (multilineMaxLines > 0) {
+                            inputButton.setMultilineMaxLines(multilineMaxLines);
+                        }
+                        int multilineHeight = configOption.multilineHeight();
+                        if (multilineHeight > 0) {
+                            inputButton.setMultilineHeight(multilineHeight);
+                        }
+                        inputButton.setDefaultTextSupplier(() -> {
+                            try {
+                                return (String) field.get(null);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        consumerMapString.put(key, value -> {
+                            try {
+                                field.set(null, value);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        inputButtons.add(inputButton);
+                    }
                 }
             }
         }
         dialogInventory.setConsumerMap(consumerMap);
         dialogInventory.setFloatConsumerMap(consumerMapFloat);
         dialogInventory.setIntegerConsumerMap(consumerMapInt);
+        dialogInventory.setStringConsumerMap(consumerMapString);
         dialogInventory.setInputButtons(inputButtons);
         zDialogInventoryDev.put(plugin.getName(), dialogInventory);
 
@@ -153,7 +207,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
             List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
             DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), zDialog.isPause(), zDialog.getAfterAction());
-            Dialog dialog = Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(ActionButton.create(paperComponent.getComponent(zDialog.getYesText(player)),paperComponent.getComponent(zDialog.getYesTooltip(player)),zDialog.getYesWidth(), createAction(inputs,zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),zDialog.getFloatConsumerMap(),zDialog.getIntegerConsumerMap())), ActionButton.create(paperComponent.getComponent(zDialog.getNoText(player)),paperComponent.getComponent(zDialog.getNoTooltip(player)),zDialog.getNoWidth(), createAction(new ArrayList<>(),new HashMap<>(),"",new HashMap<>(),new HashMap<>())))).base(dialogBase.inputs(inputs).build())
+            Dialog dialog = Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(ActionButton.create(paperComponent.getComponent(zDialog.getYesText(player)),paperComponent.getComponent(zDialog.getYesTooltip(player)),zDialog.getYesWidth(), createAction(inputs,zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),zDialog.getFloatConsumerMap(),zDialog.getIntegerConsumerMap(),zDialog.getNumberRangeConfirmText(),zDialog.getStringConsumerMap(), zDialog.getStringConfirmText())), ActionButton.create(paperComponent.getComponent(zDialog.getNoText(player)),paperComponent.getComponent(zDialog.getNoTooltip(player)),zDialog.getNoWidth(), createAction(new ArrayList<>(),new HashMap<>(),"",new HashMap<>(),new HashMap<>(),"",new HashMap<>(),"")))).base(dialogBase.inputs(inputs).build())
             );
             player.showDialog(dialog);
         } catch (Exception e) {
@@ -162,7 +216,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
             }
         }
     }
-    private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap, String booleanText, Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt) {
+    private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap, String booleanText, Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt, String numberRangeText, Map<String, Consumer<String>> stringMap, String stringText) {
         return DialogAction.customClick((view,audience)-> {
             if (inputs.isEmpty()) return;
             StringBuilder sb = new StringBuilder("Config Input Results:\n");
@@ -182,9 +236,22 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                             floatMap.get(key).accept(floatValue);
                             Config.updated = true;
                         }
+                        String line = numberRangeText.replace("%key%", key)
+                                .replace("%value%", String.valueOf(view.getFloat(key)));
+                        sb.append(line).append("\n");
                     }
                     case TextDialogInput textDialogInput -> {
                         rawValue = view.getText(key);
+                        String stringValue = (String) rawValue;
+                        if (stringMap.containsKey(key)) {
+                            stringMap.get(key).accept(stringValue);
+                            Config.updated = true;
+                        }
+                        assert stringValue != null;
+                        String line = stringText
+                                .replace("%key%", key)
+                                .replace("%text%", stringValue);
+                        sb.append(line).append("\n");
                     }
                     case BooleanDialogInput booleanDialogInput -> {
                         rawValue = view.getBoolean(key);
@@ -200,7 +267,8 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                         String line = booleanText
                                 .replace("%key%", key)
                                 .replace("%text%", text)
-                                .replace("%value%", valueIcon);
+                                .replace("%value%", valueIcon)
+                                ;
                         sb.append(line).append("\n");
                     }
                     case SingleOptionDialogInput singleOptionDialogInput -> {

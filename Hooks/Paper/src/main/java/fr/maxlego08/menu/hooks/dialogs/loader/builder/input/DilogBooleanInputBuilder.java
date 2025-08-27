@@ -9,6 +9,8 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
+
 public class DilogBooleanInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
 
@@ -25,13 +27,9 @@ public class DilogBooleanInputBuilder extends BuilderHelper implements DialogInp
     public DialogInput build(Player player, InputButton button) {
         String key = button.getKey();
         Component label = this.dialogManager.getPaperComponent().getComponent(papi(button.getLabel(),player));
-        Object object = button.getInitialValueSupplier();
+        Optional<Boolean> initialValueSupplier = button.getInitialValueSupplier();
         boolean initialValue;
-        if( object instanceof Boolean){
-            initialValue = (boolean) object;
-        } else {
-            initialValue = Boolean.parseBoolean(papi(button.getInitialValueBool(),player));
-        }
+        initialValue = initialValueSupplier.orElseGet(() -> Boolean.parseBoolean(papi(button.getInitialValueBool(), player)));
 
         String onTrueText = papi(button.getTextTrue(), player);
         String onFalseText = papi(button.getTextFalse(), player);

@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.ViewRequirementDialogs;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class InputButton implements ViewRequirementDialogs {
@@ -23,6 +24,7 @@ public class InputButton implements ViewRequirementDialogs {
     private int maxLength = 32; // Default max length for text input
     private int multilineMaxLines; // Optional positive integer. If present, limits maximum lines.
     private int multilineHeight; // Value between 1 and 512 — Height of input.
+    private Supplier<String> defaultTextSupplier;
 
     // Single option input properties
     private List<SingleOption> options;
@@ -215,26 +217,36 @@ public class InputButton implements ViewRequirementDialogs {
         this.labelFormat = labelFormat;
         return this;
     }
-    public Object getInitialValueSupplier() {
-        if (initialValueSupplier != null) {;
-            return initialValueSupplier.get();
+    public Optional<Boolean> getInitialValueSupplier() {
+        if (this.initialValueSupplier != null) {;
+            return Optional.ofNullable(initialValueSupplier.get());
         }
-        return null;
+        return Optional.empty();
     }
     public InputButton setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
         this.initialValueSupplier = initialValueSupplier;
         return this;
     }
 
-    public Object getInitialValueRangeSupplier() {
-        if (initialValueRangeSupplier != null) {;
-            return initialValueRangeSupplier.get();
+    public Optional<Float> getInitialValueRangeSupplier() {
+        if (this.initialValueRangeSupplier != null) {;
+            return Optional.ofNullable(initialValueRangeSupplier.get());
         }
-        return null;
+        return Optional.empty();
     }
 
     public InputButton setInitialValueRangeSupplier(Supplier<Float> initialValueRangeSupplier) {
         this.initialValueRangeSupplier = initialValueRangeSupplier;
+        return this;
+    }
+    public Optional<String> getDefaultTextSupplier() {
+        if (this.defaultTextSupplier != null) {;
+            return Optional.ofNullable(defaultTextSupplier.get());
+        }
+        return Optional.empty();
+    }
+    public InputButton setDefaultTextSupplier(Supplier<String> defaultTextSupplier) {
+        this.defaultTextSupplier = defaultTextSupplier;
         return this;
     }
 

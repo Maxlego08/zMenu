@@ -18,6 +18,8 @@ public @interface ConfigOption {
     String label() default "";
     int width() default 200;
     boolean labelVisible() default true;
+
+    // For text type
     int maxLength() default 32;
     int multilineMaxLines() default 0;
     int multilineHeight() default 0;

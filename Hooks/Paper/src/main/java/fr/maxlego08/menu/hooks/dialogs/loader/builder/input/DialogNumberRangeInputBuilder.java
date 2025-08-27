@@ -9,6 +9,8 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
+
 public class DialogNumberRangeInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
 
@@ -29,10 +31,10 @@ public class DialogNumberRangeInputBuilder extends BuilderHelper implements Dial
         String labelFormat = papi(button.getLabelFormat(),player);
         float start = button.getStart();
         float end = button.getEnd();
-        Object o = button.getInitialValueRangeSupplier();
+        Optional<Float> initialValueSupplier = button.getInitialValueRangeSupplier();
         float initialValueFloat;
-        if (o  instanceof Float) {
-             initialValueFloat = (Float) o;
+        if (initialValueSupplier.isPresent()) {
+             initialValueFloat = initialValueSupplier.get();
         } else {
             String initialValue = papi(button.getInitialValueRange(),player);
             try {

@@ -10,7 +10,10 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     private final Map<String, Consumer<Boolean>> consumerMap = new HashMap<>();
     private final Map<String, Consumer<Float>> floatConsumerMap = new HashMap<>();
     private final Map<String, Consumer<Integer>> integerConsumerMap = new HashMap<>();
+    private final Map<String, Consumer<String>> stringConsumerMap = new HashMap<>();
     private String booleanConfirmText = "%key%: %value%";
+    private String numberRangeConfirmText = "%key%: %value%";
+    private String stringConfirmText = "%key%: %text%";
 
     public ZDialogInventoryDeveloper(MenuPlugin plugin, String name, String fileName, String externalTitle) {
         super(plugin, name, fileName, externalTitle);
@@ -49,5 +52,28 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
 
     public void setBooleanConfirmText(String booleanConfirmText) {
         this.booleanConfirmText = booleanConfirmText;
+    }
+
+    public String getNumberRangeConfirmText() {
+        return numberRangeConfirmText;
+    }
+
+    public void setNumberRangeConfirmText(String numberRangeConfirmText) {
+        this.numberRangeConfirmText = numberRangeConfirmText;
+    }
+
+    public Map<String, Consumer<String>> getStringConsumerMap() {
+        return stringConsumerMap;
+    }
+    public void setStringConsumerMap(Map<String, Consumer<String>> stringConsumerMap) {
+        this.stringConsumerMap.clear();
+        this.stringConsumerMap.putAll(stringConsumerMap);
+    }
+    public String getStringConfirmText() {
+        return stringConfirmText;
+    }
+
+    public void setStringConfirmText(String stringConfirmText) {
+        this.stringConfirmText = stringConfirmText;
     }
 }

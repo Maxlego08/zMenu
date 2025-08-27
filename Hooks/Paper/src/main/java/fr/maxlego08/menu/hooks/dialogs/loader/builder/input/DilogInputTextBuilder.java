@@ -9,6 +9,8 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
+
 public class DilogInputTextBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
 
@@ -28,7 +30,13 @@ public class DilogInputTextBuilder extends BuilderHelper implements DialogInputB
         int width = button.getWidth();
         String label = papi(button.getLabel(), player);
         boolean labelVisible = button.isLabelVisible();
-        String defaultText = papi(button.getDefaultText(), player);
+        Optional<String> defaultTextSupplier = button.getDefaultTextSupplier();
+        String defaultText;
+        if (defaultTextSupplier.isPresent()) {
+            defaultText = papi(defaultTextSupplier.get(), player);
+        } else {
+            defaultText = papi(button.getDefaultText(), player);
+        }
         int maxLength = button.getMaxLength();
         int multilineMaxLines = button.getMultilineMaxLines();
         int multilineHeight = button.getMultilineHeight();
@@ -36,7 +44,6 @@ public class DilogInputTextBuilder extends BuilderHelper implements DialogInputB
         if (multilineMaxLines > 0 && multilineHeight > 0) {
             multilineOptions = TextDialogInput.MultilineOptions.create(multilineMaxLines, multilineHeight);
         }
-
         return DialogInput.text(key,width, this.dialogManager.getPaperComponent().getComponent(label), labelVisible, defaultText, maxLength, multilineOptions);
     }
 }

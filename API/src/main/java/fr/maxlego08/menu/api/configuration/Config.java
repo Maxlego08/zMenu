@@ -121,6 +121,14 @@ public class Config {
     public static int secondsSavePlayerData = 600;
 
     // Seconds save player data: The time in seconds for automatic backup of inventories data.
+    @ConfigOption(
+        key = "secondsSavePlayerInventories",
+        type = DialogInputType.NUMBER_RANGE,
+        label = "Seconds save player inventories",
+        startRange = 60,
+        endRange = 3600,
+        stepRange = 5
+    )
     public static int secondsSavePlayerInventories = 600;
 
     // Default menu name
@@ -187,7 +195,19 @@ public class Config {
         label = "Enable anti dupe discord notification"
     )
     public static boolean enableAntiDupeDiscordNotification = false;
+    @ConfigOption(
+        key = "antiDupeDiscordWebhookUrl",
+        type = DialogInputType.TEXT,
+        label = "Anti dupe discord webhook url",
+        maxLength = 100
+    )
     public static String antiDupeDiscordWebhookUrl = "https://discord.com/api/webhooks/<your discord webhook url>";
+    @ConfigOption(
+        key = "antiDupeMessage",
+        type = DialogInputType.TEXT,
+        label = "Anti dupe message",
+        maxLength = 200
+    )
     public static String antiDupeMessage = "**%player%** use %amount% %itemname% which comes from zMenu. Removing it !";
 
     public static List<ClickType> allClicksType = Arrays.asList(ClickType.MIDDLE, ClickType.RIGHT, ClickType.LEFT, ClickType.SHIFT_RIGHT, ClickType.SHIFT_LEFT);
@@ -208,9 +228,26 @@ public class Config {
         falseText = "<red>Disabled",
         label = "Enable cooldown click"
     )
+
     public static boolean enableCooldownClick = true;
+    @ConfigOption(
+        key = "cooldownClickMilliseconds",
+        type = DialogInputType.NUMBER_RANGE,
+        label = "Cooldown click milliseconds",
+        endRange = 1000,
+        stepRange = 10
+    )
+
     public static long cooldownClickMilliseconds = 100;
+    @ConfigOption(
+        key = "cachePlaceholderAPI",
+        type = DialogInputType.NUMBER_RANGE,
+        label = "Cache PlaceholderAPI",
+        endRange = 300,
+        stepRange = 5
+    )
     public static long cachePlaceholderAPI = 20;
+
     @ConfigOption(
         key = "enableCachePlaceholderAPI",
         type = DialogInputType.BOOLEAN,
