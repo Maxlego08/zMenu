@@ -15,6 +15,7 @@ public class ConfigFieldContext {
     private final Map<String, Consumer<Integer>> integerConsumers = new HashMap<>();
     private final Map<String, Consumer<String>> stringConsumers = new HashMap<>();
     private final Map<String, Consumer<Long>> longConsumers = new HashMap<>();
+    private Consumer<Boolean> updateConsumer;
 
     public void addInputButton(InputButton inputButton) {
         this.inputButtons.add(inputButton);
@@ -70,5 +71,13 @@ public class ConfigFieldContext {
 
     public int size() {
         return inputButtons.size();
+    }
+
+    public Consumer<Boolean> getUpdateConsumer() {
+        return updateConsumer;
+    }
+
+    public void setUpdateConsumer(Consumer<Boolean> updateConsumer) {
+        this.updateConsumer = updateConsumer;
     }
 }

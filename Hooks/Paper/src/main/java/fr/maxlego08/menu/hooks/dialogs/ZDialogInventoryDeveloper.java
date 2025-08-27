@@ -15,8 +15,11 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     private String numberRangeConfirmText = "%key%: %value%";
     private String stringConfirmText = "%key%: %text%";
 
-    public ZDialogInventoryDeveloper(MenuPlugin plugin, String name, String fileName, String externalTitle) {
+    private final Consumer<Boolean> updateConsumer;
+
+    public ZDialogInventoryDeveloper(MenuPlugin plugin, String name, String fileName, String externalTitle, Consumer<Boolean> updateConsumer) {
         super(plugin, name, fileName, externalTitle);
+        this.updateConsumer = updateConsumer;
     }
 
     public Map<String, Consumer<Boolean>> getConsumerMap() {
@@ -75,5 +78,9 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
 
     public void setStringConfirmText(String stringConfirmText) {
         this.stringConfirmText = stringConfirmText;
+    }
+
+    public Consumer<Boolean> getUpdateConsumer() {
+        return updateConsumer;
     }
 }

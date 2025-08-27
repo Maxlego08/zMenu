@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.configuration;
 
 import fr.maxlego08.menu.api.configuration.annotation.ConfigDialog;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
+import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -280,6 +281,7 @@ public class Config {
      */
     private static volatile Config instance;
 
+    @ConfigUpdate
     public static boolean updated = false;
 
     /**

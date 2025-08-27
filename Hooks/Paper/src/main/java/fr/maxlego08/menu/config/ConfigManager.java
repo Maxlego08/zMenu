@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigDialog;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
+import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
@@ -60,9 +61,9 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         ConfigDialog configDialog = validateConfigClass(configClass);
 
         String configName = plugin.getName() + ":" + configClass.getSimpleName();
-        ZDialogInventoryDeveloper dialogInventory = createDialogInventory(configDialog, configName);
-
         ConfigFieldContext context = processConfigFields(configClass);
+
+        ZDialogInventoryDeveloper dialogInventory = createDialogInventory(configDialog, configName, context.getUpdateConsumer());
 
         applyContextToDialog(dialogInventory, context);
         zDialogInventoryDev.put(plugin.getName(), dialogInventory);
@@ -76,12 +77,13 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         return configDialog;
     }
 
-    private ZDialogInventoryDeveloper createDialogInventory(ConfigDialog configDialog, String configName) {
+    private ZDialogInventoryDeveloper createDialogInventory(ConfigDialog configDialog, String configName, Consumer<Boolean> updateConsumer) {
         ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(
                 this.menuPlugin,
                 configDialog.name(),
                 configName,
-                configDialog.externalTitle()
+                configDialog.externalTitle(),
+                updateConsumer
         );
 
         dialogInventory.setDialogType(DialogType.CONFIRMATION);
@@ -104,7 +106,20 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         for (Field field : configClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(ConfigOption.class)) {
                 processField(field, context);
+            } else if (field.isAnnotationPresent(ConfigUpdate.class)){
+                field.setAccessible(true);
+                context.setUpdateConsumer(value-> {
+                    try {
+                        field.setBoolean(null, value );
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
+        }
+        if (context.getUpdateConsumer() == null) {
+            Logger.info("No update consumer found for field " + configClass.getSimpleName()+", this may be safe if you don't need to handle updates.", Logger.LogType.WARNING);
+            context.setUpdateConsumer(value -> {});
         }
 
         return context;
@@ -166,14 +181,14 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                                     createAction(inputs, zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),
                                             zDialog.getFloatConsumerMap(), zDialog.getIntegerConsumerMap(),
                                             zDialog.getNumberRangeConfirmText(), zDialog.getStringConsumerMap(),
-                                            zDialog.getStringConfirmText())
+                                            zDialog.getStringConfirmText(), zDialog.getUpdateConsumer())
                             ),
                             ActionButton.create(
                                     paperComponent.getComponent(zDialog.getNoText(player)),
                                     paperComponent.getComponent(zDialog.getNoTooltip(player)),
                                     zDialog.getNoWidth(),
                                     createAction(new ArrayList<>(), new HashMap<>(), "", new HashMap<>(),
-                                            new HashMap<>(), "", new HashMap<>(), "")
+                                            new HashMap<>(), "", new HashMap<>(), "", null)
                             )
                     ))
                     .base(dialogBase.inputs(inputs).build())
@@ -190,7 +205,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
     private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap,
                                       String booleanText, Map<String, Consumer<Float>> floatMap,
                                       Map<String, Consumer<Integer>> consumerMapInt, String numberRangeText,
-                                      Map<String, Consumer<String>> stringMap, String stringText) {
+                                      Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
         return DialogAction.customClick((view, audience) -> {
             if (inputs.isEmpty()) return;
 
@@ -199,7 +214,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
             for (DialogInput input : inputs) {
                 String key = input.key();
                 processInputResult(input, key, view, sb, consumerMap, booleanText, floatMap,
-                        consumerMapInt, numberRangeText, stringMap, stringText);
+                        consumerMapInt, numberRangeText, stringMap, stringText, updateConsumer );
             }
 
             getPaperComponent().sendMessage((Player) audience, sb.toString());
@@ -210,14 +225,14 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                                     io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
                                     Map<String, Consumer<Boolean>> consumerMap, String booleanText,
                                     Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt,
-                                    String numberRangeText, Map<String, Consumer<String>> stringMap, String stringText) {
+                                    String numberRangeText, Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
         switch (input) {
             case NumberRangeDialogInput numberRangeDialogInput ->
-                    processNumberRangeInput(key, view, sb, floatMap, consumerMapInt, numberRangeText);
+                    processNumberRangeInput(key, view, sb, floatMap, consumerMapInt, numberRangeText, updateConsumer);
             case TextDialogInput textDialogInput ->
-                    processTextInput(key, view, sb, stringMap, stringText);
+                    processTextInput(key, view, sb, stringMap, stringText, updateConsumer);
             case BooleanDialogInput booleanDialogInput ->
-                    processBooleanInput(key, view, sb, consumerMap, booleanText, booleanDialogInput);
+                    processBooleanInput(key, view, sb, consumerMap, booleanText, booleanDialogInput, updateConsumer);
             default -> {
             }
         }
@@ -225,15 +240,15 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
 
     private void processNumberRangeInput(String key, io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
                                          Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt,
-                                         String numberRangeText) {
+                                         String numberRangeText, Consumer<Boolean> updateConsumer) {
         if (consumerMapInt.containsKey(key)) {
             int intValue = view.getFloat(key) == null ? 0 : (int) view.getFloat(key).floatValue();
             consumerMapInt.get(key).accept(intValue);
-            Config.updated = true;
+            executeUpdateConsumer(updateConsumer);
         } else if (floatMap.containsKey(key)) {
             float floatValue = view.getFloat(key);
             floatMap.get(key).accept(floatValue);
-            Config.updated = true;
+            executeUpdateConsumer(updateConsumer);
         }
         String line = numberRangeText.replace("%key%", key)
                 .replace("%value%", String.valueOf(view.getFloat(key)));
@@ -241,11 +256,11 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
     }
 
     private void processTextInput(String key, io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
-                                  Map<String, Consumer<String>> stringMap, String stringText) {
+                                  Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
         String stringValue = view.getText(key);
         if (stringMap.containsKey(key)) {
             stringMap.get(key).accept(stringValue);
-            Config.updated = true;
+            executeUpdateConsumer(updateConsumer);
         }
         if (stringValue != null) {
             String line = stringText.replace("%key%", key).replace("%text%", stringValue);
@@ -255,11 +270,11 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
 
     private void processBooleanInput(String key, io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
                                      Map<String, Consumer<Boolean>> consumerMap, String booleanText,
-                                     BooleanDialogInput booleanDialogInput) {
+                                     BooleanDialogInput booleanDialogInput, Consumer<Boolean> updateConsumer) {
         Boolean booleanValue = view.getBoolean(key);
         if (booleanValue != null && consumerMap.containsKey(key)) {
             consumerMap.get(key).accept(booleanValue);
-            Config.updated = true;
+            executeUpdateConsumer(updateConsumer);
         }
 
         if (booleanValue != null) {
@@ -272,6 +287,11 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
                     .replace("%text%", text)
                     .replace("%value%", valueIcon);
             sb.append(line).append("\n");
+        }
+    }
+    private void executeUpdateConsumer(Consumer<Boolean> updateConsumer) {
+        if (updateConsumer != null) {
+            updateConsumer.accept(true);
         }
     }
 
