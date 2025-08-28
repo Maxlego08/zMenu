@@ -414,12 +414,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
             boolean hasPermission = button.checkPermission(player, menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
             if (!hasPermission) {
                 if (button.hasElseButton()) {
-                    Button elseButton = button.getElseButton();
-                    if (button.getClass().isInstance(elseButton)) {
-                        return getFirstVisibleButtonRecursive((T) elseButton, player);
-                    } else {
-                        return null;
-                    }
+                    return getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
                 } else {
                     return null;
                 }
