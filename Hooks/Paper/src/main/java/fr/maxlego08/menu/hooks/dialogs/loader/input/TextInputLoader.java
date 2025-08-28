@@ -15,7 +15,7 @@ public class TextInputLoader extends ButtonLoader {
     }
 
     public TextInputLoader(Plugin plugin) {
-        super(plugin, "text");
+        super(plugin, "dialog_text");
     }
 
     @Override

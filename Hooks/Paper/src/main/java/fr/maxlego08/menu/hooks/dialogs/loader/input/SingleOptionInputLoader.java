@@ -19,7 +19,7 @@ public class SingleOptionInputLoader extends ButtonLoader {
     }
 
     public SingleOptionInputLoader(Plugin plugin) {
-        super(plugin, "single_option");
+        super(plugin, "dialog_single_option");
     }
 
     @Override

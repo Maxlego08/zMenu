@@ -92,7 +92,7 @@ body:
 inputs:
   # Text input example
   text:
-    type: text
+    type: dialog_text
     label: "&6Share your thoughts about our server:"
     width: 400
     label-visible: true
@@ -103,7 +103,7 @@ inputs:
       height: 80
   boolean:
     # Boolean choice example
-    type: boolean
+    type: dialog_boolean
     label: "&eWould you like to receive server updates?"
     initial-value: true
     text-true: "&a&lYES, keep me updated!"
@@ -111,7 +111,7 @@ inputs:
 
   # Single option selection
   single_option:
-    type: single_option
+    type: dialog_single_option
     label: "&6What's your favorite game mode?"
     label-visible: true
     options:
@@ -134,7 +134,7 @@ inputs:
 
   # Number range selection
   number_range:
-    type: number_range
+    type: dialog_number_range
     label: "&eHow many hours do you play per day?"
     width: 350
     start: 1

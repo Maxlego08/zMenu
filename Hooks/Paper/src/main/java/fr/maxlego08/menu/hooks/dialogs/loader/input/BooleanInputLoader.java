@@ -15,7 +15,7 @@ public class BooleanInputLoader extends ButtonLoader {
     }
 
     public BooleanInputLoader(Plugin plugin) {
-        super(plugin, "boolean");
+        super(plugin, "dialog_boolean");
     }
 
     @Override

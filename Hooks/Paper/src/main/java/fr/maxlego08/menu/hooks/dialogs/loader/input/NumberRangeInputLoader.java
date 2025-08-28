@@ -15,7 +15,7 @@ public class NumberRangeInputLoader extends ButtonLoader {
     }
 
     public NumberRangeInputLoader(Plugin plugin) {
-        super(plugin, "number_range");
+        super(plugin, "dialog_number_range");
     }
 
     @Override
