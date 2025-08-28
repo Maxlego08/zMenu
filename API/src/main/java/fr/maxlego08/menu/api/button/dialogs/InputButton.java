@@ -2,8 +2,6 @@ package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.requirement.ViewRequirementDialogs;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 
 import java.util.List;
@@ -45,7 +43,6 @@ public class InputButton extends Button {
     private Supplier<Float> initialValueRangeSupplier;
     private String labelFormat = "options.generic_value"; // Default label format
 
-    private Requirement viewRequirement;
 
     public DialogInputType getInputType() {
         return inputType;
@@ -239,15 +236,5 @@ public class InputButton extends Button {
         this.defaultTextSupplier = defaultTextSupplier;
         return this;
     }
-
-    @Override
-    public Requirement getViewRequirement() {
-        return viewRequirement;
-    }
-
-    //public InputButton setViewRequirement(Requirement viewRequirement) {
-    //    this.viewRequirement = viewRequirement;
-    //    return this;
-   // }
 }
 

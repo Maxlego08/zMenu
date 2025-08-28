@@ -15,9 +15,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * Classe abstraite pour partager le code commun entre les managers de dialogs
- */
 public abstract class AbstractDialogManager {
     protected final MenuPlugin menuPlugin;
     protected final ComponentMeta paperComponent;

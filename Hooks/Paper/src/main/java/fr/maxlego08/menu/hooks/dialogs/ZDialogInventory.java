@@ -2,11 +2,11 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.DialogType;
-import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
@@ -159,7 +158,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public ZDialogInventoryBuild getBuild(Player player) {
-        return new ZDialogInventoryBuild(parsePlaceholders(player, name),parsePlaceholders(player,externalTitle), canCloseWithEscape);
+        return new ZDialogInventoryBuild(papi(this.name,player),papi(this.externalTitle, player), canCloseWithEscape);
     }
 
     @Override
@@ -192,7 +191,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public boolean hasOpenRequirement(Player player) {
-        return checkRequirement(this.openRequirement, player);
+        return checkRequirement(openRequirement, player);
     }
 
     @Override
@@ -202,7 +201,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public List<BodyButton> getDialogBodies(Player player) {
-        return filterByViewRequirement(bodyButtons, player, BodyButton::getViewRequirement);
+        return filterByViewRequirement(bodyButtons, player);
     }
 
     @Override
@@ -211,13 +210,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
     }
     @Override
     public List<InputButton> getDialogInputs(Player player) {
-        return filterByViewRequirement(inputButtons, player, InputButton::getViewRequirement);
-
-    }
-
-    public String parsePlaceholders(Player player, String text) {
-        if (text == null || text.isEmpty()) return "";
-        return papi(text, player);
+        return filterByViewRequirement(inputButtons, player);
     }
 
     @Override
@@ -245,7 +238,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getYesText(Player player) {
-        return parsePlaceholders(player, yesText);
+        return papi(this.yesText, player);
     }
 
     @Override
@@ -259,7 +252,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getNoText(Player player) {
-        return parsePlaceholders(player, noText);
+        return papi(this.noText, player);
     }
 
     @Override
@@ -273,7 +266,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getYesTooltip(Player player) {
-        return parsePlaceholders(player, yesTooltip);
+        return papi(this.yesTooltip, player);
     }
 
     @Override
@@ -287,7 +280,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getNoTooltip(Player player) {
-        return parsePlaceholders(player, noTooltip);
+        return papi(this.noTooltip, player);
     }
 
     @Override
@@ -317,7 +310,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getLabel(Player player) {
-        return parsePlaceholders(player, label);
+        return papi(this.label, player);
     }
 
     @Override
@@ -332,7 +325,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getLabelTooltip(Player player) {
-        return parsePlaceholders(player, labelTooltip);
+        return papi(this.labelTooltip, player);
     }
 
     @Override
@@ -400,24 +393,47 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
         this.noTooltip = noTooltip;
     }
 
-    protected  <T> List<T> filterByViewRequirement(List<T> buttons, Player player, Function<T, Requirement> getter) {
-        return buttons.stream()
-                .filter(button -> {
-                    Requirement requirement = getter.apply(button);
-                    return checkRequirement(requirement, player);
-                })
-                .toList();
+    @SuppressWarnings("unchecked")
+    protected <T extends Button> List<T> filterByViewRequirement(List<T> buttons, Player player) {
+        List<T> visibleButtons = new ArrayList<>();
+        for (T button : buttons) {
+            Button masterParent = button.getMasterParentButton();
+            if (button.getClass().isInstance(masterParent)) {
+                T visible = getFirstVisibleButtonRecursive((T) masterParent, player);
+                if (visible != null) {
+                    visibleButtons.add(visible);
+                }
+            }
+        }
+        return visibleButtons;
     }
 
+    @SuppressWarnings("unchecked")
+    private <T extends Button> T getFirstVisibleButtonRecursive(T button, Player player) {
+        if (button.hasPermission()) {
+            boolean hasPermission = button.checkPermission(player, menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
+            if (!hasPermission) {
+                if (button.hasElseButton()) {
+                    Button elseButton = button.getElseButton();
+                    if (button.getClass().isInstance(elseButton)) {
+                        return getFirstVisibleButtonRecursive((T) elseButton, player);
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return button;
+            }
+        } else {
+            return button;
+        }
+    }
     protected boolean checkRequirement(Requirement requirement, Player player) {
         if (requirement == null) return true;
         InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
         Placeholders placeholder = new Placeholders();
-        boolean result = requirement.execute(player, null, fakeInventory, placeholder);
-        List<Action> actions = result ? requirement.getSuccessActions() : requirement.getDenyActions();
-        for (Action action : actions) {
-            action.preExecute(player, null, fakeInventory, placeholder);
-        }
-        return result;
+        return requirement.execute(player, null, fakeInventory, placeholder);
     }
 }
