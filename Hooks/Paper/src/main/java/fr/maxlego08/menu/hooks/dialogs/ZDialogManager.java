@@ -226,8 +226,11 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
             player.showDialog(dialog);
 
         } catch (Exception e) {
-            if (Config.enableDebug){
+            if (Config.enableInformationMessage){
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
+                if (Config.enableDebug){
+                    Logger.info("Error details: "+e, Logger.LogType.ERROR);
+                }
             }
         }
     }

@@ -95,6 +95,7 @@ public enum Message implements IMessage {
     DESCRIPTION_DIALOGS_OPEN("Allows you to open a dialog"),
     DESCRIPTION_DIALOGS_RELOAD("Allows you to reload dialogs files configuration"),
     DESCRIPTION_ADDONS("List of official addons"),
+    DESCRIPTION_DUMPLOG("Generate a dumplog file for support"),
 
     RELOAD("&aYou have just reloaded the configuration files. &8(&7%inventories% inventories&8)"),
     RELOAD_INVENTORY("&aYou have just reloaded the inventories files. &8(&7%inventories% inventories&8)"),
@@ -104,6 +105,9 @@ public enum Message implements IMessage {
     RELOAD_COMMAND_FILE("&aVous have just reloaded the command &f%name%&a."),
     RELOAD_COMMAND_ERROR("&cIt is not possible to reload the command &f%name%&c."),
     RELOAD_FILES("&aYou have just reloaded config.json and messages.yml files."),
+
+    DUMPLOG_SUCCESS("&aYou have just generated a dumplog file, please send this link to support: &f%url%"),
+    DUMPLOG_ERROR("&cAn error occurred while generating the dumplog file, %error%."),
 
     PLAYERS_DATA_CLEAR_ALL("&aYou have just deleted the datas of all the players."),
     PLAYERS_DATA_CLEAR_PLAYER("&aYou have just deleted the player's data &f%player%&a."),
