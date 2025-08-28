@@ -1,10 +1,12 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
 import org.bukkit.entity.Player;
@@ -43,6 +45,12 @@ public class DilogInputTextBuilder extends BuilderHelper implements DialogInputB
         TextDialogInput.MultilineOptions multilineOptions = null;
         if (multilineMaxLines > 0 && multilineHeight > 0) {
             multilineOptions = TextDialogInput.MultilineOptions.create(multilineMaxLines, multilineHeight);
+        }
+        if (defaultText.length() > maxLength) {
+            if (Config.enableInformationMessage) {
+                Logger.info("The default text of the text input is longer than the maximum length. Truncating to fit the maximum length.");
+            }
+            defaultText = defaultText.substring(0, maxLength);
         }
         return DialogInput.text(key,width, this.dialogManager.getPaperComponent().getComponent(label), labelVisible, defaultText, maxLength, multilineOptions);
     }
