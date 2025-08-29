@@ -23,7 +23,6 @@ import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
-import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
@@ -897,7 +896,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
             if (offlinePlayer != null) {
                 SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());
+                skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
                 itemStack.setItemMeta(skullMeta);
             }
         } else {
