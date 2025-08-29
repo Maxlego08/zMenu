@@ -3,10 +3,10 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogBooleanInputBuilder;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogInputTextBuilder;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogNumberRangeInputBuilder;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogBooleanInputBuilder;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogInputTextBuilder;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DilogSingleOptionInputBuilder;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.input.DialogSingleOptionInputBuilder;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import fr.maxlego08.menu.zcore.logger.Logger;
 
@@ -26,9 +26,9 @@ public class DialogBuilderClass {
         this.registerBuilder(new PlainMessageDialogBuilder(dialogManager));
         this.registerBuilder(new ItemDialogBuilder(dialogManager));
 
-        this.registerInputBuilder(new DilogInputTextBuilder(dialogManager));
-        this.registerInputBuilder(new DilogBooleanInputBuilder(dialogManager));
-        this.registerInputBuilder(new DilogSingleOptionInputBuilder(dialogManager));
+        this.registerInputBuilder(new DialogInputTextBuilder(dialogManager));
+        this.registerInputBuilder(new DialogBooleanInputBuilder(dialogManager));
+        this.registerInputBuilder(new DialogSingleOptionInputBuilder(dialogManager));
         this.registerInputBuilder(new DialogNumberRangeInputBuilder(dialogManager));
     }
 

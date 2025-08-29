@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class DilogBooleanInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
+public class DialogBooleanInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
 
-    public DilogBooleanInputBuilder(ZDialogManager dialogManager) {
+    public DialogBooleanInputBuilder(ZDialogManager dialogManager) {
         this.dialogManager = dialogManager;
     }
 

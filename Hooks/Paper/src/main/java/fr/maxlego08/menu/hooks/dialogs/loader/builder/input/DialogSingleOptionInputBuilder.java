@@ -15,9 +15,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DilogSingleOptionInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
+public class DialogSingleOptionInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
-    public DilogSingleOptionInputBuilder(ZDialogManager dialogManager) {
+    public DialogSingleOptionInputBuilder(ZDialogManager dialogManager) {
         this.dialogManager = dialogManager;
     }
 
@@ -37,7 +37,7 @@ public class DilogSingleOptionInputBuilder extends BuilderHelper implements Dial
         List<SingleOption> optionList = button.getSigleOptions();
         List<SingleOptionDialogInput.OptionEntry> finalOptions = new ArrayList<>();
         for (SingleOption option : optionList) {
-            finalOptions.add(SingleOptionDialogInput.OptionEntry.create(option.id(),paperComponent.getComponent(option.diplay()),option.initialValue()));
+            finalOptions.add(SingleOptionDialogInput.OptionEntry.create(option.id(),paperComponent.getComponent(option.display()),option.initialValue()));
         }
         
         return DialogInput.singleOption(key, width, finalOptions, label, labelVisible);

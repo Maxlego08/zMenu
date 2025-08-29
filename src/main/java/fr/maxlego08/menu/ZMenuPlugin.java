@@ -165,9 +165,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
             Logger.info("Paper server detected, loading Dialogs support");
-            servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
             ConfigManager configManager = new ConfigManager(this);
             this.dialogManager = new ZDialogManager(this, configManager);
+            servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
             configManager.registerConfig(Config.class, this);
         }
 
