@@ -163,36 +163,30 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public InventoryResult openInventory(Player player, InventoryEngine inventoryDefault) {
-
         if (this.openRequirement != null && !this.openRequirement.execute(player, null, inventoryDefault, new Placeholders())) {
             return InventoryResult.PERMISSION;
         }
 
-        org.bukkit.inventory.Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-        InventoryHolder holder = topInventory.getHolder();
+        InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
 
-        if (holder != null) {
-            if (holder instanceof InventoryDefault inventoryHolder) {
+        if (holder instanceof InventoryDefault inventoryHolder) {
+            clearPlayerInventoryButtons(player, inventoryHolder);
 
-                clearPlayerInventoryButtons(player, inventoryHolder);
-
-                if (inventoryHolder.getMenuInventory().cleanInventory()) {
-                    InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
-                    inventoriesPlayer.storeInventory(player);
-                }
-            } else {
-                if (this.clearInventory) {
-                    InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
-                    inventoriesPlayer.storeInventory(player);
-                }
+            if (inventoryHolder.getMenuInventory().cleanInventory() && !this.clearInventory) {
+                inventoriesPlayer.giveInventory(player);
+            } else if (this.clearInventory) {
+                inventoriesPlayer.storeInventory(player);
             }
+        } else if (this.clearInventory) {
+            inventoriesPlayer.storeInventory(player);
         }
 
         return InventoryResult.SUCCESS;
     }
 
     private void clearPlayerInventoryButtons(Player player, InventoryEngine inventoryDefault) {
-        for (Button button : getButtons()) {
+        for (Button button : inventoryDefault.getButtons()) {
             if (button.isPlayerInventory()) {
                 for (int slot : button.getSlots()) {
                     if (slot >= 0 && slot <= 36) {
