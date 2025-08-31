@@ -58,7 +58,7 @@ public enum NmsVersion {
 
     ;
 
-    public static final NmsVersion nmsVersion = getCurrentVersion();
+    public static final NmsVersion nmsVersion = getNmsVersion();
     private final int version;
 
     NmsVersion(int version) {
@@ -71,6 +71,10 @@ public enum NmsVersion {
      * @return The NmsVersion instance corresponding to the current version.
      */
     public static NmsVersion getCurrentVersion() {
+        return nmsVersion;
+    }
+
+    private static NmsVersion getNmsVersion(){
         Matcher matcher = Pattern.compile("(?<version>\\d+\\.\\d+)(?<patch>\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
         int currentVersion = matcher.find() ? Integer.parseInt(matcher.group("version").replace(".", "") + (matcher.group("patch") != null ? matcher.group("patch").replace(".", "") : "0")) : 0;
 
