@@ -96,6 +96,7 @@ public enum Message implements IMessage {
     DESCRIPTION_DIALOGS_RELOAD("Allows you to reload dialogs files configuration"),
     DESCRIPTION_ADDONS("List of official addons"),
     DESCRIPTION_DUMPLOG("Generate a dumplog file for support"),
+    DESCRIPTION_CONTRIBUTORS("List of authors and contributors of the plugin"),
 
     RELOAD("&aYou have just reloaded the configuration files. &8(&7%inventories% inventories&8)"),
     RELOAD_INVENTORY("&aYou have just reloaded the inventories files. &8(&7%inventories% inventories&8)"),
