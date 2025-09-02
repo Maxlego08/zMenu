@@ -24,11 +24,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class VInventoryManager extends ListenerAdapter {
@@ -206,8 +204,18 @@ public class VInventoryManager extends ListenerAdapter {
                 if (menu != null && menu.cleanInventory()) {
                     event.getDrops().clear();
                     InventoriesPlayer inventoriesPlayer = plugin.getInventoriesPlayer();
-                    event.getDrops().addAll(inventoriesPlayer.getInventory(player.getUniqueId()));
+                    List<ItemStack> savedItems = inventoriesPlayer.getInventory(player.getUniqueId());
                     inventoriesPlayer.clearInventorie(player.getUniqueId());
+                    if (event.getKeepInventory()){
+                        player.getInventory().clear();
+                        for (ItemStack itemStack : savedItems) {
+                            if (itemStack != null){
+                                player.getInventory().addItem(itemStack);
+                            }
+                        }
+                        return;
+                    }
+                    event.getDrops().addAll(savedItems);
                 }
             }
         }
