@@ -65,8 +65,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         Optional<InventoryPlayer> optional = this.getPlayerInventory(uniqueId);
         if (optional.isPresent()) {
             InventoryPlayer inventoryPlayer = optional.get();
-            List<ItemStack> itemStacks = inventoryPlayer.getItemStacks();
-            return itemStacks;
+            return inventoryPlayer.getItemStacks();
         }
         return Collections.emptyList();
     }
