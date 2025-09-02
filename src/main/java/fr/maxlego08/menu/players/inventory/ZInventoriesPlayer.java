@@ -8,12 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZInventoriesPlayer implements InventoriesPlayer {
@@ -61,6 +58,23 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     @Override
     public Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId) {
         return Optional.ofNullable(inventories.getOrDefault(uniqueId, null));
+    }
+
+    @Override
+    public List<ItemStack> getInventory(UUID uniqueId) {
+        Optional<InventoryPlayer> optional = this.getPlayerInventory(uniqueId);
+        if (optional.isPresent()) {
+            InventoryPlayer inventoryPlayer = optional.get();
+            List<ItemStack> itemStacks = inventoryPlayer.getItemStacks();
+            return itemStacks;
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void clearInventorie(UUID uniqueId) {
+        inventories.remove(uniqueId);
+        this.plugin.getStorageManager().removeInventory(uniqueId);
     }
 
     @EventHandler

@@ -2,7 +2,9 @@ package fr.maxlego08.menu.api.players.inventory;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,6 +42,10 @@ public interface InventoriesPlayer extends Listener {
      * @return optional
      */
     Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId);
+
+    List<ItemStack> getInventory(UUID uniqueId);
+
+    void clearInventorie(UUID uniqueId);
 
     void loadInventories();
 

@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -14,6 +15,7 @@ import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -166,6 +168,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
+        if (player.isDead()) return;
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder instanceof VInventory inventory) {
             this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryClose(player, inventory));
@@ -189,6 +192,22 @@ public class VInventoryManager extends ListenerAdapter {
                 fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
                 if (menu != null && menu.shouldCancelItemPickup()) {
                     event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onDeath(PlayerDeathEvent event, Player player) {
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+        if (holder instanceof VInventory vInventory) {
+            if (vInventory instanceof InventoryDefault inventoryDefault){
+                fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
+                if (menu != null && menu.cleanInventory()) {
+                    event.getDrops().clear();
+                    InventoriesPlayer inventoriesPlayer = plugin.getInventoriesPlayer();
+                    event.getDrops().addAll(inventoriesPlayer.getInventory(player.getUniqueId()));
+                    inventoriesPlayer.clearInventorie(player.getUniqueId());
                 }
             }
         }

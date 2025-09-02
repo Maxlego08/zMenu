@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ZInventoryPlayer implements InventoryPlayer {
@@ -46,6 +47,11 @@ public class ZInventoryPlayer implements InventoryPlayer {
         this.items.forEach((slot, itemStack) -> builder.append(slot).append(":").append(itemStack).append(";"));
         String result = builder.toString();
         return result.isEmpty() ? result : result.substring(0, result.length() - 1);
+    }
+
+    @Override
+    public List<ItemStack> getItemStacks() {
+        return this.items.values().stream().map(ItemStackUtils::deserializeItemStack).toList();
     }
 
     @Override
