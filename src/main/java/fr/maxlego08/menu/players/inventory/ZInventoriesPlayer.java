@@ -94,10 +94,22 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
 
     @Override
     public void loadInventories() {
-        this.inventories.putAll(this.plugin.getStorageManager().loadInventories().stream().collect(Collectors.toMap(InventoryDTO::player_id, inventory -> {
-            var inventoryPlayer = new ZInventoryPlayer();
-            inventoryPlayer.getItems().putAll(Arrays.stream(inventory.inventory().split(";")).collect(Collectors.toMap(s -> Integer.parseInt(s.split(":")[0]), s -> s.split(":")[1])));
-            return inventoryPlayer;
-        })));
+        this.inventories.putAll(this.plugin.getStorageManager().loadInventories().stream().collect(Collectors.toMap(
+                InventoryDTO::player_id,
+                inventory -> {
+                    var inventoryPlayer = new ZInventoryPlayer();
+                    Arrays.stream(inventory.inventory().split(";"))
+                            .map(s -> s.split(":"))
+                            .filter(parts -> parts.length == 2 && !parts[0].isEmpty() && !parts[1].isEmpty())
+                            .forEach(parts -> {
+                                try {
+                                    int slot = Integer.parseInt(parts[0]);
+                                    inventoryPlayer.getItems().put(slot, parts[1]);
+                                } catch (NumberFormatException ignored) {
+                                }
+                            });
+                    return inventoryPlayer;
+                }
+        )));
     }
 }
