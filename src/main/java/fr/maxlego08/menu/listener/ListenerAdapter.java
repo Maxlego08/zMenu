@@ -3,6 +3,7 @@ package fr.maxlego08.menu.listener;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -27,5 +28,8 @@ public abstract class ListenerAdapter extends ZUtils {
     }
 
     public void onPickUp(EntityPickupItemEvent event, Player player) {
+    }
+
+    protected void onDeath(PlayerDeathEvent event, Player player) {
     }
 }

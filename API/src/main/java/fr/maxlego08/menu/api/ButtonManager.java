@@ -1,11 +1,14 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -151,6 +154,10 @@ public interface ButtonManager {
      */
     List<Action> loadActions(YamlConfiguration configuration, String path, File file);
 
+    List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException;
+
+    Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException;
+
     /**
      * Retrieves a list of all empty actions from the given configuration elements.
      *
@@ -172,4 +179,6 @@ public interface ButtonManager {
      * @return A list of all empty permissibles from the given configuration elements.
      */
     List<String> getEmptyPermissible(List<Map<String, Object>> elements);
+
+    Loader<Button> getLoaderButton(MenuPlugin menuPlugin, File file, int size, Map<Character, List<Integer>> matrix);
 }

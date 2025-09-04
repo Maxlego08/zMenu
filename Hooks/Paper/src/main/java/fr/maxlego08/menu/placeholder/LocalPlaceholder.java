@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.placeholder;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import org.bukkit.OfflinePlayer;
 
@@ -20,7 +20,7 @@ public class LocalPlaceholder {
     private final String prefix = "zmenu";
     private final Pattern pattern = Pattern.compile("[%]"+this.prefix+"_([^%]+)[%]");
     private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<>();
-    private ZMenuPlugin plugin;
+    private MenuPlugin plugin;
 
     /**
      * Private constructor for singleton.
@@ -95,7 +95,7 @@ public class LocalPlaceholder {
         return prefix;
     }
 
-    public ZMenuPlugin getPlugin() {
+    public MenuPlugin getPlugin() {
         return plugin;
     }
 
@@ -104,7 +104,7 @@ public class LocalPlaceholder {
      *
      * @param plugin
      */
-    public void setPlugin(ZMenuPlugin plugin) {
+    public void setPlugin(MenuPlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.players.inventory;
 
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -8,11 +9,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ZInventoryPlayer implements InventoryPlayer {
 
     private final Map<Integer, String> items = new HashMap<>();
+    private final ZMenuPlugin plugin;
+
+    public ZInventoryPlayer(ZMenuPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void storeInventory(Player player) {
@@ -41,11 +48,29 @@ public class ZInventoryPlayer implements InventoryPlayer {
     }
 
     @Override
+    public void forceGiveInventory(Player player) {
+        PlayerInventory playerInventory = player.getInventory();
+        for (int slot = 0; slot <= 36; slot++) {
+            if (items.containsKey(slot)) {
+                playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(items.get(slot)));
+            } else if (this.plugin.getDupeManager().isDupeItem(playerInventory.getItem(slot))) {
+                playerInventory.setItem(slot, null);
+            }
+        }
+    }
+
+
+    @Override
     public String toInventoryString() {
         StringBuilder builder = new StringBuilder();
         this.items.forEach((slot, itemStack) -> builder.append(slot).append(":").append(itemStack).append(";"));
         String result = builder.toString();
         return result.isEmpty() ? result : result.substring(0, result.length() - 1);
+    }
+
+    @Override
+    public List<ItemStack> getItemStacks() {
+        return this.items.values().stream().map(ItemStackUtils::deserializeItemStack).toList();
     }
 
     @Override

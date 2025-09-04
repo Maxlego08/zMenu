@@ -2,10 +2,7 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
-import fr.maxlego08.menu.api.ButtonManager;
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.dupe.DupeManager;
@@ -21,12 +18,14 @@ import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
@@ -88,6 +87,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
+    private DialogManager dialogManager;
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
@@ -102,6 +102,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private FoliaLib foliaLib;
+    private final File configFile = new File(getDataFolder(), "config.yml");
     // private final PacketUtils packetUtils = new PacketUtils(this);
 
     public static ZMenuPlugin getInstance() {
@@ -161,6 +162,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
+
+        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
+            Logger.info("Paper server detected, loading Dialogs support");
+            ConfigManager configManager = new ConfigManager(this);
+            this.dialogManager = new ZDialogManager(this, configManager);
+            servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
+            configManager.registerConfig(Config.class, this);
+        }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -292,6 +301,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("patterns/pattern_example.yml");
         files.add("patterns/pattern_cookies.yml");
         files.add("patterns/playtime_reward.yml");
+
+        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
+            files.add("dialogs/confirmation-dialog.yml");
+            files.add("dialogs/default-dialog.yml");
+            files.add("dialogs/multi_action-dialog.yml");
+            files.add("dialogs/server_link-dialog.yml");
+        }
+
         return files;
     }
 
@@ -301,6 +318,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.preDisable();
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
+
+        Config.getInstance().save(getConfig(), this.configFile);
 
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
@@ -346,6 +365,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandManager;
     }
 
+    /**
+     * Returns the class that will manager the dialogs
+     *
+     * @return the zDialogManager
+     */
+    @Override
+    public DialogManager getDialogManager() {return this.dialogManager;}
+
     @Override
     public StorageManager getStorageManager() {
         return this.storageManager;
@@ -354,6 +381,16 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public boolean isFolia() {
         return this.foliaLib.isFolia();
+    }
+
+    @Override
+    public boolean isPaper() {
+        return this.foliaLib.isPaper();
+    }
+
+    @Override
+    public boolean isSpigot() {
+        return this.foliaLib.isSpigot();
     }
 
     @Override
@@ -490,5 +527,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public ToastHelper getToastHelper() {
         return this.toastHelper;
+    }
+
+    public File getConfigFile() {
+        return this.configFile;
     }
 }

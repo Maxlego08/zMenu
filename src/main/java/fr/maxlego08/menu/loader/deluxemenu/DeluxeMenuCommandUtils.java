@@ -48,9 +48,10 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         actionMap.put("[givemoney]", cmd -> new CurrencyDepositAction(removePrefix(cmd, "[givemoney]"), Currencies.VAULT, null, "no reason"));
 
         for (String command : commands) {
-            CommandDelayResult result = extractAndRemoveDelay(command);
+            CommandDelayResult result = extractAndRemoveDelayAndChance(command);
             String cleanedCommand = result.command();
             int delay = result.delay();
+            float chance = result.chance();
 
             for (Map.Entry<String, Function<String, Action>> entry : actionMap.entrySet()) {
                 if (cleanedCommand.startsWith(entry.getKey())) {
@@ -60,6 +61,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
                     if (delay > 0) {
                         action.setDelay(delay);
                     }
+                    action.setChance(chance);
 
                     actions.add(action);
                     break;
@@ -70,7 +72,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         return actions;
     }
 
-    private CommandDelayResult extractAndRemoveDelay(String command) {
+    private CommandDelayResult extractAndRemoveDelayAndChance(String command) {
         Pattern delayPattern = Pattern.compile("<delay=(\\d+)>");
         Matcher matcher = delayPattern.matcher(command);
         int delay = 0; // Valeur par défaut du délai
@@ -80,7 +82,15 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
             command = matcher.replaceFirst("").trim();
         }
 
-        return new CommandDelayResult(command, delay);
+        Pattern chancePattern = Pattern.compile("<chance=(\\d+(\\.\\d+)?)>");
+        matcher = chancePattern.matcher(command);
+        float chance = 100;
+        if (matcher.find()) {
+            chance = Float.parseFloat(matcher.group(1));
+            command = matcher.replaceFirst("").trim();
+        }
+
+        return new CommandDelayResult(command, delay, chance);
     }
 
     private String removePrefix(String command, String prefix) {
@@ -209,7 +219,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         return new ZPlaceholderPermissible(action, input, output, null, denyActions, new ArrayList<>(), false);
     }
 
-    private record CommandDelayResult(String command, int delay) {
+    private record CommandDelayResult(String command, int delay, float chance) {
     }
 
 

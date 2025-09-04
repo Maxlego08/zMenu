@@ -1,0 +1,132 @@
+name: "&6&lServer Information Dialog"
+external_title: "Welcome to our server!"
+type: notice # Available: notice, confirmation, multi_action, server_links,
+
+# Dialog behavior settings
+can-close-with-escape: true  # Allow players to close with ESC key
+pause: false                 # Pause the game while dialog is open
+after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
+
+# Dialog body content - can contain multiple sections
+body:
+  plain_message:
+    type: plain_message
+    messages:
+      - "&6&lWelcome to our amazing server!"
+      - ""
+      - "&7Server Name: &f%server_name%"
+      - "&7Your Name: &f%player_name%"
+      - "&7Players Online: &f%server_online%"
+      - ""
+      - "&eEnjoy your stay and have fun!"
+    width: 400  # Width in pixels (1-1024)
+  item:
+    # Item display section
+    type: item
+    # Item configuration (same format as zMenu items)
+    item:
+      material: DIAMOND_SWORD
+      name: "&b&lLegendary Sword of Testing"
+      lore:
+        - ""
+        - "&7This magnificent sword represents"
+        - "&7the quality and dedication of our server."
+        - ""
+        - "&6Special Properties:"
+        - "&e✦ Sharpness X"
+        - "&e✦ Unbreaking V"
+        - "&e✦ Fire Aspect III"
+        - ""
+        - "&c&lNOTE: &7This is just for display!"
+      glowing: true
+    # Item description (separate from item lore)
+    description:
+      messages:
+        - "&7This legendary weapon showcases"
+        - "&7our server's custom item system."
+        - "&eClick to learn more about our features!"
+      width: 350  # Width for description (1-1024)
+    # Item display settings
+    show-decoration: true   # Show count and damage bar
+    show-tooltip: true     # Show item tooltip on hover
+    width: 200            # Item display width (1-256)
+    height: 150           # Item display height (1-256)
+  server_rules:
+    # Another message section
+    type: plain_message
+    messages:
+      - "&a&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      - "&6Server Rules"
+      - "&a&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      - ""
+      - "&71. &fBe respectful to all players"
+      - "&72. &fNo griefing or stealing"
+      - "&73. &fNo spam in chat"
+      - "&74. &fHave fun and enjoy the game!"
+      - ""
+      - "&eFor more information, visit: &b/rules"
+    width: 450
+
+# Input fields (optional) - for interactive dialogs
+inputs:
+  # Text input example
+  text:
+    type: dialog_text
+    label: "&6Share your thoughts about our server:"
+    width: 400
+    label-visible: true
+    initial-value: "This server is amazing because..."
+    max-length: 200
+    multiline:
+      max-lines: 4
+      height: 80
+  boolean:
+    # Boolean choice example
+    type: dialog_boolean
+    label: "&eWould you like to receive server updates?"
+    initial-value: true
+    text-true: "&a&lYES, keep me updated!"
+    text-false: "&c&lNo, thanks."
+
+  # Single option selection
+  single_option:
+    type: dialog_single_option
+    label: "&6What's your favorite game mode?"
+    label-visible: true
+    options:
+      option1:
+        id: "survival"
+        display: "&2🌱 Survival Mode"
+        initial: true
+      option2:
+        id: "creative"
+        display: "&6🎨 Creative Mode"
+        initial: false
+      option3:
+        id: "adventure"
+        display: "&5⚔ Adventure Mode"
+        initial: false
+      option4:
+        id: "pvp"
+        display: "&c⚡ PvP Arena"
+        initial: false
+
+  # Number range selection
+  number_range:
+    type: dialog_number_range
+    label: "&eHow many hours do you play per day?"
+    width: 350
+    start: 1
+    end: 12
+    step: 1
+    initial-value: 3
+actions:
+  1:
+    success:
+      - type: message
+        messages:
+          - "&aThank you for your feedback! text : %text%,bool : %boolean%, single_option : %single_option%, number_range : %number_range%"
+notice:
+  text: "<green>Accept the rules to continue"
+  tooltip: "<green>Click to accept the rules"
+  width: 300

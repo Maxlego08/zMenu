@@ -202,6 +202,18 @@ public interface MenuPlugin extends Plugin {
     boolean isFolia();
 
     /**
+     * Checks if the plugin is a Paper plugin.
+     * @return true if the plugin is a Paper plugin, false otherwise
+     */
+    boolean isPaper();
+
+    /**
+     * Checks if the plugin is a Spigot plugin.
+     * @return true if the plugin is a Spigot plugin, false otherwise
+     */
+    boolean isSpigot();
+
+    /**
      * Registers a placeholder that can be used globally in the plugin.
      * This method allows you to register a placeholder that can be used in any menu item stack.
      * The placeholder is specified by the given startWith string, and the biConsumer parameter
@@ -232,4 +244,6 @@ public interface MenuPlugin extends Plugin {
      * @return the ToastHelper object.
      */
     ToastHelper getToastHelper();
+
+    DialogManager getDialogManager();
 }
