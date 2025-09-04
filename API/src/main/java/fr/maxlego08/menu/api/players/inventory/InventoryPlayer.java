@@ -25,6 +25,8 @@ public interface InventoryPlayer {
      */
     void giveInventory(Player player);
 
+    void forceGiveInventory(Player player);
+
     String toInventoryString();
 
     List<ItemStack> getItemStacks();

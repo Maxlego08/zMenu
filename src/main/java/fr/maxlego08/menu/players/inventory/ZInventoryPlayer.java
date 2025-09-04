@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.players.inventory;
 
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
@@ -14,6 +15,11 @@ import java.util.Map;
 public class ZInventoryPlayer implements InventoryPlayer {
 
     private final Map<Integer, String> items = new HashMap<>();
+    private final ZMenuPlugin plugin;
+
+    public ZInventoryPlayer(ZMenuPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void storeInventory(Player player) {
@@ -40,6 +46,19 @@ public class ZInventoryPlayer implements InventoryPlayer {
         PlayerInventory playerInventory = player.getInventory();
         items.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(encodedItemStack)));
     }
+
+    @Override
+    public void forceGiveInventory(Player player) {
+        PlayerInventory playerInventory = player.getInventory();
+        for (int slot = 0; slot <= 36; slot++) {
+            if (items.containsKey(slot)) {
+                playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(items.get(slot)));
+            } else if (this.plugin.getDupeManager().isDupeItem(playerInventory.getItem(slot))) {
+                playerInventory.setItem(slot, null);
+            }
+        }
+    }
+
 
     @Override
     public String toInventoryString() {

@@ -27,6 +27,8 @@ public interface InventoriesPlayer extends Listener {
      */
     void giveInventory(Player player);
 
+    void forceGiveInventory(Player player);
+
     /**
      * Check if the player has an inventory saved
      *
