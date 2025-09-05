@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -11,10 +11,13 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlainMessageDialogBuilder extends BuilderHelper implements DialogBuilder{
+public class PlainMessageDialogBuilder implements DialogBuilder{
     private final ZDialogManager dialogManager;
-    public PlainMessageDialogBuilder(ZDialogManager dialogManager) {
+    private final MenuPlugin menuPlugin;
+
+    public PlainMessageDialogBuilder(ZDialogManager dialogManager, MenuPlugin menuPlugin) {
         this.dialogManager = dialogManager;
+        this.menuPlugin = menuPlugin;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class PlainMessageDialogBuilder extends BuilderHelper implements DialogBu
         }
         List<Component> components = new ArrayList<>();
         for (String message : messages) {
-            String parsedMessage = papi(message, player);
+            String parsedMessage = this.menuPlugin.parse(player, message);
             components.add(this.dialogManager.getPaperComponent().getComponent(parsedMessage));
         }
         Component finalComponent;

@@ -11,14 +11,13 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
-import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZDialogInventory extends BuilderHelper implements DialogInventory {
+public class ZDialogInventory implements DialogInventory {
 
     private final MenuPlugin menuPlugin;
     private final String fileName;
@@ -70,7 +69,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getName(Player player) {
-        return papi(name, player);
+        return this.menuPlugin.parse(player, name);
     }
 
     @Override
@@ -158,7 +157,10 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public ZDialogInventoryBuild getBuild(Player player) {
-        return new ZDialogInventoryBuild(papi(this.name,player),papi(this.externalTitle, player), canCloseWithEscape);
+        return new ZDialogInventoryBuild(
+                this.menuPlugin.parse(player, this.name),
+                this.menuPlugin.parse(player, this.externalTitle), canCloseWithEscape
+        );
     }
 
     @Override
@@ -238,7 +240,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getYesText(Player player) {
-        return papi(this.yesText, player);
+        return this.menuPlugin.parse(player, this.yesText);
     }
 
     @Override
@@ -252,7 +254,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getNoText(Player player) {
-        return papi(this.noText, player);
+        return this.menuPlugin.parse(player, this.noText);
     }
 
     @Override
@@ -266,7 +268,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getYesTooltip(Player player) {
-        return papi(this.yesTooltip, player);
+        return this.menuPlugin.parse(player, this.yesTooltip);
     }
 
     @Override
@@ -280,7 +282,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getNoTooltip(Player player) {
-        return papi(this.noTooltip, player);
+        return this.menuPlugin.parse(player, this.noTooltip);
     }
 
     @Override
@@ -310,7 +312,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getLabel(Player player) {
-        return papi(this.label, player);
+        return this.menuPlugin.parse(player, this.label);
     }
 
     @Override
@@ -325,7 +327,7 @@ public class ZDialogInventory extends BuilderHelper implements DialogInventory {
 
     @Override
     public String getLabelTooltip(Player player) {
-        return papi(this.labelTooltip, player);
+        return this.menuPlugin.parse(player, this.labelTooltip);
     }
 
     @Override
