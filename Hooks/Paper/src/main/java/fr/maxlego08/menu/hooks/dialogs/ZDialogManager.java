@@ -56,7 +56,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
-        this.dialogBuilders = new DialogBuilderClass(this);
+        this.dialogBuilders = new DialogBuilderClass(this, this.menuPlugin);
         inventoryManager = menuPlugin.getInventoryManager();
     }
 

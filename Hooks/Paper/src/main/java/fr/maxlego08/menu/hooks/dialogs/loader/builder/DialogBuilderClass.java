@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
@@ -17,19 +18,20 @@ import java.util.Optional;
 public class DialogBuilderClass {
     private static final Map<DialogBodyType, DialogBuilder> dialogBuilders = new HashMap<>();
     private static final Map<DialogInputType, DialogInputBuilderInt> dialogInputBuilders = new HashMap<>();
-
-    public DialogBuilderClass(ZDialogManager dialogManager) {
+    private final MenuPlugin menuPlugin;
+    public DialogBuilderClass(ZDialogManager dialogManager, MenuPlugin menuPlugin) {
+        this.menuPlugin = menuPlugin;
         this.loadBuilders(dialogManager);
     }
 
     private void loadBuilders(ZDialogManager dialogManager) {
-        this.registerBuilder(new PlainMessageDialogBuilder(dialogManager));
-        this.registerBuilder(new ItemDialogBuilder(dialogManager));
+        this.registerBuilder(new PlainMessageDialogBuilder(dialogManager, this.menuPlugin));
+        this.registerBuilder(new ItemDialogBuilder(dialogManager, this.menuPlugin));
 
-        this.registerInputBuilder(new DialogInputTextBuilder(dialogManager));
-        this.registerInputBuilder(new DialogBooleanInputBuilder(dialogManager));
-        this.registerInputBuilder(new DialogSingleOptionInputBuilder(dialogManager));
-        this.registerInputBuilder(new DialogNumberRangeInputBuilder(dialogManager));
+        this.registerInputBuilder(new DialogInputTextBuilder(dialogManager, this.menuPlugin));
+        this.registerInputBuilder(new DialogBooleanInputBuilder(dialogManager, this.menuPlugin));
+        this.registerInputBuilder(new DialogSingleOptionInputBuilder(dialogManager, this.menuPlugin));
+        this.registerInputBuilder(new DialogNumberRangeInputBuilder(dialogManager, this.menuPlugin));
     }
 
     public void registerBuilder(DialogBuilder builder) {
