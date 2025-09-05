@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -13,11 +13,13 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class DialogNumberRangeInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
+public class DialogNumberRangeInputBuilder implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
+    private final MenuPlugin menuPlugin;
 
-    public DialogNumberRangeInputBuilder(ZDialogManager dialogManager) {
+    public DialogNumberRangeInputBuilder(ZDialogManager dialogManager, MenuPlugin menuPlugin) {
         this.dialogManager = dialogManager;
+        this.menuPlugin = menuPlugin;
     }
 
     @Override
@@ -29,8 +31,8 @@ public class DialogNumberRangeInputBuilder extends BuilderHelper implements Dial
     public DialogInput build(Player player, InputButton button) {
         String key = button.getKey();
         int width = button.getWidth();
-        Component label = this.dialogManager.getPaperComponent().getComponent(papi(button.getLabel(),player));
-        String labelFormat = papi(button.getLabelFormat(),player);
+        Component label = this.dialogManager.getPaperComponent().getComponent(this.menuPlugin.parse(player, button.getLabel()));
+        String labelFormat = this.menuPlugin.parse(player, button.getLabelFormat());
         float start = button.getStart();
         float end = button.getEnd();
         Optional<Float> initialValueSupplier = button.getInitialValueRangeSupplier();
@@ -38,7 +40,7 @@ public class DialogNumberRangeInputBuilder extends BuilderHelper implements Dial
         if (initialValueSupplier.isPresent()) {
              initialValueFloat = initialValueSupplier.get();
         } else {
-            String initialValue = papi(button.getInitialValueRange(),player);
+            String initialValue = this.menuPlugin.parse(player, button.getInitialValueRange());
             try {
                 initialValueFloat = Float.parseFloat(initialValue);
             } catch (NumberFormatException e) {

@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -13,11 +13,13 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class DialogInputTextBuilder extends BuilderHelper implements DialogInputBuilderInt {
+public class DialogInputTextBuilder implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
+    private final MenuPlugin menuPlugin;
 
-    public DialogInputTextBuilder(ZDialogManager dialogManager) {
+    public DialogInputTextBuilder(ZDialogManager dialogManager, MenuPlugin menuPlugin) {
         this.dialogManager = dialogManager;
+        this.menuPlugin = menuPlugin;
     }
 
     @Override
@@ -30,14 +32,14 @@ public class DialogInputTextBuilder extends BuilderHelper implements DialogInput
         String key = button.getKey();
 
         int width = button.getWidth();
-        String label = papi(button.getLabel(), player);
+        String label = this.menuPlugin.parse(player, button.getLabel());
         boolean labelVisible = button.isLabelVisible();
         Optional<String> defaultTextSupplier = button.getDefaultTextSupplier();
         String defaultText;
         if (defaultTextSupplier.isPresent()) {
-            defaultText = papi(defaultTextSupplier.get(), player);
+            defaultText = this.menuPlugin.parse(player, defaultTextSupplier.get());
         } else {
-            defaultText = papi(button.getDefaultText(), player);
+            defaultText = this.menuPlugin.parse(player, button.getDefaultText());
         }
         int maxLength = button.getMaxLength();
         int multilineMaxLines = button.getMultilineMaxLines();

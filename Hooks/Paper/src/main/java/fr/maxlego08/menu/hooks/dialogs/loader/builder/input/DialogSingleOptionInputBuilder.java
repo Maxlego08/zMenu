@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.dialogs.utils.BuilderHelper;
 import fr.maxlego08.menu.hooks.dialogs.utils.loader.DialogInputBuilderInt;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput;
@@ -15,10 +15,13 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DialogSingleOptionInputBuilder extends BuilderHelper implements DialogInputBuilderInt {
+public class DialogSingleOptionInputBuilder implements DialogInputBuilderInt {
     private final ZDialogManager dialogManager;
-    public DialogSingleOptionInputBuilder(ZDialogManager dialogManager) {
+    private final MenuPlugin menuPlugin;
+
+    public DialogSingleOptionInputBuilder(ZDialogManager dialogManager, MenuPlugin menuPlugin) {
         this.dialogManager = dialogManager;
+        this.menuPlugin = menuPlugin;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class DialogSingleOptionInputBuilder extends BuilderHelper implements Dia
         
         String key = button.getKey();
         int width = button.getWidth();
-        Component label = paperComponent.getComponent(papi(button.getLabel(),player));
+        Component label = paperComponent.getComponent(this.menuPlugin.parse(player, button.getLabel()));
         boolean labelVisible = button.isLabelVisible();
         List<SingleOption> optionList = button.getSigleOptions();
         List<SingleOptionDialogInput.OptionEntry> finalOptions = new ArrayList<>();
