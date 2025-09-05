@@ -11,6 +11,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ZInventoryPlayer implements InventoryPlayer {
 
@@ -59,6 +60,32 @@ public class ZInventoryPlayer implements InventoryPlayer {
         }
     }
 
+    @Override
+    public void setItems(Map<Integer, ItemStack> items) {
+        setItemsFromEncode(items.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> ItemStackUtils.serializeItemStack(entry.getValue())
+                ))
+        );
+    }
+
+    @Override
+    public void setItemsFromEncode(Map<Integer, String> items) {
+        this.items.clear();
+        this.items.putAll(items);
+    }
+
+    @Override
+    public void setItems(List<ItemStack> items) {
+        this.items.clear();
+        for (int slot = 0; slot != Math.min(items.size(), 36); slot++) {
+            ItemStack itemStack = items.get(slot);
+            if (itemStack != null) {
+                this.items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
+            }
+        }
+    }
 
     @Override
     public String toInventoryString() {
