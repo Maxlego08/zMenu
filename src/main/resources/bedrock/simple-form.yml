@@ -1,0 +1,37 @@
+# Enhanced Bedrock Configuration Example
+
+type: simple # Available: modal, simple, custom
+name: "&6&lSimple Form"
+
+buttons:
+  button1:
+    type: "bedrock_button"
+    text: "Button 1"
+    click-requirement:
+      1:
+        success:
+          - type: message
+            messages:
+              - "&aAction for button 1"
+  button2:
+    type: "bedrock_button"
+    text: "Button 2"
+    image-type: "URL"
+    image-value: "url here"
+    click-requirement:
+      1:
+        success:
+          - type: message
+            messages:
+              - "&aAction for button 2"
+  button3:
+    type: "bedrock_button"
+    text: "Button 3"
+    image-type: "PATH"
+    image-value: "path here"
+    click-requirement:
+      1:
+        success:
+          - type: message
+            messages:
+              - "&aAction for button 3"

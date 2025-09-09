@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.utils.loader;
 
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import org.bukkit.entity.Player;
 

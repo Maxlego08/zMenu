@@ -25,6 +25,7 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
@@ -88,6 +89,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
     private DialogManager dialogManager;
+    private BedrockManager bedrockManager;
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
@@ -169,6 +171,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.dialogManager = new ZDialogManager(this, configManager);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
             configManager.registerConfig(Config.class, this);
+        }
+
+        if (this.isActive(Plugins.GEYSER)){
+            Logger.info("Geyser detected, loading Bedrock Inventory support");
+            this.bedrockManager = new ZBedrockManager(this);
+            servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -309,6 +317,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/server_link-dialog.yml");
         }
 
+        if (this.isActive(Plugins.GEYSER)){
+            files.add("bedrock/custom-form.yml");
+            files.add("bedrock/modal-form.yml");
+            files.add("bedrock/simple-form.yml");
+        }
+
         return files;
     }
 
@@ -368,10 +382,18 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     /**
      * Returns the class that will manager the dialogs
      *
-     * @return the zDialogManager
+     * @return the DialogManager
      */
     @Override
     public DialogManager getDialogManager() {return this.dialogManager;}
+
+    /**
+     * Returns the class that will manager the bedrock inventory
+     *
+     * @return the BedrockManager
+     */
+    @Override
+    public BedrockManager getBedrockManager() {return this.bedrockManager;}
 
     @Override
     public StorageManager getStorageManager() {
