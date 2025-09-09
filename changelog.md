@@ -46,6 +46,7 @@
 - Added reason for withdraw and deposit action
 - Fixed withdraw and deposit action with zEssentials
 - Improve update checker [#183](https://github.com/Maxlego08/zMenu/pull/183)
+- Fix ``openInventoryWithOldInventories`` method
 
 # 1.1.0.2
 
