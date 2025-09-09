@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils.discord;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -130,7 +131,7 @@ public class DiscordWebhook {
                 response.append(line);
             }
             reader.close();
-            System.out.println("Error response: " + response);
+            Logger.info("Error response: " + response, Logger.LogType.ERROR);
         }
 
         connection.getInputStream().close();

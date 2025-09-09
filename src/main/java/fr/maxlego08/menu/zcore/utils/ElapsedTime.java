@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.zcore.logger.Logger;
 
 public class ElapsedTime extends ZUtils {
 
@@ -55,7 +56,7 @@ public class ElapsedTime extends ZUtils {
     public void endDisplay(boolean b) {
         this.end();
         if (Config.enableDebugTime || b) {
-            System.out.println("[ElapsedTime] " + name + " -> " + super.format(this.getElapsedTime(), ' '));
+            Logger.info("[ElapsedTime] " + name + " -> " + super.format(this.getElapsedTime(), ' '));
         }
     }
 
