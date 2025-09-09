@@ -42,8 +42,6 @@ public interface DialogManager {
 
     Collection<DialogInventory> getDialogs();
 
-    InventoryManager getInventoryManager();
-
     void reloadDialogs();
 
     ConfigManagerInt getConfigManager();

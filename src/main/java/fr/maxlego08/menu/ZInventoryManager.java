@@ -23,6 +23,9 @@ import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
+import fr.maxlego08.menu.hooks.bedrock.loader.BedrockButtonLoader;
+import fr.maxlego08.menu.hooks.bedrock.loader.BedrockModalButtonLoader;
+import fr.maxlego08.menu.hooks.bedrock.loader.input.*;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
@@ -101,6 +104,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         DialogManager dialogManager = this.plugin.getDialogManager();
         if (dialogManager != null) {
             dialogManager.loadDialogs();
+        }
+        BedrockManager bedrockManager = this.plugin.getBedrockManager();
+        if (bedrockManager != null) {
+            bedrockManager.loadBedrockInventory();
         }
         this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
     }
@@ -406,6 +413,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new BooleanInputLoader(this.plugin));
         buttonManager.register(new NumberRangeInputLoader(this.plugin));
         buttonManager.register(new SingleOptionInputLoader(this.plugin));
+
+        // Register Button Bedrock
+        buttonManager.register(new BedrockButtonLoader(this.plugin));
+        buttonManager.register(new BedrockModalButtonLoader(this.plugin));
+        buttonManager.register(new BedrockLabelLoader(this.plugin));
+        buttonManager.register(new BedrockInputTextLoader(this.plugin));
+        buttonManager.register(new BedrockToggleInputLoader(this.plugin));
+        buttonManager.register(new BedrockSliderInputLoader(this.plugin));
+        buttonManager.register(new BedrockDropDownInputLoader(this.plugin));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());

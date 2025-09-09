@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 
 import java.util.ArrayList;
 import java.util.List;

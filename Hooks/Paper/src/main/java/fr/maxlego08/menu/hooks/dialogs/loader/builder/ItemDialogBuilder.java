@@ -3,7 +3,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.body.PlainMessageDialogBody;

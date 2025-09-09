@@ -7,8 +7,8 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
-import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
+import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -353,10 +353,6 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
             allDialogs.addAll(dialogList);
         }
         return Collections.unmodifiableCollection(allDialogs);
-    }
-    @Override
-    public InventoryManager getInventoryManager() {
-        return inventoryManager;
     }
 
     @Override

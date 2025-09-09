@@ -5,7 +5,6 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -26,18 +25,16 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
-import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
-import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
-import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
@@ -92,13 +89,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
     private DialogManager dialogManager;
+    private BedrockManager bedrockManager;
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
-    private final ItemManager itemManager = new ZItemManager(this);
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
     private CommandMenu commandMenu;
@@ -173,9 +170,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             ConfigManager configManager = new ConfigManager(this);
             this.dialogManager = new ZDialogManager(this, configManager);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-            ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
-            Logger.info(configDialogBuilder.getName());
-            configManager.registerConfig(configDialogBuilder,Config.class, this);
+            configManager.registerConfig(Config.class, this);
+        }
+
+        if (this.isActive(Plugins.GEYSER)){
+            Logger.info("Geyser detected, loading Bedrock Inventory support");
+            this.bedrockManager = new ZBedrockManager(this);
+            servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -186,7 +187,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(new AdapterListener(this));
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
-        this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addSimpleListener(this.inventoryManager);
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
@@ -198,7 +198,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.messageLoader.load();
         this.inventoriesPlayer.loadInventories();
         this.dataManager.loadPlayers();
-        this.itemManager.loadAll();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
@@ -249,94 +248,50 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
-
         if (this.isActive(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-            this.getLogger().info("Registered HeadDatabase material loader");
         }
-
         if (this.isActive(Plugins.ZHEAD)) {
             this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
-            this.getLogger().info("Registered ZHead material loader");
         }
-
         if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
-            this.fontImage = new OraxenFont();
-            this.getLogger().info("Registered Oraxen material loader and font");
         }
-
         if (this.isActive(Plugins.CRAFTENGINE)) {
             this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
-            this.getLogger().info("Registered CraftEngine material loader");
         }
-
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
-            this.getLogger().info("Registered Nexo material loader");
         }
-
-        if (this.isActive(Plugins.MAGICCOSMETICS)) {
+        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
-            this.getLogger().info("Registered MagicCosmetics material loader");
         }
-
-        if (this.isActive(Plugins.HMCCOSMETICS)) {
+        if (this.isEnable(Plugins.HMCCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
-            this.getLogger().info("Registered HMC Cosmetics material loader");
         }
-
-        if (this.isActive(Plugins.ITEMSADDER)) {
+        if (this.isEnable(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
-            this.getLogger().info("Registered ItemsAdder material loader and font");
         }
-
         if (this.isActive(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
-            this.getLogger().info("Registered SlimeFun material loader");
         }
-
         if (this.isActive(Plugins.NOVA)) {
             this.inventoryManager.registerMaterialLoader(new NovaLoader());
-            this.getLogger().info("Registered Nova material loader");
         }
-
         if (this.isActive(Plugins.ECO)) {
             this.inventoryManager.registerMaterialLoader(new EcoLoader());
-            this.getLogger().info("Registered Eco material loader");
         }
-
         if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
-            this.getLogger().info("Registered zItems material loader");
         }
-
         if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
-            this.getLogger().info("Registered ExecutableItems material loader");
         }
-
         if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
-            this.getLogger().info("Registered ExecutableBlocks material loader");
-        }
-
-        if (this.isActive(Plugins.NEXTGENS)) {
-            this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
-            this.getLogger().info("Registered NextGens material loader");
-        }
-
-        if (this.isActive(Plugins.MYTHICMOBS)){
-            this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
-            this.addListener(new MythicManager(this));
-            this.getLogger().info("Registered MythicMobs material loader and listener");
-        }
-        if (this.isActive(Plugins.BREWERYX)){
-            this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
         }
     }
-
 
     private List<String> getInventoriesFiles() {
         List<String> files = new ArrayList<>();
@@ -362,7 +317,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/server_link-dialog.yml");
         }
 
-        files.add("items/default-items.yml");
+        if (this.isActive(Plugins.GEYSER)){
+            files.add("bedrock/custom-form.yml");
+            files.add("bedrock/modal-form.yml");
+            files.add("bedrock/simple-form.yml");
+        }
 
         return files;
     }
@@ -379,7 +338,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
-        this.itemManager.unloadListeners();
         // this.packetUtils.onDisable();
 
         this.postDisable();
@@ -424,15 +382,18 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     /**
      * Returns the class that will manager the dialogs
      *
-     * @return the zDialogManager
+     * @return the DialogManager
      */
     @Override
     public DialogManager getDialogManager() {return this.dialogManager;}
 
+    /**
+     * Returns the class that will manager the bedrock inventory
+     *
+     * @return the BedrockManager
+     */
     @Override
-    public ItemManager getItemManager() {
-        return this.itemManager;
-    }
+    public BedrockManager getBedrockManager() {return this.bedrockManager;}
 
     @Override
     public StorageManager getStorageManager() {

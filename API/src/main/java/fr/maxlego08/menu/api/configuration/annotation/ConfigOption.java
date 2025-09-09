@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.configuration.annotation;
 
-import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
