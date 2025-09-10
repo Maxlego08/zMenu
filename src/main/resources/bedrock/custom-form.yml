@@ -4,6 +4,10 @@ type: custom # Available: modal, simple, custom
 name: "&6&lCustom Form"
 
 buttons:
+  # Label text example
+  label:
+    type: bedrock_label
+    text: "&6I love bedrock inventory."
   # Text input example
   text:
     type: bedrock_text

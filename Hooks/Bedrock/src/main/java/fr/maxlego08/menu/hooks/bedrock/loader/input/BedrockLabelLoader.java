@@ -15,7 +15,7 @@ public class BedrockLabelLoader extends ButtonLoader {
     }
 
     public BedrockLabelLoader(Plugin plugin) {
-        super(plugin, "bedrock_toggle");
+        super(plugin, "bedrock_label");
     }
 
     @Override

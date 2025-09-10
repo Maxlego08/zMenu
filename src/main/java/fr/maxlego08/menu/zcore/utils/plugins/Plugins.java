@@ -25,7 +25,7 @@ public enum Plugins {
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
 	ZMENUPLUS("zMenuPlus"),
-    GEYSER("Geyser");
+    GEYSER("Geyser-Spigot");
 
 	private final String name;
 
