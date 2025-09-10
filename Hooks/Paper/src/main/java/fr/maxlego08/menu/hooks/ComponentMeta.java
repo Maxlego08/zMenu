@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 
 public class ComponentMeta implements MetaUpdater {
 
+    private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
+    private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)&#([A-Fa-f0-9]{6})");
     private final MenuPlugin plugin;
     private final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
-    private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
-    private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)&#([A-Fa-f0-9]{6})");
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
     private final Map<String, String> COLORS_MAPPINGS = Map.ofEntries(
             Map.entry("0", "black"),
@@ -96,8 +96,8 @@ public class ComponentMeta implements MetaUpdater {
 
     private void updateDisplayName(ItemMeta itemMeta, String text) {
         Component component = this.cache.get(text, () -> {
-            //Fixed text becomes italic automatically
-            //From GitHub issue #62
+            // Fixed text becomes italic automatically
+            // From GitHub issue #62
             return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
         });
         try {
@@ -131,8 +131,8 @@ public class ComponentMeta implements MetaUpdater {
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
         List<Component> components = lore.stream().map(text -> this.cache.get(text, () -> {
-            //Fixed text becomes italic automatically
-            //From GitHub issue #62
+            // Fixed text becomes italic automatically
+            // From GitHub issue #62
             return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
         })).collect(Collectors.toList());
 
@@ -201,7 +201,7 @@ public class ComponentMeta implements MetaUpdater {
         // &#a1b2c3 → <#a1b2c3>
         newMessage = convertShorLegacyHex(newMessage);
         // #a1b2c3 → <#a1b2c3>
-        newMessage = newMessage.replaceAll("(?<![<&])#([A-Fa-f0-9]{6})", "<#$1>");
+        newMessage = newMessage.replaceAll("(?<![<&])(?<!:)#([A-Fa-f0-9]{6})", "<#$1>");
         // &a → <green>, §c → <red>, etc.
         newMessage = replaceLegacyColors(newMessage);
 
@@ -210,15 +210,15 @@ public class ComponentMeta implements MetaUpdater {
 
     @Override
     public void sendMessage(CommandSender sender, String message) {
-        if (sender instanceof Audience) {
+        if (sender != null) {
             Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
-            ((Audience) sender).sendMessage(component);
+            sender.sendMessage(component);
         }
     }
 
     @Override
     public void sendAction(Player player, String message) {
-        if (player instanceof Audience) {
+        if (player != null) {
             Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
             ((Audience) player).sendActionBar(component);
         }
@@ -226,11 +226,11 @@ public class ComponentMeta implements MetaUpdater {
 
     @Override
     public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
-        if (player instanceof Audience) {
+        if (player != null) {
             Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
             Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
             Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(subtitle)));
-            ((Audience) player).showTitle(Title.title(componentTitle, componentSubTitle, times));
+            player.showTitle(Title.title(componentTitle, componentSubTitle, times));
         }
     }
 
@@ -245,8 +245,8 @@ public class ComponentMeta implements MetaUpdater {
         }).collect(Collectors.toList());
 
         Book book = Book.book(titleComponent, authorComponent, linesComponent);
-        if (player instanceof Audience) {
-            ((Audience) player).openBook(book);
+        if (player != null) {
+            player.openBook(book);
         }
     }
 
@@ -274,6 +274,7 @@ public class ComponentMeta implements MetaUpdater {
         matcher.appendTail(sb);
         return sb.toString();
     }
+
     private String replaceLegacyColors(String message) {
         for (var entry : this.COLORS_MAPPINGS.entrySet()) {
             String key = entry.getKey();
