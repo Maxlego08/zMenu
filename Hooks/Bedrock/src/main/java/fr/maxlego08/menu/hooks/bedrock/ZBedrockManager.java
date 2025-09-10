@@ -219,19 +219,20 @@ public class ZBedrockManager extends AbstractBedrockInventoryManager implements 
     private Form createBedrockByType(BedrockInventory inventory, Player player) {
         return switch (inventory.getBedrockType()) {
             case MODAL -> {
+                List<BedrockButton> buttons = inventory.getBedrockButtons(player);
                 ModalForm.Builder builder = ModalForm.builder()
                         .title(inventory.getName(player))
                         .content(inventory.getContent(player))
-                        .button1("Button 1")
-                        .button2("Button 2")
+                        .button1(buttons.get(0).getText())
+                        .button2(buttons.get(1).getText())
                         .validResultHandler((form, responseData) -> {
-                            String content = form.content();
-                            if (responseData.clickedFirst()) {
-                                //FirstButton click
-                                return;
+                            Placeholders placeholders = new Placeholders();
+                            placeholders.register("content", form.content());
+
+                            int id = responseData.clickedButtonId();
+                            for (Requirement requirement : buttons.get(id).getClickRequirements()) {
+                                requirement.execute(player, null, inventoryManager.getFakeInventory(), placeholders);
                             }
-                            //SecondButton click
-                            return;
                         });
                 
                 yield withDefaultResultHandler(builder, player, inventory);
@@ -250,8 +251,8 @@ public class ZBedrockManager extends AbstractBedrockInventoryManager implements 
                 builder.validResultHandler((form, responseData) -> {
                     int slot = responseData.clickedButtonId();
 
-                    for (Action action : buttons.get(slot).getActions()) {
-                        action.preExecute(player, null, inventoryManager.getFakeInventory(), new Placeholders());
+                    for (Requirement requirement : buttons.get(slot).getClickRequirements()) {
+                        requirement.execute(player, null, inventoryManager.getFakeInventory(), new Placeholders());
                     }
                 });
                 yield withDefaultResultHandler(builder, player, inventory);
@@ -271,7 +272,13 @@ public class ZBedrockManager extends AbstractBedrockInventoryManager implements 
                     for (int i = 0; i < buttons.size(); i++) {
                         InputButton input = buttons.get(i);
                         String key = input.getKey();
-                        String value = responseData.valueAt(i); // i = index de la liste
+
+                        Object rawValue = responseData.valueAt(i);
+                        if (rawValue == null) {
+                            continue;
+                        }
+
+                        String value = rawValue.toString();
                         if (value == null) {
                             continue;
                         }
