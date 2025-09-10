@@ -1,7 +1,7 @@
 # Enhanced Bedrock Configuration Example
 
 type: simple # Available: modal, simple, custom
-name: "&6&lSimple Form"
+title: "Simple Form"
 
 buttons:
   button1:

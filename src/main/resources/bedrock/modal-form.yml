@@ -1,7 +1,7 @@
 # Enhanced Bedrock Configuration Example
 
 type: modal # Available: modal, simple, custom
-name: "&6&lModal Form"
+title: "Modal Form"
 content: "Welcome to content"
 
 buttons:
@@ -13,7 +13,7 @@ buttons:
         success:
           - type: message
             messages:
-              - "&aThank you for your feedback! text : %content%"
+              - "Thank you for your feedback! text : %content%"
   button2:
     type: "bedrock_modal_button"
     text: "Button 2"
@@ -22,4 +22,4 @@ buttons:
         success:
           - type: message
             messages:
-              - "&cWe're sorry to hear that! Please let us know how we can improve. %content%"
+              - "We're sorry to hear that! Please let us know how we can improve. %content%"
