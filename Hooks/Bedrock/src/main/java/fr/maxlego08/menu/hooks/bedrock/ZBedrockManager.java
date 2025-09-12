@@ -7,13 +7,12 @@ import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderClass;
-import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockButtonBuilder;
+import fr.maxlego08.menu.hooks.bedrock.loader.builder.bedrock.ButtonBuilder;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -244,7 +243,7 @@ public class ZBedrockManager extends AbstractBedrockInventoryManager implements 
                         .content(inventory.getContent(player));
                 
                 List<BedrockButton> buttons = inventory.getBedrockButtons(player);
-                BedrockButtonBuilder buttonBuilder = this.dialogBuilders.getBedrockButtonBuilder();
+                ButtonBuilder buttonBuilder = this.dialogBuilders.getBedrockButtonBuilder();
                 buttons.forEach(button -> {
                     builder.button(buttonBuilder.build(player, button));
                 });
