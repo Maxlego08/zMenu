@@ -35,7 +35,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
     public BedrockInventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
-        String title = configuration.getString("title", "");
+        String title = configuration.getString("name", "");
         String content = configuration.getString("content", "");
 
         ZBedrockInventory BedrockInventory = new ZBedrockInventory(menuPlugin, file.getName(), title, content);

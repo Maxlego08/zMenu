@@ -1,7 +1,7 @@
 # Enhanced Bedrock Configuration Example
 
 type: custom # Available: modal, simple, custom
-title: "Custom Form"
+name: "Custom Form"
 
 buttons:
   # Label text example
