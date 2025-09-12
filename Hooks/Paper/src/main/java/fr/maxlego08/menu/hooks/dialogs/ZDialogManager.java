@@ -19,7 +19,7 @@ import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderBody;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
@@ -189,7 +189,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         return dialog;
     }
 
-    public void registerBuilder(DialogBuilder builder) {
+    public void registerBuilder(DialogBuilderBody builder) {
         this.dialogBuilders.registerBuilder(builder);
     }
 
@@ -350,7 +350,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         return this.configManager;
     }
 
-    public Optional<DialogBuilder> getDialogBuilder(DialogBodyType type) {
+    public Optional<DialogBuilderBody> getDialogBuilder(DialogBodyType type) {
         return DialogBuilderClass.getDialogBuilder(type);
     }
 
