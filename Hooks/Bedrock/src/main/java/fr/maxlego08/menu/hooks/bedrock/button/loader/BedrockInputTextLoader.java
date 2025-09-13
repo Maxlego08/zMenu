@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.bedrock.buttons.loader;
+package fr.maxlego08.menu.hooks.bedrock.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
@@ -8,24 +8,24 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-public class BedrockLabelLoader extends ButtonLoader {
+public class BedrockInputTextLoader extends ButtonLoader {
 
-    public BedrockLabelLoader(Plugin plugin, String  name) {
+    public BedrockInputTextLoader(Plugin plugin, String  name) {
         super(plugin, name);
     }
 
-    public BedrockLabelLoader(Plugin plugin) {
-        super(plugin, "bedrock_label");
+    public BedrockInputTextLoader(Plugin plugin) {
+        super(plugin, "bedrock_text");
     }
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         InputButton inputButton = new InputButton();
         String label = configuration.getString(path + ".text", "");
-
+        String defaultValue = configuration.getString(path + ".default-value", "");
         inputButton.setLabel(label);
-        inputButton.setInputType(DialogInputType.BEDROCK_LABEL);
-
+        inputButton.setDefaultText(defaultValue);
+        inputButton.setInputType(DialogInputType.TEXT);
         return inputButton;
     }
 }

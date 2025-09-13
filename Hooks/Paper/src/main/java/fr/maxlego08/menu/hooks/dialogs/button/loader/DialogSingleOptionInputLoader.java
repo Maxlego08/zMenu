@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.bedrock.buttons.loader;
+package fr.maxlego08.menu.hooks.dialogs.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
@@ -12,21 +12,22 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BedrockDropDownInputLoader extends ButtonLoader {
+public class DialogSingleOptionInputLoader extends ButtonLoader {
 
-    public BedrockDropDownInputLoader(Plugin plugin, String  name) {
+    public DialogSingleOptionInputLoader(Plugin plugin, String  name) {
         super(plugin, name);
     }
 
-    public BedrockDropDownInputLoader(Plugin plugin) {
-        super(plugin, "bedrock_dropdown");
+    public DialogSingleOptionInputLoader(Plugin plugin) {
+        super(plugin, "dialog_single_option");
     }
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
         InputButton inputButton = new InputButton();
 
-        String label = configuration.getString(path + ".text", "");
+        String label = configuration.getString(path + ".label", "");
+        boolean labelVisible = configuration.getBoolean(path + ".label-visible", true);
         List<SingleOption> singleOptionList = new ArrayList<>();
 
         if (configuration.isConfigurationSection(path + ".options")) {
@@ -50,6 +51,7 @@ public class BedrockDropDownInputLoader extends ButtonLoader {
         }
 
         inputButton.setLabel(label);
+        inputButton.setLabelVisible(labelVisible);
         inputButton.setSigleOptions(singleOptionList);
         inputButton.setInputType(DialogInputType.SINGLE_OPTION);
         return inputButton;

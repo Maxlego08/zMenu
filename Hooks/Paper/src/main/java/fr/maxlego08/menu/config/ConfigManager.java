@@ -13,7 +13,7 @@ import fr.maxlego08.menu.config.processors.ConfigFieldProcessor;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorFactory;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorRegistry;
 import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.AbstractDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventoryDeveloper;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ConfigManager extends AbstractDialogManager implements ConfigManagerInt {
+public class ConfigManager extends DialogBuilderManager implements ConfigManagerInt {
     private final MenuPlugin menuPlugin;
     private final Map<String, ZDialogInventoryDeveloper> zDialogInventoryDev = new HashMap<>();
     private final ComponentMeta paperComponent;

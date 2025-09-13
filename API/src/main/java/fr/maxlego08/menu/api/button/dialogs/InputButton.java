@@ -66,153 +66,139 @@ public class InputButton extends Button {
         return labelVisible;
     }
 
-    public InputButton setLabelVisible(boolean labelVisible) {
+    public void setLabelVisible(boolean labelVisible) {
         this.labelVisible = labelVisible;
-        return this;
     }
 
     public int getWidth() {
         return width;
     }
 
-    public InputButton setWidth(int width) {
+    public void setWidth(int width) {
         this.width = width;
-        return this;
     }
 
     public String getDefaultText() {
         return defaultText;
     }
 
-    public InputButton setDefaultText(String defaultText) {
+    public void setDefaultText(String defaultText) {
         this.defaultText = defaultText;
-        return this;
     }
 
     public int getMaxLength() {
         return maxLength;
     }
 
-    public InputButton setMaxLength(int maxLength) {
+    public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
-        return this;
     }
 
     public int getMultilineMaxLines() {
         return multilineMaxLines;
     }
 
-    public InputButton setMultilineMaxLines(int multilineMaxLines) {
+    public void setMultilineMaxLines(int multilineMaxLines) {
         this.multilineMaxLines = multilineMaxLines;
-        return this;
     }
 
     public int getMultilineHeight() {
         return multilineHeight;
     }
 
-    public InputButton setMultilineHeight(int multilineHeight) {
+    public void setMultilineHeight(int multilineHeight) {
         this.multilineHeight = multilineHeight;
-        return this;
     }
 
     public List<SingleOption> getSigleOptions() {
         return singleOptions;
     }
 
-    public InputButton setSigleOptions(List<SingleOption> options) {
+    public void setSigleOptions(List<SingleOption> options) {
         this.singleOptions = options;
-        return this;
     }
 
     public String getInitialValueBool() {
         return initialValueBool;
     }
 
-    public InputButton setInitialValueBool(String initialValueBool) {
+    public void setInitialValueBool(String initialValueBool) {
         this.initialValueBool = initialValueBool;
-        return this;
     }
 
     public String getTextTrue() {
         return textTrue;
     }
 
-    public InputButton setTextTrue(String textTrue) {
+    public void setTextTrue(String textTrue) {
         this.textTrue = textTrue;
-        return this;
     }
 
     public String getTextFalse() {
         return textFalse;
     }
 
-    public InputButton setTextFalse(String textFalse) {
+    public void setTextFalse(String textFalse) {
         this.textFalse = textFalse;
-        return this;
     }
 
     public float getStart() {
         return start;
     }
 
-    public InputButton setStart(float start) {
+    public void setStart(float start) {
         this.start = start;
-        return this;
     }
 
     public float getEnd() {
         return end;
     }
 
-    public InputButton setEnd(float end) {
+    public void setEnd(float end) {
         this.end = end;
-        return this;
     }
 
     public float getStep() {
         return step;
     }
 
-    public InputButton setStep(float step) {
+    public void setStep(float step) {
         this.step = step;
-        return this;
     }
 
     public String getInitialValueRange() {
         return initialValueRange;
     }
 
-    public InputButton setInitialValueRange(String initialValueRange) {
+    public void setInitialValueRange(String initialValueRange) {
         this.initialValueRange = initialValueRange;
-        return this;
     }
 
     public String getKey() {
         return key;
     }
 
-    public InputButton setKey(String key) {
+    public void setKey(String key) {
         this.key = key;
-        return this;
     }
 
     public String getLabelFormat() {
         return labelFormat;
     }
-    public InputButton setLabelFormat(String labelFormat) {
+
+    public void setLabelFormat(String labelFormat) {
         this.labelFormat = labelFormat;
-        return this;
     }
+
     public Optional<Boolean> getInitialValueSupplier() {
         if (this.initialValueSupplier != null) {;
             return Optional.ofNullable(initialValueSupplier.get());
         }
         return Optional.empty();
     }
-    public InputButton setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
+
+    public void setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
         this.initialValueSupplier = initialValueSupplier;
-        return this;
     }
 
     public Optional<Float> getInitialValueRangeSupplier() {
@@ -222,19 +208,19 @@ public class InputButton extends Button {
         return Optional.empty();
     }
 
-    public InputButton setInitialValueRangeSupplier(Supplier<Float> initialValueRangeSupplier) {
+    public void setInitialValueRangeSupplier(Supplier<Float> initialValueRangeSupplier) {
         this.initialValueRangeSupplier = initialValueRangeSupplier;
-        return this;
     }
+
     public Optional<String> getDefaultTextSupplier() {
         if (this.defaultTextSupplier != null) {;
             return Optional.ofNullable(defaultTextSupplier.get());
         }
         return Optional.empty();
     }
-    public InputButton setDefaultTextSupplier(Supplier<String> defaultTextSupplier) {
+
+    public void setDefaultTextSupplier(Supplier<String> defaultTextSupplier) {
         this.defaultTextSupplier = defaultTextSupplier;
-        return this;
     }
 }
 

@@ -1,9 +1,8 @@
-package fr.maxlego08.menu.hooks.dialogs;
+package fr.maxlego08.menu.hooks.dialogs.loader.builder;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
@@ -16,11 +15,11 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class AbstractDialogManager {
+public abstract class DialogBuilderManager {
     protected final MenuPlugin menuPlugin;
     protected final ComponentMeta paperComponent;
 
-    public AbstractDialogManager(MenuPlugin menuPlugin) {
+    public DialogBuilderManager(MenuPlugin menuPlugin) {
         this.menuPlugin = menuPlugin;
         this.paperComponent = (ComponentMeta) menuPlugin.getMetaUpdater();
     }

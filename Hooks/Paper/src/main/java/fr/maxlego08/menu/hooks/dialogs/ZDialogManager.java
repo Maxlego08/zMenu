@@ -21,6 +21,7 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderBody;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -41,7 +42,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ZDialogManager extends AbstractDialogManager implements DialogManager {
+public class ZDialogManager extends DialogBuilderManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
     private static InventoryManager inventoryManager;
