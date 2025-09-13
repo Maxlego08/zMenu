@@ -6,8 +6,8 @@ import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BodyButton extends Button {
-    private DialogBodyType bodyType;
+public abstract class BodyButton extends Button {
+    private final DialogBodyType bodyType;
 
     // Item-specific properties
     private int width = 256; // Default width
@@ -19,12 +19,12 @@ public class BodyButton extends Button {
 
     private int messageWidth = 300;
 
-    public DialogBodyType getBodyType() {
-        return bodyType;
+    public BodyButton(DialogBodyType bodyType) {
+        this.bodyType = bodyType;
     }
 
-    public void setBodyType(DialogBodyType bodyType) {
-        this.bodyType = bodyType;
+    public DialogBodyType getBodyType() {
+        return bodyType;
     }
 
     public int getWidth() {

@@ -416,7 +416,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new BedrockButtonLoader(this.plugin));
         buttonManager.register(new BedrockModalButtonLoader(this.plugin));
         buttonManager.register(new BedrockLabelLoader(this.plugin));
-        buttonManager.register(new BedrockInputTextLoader(this.plugin));
+        buttonManager.register(new BedrockTextInputLoader(this.plugin));
         buttonManager.register(new BedrockToggleInputLoader(this.plugin));
         buttonManager.register(new BedrockSliderInputLoader(this.plugin));
         buttonManager.register(new BedrockDropDownInputLoader(this.plugin));

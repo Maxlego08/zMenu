@@ -5,14 +5,11 @@ import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogNumberRangeInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 public class DialogNumberRangeInputLoader extends ButtonLoader {
-
-    public DialogNumberRangeInputLoader(Plugin plugin, String  name) {
-        super(plugin, name);
-    }
 
     public DialogNumberRangeInputLoader(Plugin plugin) {
         super(plugin, "dialog_number_range");
@@ -20,7 +17,6 @@ public class DialogNumberRangeInputLoader extends ButtonLoader {
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
-        InputButton inputButton = new InputButton();
         String label = configuration.getString(path + ".label", "");
         int width = configuration.getInt(path + ".width", 200);
         float start = (float) configuration.getDouble(path + ".start", 0);
@@ -29,15 +25,6 @@ public class DialogNumberRangeInputLoader extends ButtonLoader {
         String initialValue = configuration.getString(path + ".initial-value", String.valueOf((end + start) / 2));
         String labelFormat = configuration.getString(path + ".label-format", "options.generic_value");
 
-        inputButton.setLabel(label);
-        inputButton.setWidth(width);
-        inputButton.setStart(start);
-        inputButton.setEnd(end);
-        inputButton.setStep(step);
-        inputButton.setLabelFormat(labelFormat);
-        inputButton.setInitialValueRange(initialValue);
-        inputButton.setInputType(DialogInputType.NUMBER_RANGE);
-
-        return inputButton;
+        return new ZDialogNumberRangeInput(label, start, end, step, initialValue, width, labelFormat);
     }
 }
