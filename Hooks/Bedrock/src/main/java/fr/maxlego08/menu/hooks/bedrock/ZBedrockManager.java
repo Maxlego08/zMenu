@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderClass;
+import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderManager;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.bedrock.ButtonBuilder;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,7 +35,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class ZBedrockManager extends AbstractBedrockInventoryManager implements BedrockManager {
+public class ZBedrockManager extends BedrockBuilderManager implements BedrockManager {
     private final MenuPlugin menuPlugin;
     private static InventoryManager inventoryManager;
     private final Map<String, List<BedrockInventory>> bedrockInventory = new HashMap<>();
@@ -222,8 +223,8 @@ public class ZBedrockManager extends AbstractBedrockInventoryManager implements 
                 ModalForm.Builder builder = ModalForm.builder()
                         .title(inventory.getName(player))
                         .content(inventory.getContent(player))
-                        .button1(buttons.get(0).getText())
-                        .button2(buttons.get(1).getText())
+                        .button1(buttons.get(0).getText(player))
+                        .button2(buttons.get(1).getText(player))
                         .validResultHandler((form, responseData) -> {
                             Placeholders placeholders = new Placeholders();
                             placeholders.register("content", form.content());
@@ -249,10 +250,7 @@ public class ZBedrockManager extends AbstractBedrockInventoryManager implements 
                 });
                 builder.validResultHandler((form, responseData) -> {
                     int slot = responseData.clickedButtonId();
-
-                    for (Requirement requirement : buttons.get(slot).getClickRequirements()) {
-                        requirement.execute(player, null, inventoryManager.getFakeInventory(), new Placeholders());
-                    }
+                    buttons.get(slot).onClick(player, null, inventoryManager.getFakeInventory(), slot, new Placeholders());
                 });
                 yield withDefaultResultHandler(builder, player, inventory);
             }

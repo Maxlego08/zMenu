@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.bedrock.buttons.loader;
+package fr.maxlego08.menu.hooks.bedrock.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;

@@ -15,12 +15,12 @@ public class ButtonBuilder {
     }
 
     public ButtonComponent build(Player player, BedrockButton button) {
-        String text = menuPlugin.parse(player, button.getText());
+        String text = menuPlugin.parse(player, button.getText(player));
 
-        BedrockImageType imageType = button.getImageType();
+        BedrockImageType imageType = button.getImageType(player);
         if (imageType == BedrockImageType.NONE){
             return ButtonComponent.of(text);
         }
-        return ButtonComponent.of(text, FormImage.Type.valueOf(imageType.toString()), button.getImageData());
+        return ButtonComponent.of(text, FormImage.Type.valueOf(imageType.toString()), button.getImageData(player));
     }
 }

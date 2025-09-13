@@ -1,8 +1,7 @@
-package fr.maxlego08.menu.hooks.bedrock;
+package fr.maxlego08.menu.hooks.bedrock.loader.builder;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderClass;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.component.Component;
 
@@ -12,10 +11,10 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class AbstractBedrockInventoryManager {
+public abstract class BedrockBuilderManager {
     protected final MenuPlugin menuPlugin;
 
-    public AbstractBedrockInventoryManager(MenuPlugin menuPlugin) {
+    public BedrockBuilderManager(MenuPlugin menuPlugin) {
         this.menuPlugin = menuPlugin;
     }
 

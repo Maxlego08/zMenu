@@ -23,71 +23,63 @@ public class BodyButton extends Button {
         return bodyType;
     }
 
-    public BodyButton setBodyType(DialogBodyType bodyType) {
+    public void setBodyType(DialogBodyType bodyType) {
         this.bodyType = bodyType;
-        return this;
     }
 
     public int getWidth() {
         return width;
     }
 
-    public BodyButton setWidth(int width) {
+    public void setWidth(int width) {
         this.width = Math.max(1, Math.min(width, bodyType == DialogBodyType.ITEM ? 256 : 1024));
-        return this;
     }
 
     public int getHeight() {
         return height;
     }
 
-    public BodyButton setHeight(int height) {
+    public void setHeight(int height) {
         this.height = Math.max(1, Math.min(height, 256));
-        return this;
     }
 
     public boolean isShowDecorations() {
         return showDecorations;
     }
 
-    public BodyButton setShowDecorations(boolean showDecorations) {
+    public void setShowDecorations(boolean showDecorations) {
         this.showDecorations = showDecorations;
-        return this;
     }
 
     public boolean isShowTooltip() {
         return showTooltip;
     }
 
-    public BodyButton setShowTooltip(boolean showTooltip) {
+    public void setShowTooltip(boolean showTooltip) {
         this.showTooltip = showTooltip;
-        return this;
     }
 
     public List<String> getDescriptionMessages() {
         return descriptionMessages;
     }
 
-    public BodyButton setDescriptionMessages(List<String> descriptionMessages) {
+    public void setDescriptionMessages(List<String> descriptionMessages) {
         this.descriptionMessages = descriptionMessages != null ? descriptionMessages : new ArrayList<>();
-        return this;
     }
 
     public int getDescriptionWidth() {
         return descriptionWidth;
     }
 
-    public BodyButton setDescriptionWidth(int descriptionWidth) {
+    public void setDescriptionWidth(int descriptionWidth) {
         this.descriptionWidth = Math.max(1, Math.min(descriptionWidth, 1024));
-        return this;
     }
 
     public int getMessageWidth() {
         return messageWidth;
     }
 
-    public BodyButton setMessageWidth(int messageWidth) {
+    public void setMessageWidth(int messageWidth) {
         this.messageWidth = Math.max(1, Math.min(messageWidth, 1024));
-        return this;
     }
 }
