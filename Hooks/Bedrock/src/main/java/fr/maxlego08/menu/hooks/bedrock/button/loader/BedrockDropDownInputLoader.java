@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
+import fr.maxlego08.menu.hooks.bedrock.button.buttons.ZBedrockDropDownInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -14,18 +15,12 @@ import java.util.List;
 
 public class BedrockDropDownInputLoader extends ButtonLoader {
 
-    public BedrockDropDownInputLoader(Plugin plugin, String  name) {
-        super(plugin, name);
-    }
-
     public BedrockDropDownInputLoader(Plugin plugin) {
         super(plugin, "bedrock_dropdown");
     }
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
-        InputButton inputButton = new InputButton();
-
         String label = configuration.getString(path + ".text", "");
         List<SingleOption> singleOptionList = new ArrayList<>();
 
@@ -49,9 +44,6 @@ public class BedrockDropDownInputLoader extends ButtonLoader {
             }
         }
 
-        inputButton.setLabel(label);
-        inputButton.setSigleOptions(singleOptionList);
-        inputButton.setInputType(DialogInputType.SINGLE_OPTION);
-        return inputButton;
+        return new ZBedrockDropDownInput(label, singleOptionList);
     }
 }

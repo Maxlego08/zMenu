@@ -10,10 +10,6 @@ import org.bukkit.plugin.Plugin;
 
 public class BedrockButtonLoader extends ButtonLoader {
 
-    public BedrockButtonLoader(Plugin plugin, String  name) {
-        super(plugin, name);
-    }
-
     public BedrockButtonLoader(Plugin plugin) {
         super(plugin, "bedrock_button");
     }

@@ -9,12 +9,7 @@ import java.lang.reflect.Field;
 public abstract class AbstractConfigFieldProcessor implements ConfigFieldProcessor {
 
     protected InputButton createBaseInputButton(ConfigOption configOption, DialogInputType type) {
-        InputButton inputButton = new InputButton();
-        inputButton.setInputType(type);
-        inputButton.setLabel(configOption.label());
-        inputButton.setLabelVisible(configOption.labelVisible());
-        inputButton.setKey(configOption.key());
-        return inputButton;
+        return new ConfigButton(configOption);
     }
 
     protected RuntimeException createReflectionException(String operation, String fieldName, Exception cause) {

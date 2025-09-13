@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class InputButton extends Button {
-    private DialogInputType inputType = DialogInputType.BOOLEAN;
+public abstract class InputButton extends Button {
+    private final DialogInputType inputType;
     private String key; // Unique identifier for the input button
     private String label;
 
@@ -43,14 +43,13 @@ public class InputButton extends Button {
     private Supplier<Float> initialValueRangeSupplier;
     private String labelFormat = "options.generic_value"; // Default label format
 
+    public InputButton(DialogInputType inputType) {
+        super();
+        this.inputType = inputType;
+    }
 
     public DialogInputType getInputType() {
         return inputType;
-    }
-
-    public InputButton setInputType(DialogInputType inputType) {
-        this.inputType = inputType;
-        return this;
     }
 
     public String getLabel() {

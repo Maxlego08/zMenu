@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
+import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogSingleOptionInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -14,18 +15,12 @@ import java.util.List;
 
 public class DialogSingleOptionInputLoader extends ButtonLoader {
 
-    public DialogSingleOptionInputLoader(Plugin plugin, String  name) {
-        super(plugin, name);
-    }
-
     public DialogSingleOptionInputLoader(Plugin plugin) {
         super(plugin, "dialog_single_option");
     }
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
-        InputButton inputButton = new InputButton();
-
         String label = configuration.getString(path + ".label", "");
         boolean labelVisible = configuration.getBoolean(path + ".label-visible", true);
         List<SingleOption> singleOptionList = new ArrayList<>();
@@ -49,11 +44,6 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
                 singleOptionList.add(singleOption);
             }
         }
-
-        inputButton.setLabel(label);
-        inputButton.setLabelVisible(labelVisible);
-        inputButton.setSigleOptions(singleOptionList);
-        inputButton.setInputType(DialogInputType.SINGLE_OPTION);
-        return inputButton;
+        return new ZDialogSingleOptionInput(label, labelVisible,  singleOptionList);
     }
 }
