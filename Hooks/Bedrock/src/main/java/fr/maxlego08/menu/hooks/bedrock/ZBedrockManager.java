@@ -194,9 +194,15 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     /**
      * Opens a specific dialog for the specified player
      */
+
     @Override
     public void openBedrockInventory(Player player, BedrockInventory bedrockInventory) {
-        PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, bedrockInventory, 1, null);
+        openBedrockInventory(player, bedrockInventory, new ArrayList<>());
+    }
+
+    @Override
+    public void openBedrockInventory(Player player, BedrockInventory bedrockInventory, List<Inventory> oldInventories) {
+        PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, bedrockInventory, 1, oldInventories);
         if (Config.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();

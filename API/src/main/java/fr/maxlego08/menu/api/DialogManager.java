@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface DialogManager {
@@ -39,6 +40,8 @@ public interface DialogManager {
     void openDialog(Player player, DialogInventory dialog);
 
     //Optional<DialogBuilder> getDialogBuilder(DialogBodyType type);
+
+    void openDialog(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories);
 
     Collection<DialogInventory> getDialogs();
 

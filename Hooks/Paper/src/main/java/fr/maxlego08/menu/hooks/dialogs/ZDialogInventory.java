@@ -226,7 +226,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public List<BodyButton> getDialogBodies(Player player) {
-        return filterByViewRequirement(bodyButtons, player);
+        return filterByViewRequirement(this.bodyButtons, player);
     }
 
     @Override
@@ -235,17 +235,17 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public List<InputButton> getDialogInputs(Player player) {
-        return filterByViewRequirement(inputButtons, player);
+        return filterByViewRequirement(this.inputButtons, player);
     }
 
     @Override
     public List<Requirement> getYesActions() {
-        return yesActions;
+        return this.yesActions;
     }
 
     @Override
     public List<Requirement> getNoActions() {
-        return noActions;
+        return this.noActions;
     }
 
     @Override
@@ -258,7 +258,7 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public String getYesText() {
-        return yesText;
+        return this.yesText;
     }
 
     @Override
@@ -272,7 +272,7 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public String getNoText() {
-        return noText;
+        return this.noText;
     }
 
     @Override
@@ -286,7 +286,7 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public String getYesTooltip() {
-        return yesTooltip;
+        return this.yesTooltip;
     }
 
     @Override
@@ -300,7 +300,7 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public String getNoTooltip() {
-        return noTooltip;
+        return this.noTooltip;
     }
 
     @Override
@@ -310,12 +310,12 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public int getYesWidth() {
-        return yesWidth;
+        return this.yesWidth;
     }
 
     @Override
     public int getNoWidth() {
-        return noWidth;
+        return this.noWidth;
     }
 
     @Override
@@ -330,7 +330,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public String getLabel() {
-        return label != null ? label : "";
+        return this.label != null ? this.label : "";
     }
 
     @Override
@@ -345,7 +345,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public String getLabelTooltip() {
-        return labelTooltip != null ? labelTooltip : "";
+        return this.labelTooltip != null ? this.labelTooltip : "";
     }
 
     @Override
@@ -360,7 +360,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public int getLabelWidth() {
-        return labelWidth;
+        return this.labelWidth;
     }
 
     @Override
@@ -371,7 +371,7 @@ public class ZDialogInventory implements DialogInventory {
     @Override
     public List<ActionButtonRecord> getActionButtons(Player player) {
         List<ActionButtonRecord> actionButtonsParse = new ArrayList<>();
-        for (ActionButtonRecord actionButtonRecord : actionButtons) {
+        for (ActionButtonRecord actionButtonRecord : this.actionButtons) {
             actionButtonsParse.add(actionButtonRecord.parse(player));
         }
         return actionButtonsParse;
@@ -379,7 +379,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public List<ActionButtonRecord> getActionButtons() {
-        return actionButtons;
+        return this.actionButtons;
     }
 
     @Override
@@ -391,7 +391,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public int getNumberOfColumns() {
-        return numberOfColumns;
+        return this.numberOfColumns;
     }
 
     @Override
@@ -410,7 +410,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public List<Requirement> getActions() {
-        return actions;
+        return this.actions;
     }
 
     @Override
@@ -436,7 +436,7 @@ public class ZDialogInventory implements DialogInventory {
     @SuppressWarnings("unchecked")
     private <T extends Button> T getFirstVisibleButtonRecursive(T button, Player player) {
         if (button.hasPermission()) {
-            boolean hasPermission = button.checkPermission(player, menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
+            boolean hasPermission = button.checkPermission(player, this.menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
             if (!hasPermission) {
                 if (button.hasElseButton()) {
                     return getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
@@ -449,11 +449,5 @@ public class ZDialogInventory implements DialogInventory {
         } else {
             return button;
         }
-    }
-    protected boolean checkRequirement(Requirement requirement, Player player) {
-        if (requirement == null) return true;
-        InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
-        Placeholders placeholder = new Placeholders();
-        return requirement.execute(player, null, fakeInventory, placeholder);
     }
 }

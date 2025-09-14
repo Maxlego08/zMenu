@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface BedrockManager {
@@ -35,6 +36,8 @@ public interface BedrockManager {
     BedrockInventory loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException;
 
     void openBedrockInventory(Player player, BedrockInventory bedrockInventory);
+
+    void openBedrockInventory(Player player, BedrockInventory bedrockInventory, List<Inventory> oldInventories);
 
     Collection<BedrockInventory> getBedrockInventory();
 

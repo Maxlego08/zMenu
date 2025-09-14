@@ -78,7 +78,7 @@ public class DialogLoader implements Loader<DialogInventory> {
         List<BodyButton> bodyButtons = loadButtons(configuration, file, "body", BodyButton.class, null);
         dialogInventory.setBodyButtons(bodyButtons);
 
-        List<InputButton> inputButtons = loadButtons(configuration, file, "input", InputButton.class, InputButton::setKey);
+        List<InputButton> inputButtons = loadButtons(configuration, file, "inputs", InputButton.class, InputButton::setKey);
         dialogInventory.setInputButtons(inputButtons);
 
         dialogInventory.setFile(file);
