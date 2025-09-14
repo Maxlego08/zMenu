@@ -7,13 +7,16 @@ import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
+import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class ZBedrockInventory implements BedrockInventory {
 
@@ -28,6 +31,8 @@ public class ZBedrockInventory implements BedrockInventory {
     private List<InputButton> inputButtons = new ArrayList<>();
 
     private final List<Requirement> actions = new ArrayList<>();
+    private final List<ConditionalName> conditionalNames = new ArrayList<>();
+    private String targetPlayerNamePlaceholder;
     private Requirement openRequirement;
 
     public ZBedrockInventory(MenuPlugin plugin, String fileName, String name, String content) {
@@ -38,7 +43,20 @@ public class ZBedrockInventory implements BedrockInventory {
     }
 
     @Override
-    public String getName(Player player) {
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+        if (!this.conditionalNames.isEmpty()) {
+            Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
+
+            if (optional.isPresent()) {
+                ConditionalName conditionalName = optional.get();
+                return conditionalName.name();
+            }
+        }
         return this.menuPlugin.parse(player, this.name);
     }
 
@@ -61,13 +79,10 @@ public class ZBedrockInventory implements BedrockInventory {
     public File getFile() {
         return file;
     }
-
-    @Override
     public void setFile(File file) {
         this.file = file;
     }
 
-    @Override
     public void setBedrockType(BedrockType bedrockType) {
         this.bedrockType = bedrockType;
     }
@@ -77,7 +92,6 @@ public class ZBedrockInventory implements BedrockInventory {
         return bedrockType;
     }
 
-    @Override
     public void setBedrockButtons(List<BedrockButton> bedrockButtons) {
         this.bedrockButtons = bedrockButtons;
     }
@@ -92,7 +106,6 @@ public class ZBedrockInventory implements BedrockInventory {
         return filterByViewRequirement(this.bedrockButtons, player);
     }
 
-    @Override
     public void setInputButtons(List<InputButton> inputButtons) {
         this.inputButtons = inputButtons != null ? inputButtons : new ArrayList<>();
     }
@@ -107,7 +120,6 @@ public class ZBedrockInventory implements BedrockInventory {
         return filterByViewRequirement(this.inputButtons, player);
     }
 
-    @Override
     public void setOpenRequirement(Requirement openRequirement) {
         this.openRequirement = openRequirement;
     }
@@ -118,11 +130,18 @@ public class ZBedrockInventory implements BedrockInventory {
     }
 
     @Override
-    public boolean hasOpenRequirement(Player player) {
-        return checkRequirement(openRequirement, player);
+    public List<ConditionalName> getConditionalNames() {
+        return this.conditionalNames;
     }
 
     @Override
+    public String getTargetPlayerNamePlaceholder() {
+        return this.targetPlayerNamePlaceholder;
+    }
+    public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
+        this.targetPlayerNamePlaceholder = targetPlaceholder;
+    }
+
     public void setRequirements(List<Requirement> actions) {
         this.actions.addAll(actions);
     }
@@ -163,11 +182,5 @@ public class ZBedrockInventory implements BedrockInventory {
         } else {
             return button;
         }
-    }
-    protected boolean checkRequirement(Requirement requirement, Player player) {
-        if (requirement == null) return true;
-        InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
-        Placeholders placeholder = new Placeholders();
-        return requirement.execute(player, null, fakeInventory, placeholder);
     }
 }

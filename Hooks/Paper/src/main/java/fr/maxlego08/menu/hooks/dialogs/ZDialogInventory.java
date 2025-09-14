@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
+import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
@@ -15,7 +16,9 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class ZDialogInventory implements DialogInventory {
 
@@ -57,6 +60,8 @@ public class ZDialogInventory implements DialogInventory {
     private ActionButtonRecord actionButtonRecordServerLink;
     private int numberOfColumns = 1;
 
+    private final List<ConditionalName> conditionalNames = new ArrayList<>();
+    private String targetPlayerNamePlaceholder;
     private Requirement openRequirement;
 
     public ZDialogInventory(MenuPlugin plugin, String name, String fileName, String externalTitle) {
@@ -66,10 +71,22 @@ public class ZDialogInventory implements DialogInventory {
         this.externalTitle = externalTitle;
     }
 
+    @Override
+    public String getName() {
+        return this.name;
+    }
 
     @Override
-    public String getName(Player player) {
-        return this.menuPlugin.parse(player, name);
+    public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+        if (!this.conditionalNames.isEmpty()) {
+            Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
+
+            if (optional.isPresent()) {
+                ConditionalName conditionalName = optional.get();
+                return conditionalName.name();
+            }
+        }
+        return this.menuPlugin.parse(player, this.name);
     }
 
     @Override
@@ -87,7 +104,6 @@ public class ZDialogInventory implements DialogInventory {
         return file;
     }
 
-    @Override
     public void setFile(File file) {
         this.file = file;
     }
@@ -181,7 +197,6 @@ public class ZDialogInventory implements DialogInventory {
         return actionButtonRecordServerLink;
     }
 
-    @Override
     public void setOpenRequirement(Requirement openRequirement) {
         this.openRequirement = openRequirement;
     }
@@ -192,8 +207,16 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public boolean hasOpenRequirement(Player player) {
-        return checkRequirement(openRequirement, player);
+    public List<ConditionalName> getConditionalNames() {
+        return this.conditionalNames;
+    }
+
+    @Override
+    public String getTargetPlayerNamePlaceholder() {
+        return this.targetPlayerNamePlaceholder;
+    }
+    public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
+        this.targetPlayerNamePlaceholder = targetPlaceholder;
     }
 
     @Override
