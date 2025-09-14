@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.DialogInventory;
+import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
@@ -17,12 +18,11 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Constructor;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class DialogLoader implements Loader<DialogInventory> {
@@ -82,8 +82,31 @@ public class DialogLoader implements Loader<DialogInventory> {
         dialogInventory.setInputButtons(inputButtons);
 
         dialogInventory.setFile(file);
+        dialogInventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
 
+        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
+        for (InventoryOption inventoryOption : inventoryOptions) {
+            inventoryOption.loadInventory(dialogInventory, file, configuration, this.menuPlugin.getInventoryManager(), this.menuPlugin.getButtonManager());
+        }
         return dialogInventory;
+    }
+
+    /**
+     * Loads InventoryOption
+     */
+    private InventoryOption createInstance(Plugin plugin, Class<? extends InventoryOption> aClass) {
+        try {
+            Constructor<? extends InventoryOption> constructor = aClass.getConstructor(Plugin.class);
+            return constructor.newInstance(plugin);
+        } catch (NoSuchMethodException ignored) {
+            try {
+                return aClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                return null;
+            }
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     /**
