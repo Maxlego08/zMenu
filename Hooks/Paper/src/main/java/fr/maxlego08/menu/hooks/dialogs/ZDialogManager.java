@@ -208,25 +208,24 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
      * Opens a specific dialog for the specified player
      */
     @Override
-    public void openDialog(Player player, DialogInventory zDialog) {
-        PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, zDialog, 1, null);
+    public void openDialog(Player player, DialogInventory dialogInventory) {
+        openDialog(player, dialogInventory, new ArrayList<>());
+    }
+
+    @Override
+    public void openDialog(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
+        PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, dialogInventory, 1, oldInventories);
         if (Config.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
         if (playerOpenInventoryEvent.isCancelled()) return;
 
-        Player target = Bukkit.getPlayer(this.menuPlugin.parse(player, zDialog.getTargetPlayerNamePlaceholder()));
+        Player target = Bukkit.getPlayer(this.menuPlugin.parse(player, dialogInventory.getTargetPlayerNamePlaceholder()));
         if (target != null) {
             player = target;
         }
 
-        createDialogPlayer(player, zDialog);
-    }
-
-    private Player getTargetPlayer(Player player, BedrockInventory bedrockInventory){
-        String targetName = this.menuPlugin.parse(player, bedrockInventory.getTargetPlayerNamePlaceholder());
-        Player targetPlayer = Bukkit.getPlayer(targetName);
-        return targetPlayer != null ? targetPlayer : player;
+        createDialogPlayer(player, dialogInventory);
     }
 
     private void createDialogPlayer(Player player, DialogInventory zDialog) {

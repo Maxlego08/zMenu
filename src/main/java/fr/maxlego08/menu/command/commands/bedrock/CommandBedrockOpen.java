@@ -18,8 +18,8 @@ public class CommandBedrockOpen extends VCommand {
     public CommandBedrockOpen(ZMenuPlugin plugin) {
         super(plugin);
         this.addSubCommand("open", "o");
-        DialogManager dialogManager = plugin.getDialogManager();
-        this.addRequireArg("bedrock name", (a,b)-> dialogManager.getDialogs().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase())).toList());
+        BedrockManager dialogManager = plugin.getBedrockManager();
+        this.addRequireArg("bedrock name", (a,b)-> dialogManager.getBedrockInventory().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase())).toList());
 
         this.addOptionalArg("player");
         this.addOptionalArg("display message", (a,b)-> Arrays.asList("true", "false"));
