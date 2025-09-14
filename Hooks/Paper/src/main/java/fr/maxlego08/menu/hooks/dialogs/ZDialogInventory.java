@@ -44,12 +44,12 @@ public class ZDialogInventory implements DialogInventory {
     // When {@link DialogType#CONFIRM} is used
     private final List<Requirement> yesActions = new ArrayList<>();
     private String yesText = "Yes";
-    private String yesTooltip = null;
+    private String yesTooltip = "";
     private int yesWidth = 100;
 
     private final List<Requirement> noActions = new ArrayList<>();
     private String noText = "No";
-    private String noTooltip = null;
+    private String noTooltip = "";
     private int noWidth = 100;
 
     // MultiAction
