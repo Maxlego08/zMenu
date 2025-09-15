@@ -437,6 +437,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         var commandManager = this.plugin.getCommandManager();
         commandManager.registerArgumentValidator(new IntArgumentValidator());
         commandManager.registerArgumentValidator(new DoubleArgumentValidator());
+        commandManager.registerArgumentValidator(new BedrockPlayerArgumentValidator(this.plugin.getBedrockManager()));
         commandManager.registerArgumentValidator(new BooleanArgumentValidator());
         commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
