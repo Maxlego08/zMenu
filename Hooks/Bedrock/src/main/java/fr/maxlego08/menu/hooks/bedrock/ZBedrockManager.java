@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderClass;
@@ -202,34 +203,34 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
 
     @Override
     public void openBedrockInventory(Player player, BedrockInventory bedrockInventory, List<Inventory> oldInventories) {
+        if (!isBedrockPlayer(player)){
+            this.menuPlugin.getMetaUpdater().sendMessage(player, Message.BEDROCK_OPEN_ERROR_NOT_BEDROCK_PLAYER.getMessage());
+        }
+
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, bedrockInventory, 1, oldInventories);
         if (Config.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
         if (playerOpenInventoryEvent.isCancelled()) return;
 
-        Player target = Bukkit.getPlayer(this.menuPlugin.parse(player, bedrockInventory.getTargetPlayerNamePlaceholder()));
-        if (target != null) {
-            player = target;
+        Player targetPlayer = Bukkit.getPlayer(this.menuPlugin.parse(player, bedrockInventory.getTargetPlayerNamePlaceholder()));
+        if (targetPlayer == null) {
+            targetPlayer = player;
         }
 
-        createBedrockInventoryPlayer(player, bedrockInventory);
-    }
-
-    private void createBedrockInventoryPlayer(Player player, BedrockInventory bedrockInventory) {
         try {
             boolean canOpen = checkRequirement(bedrockInventory.getOpenRequirement(), player);
             if (!canOpen){
                 return;
             }
 
-            Form form = createBedrockByType(bedrockInventory, player);
+            Form form = createBedrockByType(bedrockInventory, targetPlayer);
+            FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
 
             activeBedrockInventory.put(player.getUniqueId(), bedrockInventory);
-            FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
         } catch (Exception e) {
             if (Config.enableInformationMessage){
-                Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
+                Logger.info("Failed to open bedrock inventory for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
                 if (Config.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
                 }
@@ -317,9 +318,9 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     protected  <B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> Form withDefaultResultHandler(B builder, Player player, BedrockInventory inventory) {
-        builder.closedOrInvalidResultHandler((form, responseData) -> {
+        /*builder.closedOrInvalidResultHandler((form, responseData) -> {
             player.sendMessage("Formulaire fermé ou invalide !");
-        });
+        });*/
         return builder.build();
     }
 
@@ -361,8 +362,15 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         }
         return Collections.unmodifiableCollection(allDialogs);
     }
+
     @Override
-    public InventoryManager getInventoryManager() {
-        return inventoryManager;
+    public boolean isBedrockPlayer(Player player) {
+        return FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
+    }
+
+    @Override
+    public boolean isBedrockPlayer(String value) {
+        Player player = this.menuPlugin.getServer().getPlayerExact(value);
+        return player != null && isBedrockPlayer(player);
     }
 }

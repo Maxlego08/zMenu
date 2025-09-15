@@ -220,35 +220,31 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         } else playerOpenInventoryEvent.call();
         if (playerOpenInventoryEvent.isCancelled()) return;
 
-        Player target = Bukkit.getPlayer(this.menuPlugin.parse(player, dialogInventory.getTargetPlayerNamePlaceholder()));
-        if (target != null) {
-            player = target;
+
+        Player targetPlayer = Bukkit.getPlayer(this.menuPlugin.parse(player, dialogInventory.getTargetPlayerNamePlaceholder()));
+        if (targetPlayer == null) {
+            targetPlayer = player;
         }
 
-        createDialogPlayer(player, dialogInventory);
-    }
-
-    private void createDialogPlayer(Player player, DialogInventory zDialog) {
         try {
-            boolean canOpen = checkRequirement(zDialog.getOpenRequirement(), player);
+            boolean canOpen = checkRequirement(dialogInventory.getOpenRequirement(), player);
             if (!canOpen){
                 return;
             }
 
-            ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies(player));
-            List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
+            ZDialogInventoryBuild dialogBuild = dialogInventory.getBuild(targetPlayer);
+            List<DialogBody> bodies = getDialogBodies(targetPlayer, dialogInventory.getDialogBodies(targetPlayer));
+            List<DialogInput> inputs = getDialogInputs(targetPlayer, dialogInventory.getDialogInputs(targetPlayer));
 
-            DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), zDialog.isPause(), zDialog.getAfterAction());
-            Dialog dialog = createDialogByType(zDialog.getDialogType(), dialogBase, bodies, inputs, zDialog, player);
-
-            activeDialogs.put(player.getUniqueId(), zDialog);
+            DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), dialogInventory.isPause(), dialogInventory.getAfterAction());
+            Dialog dialog = createDialogByType(dialogInventory.getDialogType(), dialogBase, bodies, inputs, dialogInventory, player);
 
             player.showDialog(dialog);
 
+            activeDialogs.put(player.getUniqueId(), dialogInventory);
         } catch (Exception e) {
             if (Config.enableInformationMessage){
-                Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
+                Logger.info("Failed to open bedrock inventory for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
                 if (Config.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
                 }

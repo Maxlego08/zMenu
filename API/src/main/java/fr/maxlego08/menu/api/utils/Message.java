@@ -68,6 +68,7 @@ public enum Message implements IMessage {
     BEDROCK_OPEN_SUCCESS("&aYou have just opened the bedrock inventory &f%name%&a."),
     BEDROCK_OPEN_SUCCESS_OTHER("&aYou have just opened the bedrock inventory &f%name%&a to the &3%player%&a."),
     BEDROCK_OPEN_ERROR_NOT_FOUND("&cImpossible to find the bedrock inventory &f%name%&c."),
+    BEDROCK_OPEN_ERROR_NOT_BEDROCK_PLAYER("&cOnly one bedrock player can open a bedrock inventory."),
     BEDROCK_OPEN_ERROR_CONSOLE("&cOnly one player can open a bedrock inventory."),
 
     DESCRIPTION_OPEN("Allows you to open an inventory"),
