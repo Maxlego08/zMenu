@@ -41,7 +41,9 @@ public interface BedrockManager {
 
     Collection<BedrockInventory> getBedrockInventory();
 
-    InventoryManager getInventoryManager();
-
     void reloadBedrockInventory();
+
+    boolean isBedrockPlayer(Player player);
+
+    boolean isBedrockPlayer(String value);
 }
