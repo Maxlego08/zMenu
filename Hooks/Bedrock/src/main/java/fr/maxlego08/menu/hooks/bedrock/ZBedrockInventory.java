@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 
@@ -34,6 +35,7 @@ public class ZBedrockInventory implements BedrockInventory {
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
     private String targetPlayerNamePlaceholder;
     private Requirement openRequirement;
+    private InventoryReplacement inventoryReplacement;
 
     public ZBedrockInventory(MenuPlugin plugin, String fileName, String name, String content) {
         this.menuPlugin = plugin;
@@ -127,6 +129,15 @@ public class ZBedrockInventory implements BedrockInventory {
     @Override
     public Requirement getOpenRequirement() {
         return this.openRequirement;
+    }
+
+    public void setInventoryReplacement(InventoryReplacement replacement) {
+        this.inventoryReplacement = replacement;
+    }
+
+    @Override
+    public InventoryReplacement getInventoryReplacement() {
+        return this.inventoryReplacement;
     }
 
     @Override
