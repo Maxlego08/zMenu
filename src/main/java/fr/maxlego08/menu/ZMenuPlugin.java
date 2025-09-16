@@ -26,6 +26,7 @@ import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
+import fr.maxlego08.menu.hooks.bedrock.listener.bedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
@@ -176,6 +177,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isActive(Plugins.GEYSER)){
             Logger.info("Geyser detected, loading Bedrock Inventory support");
             this.bedrockManager = new ZBedrockManager(this);
+            this.addListener(new bedrockReplacementListener(this.bedrockManager));
             servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
         }
 

@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -27,6 +28,8 @@ public interface BedrockInventory extends Inventory {
     List<InputButton> getInputButtons();
 
     List<InputButton> getInputButtons(Player player);
+
+    InventoryReplacement getInventoryReplacement();
 
     List<Requirement> getRequirements();
 
