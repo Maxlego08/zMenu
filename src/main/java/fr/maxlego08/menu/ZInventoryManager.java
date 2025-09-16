@@ -385,6 +385,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
+        if (this.plugin.getBedrockManager() != null) {
+            buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
+        }
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each
