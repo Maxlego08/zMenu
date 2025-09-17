@@ -64,9 +64,9 @@ public class BedrockLoader implements Loader<BedrockInventory> {
         }
 
         if (configuration.isConfigurationSection("inventory-replacement")){
-            String replacementName = configuration.getString("name", "");
-            String replacementPlugin = configuration.getString("plugin", "");
-            List<Integer> replacementPages = configuration.getIntegerList("pages");
+            String replacementName = configuration.getString("inventory-replacement.name", "");
+            String replacementPlugin = configuration.getString("inventory-replacement.plugin", "");
+            List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
             InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
             bedrockInventory.setInventoryReplacement(inventoryReplacement);
         }

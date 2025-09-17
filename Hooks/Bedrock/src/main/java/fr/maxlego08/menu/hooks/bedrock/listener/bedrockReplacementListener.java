@@ -21,15 +21,14 @@ public class bedrockReplacementListener implements Listener {
             return;
         }
 
-        for (BedrockInventory inventory : bedrockManager.getBedrockInventory()) {
+        for (BedrockInventory inventory : this.bedrockManager.getBedrockInventory()) {
             InventoryReplacement replacement = inventory.getInventoryReplacement();
             if (replacement == null) {
                 continue;
             }
-
             if (replacement.shouldTrigger(event)) {
                 event.setCancelled(true);
-                bedrockManager.openBedrockInventory(event.getPlayer(), inventory);
+                this.bedrockManager.openBedrockInventory(event.getPlayer(), inventory);
                 return;
             }
         }

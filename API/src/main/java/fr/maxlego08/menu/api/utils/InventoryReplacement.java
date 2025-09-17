@@ -33,17 +33,17 @@ public class InventoryReplacement {
     }
 
     public boolean shouldTrigger(PlayerOpenInventoryEvent event) {
+
         // Inventory Name
-        if (!Objects.equals(this.inventoryName, event.getInventory().getName())) {
+        if (!Objects.equals(this.inventoryName, event.getInventory().getFileName())) {
             return false;
         }
-
         // Plugin Name
-        if (this.plugin != null && !Objects.equals(this.plugin, event.getInventory().getPlugin().getName())) {
+        if (!Objects.equals(this.plugin, "") && !Objects.equals(this.plugin, event.getInventory().getPlugin().getName())) {
             return false;
         }
 
         // Page
-        return this.pages == null || this.pages.contains(event.getPage());
+        return this.pages.isEmpty() || this.pages.contains(event.getPage());
     }
 }
