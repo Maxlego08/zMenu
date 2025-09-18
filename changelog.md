@@ -60,6 +60,7 @@
 - New command: ``/zm contributors``
 - New command: ``/zm addons``
 - New command: ``/zm dumplog``
+- Update to Sarah 1.19
 
 # 1.1.0.2
 
