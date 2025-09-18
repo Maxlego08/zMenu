@@ -205,6 +205,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public void openBedrockInventory(Player player, BedrockInventory bedrockInventory, List<Inventory> oldInventories) {
         if (!isBedrockPlayer(player)){
             this.menuPlugin.getMetaUpdater().sendMessage(player, Message.BEDROCK_OPEN_ERROR_NOT_BEDROCK_PLAYER.getMessage());
+            return;
         }
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, bedrockInventory, 1, oldInventories);
