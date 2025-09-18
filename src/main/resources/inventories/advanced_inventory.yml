@@ -52,6 +52,12 @@ name: "&4Advanced &cInventory &7%page%&8/&7%max-page%"
 patterns:
   - "pattern_example"
 
+
+# Enable section. (https://docs.zmenu.dev/configurations/inventories#enable)
+#
+# Allows you to activate or not the loading of an inventory.
+enable: true
+
 # Item section. (https://docs.zmenu.dev/configurations/inventories#items)
 #
 # This is where you will add all the items that will be present in your inventory.
