@@ -1,19 +1,14 @@
 package fr.maxlego08.menu.command;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.command.commands.CommandInventory;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.commands.CommandInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -197,7 +192,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             command.setExecutor(this);
             command.setTabCompleter(this);
             command.setAliases(aliases);
-            if (vCommand.getPermission() != null) {
+            if (vCommand.getPermission() != null && vCommand.getDenyMessage() == null) {
                 command.setPermission(vCommand.getPermission());
             }
 

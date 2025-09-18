@@ -42,6 +42,26 @@
 
 # Unreleased
 
+# 1.1.0.3
+
+- Added dialogs inventories ``/zm dialog`` [#186](https://github.com/Maxlego08/zMenu/pull/186) by [1robie](https://github.com/1robie) and [saildrag](https://github.com/saildrag)
+- Added ``%player%`` placeholder for each action
+- Added a view requirement system with the ability to define an else for another pattern
+- Added option to disable inventory loading: ``enable: false``
+- Added ``reason`` for withdraw and deposit action
+- Fixed withdraw and deposit action with zEssentials
+- Improve update checker [#183](https://github.com/Maxlego08/zMenu/pull/183)
+- Fix ``openInventoryWithOldInventories`` method
+- Fixed inventory button drop on death when clear inv is active
+- Fixed item giving on disconnect when clear inv is active
+- Fixed textures of offline players’ heads
+- Optimized Enum NmsVersion → no more repeated calls to getVersion (unnecessary since the version doesn’t change at startup)
+- Fixed commands not displaying the "No permission" message during setup
+- New command: ``/zm contributors``
+- New command: ``/zm addons``
+- New command: ``/zm dumplog``
+- Update to Sarah 1.19
+
 # 1.1.0.2
 
 - Added [toast](https://docs.zmenu.dev/configurations/actions#toast) action

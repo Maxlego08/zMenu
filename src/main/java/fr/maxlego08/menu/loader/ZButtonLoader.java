@@ -38,12 +38,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
@@ -88,7 +83,21 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
             mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
             YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
-            return this.load(patternConfiguration, "button.", buttonName);
+            Button patternButton = this.load(patternConfiguration, "button.", buttonName);
+            // Load view requirements for the pattern button (from main config)
+            loadViewRequirements(patternButton, configuration, path, file);
+
+            // Load else button from main config if present
+            if (configuration.contains(path + "else")) {
+                DefaultButtonValue elseDefaultButtonValue = new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
+                Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
+                patternButton.setElseButton(elseButton);
+                if (elseButton != null) {
+                    elseButton.setParentButton(patternButton);
+                }
+            }
+
+            return patternButton;
         }
 
         ButtonManager buttonManager = this.plugin.getButtonManager();

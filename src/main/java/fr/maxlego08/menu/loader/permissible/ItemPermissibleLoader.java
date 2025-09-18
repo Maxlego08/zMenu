@@ -3,6 +3,7 @@ package fr.maxlego08.menu.loader.permissible;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -15,9 +16,9 @@ import java.util.List;
 
 public class ItemPermissibleLoader extends PermissibleLoader {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public ItemPermissibleLoader(ZMenuPlugin plugin) {
+    public ItemPermissibleLoader(MenuPlugin plugin) {
         super("item");
         this.plugin = plugin;
     }

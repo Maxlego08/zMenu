@@ -19,6 +19,7 @@ public class CurrencyDepositLoader extends ActionLoader {
         String bigDecimal = accessor.getString("amount");
         Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase());
         String economyName = accessor.getString("economy", null);
-        return new CurrencyDepositAction(bigDecimal, currencies, economyName);
+        String reason = accessor.getString("reason", "no reason");
+        return new CurrencyDepositAction(bigDecimal, currencies, economyName, reason);
     }
 }

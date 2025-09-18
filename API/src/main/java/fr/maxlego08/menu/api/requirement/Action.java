@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ public abstract class Action {
      * A value of 0 means no delay.
      */
     private int delay;
+    private float chance;
 
     /**
      * Executes the action for the specified player.
@@ -31,6 +33,8 @@ public abstract class Action {
     protected abstract void execute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
 
     public void preExecute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+        placeholders.register("player", player.getName());
+        if (chance < 100 && Math.random() > (chance / 100.0f)) return;
         if (delay == 0) execute(player, button, inventoryEngine, placeholders);
         else {
             inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> execute(player, button, inventoryEngine, placeholders), this.delay);
@@ -43,6 +47,18 @@ public abstract class Action {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public float getChance() {return chance;}
+
+    public void setChance(float chance) {
+        if ( chance < 0 || chance > 100) {
+            if (Config.enableDebug){
+                throw new IllegalArgumentException("Chance must be between 0 and 100");
+            }
+            chance = 100;
+        };
+        this.chance = chance;
     }
 
     /**

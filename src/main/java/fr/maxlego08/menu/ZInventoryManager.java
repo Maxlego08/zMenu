@@ -23,6 +23,12 @@ import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.command.validators.*;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -93,6 +99,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.loadButtons();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
+        DialogManager dialogManager = this.plugin.getDialogManager();
+        if (dialogManager != null) {
+            dialogManager.loadDialogs();
+        }
         this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
     }
 
@@ -143,6 +153,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
         YamlConfiguration configuration = loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+
+        boolean enableInventoryLoad = configuration.getBoolean("enable", true);
+        if (!enableInventoryLoad) {
+            if (Config.enableInformationMessage) {
+                Logger.info("The inventory " + file.getPath() + " is disabled, so it will not be loaded.", LogType.WARNING);
+            }
+            return null;
+        }
 
         InventoryRequirementChecker checker = new InventoryRequirementChecker(this.plugin);
         Optional<InventoryLoadRequirement> optional = checker.canLoadInventory(configuration, plugin, file, classz);
@@ -247,14 +265,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventoryWithOldInventories(Player player, Inventory inventory, int page) {
+
+        List<Inventory> oldInventories = new ArrayList<>();
+
         if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault inventoryDefault) {
-
             Inventory fromInventory = inventoryDefault.getMenuInventory();
-            List<Inventory> oldInventories = inventoryDefault.getOldInventories();
+            oldInventories = inventoryDefault.getOldInventories();
             oldInventories.add(fromInventory);
-
-            this.openInventory(player, inventory, page, oldInventories);
         }
+
+        this.openInventory(player, inventory, page, oldInventories);
     }
 
     @Override
@@ -292,6 +312,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new PlayerNamePermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new CuboidPermissibleLoader(buttonManager));
         if (this.plugin.isEnable(Plugins.JOBS)) {
             buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
         }
@@ -328,6 +349,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
         buttonManager.registerAction(new ToastLoader(this.plugin));
+        if (this.plugin.getDialogManager() != null) {
+            buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
+        }
 
         // Loading ButtonLoader
         // The first step will be to load the buttons in the plugin, so each
@@ -345,12 +369,23 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new JumpLoader(this.plugin));
         buttonManager.register(new SwitchLoader(this.plugin));
 
+        // Loading Button Dialog
+        // Register Button Dialog Body
+        buttonManager.register(new ItemBodyLoader(this.plugin));
+        buttonManager.register(new PlainMessageBodyLoader(this.plugin));
+        // Register Button Dialog Input
+        buttonManager.register(new TextInputLoader(this.plugin));
+        buttonManager.register(new BooleanInputLoader(this.plugin));
+        buttonManager.register(new NumberRangeInputLoader(this.plugin));
+        buttonManager.register(new SingleOptionInputLoader(this.plugin));
+
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());
         registerItemStackVerification(new LoreSimilar());
         registerItemStackVerification(new MaterialSimilar());
         registerItemStackVerification(new ModelIdSimilar());
         registerItemStackVerification(new NameSimilar());
+        registerItemStackVerification(new ItemModelSimilar()); // 1.21.4+
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
@@ -605,28 +640,34 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void updateInventory(Player player) {
-        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault inventoryDefault) {
-            this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
-        }
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (holder instanceof InventoryDefault inventoryDefault) {
+                this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+            }
+        });
     }
 
     @Override
     public void updateInventoryCurrentPage(Player player) {
-        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault inventoryDefault) {
-            this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());
-        }
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (holder instanceof InventoryDefault inventoryDefault) {
+                this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());
+            }
+        });
     }
 
     @Override
     public void updateInventory(Player player, Plugin plugin) {
-        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault inventoryDefault) {
-            if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
-                this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (holder instanceof InventoryDefault inventoryDefault) {
+                if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
+                    this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+                }
             }
-        }
+        });
     }
 
     @Override
@@ -863,7 +904,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
             if (offlinePlayer != null) {
                 SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile());
+                skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
                 itemStack.setItemMeta(skullMeta);
             }
         } else {

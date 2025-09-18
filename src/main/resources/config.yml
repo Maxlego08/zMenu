@@ -9,6 +9,9 @@ enable-debug-time: false
 # Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
 enable-information-message: true
 
+# Skip the update check
+skip-update-check: false
+
 # Storage:
 # SQLITE - For the launch of the plugin only.
 # HIKARICP - RECOMMENDED - HikariCP is a fast and lightweight JDBC connection pool. It optimizes database connections, ensuring quick acquisition and low latency. This improves performance and reliability, making it ideal for high-demand applications.

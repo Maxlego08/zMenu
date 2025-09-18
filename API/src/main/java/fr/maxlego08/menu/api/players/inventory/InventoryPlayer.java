@@ -1,7 +1,9 @@
 package fr.maxlego08.menu.api.players.inventory;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +25,11 @@ public interface InventoryPlayer {
      */
     void giveInventory(Player player);
 
+    void forceGiveInventory(Player player);
+
     String toInventoryString();
+
+    List<ItemStack> getItemStacks();
 
     Map<Integer, String> getItems();
 }

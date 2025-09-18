@@ -1,16 +1,24 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.loader.RequirementLoader;
+import fr.maxlego08.menu.loader.ZButtonLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -142,6 +150,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 Action action = actionLoader.load(path, accessor, file);
                 if (action != null) {
                     action.setDelay(accessor.getInt("delay", 0));
+                    action.setChance(accessor.getFloat("chance", 100));
                 }
                 return action;
             }
@@ -157,6 +166,26 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override
+    public List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException {
+        if (configuration == null) return List.of();
+
+        ConfigurationSection section = configuration.getConfigurationSection(path);
+        if (section == null) return List.of();
+
+        List<Requirement> requirements = new ArrayList<>();
+        for (String key : section.getKeys(false)) {
+            requirements.add(loadRequirement(configuration, path + "." + key + ".", file));
+        }
+        return requirements;
+    }
+
+    @Override
+    public Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
+        Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
+        return requirementLoader.load(configuration, path, file);
+    }
+
+    @Override
     public List<String> getEmptyActions(List<Map<String, Object>> elements) {
         return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getActionLoader(type).isEmpty()).collect(Collectors.toList());
     }
@@ -164,5 +193,10 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public List<String> getEmptyPermissible(List<Map<String, Object>> elements) {
         return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getPermission(type).isEmpty()).collect(Collectors.toList());
+    }
+
+    @Override
+    public Loader<Button> getLoaderButton(MenuPlugin menuPlugin, File file, int size, Map<Character, List<Integer>> matrix) {
+        return new ZButtonLoader(menuPlugin, file, size, matrix);
     }
 }

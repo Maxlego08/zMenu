@@ -51,10 +51,14 @@ public enum NmsVersion {
     V_1_21_2(1212),
     V_1_21_3(1213),
     V_1_21_4(1214),
+    V_1_21_5(1215),
+    V_1_21_6(1216),
+    V_1_21_7(1217),
+    V_1_21_8(1218),
 
     ;
 
-    public static final NmsVersion nmsVersion = getCurrentVersion();
+    public static final NmsVersion nmsVersion = getNmsVersion();
     private final int version;
 
     NmsVersion(int version) {
@@ -67,6 +71,10 @@ public enum NmsVersion {
      * @return The NmsVersion instance corresponding to the current version.
      */
     public static NmsVersion getCurrentVersion() {
+        return nmsVersion;
+    }
+
+    private static NmsVersion getNmsVersion(){
         Matcher matcher = Pattern.compile("(?<version>\\d+\\.\\d+)(?<patch>\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
         int currentVersion = matcher.find() ? Integer.parseInt(matcher.group("version").replace(".", "") + (matcher.group("patch") != null ? matcher.group("patch").replace(".", "") : "0")) : 0;
 
@@ -201,4 +209,11 @@ public enum NmsVersion {
         return version >= V_1_21.version;
     }
 
+    public boolean isNewItemModelAPI() {
+        return version >= V_1_21_4.version;
+    }
+
+    public boolean isDialogsVersion() {
+        return version >= V_1_21_6.version;
+    }
 }

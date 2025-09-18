@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
@@ -14,6 +15,7 @@ import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -22,6 +24,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -163,6 +166,7 @@ public class VInventoryManager extends ListenerAdapter {
 
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
+        if (player.isDead()) return;
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder instanceof VInventory inventory) {
             this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryClose(player, inventory));
@@ -191,6 +195,32 @@ public class VInventoryManager extends ListenerAdapter {
         }
     }
 
+    @Override
+    protected void onDeath(PlayerDeathEvent event, Player player) {
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+        if (holder instanceof VInventory vInventory) {
+            if (vInventory instanceof InventoryDefault inventoryDefault){
+                fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
+                if (menu != null && menu.cleanInventory()) {
+                    event.getDrops().clear();
+                    InventoriesPlayer inventoriesPlayer = plugin.getInventoriesPlayer();
+                    List<ItemStack> savedItems = inventoriesPlayer.getInventory(player.getUniqueId());
+                    inventoriesPlayer.clearInventorie(player.getUniqueId());
+                    if (event.getKeepInventory()){
+                        player.getInventory().clear();
+                        for (ItemStack itemStack : savedItems) {
+                            if (itemStack != null){
+                                player.getInventory().addItem(itemStack);
+                            }
+                        }
+                        return;
+                    }
+                    event.getDrops().addAll(savedItems);
+                }
+            }
+        }
+    }
+
     /**
      * @param id - Inventory I'd
      * @return Optional - Allows returning the inventory in an optional
@@ -204,11 +234,23 @@ public class VInventoryManager extends ListenerAdapter {
     }
 
     public void close(Predicate<VInventory> predicate) {
+        if (!this.plugin.isEnabled()) {
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+                if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
+                    if (player.isOnline()) {
+                        player.closeInventory();
+                    }
+                }
+            });
+            return;
+        }
         Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
-                if (player.isOnline())
+                if (player.isOnline()) {
                     player.closeInventory();
+                }
             }
         }));
     }
