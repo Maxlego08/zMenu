@@ -17,7 +17,7 @@ buttons:
     type: "bedrock_button"
     text: "Button 2"
     image-type: "URL"
-    image-value: "url here"
+    image-value: "https://github.com/GeyserMC.png?size=200"
     click-requirement:
       1:
         success:
@@ -28,7 +28,7 @@ buttons:
     type: "bedrock_button"
     text: "Button 3"
     image-type: "PATH"
-    image-value: "path here"
+    image-value: "textures/i/glyph_world_template.png"
     click-requirement:
       1:
         success:
