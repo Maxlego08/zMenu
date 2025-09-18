@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.enums.bedrock;
 
 public enum BedrockImageType {
-    ULR,
+    URL,
     PATH,
     NONE,
 }
