@@ -102,6 +102,8 @@ public class ZStorageManager implements StorageManager {
 
     private void storePlayerData() {
 
+        if (!isEnable()) return;
+
         List<Schema> schemas = new ArrayList<>();
 
         var iterator = this.cache.get(DataDTO.class).iterator();
@@ -120,6 +122,9 @@ public class ZStorageManager implements StorageManager {
     }
 
     private void storeOpenInventories() {
+
+        if (!isEnable()) return;
+
         List<Schema> schemas = new ArrayList<>();
         var iterator = this.cache.get(PlayerOpenInventoryEvent.class).iterator();
         while (iterator.hasNext()) {
@@ -194,12 +199,12 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public List<DataDTO> loadPlayers() {
-        return this.requestHelper.selectAll(Tables.PLAYER_DATAS, DataDTO.class);
+        return this.isEnable() ? this.requestHelper.selectAll(Tables.PLAYER_DATAS, DataDTO.class) : List.of();
     }
 
     @Override
     public List<InventoryDTO> loadInventories() {
-        return this.requestHelper.selectAll(Tables.PLAYER_INVENTORIES, InventoryDTO.class);
+        return this.isEnable() ? this.requestHelper.selectAll(Tables.PLAYER_INVENTORIES, InventoryDTO.class) : List.of();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -212,11 +217,17 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void removeInventory(UUID uuid) {
+
+        if (!isEnable()) return;
+
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
     }
 
     @Override
     public void storeInventory(UUID uuid, InventoryPlayer inventoryPlayer) {
+
+        if (!isEnable()) return;
+
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.insert(Tables.PLAYER_INVENTORIES, table -> {
             table.uuid("player_id", uuid);
             table.string("inventory", inventoryPlayer.toInventoryString());
