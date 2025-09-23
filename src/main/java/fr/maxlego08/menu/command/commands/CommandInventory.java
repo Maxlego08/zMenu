@@ -75,9 +75,9 @@ public class CommandInventory extends VCommand {
         CommandArgument lastArgument = null;
         Placeholders placeholders = new Placeholders();
         Map<String, String> playerArguments = new HashMap<>();
-
-        if (!(sender instanceof Player)) {
-            player = null;
+        Player targetPlayer = null;
+        if (sender instanceof Player) {
+            targetPlayer = this.player;
         }
 
         if (this.command.hasArgument()) {
@@ -121,8 +121,8 @@ public class CommandInventory extends VCommand {
 
                     if (validatorOptional.isPresent()) {
                         CommandArgumentValidator validator = validatorOptional.get();
-                        if (player == null && validator instanceof OnlinePlayerArgumentValidator){
-                            player = plugin.getServer().getPlayerExact(value.toString());
+                        if (targetPlayer == null && validator instanceof OnlinePlayerArgumentValidator){
+                            targetPlayer = plugin.getServer().getPlayerExact(value.toString());
                         }
 
                         if (!validator.isValid(result)) {
@@ -137,15 +137,16 @@ public class CommandInventory extends VCommand {
             }
         }
 
-        if (player == null){
+        if (targetPlayer == null){
             message(this.plugin, sender, Message.COMMAND_NO_CONSOLE);
             return CommandType.DEFAULT;
         }
+        Player finalTargetPlayer = targetPlayer;
 
         if (!playerArguments.isEmpty()){
             CommandManager commandManager = plugin.getCommandManager();
             playerArguments.forEach((argument, value) ->
-                    commandManager.setPlayerArgument(player, argument, value)
+                    commandManager.setPlayerArgument(finalTargetPlayer, argument, value)
             );
         }
 
@@ -155,12 +156,12 @@ public class CommandInventory extends VCommand {
         inventoryDefault.setPlugin(plugin);
 
         if (lastArgument != null) {
-            lastArgument.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+            lastArgument.getActions().forEach(action -> action.preExecute(finalTargetPlayer, null, inventoryDefault, placeholders));
         }
 
         if (performMainActions) {
-            this.command.actions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
-            optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
+            this.command.actions().forEach(action -> action.preExecute(finalTargetPlayer, null, inventoryDefault, placeholders));
+            optional.ifPresent(inventory -> manager.openInventory(finalTargetPlayer, inventory));
         }
 
         return CommandType.SUCCESS;
