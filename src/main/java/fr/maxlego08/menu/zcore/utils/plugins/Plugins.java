@@ -24,6 +24,7 @@ public enum Plugins {
 	CRAFTENGINE("CraftEngine"),
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
+    NEXTGENS("NextGens"),
 	ZMENUPLUS("zMenuPlus");
 
 	private final String name;
