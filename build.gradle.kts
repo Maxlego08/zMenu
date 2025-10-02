@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.0.3"
+version = "1.1.0.4"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -87,7 +87,7 @@ allprojects {
         compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
 
-        implementation("fr.maxlego08.sarah:sarah:1.19")
+        implementation("fr.maxlego08.sarah:sarah:1.20")
         implementation("fr.traqueur.currencies:currenciesapi:1.0.10")
         implementation("com.tcoded:FoliaLib:0.5.1")
 

@@ -42,6 +42,12 @@
 
 # Unreleased
 
+# 1.1.0.4
+
+- Update to Sarah 1.20. Added MARIADB support
+- Fixed NONE database settings
+- Improve pattern file loading
+
 # 1.1.0.3
 
 - Added dialogs inventories ``/zm dialog`` [#186](https://github.com/Maxlego08/zMenu/pull/186) by [1robie](https://github.com/1robie) and [saildrag](https://github.com/saildrag)

@@ -45,10 +45,13 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -62,6 +65,7 @@ public abstract class ZUtils extends MessageUtils {
     private static final Timer TIMER = new Timer();
     private static final UUID RANDOM_UUID = UUID.fromString("92864445-51c5-4c3b-9039-517c9927d1b4"); // We reuse the same "random" UUID all the time
     private static final SimpleCache<String, Object> cache = new SimpleCache<>();
+    private static final ConcurrentHashMap<Path, CachedLines> CONFIGURATION_CACHE = new ConcurrentHashMap<>();
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
 
@@ -786,46 +790,42 @@ public abstract class ZUtils extends MessageUtils {
         YamlConfiguration loadConfiguration = new YamlConfiguration();
 
         try {
-            FileInputStream stream = new FileInputStream(file);
-            Reader reader = new InputStreamReader(stream, Charsets.UTF_8);
-
-            BufferedReader input = new BufferedReader(reader);
+            CachedLines cachedLines = getCachedLines(file);
             StringBuilder builder = new StringBuilder();
             Placeholders placeholders = new Placeholders();
+            Map<String, Object> placeholdersMap = mapPlaceholders != null ? mapPlaceholders : Collections.emptyMap();
 
-            String line;
-            try {
-                while ((line = input.readLine()) != null) {
+            for (String originalLine : cachedLines.lines()) {
+                String line = originalLine;
 
-                    for (Map.Entry<String, Object> replacement : mapPlaceholders.entrySet()) {
-                        String key = replacement.getKey();
-                        Object value = replacement.getValue();
-
-                        if (line != null) {
-                            if (value instanceof List<?> && line.contains("%" + key + "%")) {
-                                int index = line.indexOf("%" + key + "%");
-                                String prefix = line.substring(0, index);
-                                String finalLine = line.substring(index);
-                                ((List<?>) value).forEach(currentValue -> {
-                                    String currentElement = placeholders.parse(finalLine, key, currentValue.toString());
-                                    builder.append(placeholders.parse(prefix, key, currentValue.toString())).append(currentElement);
-                                    builder.append('\n');
-                                });
-
-                                line = null;
-                            } else {
-                                line = placeholders.parse(line, key, value.toString());
-                            }
-                        }
-                    }
+                for (Map.Entry<String, Object> replacement : placeholdersMap.entrySet()) {
+                    String key = replacement.getKey();
+                    Object value = replacement.getValue();
 
                     if (line != null) {
-                        builder.append(line);
-                        builder.append('\n');
+                        if (value instanceof List<?> && line.contains("%" + key + "%")) {
+                            int index = line.indexOf("%" + key + "%");
+                            String prefix = line.substring(0, index);
+                            String finalLine = line.substring(index);
+                            ((List<?>) value).forEach(currentValue -> {
+                                String replacementValue = currentValue != null ? currentValue.toString() : "";
+                                String currentElement = placeholders.parse(finalLine, key, replacementValue);
+                                builder.append(placeholders.parse(prefix, key, replacementValue)).append(currentElement);
+                                builder.append('\n');
+                            });
+
+                            line = null;
+                        } else {
+                            String replacementValue = value != null ? value.toString() : "";
+                            line = placeholders.parse(line, key, replacementValue);
+                        }
                     }
                 }
-            } finally {
-                input.close();
+
+                if (line != null) {
+                    builder.append(line);
+                    builder.append('\n');
+                }
             }
 
             loadConfiguration.loadFromString(builder.toString());
@@ -835,6 +835,30 @@ public abstract class ZUtils extends MessageUtils {
         }
 
         return loadConfiguration;
+    }
+
+    protected static void clearConfigurationCache() {
+        CONFIGURATION_CACHE.clear();
+    }
+
+    private static CachedLines getCachedLines(File file) throws IOException {
+        Path path = file.toPath();
+        long lastModified = file.lastModified();
+        CachedLines cachedLines = CONFIGURATION_CACHE.get(path);
+
+        if (cachedLines == null || cachedLines.lastModified() != lastModified) {
+            List<String> lines = Files.readAllLines(path, Charsets.UTF_8);
+            cachedLines = new CachedLines(lines, lastModified);
+            CONFIGURATION_CACHE.put(path, cachedLines);
+        }
+
+        return cachedLines;
+    }
+
+    private record CachedLines(List<String> lines, long lastModified) {
+        private CachedLines {
+            lines = List.copyOf(lines);
+        }
     }
 
 }
