@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.packetevents;
 
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -42,12 +43,12 @@ public class FakeInventory {
     }
 
     public ItemStack getAt(int slot) {
-        System.out.println("try to " + slot + " -> " + (slot - this.inventory.size()) + " = " + this.slots.get(slot - this.inventory.size()) + " -: " + this.inventory.size());
+        Logger.info("try to " + slot + " -> " + (slot - this.inventory.size()) + " = " + this.slots.get(slot - this.inventory.size()) + " -: " + this.inventory.size());
         return this.slots.get(slot - this.inventory.size());
     }
 
     public ItemStack getFrom(int slot) {
-        System.out.println("try get from " + slot + " -> " + (slot + this.inventory.size()) + " = " + this.slots.get(slot + this.inventory.size()) + " -: " + this.inventory.size());
+        Logger.info("try get from " + slot + " -> " + (slot + this.inventory.size()) + " = " + this.slots.get(slot + this.inventory.size()) + " -: " + this.inventory.size());
         return this.slots.getOrDefault(slot + this.inventory.size(), new ItemStack(Material.AIR));
     }
 }

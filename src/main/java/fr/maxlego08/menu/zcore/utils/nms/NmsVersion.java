@@ -214,6 +214,6 @@ public enum NmsVersion {
     }
 
     public boolean isDialogsVersion() {
-        return version >= V_1_21_6.version;
+        return version >= V_1_21_7.version;
     }
 }

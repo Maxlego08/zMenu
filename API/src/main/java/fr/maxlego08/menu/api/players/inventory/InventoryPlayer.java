@@ -27,6 +27,12 @@ public interface InventoryPlayer {
 
     void forceGiveInventory(Player player);
 
+    void setItems(Map<Integer, ItemStack> items);
+
+    void setItems(List<ItemStack> items);
+
+    void setItemsFromEncode(Map<Integer, String> items);
+
     String toInventoryString();
 
     List<ItemStack> getItemStacks();

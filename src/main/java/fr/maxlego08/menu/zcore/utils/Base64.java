@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import java.util.Arrays;
 
 public final class Base64 {
@@ -90,7 +92,7 @@ public final class Base64 {
         int encodedIndex = 0;
         int dataIndex = 0;
         if (fDebug) {
-            System.out.println("number of triplets = " + numberTriplets);
+            Logger.info("number of triplets = " + numberTriplets);
         }
 
         for (int i = 0; i < numberTriplets; i++) {
@@ -99,7 +101,7 @@ public final class Base64 {
             b3 = binaryData[dataIndex++];
 
             if (fDebug) {
-                System.out.println("b1= " + b1 + ", b2= " + b2 + ", b3= " + b3);
+                Logger.info("b1= " + b1 + ", b2= " + b2 + ", b3= " + b3);
             }
 
             l = (byte) (b2 & 0x0f);
@@ -111,9 +113,9 @@ public final class Base64 {
             byte val3 = ((b3 & SIGN) == 0) ? (byte) (b3 >> 6) : (byte) ((b3) >> 6 ^ 0xfc);
 
             if (fDebug) {
-                System.out.println("val2 = " + val2);
-                System.out.println("k4   = " + (k << 4));
-                System.out.println("vak  = " + (val2 | (k << 4)));
+                Logger.info("val2 = " + val2);
+                Logger.info("k4   = " + (k << 4));
+                Logger.info("vak  = " + (val2 | (k << 4)));
             }
 
             encodedData[encodedIndex++] = lookUpBase64Alphabet[val1];
@@ -127,8 +129,8 @@ public final class Base64 {
             b1 = binaryData[dataIndex];
             k = (byte) (b1 & 0x03);
             if (fDebug) {
-                System.out.println("b1=" + b1);
-                System.out.println("b1<<2 = " + (b1 >> 2));
+                Logger.info("b1=" + b1);
+                Logger.info("b1<<2 = " + (b1 >> 2));
             }
             byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
             encodedData[encodedIndex++] = lookUpBase64Alphabet[val1];

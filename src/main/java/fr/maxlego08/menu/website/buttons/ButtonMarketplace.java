@@ -1,13 +1,14 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.engine.Pagination;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.website.Resource;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZOpenLink;
-import fr.maxlego08.menu.api.engine.Pagination;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -45,7 +46,7 @@ public class ButtonMarketplace extends Button {
                 OpenLink openLink = new ZOpenLink(this.plugin, ClickEvent.Action.OPEN_URL, "§7" + resource.getName(), resource.getLink(), resource.getName(), Collections.singletonList("§7Click here"));
                 openLink.send(player, Collections.singletonList("§fResource§8: §7" + resource.getName()));
 
-            }).setRightClick(event -> System.out.println("TODO"));
+            }).setRightClick(event -> Logger.info("TODO"));
         });
 
     }
