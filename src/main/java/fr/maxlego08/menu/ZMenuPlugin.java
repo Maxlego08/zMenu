@@ -31,6 +31,8 @@ import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
+import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
+import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -285,6 +287,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
         if (this.isActive(Plugins.NEXTGENS)) {
             this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
+        }
+        if (this.isActive(Plugins.MYTHICMOBS)){
+            this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
+            this.addListener(new MythicManager(this));
         }
     }
 

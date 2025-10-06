@@ -20,6 +20,7 @@ softdepend:
   - SCore
   - ExecutableItems
   - ExecutableBlocks
+  - MythicMobs
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

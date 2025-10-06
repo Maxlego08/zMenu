@@ -25,6 +25,7 @@ public enum Plugins {
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
     NEXTGENS("NextGens"),
+    MYTHICMOBS("MythicMobs"),
 	ZMENUPLUS("zMenuPlus");
 
 	private final String name;
