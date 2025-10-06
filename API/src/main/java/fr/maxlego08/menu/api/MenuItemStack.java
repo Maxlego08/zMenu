@@ -260,4 +260,8 @@ public interface MenuItemStack {
     void setEquippedModel(String equippedModel);
 
     String getEquippedModel();
+
+    boolean isClearDefaultAttributes();
+
+    void setClearDefaultAttributes(boolean clearDefaultAttributes);
 }

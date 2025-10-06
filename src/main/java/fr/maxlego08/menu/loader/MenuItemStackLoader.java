@@ -160,6 +160,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
         menuItemStack.setAttributes(attributeModifiers);
+        menuItemStack.setClearDefaultAttributes(configuration.getBoolean(path + "clear-default-attributes", true));
     }
 
     /**
