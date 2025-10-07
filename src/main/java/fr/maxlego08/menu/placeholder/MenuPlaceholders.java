@@ -2,6 +2,7 @@ package fr.maxlego08.menu.placeholder;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
@@ -39,6 +40,12 @@ public class MenuPlaceholders extends ZUtils {
         // Statistics
         placeholder.register("statistic_hours_played", (player, s) -> String.valueOf((player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20) / 60));
         placeholder.register("statistic_time_played", (player, s) -> TimerBuilder.getStringTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20));
+
+        // Global Placeholders
+        placeholder.register("global_placeholders_",(player, args) ->{
+            Object object = plugin.getGlobalPlaceholders().get(args);
+            return object == null ? Message.GLOBAL_PLACEHOLDER_NOT_FOUND.getMessage() : String.valueOf(object);
+        });
     }
 
 }
