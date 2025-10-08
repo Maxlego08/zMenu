@@ -62,6 +62,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
+    private boolean clearDefaultAttributes = true;
     private List<IAttribute> attributes = new ArrayList<>();
     private Banner banner;
     private Firework firework;
@@ -268,7 +269,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
 
 
-            if (attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+            if (this.clearDefaultAttributes && attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
                 itemMeta.setAttributeModifiers(ArrayListMultimap.create());
             }
 
@@ -1056,6 +1057,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public String getEquippedModel() {
         return equippedModel;
+    }
+
+    @Override
+    public boolean isClearDefaultAttributes() {
+        return this.clearDefaultAttributes;
+    }
+
+    @Override
+    public void setClearDefaultAttributes(boolean clearDefaultAttributes) {
+        this.clearDefaultAttributes = clearDefaultAttributes;
     }
 
     @Override
