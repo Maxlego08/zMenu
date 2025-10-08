@@ -1,24 +1,24 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.exceptions.InventorySizeException;
-import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -27,11 +27,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {

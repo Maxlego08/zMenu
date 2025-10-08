@@ -187,7 +187,10 @@ public enum Message implements IMessage {
     COMMAND_ARGUMENT_LOCATION("&cThe argument &f%argument%&c must be a location."),
     COMMAND_ARGUMENT_MATERIAL("&cThe argument &f%argument%&c must be a material."),
     COMMAND_ARGUMENT_BLOCK("&cThe argument &f%argument%&c must be a block."),
-    COMMAND_ARGUMENT_WORLD("&cThe argument &f%argument%&c must be a world.");
+    COMMAND_ARGUMENT_WORLD("&cThe argument &f%argument%&c must be a world."),
+
+    GLOBAL_PLACEHOLDER_NOT_FOUND("&cGlobal placeholder not found."),
+    ;
 
     private List<String> messages;
     private String message;

@@ -25,7 +25,11 @@ public enum Plugins {
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
 	ZMENUPLUS("zMenuPlus"),
-    GEYSER("Geyser-Spigot");
+  GEYSER("Geyser-Spigot")
+  NEXTGENS("NextGens"),
+  MYTHICMOBS("MythicMobs"),
+  
+  ;
 
 	private final String name;
 
