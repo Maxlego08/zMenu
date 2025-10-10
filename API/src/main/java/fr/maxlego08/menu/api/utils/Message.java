@@ -258,5 +258,4 @@ public enum Message implements IMessage {
     public void setItemStack(ItemStack itemStack) {
         this.itemStack = itemStack;
     }
-
 }
