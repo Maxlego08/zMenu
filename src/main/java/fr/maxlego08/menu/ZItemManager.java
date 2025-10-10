@@ -28,7 +28,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ZItemManager implements ItemManager {
+public class ZItemManager implements ItemManager{
     private final NamespacedKey itemIdKey;
     private final NamespacedKey ownerKey;
     private final MenuPlugin menuPlugin;
@@ -224,7 +224,9 @@ public class ZItemManager implements ItemManager {
             if (itemData == null) continue;
 
             MenuItemStack menuItemStack = itemData.menuItemStack();
-            Player owner = this.menuPlugin.getServer().getPlayer(player.getUniqueId());
+            String ownerUuid = meta.getPersistentDataContainer().get(ownerKey, PersistentDataType.STRING);
+            if (ownerUuid == null) continue;
+            Player owner = this.menuPlugin.getServer().getPlayer(UUID.fromString(ownerUuid));
             if (owner == null) continue;
 
             ItemStack built = menuItemStack.build(owner);
