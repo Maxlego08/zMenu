@@ -25,6 +25,6 @@ public class DialogLoader extends ActionLoader {
         String dialog = accessor.getString("dialog");
         String plugin = accessor.getString("plugin", null);
         List<String> arguments = accessor.getStringList("arguments");
-        return new DialogAction(this.plugin.getDialogManager(), this.plugin.getCommandManager(), dialog, plugin, arguments);
+        return new DialogAction(this.dialogManager, this.plugin.getCommandManager(), dialog, plugin, arguments);
     }
 }

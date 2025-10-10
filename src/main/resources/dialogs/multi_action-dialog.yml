@@ -42,7 +42,7 @@ multi-actions:
 # Dialog body content - can contain multiple sections
 body:
   plain_message:
-    type: plain_message
+    type: dialog_plain_message
     messages:
       - "&6&lWelcome to our amazing server!"
       - ""
@@ -54,7 +54,7 @@ body:
     width: 400  # Width in pixels (1-1024)
   item:
     # Item display section
-    type: item
+    type: dialog_item
     # Item configuration (same format as zMenu items)
     item:
       material: DIAMOND_SWORD
@@ -85,7 +85,7 @@ body:
     height: 150           # Item display height (1-256)
   server_rules:
     # Another message section
-    type: plain_message
+    type: dialog_plain_message
     messages:
       - "&a&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       - "&6Server Rules"
