@@ -98,6 +98,7 @@ public enum Message implements IMessage {
     DESCRIPTION_ADDONS("List of official addons"),
     DESCRIPTION_DUMPLOG("Generate a dumplog file for support"),
     DESCRIPTION_CONTRIBUTORS("List of authors and contributors of the plugin"),
+    DESCRIPTION_GIVE_ITEM("Give a custom item to a player"),
 
     RELOAD("&aYou have just reloaded the configuration files. &8(&7%inventories% inventories&8)"),
     RELOAD_INVENTORY("&aYou have just reloaded the inventories files. &8(&7%inventories% inventories&8)"),
@@ -110,6 +111,10 @@ public enum Message implements IMessage {
 
     DUMPLOG_SUCCESS("&aYou have just generated a dumplog file, please send this link to support: &f%url%"),
     DUMPLOG_ERROR("&cAn error occurred while generating the dumplog file, %error%."),
+
+    GIVE_ITEM_NOT_FOUND("&cItem with ID &f%itemId%&c does not exist."),
+    GIVE_ITEM_SUCCESS_SELF("&aYou have received the item &f%itemId%&a."),
+    GIVE_ITEM_SUCCESS_OTHER("&aYou have given the item &f%itemId%&a to &3%player%&a."),
 
     PLAYERS_DATA_CLEAR_ALL("&aYou have just deleted the datas of all the players."),
     PLAYERS_DATA_CLEAR_PLAYER("&aYou have just deleted the player's data &f%player%&a."),
@@ -255,4 +260,3 @@ public enum Message implements IMessage {
     }
 
 }
-

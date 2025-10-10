@@ -322,6 +322,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/server_link-dialog.yml");
         }
 
+        files.add("items/default-items.yml");
+
         return files;
     }
 

@@ -14,6 +14,7 @@ public class CommandMenuGiveItem extends VCommand {
         super(plugin);
         this.itemManager = plugin.getItemManager();
         this.addSubCommand("giveitem");
+        this.setDescription(Message.DESCRIPTION_GIVE_ITEM);
         this.setPermission(Permission.ZMENU_GIVE_ITEM);
         this.addRequireArg("itemId",(sender,args)-> this.itemManager.getItemIds().stream().toList());
         this.addOptionalArg("player");
@@ -29,15 +30,14 @@ public class CommandMenuGiveItem extends VCommand {
             return CommandType.DEFAULT;
         }
         if (!this.itemManager.isCustomItem(itemId)) {
-            message(plugin, sender, "&cItem with ID %itemId% does not exist.", "%itemId%", itemId);
+            message(plugin, sender, Message.GIVE_ITEM_NOT_FOUND, "%itemId%", itemId);
             return CommandType.DEFAULT;
         }
         this.itemManager.giveItem(target, itemId);
         if (target.equals(this.player)) {
-            message(plugin, sender, "&aYou have received the item %itemId%.", "%itemId%", itemId);
+            message(plugin, sender, Message.GIVE_ITEM_SUCCESS_SELF, "%itemId%", itemId);
         } else {
-            message(plugin, sender, "&aYou have given the item %itemId% to %player%.", "%itemId%", itemId, "%player%", target.getName());
-            message(plugin, target, "&aYou have received the item %itemId% from %sender%.", "%itemId%", itemId, "%sender%", sender.getName());
+            message(plugin, sender, Message.GIVE_ITEM_SUCCESS_OTHER, "%itemId%", itemId, "%player%", target.getName());
         }
         return CommandType.SUCCESS;
     }
