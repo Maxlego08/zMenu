@@ -45,6 +45,7 @@ public enum Message implements IMessage {
     COMMAND_NO_CONSOLE("&cOnly one player can execute this command."),
     COMMAND_NO_ARG("&cImpossible to find the command with its arguments."),
     COMMAND_SYNTAX_HELP("&f%syntax% &7» &7%description%"),
+    COMMAND_PLAYER_NOT_FOUND("&cUnable to find the player &f%player%&c."),
     DOCUMENTATION_INFORMATION("&7Documentation&8: &fhttps://docs.zmenu.dev/"),
     DOCUMENTATION_INFORMATION_LINK("&7Documentation&8: &f%link%"),
     ADDONS_INFORMATION("&7Official addons :"),
