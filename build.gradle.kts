@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.invoke
-
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "9.0.0"
@@ -7,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.0.2"
+version = "1.1.0.4"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
