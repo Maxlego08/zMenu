@@ -5,6 +5,7 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -172,7 +173,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             ConfigManager configManager = new ConfigManager(this);
             this.dialogManager = new ZDialogManager(this, configManager);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-            configManager.registerConfig(Config.class, this);
+            ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
+            Logger.info(configDialogBuilder.getName());
+            configManager.registerConfig(configDialogBuilder,Config.class, this);
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
