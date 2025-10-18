@@ -64,7 +64,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         this.loadFireworks(menuItemStack, configuration, path);
         this.loadLore(menuItemStack, configuration, path);
 
-        menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString("display_name", configuration.getString("display-name", null))));
+        menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString(path + "display_name", configuration.getString(path + "display-name", null))));
         menuItemStack.setCenterName(configuration.getBoolean(path + "center-name", false));
         menuItemStack.setCenterLore(configuration.getBoolean(path + "center-lore", false));
         try {

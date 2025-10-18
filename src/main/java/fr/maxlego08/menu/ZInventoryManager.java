@@ -20,8 +20,8 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.button.loader.BackLoader;
+import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
@@ -265,14 +265,16 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventoryWithOldInventories(Player player, Inventory inventory, int page) {
+
+        List<Inventory> oldInventories = new ArrayList<>();
+
         if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault inventoryDefault) {
-
             Inventory fromInventory = inventoryDefault.getMenuInventory();
-            List<Inventory> oldInventories = inventoryDefault.getOldInventories();
+            oldInventories = inventoryDefault.getOldInventories();
             oldInventories.add(fromInventory);
-
-            this.openInventory(player, inventory, page, oldInventories);
         }
+
+        this.openInventory(player, inventory, page, oldInventories);
     }
 
     @Override
@@ -638,28 +640,34 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void updateInventory(Player player) {
-        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault inventoryDefault) {
-            this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
-        }
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (holder instanceof InventoryDefault inventoryDefault) {
+                this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+            }
+        });
     }
 
     @Override
     public void updateInventoryCurrentPage(Player player) {
-        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault inventoryDefault) {
-            this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());
-        }
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (holder instanceof InventoryDefault inventoryDefault) {
+                this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());
+            }
+        });
     }
 
     @Override
     public void updateInventory(Player player, Plugin plugin) {
-        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof InventoryDefault inventoryDefault) {
-            if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
-                this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+            if (holder instanceof InventoryDefault inventoryDefault) {
+                if (inventoryDefault.getMenuInventory().getPlugin() == plugin) {
+                    this.openInventory(player, inventoryDefault.getMenuInventory(), inventoryDefault.getPage(), inventoryDefault.getOldInventories());
+                }
             }
-        }
+        });
     }
 
     @Override
