@@ -246,4 +246,6 @@ public interface MenuPlugin extends Plugin {
     ToastHelper getToastHelper();
 
     DialogManager getDialogManager();
+
+    ItemManager getItemManager();
 }
