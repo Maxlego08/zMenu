@@ -25,6 +25,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
+import fr.maxlego08.menu.api.requirement.PermissionPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.sound.ZSoundOption;
@@ -241,7 +242,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> permissions = configuration.getStringList(path + "permission");
         if (permissions.isEmpty()) permissions = configuration.getStringList(path + "permissions");
         if (!permissions.isEmpty()) {
-            List<ZPermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
+            List<PermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
             for (String permissionValue : permissions) {
                 mappedPermissions.add(new ZPermissionPermissible(permissionValue));
             }
@@ -262,7 +263,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (orPermissions.isEmpty()) {
             orPermissions = configuration.getStringList(path + "or-permissions");
         }
-        List<ZPermissionPermissible> mappedOrPermissions = new ArrayList<>(orPermissions.size());
+        List<PermissionPermissible> mappedOrPermissions = new ArrayList<>(orPermissions.size());
         for (String permissionValue : orPermissions) {
             mappedOrPermissions.add(new ZPermissionPermissible(permissionValue));
         }
@@ -369,9 +370,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
         List<ButtonOption> buttonOptions = new ArrayList<>();
-        for (Map.Entry<String, List<ButtonOption>> entry : inventoryManager.getOptions().entrySet()) {
-            for (ButtonOption option : entry.getValue()) {
-                ButtonOption instance = createInstance(entry.getKey(), option);
+        for (Map.Entry<Plugin, List<Class<? extends ButtonOption>>> entry : inventoryManager.getOptions().entrySet()) {
+            for (Class<? extends ButtonOption> optionClass : entry.getValue()) {
+                ButtonOption instance = createInstance(entry.getKey(), optionClass);
                 if (instance != null) {
                     buttonOptions.add(instance);
                 }

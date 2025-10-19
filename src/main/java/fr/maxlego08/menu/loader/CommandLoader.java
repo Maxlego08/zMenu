@@ -46,9 +46,9 @@ public class CommandLoader implements Loader<Command> {
         List<CommandArgument> arguments = new ArrayList<>();
         List<?> listValues = configuration.getList(path + "arguments", new ArrayList<>());
         if (isListOfMap(listValues)) {
-            List<Map<String, Object>> mapList = configuration.getMapList(path + "arguments");
+            List<Map<?, ?>> mapList = configuration.getMapList(path + "arguments");
             List<CommandArgument> mappedArguments = new ArrayList<>(mapList.size());
-            for (Map<String, Object> map : mapList) {
+            for (Map<?, ?> map : mapList) {
                 String argument = (String) map.get("name");
                 String inventoryName = map.containsKey("inventory") ? (String) map.get("inventory") : null;
                 boolean isRequired = map.containsKey("isRequired") ? (boolean) map.get("isRequired") : !map.containsKey("is-required") || (boolean) map.get("is-required");

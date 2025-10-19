@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import fr.maxlego08.menu.api.requirement.PermissionPermissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
@@ -176,14 +177,14 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
                 permissions.add(permission);
             }
         }
-        List<ZPermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
+        List<PermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
         for (String permissionValue : permissions) {
             mappedPermissions.add(new ZPermissionPermissible(permissionValue));
         }
         button.setPermissions(mappedPermissions);
         List<String> orPermissions = configuration.getStringList(path + "orPermission");
         List<String> resolvedOrPermissions = orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions;
-        List<ZPermissionPermissible> mappedOrPermissions = new ArrayList<>(resolvedOrPermissions.size());
+        List<PermissionPermissible> mappedOrPermissions = new ArrayList<>(resolvedOrPermissions.size());
         for (String permissionValue : resolvedOrPermissions) {
             mappedOrPermissions.add(new ZPermissionPermissible(permissionValue));
         }
