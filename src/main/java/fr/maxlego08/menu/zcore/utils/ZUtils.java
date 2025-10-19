@@ -56,7 +56,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
@@ -511,11 +510,19 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected List<String> color(List<String> messages) {
-        return messages.stream().map(this::color).collect(Collectors.toList());
+        List<String> colored = new ArrayList<>(messages.size());
+        for (String message : messages) {
+            colored.add(this.color(message));
+        }
+        return colored;
     }
 
     public List<String> colorReverse(List<String> messages) {
-        return messages.stream().map(this::colorReverse).collect(Collectors.toList());
+        List<String> colored = new ArrayList<>(messages.size());
+        for (String message : messages) {
+            colored.add(this.colorReverse(message));
+        }
+        return colored;
     }
 
     public ItemFlag getFlag(String flagString) {
@@ -567,7 +574,12 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected String toList(Stream<String> list) {
-        return toList(list.collect(Collectors.toList()), "§e", "§6");
+        List<String> values = new ArrayList<>();
+        Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            values.add(iterator.next());
+        }
+        return toList(values, "§e", "§6");
     }
 
     protected String toList(List<String> list) {

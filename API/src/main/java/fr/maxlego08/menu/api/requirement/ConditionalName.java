@@ -63,6 +63,11 @@ public record ConditionalName(String name, List<Permissible> permissibles, int p
      * otherwise.
      */
     public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
-        return this.permissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventoryEngine, placeholders));
+        for (Permissible permissible : this.permissibles) {
+            if (!permissible.hasPermission(player, button, inventoryEngine, placeholders)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

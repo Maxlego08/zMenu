@@ -21,7 +21,6 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
 
@@ -69,7 +68,12 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
 
             if (button.getPriority() < 0) continue; // Le bouton n'a pas de priorité
 
-            List<Button> sameButtons = buttons.stream().filter(currentButton -> currentButton.getSlot() == button.getSlot() && currentButton.getPriority() >= 0).collect(Collectors.toList()); // On va trier les boutons par slot et priorité
+            List<Button> sameButtons = new ArrayList<>();
+            for (Button currentButton : buttons) {
+                if (currentButton.getSlot() == button.getSlot() && currentButton.getPriority() >= 0) {
+                    sameButtons.add(currentButton);
+                }
+            } // On va trier les boutons par slot et priorité
             if (sameButtons.size() < 2) continue; // Pas assez de bouton pour gérer la priorité
 
             buttons.removeAll(sameButtons); // On supprime les boutons de la liste par défaut

@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class VCommandManager extends ZUtils implements CommandExecutor, TabCompleter {
 
@@ -116,7 +115,13 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     private int getUniqueCommand() {
-        return (int) this.commands.stream().filter(command -> command.getParent() == null).count();
+        int count = 0;
+        for (VCommand command : this.commands) {
+            if (command.getParent() == null) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public void sendHelp(String commandString, CommandSender sender) {
@@ -213,7 +218,15 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
 
     public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {
 
-        Optional<VCommand> optional = this.commands.stream().filter(e -> e instanceof CommandInventory && ((CommandInventory) e).getCommand().equals(command)).findFirst();
-        optional.ifPresent(this.commands::remove);
+        VCommand target = null;
+        for (VCommand value : this.commands) {
+            if (value instanceof CommandInventory inventory && inventory.getCommand().equals(command)) {
+                target = value;
+                break;
+            }
+        }
+        if (target != null) {
+            this.commands.remove(target);
+        }
     }
 }

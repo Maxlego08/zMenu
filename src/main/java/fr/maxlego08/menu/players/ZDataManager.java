@@ -18,7 +18,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZDataManager implements DataManager {
 
@@ -90,7 +89,11 @@ public class ZDataManager implements DataManager {
             }
 
             PlayerData playerData = optional.get();
-            return playerData.getDatas().stream().map(Data::getKey).collect(Collectors.toList());
+            List<String> keys = new ArrayList<>(playerData.getDatas().size());
+            for (Data data : playerData.getDatas()) {
+                keys.add(data.getKey());
+            }
+            return keys;
 
         } catch (Exception e) {
             return new ArrayList<>();
@@ -137,7 +140,11 @@ public class ZDataManager implements DataManager {
     public List<String> getKeys() {
         Set<String> strings = new HashSet<>();
         strings.addAll(this.defaultValues.keySet());
-        strings.addAll(this.players.values().stream().flatMap(playerData -> playerData.getDatas().stream().map(Data::getKey)).toList());
+        for (PlayerData playerData : this.players.values()) {
+            for (Data data : playerData.getDatas()) {
+                strings.add(data.getKey());
+            }
+        }
         return new ArrayList<>(strings);
     }
 

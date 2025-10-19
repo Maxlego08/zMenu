@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ZEnchantments implements Enchantments {
 
@@ -16,7 +15,14 @@ public class ZEnchantments implements Enchantments {
 
     @Override
     public Optional<MenuEnchantment> getEnchantments(String enchantment) {
-        return essentialsEnchantments.stream().filter(menuEnchantment -> menuEnchantment.aliases().stream().anyMatch(e -> e.equalsIgnoreCase(enchantment))).findFirst();
+        for (MenuEnchantment menuEnchantment : essentialsEnchantments) {
+            for (String alias : menuEnchantment.aliases()) {
+                if (alias.equalsIgnoreCase(enchantment)) {
+                    return Optional.of(menuEnchantment);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -77,7 +83,11 @@ public class ZEnchantments implements Enchantments {
 
     @Override
     public List<String> getEnchantments() {
-        return this.essentialsEnchantments.stream().map(MenuEnchantment::aliases).flatMap(List::stream).collect(Collectors.toList());
+        List<String> aliases = new ArrayList<>();
+        for (MenuEnchantment menuEnchantment : this.essentialsEnchantments) {
+            aliases.addAll(menuEnchantment.aliases());
+        }
+        return aliases;
     }
 
     private Enchantment valueOf(String... names) {

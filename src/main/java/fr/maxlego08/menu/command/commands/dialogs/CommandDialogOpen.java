@@ -10,7 +10,9 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class CommandDialogOpen extends VCommand {
@@ -18,7 +20,13 @@ public class CommandDialogOpen extends VCommand {
         super(plugin);
         this.addSubCommand("open", "o");
         DialogManager dialogManager = plugin.getDialogManager();
-        this.addRequireArg("dialog name", (a,b)-> dialogManager.getDialogs().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase())).toList());
+        this.addRequireArg("dialog name", (a, b) -> {
+            List<String> dialogs = new ArrayList<>();
+            for (DialogInventory dialog : dialogManager.getDialogs()) {
+                dialogs.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()).toLowerCase());
+            }
+            return dialogs;
+        });
 
         this.addOptionalArg("player");
         this.addOptionalArg("display message", (a,b)-> Arrays.asList("true", "false"));

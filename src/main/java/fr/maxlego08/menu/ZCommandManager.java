@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZCommandManager extends ZUtils implements CommandManager {
 
@@ -64,7 +63,11 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Collection<Command> getCommands() {
-        return this.commands.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        List<Command> allCommands = new ArrayList<>();
+        for (List<Command> commandList : this.commands.values()) {
+            allCommands.addAll(commandList);
+        }
+        return allCommands;
     }
 
     @Override
@@ -168,7 +171,12 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<Command> getCommand(Inventory inventory) {
-        return this.getCommands(inventory.getPlugin()).stream().filter(e -> e.inventory().equals(inventory)).findFirst();
+        for (Command command : this.getCommands(inventory.getPlugin())) {
+            if (command.inventory().equals(inventory)) {
+                return Optional.of(command);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -193,7 +201,12 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<Command> getCommand(String commandName) {
-        return this.getCommands().stream().filter(e -> e.command().equalsIgnoreCase(commandName)).findFirst();
+        for (Command command : this.getCommands()) {
+            if (command.command().equalsIgnoreCase(commandName)) {
+                return Optional.of(command);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -238,6 +251,11 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<CommandArgumentValidator> getArgumentValidator(String argumentTypeName) {
-        return this.commandArgumentValidators.stream().filter(e -> e.getType().equalsIgnoreCase(argumentTypeName)).findFirst();
+        for (CommandArgumentValidator validator : this.commandArgumentValidators) {
+            if (validator.getType().equalsIgnoreCase(argumentTypeName)) {
+                return Optional.of(validator);
+            }
+        }
+        return Optional.empty();
     }
 }

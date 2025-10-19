@@ -95,9 +95,12 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         List<DialogInventory> pluginDialogs = dialogs.get(pluginName);
         if (pluginDialogs == null) return Optional.empty();
 
-        return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName(null).equals(fileName))
-                .findFirst();
+        for (DialogInventory dialog : pluginDialogs) {
+            if (dialog.getFileName().equals(fileName) || dialog.getName(null).equals(fileName)) {
+                return Optional.of(dialog);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -105,9 +108,12 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         List<DialogInventory> pluginDialogs = dialogs.get(plugin.getName());
         if (pluginDialogs == null) return Optional.empty();
 
-        return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName))
-                .findFirst();
+        for (DialogInventory dialog : pluginDialogs) {
+            if (dialog.getFileName().equals(fileName)) {
+                return Optional.of(dialog);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -133,18 +139,22 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         }
 
         try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
-            stream.skip(1)
-                    .map(Path::toFile)
-                    .filter(File::isFile)
-                    .filter(file -> file.getName().endsWith(".yml"))
-                    .forEach(file -> {
-                        try {
-                            this.loadInventory(this.menuPlugin, file);
-                        } catch (DialogException | InventoryException exception) {
-                            Logger.info("Failed to load dialog from file: " + file.getName(), Logger.LogType.WARNING);
+            Iterator<Path> iterator = stream.iterator();
+            if (iterator.hasNext()) {
+                iterator.next();
+            }
+            while (iterator.hasNext()) {
+                Path path = iterator.next();
+                File file = path.toFile();
+                if (file.isFile() && file.getName().endsWith(".yml")) {
+                    try {
+                        this.loadInventory(this.menuPlugin, file);
+                    } catch (DialogException | InventoryException exception) {
+                        Logger.info("Failed to load dialog from file: " + file.getName(), Logger.LogType.WARNING);
 
-                        }
-                    });
+                    }
+                }
+            }
         } catch (IOException exception) {
             Logger.info("Failed to load dialogs", Logger.LogType.WARNING);
         }

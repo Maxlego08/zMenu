@@ -6,10 +6,8 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class LocalPlaceholder {
 
@@ -74,18 +72,24 @@ public class LocalPlaceholder {
     }
 
     public List<String> setPlaceholders(OfflinePlayer offlinePlayer, List<String> lore) {
-        return lore == null ? null : lore.stream().map(e -> e = setPlaceholders(offlinePlayer, e)).collect(Collectors.toList());
+        if (lore == null) {
+            return null;
+        }
+        List<String> parsed = new ArrayList<>(lore.size());
+        for (String entry : lore) {
+            parsed.add(setPlaceholders(offlinePlayer, entry));
+        }
+        return parsed;
     }
 
     public String onRequest(OfflinePlayer offlinePlayer, String string) {
 
-        Optional<AutoPlaceholder> optional = this.autoPlaceholders.stream().filter(e -> string.startsWith(e.startWith())).findFirst();
-        if (optional.isPresent()) {
-
-            AutoPlaceholder autoPlaceholder = optional.get();
+        for (AutoPlaceholder autoPlaceholder : this.autoPlaceholders) {
+            if (!string.startsWith(autoPlaceholder.startWith())) {
+                continue;
+            }
             String value = string.replace(autoPlaceholder.startWith(), "");
             return autoPlaceholder.accept(offlinePlayer, value);
-
         }
 
         return null;

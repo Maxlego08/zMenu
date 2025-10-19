@@ -24,7 +24,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
@@ -40,9 +39,20 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public void register(ButtonLoader button) {
 
-        var optional = loaders.entrySet().stream().flatMap(e -> e.getValue().stream()).filter(e -> e.getName().equalsIgnoreCase(button.getName())).findFirst();
-        if (optional.isPresent()) {
-            var loader = optional.get();
+        ButtonLoader existingLoader = null;
+        for (List<ButtonLoader> buttonLoaders : loaders.values()) {
+            for (ButtonLoader loader : buttonLoaders) {
+                if (loader.getName().equalsIgnoreCase(button.getName())) {
+                    existingLoader = loader;
+                    break;
+                }
+            }
+            if (existingLoader != null) {
+                break;
+            }
+        }
+        if (existingLoader != null) {
+            var loader = existingLoader;
             throw new ButtonAlreadyRegisterException("Button " + button.getName() + " was already register in the " + loader.getPlugin().getName());
         }
 
@@ -69,7 +79,11 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public Collection<ButtonLoader> getLoaders() {
-        return this.loaders.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        List<ButtonLoader> flattened = new ArrayList<>();
+        for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
+            flattened.addAll(buttonLoaders);
+        }
+        return flattened;
     }
 
     @Override
@@ -79,7 +93,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public Optional<ButtonLoader> getLoader(String name) {
-        return this.getLoaders().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
+        for (ButtonLoader loader : this.getLoaders()) {
+            if (loader.getName().equalsIgnoreCase(name)) {
+                return Optional.of(loader);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -113,20 +132,24 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path, File file) {
-        return elements.stream().map(map -> {
+        List<Permissible> permissibles = new ArrayList<>();
+        for (Map<String, Object> map : elements) {
+            Permissible permissible = null;
             String type = (String) map.getOrDefault("type", null);
-            if (type == null) return null;
-            Optional<PermissibleLoader> optional = getPermission(type);
-            if (optional.isPresent()) {
-                PermissibleLoader permissibleLoader = optional.get();
-                return permissibleLoader.load(path, new TypedMapAccessor(map), file);
+            if (type != null) {
+                Optional<PermissibleLoader> optional = getPermission(type);
+                if (optional.isPresent()) {
+                    PermissibleLoader permissibleLoader = optional.get();
+                    permissible = permissibleLoader.load(path, new TypedMapAccessor(map), file);
+                }
             }
-            return null;
-        }).filter(element -> {
-            if (element != null && element.isValid()) return true;
-            Logger.info("Error, an element is invalid in " + path + " for permissible", Logger.LogType.ERROR);
-            return false;
-        }).collect(Collectors.toList());
+            if (permissible != null && permissible.isValid()) {
+                permissibles.add(permissible);
+            } else {
+                Logger.info("Error, an element is invalid in " + path + " for permissible", Logger.LogType.ERROR);
+            }
+        }
+        return permissibles;
     }
 
     @Override
@@ -137,11 +160,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file) {
-        return elements.stream().map(map -> {
+        List<Action> actions = new ArrayList<>();
+        for (Map<String, Object> map : elements) {
             String type = (String) map.getOrDefault("type", null);
             if (type == null) {
                 Logger.info("Error, an element is invalid in " + path + ", type is invalid", Logger.LogType.ERROR);
-                return null;
+                continue;
             }
             Optional<ActionLoader> optional = getActionLoader(type);
             if (optional.isPresent()) {
@@ -151,12 +175,13 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 if (action != null) {
                     action.setDelay(accessor.getInt("delay", 0));
                     action.setChance(accessor.getFloat("chance", 100));
+                    actions.add(action);
                 }
-                return action;
+            } else {
+                Logger.info("Error, an element is invalid in " + path + " with type " + type + ", he doesn't exist!", Logger.LogType.ERROR);
             }
-            Logger.info("Error, an element is invalid in " + path + " with type " + type + ", he doesn't exist!", Logger.LogType.ERROR);
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
+        return actions;
     }
 
     @Override
@@ -187,12 +212,26 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public List<String> getEmptyActions(List<Map<String, Object>> elements) {
-        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getActionLoader(type).isEmpty()).collect(Collectors.toList());
+        List<String> invalid = new ArrayList<>();
+        for (Map<String, Object> element : elements) {
+            Object typeObj = element.get("type");
+            if (typeObj instanceof String type && getActionLoader(type).isEmpty()) {
+                invalid.add(type);
+            }
+        }
+        return invalid;
     }
 
     @Override
     public List<String> getEmptyPermissible(List<Map<String, Object>> elements) {
-        return elements.stream().map(element -> (String) element.get("type")).filter(Objects::nonNull).filter(type -> getPermission(type).isEmpty()).collect(Collectors.toList());
+        List<String> invalid = new ArrayList<>();
+        for (Map<String, Object> element : elements) {
+            Object typeObj = element.get("type");
+            if (typeObj instanceof String type && getPermission(type).isEmpty()) {
+                invalid.add(type);
+            }
+        }
+        return invalid;
     }
 
     @Override

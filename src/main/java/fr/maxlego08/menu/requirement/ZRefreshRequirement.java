@@ -66,11 +66,21 @@ public class ZRefreshRequirement implements RefreshRequirement {
 
     @Override
     public boolean needRefresh(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        return this.enablePermissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventory, placeholders));
+        for (Permissible permissible : this.enablePermissibles) {
+            if (!permissible.hasPermission(player, button, inventory, placeholders)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean canRefresh(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        return this.permissibles.stream().allMatch(permissible -> permissible.hasPermission(player, button, inventory, placeholders));
+        for (Permissible permissible : this.permissibles) {
+            if (!permissible.hasPermission(player, button, inventory, placeholders)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -9,6 +9,7 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,17 +42,21 @@ public abstract class AbstractDialogManager {
             Function<TYPE, Optional<BUILDER>> builderResolver,
             BiFunction<BUILDER, B, T> builderExecutor
     ) {
-        return buttons.stream()
-                .map(button -> {
-                    TYPE type = typeExtractor.apply(button);
-                    if (type == null) return null;
-
-                    return builderResolver.apply(type)
-                            .map(builder -> builderExecutor.apply(builder, button))
-                            .orElse(null);
-                })
-                .filter(Objects::nonNull)
-                .toList();
+        List<T> results = new java.util.ArrayList<>(buttons.size());
+        for (B button : buttons) {
+            TYPE type = typeExtractor.apply(button);
+            if (type == null) {
+                continue;
+            }
+            Optional<BUILDER> builderOptional = builderResolver.apply(type);
+            if (builderOptional.isPresent()) {
+                T value = builderExecutor.apply(builderOptional.get(), button);
+                if (value != null) {
+                    results.add(value);
+                }
+            }
+        }
+        return results;
     }
 
     protected DialogBase.Builder createDialogBase(String dialogName, String externalTitle, boolean canCloseWithEscape, boolean canPauseGame, String afterAction){

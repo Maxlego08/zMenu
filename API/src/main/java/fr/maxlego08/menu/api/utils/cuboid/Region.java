@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class Region {
@@ -45,11 +45,19 @@ public class Region {
     }
 
     public Collection<Player> getPlayers() {
-        return this.cuboids.stream().map(Cuboid::getPlayers).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+        Collection<Player> players = new LinkedHashSet<>();
+        for (Cuboid cuboid : this.cuboids) {
+            players.addAll(cuboid.getPlayers());
+        }
+        return new ArrayList<>(players);
     }
 
     public Collection<LivingEntity> getEntities() {
-        return this.cuboids.stream().map(Cuboid::getEntities).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+        Collection<LivingEntity> entities = new LinkedHashSet<>();
+        for (Cuboid cuboid : this.cuboids) {
+            entities.addAll(cuboid.getEntities());
+        }
+        return new ArrayList<>(entities);
     }
 
     public boolean contains(Location location) {

@@ -24,7 +24,16 @@ public class BroadcastAction extends ActionHelper {
     @Override
     public void execute(Player sender, Button button, InventoryEngine inventory, Placeholders placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (requirements.isEmpty() || requirements.stream().allMatch(e -> e.hasPermission(player, button, inventory, placeholders))) {
+            boolean allowed = true;
+            if (!requirements.isEmpty()) {
+                for (Permissible requirement : requirements) {
+                    if (!requirement.hasPermission(player, button, inventory, placeholders)) {
+                        allowed = false;
+                        break;
+                    }
+                }
+            }
+            if (allowed) {
                 papi(placeholders.parse(this.messages), player).forEach(message -> {
                     message = message.replace("%sender%", sender.getName());
                     message = message.replace("%receiver%", player.getName());

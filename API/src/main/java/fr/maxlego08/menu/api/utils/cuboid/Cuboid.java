@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializable {
 
@@ -638,11 +637,23 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
     }
 
     public Collection<Player> getPlayers() {
-        return Bukkit.getOnlinePlayers().stream().filter(p -> this.contains(p.getLocation())).collect(Collectors.toList());
+        List<Player> players = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (this.contains(player.getLocation())) {
+                players.add(player);
+            }
+        }
+        return players;
     }
 
     public Collection<LivingEntity> getEntities() {
-        return getWorld().getLivingEntities().stream().filter(e -> this.contains(e.getLocation())).collect(Collectors.toList());
+        List<LivingEntity> entities = new ArrayList<>();
+        for (LivingEntity entity : getWorld().getLivingEntities()) {
+            if (this.contains(entity.getLocation())) {
+                entities.add(entity);
+            }
+        }
+        return entities;
     }
 
     public enum CuboidDirection {

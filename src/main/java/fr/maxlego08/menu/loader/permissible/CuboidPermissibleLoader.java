@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CuboidPermissibleLoader extends PermissibleLoader {
 
@@ -36,7 +35,11 @@ public class CuboidPermissibleLoader extends PermissibleLoader {
             return new ZCuboidPermissible(denyActions, successActions, null);
         }
 
-        var region = new Region(cuboids.stream().map(this::stringToCuboid).collect(Collectors.toList()));
+        List<Cuboid> cuboidList = new ArrayList<>(cuboids.size());
+        for (String cuboid : cuboids) {
+            cuboidList.add(this.stringToCuboid(cuboid));
+        }
+        var region = new Region(cuboidList);
 
         return new ZCuboidPermissible(denyActions, successActions, region);
     }

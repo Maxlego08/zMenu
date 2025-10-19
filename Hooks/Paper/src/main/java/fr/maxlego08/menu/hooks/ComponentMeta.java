@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class ComponentMeta implements MetaUpdater {
 
@@ -130,11 +129,15 @@ public class ComponentMeta implements MetaUpdater {
     @SuppressWarnings("unchecked")
     @Override
     public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
-        List<Component> components = lore.stream().map(text -> this.cache.get(text, () -> {
-            // Fixed text becomes italic automatically
-            // From GitHub issue #62
-            return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
-        })).collect(Collectors.toList());
+        List<Component> components = new ArrayList<>(lore.size());
+        for (String text : lore) {
+            Component component = this.cache.get(text, () -> {
+                // Fixed text becomes italic automatically
+                // From GitHub issue #62
+                return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
+            });
+            components.add(component);
+        }
 
         if (loreType != LoreType.REPLACE && itemMeta.hasLore()) {
             try {
@@ -239,10 +242,12 @@ public class ComponentMeta implements MetaUpdater {
 
         Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
         Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(author)));
-        List<Component> linesComponent = lines.stream().map(text -> {
+        List<Component> linesComponent = new ArrayList<>(lines.size());
+        for (String text : lines) {
             String result = plugin.parse(player, text);
-            return this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(result)));
-        }).collect(Collectors.toList());
+            Component component = this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(result)));
+            linesComponent.add(component);
+        }
 
         Book book = Book.book(titleComponent, authorComponent, linesComponent);
         if (player != null) {

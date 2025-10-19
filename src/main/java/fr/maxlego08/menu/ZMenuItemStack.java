@@ -37,7 +37,6 @@ import org.bukkit.potion.PotionType;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
@@ -259,7 +258,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 }
             });
 
-            this.flags.stream().filter(Objects::nonNull).forEach(itemMeta::addItemFlags);
+            for (ItemFlag flag : this.flags) {
+                if (flag != null) {
+                    itemMeta.addItemFlags(flag);
+                }
+            }
 
             if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
                 this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
@@ -315,7 +318,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         if (!this.lore.isEmpty()) {
             List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
-            itemLore = lore.stream().flatMap(str -> Arrays.stream(str.split("\n"))).map(fontImage::replace).collect(Collectors.toList());
+            List<String> flattened = new ArrayList<>();
+            for (String str : lore) {
+                String[] parts = str.split("\n");
+                for (String part : parts) {
+                    flattened.add(fontImage.replace(part));
+                }
+            }
+            itemLore = flattened;
         }
 
         if (itemName != null) {
@@ -839,7 +849,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
 
-        List<ItemFlag> flags = configuration.getStringList("flags").stream().map(this::getFlag).collect(Collectors.toList());
+        List<String> flagStrings = configuration.getStringList("flags");
+        List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
+        for (String flag : flagStrings) {
+            flags.add(this.getFlag(flag));
+        }
 
         List<IAttribute> attributeModifiers = new ArrayList<>();
 
