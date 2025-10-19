@@ -37,6 +37,11 @@ public abstract class PlaceholderButton extends PermissibleButton {
         }
 
         // Then we will check if the player to all valid placeholders
-        return this.placeholders.stream().allMatch(placeholder -> placeholder.hasPermission(player, null, inventoryEngine, placeholders));
+        for (PlaceholderPermissible placeholder : this.placeholders) {
+            if (!placeholder.hasPermission(player, null, inventoryEngine, placeholders)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

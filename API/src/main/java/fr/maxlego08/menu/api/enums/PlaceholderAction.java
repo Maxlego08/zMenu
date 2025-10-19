@@ -46,8 +46,13 @@ public enum PlaceholderAction {
         if (string == null) return null;
 
         for (PlaceholderAction action : values()) {
-            if (action.name().equalsIgnoreCase(string) || action.aliases.stream().anyMatch(e -> e.equalsIgnoreCase(string))) {
+            if (action.name().equalsIgnoreCase(string)) {
                 return action;
+            }
+            for (String alias : action.aliases) {
+                if (alias.equalsIgnoreCase(string)) {
+                    return action;
+                }
             }
         }
         System.err.println("Impossible to find the " + string + " action for placeholder");

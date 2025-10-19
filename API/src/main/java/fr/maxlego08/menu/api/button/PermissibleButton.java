@@ -34,11 +34,21 @@ public abstract class PermissibleButton extends PerformButton {
     public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
 
         if (!this.orPermissions.isEmpty()) {
-            return this.orPermissions.stream().anyMatch(p -> p.hasPermission(player, null, inventoryEngine, placeholders));
+            for (PermissionPermissible permission : this.orPermissions) {
+                if (permission.hasPermission(player, null, inventoryEngine, placeholders)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         if (!this.permissions.isEmpty()) {
-            return this.permissions.stream().allMatch(p -> p.hasPermission(player, null, inventoryEngine, placeholders));
+            for (PermissionPermissible permission : this.permissions) {
+                if (!permission.hasPermission(player, null, inventoryEngine, placeholders)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         return true;

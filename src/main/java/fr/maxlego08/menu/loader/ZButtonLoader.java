@@ -39,7 +39,6 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
@@ -150,7 +149,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             slots = defaultButtonValue.getSlots();
         } else {
             int finalPage = page;
-            slots = slots.stream().map(specialSlot -> specialSlot + ((finalPage - 1) * this.inventorySize)).collect(Collectors.toList());
+            List<Integer> adjustedSlots = new ArrayList<>(slots.size());
+            for (Integer specialSlot : slots) {
+                adjustedSlots.add(specialSlot + ((finalPage - 1) * this.inventorySize));
+            }
+            slots = adjustedSlots;
         }
 
         char currentChar = buttonName.charAt(0);
@@ -238,7 +241,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> permissions = configuration.getStringList(path + "permission");
         if (permissions.isEmpty()) permissions = configuration.getStringList(path + "permissions");
         if (!permissions.isEmpty()) {
-            button.setPermissions(permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+            List<ZPermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
+            for (String permissionValue : permissions) {
+                mappedPermissions.add(new ZPermissionPermissible(permissionValue));
+            }
+            button.setPermissions(mappedPermissions);
         }
         String permission = configuration.getString(path + "permission", null);
         if (permission != null) {
@@ -255,7 +262,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (orPermissions.isEmpty()) {
             orPermissions = configuration.getStringList(path + "or-permissions");
         }
-        button.setOrPermissions(orPermissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+        List<ZPermissionPermissible> mappedOrPermissions = new ArrayList<>(orPermissions.size());
+        for (String permissionValue : orPermissions) {
+            mappedOrPermissions.add(new ZPermissionPermissible(permissionValue));
+        }
+        button.setOrPermissions(mappedOrPermissions);
 
         if (configuration.contains(path + "else")) {
 
@@ -278,13 +289,16 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader(this.plugin.getButtonManager());
-        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(map -> (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file)).filter(permissible -> {
-            if (!permissible.isValid()) {
+        List<Map<String, Object>> placeholderMaps = (List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>());
+        List<PlaceholderPermissible> placeholders = new ArrayList<>();
+        for (Map<String, Object> map : placeholderMaps) {
+            PlaceholderPermissible permissible = (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
+            if (permissible == null || !permissible.isValid()) {
                 Logger.info("A placeholder is invalid in the placeholder list of the button " + path + " in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
-                return false;
+                continue;
             }
-            return true;
-        }).collect(Collectors.toList());
+            placeholders.add(permissible);
+        }
 
         String placeholder = configuration.getString(path + "placeHolder", configuration.getString(path + "placeholder", null));
         PlaceholderAction placeholderAction = PlaceholderAction.from(configuration.getString(path + "action", null));
@@ -354,7 +368,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
-        List<ButtonOption> buttonOptions = inventoryManager.getOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(option -> createInstance(entry.getKey(), option))).filter(Objects::nonNull).collect(Collectors.toList());
+        List<ButtonOption> buttonOptions = new ArrayList<>();
+        for (Map.Entry<String, List<ButtonOption>> entry : inventoryManager.getOptions().entrySet()) {
+            for (ButtonOption option : entry.getValue()) {
+                ButtonOption instance = createInstance(entry.getKey(), option);
+                if (instance != null) {
+                    buttonOptions.add(instance);
+                }
+            }
+        }
         buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, file));
         button.setOptions(buttonOptions);
 

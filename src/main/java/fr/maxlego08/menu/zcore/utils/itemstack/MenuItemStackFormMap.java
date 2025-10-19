@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class MenuItemStackFormMap {
 
@@ -85,7 +84,11 @@ public class MenuItemStackFormMap {
             }
         }
 
-        List<ItemFlag> flags = accessor.getStringList("flags").stream().map(menuItemStack::getFlag).collect(Collectors.toList());
+        List<String> flagStrings = accessor.getStringList("flags");
+        List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
+        for (String flagName : flagStrings) {
+            flags.add(menuItemStack.getFlag(flagName));
+        }
 
         List<IAttribute> attributeModifiers = new ArrayList<>();
 

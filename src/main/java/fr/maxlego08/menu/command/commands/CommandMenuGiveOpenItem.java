@@ -11,8 +11,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CommandMenuGiveOpenItem extends VCommand {
 
@@ -24,7 +25,13 @@ public class CommandMenuGiveOpenItem extends VCommand {
         this.addSubCommand("goi");
 
         InventoryManager inventoryManager = plugin.getInventoryManager();
-        this.addRequireArg("inventory name", (a, b) -> inventoryManager.getInventories().stream().map(e -> (e.getPlugin().getName() + ":" + e.getFileName()).toLowerCase()).collect(Collectors.toList()));
+        this.addRequireArg("inventory name", (a, b) -> {
+            List<String> inventories = new ArrayList<>();
+            for (Inventory inventory : inventoryManager.getInventories()) {
+                inventories.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase());
+            }
+            return inventories;
+        });
         this.addOptionalArg("player");
     }
 

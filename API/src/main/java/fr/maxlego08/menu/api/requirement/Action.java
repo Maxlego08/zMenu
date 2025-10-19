@@ -6,9 +6,8 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Represents an action that can be executed based on certain conditions.
@@ -70,6 +69,13 @@ public abstract class Action {
      * @return A list of commands that have been processed and flattened with placeholders replaced.
      */
     protected List<String> parseAndFlattenCommands(List<String> liste, Player player) {
-        return liste.stream().flatMap(cmd -> Stream.of(cmd.split("\n"))).map(cmd -> cmd.replace("%player%", player.getName())).collect(Collectors.toList());
+        List<String> commands = new ArrayList<>();
+        for (String cmd : liste) {
+            String[] split = cmd.split("\n");
+            for (String part : split) {
+                commands.add(part.replace("%player%", player.getName()));
+            }
+        }
+        return commands;
     }
 }
