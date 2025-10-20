@@ -1,0 +1,13 @@
+#<item-id>:
+#  name: ... # Same format use for items in menu
+#  mechanics:
+#    <mechanic-id>:
+#      ... # Depending on the mechanic
+
+
+first-item:
+  name: "&aFirst Item"
+  lore:
+    - "&7This is the first item"
+    - "&7in the default items file."
+  
