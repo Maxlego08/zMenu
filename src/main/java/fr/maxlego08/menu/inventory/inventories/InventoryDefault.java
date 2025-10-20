@@ -20,23 +20,28 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * @author Maxlego08
  */
 public class InventoryDefault extends VInventory implements InventoryEngine {
 
-    private final Map<Integer, TimerTask> timers = new HashMap<>();
+    private final Map<Integer, TimerTask> timers = new ConcurrentHashMap<>();
     private Inventory inventory;
     private List<Inventory> oldInventories = new ArrayList<>();
-    private List<Button> buttons = new ArrayList<>();
+    private List<Button> buttons = Collections.emptyList();
     private int maxPage = 1;
     private boolean isAsync = false;
 
-    private List<Button> updatedButtons = new ArrayList<>();
+    private List<Button> updatedButtons = Collections.emptyList();
 
     @Override
     public InventoryResult openInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
@@ -48,18 +53,31 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return result;
         }
 
-        this.oldInventories = (List<Inventory>) args[1];
+        this.oldInventories = extractOldInventories(args);
 
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
         this.maxPage = Math.max(1, this.inventory.getMaxPage(patterns, player, args));
 
-        this.buttons = new ArrayList<>();
-        this.buttons.addAll(patterns.stream().flatMap(pattern -> this.inventory.sortPatterns(pattern, page, args).stream()).toList());
-        this.buttons.addAll(this.inventory.sortButtons(page, args));
+        List<Button> computedButtons = new ArrayList<>();
+        for (Pattern pattern : patterns) {
+            computedButtons.addAll(this.inventory.sortPatterns(pattern, page, args));
+        }
+        computedButtons.addAll(this.inventory.sortButtons(page, args));
+        this.buttons = computedButtons;
 
-        this.updatedButtons = this.buttons.stream().filter(Button::updateOnClick).collect(Collectors.toList());
-        isAsync = this.buttons.stream().anyMatch(Button::isOpenAsync);
+        List<Button> clickableUpdates = new ArrayList<>();
+        boolean async = false;
+        for (Button button : computedButtons) {
+            if (button.updateOnClick()) {
+                clickableUpdates.add(button);
+            }
+            if (!async && button.isOpenAsync()) {
+                async = true;
+            }
+        }
+        this.updatedButtons = clickableUpdates;
+        this.isAsync = async;
         InventoryManager manager = this.plugin.getInventoryManager();
         manager.setPlayerPage(player, page, maxPage);
 
@@ -80,8 +98,12 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             }
             // Display fill items
             if (this.inventory.getFillItemStack() != null) {
-                for (int a = 0; a != super.getSpigotInventory().getContents().length; a++) {
-                    this.addItem(a, this.inventory.getFillItemStack().build(player));
+                ItemStack builtItem = this.inventory.getFillItemStack().build(player);
+                if (builtItem != null) {
+                    ItemStack[] contents = super.getSpigotInventory().getContents();
+                    for (int slot = 0; slot < contents.length; slot++) {
+                        this.addItem(slot, builtItem.clone());
+                    }
                 }
             }
 
@@ -135,6 +157,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      */
     @Override
     public void buildButton(Button button) {
+        if (button == null) {
+            return;
+        }
         final Player targetPlayer = getTargetPlayer();
         if (button.hasCustomRender()) {
             button.onRender(targetPlayer, this);
@@ -142,13 +167,17 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
 
         button = button.getDisplayButton(this, this.player);
+        if (button == null) {
+            return;
+        }
 
         // If the button has a permission or a placeholder to check
         if (button.hasPermission()) {
+            Placeholders placeholders = new Placeholders();
 
             // We will check if the player has the permission to display the
             // button
-            if (!button.checkPermission(targetPlayer, this, new Placeholders())) {
+            if (!button.checkPermission(targetPlayer, this, placeholders)) {
 
                 // If there is an ElseButton we will display it
                 if (button.hasElseButton()) {
@@ -175,10 +204,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     @Override
     public void displayButton(Button button) {
         final Player targetPlayer = getTargetPlayer();
+        var scheduler = plugin.getScheduler();
         if (button.hasSpecialRender()) {
 
             Consumer<WrappedTask> runnable = w -> button.onRender(targetPlayer, this);
-            if (isAsync) plugin.getScheduler().runAtEntity(player, runnable);
+            if (isAsync) scheduler.runAtEntity(player, runnable);
             else runnable.accept(null);
 
         } else {
@@ -188,7 +218,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 this.displayFinalButton(button, slot);
             };
 
-            if (isAsync) plugin.getScheduler().runAtEntity(player, runnable);
+            if (isAsync) scheduler.runAtEntity(player, runnable);
             else runnable.accept(null);
         }
     }
@@ -200,6 +230,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     public void displayFinalButton(Button button, int... slots) {
         final Player targetPlayer = getTargetPlayer();
         ItemStack itemStack = button.getCustomItemStack(targetPlayer);
+        if (itemStack == null) {
+            return;
+        }
         for (int slot : slots) {
 
             if (slot < 0) {
@@ -306,20 +339,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot) {
-        final Player targetPlayer = getTargetPlayer();
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        List<String> lore = button.buildLore(targetPlayer);
-        String displayName = button.buildDisplayName(targetPlayer);
-
-        if (!lore.isEmpty() && refreshRequirement.isRefreshLore()) {
-            this.plugin.getMetaUpdater().updateLore(itemMeta, papi(lore, targetPlayer, false), button.getItemStack().getLoreType());
+        boolean updated = applyMetaUpdates(button, itemStack, refreshRequirement.isRefreshLore(), refreshRequirement.isRefreshName());
+        if (!updated) {
+            return;
         }
 
-        if (displayName != null && refreshRequirement.isRefreshName()) {
-            this.plugin.getMetaUpdater().updateDisplayName(itemMeta, papi(displayName, targetPlayer, false), targetPlayer);
-        }
-
-        itemStack.setItemMeta(itemMeta);
         this.getSpigotInventory().setItem(slot, itemStack);
 
         if (refreshRequirement.isRefreshButton()) {
@@ -328,7 +352,6 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     private void handleUpdatedButton(Button button, ItemStack itemStack, int slot) {
-        final Player targetPlayer = getTargetPlayer();
         Button masterButton = button.getMasterParentButton();
 
         if (button.isUpdatedMasterButton()) {
@@ -337,26 +360,60 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return;
         }
 
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        List<String> lore = button.buildLore(targetPlayer);
-        String displayName = button.buildDisplayName(targetPlayer);
-
-        if (!lore.isEmpty()) {
-            this.plugin.getMetaUpdater().updateLore(itemMeta, papi(lore, targetPlayer, false), button.getItemStack().getLoreType());
-        }
-        if (displayName != null) {
-            this.plugin.getMetaUpdater().updateDisplayName(itemMeta, papi(displayName, targetPlayer, false), targetPlayer);
+        if (!applyMetaUpdates(button, itemStack, true, true)) {
+            return;
         }
 
-        itemStack.setItemMeta(itemMeta);
         this.getSpigotInventory().setItem(slot, itemStack);
     }
 
-    private Player getTargetPlayer(){
+    private boolean applyMetaUpdates(Button button, ItemStack itemStack, boolean refreshLore, boolean refreshName) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return false;
+        }
+
+        final Player targetPlayer = getTargetPlayer();
+
+        if (refreshLore) {
+            List<String> lore = button.buildLore(targetPlayer);
+            if (!lore.isEmpty()) {
+                this.plugin.getMetaUpdater().updateLore(itemMeta, papi(lore, targetPlayer, false), button.getItemStack().getLoreType());
+            }
+        }
+
+        if (refreshName) {
+            String displayName = button.buildDisplayName(targetPlayer);
+            if (displayName != null) {
+                this.plugin.getMetaUpdater().updateDisplayName(itemMeta, papi(displayName, targetPlayer, false), targetPlayer);
+            }
+        }
+
+        itemStack.setItemMeta(itemMeta);
+        return true;
+    }
+
+    private List<Inventory> extractOldInventories(Object[] args) {
+        if (args.length < 2 || !(args[1] instanceof List<?> inventories)) {
+            return new ArrayList<>();
+        }
+        @SuppressWarnings("unchecked")
+        List<Inventory> castedInventories = (List<Inventory>) inventories;
+        return new ArrayList<>(castedInventories);
+    }
+
+    private Player getTargetPlayer() {
         if (inventory == null || player == null) {
             return this.player;
         }
-        String targetName = papi(inventory.getTargetPlayerNamePlaceholder(), player, false);
+        String targetPlaceholder = inventory.getTargetPlayerNamePlaceholder();
+        if (targetPlaceholder == null || targetPlaceholder.isEmpty()) {
+            return this.player;
+        }
+        String targetName = papi(targetPlaceholder, player, false);
+        if (targetName == null || targetName.isEmpty()) {
+            return this.player;
+        }
         Player targetPlayer = Bukkit.getPlayer(targetName);
         return targetPlayer != null ? targetPlayer : this.player;
     }
