@@ -37,10 +37,10 @@ public class DialogAction extends ActionHelper {
             String dialogName = this.papi(placeholders.parse(this.dialog), player);
             Optional<DialogInventory> optional = this.plugin == null ? this.dialogManager.getDialog(dialogName) : this.dialogManager.getDialog(this.plugin, dialogName);
             if (optional.isPresent()) {
-                //oldInventories.add(fromInventory); SOON
+                oldInventories.add(fromInventory);
 
                 this.inventoryArgument.process(player);
-                this.dialogManager.openDialog(player, optional.get());
+                this.dialogManager.openDialog(player, optional.get(), oldInventories);
             } else {
                 inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.dialog, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }

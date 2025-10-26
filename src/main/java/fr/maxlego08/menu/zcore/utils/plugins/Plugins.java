@@ -24,9 +24,12 @@ public enum Plugins {
 	CRAFTENGINE("CraftEngine"),
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
-    NEXTGENS("NextGens"),
-    MYTHICMOBS("MythicMobs"),
-	ZMENUPLUS("zMenuPlus");
+	ZMENUPLUS("zMenuPlus"),
+  GEYSER("Geyser-Spigot"),
+  NEXTGENS("NextGens"),
+  MYTHICMOBS("MythicMobs"),
+  
+  ;
 
 	private final String name;
 

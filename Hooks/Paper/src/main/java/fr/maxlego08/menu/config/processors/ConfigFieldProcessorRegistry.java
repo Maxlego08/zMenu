@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.config.processors;
 
-import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 
 import java.util.EnumMap;
 import java.util.Map;
