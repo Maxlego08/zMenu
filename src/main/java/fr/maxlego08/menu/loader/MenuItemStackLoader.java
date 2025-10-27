@@ -21,6 +21,7 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionType;
@@ -28,7 +29,6 @@ import org.bukkit.potion.PotionType;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack> {
@@ -77,7 +77,12 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         this.loadTranslation(menuItemStack, configuration, path);
         this.loadEnchantements(menuItemStack, configuration, path, file);
-        menuItemStack.setFlags(configuration.getStringList(path + "flags").stream().map(this::getFlag).collect(Collectors.toList()));
+        List<String> flagStrings = configuration.getStringList(path + "flags");
+        List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
+        for (String flagName : flagStrings) {
+            flags.add(this.getFlag(flagName));
+        }
+        menuItemStack.setFlags(flags);
 
         this.loadAttributes(menuItemStack, configuration, path);
 
@@ -160,6 +165,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
         menuItemStack.setAttributes(attributeModifiers);
+        menuItemStack.setClearDefaultAttributes(configuration.getBoolean(path + "clear-default-attributes", true));
     }
 
     /**
@@ -617,13 +623,18 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
         if (item.getEnchantments() != null && !item.getEnchantments().isEmpty()) {
-            List<String> stringEnchantments = item.getEnchantments().entrySet().stream().map(e -> e.getKey().getName() + "," + e.getValue().toString()).collect(Collectors.toList());
+            List<String> stringEnchantments = new ArrayList<>(item.getEnchantments().size());
+            item.getEnchantments().forEach((enchantment, level) -> stringEnchantments.add(enchantment.getName() + "," + level));
 
             configuration.set(path + "enchants", stringEnchantments);
         }
 
         if (item.getFlags() != null && !item.getFlags().isEmpty()) {
-            configuration.set(path + "flags", item.getFlags().stream().map(Enum::toString).collect(Collectors.toList()));
+            List<String> flags = new ArrayList<>(item.getFlags().size());
+            for (ItemFlag flag : item.getFlags()) {
+                flags.add(flag.toString());
+            }
+            configuration.set(path + "flags", flags);
         }
 
         try {

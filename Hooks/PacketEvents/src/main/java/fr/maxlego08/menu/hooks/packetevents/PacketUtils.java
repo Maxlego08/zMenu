@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
@@ -68,8 +69,8 @@ public class PacketUtils implements InventoryListener {
     public void onInventoryPostOpen(Player player, BaseInventory inventory) {
         if (fakeContents.containsKey(inventory.getPlayer().getUniqueId())) {
             FakeInventory fakeInventory = fakeContents.get(inventory.getPlayer().getUniqueId());
-            System.out.println("OPEN");
-            System.out.println(fakeInventory.getSlots());
+            Logger.info("OPEN");
+            Logger.info(fakeInventory.getSlots().toString());
         }
     }
 

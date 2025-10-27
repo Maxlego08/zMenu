@@ -2,10 +2,10 @@ package fr.maxlego08.menu.zcore.utils.loader;
 
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.exceptions.ItemFlagException;
+import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Material;
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
@@ -189,7 +188,11 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
             }
 
             if (!meta.getItemFlags().isEmpty()) {
-                configuration.set(path + "flags", meta.getItemFlags().stream().map(Enum::name).collect(Collectors.toList()));
+                List<String> flags = new ArrayList<>(meta.getItemFlags().size());
+                for (ItemFlag flag : meta.getItemFlags()) {
+                    flags.add(flag.name());
+                }
+                configuration.set(path + "flags", flags);
             }
 
             if (meta.hasEnchants()) {

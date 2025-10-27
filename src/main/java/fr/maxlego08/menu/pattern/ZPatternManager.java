@@ -2,13 +2,13 @@ package fr.maxlego08.menu.pattern;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
+import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.loader.PatternLoader;
-import fr.maxlego08.menu.api.configuration.Config;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.loader.PatternLoader;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

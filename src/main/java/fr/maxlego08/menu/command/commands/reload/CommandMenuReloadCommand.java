@@ -9,8 +9,9 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CommandMenuReloadCommand extends VCommand {
 
@@ -18,7 +19,13 @@ public class CommandMenuReloadCommand extends VCommand {
         super(plugin);
         this.addSubCommand("command", "cmd");
         this.setPermission(Permission.ZMENU_RELOAD);
-        this.addOptionalArg("command", (a, b) -> plugin.getCommandManager().getCommands().stream().map(e -> e.command().toLowerCase()).collect(Collectors.toList()));
+        this.addOptionalArg("command", (a, b) -> {
+            List<String> commands = new ArrayList<>();
+            for (Command command : plugin.getCommandManager().getCommands()) {
+                commands.add(command.command().toLowerCase());
+            }
+            return commands;
+        });
     }
 
     @Override

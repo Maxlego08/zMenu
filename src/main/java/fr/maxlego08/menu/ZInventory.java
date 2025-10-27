@@ -24,7 +24,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZInventory extends ZUtils implements Inventory {
 
@@ -76,11 +75,19 @@ public class ZInventory extends ZUtils implements Inventory {
     public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
 
         if (!this.conditionalNames.isEmpty()) {
-            Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
+            ConditionalName selected = null;
+            int highestPriority = Integer.MIN_VALUE;
+            for (ConditionalName conditionalName : this.conditionalNames) {
+                if (conditionalName.hasPermission(player, null, inventoryDefault, placeholders)) {
+                    if (selected == null || conditionalName.priority() > highestPriority) {
+                        selected = conditionalName;
+                        highestPriority = conditionalName.priority();
+                    }
+                }
+            }
 
-            if (optional.isPresent()) {
-                ConditionalName conditionalName = optional.get();
-                return conditionalName.name();
+            if (selected != null) {
+                return selected.name();
             }
         }
 
@@ -118,7 +125,13 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public <T extends Button> List<T> getButtons(Class<T> type) {
-        return this.getButtons().stream().filter(e -> type.isAssignableFrom(e.getClass())).map(type::cast).collect(Collectors.toList());
+        List<T> filtered = new ArrayList<>();
+        for (Button button : this.getButtons()) {
+            if (type.isAssignableFrom(button.getClass())) {
+                filtered.add(type.cast(button));
+            }
+        }
+        return filtered;
     }
 
     @Override
@@ -128,37 +141,73 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
-
         List<Button> buttons = new ArrayList<>(this.buttons);
         patterns.forEach(pattern -> buttons.addAll(pattern.buttons()));
 
-        int maxSlotInventory = buttons.stream().filter(button -> !button.isPlayerInventory()).mapToInt(Button::getSlot).max().orElse(-1);
+        int maxSlotInventory = -1;
+        for (Button button : buttons) {
+            if (!button.isPlayerInventory()) {
+                maxSlotInventory = Math.max(maxSlotInventory, button.getSlot());
+            }
+        }
         int maxPageInventory = (maxSlotInventory >= 0) ? (maxSlotInventory / this.size) + 1 : 1;
 
-        int maxSlotPlayerInventory = buttons.stream().filter(Button::isPlayerInventory).mapToInt(Button::getSlot).max().orElse(-1);
+        int maxSlotPlayerInventory = -1;
+        for (Button button : buttons) {
+            if (button.isPlayerInventory()) {
+                maxSlotPlayerInventory = Math.max(maxSlotPlayerInventory, button.getSlot());
+            }
+        }
         int maxPagePlayerInventory = (maxSlotPlayerInventory >= 0) ? (maxSlotPlayerInventory / 36) + 1 : 1;
 
         final int maxPageFinal = Math.max(maxPageInventory, maxPagePlayerInventory);
 
-        return this.buttons.stream().filter(PaginateButton.class::isInstance).map(PaginateButton.class::cast).max(Comparator.comparingInt(button -> button.getPaginationSize(player))).map(paginateButton -> Math.max(maxPageFinal, (int) Math.ceil((double) paginateButton.getPaginationSize(player) / paginateButton.getSlots().size()))).orElse(maxPageFinal);
+        PaginateButton selected = null;
+        int maxPaginationSize = Integer.MIN_VALUE;
+        for (Button button : buttons) {
+            if (button instanceof PaginateButton paginateButton) {
+                int paginationSize = paginateButton.getPaginationSize(player);
+                if (selected == null || paginationSize > maxPaginationSize) {
+                    selected = paginateButton;
+                    maxPaginationSize = paginationSize;
+                }
+            }
+        }
+
+        if (selected != null) {
+            int slotsSize = selected.getSlots().size();
+            if (slotsSize > 0) {
+                int calculated = (int) Math.ceil((double) maxPaginationSize / slotsSize);
+                return Math.max(maxPageFinal, calculated);
+            }
+        }
+        return maxPageFinal;
     }
 
     @Override
     public List<Button> sortButtons(int page, Object... objects) {
-        return this.buttons.stream().filter(button -> {
+        List<Button> sorted = new ArrayList<>();
+        for (Button button : this.buttons) {
             int size = button.isPlayerInventory() ? 36 : this.size;
             int slot = button.getRealSlot(size, page);
-            return (slot >= 0 && slot < size);
-        }).collect(Collectors.toList());
+            if (slot >= 0 && slot < size) {
+                sorted.add(button);
+            }
+        }
+        return sorted;
     }
 
     @Override
     public List<Button> sortPatterns(Pattern pattern, int page, Object... objects) {
         if (!pattern.enableMultiPage()) return new ArrayList<>(pattern.buttons());
-        return pattern.buttons().stream().filter(button -> {
+        List<Button> sorted = new ArrayList<>();
+        for (Button button : pattern.buttons()) {
             int slot = button.getRealSlot(this.size, page);
-            return slot >= 0 && slot < this.size;
-        }).collect(Collectors.toList());
+            if (slot >= 0 && slot < this.size) {
+                sorted.add(button);
+            }
+        }
+        return sorted;
     }
 
     @Override

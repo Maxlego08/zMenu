@@ -144,12 +144,15 @@ public abstract class Button extends PlaceholderButton {
 
             int inventorySize = this.isPlayerInventory() ? 36 : inventoryEngine.getInventory().getSize();
 
-            int[] slots = this.getSlots().stream().map(slot -> {
+            List<Integer> slotList = new ArrayList<>(this.getSlots());
+            int[] slots = new int[slotList.size()];
+            for (int i = 0; i < slotList.size(); i++) {
+                int slot = slotList.get(i);
                 if (!this.isPermanent) {
-                    return slot - ((this.getPage() - 1) * inventorySize);
+                    slot -= ((this.getPage() - 1) * inventorySize);
                 }
-                return slot;
-            }).mapToInt(Integer::intValue).toArray();
+                slots[i] = slot;
+            }
             inventoryEngine.displayFinalButton(this, slots);
         }
     }

@@ -10,9 +10,10 @@ import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.OfflinePlayer;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CommandMenuPlayersKeys extends VCommand {
 
@@ -45,7 +46,11 @@ public class CommandMenuPlayersKeys extends VCommand {
             return CommandType.SUCCESS;
         }
 
-        String keys = toList(collection.stream().map(Data::getKey).collect(Collectors.toList()), "§8", "§7");
+        List<String> keyList = new ArrayList<>(collection.size());
+        for (Data data : collection) {
+            keyList.add(data.getKey());
+        }
+        String keys = toList(keyList, "§8", "§7");
         message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
 
         return CommandType.SUCCESS;

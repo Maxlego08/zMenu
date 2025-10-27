@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CommandLoader implements Loader<Command> {
 
@@ -47,8 +46,9 @@ public class CommandLoader implements Loader<Command> {
         List<CommandArgument> arguments = new ArrayList<>();
         List<?> listValues = configuration.getList(path + "arguments", new ArrayList<>());
         if (isListOfMap(listValues)) {
-            arguments = configuration.getMapList(path + "arguments").stream().map(map -> {
-
+            List<Map<?, ?>> mapList = configuration.getMapList(path + "arguments");
+            List<CommandArgument> mappedArguments = new ArrayList<>(mapList.size());
+            for (Map<?, ?> map : mapList) {
                 String argument = (String) map.get("name");
                 String inventoryName = map.containsKey("inventory") ? (String) map.get("inventory") : null;
                 boolean isRequired = map.containsKey("isRequired") ? (boolean) map.get("isRequired") : !map.containsKey("is-required") || (boolean) map.get("is-required");
@@ -60,13 +60,15 @@ public class CommandLoader implements Loader<Command> {
                 List<String> autoCompletions = map.containsKey("auto-completion") ? (List<String>) map.get("auto-completion") : new ArrayList<>();
                 String defaultValue = map.containsKey("defaultValue") ? (String) map.get("defaultValue") : map.containsKey("default-value") ? (String) map.get("default-value") : null;
 
-                return new ZCommandArgument(argumentType, argument, inventoryName, isRequired, performMainAction, actions, autoCompletions, defaultValue);
-            }).collect(Collectors.toList());
+                mappedArguments.add(new ZCommandArgument(argumentType, argument, inventoryName, isRequired, performMainAction, actions, autoCompletions, defaultValue));
+            }
+            arguments = mappedArguments;
         } else {
             List<String> strings = configuration.getStringList(path + "arguments");
             if (!strings.isEmpty()) {
                 this.plugin.getLogger().warning("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.zmenu.dev/configurations/commands) Your command will still work properly but it is advisable to update it.");
-                arguments = configuration.getStringList(path + "arguments").stream().map(arg -> {
+                List<CommandArgument> mappedArguments = new ArrayList<>(strings.size());
+                for (String arg : strings) {
                     String inventoryName = null;
                     String argument = arg;
                     boolean isRequired = true;
@@ -77,8 +79,9 @@ public class CommandLoader implements Loader<Command> {
                         if (values.length >= 2) isRequired = Boolean.parseBoolean(values[1]);
                         if (values.length == 3) inventoryName = values[2];
                     }
-                    return new ZCommandArgument("STRING", argument, inventoryName, isRequired, performMainAction, new ArrayList<>(), new ArrayList<>(), null);
-                }).collect(Collectors.toList());
+                    mappedArguments.add(new ZCommandArgument("STRING", argument, inventoryName, isRequired, performMainAction, new ArrayList<>(), new ArrayList<>(), null));
+                }
+                arguments = mappedArguments;
             }
         }
 

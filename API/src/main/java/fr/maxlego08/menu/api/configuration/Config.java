@@ -14,123 +14,122 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @ConfigDialog(
-    name = "zMenu Config",
-    externalTitle = "zMenu Configuration"
+        name = "zMenu Config",
+        externalTitle = "zMenu Configuration"
 )
 public class Config {
 
     // Enable debug, allows you to display errors in the console that would normally be hidden.
     @ConfigOption(
-        key = "enableDebug",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable debug"
+            key = "enableDebug",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable debug"
     )
     public static boolean enableDebug = false;
 
     // Enable debug time, allows you to display the code execution time in nanosecond, perfect for testing the effectiveness of the plugin.
     @ConfigOption(
-        key = "enableDebugTime",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable debug time"
+            key = "enableDebugTime",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable debug time"
     )
     public static boolean enableDebugTime = false;
 
     // Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
     @ConfigOption(
-        key = "enableInformationMessage",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable information message"
+            key = "enableInformationMessage",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable information message"
     )
     public static boolean enableInformationMessage = true;
 
     // Enable save or load file log in console
     @ConfigOption(
-        key = "enableLogStorageFile",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable log storage file"
+            key = "enableLogStorageFile",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable log storage file"
     )
     public static boolean enableLogStorageFile = false;
 
     // Skip update check
     @ConfigOption(
-        key = "skipUpdateCheck",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Skip update check"
+            key = "skipUpdateCheck",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Skip update check"
     )
     public static boolean skipUpdateCheck = false;
 
     // Enable open message, default value for the command /zm open <inventory name> <player> <display message>
     @ConfigOption(
-        key = "enableOpenMessage",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable open message"
+            key = "enableOpenMessage",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable open message"
     )
     public static boolean enableOpenMessage = true;
 
     // Enable mini message format, allows you to activate the mini message format, available from 1.17 onwards, more information here: https://docs.advntr.dev/minimessage/index.html
     @ConfigOption(
-        key = "enableMiniMessageFormat",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable mini message format"
+            key = "enableMiniMessageFormat",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable mini message format"
     )
     public static boolean enableMiniMessageFormat = true;
 
     // Enable player command in chat, Allows you to ensure that when a player executes a command, they execute it from the chat and not from the console. If you have "fake" command, which are not saved in spigot you need to enable this option.
     @ConfigOption(
-        key = "enablePlayerCommandInChat",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable player command in chat"
+            key = "enablePlayerCommandInChat",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable player command in chat"
     )
     public static boolean enablePlayerCommandInChat = false;
 
     // Allows you to use the FastEvent interface instead of bukkit events. You gain performance. To use FastEvent, please read the documentation.
     @ConfigOption(
-        key = "enableFastEvent",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable FastEvent"
+            key = "enableFastEvent",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable FastEvent"
     )
     public static boolean enableFastEvent = false;
 
     // Seconds save player data: The time in seconds for automatic backup of player data.
     @ConfigOption(
-        key = "secondsSavePlayerData",
-        type = DialogInputType.NUMBER_RANGE,
-        label = "Seconds save player data",
-        startRange = 60,
-        endRange = 3600,
-        stepRange = 5
+            key = "secondsSavePlayerData",
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Seconds save player data",
+            startRange = 60,
+            endRange = 3600,
+            stepRange = 5
     )
     public static int secondsSavePlayerData = 600;
 
     // Seconds save player data: The time in seconds for automatic backup of inventories data.
     @ConfigOption(
-        key = "secondsSavePlayerInventories",
-        type = DialogInputType.NUMBER_RANGE,
-        label = "Seconds save player inventories",
-        startRange = 60,
-        endRange = 3600,
-        stepRange = 5
+            key = "secondsSavePlayerInventories",
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Seconds save player inventories",
+            startRange = 60,
+            endRange = 3600,
+            stepRange = 5
     )
     public static int secondsSavePlayerInventories = 600;
 
@@ -139,21 +138,21 @@ public class Config {
 
     // Open main menu when swap item offhand key is press
     @ConfigOption(
-        key = "useSwapItemOffHandKeyToOpenMainMenu",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Use swap item offhand key to open main menu"
+            key = "useSwapItemOffHandKeyToOpenMainMenu",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Use swap item offhand key to open main menu"
     )
     public static boolean useSwapItemOffHandKeyToOpenMainMenu = false;
 
     // Open main menu when swap item offhand key is press and sneak key
     @ConfigOption(
-        key = "useSwapItemOffHandKeyToOpenMainMenuNeedsShift",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Use swap item offhand key to open main menu needs shift"
+            key = "useSwapItemOffHandKeyToOpenMainMenuNeedsShift",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Use swap item offhand key to open main menu needs shift"
     )
     public static boolean useSwapItemOffHandKeyToOpenMainMenuNeedsShift = false;
 
@@ -162,127 +161,126 @@ public class Config {
 
     // Generate default configuration
     @ConfigOption(
-        key = "generateDefaultFile",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Generate default file"
+            key = "generateDefaultFile",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Generate default file"
     )
     public static boolean generateDefaultFile = true;
 
     // Does not take double click into account
     @ConfigOption(
-        key = "disableDoubleClickEvent",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Disable double click event"
+            key = "disableDoubleClickEvent",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Disable double click event"
     )
     public static boolean disableDoubleClickEvent = true;
 
     // Enable anti dupe
     @ConfigOption(
-        key = "enableAntiDupe",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable anti dupe"
+            key = "enableAntiDupe",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable anti dupe"
     )
     public static boolean enableAntiDupe = true;
     // Enable anti dupe discord notification
     @ConfigOption(
-        key = "enableAntiDupeDiscordNotification",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable anti dupe discord notification"
+            key = "enableAntiDupeDiscordNotification",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable anti dupe discord notification"
     )
     public static boolean enableAntiDupeDiscordNotification = false;
     @ConfigOption(
-        key = "antiDupeDiscordWebhookUrl",
-        type = DialogInputType.TEXT,
-        label = "Anti dupe discord webhook url",
-        maxLength = 100
+            key = "antiDupeDiscordWebhookUrl",
+            type = DialogInputType.TEXT,
+            label = "Anti dupe discord webhook url",
+            maxLength = 100
     )
     public static String antiDupeDiscordWebhookUrl = "https://discord.com/api/webhooks/<your discord webhook url>";
     @ConfigOption(
-        key = "antiDupeMessage",
-        type = DialogInputType.TEXT,
-        label = "Anti dupe message",
-        maxLength = 200
+            key = "antiDupeMessage",
+            type = DialogInputType.TEXT,
+            label = "Anti dupe message",
+            maxLength = 200
     )
     public static String antiDupeMessage = "**%player%** use %amount% %itemname% which comes from zMenu. Removing it !";
 
     public static List<ClickType> allClicksType = Arrays.asList(ClickType.MIDDLE, ClickType.RIGHT, ClickType.LEFT, ClickType.SHIFT_RIGHT, ClickType.SHIFT_LEFT);
     // Enable cache itemstack in memory
     @ConfigOption(
-        key = "enableCacheItemStack",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable cache item stack"
+            key = "enableCacheItemStack",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable cache item stack"
     )
     public static boolean enableCacheItemStack = true;
 
     @ConfigOption(
-        key = "enableCooldownClick",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable cooldown click"
+            key = "enableCooldownClick",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable cooldown click"
     )
 
     public static boolean enableCooldownClick = true;
     @ConfigOption(
-        key = "cooldownClickMilliseconds",
-        type = DialogInputType.NUMBER_RANGE,
-        label = "Cooldown click milliseconds",
-        endRange = 1000,
-        stepRange = 10
+            key = "cooldownClickMilliseconds",
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Cooldown click milliseconds",
+            endRange = 1000,
+            stepRange = 10
     )
 
     public static long cooldownClickMilliseconds = 100;
     @ConfigOption(
-        key = "cachePlaceholderAPI",
-        type = DialogInputType.NUMBER_RANGE,
-        label = "Cache PlaceholderAPI",
-        endRange = 300,
-        stepRange = 5
+            key = "cachePlaceholderAPI",
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Cache PlaceholderAPI",
+            endRange = 300,
+            stepRange = 5
     )
     public static long cachePlaceholderAPI = 20;
 
     @ConfigOption(
-        key = "enableCachePlaceholderAPI",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable cache PlaceholderAPI"
+            key = "enableCachePlaceholderAPI",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable cache PlaceholderAPI"
     )
     public static boolean enableCachePlaceholderAPI = false;
     @ConfigOption(
-        key = "enableDownloadCommand",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable download command"
+            key = "enableDownloadCommand",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable download command"
     )
     public static boolean enableDownloadCommand = false;
     @ConfigOption(
-        key = "enablePlayerOpenInventoryLogs",
-        type = DialogInputType.BOOLEAN,
-        trueText = "<green>Enabled",
-        falseText = "<red>Disabled",
-        label = "Enable player open inventory logs"
+            key = "enablePlayerOpenInventoryLogs",
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable player open inventory logs"
     )
     public static boolean enablePlayerOpenInventoryLogs = true;
-
+    public static boolean enableToast = true;
+    @ConfigUpdate
+    public static boolean updated = false;
     /**
      * static Singleton instance.
      */
     private static volatile Config instance;
-
-    @ConfigUpdate
-    public static boolean updated = false;
 
     /**
      * Private constructor for singleton.
@@ -319,7 +317,7 @@ public class Config {
 
         secondsSavePlayerData = configuration.getInt(ConfigPath.SECONDS_SAVE_PLAYER_DATA.getPath());
         secondsSavePlayerInventories = configuration.getInt(ConfigPath.SECONDS_SAVE_PLAYER_INVENTORIES.getPath());
-        
+
         mainMenu = configuration.getString(ConfigPath.MAIN_MENU.getPath());
         useSwapItemOffHandKeyToOpenMainMenu = configuration.getBoolean(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU.getPath());
         useSwapItemOffHandKeyToOpenMainMenuNeedsShift = configuration.getBoolean(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT.getPath());
@@ -333,17 +331,16 @@ public class Config {
         antiDupeDiscordWebhookUrl = configuration.getString(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath());
         antiDupeMessage = configuration.getString(ConfigPath.ANTI_DUPE_MESSAGE.getPath());
 
-        allClicksType = configuration.getStringList(ConfigPath.ALL_CLICKS_TYPE.getPath()).stream()
-                .map(name -> {
-                    try {
-                        return ClickType.valueOf(name);
-                    } catch (IllegalArgumentException e) {
-                        Bukkit.getLogger().warning("[zMenu] Invalid click type in config: " + name);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<String> clickTypeStrings = configuration.getStringList(ConfigPath.ALL_CLICKS_TYPE.getPath());
+        List<ClickType> clickTypes = new ArrayList<>(clickTypeStrings.size());
+        for (String name : clickTypeStrings) {
+            try {
+                clickTypes.add(ClickType.valueOf(name));
+            } catch (IllegalArgumentException e) {
+                Bukkit.getLogger().warning("[zMenu] Invalid click type in config: " + name);
+            }
+        }
+        allClicksType = clickTypes;
 
         enableCacheItemStack = configuration.getBoolean(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath());
         enableCooldownClick = configuration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath());
@@ -354,6 +351,7 @@ public class Config {
 
         enableDownloadCommand = configuration.getBoolean(ConfigPath.ENABLE_DOWNLOAD_COMMAND.getPath());
         enablePlayerOpenInventoryLogs = configuration.getBoolean(ConfigPath.ENABLE_PLAYER_OPEN_INVENTORY_LOGS.getPath());
+        enableToast = configuration.getBoolean(ConfigPath.ENABLE_TOAST.getPath());
     }
 
     public void save(FileConfiguration configuration, File file) {
@@ -386,9 +384,10 @@ public class Config {
         configuration.set(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath(), antiDupeDiscordWebhookUrl);
         configuration.set(ConfigPath.ANTI_DUPE_MESSAGE.getPath(), antiDupeMessage);
 
-        List<String> clickTypeNames = allClicksType.stream()
-                .map(Enum::name)
-                .collect(Collectors.toList());
+        List<String> clickTypeNames = new ArrayList<>(allClicksType.size());
+        for (ClickType clickType : allClicksType) {
+            clickTypeNames.add(clickType.name());
+        }
         configuration.set(ConfigPath.ALL_CLICKS_TYPE.getPath(), clickTypeNames);
 
         configuration.set(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath(), enableCacheItemStack);
@@ -443,8 +442,8 @@ public class Config {
         ENABLE_CACHE_PLACEHOLDER_API("enable-cache-placeholder-api"),
 
         ENABLE_DOWNLOAD_COMMAND("enable-download-command"),
-        ENABLE_PLAYER_OPEN_INVENTORY_LOGS("enable-player-open-inventory-logs")
-        ;
+        ENABLE_PLAYER_OPEN_INVENTORY_LOGS("enable-player-open-inventory-logs"),
+        ENABLE_TOAST("enable-toast");
         private final String path;
 
         ConfigPath(String path) {

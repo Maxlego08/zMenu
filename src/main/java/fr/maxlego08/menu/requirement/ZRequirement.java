@@ -52,22 +52,24 @@ public class ZRequirement implements Requirement {
     public boolean execute(Player player, Button button, InventoryEngine inventoryDefault, Placeholders placeholders) {
 
         AtomicBoolean earlyExit = new AtomicBoolean(false);
-        long requirementSuccess = this.permissibles.stream().filter(permissible -> {
-
+        int requirementSuccess = 0;
+        for (Permissible permissible : this.permissibles) {
             if (earlyExit.get()) {
-                return false;
+                break;
             }
 
             boolean result = permissible.hasPermission(player, button, inventoryDefault, placeholders);
             List<Action> actions = result ? permissible.getSuccessActions() : permissible.getDenyActions();
-            actions.forEach(action -> action.preExecute(player, button, inventoryDefault, placeholders));
-
-            if (this.permissibles.size() == this.miniumRequirement && !result) {
-                earlyExit.set(true);
+            for (Action action : actions) {
+                action.preExecute(player, button, inventoryDefault, placeholders);
             }
 
-            return result;
-        }).count();
+            if (result) {
+                requirementSuccess++;
+            } else if (this.permissibles.size() == this.miniumRequirement) {
+                earlyExit.set(true);
+            }
+        }
 
         boolean isSuccess = requirementSuccess >= this.miniumRequirement;
 

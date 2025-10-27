@@ -1,24 +1,24 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.exceptions.InventorySizeException;
-import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -27,12 +27,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -125,7 +120,15 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         String loadString;
         inventory.setTranslatedNames(translatedDisplayName);*/
 
-        List<InventoryOption> inventoryOptions = this.plugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
+        List<InventoryOption> inventoryOptions = new ArrayList<>();
+        for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
+            for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
+                InventoryOption instance = createInstance(entry.getKey(), optionClass);
+                if (instance != null) {
+                    inventoryOptions.add(instance);
+                }
+            }
+        }
         for (InventoryOption inventoryOption : inventoryOptions) {
             inventoryOption.loadInventory(inventory, file, configuration, this.plugin.getInventoryManager(), this.plugin.getButtonManager());
         }
@@ -160,7 +163,12 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      */
     private void loadPatterns(YamlConfiguration configuration, ZInventory inventory) {
         PatternManager patternManager = this.plugin.getPatternManager();
-        List<Pattern> patterns = configuration.getStringList("patterns").stream().map(patternManager::getPattern).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        List<String> patternNames = configuration.getStringList("patterns");
+        List<Pattern> patterns = new ArrayList<>(patternNames.size());
+        for (String patternName : patternNames) {
+            Optional<Pattern> pattern = patternManager.getPattern(patternName);
+            pattern.ifPresent(patterns::add);
+        }
         inventory.setPatterns(patterns);
     }
 
@@ -189,13 +197,14 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             if (loadString != null) {
                 MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
-                List<Action> actions = configuration.getStringList(loadString + ".actions").stream().map(string -> {
+                List<String> actionStrings = configuration.getStringList(loadString + ".actions");
+                List<Action> actions = new ArrayList<>(actionStrings.size());
+                for (String string : actionStrings) {
                     try {
-                        return Action.valueOf(string.toUpperCase());
-                    } catch (Exception exception) {
-                        return null;
+                        actions.add(Action.valueOf(string.toUpperCase()));
+                    } catch (Exception ignored) {
                     }
-                }).filter(Objects::nonNull).collect(Collectors.toList());
+                }
 
                 String type = configuration.getString(loadString + ".type", "full");
                 ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);

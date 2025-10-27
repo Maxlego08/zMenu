@@ -8,12 +8,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ZInventoryPlayer implements InventoryPlayer {
-
+    private final int MAX_INVENTORY_SIZE = 36;
     private final Map<Integer, String> items = new HashMap<>();
     private final ZMenuPlugin plugin;
 
@@ -25,7 +26,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     public void storeInventory(Player player) {
         PlayerInventory playerInventory = player.getInventory();
         ItemStack[] content = playerInventory.getContents();
-        for (int slot = 0; slot != 36; slot++) {
+        for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
             clear(slot, playerInventory, content);
         }
         if (!NMSUtils.isOneHand()) {
@@ -50,7 +51,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     @Override
     public void forceGiveInventory(Player player) {
         PlayerInventory playerInventory = player.getInventory();
-        for (int slot = 0; slot <= 36; slot++) {
+        for (int slot = 0; slot <= MAX_INVENTORY_SIZE; slot++) {
             if (items.containsKey(slot)) {
                 playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(items.get(slot)));
             } else if (this.plugin.getDupeManager().isDupeItem(playerInventory.getItem(slot))) {
@@ -59,6 +60,31 @@ public class ZInventoryPlayer implements InventoryPlayer {
         }
     }
 
+    @Override
+    public void setItems(Map<Integer, ItemStack> items) {
+        Map<Integer, String> encodedItems = new HashMap<>();
+        for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
+            encodedItems.put(entry.getKey(), ItemStackUtils.serializeItemStack(entry.getValue()));
+        }
+        setItemsFromEncode(encodedItems);
+    }
+
+    @Override
+    public void setItemsFromEncode(Map<Integer, String> items) {
+        this.items.clear();
+        this.items.putAll(items);
+    }
+
+    @Override
+    public void setItems(List<ItemStack> items) {
+        this.items.clear();
+        for (int slot = 0; slot != Math.min(items.size(), MAX_INVENTORY_SIZE); slot++) {
+            ItemStack itemStack = items.get(slot);
+            if (itemStack != null) {
+                this.items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
+            }
+        }
+    }
 
     @Override
     public String toInventoryString() {
@@ -70,7 +96,11 @@ public class ZInventoryPlayer implements InventoryPlayer {
 
     @Override
     public List<ItemStack> getItemStacks() {
-        return this.items.values().stream().map(ItemStackUtils::deserializeItemStack).toList();
+        List<ItemStack> deserialized = new ArrayList<>(this.items.size());
+        for (String encoded : this.items.values()) {
+            deserialized.add(ItemStackUtils.deserializeItemStack(encoded));
+        }
+        return deserialized;
     }
 
     @Override

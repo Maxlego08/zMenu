@@ -69,7 +69,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
@@ -200,18 +199,41 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
-        return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(e -> pluginName != null && e.getName().equalsIgnoreCase(pluginName)).findFirst();
+        if (pluginName == null) {
+            return Optional.empty();
+        }
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+            if (plugin.getName().equalsIgnoreCase(pluginName)) {
+                return Optional.of(plugin);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Inventory> getInventory(String name) {
-        var inventories = this.getInventories();
-        return inventories.stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name)).findFirst();
+        if (name == null) {
+            return Optional.empty();
+        }
+        for (Inventory inventory : this.getInventories()) {
+            if (inventory.getFileName().equalsIgnoreCase(name)) {
+                return Optional.of(inventory);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Inventory> getInventory(Plugin plugin, String name) {
-        return this.getInventories(plugin).stream().filter(i -> name != null && i.getFileName().equalsIgnoreCase(name)).findFirst();
+        if (name == null) {
+            return Optional.empty();
+        }
+        for (Inventory inventory : this.getInventories(plugin)) {
+            if (inventory.getFileName().equalsIgnoreCase(name)) {
+                return Optional.of(inventory);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -222,7 +244,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Collection<Inventory> getInventories() {
-        return this.inventories.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        List<Inventory> allInventories = new ArrayList<>();
+        for (List<Inventory> inventoryList : this.inventories.values()) {
+            allInventories.addAll(inventoryList);
+        }
+        return allInventories;
     }
 
     @Override
@@ -418,13 +444,21 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         // Load inventories
         try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
-            stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(file -> {
-                try {
-                    this.loadInventory(this.plugin, file);
-                } catch (InventoryException exception) {
-                    exception.printStackTrace();
+            Iterator<Path> iterator = stream.iterator();
+            if (iterator.hasNext()) {
+                iterator.next();
+            }
+            while (iterator.hasNext()) {
+                Path path = iterator.next();
+                File file = path.toFile();
+                if (file.isFile() && file.getName().endsWith(".yml")) {
+                    try {
+                        this.loadInventory(this.plugin, file);
+                    } catch (InventoryException exception) {
+                        exception.printStackTrace();
+                    }
                 }
-            });
+            }
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -461,7 +495,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<MaterialLoader> getMaterialLoader(String key) {
-        return this.loaders.stream().filter(e -> e.getKey().equalsIgnoreCase(key)).findFirst();
+        for (MaterialLoader loader : this.loaders) {
+            if (loader.getKey().equalsIgnoreCase(key)) {
+                return Optional.of(loader);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -597,7 +636,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         this.inventories.forEach((plugin, inventories) -> {
-            String inventoriesAsString = toList(inventories.stream().map(Inventory::getFileName).collect(Collectors.toList()), "§8", "§7");
+            List<String> fileNames = new ArrayList<>(inventories.size());
+            for (Inventory inventory : inventories) {
+                fileNames.add(inventory.getFileName());
+            }
+            String inventoriesAsString = toList(fileNames, "§8", "§7");
             messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
         });
     }
@@ -771,7 +814,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Class<? extends ButtonOption>> getOption(String name) {
-        return this.buttonOptions.values().stream().flatMap(List::stream).filter(buttonOption -> buttonOption.getName().equalsIgnoreCase(name)).findFirst();
+        for (List<Class<? extends ButtonOption>> options : this.buttonOptions.values()) {
+            for (Class<? extends ButtonOption> buttonOption : options) {
+                if (buttonOption.getName().equalsIgnoreCase(name)) {
+                    return Optional.of(buttonOption);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -869,7 +919,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Class<? extends InventoryOption>> getInventoryOption(String name) {
-        return this.inventoryOptions.values().stream().flatMap(List::stream).filter(inventoryOption -> inventoryOption.getName().equalsIgnoreCase(name)).findFirst();
+        for (List<Class<? extends InventoryOption>> options : this.inventoryOptions.values()) {
+            for (Class<? extends InventoryOption> inventoryOption : options) {
+                if (inventoryOption.getName().equalsIgnoreCase(name)) {
+                    return Optional.of(inventoryOption);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
