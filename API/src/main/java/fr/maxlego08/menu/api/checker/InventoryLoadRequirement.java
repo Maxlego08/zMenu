@@ -53,7 +53,12 @@ public class InventoryLoadRequirement {
     }
 
     public boolean canLoad() {
-        return this.requirements.values().stream().allMatch(List::isEmpty);
+        for (List<String> names : this.requirements.values()) {
+            if (!names.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Map<InventoryRequirementType, List<String>> getRequirements() {

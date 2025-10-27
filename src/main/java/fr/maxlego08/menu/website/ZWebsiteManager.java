@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
@@ -152,7 +151,11 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
                 List<Map<String, Object>> maps = (List<Map<String, Object>>) map.get("resources");
 
-                this.resources = maps.stream().map(Resource::new).collect(Collectors.toList());
+                List<Resource> loadedResources = new ArrayList<>(maps.size());
+                for (Map<String, Object> resourceMap : maps) {
+                    loadedResources.add(new Resource(resourceMap));
+                }
+                this.resources = loadedResources;
 
                 this.plugin.getScheduler().runAtEntity(player, w -> openMarketplaceInventory(player));
             });
@@ -253,7 +256,14 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                     this.folders.add(folder);
                 }
 
-                this.baseFolderId = this.folders.stream().filter(e -> e.parentId() == -1).map(Folder::id).findFirst().orElse(-1);
+                int baseId = -1;
+                for (Folder folder : this.folders) {
+                    if (folder.parentId() == -1) {
+                        baseId = folder.id();
+                        break;
+                    }
+                }
+                this.baseFolderId = baseId;
 
                 this.plugin.getScheduler().runAtEntity(player, w -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
             } else {
@@ -279,15 +289,31 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     public Optional<Folder> getCurrentFolder() {
-        return this.folders.stream().filter(e -> e.id() == currentFolderId).findFirst();
+        for (Folder folder : this.folders) {
+            if (folder.id() == currentFolderId) {
+                return Optional.of(folder);
+            }
+        }
+        return Optional.empty();
     }
 
     public Optional<Folder> getFolder(int id) {
-        return this.folders.stream().filter(e -> e.id() == id).findFirst();
+        for (Folder folder : this.folders) {
+            if (folder.id() == id) {
+                return Optional.of(folder);
+            }
+        }
+        return Optional.empty();
     }
 
     public List<Folder> getFolders(Folder folder) {
-        return this.folders.stream().filter(e -> e.parentId() == folder.id()).collect(Collectors.toList());
+        List<Folder> children = new ArrayList<>();
+        for (Folder current : this.folders) {
+            if (current.parentId() == folder.id()) {
+                children.add(current);
+            }
+        }
+        return children;
     }
 
     public void loadPlaceholders() {

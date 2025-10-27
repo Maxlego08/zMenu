@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
@@ -189,7 +188,11 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
             }
 
             if (!meta.getItemFlags().isEmpty()) {
-                configuration.set(path + "flags", meta.getItemFlags().stream().map(Enum::name).collect(Collectors.toList()));
+                List<String> flags = new ArrayList<>(meta.getItemFlags().size());
+                for (ItemFlag flag : meta.getItemFlags()) {
+                    flags.add(flag.name());
+                }
+                configuration.set(path + "flags", flags);
             }
 
             if (meta.hasEnchants()) {

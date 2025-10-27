@@ -4,9 +4,9 @@ import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.api.configuration.Config;
 import org.bukkit.OfflinePlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class PapiUtils extends TranslationHelper {
 
@@ -46,7 +46,11 @@ public class PapiUtils extends TranslationHelper {
 
     public List<String> papi(List<String> placeHolders, OfflinePlayer player, boolean useCache) {
         if (player == null) return placeHolders;
-        return placeHolders.stream().map(placeHolder -> papi(placeHolder, player, useCache)).collect(Collectors.toList());
+        List<String> parsed = new ArrayList<>(placeHolders.size());
+        for (String placeHolder : placeHolders) {
+            parsed.add(papi(placeHolder, player, useCache));
+        }
+        return parsed;
     }
 
     /**

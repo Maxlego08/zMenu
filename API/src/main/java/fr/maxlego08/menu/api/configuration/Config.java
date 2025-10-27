@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @ConfigDialog(
         name = "zMenu Config",
@@ -332,17 +331,16 @@ public class Config {
         antiDupeDiscordWebhookUrl = configuration.getString(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath());
         antiDupeMessage = configuration.getString(ConfigPath.ANTI_DUPE_MESSAGE.getPath());
 
-        allClicksType = configuration.getStringList(ConfigPath.ALL_CLICKS_TYPE.getPath()).stream()
-                .map(name -> {
-                    try {
-                        return ClickType.valueOf(name);
-                    } catch (IllegalArgumentException e) {
-                        Bukkit.getLogger().warning("[zMenu] Invalid click type in config: " + name);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<String> clickTypeStrings = configuration.getStringList(ConfigPath.ALL_CLICKS_TYPE.getPath());
+        List<ClickType> clickTypes = new ArrayList<>(clickTypeStrings.size());
+        for (String name : clickTypeStrings) {
+            try {
+                clickTypes.add(ClickType.valueOf(name));
+            } catch (IllegalArgumentException e) {
+                Bukkit.getLogger().warning("[zMenu] Invalid click type in config: " + name);
+            }
+        }
+        allClicksType = clickTypes;
 
         enableCacheItemStack = configuration.getBoolean(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath());
         enableCooldownClick = configuration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath());
@@ -386,9 +384,10 @@ public class Config {
         configuration.set(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath(), antiDupeDiscordWebhookUrl);
         configuration.set(ConfigPath.ANTI_DUPE_MESSAGE.getPath(), antiDupeMessage);
 
-        List<String> clickTypeNames = allClicksType.stream()
-                .map(Enum::name)
-                .collect(Collectors.toList());
+        List<String> clickTypeNames = new ArrayList<>(allClicksType.size());
+        for (ClickType clickType : allClicksType) {
+            clickTypeNames.add(clickType.name());
+        }
         configuration.set(ConfigPath.ALL_CLICKS_TYPE.getPath(), clickTypeNames);
 
         configuration.set(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath(), enableCacheItemStack);

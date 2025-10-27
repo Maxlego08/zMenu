@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ZInventoryPlayer implements InventoryPlayer {
     private final int MAX_INVENTORY_SIZE = 36;
@@ -62,12 +62,11 @@ public class ZInventoryPlayer implements InventoryPlayer {
 
     @Override
     public void setItems(Map<Integer, ItemStack> items) {
-        setItemsFromEncode(items.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> ItemStackUtils.serializeItemStack(entry.getValue())
-                ))
-        );
+        Map<Integer, String> encodedItems = new HashMap<>();
+        for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
+            encodedItems.put(entry.getKey(), ItemStackUtils.serializeItemStack(entry.getValue()));
+        }
+        setItemsFromEncode(encodedItems);
     }
 
     @Override
@@ -97,7 +96,11 @@ public class ZInventoryPlayer implements InventoryPlayer {
 
     @Override
     public List<ItemStack> getItemStacks() {
-        return this.items.values().stream().map(ItemStackUtils::deserializeItemStack).toList();
+        List<ItemStack> deserialized = new ArrayList<>(this.items.size());
+        for (String encoded : this.items.values()) {
+            deserialized.add(ItemStackUtils.deserializeItemStack(encoded));
+        }
+        return deserialized;
     }
 
     @Override
