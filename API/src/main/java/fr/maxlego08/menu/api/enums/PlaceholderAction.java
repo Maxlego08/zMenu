@@ -28,10 +28,6 @@ public enum PlaceholderAction {
 
     private final List<String> aliases;
 
-    PlaceholderAction() {
-        this.aliases = new ArrayList<>();
-    }
-
     PlaceholderAction(String... aliases) {
         this.aliases = Arrays.asList(aliases);
     }

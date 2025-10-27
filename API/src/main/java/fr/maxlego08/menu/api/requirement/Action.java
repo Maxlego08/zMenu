@@ -70,10 +70,11 @@ public abstract class Action {
      */
     protected List<String> parseAndFlattenCommands(List<String> liste, Player player) {
         List<String> commands = new ArrayList<>();
+        final String playerName = player.getName();
         for (String cmd : liste) {
             String[] split = cmd.split("\n");
             for (String part : split) {
-                commands.add(part.replace("%player%", player.getName()));
+                commands.add(part.replace("%player%", playerName));
             }
         }
         return commands;
