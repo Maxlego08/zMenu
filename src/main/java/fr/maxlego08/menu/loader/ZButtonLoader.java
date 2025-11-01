@@ -71,8 +71,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             Map<String, Object> mapPlaceholders = new HashMap<>();
             patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
-            String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name"));
-            String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", null));
+            String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name", configuration.getString(path + "pattern.file")));
+            String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", configuration.getString(path + "pattern.plugin", null)));
             Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
             if (patternPlugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
 
@@ -451,7 +451,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
     @Override
     public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
-        //TODO: FINISH THE SAVE METHOD
+        // TODO: FINISH THE SAVE METHOD
     }
 
     private ButtonOption createInstance(Plugin plugin, Class<? extends ButtonOption> aClass) {
