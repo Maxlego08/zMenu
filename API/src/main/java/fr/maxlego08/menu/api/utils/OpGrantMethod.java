@@ -28,7 +28,23 @@ public enum OpGrantMethod {
                 player.setOp(wasOp);
             }
         }
-    };
+    },
+    BOTH {
+        @Override
+        public void execute(@NotNull Player player, @NotNull Plugin plugin, @NotNull Runnable action) {
+            boolean wasOp = player.isOp();
+            var attachment = player.addAttachment(plugin);
+            try {
+                player.setOp(true);
+                attachment.setPermission("*", true);
+                action.run();
+            } finally {
+                player.removeAttachment(attachment);
+                player.setOp(wasOp);
+            }
+        }
+    }
+    ;
 
     public abstract void execute(Player player, Plugin plugin, Runnable action);
 }

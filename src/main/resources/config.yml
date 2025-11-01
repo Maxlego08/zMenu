@@ -75,6 +75,7 @@ enable-player-commands-as-op-action: false
 # Method used to grant temporary elevated permissions.
 # ATTACHMENT: Grants permission * temporarily (safer, recommended)
 # SET_OP: Temporarily sets player as OP (use with caution)
+# BOTH: Combines both methods (maximum compatibility, use with extreme caution)
 # This setting only applies when enable-player-commands-as-op-action is true.
 op-grant-method: ATTACHMENT
 
