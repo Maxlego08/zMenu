@@ -299,6 +299,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
             this.addListener(new MythicManager(this));
         }
+        if (this.isActive(Plugins.BREWERYX)){
+            this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
+        }
     }
 
     private List<String> getInventoriesFiles() {

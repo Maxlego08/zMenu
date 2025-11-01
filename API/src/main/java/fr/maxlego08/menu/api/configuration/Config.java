@@ -3,6 +3,8 @@ package fr.maxlego08.menu.api.configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.utils.OpGrantMethod;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.ClickType;
@@ -271,6 +273,17 @@ public class Config {
     )
     public static boolean enablePlayerOpenInventoryLogs = true;
 
+    @ConfigOption(
+        key = "enablePlayerCommandsAsOPAction",
+        type = DialogInputType.BOOLEAN,
+        trueText = "<green>Enabled",
+        falseText = "<red>Disabled",
+        label = "Enable player commands as OP action (requires server restart)"
+    )
+    public static boolean enablePlayerCommandsAsOPAction = false;
+
+    public static OpGrantMethod opGrantMethod = OpGrantMethod.ATTACHMENT;
+
     /**
      * static Singleton instance.
      */
@@ -349,6 +362,14 @@ public class Config {
 
         enableDownloadCommand = configuration.getBoolean(ConfigPath.ENABLE_DOWNLOAD_COMMAND.getPath());
         enablePlayerOpenInventoryLogs = configuration.getBoolean(ConfigPath.ENABLE_PLAYER_OPEN_INVENTORY_LOGS.getPath());
+
+        enablePlayerCommandsAsOPAction = configuration.getBoolean(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath());
+        try {
+            opGrantMethod = OpGrantMethod.valueOf(configuration.getString(ConfigPath.OP_GRANT_METHOD.getPath(), OpGrantMethod.ATTACHMENT.name()).toUpperCase());
+        } catch (IllegalArgumentException e) {
+            Logger.info("Invalid op grant method in config, defaulting to ATTACHMENT.");
+            opGrantMethod = OpGrantMethod.ATTACHMENT;
+        }
     }
 
     public void save(FileConfiguration configuration, File file) {
@@ -438,7 +459,10 @@ public class Config {
         ENABLE_CACHE_PLACEHOLDER_API("enable-cache-placeholder-api"),
 
         ENABLE_DOWNLOAD_COMMAND("enable-download-command"),
-        ENABLE_PLAYER_OPEN_INVENTORY_LOGS("enable-player-open-inventory-logs")
+        ENABLE_PLAYER_OPEN_INVENTORY_LOGS("enable-player-open-inventory-logs"),
+
+        ENABLE_PLAYER_COMMANDS_AS_OP_ACTION("enable-player-commands-as-op-action"),
+        OP_GRANT_METHOD("op-grant-method")
         ;
         private final String path;
 
