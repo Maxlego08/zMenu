@@ -250,6 +250,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
         if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
+            this.fontImage = new OraxenFont();
         }
         if (this.isActive(Plugins.CRAFTENGINE)) {
             this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
