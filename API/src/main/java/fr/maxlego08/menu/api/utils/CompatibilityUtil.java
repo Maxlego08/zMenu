@@ -26,7 +26,7 @@ public class CompatibilityUtil {
             getTopInventory.setAccessible(true);
             return (Inventory) getTopInventory.invoke(view);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -37,7 +37,7 @@ public class CompatibilityUtil {
             getTopInventory.setAccessible(true);
             return (Inventory) getTopInventory.invoke(view);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
