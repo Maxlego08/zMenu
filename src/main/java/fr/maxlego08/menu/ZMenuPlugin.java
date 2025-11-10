@@ -269,17 +269,17 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.getLogger().info("Registered Nexo material loader");
         }
 
-        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
+        if (this.isActive(Plugins.MAGICCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
             this.getLogger().info("Registered MagicCosmetics material loader");
         }
 
-        if (this.isEnable(Plugins.HMCCOSMETICS)) {
+        if (this.isActive(Plugins.HMCCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
             this.getLogger().info("Registered HMC Cosmetics material loader");
         }
 
-        if (this.isEnable(Plugins.ITEMSADDER)) {
+        if (this.isActive(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
             this.getLogger().info("Registered ItemsAdder material loader and font");
