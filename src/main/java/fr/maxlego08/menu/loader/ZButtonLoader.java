@@ -20,6 +20,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
@@ -39,7 +40,6 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
@@ -71,8 +71,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             Map<String, Object> mapPlaceholders = new HashMap<>();
             patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
-            String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name"));
-            String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", null));
+            String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name", configuration.getString(path + "pattern.file")));
+            String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", configuration.getString(path + "pattern.plugin", null)));
             Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
             if (patternPlugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
 
@@ -150,7 +150,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             slots = defaultButtonValue.getSlots();
         } else {
             int finalPage = page;
-            slots = slots.stream().map(specialSlot -> specialSlot + ((finalPage - 1) * this.inventorySize)).collect(Collectors.toList());
+            List<Integer> adjustedSlots = new ArrayList<>(slots.size());
+            for (Integer specialSlot : slots) {
+                adjustedSlots.add(specialSlot + ((finalPage - 1) * this.inventorySize));
+            }
+            slots = adjustedSlots;
         }
 
         char currentChar = buttonName.charAt(0);
@@ -238,7 +242,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<String> permissions = configuration.getStringList(path + "permission");
         if (permissions.isEmpty()) permissions = configuration.getStringList(path + "permissions");
         if (!permissions.isEmpty()) {
-            button.setPermissions(permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+            List<PermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
+            for (String permissionValue : permissions) {
+                mappedPermissions.add(new ZPermissionPermissible(permissionValue));
+            }
+            button.setPermissions(mappedPermissions);
         }
         String permission = configuration.getString(path + "permission", null);
         if (permission != null) {
@@ -255,7 +263,11 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         if (orPermissions.isEmpty()) {
             orPermissions = configuration.getStringList(path + "or-permissions");
         }
-        button.setOrPermissions(orPermissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+        List<PermissionPermissible> mappedOrPermissions = new ArrayList<>(orPermissions.size());
+        for (String permissionValue : orPermissions) {
+            mappedOrPermissions.add(new ZPermissionPermissible(permissionValue));
+        }
+        button.setOrPermissions(mappedOrPermissions);
 
         if (configuration.contains(path + "else")) {
 
@@ -278,13 +290,16 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader(this.plugin.getButtonManager());
-        List<PlaceholderPermissible> placeholders = ((List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>())).stream().map(map -> (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file)).filter(permissible -> {
-            if (!permissible.isValid()) {
+        List<Map<String, Object>> placeholderMaps = (List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>());
+        List<PlaceholderPermissible> placeholders = new ArrayList<>();
+        for (Map<String, Object> map : placeholderMaps) {
+            PlaceholderPermissible permissible = (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
+            if (permissible == null || !permissible.isValid()) {
                 Logger.info("A placeholder is invalid in the placeholder list of the button " + path + " in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
-                return false;
+                continue;
             }
-            return true;
-        }).collect(Collectors.toList());
+            placeholders.add(permissible);
+        }
 
         String placeholder = configuration.getString(path + "placeHolder", configuration.getString(path + "placeholder", null));
         PlaceholderAction placeholderAction = PlaceholderAction.from(configuration.getString(path + "action", null));
@@ -354,7 +369,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
-        List<ButtonOption> buttonOptions = inventoryManager.getOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(option -> createInstance(entry.getKey(), option))).filter(Objects::nonNull).collect(Collectors.toList());
+        List<ButtonOption> buttonOptions = new ArrayList<>();
+        for (Map.Entry<Plugin, List<Class<? extends ButtonOption>>> entry : inventoryManager.getOptions().entrySet()) {
+            for (Class<? extends ButtonOption> optionClass : entry.getValue()) {
+                ButtonOption instance = createInstance(entry.getKey(), optionClass);
+                if (instance != null) {
+                    buttonOptions.add(instance);
+                }
+            }
+        }
         buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, file));
         button.setOptions(buttonOptions);
 
@@ -428,7 +451,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
     @Override
     public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
-        //TODO: FINISH THE SAVE METHOD
+        // TODO: FINISH THE SAVE METHOD
     }
 
     private ButtonOption createInstance(Plugin plugin, Class<? extends ButtonOption> aClass) {

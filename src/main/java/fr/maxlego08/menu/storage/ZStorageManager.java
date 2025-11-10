@@ -26,7 +26,6 @@ import org.bukkit.event.EventPriority;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class ZStorageManager implements StorageManager {
 
@@ -135,12 +134,16 @@ public class ZStorageManager implements StorageManager {
                     table.string("plugin", event.getInventory().getPlugin().getName());
                     table.string("inventory", event.getInventory().getFileName());
                     table.bigInt("page", event.getPage());
-                    table.string("old_inventories",
-                            event.getOldInventories().stream()
-                                    .filter(Objects::nonNull)
-                                    .map(Inventory::getFileName)
-                                    .collect(Collectors.joining(","))
-                    );
+                    StringBuilder inventoriesBuilder = new StringBuilder();
+                    for (Inventory oldInventory : event.getOldInventories()) {
+                        if (oldInventory != null) {
+                            if (inventoriesBuilder.length() > 0) {
+                                inventoriesBuilder.append(',');
+                            }
+                            inventoriesBuilder.append(oldInventory.getFileName());
+                        }
+                    }
+                    table.string("old_inventories", inventoriesBuilder.toString());
                 }));
             }
             iterator.remove();

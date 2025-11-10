@@ -81,7 +81,16 @@ public enum NmsVersion {
         int currentVersion = matcher.find() ? Integer.parseInt(matcher.group("version").replace(".", "") + (matcher.group("patch") != null ? matcher.group("patch").replace(".", "") : "0")) : 0;
 
         // Returns the version closest to the current version
-        return java.util.Arrays.stream(values()).min(java.util.Comparator.comparingInt(v -> Math.abs(v.version - currentVersion))).orElse(V_1_12_2);
+        NmsVersion closest = V_1_12_2;
+        int smallestDifference = Integer.MAX_VALUE;
+        for (NmsVersion value : values()) {
+            int difference = Math.abs(value.version - currentVersion);
+            if (difference < smallestDifference) {
+                smallestDifference = difference;
+                closest = value;
+            }
+        }
+        return closest;
     }
 
     /**

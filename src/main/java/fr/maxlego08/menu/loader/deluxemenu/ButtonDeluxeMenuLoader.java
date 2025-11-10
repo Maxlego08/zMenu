@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.ZRequirement;
@@ -28,7 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Button> {
 
@@ -177,9 +177,18 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
                 permissions.add(permission);
             }
         }
-        button.setPermissions(permissions.stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+        List<PermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
+        for (String permissionValue : permissions) {
+            mappedPermissions.add(new ZPermissionPermissible(permissionValue));
+        }
+        button.setPermissions(mappedPermissions);
         List<String> orPermissions = configuration.getStringList(path + "orPermission");
-        button.setOrPermissions((orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions).stream().map(ZPermissionPermissible::new).collect(Collectors.toList()));
+        List<String> resolvedOrPermissions = orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions;
+        List<PermissionPermissible> mappedOrPermissions = new ArrayList<>(resolvedOrPermissions.size());
+        for (String permissionValue : resolvedOrPermissions) {
+            mappedOrPermissions.add(new ZPermissionPermissible(permissionValue));
+        }
+        button.setOrPermissions(mappedOrPermissions);
 
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
         if (Config.enableFastEvent) {

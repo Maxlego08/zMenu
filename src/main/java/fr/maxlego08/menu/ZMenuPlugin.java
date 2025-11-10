@@ -249,60 +249,94 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
+
         if (this.isActive(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
+            this.getLogger().info("Registered HeadDatabase material loader");
         }
+
         if (this.isActive(Plugins.ZHEAD)) {
             this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
+            this.getLogger().info("Registered ZHead material loader");
         }
+
         if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
+            this.fontImage = new OraxenFont();
+            this.getLogger().info("Registered Oraxen material loader and font");
         }
+
         if (this.isActive(Plugins.CRAFTENGINE)) {
             this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
+            this.getLogger().info("Registered CraftEngine material loader");
         }
+
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
+            this.getLogger().info("Registered Nexo material loader");
         }
-        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
+
+        if (this.isActive(Plugins.MAGICCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
+            this.getLogger().info("Registered MagicCosmetics material loader");
         }
-        if (this.isEnable(Plugins.HMCCOSMETICS)) {
+
+        if (this.isActive(Plugins.HMCCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
+            this.getLogger().info("Registered HMC Cosmetics material loader");
         }
-        if (this.isEnable(Plugins.ITEMSADDER)) {
+
+        if (this.isActive(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
+            this.getLogger().info("Registered ItemsAdder material loader and font");
         }
+
         if (this.isActive(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
+            this.getLogger().info("Registered SlimeFun material loader");
         }
+
         if (this.isActive(Plugins.NOVA)) {
             this.inventoryManager.registerMaterialLoader(new NovaLoader());
+            this.getLogger().info("Registered Nova material loader");
         }
+
         if (this.isActive(Plugins.ECO)) {
             this.inventoryManager.registerMaterialLoader(new EcoLoader());
+            this.getLogger().info("Registered Eco material loader");
         }
+
         if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
+            this.getLogger().info("Registered zItems material loader");
         }
+
         if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
+            this.getLogger().info("Registered ExecutableItems material loader");
         }
+
         if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
+            this.getLogger().info("Registered ExecutableBlocks material loader");
         }
+
         if (this.isActive(Plugins.NEXTGENS)) {
             this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
+            this.getLogger().info("Registered NextGens material loader");
         }
+
         if (this.isActive(Plugins.MYTHICMOBS)){
             this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
             this.addListener(new MythicManager(this));
+            this.getLogger().info("Registered MythicMobs material loader and listener");
         }
         if (this.isActive(Plugins.BREWERYX)){
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
         }
     }
+
 
     private List<String> getInventoriesFiles() {
         List<String> files = new ArrayList<>();

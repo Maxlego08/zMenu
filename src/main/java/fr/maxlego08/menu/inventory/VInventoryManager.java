@@ -199,17 +199,17 @@ public class VInventoryManager extends ListenerAdapter {
     protected void onDeath(PlayerDeathEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof VInventory vInventory) {
-            if (vInventory instanceof InventoryDefault inventoryDefault){
+            if (vInventory instanceof InventoryDefault inventoryDefault) {
                 fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
                 if (menu != null && menu.cleanInventory()) {
                     event.getDrops().clear();
                     InventoriesPlayer inventoriesPlayer = plugin.getInventoriesPlayer();
                     List<ItemStack> savedItems = inventoriesPlayer.getInventory(player.getUniqueId());
                     inventoriesPlayer.clearInventorie(player.getUniqueId());
-                    if (event.getKeepInventory()){
+                    if (event.getKeepInventory()) {
                         player.getInventory().clear();
                         for (ItemStack itemStack : savedItems) {
-                            if (itemStack != null){
+                            if (itemStack != null) {
                                 player.getInventory().addItem(itemStack);
                             }
                         }
@@ -235,24 +235,22 @@ public class VInventoryManager extends ListenerAdapter {
 
     public void close(Predicate<VInventory> predicate) {
         if (!this.plugin.isEnabled()) {
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-                if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
-                    if (player.isOnline()) {
-                        player.closeInventory();
-                    }
-                }
-            });
+            Bukkit.getOnlinePlayers().forEach(player -> needClose(player, predicate));
             return;
         }
-        Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> {
-            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+        Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> needClose(player, predicate)));
+    }
+
+    private void needClose(Player player, Predicate<VInventory> predicate) {
+        var inventory = CompatibilityUtil.getTopInventory(player);
+        if (inventory != null && inventory.getHolder() != null) {
+            InventoryHolder holder = inventory.getHolder();
             if (holder instanceof VInventory vInventory && predicate.test(vInventory)) {
                 if (player.isOnline()) {
                     player.closeInventory();
                 }
             }
-        }));
+        }
     }
 
     @Override

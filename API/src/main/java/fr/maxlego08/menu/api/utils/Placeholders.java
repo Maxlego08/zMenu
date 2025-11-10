@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.api.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Placeholders {
 
@@ -43,7 +43,11 @@ public class Placeholders {
      * @return the list of parsed strings
      */
     public List<String> parse(List<String> strings) {
-        return strings.stream().map(this::parse).collect(Collectors.toList());
+        List<String> parsed = new ArrayList<>(strings.size());
+        for (String string : strings) {
+            parsed.add(this.parse(string));
+        }
+        return parsed;
     }
 
     /**

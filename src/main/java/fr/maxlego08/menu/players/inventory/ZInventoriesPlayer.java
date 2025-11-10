@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 public class ZInventoriesPlayer implements InventoriesPlayer {
 
@@ -103,22 +102,22 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
 
     @Override
     public void loadInventories() {
-        this.inventories.putAll(this.plugin.getStorageManager().loadInventories().stream().collect(Collectors.toMap(
-                InventoryDTO::player_id,
-                inventory -> {
-                    var inventoryPlayer = new ZInventoryPlayer(this.plugin);
-                    Arrays.stream(inventory.inventory().split(";"))
-                            .map(s -> s.split(":"))
-                            .filter(parts -> parts.length == 2 && !parts[0].isEmpty() && !parts[1].isEmpty())
-                            .forEach(parts -> {
-                                try {
-                                    int slot = Integer.parseInt(parts[0]);
-                                    inventoryPlayer.getItems().put(slot, parts[1]);
-                                } catch (NumberFormatException ignored) {
-                                }
-                            });
-                    return inventoryPlayer;
+        Map<UUID, ZInventoryPlayer> loadedInventories = new HashMap<>();
+        for (InventoryDTO inventory : this.plugin.getStorageManager().loadInventories()) {
+            var inventoryPlayer = new ZInventoryPlayer(this.plugin);
+            String[] serializedItems = inventory.inventory().split(";");
+            for (String serializedItem : serializedItems) {
+                String[] parts = serializedItem.split(":");
+                if (parts.length == 2 && !parts[0].isEmpty() && !parts[1].isEmpty()) {
+                    try {
+                        int slot = Integer.parseInt(parts[0]);
+                        inventoryPlayer.getItems().put(slot, parts[1]);
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
-        )));
+            }
+            loadedInventories.put(inventory.player_id(), inventoryPlayer);
+        }
+        this.inventories.putAll(loadedInventories);
     }
 }

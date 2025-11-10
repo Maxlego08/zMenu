@@ -7,8 +7,8 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @param plugin      The plugin where the command comes from
@@ -32,7 +32,11 @@ public record ZCommand(Plugin plugin, String command, List<String> aliases, Stri
 
     @Override
     public List<String> getCommandArguments() {
-        return this.arguments.stream().map(CommandArgument::getArgument).collect(Collectors.toList());
+        List<String> args = new ArrayList<>(this.arguments.size());
+        for (CommandArgument argument : this.arguments) {
+            args.add(argument.getArgument());
+        }
+        return args;
     }
 
     @Override

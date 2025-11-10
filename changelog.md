@@ -42,6 +42,15 @@
 
 # Unreleased
 
+# 1.1.0.5
+
+- Improved and optimized internal code. These consist of micro-optimizations that will only be noticeable on servers with several hundred players.
+- Added an option to disable toasts.
+- Fixed antivirus-related flag issues.
+- Fixed default attributes applied to items.
+- Added support for MythicMobs.
+- Added a placeholder for global placeholders.
+
 # 1.1.0.4
 
 - Update to Sarah 1.20. Added MARIADB support
