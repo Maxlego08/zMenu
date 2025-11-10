@@ -26,7 +26,9 @@ public enum Plugins {
 	MAGICCOSMETICS("MagicCosmetics"),
     NEXTGENS("NextGens"),
     MYTHICMOBS("MythicMobs"),
-	ZMENUPLUS("zMenuPlus");
+	ZMENUPLUS("zMenuPlus"),
+    BREWERYX("BreweryX")
+    ;
 
 	private final String name;
 

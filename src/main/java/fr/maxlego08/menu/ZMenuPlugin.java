@@ -5,6 +5,7 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -36,6 +37,7 @@ import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
+import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
@@ -96,6 +98,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
+    private final ItemManager itemManager = new ZItemManager(this);
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
     private CommandMenu commandMenu;
@@ -170,7 +173,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             ConfigManager configManager = new ConfigManager(this);
             this.dialogManager = new ZDialogManager(this, configManager);
             servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-            configManager.registerConfig(Config.class, this);
+            ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
+            Logger.info(configDialogBuilder.getName());
+            configManager.registerConfig(configDialogBuilder,Config.class, this);
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
@@ -181,6 +186,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(new AdapterListener(this));
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
+        this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addSimpleListener(this.inventoryManager);
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
@@ -192,6 +198,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.messageLoader.load();
         this.inventoriesPlayer.loadInventories();
         this.dataManager.loadPlayers();
+        this.itemManager.loadAll();
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
@@ -325,6 +332,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.addListener(new MythicManager(this));
             this.getLogger().info("Registered MythicMobs material loader and listener");
         }
+        if (this.isActive(Plugins.BREWERYX)){
+            this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
+        }
     }
 
 
@@ -352,6 +362,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/server_link-dialog.yml");
         }
 
+        files.add("items/default-items.yml");
+
         return files;
     }
 
@@ -367,6 +379,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
+        this.itemManager.unloadListeners();
         // this.packetUtils.onDisable();
 
         this.postDisable();
@@ -415,6 +428,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      */
     @Override
     public DialogManager getDialogManager() {return this.dialogManager;}
+
+    @Override
+    public ItemManager getItemManager() {
+        return this.itemManager;
+    }
 
     @Override
     public StorageManager getStorageManager() {

@@ -21,6 +21,7 @@ softdepend:
   - ExecutableItems
   - ExecutableBlocks
   - MythicMobs
+  - BreweryX
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2

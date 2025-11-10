@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.invoke
-
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "9.0.0"
@@ -82,7 +80,7 @@ allprojects {
 
     dependencies {
         if (project.name != "Paper") {
-            compileOnly("org.spigotmc:spigot-api:1.21.8-R0.1-SNAPSHOT")
+            compileOnly("org.spigotmc:spigot-api:1.21.10-R0.1-SNAPSHOT")
         }
         compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
