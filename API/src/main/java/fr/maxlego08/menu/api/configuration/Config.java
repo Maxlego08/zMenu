@@ -16,10 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@ConfigDialog(
-        name = "zMenu Config",
-        externalTitle = "zMenu Configuration"
-)
 public class Config {
 
     // Enable debug, allows you to display errors in the console that would normally be hidden.
