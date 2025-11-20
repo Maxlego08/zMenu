@@ -46,6 +46,17 @@ public interface MenuItemStack {
     ItemStack build(Player player, boolean useCache, Placeholders placeholders);
 
     /**
+     * Build an item stack using the given player, use cache and placeholders with a default base itemStack.
+     *
+     * @param player                The player to use to build the item stack.
+     * @param useCache              Whether to use the cache or not.
+     * @param placeholders          The placeholders to use in the item stack construction.
+     * @param defaultItemStack      The base itemStack build
+     * @return The built item stack.
+     */
+    ItemStack build(Player player, boolean useCache, Placeholders placeholders, ItemStack defaultItemStack);
+
+    /**
      * Retrieves the {@link InventoryManager} responsible for managing this menu item stack.
      *
      * @return The inventory manager that manages this menu item stack.
@@ -109,9 +120,23 @@ public interface MenuItemStack {
 
     void setData(String data);
 
+    /**
+     * This méthod is deprecated, now use placeholder support
+     * Use getDura or parseDura
+     * @return durability
+     */
+    @Deprecated
     int getDurability();
 
+    String getDura();
+
+    int parseDura(Player player);
+
+    int parseDura(OfflinePlayer offlinePlayer, Placeholders placeholders);
+
     void setDurability(int durability);
+
+    void setDurability(String durability);
 
     Potion getPotion();
 

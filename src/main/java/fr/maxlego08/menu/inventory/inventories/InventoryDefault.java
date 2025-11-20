@@ -268,6 +268,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 itemButton.setMiddleClick(event -> button.onMiddleClick(this.player, event, this, slot));
             }
 
+            if (button.isDraggable()) {
+                //If one button is draggrable enable click
+                super.setDisablePlayerInventoryClick(false);
+            }
+
             if (button.hasRefreshRequirement() || button.isUpdated()) {
 
                 RefreshRequirement refreshRequirement = button.hasRefreshRequirement() ? button.getRefreshRequirement() : null;

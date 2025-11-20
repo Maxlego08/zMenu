@@ -33,7 +33,7 @@ public class MenuItemStackFormMap {
         ZMenuItemStack menuItemStack = new ZMenuItemStack(inventoryManager, file.getPath(), path);
 
         menuItemStack.setData(accessor.getString("data", "0"));
-        menuItemStack.setDurability(accessor.getInt("durability", 0));
+        menuItemStack.setDurability(accessor.getString("durability", null));
         menuItemStack.setAmount(accessor.getString("amount", "1"));
         menuItemStack.setMaterial(accessor.getString("material", null));
         menuItemStack.setTargetPlayer(accessor.getString("target", null));

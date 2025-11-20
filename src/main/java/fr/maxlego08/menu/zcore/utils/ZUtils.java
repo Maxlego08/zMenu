@@ -810,27 +810,34 @@ public abstract class ZUtils extends MessageUtils {
             for (String originalLine : cachedLines.lines()) {
                 String line = originalLine;
 
+                if (line == null) continue;
+                if (!line.contains("%")) {
+                    builder.append(line).append('\n');
+                    continue;
+                }
+
                 for (Map.Entry<String, Object> replacement : placeholdersMap.entrySet()) {
                     String key = replacement.getKey();
                     Object value = replacement.getValue();
 
-                    if (line != null) {
-                        if (value instanceof List<?> && line.contains("%" + key + "%")) {
-                            int index = line.indexOf("%" + key + "%");
-                            String prefix = line.substring(0, index);
-                            String finalLine = line.substring(index);
-                            ((List<?>) value).forEach(currentValue -> {
-                                String replacementValue = currentValue != null ? currentValue.toString() : "";
-                                String currentElement = placeholders.parse(finalLine, key, replacementValue);
-                                builder.append(placeholders.parse(prefix, key, replacementValue)).append(currentElement);
-                                builder.append('\n');
-                            });
+                    if (line == null) continue;
+                    int index = line.indexOf('%' + key + '%');
+                    if (index < 0) continue;
 
-                            line = null;
-                        } else {
-                            String replacementValue = value != null ? value.toString() : "";
-                            line = placeholders.parse(line, key, replacementValue);
+                    if (value instanceof List<?>) {
+                        String prefix = line.substring(0, index);
+                        String suffix = line.substring(index); // équivaut à "finalLine"
+
+                        for (Object element : (List<?>) value) {
+                            String repl = (element != null ? element.toString() : "");
+                            builder.append(placeholders.parse(prefix, key, repl))
+                                    .append(placeholders.parse(suffix, key, repl))
+                                    .append('\n');
                         }
+                        line = null;
+                    } else {
+                        String repl = (value != null ? value.toString() : "");
+                        line = placeholders.parse(line, key, repl);
                     }
                 }
 

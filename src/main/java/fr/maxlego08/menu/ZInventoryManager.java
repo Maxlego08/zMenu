@@ -23,12 +23,13 @@ import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
+import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
+import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogItemBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogPlainMessageBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogBooleanInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogNumberRangeInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogSingleOptionInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogTextInputLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -101,6 +102,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         DialogManager dialogManager = this.plugin.getDialogManager();
         if (dialogManager != null) {
             dialogManager.loadDialogs();
+        }
+        BedrockManager bedrockManager = this.plugin.getBedrockManager();
+        if (bedrockManager != null) {
+            bedrockManager.loadBedrockInventory();
         }
         this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
     }
@@ -373,12 +378,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TeleportLoader(this.plugin));
         buttonManager.registerAction(new CurrencyWithdrawLoader());
         buttonManager.registerAction(new CurrencyDepositLoader());
+        buttonManager.registerAction(new ItemEditLoader(this.plugin));
+        buttonManager.registerAction(new ItemGiveLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
         buttonManager.registerAction(new ToastLoader(this.plugin));
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
+        }
+        if (this.plugin.getBedrockManager() != null) {
+            buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
         }
 
         // Loading ButtonLoader
@@ -396,16 +406,26 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
         buttonManager.register(new SwitchLoader(this.plugin));
+        buttonManager.register(new ItemDragLoader(this.plugin));
 
         // Loading Button Dialog
         // Register Button Dialog Body
-        buttonManager.register(new ItemBodyLoader(this.plugin));
-        buttonManager.register(new PlainMessageBodyLoader(this.plugin));
+        buttonManager.register(new DialogItemBodyLoader(this.plugin));
+        buttonManager.register(new DialogPlainMessageBodyLoader(this.plugin));
         // Register Button Dialog Input
-        buttonManager.register(new TextInputLoader(this.plugin));
-        buttonManager.register(new BooleanInputLoader(this.plugin));
-        buttonManager.register(new NumberRangeInputLoader(this.plugin));
-        buttonManager.register(new SingleOptionInputLoader(this.plugin));
+        buttonManager.register(new DialogTextInputLoader(this.plugin));
+        buttonManager.register(new DialogBooleanInputLoader(this.plugin));
+        buttonManager.register(new DialogNumberRangeInputLoader(this.plugin));
+        buttonManager.register(new DialogSingleOptionInputLoader(this.plugin));
+
+        // Register Button Bedrock
+        buttonManager.register(new BedrockButtonLoader(this.plugin));
+        buttonManager.register(new BedrockModalButtonLoader(this.plugin));
+        buttonManager.register(new BedrockLabelLoader(this.plugin));
+        buttonManager.register(new BedrockTextInputLoader(this.plugin));
+        buttonManager.register(new BedrockToggleInputLoader(this.plugin));
+        buttonManager.register(new BedrockSliderInputLoader(this.plugin));
+        buttonManager.register(new BedrockDropDownInputLoader(this.plugin));
 
         // Register ItemStackSimilar
         registerItemStackVerification(new FullSimilar());
@@ -423,6 +443,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         var commandManager = this.plugin.getCommandManager();
         commandManager.registerArgumentValidator(new IntArgumentValidator());
         commandManager.registerArgumentValidator(new DoubleArgumentValidator());
+        commandManager.registerArgumentValidator(new BedrockPlayerArgumentValidator(this.plugin.getBedrockManager()));
         commandManager.registerArgumentValidator(new BooleanArgumentValidator());
         commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
