@@ -53,7 +53,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         ZMenuItemStack menuItemStack = new ZMenuItemStack(this.manager, file.getPath(), path);
         menuItemStack.setMaterial(configuration.getString(path + "material", null));
         menuItemStack.setData(configuration.getString(path + "data", "0"));
-        menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
+        menuItemStack.setDurability(configuration.getString(path + "durability", null));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
         menuItemStack.setUrl(configuration.getString(path + "url", null));
@@ -547,7 +547,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         } catch (Exception ignored) {
             configuration.set(path + "data", item.getData());
         }
-        if (item.getDurability() > 0) configuration.set(path + "durability", item.getDurability());
+        if (item.getDura() != null) configuration.set(path + "durability", item.getDurability());
         if (item.getAmount() != null) {
             try {
                 int value = Integer.parseInt(item.getAmount());
