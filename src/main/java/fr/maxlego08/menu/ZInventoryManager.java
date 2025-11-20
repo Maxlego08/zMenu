@@ -378,6 +378,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TeleportLoader(this.plugin));
         buttonManager.registerAction(new CurrencyWithdrawLoader());
         buttonManager.registerAction(new CurrencyDepositLoader());
+        buttonManager.registerAction(new ItemEditLoader(this.plugin));
+        buttonManager.registerAction(new ItemGiveLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
@@ -404,6 +406,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
         buttonManager.register(new SwitchLoader(this.plugin));
+        buttonManager.register(new ItemDragLoader(this.plugin));
 
         // Loading Button Dialog
         // Register Button Dialog Body

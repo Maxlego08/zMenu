@@ -40,6 +40,7 @@ import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
+import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
 import fr.maxlego08.menu.placeholder.Placeholder;
@@ -209,6 +210,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.websiteManager.registerPlaceholders();
         new MenuPlaceholders().register(this);
+        new ItemPlaceholders().register(this);
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
@@ -304,6 +306,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
         files.add("inventories/examples/switch.yml");
+        files.add("inventories/examples/item_drag.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");

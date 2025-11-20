@@ -40,6 +40,7 @@ public abstract class Button extends PlaceholderButton {
     private boolean isUpdated = false;
     private boolean isMasterButtonUpdated = false;
     private boolean refreshOnClick = false;
+    private boolean refreshOnDrag = false;
     private List<ActionPlayerData> datas = new ArrayList<>();
     private boolean updateOnClick = false;
     private boolean isOpenAsync = false;
@@ -258,6 +259,13 @@ public abstract class Button extends PlaceholderButton {
         this.refreshOnClick = refreshOnClick;
     }
 
+    public boolean isRefreshOnDrag() {
+        return this.refreshOnDrag;
+    }
+
+    public void setRefreshOnDrag(boolean refreshOnDrag) {
+        this.refreshOnDrag = refreshOnDrag;
+    }
 
     public List<ActionPlayerData> getData() {
         return this.datas;
@@ -427,6 +435,15 @@ public abstract class Button extends PlaceholderButton {
      */
     public void setPlayerInventory(boolean inPlayerInventory) {
         isInPlayerInventory = inPlayerInventory;
+    }
+
+    /**
+     * Returns whether this button allow draggable in the button slot.
+     *
+     * @return true if this button can allow drag in this button, false otherwise
+     */
+    public boolean isDraggable() {
+        return false;
     }
 
     /**
