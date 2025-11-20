@@ -3,9 +3,9 @@ package fr.maxlego08.menu.config;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
-import fr.maxlego08.menu.api.configuration.annotation.ConfigDialog;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
+import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
@@ -27,6 +27,7 @@ import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
 import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -57,43 +58,35 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
     }
 
     @Override
-    public <T> void registerConfig(Class<T> configClass, Plugin plugin) {
-        ConfigDialog configDialog = validateConfigClass(configClass);
-
+    public <T> void registerConfig(@NotNull ConfigDialogBuilder configDialogBuilder, @NotNull Class<T> configClass, @NotNull Plugin plugin) {
         String configName = plugin.getName() + ":" + configClass.getSimpleName();
         ConfigFieldContext context = processConfigFields(configClass);
 
-        ZDialogInventoryDeveloper dialogInventory = createDialogInventory(configDialog, configName, context.getUpdateConsumer());
+        ZDialogInventoryDeveloper dialogInventory = createDialogInventory(configDialogBuilder, configName, context.getUpdateConsumer());
 
         applyContextToDialog(dialogInventory, context);
         zDialogInventoryDev.put(plugin.getName(), dialogInventory);
     }
 
-    private <T> ConfigDialog validateConfigClass(Class<T> configClass) {
-        ConfigDialog configDialog = configClass.getAnnotation(ConfigDialog.class);
-        if (configDialog == null) {
-            throw new IllegalArgumentException("The class " + configClass.getName() + " must be annotated with @ConfigDialog");
-        }
-        return configDialog;
-    }
-
-    private ZDialogInventoryDeveloper createDialogInventory(ConfigDialog configDialog, String configName, Consumer<Boolean> updateConsumer) {
+    private ZDialogInventoryDeveloper createDialogInventory(ConfigDialogBuilder configDialog, String configName, Consumer<Boolean> updateConsumer) {
         ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(
                 this.menuPlugin,
-                configDialog.name(),
+                configDialog.getName(),
                 configName,
-                configDialog.externalTitle(),
+                configDialog.getExternalTitle(),
                 updateConsumer
         );
 
         dialogInventory.setDialogType(DialogType.CONFIRMATION);
-        dialogInventory.setBooleanConfirmText(configDialog.booleanConfirmText());
-        dialogInventory.setNumberRangeConfirmText(configDialog.numberRangeConfirmText());
-        dialogInventory.setStringConfirmText(configDialog.textConfirmText());
-        dialogInventory.setYesText(configDialog.yesText());
-        dialogInventory.setNoText(configDialog.noText());
-        dialogInventory.setYesWidth(configDialog.yesWidth());
-        dialogInventory.setNoWidth(configDialog.noWidth());
+        dialogInventory.setBooleanConfirmText(configDialog.getBooleanConfirmText());
+        dialogInventory.setNumberRangeConfirmText(configDialog.getNumberRangeConfirmText());
+        dialogInventory.setStringConfirmText(configDialog.getTextConfirmText());
+        dialogInventory.setYesText(configDialog.getYesText());
+        dialogInventory.setYesWidth(configDialog.getYesWidth());
+        dialogInventory.setYesTooltip(configDialog.getYesTooltip());
+        dialogInventory.setNoText(configDialog.getNoText());
+        dialogInventory.setNoWidth(configDialog.getNoWidth());
+        dialogInventory.setNoTooltip(configDialog.getNoTooltip());
         dialogInventory.setPause(true);
         dialogInventory.setCanCloseWithEscape(false);
 
@@ -198,6 +191,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         } catch (Exception e) {
             if (Config.enableDebug) {
                 Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error :" + e.getMessage(), Logger.LogType.ERROR);
+                e.printStackTrace();
             }
         }
     }
