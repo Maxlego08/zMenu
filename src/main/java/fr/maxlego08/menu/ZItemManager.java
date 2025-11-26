@@ -17,6 +17,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
@@ -34,7 +35,7 @@ public class ZItemManager implements ItemManager{
     private final MenuPlugin menuPlugin;
 
     private final Map<String, MechanicListener> mechanicListeners = new HashMap<>();
-    private final Map<String, MechanicFactory> mechanicFactories = new HashMap<>();
+    private final Map<String, MechanicFactory<?>> mechanicFactories = new HashMap<>();
 
     private final Map<String, CustomItemData> customItems = new HashMap<>();
 
@@ -86,7 +87,7 @@ public class ZItemManager implements ItemManager{
                 if (mechanicSection != null) {
                     path += "mechanics.";
                     for (String mechanicId : mechanicSection.getKeys(false)) {
-                        MechanicFactory factory = mechanicFactories.get(mechanicId);
+                        MechanicFactory<?> factory = mechanicFactories.get(mechanicId);
                         if (factory != null) {
                             factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
                             mechanicIds.add(mechanicId);
@@ -108,7 +109,7 @@ public class ZItemManager implements ItemManager{
     @Override
     public void reloadCustomItems() {
         customItems.clear();
-        for (MechanicFactory factory : mechanicFactories.values()) {
+        for (MechanicFactory<?> factory : mechanicFactories.values()) {
             factory.clearMechanics();
         }
         this.loadCustomItems();
@@ -158,7 +159,7 @@ public class ZItemManager implements ItemManager{
     }
 
     @Override
-    public void registerMechanicFactory(MechanicFactory factory) {
+    public void registerMechanicFactory(MechanicFactory<?> factory) {
         if (mechanicFactories.containsKey(factory.getMechanicId())) {
             Logger.info("MechanicFactory " + factory.getMechanicId() + " is already registered.", Logger.LogType.WARNING);
             return;
@@ -177,9 +178,12 @@ public class ZItemManager implements ItemManager{
         MenuItemStack menuItemStack = itemData.menuItemStack();
         ItemStack itemStack = menuItemStack.build(player);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, itemId);
-        itemMeta.getPersistentDataContainer().set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
-        itemStack.setItemMeta(itemMeta);
+        if (itemMeta != null) {
+            PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
+            persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, itemId);
+            persistentDataContainer.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            itemStack.setItemMeta(itemMeta);
+        }
 
         boolean shouldCancel = false;
         for (String mechanicId : itemData.mechanicIds()) {

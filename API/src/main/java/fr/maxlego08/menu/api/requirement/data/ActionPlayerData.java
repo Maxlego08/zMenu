@@ -36,7 +36,7 @@ public interface ActionPlayerData {
      *
      * @return The expiration time in seconds.
      */
-    long getSeconds();
+    String getSeconds();
 
     /**
      * Converts the action into player data.

@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.DiscordComponentAction;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponent;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public class DiscordComponentV2Loader extends ActionLoader {
             DiscordConfigurationComponent config = new DiscordConfigurationComponent(webhookUrl, avatarUrl, username, json);
             return new DiscordComponentAction(config);
         } else {
-            System.err.println("Impossible to load discord action, webhook does not exists: " + webhookUrl);
+            Logger.info("Impossible to load discord action, webhook does not exists: " + webhookUrl, Logger.LogType.ERROR);
         }
         return null;
     }

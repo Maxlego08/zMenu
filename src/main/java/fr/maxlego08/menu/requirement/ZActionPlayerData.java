@@ -20,10 +20,10 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     private final String key;
     private final ActionPlayerDataType type;
     private final Object value;
-    private final long seconds;
+    private final String seconds;
     private final boolean enableMathExpression;
 
-    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, long seconds, boolean enableMathExpression) {
+    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, String seconds, boolean enableMathExpression) {
         super();
         this.storageManager = storageManager;
         this.key = key;
@@ -49,13 +49,19 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     }
 
     @Override
-    public long getSeconds() {
+    public String getSeconds() {
         return this.seconds;
     }
 
     @Override
     public Data toData(OfflinePlayer player) {
-        long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
+        long seconds;
+        try {
+            seconds = Long.parseLong(papi(this.seconds,player,false));
+        } catch (Exception e) {
+            seconds = 0;
+        }
+        long expiredAt = seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
         String result = papi(this.value.toString(), player, false);
         String dataValue = this.enableMathExpression ? String.valueOf((int) new ExpressionBuilder(result).build().evaluate()) : result;
         return new ZData(this.papi(this.key, player, false), dataValue, expiredAt);
