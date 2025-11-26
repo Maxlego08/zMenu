@@ -54,5 +54,4 @@ public class MenuPlaceholders extends ZUtils {
         placeholder.register("time_next_day_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().plusDays(1L).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
         placeholder.register("time_today_start_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
     }
-
 }

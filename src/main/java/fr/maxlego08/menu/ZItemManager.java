@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.event.events.ZMenuItemsLoad;
 import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
 import fr.maxlego08.menu.item.CustomItemData;
@@ -39,6 +40,8 @@ public class ZItemManager implements ItemManager{
 
     private final Map<String, CustomItemData> customItems = new HashMap<>();
 
+    private boolean isFirstLoad = true;
+
     public ZItemManager(ZMenuPlugin menuPlugin) {
         this.itemIdKey = new NamespacedKey(menuPlugin, "item-id");
         this.ownerKey = new NamespacedKey(menuPlugin, "owner");
@@ -67,6 +70,11 @@ public class ZItemManager implements ItemManager{
         }
         try (Stream<Path> stream = Files.walk(Paths.get(itemsFolder.getPath()))) {
             stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(this::loadCustomItem);
+            ZMenuItemsLoad event = new ZMenuItemsLoad(new HashSet<>(customItems.keySet()), !isFirstLoad);
+            menuPlugin.getServer().getPluginManager().callEvent(event);
+            if (isFirstLoad) {
+                isFirstLoad = false;
+            }
         } catch (IOException exception) {
             if (Config.enableDebug){
                 Logger.info("Error while loading items: " + exception.getMessage(), Logger.LogType.ERROR);
