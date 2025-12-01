@@ -12,9 +12,9 @@ public class ItemButton {
 
     private final int slot;
     private final ItemStack displayItem;
-    private Map<ClickType, Consumer<InventoryClickEvent>> onClickType = new HashMap<>();
+    private final Map<ClickType, Consumer<InventoryClickEvent>> onClickType = new HashMap<>();
     private Consumer<InventoryClickEvent> onClick;
-    
+
     public ItemButton(ItemStack displayItem, int slot) {
         super();
         this.displayItem = displayItem;
@@ -30,7 +30,7 @@ public class ItemButton {
         return this;
     }
 
-    public ItemButton setClick(ClickType clickType ,Consumer<InventoryClickEvent> onClick) {
+    public ItemButton setClick(ClickType clickType, Consumer<InventoryClickEvent> onClick) {
         this.onClickType.put(clickType, onClick);
         return this;
     }

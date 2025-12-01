@@ -61,7 +61,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
-    private boolean clearDefaultAttributes = true;
+    private boolean clearDefaultAttributes = false;
     private List<IAttribute> attributes = new ArrayList<>();
     private Banner banner;
     private Firework firework;
@@ -267,10 +267,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
                 this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
             }
+
             if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
                 this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
             }
-
 
             if (this.clearDefaultAttributes && attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
                 itemMeta.setAttributeModifiers(ArrayListMultimap.create());
