@@ -3,8 +3,8 @@ package fr.maxlego08.menu.loader;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.attribute.Attribute;
-import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
+import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
@@ -153,19 +153,20 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      *                      attributes from.
      */
     private void loadAttributes(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
-        List<IAttribute> attributeModifiers = new ArrayList<>();
+        List<AttributeWrapper> attributeModifiers = new ArrayList<>();
 
         if (configuration.contains(path + "attributes")) {
             List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList(path + "attributes");
             if (attributesFromConfig != null) {
                 for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(Attribute.deserialize(attributeMap));
+                    attributeModifiers.add(AttributeWrapper.deserialize(attributeMap));
                 }
             }
         }
 
+        menuItemStack.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString(path + "attribute-merge-strategy", AttributeMergeStrategy.ADD.name()).toUpperCase()));
         menuItemStack.setAttributes(attributeModifiers);
-        menuItemStack.setClearDefaultAttributes(configuration.getBoolean(path + "clear-default-attributes", true));
+        menuItemStack.setClearDefaultAttributes(configuration.getBoolean(path + "clear-default-attributes", false));
     }
 
     /**
