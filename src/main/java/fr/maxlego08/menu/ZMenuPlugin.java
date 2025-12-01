@@ -3,6 +3,8 @@ package fr.maxlego08.menu;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
+import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
@@ -91,7 +93,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
     private final CommandManager commandManager = new ZCommandManager(this);
-    private DialogManager dialogManager;
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
     private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
@@ -101,13 +102,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ItemManager itemManager = new ZItemManager(this);
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
+    private final File configFile = new File(getDataFolder(), "config.yml");
+    private DialogManager dialogManager;
     private CommandMenu commandMenu;
     private PlatformScheduler scheduler;
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private FoliaLib foliaLib;
-    private final File configFile = new File(getDataFolder(), "config.yml");
+    private AttributApplier attributApplier = new ApplySpigotAttribute();
     // private final PacketUtils packetUtils = new PacketUtils(this);
 
     public static ZMenuPlugin getInstance() {
@@ -331,12 +334,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.getLogger().info("Registered NextGens material loader");
         }
 
-        if (this.isActive(Plugins.MYTHICMOBS)){
+        if (this.isActive(Plugins.MYTHICMOBS)) {
             this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
             this.addListener(new MythicManager(this));
             this.getLogger().info("Registered MythicMobs material loader and listener");
         }
-        if (this.isActive(Plugins.BREWERYX)){
+        if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
         }
     }
@@ -359,7 +362,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("patterns/pattern_cookies.yml");
         files.add("patterns/playtime_reward.yml");
 
-        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
+        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -431,11 +434,18 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the zDialogManager
      */
     @Override
-    public DialogManager getDialogManager() {return this.dialogManager;}
+    public DialogManager getDialogManager() {
+        return this.dialogManager;
+    }
 
     @Override
     public ItemManager getItemManager() {
         return this.itemManager;
+    }
+
+    @Override
+    public AttributApplier getAttributApplier() {
+        return this.attributApplier;
     }
 
     @Override
