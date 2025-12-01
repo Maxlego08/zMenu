@@ -324,4 +324,13 @@ public class TypedMapAccessor implements MapConfiguration {
                 "map=" + map +
                 '}';
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String,Object>> getMapList(String key) {
+        try {
+            return (List<Map<String, Object>>) map.getOrDefault(key, new ArrayList<Map<String, Object>>());
+        } catch (ClassCastException e){
+            return new ArrayList<>();
+        }
+    }
 }
