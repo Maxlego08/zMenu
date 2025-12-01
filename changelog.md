@@ -42,6 +42,17 @@
 
 # Unreleased
 
+# 1.1.0.6
+
+- Fixed the removal of default attributes.
+- Improved attribute configuration, you now have more comprehensive options. More information available [here](https://docs.zmenu.dev/configurations/items#attributes).
+- Added more configuration options for patterns.
+- Added Brewery support to create your items.
+- Added an option to run actions as an administrator.
+- Added support for Oraxen fonts.
+- Fixed the loading of certain plugins.
+- Added a system to apply actions to items.
+
 # 1.1.0.5
 
 - Improved and optimized internal code. These consist of micro-optimizations that will only be noticeable on servers with several hundred players.
