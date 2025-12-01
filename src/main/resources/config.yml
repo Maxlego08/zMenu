@@ -66,6 +66,19 @@ enable-mini-message-format: true
 # Prevents players from executing commands from the console. Useful for "fake" commands not registered in Spigot.
 enable-player-command-in-chat: false
 
+# Enable player commands as OP action.
+# WARNING: This is a security-sensitive feature. Only enable if you understand the risks.
+# Allows buttons to execute commands with elevated permissions (OP or permission *).
+# Default is disabled for security reasons. Requires server restart to take effect.
+enable-player-commands-as-op-action: false
+
+# Method used to grant temporary elevated permissions.
+# ATTACHMENT: Grants permission * temporarily (safer, recommended)
+# SET_OP: Temporarily sets player as OP (use with caution)
+# BOTH: Combines both methods (maximum compatibility, use with extreme caution)
+# This setting only applies when enable-player-commands-as-op-action is true.
+op-grant-method: ATTACHMENT
+
 # Enable FastEvent system.
 # Replaces some Bukkit events with a faster alternative. Enables better performance at the cost of API changes.
 # Refer to documentation before enabling this.

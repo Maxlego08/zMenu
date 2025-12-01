@@ -3,11 +3,11 @@ package fr.maxlego08.menu;
 import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.attribute.Attribute;
-import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
+import fr.maxlego08.menu.api.attribute.AttributeUtil;
+import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
-import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -19,7 +19,6 @@ import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -48,7 +47,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String amount;
     private String url;
     private String data;
-    private String tooltipstyle;
+    private String tooltipStyle;
     private int durability;
     private Potion potion;
     private List<String> lore = new ArrayList<>();
@@ -61,8 +60,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
-    private boolean clearDefaultAttributes = true;
-    private List<IAttribute> attributes = new ArrayList<>();
+    private boolean clearDefaultAttributes = false;
+    private List<AttributeWrapper> attributes = new ArrayList<>();
+    private AttributeMergeStrategy attributeMergeStrategy;
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
@@ -131,66 +131,103 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public ItemStack build(Player player, boolean useCache, Placeholders placeholders) {
 
-        // If we don’t need PlaceHolderApi, then we use the cache
-        if (!this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack && useCache) {
+        if (shouldUseCache(useCache)) {
             return this.cacheItemStack;
         }
 
-        ItemStack itemStack = null;
-        Material material = null;
-
-        // If the material is null, then by default it will be stone, stone is a
-        // material present in all versions, so no conflict problem.
         if (this.material == null) {
             this.material = "STONE";
         }
 
-        OfflinePlayer offlinePlayer = this.targetPlayer != null ? OfflinePlayerCache.get(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
-
-        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
+        OfflinePlayer offlinePlayer = resolveOfflinePlayer(player, placeholders);
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
 
+        ItemStack itemStack = createItemStack(player, placeholders, offlinePlayer, amount);
+
+        applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
+        applyAttributes(itemStack);
+
+        if (!needPlaceholderAPI && Config.enableCacheItemStack) {
+            this.cacheItemStack = itemStack;
+        }
+
+        return itemStack;
+    }
+
+    private boolean shouldUseCache(boolean useCache) {
+        return !this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack && useCache;
+    }
+
+    private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
+        return this.targetPlayer != null ? OfflinePlayerCache.get(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
+    }
+
+    private ItemStack createItemStack(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, int amount) {
+        Material material = resolveMaterial(player, placeholders, offlinePlayer);
+        ItemStack itemStack = resolveCustomItem(player, placeholders, material);
+
+        if (itemStack == null) {
+            itemStack = createDefaultItemStack(player, material, amount);
+        }
+
+        itemStack = applySpecialItemStack(player, amount, itemStack);
+        if (itemStack == null) {
+            itemStack = new ItemStack(Material.STONE);
+        }
+
+        itemStack.setAmount(Math.max(1, amount));
+        if (this.durability != 0) {
+            itemStack.setDurability((short) this.durability);
+        }
+
+        return itemStack;
+    }
+
+    private Material resolveMaterial(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer) {
+        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
+
         try {
-            material = getMaterial(Integer.parseInt(papiMaterial));
+            return getMaterial(Integer.parseInt(papiMaterial));
         } catch (Exception ignored) {
         }
 
-        if (material == null && papiMaterial != null) {
-            try {
-                material = Material.getMaterial(papiMaterial.toUpperCase());
-            } catch (Exception ignored) {
-            }
+        try {
+            return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase()) : null;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private ItemStack resolveCustomItem(Player player, Placeholders placeholders, Material material) {
+        String papiMaterial = papi(placeholders.parse(this.material), player, true);
+        if (material != null && !material.equals(Material.AIR)) {
+            return null;
         }
 
-        if (material == null || material.equals(Material.AIR)) {
+        if (papiMaterial != null && papiMaterial.contains(":")) {
+            String[] values = papiMaterial.split(":", 2);
+            if (values.length == 2) {
+                String key = values[0];
+                String value = values[1];
 
-            if (papiMaterial.contains(":")) {
-
-                String[] values = papiMaterial.split(":", 2);
-
-                if (values.length == 2) {
-
-                    String key = values[0];
-                    String value = values[1];
-
-                    Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
-                    if (optional.isPresent()) {
-                        MaterialLoader loader = optional.get();
-                        itemStack = loader.load(player, null, path, value);
-                    }
+                Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
+                if (optional.isPresent()) {
+                    MaterialLoader loader = optional.get();
+                    return loader.load(player, null, path, value);
                 }
             }
         }
+        return null;
+    }
 
-        // Final check
+    private ItemStack createDefaultItemStack(Player player, Material material, int amount) {
         if (material == null) {
             material = Material.STONE;
         }
+        return data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
+    }
 
-        if (itemStack == null) {
-            itemStack = data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
-        }
-
+    private ItemStack applySpecialItemStack(Player player, int amount, ItemStack itemStack) {
         if (this.url != null && !url.equalsIgnoreCase("null")) {
             String urlResult = this.papi(this.url, player, false);
             if (urlResult != null) {
@@ -213,80 +250,89 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.leatherArmor != null) {
             itemStack = leatherArmor.toItemStack(amount);
         }
+        return itemStack;
+    }
 
-        if (itemStack == null) {
-            return null;
-        }
-
-        itemStack.setAmount(amount <= 0 ? 1 : amount);
-
-        if (this.durability != 0) {
-            itemStack.setDurability((short) this.durability);
+    private void applyItemMeta(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, boolean useCache, ItemStack itemStack) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null) {
+            return;
         }
 
         Material finalMaterial = itemStack.getType();
-        ItemMeta itemMeta = itemStack.getItemMeta();
         String locale = findPlayerLocale(player);
         FontImage fontImage = this.inventoryManager.getFontImage();
 
-        if (itemMeta != null) {
-            this.applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
+        applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
+        applyGlowing(itemMeta);
+        applyCustomModelData(player, placeholders, offlinePlayer, itemMeta);
+        applyEnchantments(finalMaterial, itemMeta);
+        applyFlags(itemMeta);
+        applyVersionSpecificMeta(itemStack, itemMeta, player, placeholders);
 
-            Enchantments helperEnchantments = inventoryManager.getEnchantments();
-            if (this.isGlowing) {
+        itemStack.setItemMeta(itemMeta);
+    }
 
-                Optional<MenuEnchantment> optional = helperEnchantments.getEnchantments("power");
-                if (optional.isPresent()) {
-                    MenuEnchantment menuEnchantment = optional.get();
-                    itemMeta.addEnchant(menuEnchantment.enchantment(), 1, true);
-                    itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                }
-            }
-
-            try {
-
-                int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer, true));
-                if (customModelData != 0) itemMeta.setCustomModelData(customModelData);
-            } catch (NumberFormatException ignored) {
-            }
-
-            this.enchantments.forEach((enchantment, level) -> {
-                if (finalMaterial.equals(Material.ENCHANTED_BOOK)) {
-                    ((EnchantmentStorageMeta) itemMeta).addStoredEnchant(enchantment, level, true);
-                } else {
-                    itemMeta.addEnchant(enchantment, level, true);
-                }
-            });
-
-            for (ItemFlag flag : this.flags) {
-                if (flag != null) {
-                    itemMeta.addItemFlags(flag);
-                }
-            }
-
-            if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
-                this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
-            }
-            if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
-                this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
-            }
-
-
-            if (this.clearDefaultAttributes && attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
-                itemMeta.setAttributeModifiers(ArrayListMultimap.create());
-            }
-
-            itemStack.setItemMeta(itemMeta);
+    private void applyGlowing(ItemMeta itemMeta) {
+        if (!this.isGlowing) {
+            return;
         }
 
-        if (itemStack.getType() != Material.AIR) {
-            AttributeApplier attributeApplier = new AttributeApplier(attributes);
-            attributeApplier.apply(itemStack);
+        Enchantments helperEnchantments = inventoryManager.getEnchantments();
+        helperEnchantments.getEnchantments("power").ifPresent(menuEnchantment -> {
+            itemMeta.addEnchant(menuEnchantment.enchantment(), 1, true);
+            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        });
+    }
+
+    private void applyCustomModelData(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, ItemMeta itemMeta) {
+        try {
+            int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer, true));
+            if (customModelData != 0) {
+                itemMeta.setCustomModelData(customModelData);
+            }
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
+    private void applyEnchantments(Material finalMaterial, ItemMeta itemMeta) {
+        this.enchantments.forEach((enchantment, level) -> {
+            if (finalMaterial.equals(Material.ENCHANTED_BOOK)) {
+                ((EnchantmentStorageMeta) itemMeta).addStoredEnchant(enchantment, level, true);
+            } else {
+                itemMeta.addEnchant(enchantment, level, true);
+            }
+        });
+    }
+
+    private void applyFlags(ItemMeta itemMeta) {
+        for (ItemFlag flag : this.flags) {
+            if (flag != null) {
+                itemMeta.addItemFlags(flag);
+            }
+        }
+    }
+
+    private void applyVersionSpecificMeta(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
+        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+            this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
         }
 
-        if (!needPlaceholderAPI && Config.enableCacheItemStack) this.cacheItemStack = itemStack;
+        if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
+            this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
+        }
 
-        return itemStack;
+        if (this.clearDefaultAttributes && attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+            itemMeta.setAttributeModifiers(ArrayListMultimap.create());
+        }
+    }
+
+    private void applyAttributes(ItemStack itemStack) {
+        if (itemStack.getType() == Material.AIR) {
+            return;
+        }
+
+        AttributeUtil.applyAttributes(itemStack, this.attributes, this.inventoryManager.getPlugin(), this.attributeMergeStrategy);
     }
 
     /**
@@ -393,8 +439,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             itemMeta.setRarity(this.itemRarity.getItemRarity());
         }
 
-        if (this.tooltipstyle != null) {
-            String[] tooltipstyleSplit = this.tooltipstyle.split(":", 2);
+        if (this.tooltipStyle != null) {
+            String[] tooltipstyleSplit = this.tooltipStyle.split(":", 2);
             if (tooltipstyleSplit.length == 2) {
                 itemMeta.setTooltipStyle(new NamespacedKey(tooltipstyleSplit[0], tooltipstyleSplit[1]));
             }
@@ -620,15 +666,25 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     /**
      * @return the attributes
      */
-    public List<IAttribute> getAttributes() {
+    public List<AttributeWrapper> getAttributes() {
         return attributes;
     }
 
     /**
      * @param attributes the attributes to set.
      */
-    public void setAttributes(List<IAttribute> attributes) {
+    public void setAttributes(List<AttributeWrapper> attributes) {
         this.attributes = attributes;
+    }
+
+    @Override
+    public AttributeMergeStrategy getAttributeMergeStrategy() {
+        return attributeMergeStrategy;
+    }
+
+    @Override
+    public void setAttributeMergeStrategy(AttributeMergeStrategy attributeMergeStrategy) {
+        this.attributeMergeStrategy = attributeMergeStrategy;
     }
 
     /**
@@ -675,12 +731,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public String getToolTipStyle() {
-        return tooltipstyle;
+        return tooltipStyle;
     }
 
     @Override
     public void setToolTipStyle(String toolTipStyle) {
-        this.tooltipstyle = toolTipStyle;
+        this.tooltipStyle = toolTipStyle;
     }
 
     @Override
@@ -855,13 +911,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             flags.add(this.getFlag(flag));
         }
 
-        List<IAttribute> attributeModifiers = new ArrayList<>();
+        List<AttributeWrapper> attributeModifiers = new ArrayList<>();
 
         if (configuration.contains("attributes")) {
             List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList("attributes");
             if (attributesFromConfig != null) {
                 for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(Attribute.deserialize(attributeMap));
+                    attributeModifiers.add(AttributeWrapper.deserialize(attributeMap));
                 }
             }
         }
@@ -869,7 +925,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         setEnchantments(enchantments);
         setFlags(flags);
         setAttributes(attributeModifiers);
-
+        setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
     }
 
     private Color getColor(MapConfiguration configuration, String key, Color def) {
@@ -1074,6 +1130,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
+    public void setEquippedModel(String equippedModel) {
+        this.equippedModel = equippedModel;
+    }
+
+    @Override
     public boolean isClearDefaultAttributes() {
         return this.clearDefaultAttributes;
     }
@@ -1081,10 +1142,5 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void setClearDefaultAttributes(boolean clearDefaultAttributes) {
         this.clearDefaultAttributes = clearDefaultAttributes;
-    }
-
-    @Override
-    public void setEquippedModel(String equippedModel) {
-        this.equippedModel = equippedModel;
     }
 }

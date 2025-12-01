@@ -88,7 +88,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 button.onInventoryOpen(player, this, placeholders);
             }
 
-            String inventoryName = this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage);
+            String inventoryName = this.plugin.getFontImage().replace(this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage));
             Player targetPlayer = getTargetPlayer();
 
             if (this.inventory.getType() == InventoryType.CHEST) {

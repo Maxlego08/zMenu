@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
+import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -246,4 +247,8 @@ public interface MenuPlugin extends Plugin {
     ToastHelper getToastHelper();
 
     DialogManager getDialogManager();
+
+    ItemManager getItemManager();
+
+    AttributApplier getAttributApplier();
 }
