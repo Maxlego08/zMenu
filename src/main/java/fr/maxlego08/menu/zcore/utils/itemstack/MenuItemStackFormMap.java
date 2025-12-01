@@ -2,8 +2,8 @@ package fr.maxlego08.menu.zcore.utils.itemstack;
 
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.attribute.Attribute;
-import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
+import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
@@ -90,19 +90,20 @@ public class MenuItemStackFormMap {
             flags.add(menuItemStack.getFlag(flagName));
         }
 
-        List<IAttribute> attributeModifiers = new ArrayList<>();
+        List<AttributeWrapper> attributeModifiers = new ArrayList<>();
 
         if (accessor.contains("attributes")) {
             List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) accessor.getList("attributes");
             if (attributesFromConfig != null) {
                 for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(Attribute.deserialize(attributeMap));
+                    attributeModifiers.add(AttributeWrapper.deserialize(attributeMap));
                 }
             }
         }
 
         menuItemStack.setEnchantments(enchantments);
         menuItemStack.setFlags(flags);
+        menuItemStack.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(accessor.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
         menuItemStack.setAttributes(attributeModifiers);
 
         if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {

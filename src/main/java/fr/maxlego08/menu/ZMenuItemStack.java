@@ -3,11 +3,11 @@ package fr.maxlego08.menu;
 import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.attribute.Attribute;
-import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
+import fr.maxlego08.menu.api.attribute.AttributeUtil;
+import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
-import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -19,7 +19,6 @@ import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.attribute.AttributeApplier;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -48,7 +47,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String amount;
     private String url;
     private String data;
-    private String tooltipstyle;
+    private String tooltipStyle;
     private int durability;
     private Potion potion;
     private List<String> lore = new ArrayList<>();
@@ -62,7 +61,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
-    private List<IAttribute> attributes = new ArrayList<>();
+    private List<AttributeWrapper> attributes = new ArrayList<>();
+    private AttributeMergeStrategy attributeMergeStrategy;
     private Banner banner;
     private Firework firework;
     private LeatherArmor leatherArmor;
@@ -143,9 +143,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
 
         ItemStack itemStack = createItemStack(player, placeholders, offlinePlayer, amount);
-        if (itemStack == null) {
-            return null;
-        }
 
         applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
         applyAttributes(itemStack);
@@ -175,7 +172,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         itemStack = applySpecialItemStack(player, amount, itemStack);
         if (itemStack == null) {
-            return null;
+            itemStack = new ItemStack(Material.STONE);
         }
 
         itemStack.setAmount(Math.max(1, amount));
@@ -335,8 +332,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             return;
         }
 
-        AttributeApplier attributeApplier = new AttributeApplier(attributes);
-        attributeApplier.apply(itemStack);
+        AttributeUtil.applyAttributes(itemStack, this.attributes, this.inventoryManager.getPlugin(), this.attributeMergeStrategy);
     }
 
     /**
@@ -443,8 +439,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             itemMeta.setRarity(this.itemRarity.getItemRarity());
         }
 
-        if (this.tooltipstyle != null) {
-            String[] tooltipstyleSplit = this.tooltipstyle.split(":", 2);
+        if (this.tooltipStyle != null) {
+            String[] tooltipstyleSplit = this.tooltipStyle.split(":", 2);
             if (tooltipstyleSplit.length == 2) {
                 itemMeta.setTooltipStyle(new NamespacedKey(tooltipstyleSplit[0], tooltipstyleSplit[1]));
             }
@@ -670,15 +666,25 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     /**
      * @return the attributes
      */
-    public List<IAttribute> getAttributes() {
+    public List<AttributeWrapper> getAttributes() {
         return attributes;
     }
 
     /**
      * @param attributes the attributes to set.
      */
-    public void setAttributes(List<IAttribute> attributes) {
+    public void setAttributes(List<AttributeWrapper> attributes) {
         this.attributes = attributes;
+    }
+
+    @Override
+    public AttributeMergeStrategy getAttributeMergeStrategy() {
+        return attributeMergeStrategy;
+    }
+
+    @Override
+    public void setAttributeMergeStrategy(AttributeMergeStrategy attributeMergeStrategy) {
+        this.attributeMergeStrategy = attributeMergeStrategy;
     }
 
     /**
@@ -725,12 +731,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public String getToolTipStyle() {
-        return tooltipstyle;
+        return tooltipStyle;
     }
 
     @Override
     public void setToolTipStyle(String toolTipStyle) {
-        this.tooltipstyle = toolTipStyle;
+        this.tooltipStyle = toolTipStyle;
     }
 
     @Override
@@ -905,13 +911,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             flags.add(this.getFlag(flag));
         }
 
-        List<IAttribute> attributeModifiers = new ArrayList<>();
+        List<AttributeWrapper> attributeModifiers = new ArrayList<>();
 
         if (configuration.contains("attributes")) {
             List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList("attributes");
             if (attributesFromConfig != null) {
                 for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(Attribute.deserialize(attributeMap));
+                    attributeModifiers.add(AttributeWrapper.deserialize(attributeMap));
                 }
             }
         }
@@ -919,7 +925,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         setEnchantments(enchantments);
         setFlags(flags);
         setAttributes(attributeModifiers);
-
+        setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
     }
 
     private Color getColor(MapConfiguration configuration, String key, Color def) {
@@ -1124,6 +1130,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
+    public void setEquippedModel(String equippedModel) {
+        this.equippedModel = equippedModel;
+    }
+
+    @Override
     public boolean isClearDefaultAttributes() {
         return this.clearDefaultAttributes;
     }
@@ -1131,10 +1142,5 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void setClearDefaultAttributes(boolean clearDefaultAttributes) {
         this.clearDefaultAttributes = clearDefaultAttributes;
-    }
-
-    @Override
-    public void setEquippedModel(String equippedModel) {
-        this.equippedModel = equippedModel;
     }
 }

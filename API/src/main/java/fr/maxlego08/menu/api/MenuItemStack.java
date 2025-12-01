@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.attribute.IAttribute;
+import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
+import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
@@ -263,14 +264,31 @@ public interface MenuItemStack {
      *
      * @return the list of attributes.
      */
-    List<IAttribute> getAttributes();
+    List<AttributeWrapper> getAttributes();
 
     /**
      * Sets the attributes applied to this item stack.
      *
      * @param attributes the attributes to apply.
      */
-    void setAttributes(List<IAttribute> attributes);
+    void setAttributes(List<AttributeWrapper> attributes);
+
+    /**
+     * Retrieves the strategy for merging attribute modifiers when applying custom attributes to items.
+     *
+     * @return the strategy for merging attribute modifiers.
+     * @see AttributeMergeStrategy
+     */
+    AttributeMergeStrategy getAttributeMergeStrategy();
+
+    /**
+     * Sets the strategy for merging attribute modifiers when applying custom attributes to items.
+     * The chosen strategy will be used when calling {@link #setAttributes(List)}.
+     *
+     * @param attributeMergeStrategy the strategy for merging attribute modifiers.
+     * @see AttributeMergeStrategy
+     */
+    void setAttributeMergeStrategy(AttributeMergeStrategy attributeMergeStrategy);
 
     /**
      * Returns the banner configuration attached to this item stack.
@@ -663,18 +681,18 @@ public interface MenuItemStack {
     void setItemModel(String itemModel);
 
     /**
-     * Sets the equipped model identifier used for wearable items.
-     *
-     * @param equippedModel the equipped model identifier to set.
-     */
-    void setEquippedModel(String equippedModel);
-
-    /**
      * Retrieves the equipped model identifier used for wearable items.
      *
      * @return the equipped model identifier.
      */
     String getEquippedModel();
+
+    /**
+     * Sets the equipped model identifier used for wearable items.
+     *
+     * @param equippedModel the equipped model identifier to set.
+     */
+    void setEquippedModel(String equippedModel);
 
     /**
      * Indicates whether default attributes should be cleared on the item.
