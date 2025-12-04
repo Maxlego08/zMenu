@@ -80,6 +80,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             if (!patternFile.exists()) {
                 throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
             }
+            loadDefaultPatternValues(patternFile, mapPlaceholders);
 
             mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
             YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
@@ -387,6 +388,18 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         } else buttonLoadEvent.call();
 
         return button;
+    }
+
+    private void loadDefaultPatternValues(File patternFile, Map<String, Object> mapPlaceholders) {
+        YamlConfiguration patternConfig = YamlConfiguration.loadConfiguration(patternFile);
+        if (patternConfig.isConfigurationSection("default-values.")) {
+            Map<String, Object> defaultValues = patternConfig.getConfigurationSection("default-values.").getValues(false);
+            for (String key : defaultValues.keySet()) {
+                if (!mapPlaceholders.containsKey(key)) {
+                    mapPlaceholders.put(key, defaultValues.get(key));
+                }
+            }
+        }
     }
 
     /**
