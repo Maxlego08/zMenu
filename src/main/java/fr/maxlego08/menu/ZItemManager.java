@@ -71,7 +71,7 @@ public class ZItemManager implements ItemManager{
         try (Stream<Path> stream = Files.walk(Paths.get(itemsFolder.getPath()))) {
             stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(this::loadCustomItem);
             ZMenuItemsLoad event = new ZMenuItemsLoad(new HashSet<>(customItems.keySet()), !isFirstLoad);
-            menuPlugin.getServer().getPluginManager().callEvent(event);
+            this.menuPlugin.getServer().getPluginManager().callEvent(event);
             if (isFirstLoad) {
                 isFirstLoad = false;
             }
@@ -87,7 +87,7 @@ public class ZItemManager implements ItemManager{
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         for (String itemId : config.getKeys(false)) {
             String path = itemId + ".";
-            MenuItemStack menuItemStack = menuPlugin.loadItemStack(config, path, file);
+            MenuItemStack menuItemStack = this.menuPlugin.loadItemStack(config, path, file);
             if (menuItemStack != null) {
                 Set<String> mechanicIds = new HashSet<>();
 
@@ -95,7 +95,7 @@ public class ZItemManager implements ItemManager{
                 if (mechanicSection != null) {
                     path += "mechanics.";
                     for (String mechanicId : mechanicSection.getKeys(false)) {
-                        MechanicFactory<?> factory = mechanicFactories.get(mechanicId);
+                        MechanicFactory<?> factory = this.mechanicFactories.get(mechanicId);
                         if (factory != null) {
                             factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
                             mechanicIds.add(mechanicId);
@@ -105,7 +105,7 @@ public class ZItemManager implements ItemManager{
                     }
                 }
 
-                customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds));
+                this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds));
             } else {
                 if (Config.enableDebug){
                     Logger.info("Impossible to load item " + itemId + " from file " + file.getName());
@@ -116,7 +116,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void reloadCustomItems() {
-        customItems.clear();
+        this.customItems.clear();
         for (MechanicFactory<?> factory : mechanicFactories.values()) {
             factory.clearMechanics();
         }
@@ -125,7 +125,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public boolean isCustomItem(String itemId) {
-        return customItems.containsKey(itemId);
+        return this.customItems.containsKey(itemId);
     }
 
     @Override
@@ -182,9 +182,9 @@ public class ZItemManager implements ItemManager{
             return;
         }
 
-        CustomItemData itemData = customItems.get(itemId);
+        CustomItemData itemData = this.customItems.get(itemId);
         MenuItemStack menuItemStack = itemData.menuItemStack();
-        ItemStack itemStack = menuItemStack.build(player);
+        ItemStack itemStack = menuItemStack.build(player).clone();
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
@@ -241,8 +241,7 @@ public class ZItemManager implements ItemManager{
             Player owner = this.menuPlugin.getServer().getPlayer(UUID.fromString(ownerUuid));
             if (owner == null) continue;
 
-            ItemStack built = menuItemStack.build(owner);
-            if (built == null) continue;
+            ItemStack built = menuItemStack.build(owner).clone();
 
             built.setAmount(itemStack.getAmount());
 
