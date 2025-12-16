@@ -42,6 +42,16 @@
 
 # Unreleased
 
+- Fix NMS for 1.21.10.
+- Fix deluxemenus inventories loading.
+- Fix minimessage regex.
+- Added ``ZMenuItemsLoad`` event. Called when zMenu custom items are loaded or reloaded.
+- Improve logger system.
+- Improve items mechanics.
+- Added ``deny-chance-actions`` for actions.
+- Various minor corrections and code improvements
+- Added placeholder ``%zmenu_time_unix_timestamp%``, ``%zmenu_time_next_day_unix_timestamp%``, ``%zmenu_time_today_start_unix_timestamp%``
+
 # 1.1.0.6
 
 - Fixed the removal of default attributes.

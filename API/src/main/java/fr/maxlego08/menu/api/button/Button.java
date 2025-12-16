@@ -178,7 +178,7 @@ public abstract class Button extends PlaceholderButton {
 
             DataManager dataManager = this.plugin.getDataManager();
             for (ActionPlayerData actionPlayerData : this.datas) {
-                actionPlayerData.execute(player, dataManager);
+                actionPlayerData.execute(player, dataManager, placeholders);
             }
         }
 

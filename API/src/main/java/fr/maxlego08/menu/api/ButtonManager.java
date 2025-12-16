@@ -180,5 +180,16 @@ public interface ButtonManager {
      */
     List<String> getEmptyPermissible(List<Map<String, Object>> elements);
 
+    /**
+     * Retrieves a {@link Loader} for a {@link Button} object based on the given parameters.
+     *
+     * <p>This method is used to create a loader for a button object, given the plugin instance, file, size, and matrix.</p>
+     *
+     * @param menuPlugin The plugin instance associated with the button loader.
+     * @param file The file from which the button configuration is loaded.
+     * @param size The size of the button.
+     * @param matrix The matrix containing the button's configuration data.
+     * @return A {@link Loader} for a {@link Button} object based on the given parameters.
+     */
     Loader<Button> getLoaderButton(MenuPlugin menuPlugin, File file, int size, Map<Character, List<Integer>> matrix);
 }
