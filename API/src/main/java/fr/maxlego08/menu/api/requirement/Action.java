@@ -14,6 +14,7 @@ import java.util.List;
  */
 public abstract class Action {
 
+    private final List<Action> denyChanceActions = new ArrayList<>();
     /**
      * The delay in ticks before the action is executed.
      * A value of 0 means no delay.
@@ -33,7 +34,13 @@ public abstract class Action {
 
     public void preExecute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
         placeholders.register("player", player.getName());
-        if (chance < 100 && Math.random() > (chance / 100.0f)) return;
+        if (chance < 100 && Math.random() > (chance / 100.0f)) {
+            for (Action denyChanceAction : denyChanceActions) {
+                denyChanceAction.preExecute(player, button, inventoryEngine, placeholders);
+            }
+            return;
+        }
+        ;
         if (delay == 0) execute(player, button, inventoryEngine, placeholders);
         else {
             inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> execute(player, button, inventoryEngine, placeholders), this.delay);
@@ -48,16 +55,41 @@ public abstract class Action {
         this.delay = delay;
     }
 
-    public float getChance() {return chance;}
+    @SuppressWarnings("unused")
+    public float getChance() {
+        return chance;
+    }
 
     public void setChance(float chance) {
-        if ( chance < 0 || chance > 100) {
-            if (Config.enableDebug){
+        if (chance < 0 || chance > 100) {
+            if (Config.enableDebug) {
                 throw new IllegalArgumentException("Chance must be between 0 and 100");
             }
             chance = 100;
-        };
+        }
+        ;
         this.chance = chance;
+    }
+
+    /**
+     * Returns the list of deny chance actions associated with this action.
+     *
+     * @return The list of deny chance actions.
+     */
+    public List<Action> getDenyChanceActions() {
+        return denyChanceActions;
+    }
+
+    /**
+     * Sets the list of deny chance actions associated with this action.
+     *
+     * @param denyChanceActions The list of deny chance actions.
+     */
+    public void setDenyChanceActions(List<Action> denyChanceActions) {
+        this.denyChanceActions.clear();
+        if (denyChanceActions != null) {
+            this.denyChanceActions.addAll(denyChanceActions);
+        }
     }
 
     /**

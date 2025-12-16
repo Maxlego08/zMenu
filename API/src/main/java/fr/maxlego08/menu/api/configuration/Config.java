@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class Config {
 
@@ -368,7 +367,7 @@ public class Config {
             Logger.info("Invalid op grant method in config, defaulting to ATTACHMENT.");
             opGrantMethod = OpGrantMethod.ATTACHMENT;
         }
-        enableToast = configuration.getBoolean(ConfigPath.ENABLE_TOAST.getPath());
+        enableToast = configuration.getBoolean(ConfigPath.ENABLE_TOAST.getPath(), true);
     }
 
     public void save(FileConfiguration configuration, File file) {

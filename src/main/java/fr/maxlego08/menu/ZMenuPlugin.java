@@ -171,15 +171,18 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
 
-        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
-            Logger.info("Paper server detected, loading Dialogs support");
-            ConfigManager configManager = new ConfigManager(this);
-            this.dialogManager = new ZDialogManager(this, configManager);
-            this.attributApplier = new ApplyPaperAttribute();
-            servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-            ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
-            Logger.info(configDialogBuilder.getName());
-            configManager.registerConfig(configDialogBuilder, Config.class, this);
+        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
+            if (Config.enableMiniMessageFormat){
+                Logger.info("Paper server detected, loading Dialogs support");
+                ConfigManager configManager = new ConfigManager(this);
+                this.dialogManager = new ZDialogManager(this, configManager);
+                servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
+                ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
+                Logger.info(configDialogBuilder.getName());
+                configManager.registerConfig(configDialogBuilder,Config.class, this);
+            } else {
+                Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
+            }
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());

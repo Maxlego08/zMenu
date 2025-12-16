@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.DiscordAction;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfiguration;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordEmbedConfiguration;
 
@@ -40,7 +41,7 @@ public class DiscordLoader extends ActionLoader {
             DiscordConfiguration config = new DiscordConfiguration(webhookUrl, avatarUrl, message, username, DiscordEmbedConfiguration.convertToEmbedObjects(values));
             return new DiscordAction(config);
         } else {
-            System.err.println("Impossible to load discord action, webhook does not exists: " + webhookUrl);
+            Logger.info("Impossible to load discord action, webhook does not exists: " + webhookUrl);
         }
 
         return null;

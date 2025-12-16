@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.loader;
 
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.storage.StorageManager;
-import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -26,7 +26,11 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
         ActionPlayerDataType type = ActionPlayerDataType.valueOf(configuration.getString(path + "type", "SET"));
         String key = configuration.getString(path + "key");
         Object object = configuration.get(path + "value", true);
-        long seconds = configuration.getLong(path + "seconds", 0);
+        String seconds = configuration.getString(path + "seconds", null);
+        if (seconds == null) {
+            seconds = String.valueOf(configuration.getLong(path + "seconds",0));
+        }
+
         boolean mathExpression = configuration.getBoolean(path + "math", false);
 
         return new ZActionPlayerData(storageManager, key, type, object, seconds, mathExpression);
