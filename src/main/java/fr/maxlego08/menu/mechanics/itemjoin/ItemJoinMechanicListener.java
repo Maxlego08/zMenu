@@ -2,7 +2,6 @@ package fr.maxlego08.menu.mechanics.itemjoin;
 
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.mechanic.Mechanic;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
 import org.bukkit.Material;
 import org.bukkit.entity.ItemFrame;
@@ -41,11 +40,9 @@ public class ItemJoinMechanicListener extends MechanicListener {
         Optional<String> itemId = itemManager.getItemId(item);
         if (itemId.isEmpty()) return Optional.empty();
 
-        Mechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId.get());
-        if (mechanic instanceof ItemJoinMechanic itemJoinMechanic) {
-            if (itemJoinMechanic.preventsInventoryChanges() && itemJoinMechanic.getFixedSlot().isPresent()) {
-                return Optional.of(itemJoinMechanic);
-            }
+        ItemJoinMechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId.get());
+        if (mechanic != null && mechanic.preventsInventoryChanges() && mechanic.getFixedSlot().isPresent()) {
+            return Optional.of(mechanic);
         }
         return Optional.empty();
     }
@@ -64,11 +61,10 @@ public class ItemJoinMechanicListener extends MechanicListener {
     public void onConnect(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            for (Map.Entry<String, Mechanic> entry : itemJoinMechanicFactory.getAllMechanics()) {
-                if (entry.getValue() instanceof ItemJoinMechanic itemJoinMechanic) {
-                    if (itemJoinMechanic.shouldGrantOnFirstJoin()) {
-                        this.itemManager.giveItem(player, entry.getKey());
-                    }
+            for (Map.Entry<String, ItemJoinMechanic> entry : itemJoinMechanicFactory.getAllMechanics()) {
+                ItemJoinMechanic mechanic = entry.getValue();
+                if (mechanic.shouldGrantOnFirstJoin()) {
+                    this.itemManager.giveItem(player, entry.getKey());
                 }
             }
         }
@@ -88,7 +84,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
         }
 
         Optional<ItemJoinMechanic> mechanic = getProtectedMechanic(event.getCurrentItem());
-        if (mechanic.isPresent() && event.getSlot() == mechanic.get().getFixedSlot().getAsInt()) {
+        if (mechanic.isPresent() && mechanic.get().getFixedSlot().isPresent() && event.getSlot() == mechanic.get().getFixedSlot().getAsInt()) {
             event.setCancelled(true);
         }
     }
@@ -101,7 +97,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
 
         for (ItemStack draggedItem : event.getNewItems().values()) {
             Optional<ItemJoinMechanic> mechanic = getProtectedMechanic(draggedItem);
-            if (mechanic.isPresent() && event.getRawSlots().contains(mechanic.get().getFixedSlot().getAsInt())) {
+            if (mechanic.isPresent() && mechanic.get().getFixedSlot().isPresent() && event.getRawSlots().contains(mechanic.get().getFixedSlot().getAsInt())) {
                 event.setCancelled(true);
                 return;
             }
@@ -131,13 +127,11 @@ public class ItemJoinMechanicListener extends MechanicListener {
 
     @Override
     public boolean onItemGive(Player player, ItemStack item, String itemId) {
-        Mechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId);
-        if (mechanic instanceof ItemJoinMechanic itemJoinMechanic) {
-            if (itemJoinMechanic.preventsInventoryChanges() && itemJoinMechanic.getFixedSlot().isPresent()) {
-                int slot = itemJoinMechanic.getFixedSlot().getAsInt();
-                player.getInventory().setItem(slot, item);
-                return true;
-            }
+        ItemJoinMechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId);
+        if (mechanic != null && mechanic.preventsInventoryChanges() && mechanic.getFixedSlot().isPresent()) {
+            int slot = mechanic.getFixedSlot().getAsInt();
+            player.getInventory().setItem(slot, item);
+            return true;
         }
         return false;
     }

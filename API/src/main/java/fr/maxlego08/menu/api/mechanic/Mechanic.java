@@ -2,12 +2,12 @@ package fr.maxlego08.menu.api.mechanic;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-public abstract class Mechanic {
+public abstract class Mechanic<T extends MechanicFactory<?>> {
     private final ConfigurationSection mechanicSection;
-    private final MechanicFactory mechanicFactory;
+    private final T mechanicFactory;
     private final String itemId;
 
-    public Mechanic(final String itemId, final MechanicFactory mechanicFactory, final ConfigurationSection mechanicSection) {
+    public Mechanic(final String itemId, final T mechanicFactory, final ConfigurationSection mechanicSection) {
         this.mechanicFactory = mechanicFactory;
         this.mechanicSection = mechanicSection;
         this.itemId = itemId;
@@ -17,7 +17,7 @@ public abstract class Mechanic {
         return mechanicSection;
     }
 
-    public MechanicFactory getMechanicFactory() {
+    public T getMechanicFactory() {
         return mechanicFactory;
     }
 

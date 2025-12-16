@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.requirement.data;
 
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -36,21 +37,31 @@ public interface ActionPlayerData {
      *
      * @return The expiration time in seconds.
      */
-    long getSeconds();
+    String getSeconds();
 
     /**
      * Converts the action into player data.
+     * <p>
+     * DEPRECATED: Use {@link #toData(OfflinePlayer, Placeholders)} instead.
      *
      * @param player The player for whom the data is created.
      * @return The {@link Data}.
      */
+    @Deprecated(since = "1.1.0.6")
     Data toData(OfflinePlayer player);
+
+    Data toData(OfflinePlayer player, Placeholders placeholders);
 
     /**
      * Executes the action when the player clicks.
+     * <p>
+     * DEPRECATED: Use {@link #execute(Player, DataManager, Placeholders)} instead.
      *
      * @param player       The player who executes the action.
      * @param dataManager  The {@link DataManager}.
      */
+    @Deprecated(since = "1.1.0.6")
     void execute(Player player, DataManager dataManager);
+
+    void execute(Player player, DataManager dataManager, Placeholders placeholders);
 }

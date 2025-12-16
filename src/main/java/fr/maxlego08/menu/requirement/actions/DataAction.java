@@ -20,6 +20,6 @@ public class DataAction extends Action {
 
     @Override
     protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
-        this.playerData.execute(player, this.plugin.getDataManager());
+        this.playerData.execute(player, this.plugin.getDataManager(),placeholders);
     }
 }

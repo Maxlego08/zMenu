@@ -24,7 +24,10 @@ public class DataLoader extends ActionLoader {
         ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("action", "SET").toUpperCase());
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
-        long seconds = accessor.getLong("seconds", 0L);
+        String seconds = accessor.getString("seconds");
+        if (seconds == null) {
+            seconds = String.valueOf(accessor.getLong("seconds", 0L));
+        }
         boolean mathExpression = accessor.getBoolean("math", false);
         return new DataAction(new ZActionPlayerData(this.plugin.getStorageManager(), key, type, object, seconds, mathExpression), this.plugin);
     }

@@ -11,6 +11,9 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 public class MenuPlaceholders extends ZUtils {
 
     public void register(MenuPlugin plugin) {
@@ -46,6 +49,9 @@ public class MenuPlaceholders extends ZUtils {
             Object object = plugin.getGlobalPlaceholders().get(args);
             return object == null ? Message.GLOBAL_PLACEHOLDER_NOT_FOUND.getMessage() : String.valueOf(object);
         });
-    }
 
+        placeholder.register("time_unix_timestamp", (player, args) -> String.valueOf(System.currentTimeMillis()));
+        placeholder.register("time_next_day_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().plusDays(1L).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+        placeholder.register("time_today_start_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+    }
 }

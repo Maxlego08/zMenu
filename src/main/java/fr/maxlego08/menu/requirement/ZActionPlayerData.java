@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.players.ZData;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -20,10 +21,10 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     private final String key;
     private final ActionPlayerDataType type;
     private final Object value;
-    private final long seconds;
+    private final String seconds;
     private final boolean enableMathExpression;
 
-    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, long seconds, boolean enableMathExpression) {
+    public ZActionPlayerData(StorageManager storageManager, String key, ActionPlayerDataType type, Object value, String seconds, boolean enableMathExpression) {
         super();
         this.storageManager = storageManager;
         this.key = key;
@@ -49,14 +50,25 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     }
 
     @Override
-    public long getSeconds() {
+    public String getSeconds() {
         return this.seconds;
     }
 
     @Override
     public Data toData(OfflinePlayer player) {
-        long expiredAt = this.seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * this.seconds);
-        String result = papi(this.value.toString(), player, false);
+        return toData(player, new Placeholders());
+    }
+
+    @Override
+    public Data toData(OfflinePlayer player, Placeholders placeholders) {
+        long seconds;
+        try {
+            seconds = Long.parseLong(papi(this.seconds,player,false));
+        } catch (Exception e) {
+            seconds = 0;
+        }
+        long expiredAt = seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
+        String result = placeholders.parse(papi(this.value.toString(), player, false));
         String dataValue = this.enableMathExpression ? String.valueOf((int) new ExpressionBuilder(result).build().evaluate()) : result;
         return new ZData(this.papi(this.key, player, false), dataValue, expiredAt);
     }
@@ -71,7 +83,11 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     @Override
     public void execute(Player player, DataManager dataManager) {
+        execute(player, dataManager, new Placeholders());
+    }
 
+    @Override
+    public void execute(Player player, DataManager dataManager, Placeholders placeholders) {
         if (this.type == ActionPlayerDataType.REMOVE) {
 
             Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
@@ -81,27 +97,27 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                String result = papi(this.value.toString(), player, false);
+                String result = placeholders.parse(papi(this.value.toString(), player, false));
                 data.add(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
                 storageManager.upsertData(player.getUniqueId(), data);
             } else {
-                dataManager.addData(player.getUniqueId(), this.toData(player));
+                dataManager.addData(player.getUniqueId(), this.toData(player,placeholders));
             }
         } else if (this.type == ActionPlayerDataType.SUBTRACT) {
 
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                String result = papi(this.value.toString(), player, false);
+                String result = placeholders.parse(papi(this.value.toString(), player, false));
                 data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
                 storageManager.upsertData(player.getUniqueId(), data);
             } else {
-                var data = this.toData(player);
+                var data = this.toData(player,placeholders);
                 data.negate();
                 dataManager.addData(player.getUniqueId(), data);
             }
         } else if (this.type == ActionPlayerDataType.SET) {
-            dataManager.addData(player.getUniqueId(), this.toData(player));
+            dataManager.addData(player.getUniqueId(), this.toData(player,placeholders));
         }
     }
 }
