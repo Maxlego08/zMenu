@@ -4,8 +4,8 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
@@ -24,11 +24,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Button> {
 
@@ -92,9 +88,11 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         List<String> slotsAsString = configuration.getStringList(path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
         if (slots.isEmpty()) slots = defaultButtonValue.getSlots();
+        if (slots.isEmpty()) {
+            slots.add(slot);
+        }
 
         button.setSlots(slots);
-        button.setSlot(slot);
         button.setPage(page);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
@@ -212,7 +210,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
 
     @Override
     public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
-        //TODO: FINISH THE SAVE METHOD
+        // TODO: FINISH THE SAVE METHOD
     }
 
 }

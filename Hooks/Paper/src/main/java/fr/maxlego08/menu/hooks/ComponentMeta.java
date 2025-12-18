@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public class ComponentMeta implements MetaUpdater {
 
     private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
-    private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)&#([A-Fa-f0-9]{6})");
+    private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)(?<!</)#([a-fA-F0-9]{6})");
     private final MenuPlugin plugin;
     private final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
