@@ -42,6 +42,8 @@
 
 # Unreleased
 
+- The inventory name can now have several lines, will be used to simplify the configuration of inventory names with zTextGenerator.
+
 # 1.1.0.7
 
 - Fixed NMS compatibility for **1.21.10**.
