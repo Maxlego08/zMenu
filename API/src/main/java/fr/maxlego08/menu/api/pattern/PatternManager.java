@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.pattern;
 
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
@@ -18,6 +19,8 @@ public interface PatternManager {
      */
     Collection<Pattern> getPatterns();
 
+    Collection<ActionPattern> getActionPatterns();
+
     /**
      * Retrieves a pattern by its name.
      *
@@ -26,6 +29,8 @@ public interface PatternManager {
      */
     Optional<Pattern> getPattern(String name);
 
+    Optional<ActionPattern> getActionPattern(String name);
+
     /**
      * Registers a new pattern.
      *
@@ -33,12 +38,16 @@ public interface PatternManager {
      */
     void registerPattern(Pattern pattern);
 
+    void registerActionPattern(@NotNull ActionPattern pattern);
+
     /**
      * Unregisters a pattern.
      *
      * @param pattern The pattern to be unregistered.
      */
     void unregisterPattern(Pattern pattern);
+
+    void unregisterActionPattern(ActionPattern pattern);
 
     /**
      * Loads a pattern from a file.
@@ -49,9 +58,16 @@ public interface PatternManager {
      */
     Pattern loadPattern(File file) throws InventoryException;
 
+    ActionPattern loadActionPattern(File file) throws InventoryException;
+
     /**
      * Loads all registered patterns.
      */
     void loadPatterns();
+
+    /**
+     * Loads all registered action patterns.
+     */
+    void loadActionsPatterns();
 
 }

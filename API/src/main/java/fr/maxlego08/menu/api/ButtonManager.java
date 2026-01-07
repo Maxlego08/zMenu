@@ -5,12 +5,14 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
@@ -142,6 +144,8 @@ public interface ButtonManager {
      */
     List<Action> loadActions(List<Map<String, Object>> elements, String path, File file);
 
+    List<Action> loadActions(List<Map<String, Object>> elements, String path, File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty);
+
     /**
      * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
      *
@@ -153,6 +157,8 @@ public interface ButtonManager {
      * @return A list of {@link Action} objects derived from the configuration.
      */
     List<Action> loadActions(YamlConfiguration configuration, String path, File file);
+
+    List<Action> loadActions(YamlConfiguration configuration, String path, File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty);
 
     List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException;
 

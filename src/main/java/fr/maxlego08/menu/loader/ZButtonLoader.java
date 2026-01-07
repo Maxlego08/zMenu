@@ -16,6 +16,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -61,7 +62,18 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
-        DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
+        DefaultButtonValue defaultButtonValue = null;
+        List<ActionPattern> actionPatterns = new ArrayList<>();
+        for (Object o : objects) {
+            if (o instanceof DefaultButtonValue) {
+                defaultButtonValue = (DefaultButtonValue) o;
+            } else if (o instanceof List<?> lst && !lst.isEmpty() && lst.getFirst() instanceof ActionPattern) {
+                actionPatterns = (List<ActionPattern>) o;
+            }
+        }
+        if (defaultButtonValue == null) {
+            defaultButtonValue = new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
+        }
 
         ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
 
@@ -84,14 +96,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
             mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
             YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
-            Button patternButton = this.load(patternConfiguration, "button.", buttonName);
+            Button patternButton = this.load(patternConfiguration, "button.", buttonName, actionPatterns);
             // Load view requirements for the pattern button (from main config)
             loadViewRequirements(patternButton, configuration, path, file);
 
             // Load else button from main config if present
             if (configuration.contains(path + "else")) {
                 DefaultButtonValue elseDefaultButtonValue = new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
-                Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
+                Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue, actionPatterns);
                 patternButton.setElseButton(elseButton);
                 if (elseButton != null) {
                     elseButton.setParentButton(patternButton);
@@ -282,7 +294,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             elseDefaultButtonValue.setUpdateMasterButton(button.isUpdatedMasterButton());
             elseDefaultButtonValue.setUpdateOnClick(button.updateOnClick());
 
-            Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue);
+            Button elseButton = this.load(configuration, path + "else.", buttonName + ".else", elseDefaultButtonValue, actionPatterns);
             button.setElseButton(elseButton);
 
             if (elseButton != null) {
@@ -361,11 +373,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         // Load view requirements
         loadViewRequirements(button, configuration, path, file);
         // Load clicks requirements
-        loadClickRequirements(button, configuration, path, file);
+        loadClickRequirements(button, configuration, path, file, actionPatterns);
         // Load refresh requirements
         loadRefreshRequirements(button, configuration, path, file);
         // Load actions
-        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file);
+        boolean stopOnEmpty = configuration.getBoolean(path + "stop-on-empty", true);
+        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file, actionPatterns,true,stopOnEmpty);
+
         button.setActions(actions);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
@@ -410,7 +424,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadClickRequirements(Button button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+    private void loadClickRequirements(Button button, YamlConfiguration configuration, String path, File file,List<ActionPattern> actionPatterns) throws InventoryException {
         String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
         ConfigurationSection section = null;
         String sectionString = "";
@@ -424,7 +438,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         List<Requirement> requirements = new ArrayList<>();
         for (String key : section.getKeys(false)) {
-            requirements.add(loader.load(configuration, path + sectionString + key + ".", file));
+            requirements.add(loader.load(configuration, path + sectionString + key + ".", file,actionPatterns));
         }
         button.setClickRequirements(requirements);
     }

@@ -4,12 +4,15 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.loader.ActionPatternLoader;
 import fr.maxlego08.menu.loader.PatternLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +27,14 @@ import java.util.stream.Stream;
 
 public class ZPatternManager implements PatternManager {
 
+    @FunctionalInterface
+    private interface ThrowingFileLoader {
+        void load(File file) throws InventoryException;
+    }
+
     private final ZMenuPlugin plugin;
     private final Map<String, Pattern> patterns = new HashMap<>();
+    private final Map<String, ActionPattern> actionPatterns = new HashMap<>();
 
     public ZPatternManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
@@ -37,8 +46,18 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
+    public Collection<ActionPattern> getActionPatterns() {
+        return actionPatterns.values();
+    }
+
+    @Override
     public Optional<Pattern> getPattern(String name) {
         return Optional.ofNullable(patterns.getOrDefault(name, null));
+    }
+
+    @Override
+    public Optional<ActionPattern> getActionPattern(String name) {
+        return Optional.ofNullable(actionPatterns.get(name));
     }
 
     @Override
@@ -47,8 +66,18 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
+    public void registerActionPattern(@NotNull ActionPattern pattern) {
+        actionPatterns.put(pattern.name(), pattern);
+    }
+
+    @Override
     public void unregisterPattern(Pattern pattern) {
         patterns.remove(pattern.name());
+    }
+
+    @Override
+    public void unregisterActionPattern(ActionPattern pattern) {
+        actionPatterns.remove(pattern.name());
     }
 
     @Override
@@ -73,27 +102,54 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
-    public void loadPatterns() {
+    public ActionPattern loadActionPattern(File file) throws InventoryException {
+        Loader<ActionPattern> loader = new ActionPatternLoader(this.plugin);
 
-        // Check if file exist
-        File folder = new File(this.plugin.getDataFolder(), "patterns");
-        if (!folder.exists()) {
-            folder.mkdir();
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        ActionPattern actionPattern = loader.load(yamlConfiguration, "", file);
+        if (actionPattern != null) {
+            this.actionPatterns.put(actionPattern.name(), actionPattern);
+
+            if (Config.enableInformationMessage) {
+                Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
+            }
         }
 
-        // Load inventories
+        return actionPattern;
+    }
+
+    @Override
+    public void loadPatterns() {
+        loadFromFolder("patterns", this::loadPattern);
+    }
+
+    @Override
+    public void loadActionsPatterns() {
+        loadFromFolder("actions_patterns", this::loadActionPattern);
+    }
+
+    private void loadFromFolder(String folderName, ThrowingFileLoader loader) {
+        File folder = new File(this.plugin.getDataFolder(), folderName);
+        if (!folder.exists() && !folder.mkdir()) {
+            Logger.info("Could not create " + folderName + " folder!", Logger.LogType.ERROR);
+            return;
+        }
+
         try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
-            stream.skip(1).map(Path::toFile).filter(File::isFile).filter(file -> file.getName().endsWith(".yml")).forEach(file -> {
-                try {
-                    this.loadPattern(file);
-                } catch (InventoryException inventoryException) {
-                    inventoryException.printStackTrace();
-                }
-            });
+            stream.skip(1)
+                .map(Path::toFile)
+                .filter(File::isFile)
+                .filter(file -> file.getName().endsWith(".yml"))
+                .forEach(file -> {
+                    try {
+                        loader.load(file);
+                    } catch (InventoryException e) {
+                        e.printStackTrace();
+                    }
+                });
         } catch (IOException exception) {
             exception.printStackTrace();
         }
-
     }
 }
 

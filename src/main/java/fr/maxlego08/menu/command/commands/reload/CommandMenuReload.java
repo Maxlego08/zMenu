@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Permission;
@@ -41,7 +42,9 @@ public class CommandMenuReload extends VCommand {
         config.load(plugin.getConfig());
 
         plugin.getVInventoryManager().close();
-        plugin.getPatternManager().loadPatterns();
+        PatternManager patternManager = plugin.getPatternManager();
+        patternManager.loadActionsPatterns();
+        patternManager.loadPatterns();
 
         inventoryManager.deleteInventories(plugin);
         inventoryManager.loadInventories();

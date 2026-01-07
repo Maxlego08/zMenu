@@ -96,6 +96,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void load() {
         this.loadButtons();
+        this.plugin.getPatternManager().loadActionsPatterns();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
         DialogManager dialogManager = this.plugin.getDialogManager();

@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -27,7 +28,10 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -70,6 +74,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
 
+        List<ActionPattern> actionPatterns = this.loadActionPatterns(configuration);
+
         Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
@@ -77,7 +83,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         if (section != null) {
             for (String buttonPath : section.getKeys(false)) {
                 try {
-                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
+                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
                     Logger.info(exception.getMessage(), Logger.LogType.ERROR);
                 }
@@ -170,6 +176,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             pattern.ifPresent(patterns::add);
         }
         inventory.setPatterns(patterns);
+    }
+
+    private List<ActionPattern> loadActionPatterns(YamlConfiguration configuration) {
+        PatternManager patternManager = this.plugin.getPatternManager();
+        List<ActionPattern> actionPatterns = new ArrayList<>();
+        for (String patternName: configuration.getStringList("action-patterns")){
+            Optional<ActionPattern> actionPattern = patternManager.getActionPattern(patternName);
+            actionPattern.ifPresent(actionPatterns::add);
+        }
+        return actionPatterns;
     }
 
     /**

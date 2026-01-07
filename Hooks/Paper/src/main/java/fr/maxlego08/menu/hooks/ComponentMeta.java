@@ -204,7 +204,8 @@ public class ComponentMeta implements MetaUpdater {
         // &#a1b2c3 → <#a1b2c3>
         newMessage = convertShorLegacyHex(newMessage);
         // #a1b2c3 → <#a1b2c3>
-        newMessage = newMessage.replaceAll("(?<![<&])(?<!:)#([A-Fa-f0-9]{6})", "<#$1>");
+        newMessage = newMessage.replaceAll("(?<![<&])(?<!:)(?<!</)#([A-Fa-f0-9]{6})", "<#$1>");
+
         // &a → <green>, §c → <red>, etc.
         newMessage = replaceLegacyColors(newMessage);
 

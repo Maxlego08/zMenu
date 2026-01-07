@@ -23,6 +23,11 @@ public abstract class Action {
     private float chance;
 
     /**
+     * The type of the action.
+     */
+    private String type;
+
+    /**
      * Executes the action for the specified player.
      *
      * @param player          The player who triggers the action.
@@ -110,5 +115,13 @@ public abstract class Action {
             }
         }
         return commands;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return this.type;
     }
 }

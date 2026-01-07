@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.api.loader;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,6 +56,23 @@ public abstract class PermissibleLoader {
     }
 
     /**
+     * Load a list of Action from a configuration node with action patterns and success flag.
+     *
+     * @param buttonManager the button manager used to load the actions.
+     * @param accessor      the typed map accessor to access the configuration.
+     * @param key           the key of the list of actions.
+     * @param path          the path of the file.
+     * @param file          the file of the configuration.
+     * @param actionPatterns the list of action patterns to use.
+     * @param useSuccess    whether to use success actions or not.
+     * @return a list of Action.
+     */
+    @SuppressWarnings("unchecked")
+    protected List<Action> loadAction(ButtonManager buttonManager, TypedMapAccessor accessor, String key, String path, File file, @NotNull List<ActionPattern> actionPatterns, boolean useSuccess, boolean stopOnEmpty) {
+        return buttonManager.loadActions((List<Map<String, Object>>) accessor.getObject(key, new ArrayList<Map<String, Object>>()), path, file, actionPatterns, useSuccess, stopOnEmpty);
+
+    }
+    /**
      * Load a list of Permissible from a configuration node.
      *
      * @param buttonManager the button manager used to load the actions.
@@ -67,5 +86,4 @@ public abstract class PermissibleLoader {
     protected List<Permissible> loadPermissible(ButtonManager buttonManager, TypedMapAccessor accessor, String key, String path, File file) {
         return buttonManager.loadPermissible((List<Map<String, Object>>) accessor.getObject(key, new ArrayList<Map<String, Object>>()), path, file);
     }
-
 }
