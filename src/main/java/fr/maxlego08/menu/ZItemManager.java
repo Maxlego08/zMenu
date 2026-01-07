@@ -104,8 +104,13 @@ public class ZItemManager implements ItemManager{
                         }
                     }
                 }
+                ConfigurationSection itemSection = config.getConfigurationSection(itemId);
+                boolean saveOwnerInPDC = true;
+                if (itemSection != null) {
+                    saveOwnerInPDC = itemSection.getBoolean("save-owner-in-pdc", true);
+                }
 
-                this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds));
+                this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds, saveOwnerInPDC));
             } else {
                 if (Config.enableDebug){
                     Logger.info("Impossible to load item " + itemId + " from file " + file.getName());
@@ -161,7 +166,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void unloadListeners() {
-        for (Listener listener: mechanicListeners.values()) {
+        for (Listener listener: this.mechanicListeners.values()) {
             HandlerList.unregisterAll(listener);
         }
     }
@@ -172,7 +177,7 @@ public class ZItemManager implements ItemManager{
             Logger.info("MechanicFactory " + factory.getMechanicId() + " is already registered.", Logger.LogType.WARNING);
             return;
         }
-        mechanicFactories.put(factory.getMechanicId(), factory);
+        this.mechanicFactories.put(factory.getMechanicId(), factory);
     }
 
     @Override
@@ -189,13 +194,15 @@ public class ZItemManager implements ItemManager{
         if (itemMeta != null) {
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
             persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, itemId);
-            persistentDataContainer.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            if (itemData.saveOwnerInPDC()) {
+                persistentDataContainer.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            }
             itemStack.setItemMeta(itemMeta);
         }
 
         boolean shouldCancel = false;
         for (String mechanicId : itemData.mechanicIds()) {
-            MechanicListener mechanicListener = mechanicListeners.get(mechanicId);
+            MechanicListener mechanicListener = this.mechanicListeners.get(mechanicId);
             if (mechanicListener != null) {
                 boolean cancel = mechanicListener.onItemGive(player, itemStack, itemId);
                 if (cancel) shouldCancel = true;
@@ -237,19 +244,24 @@ public class ZItemManager implements ItemManager{
 
             MenuItemStack menuItemStack = itemData.menuItemStack();
             String ownerUuid = meta.getPersistentDataContainer().get(ownerKey, PersistentDataType.STRING);
-            if (ownerUuid == null) continue;
-            Player owner = this.menuPlugin.getServer().getPlayer(UUID.fromString(ownerUuid));
+            Player owner;
+            if (itemData.saveOwnerInPDC()){
+                if (ownerUuid == null) continue;
+                owner = this.menuPlugin.getServer().getPlayer(UUID.fromString(ownerUuid));
+            } else {
+                owner = player;
+            }
             if (owner == null) continue;
 
             ItemStack built = menuItemStack.build(owner).clone();
-
             built.setAmount(itemStack.getAmount());
 
             ItemMeta builtMeta = built.getItemMeta();
             if (builtMeta == null) continue;
             builtMeta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, itemId);
-            builtMeta.getPersistentDataContainer().set(ownerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
-
+            if (itemData.saveOwnerInPDC()) {
+                builtMeta.getPersistentDataContainer().set(ownerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
+            }
             built.setItemMeta(builtMeta);
 
             if (!built.isSimilar(itemStack)) {
