@@ -23,6 +23,7 @@ public class TrimHelper {
         trimMaterials.put("diamond", TrimMaterial.DIAMOND);
         trimMaterials.put("lapis", TrimMaterial.LAPIS);
         trimMaterials.put("amethyst", TrimMaterial.AMETHYST);
+        trimMaterials.put("resin", TrimMaterial.RESIN);
 
         trimPatterns.put("sentry", TrimPattern.SENTRY);
         trimPatterns.put("dune", TrimPattern.DUNE);
