@@ -2,7 +2,7 @@ package fr.maxlego08.menu.pattern;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
@@ -91,7 +91,7 @@ public class ZPatternManager implements PatternManager {
         if (pattern != null) {
             this.patterns.put(pattern.name(), pattern);
 
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
             }
 
@@ -110,7 +110,7 @@ public class ZPatternManager implements PatternManager {
         if (actionPattern != null) {
             this.actionPatterns.put(actionPattern.name(), actionPattern);
 
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info(file.getPath() + " loaded successfully !", Logger.LogType.INFO);
             }
         }

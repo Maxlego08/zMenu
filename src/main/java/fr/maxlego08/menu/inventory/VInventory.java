@@ -2,7 +2,7 @@ package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryListener;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
@@ -106,7 +106,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
             return null;
         }
 
-        if (Config.enableAntiDupe && enableAntiDupe) {
+        if (Configuration.enableAntiDupe && enableAntiDupe) {
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
 

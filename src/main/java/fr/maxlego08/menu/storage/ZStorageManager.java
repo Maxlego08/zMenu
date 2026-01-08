@@ -2,7 +2,7 @@ package fr.maxlego08.menu.storage;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
@@ -24,7 +24,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ZStorageManager implements StorageManager {
@@ -213,7 +216,7 @@ public class ZStorageManager implements StorageManager {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerOpenInventory(PlayerOpenInventoryEvent event) {
 
-        if (!isEnable() || !Config.enablePlayerOpenInventoryLogs) return;
+        if (!isEnable() || !Configuration.enablePlayerOpenInventoryLogs) return;
 
         this.cache.add(event);
     }

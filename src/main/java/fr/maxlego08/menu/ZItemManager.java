@@ -3,7 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.ZMenuItemsLoad;
 import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
@@ -76,7 +76,7 @@ public class ZItemManager implements ItemManager{
                 isFirstLoad = false;
             }
         } catch (IOException exception) {
-            if (Config.enableDebug){
+            if (Configuration.enableDebug){
                 Logger.info("Error while loading items: " + exception.getMessage(), Logger.LogType.ERROR);
             }
         }
@@ -112,7 +112,7 @@ public class ZItemManager implements ItemManager{
 
                 this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds, saveOwnerInPDC));
             } else {
-                if (Config.enableDebug){
+                if (Configuration.enableDebug){
                     Logger.info("Impossible to load item " + itemId + " from file " + file.getName());
                 }
             }

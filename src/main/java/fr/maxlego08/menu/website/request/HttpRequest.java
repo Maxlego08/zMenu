@@ -3,14 +3,9 @@ package fr.maxlego08.menu.website.request;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -79,7 +74,7 @@ public class HttpRequest {
                 }
 
             } catch (Exception exception) {
-                if (Config.enableDebug) {
+                if (Configuration.enableDebug) {
                     exception.printStackTrace();
                 }
             }

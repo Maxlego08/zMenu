@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
@@ -156,7 +156,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         boolean enableInventoryLoad = configuration.getBoolean("enable", true);
         if (!enableInventoryLoad) {
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info("The inventory " + file.getPath() + " is disabled, so it will not be loaded.", LogType.WARNING);
             }
             return null;
@@ -166,7 +166,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         Optional<InventoryLoadRequirement> optional = checker.canLoadInventory(configuration, plugin, file, classz);
         if (optional.isPresent()) {
 
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info("Cannot load inventory " + file.getPath() + ", inventory is waiting.", LogType.WARNING);
 
                 InventoryLoadRequirement inventoryLoadRequirement = optional.get();
@@ -187,12 +187,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
 
-        if (Config.enableInformationMessage) {
+        if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
         }
 
         InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
-        if (Config.enableFastEvent) getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
+        if (Configuration.enableFastEvent) getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
         else inventoryLoadEvent.call();
 
         return inventory;
@@ -308,7 +308,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
 
@@ -358,7 +358,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new DataLoader(this.plugin));
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
         buttonManager.registerAction(new ChatLoader());
-        if (Config.enablePlayerCommandsAsOPAction){ // Disabled by default for security reasons
+        if (Configuration.enablePlayerCommandsAsOPAction){ // Disabled by default for security reasons
             buttonManager.registerAction(new PlayerCommandAsOPLoader());
         }
         buttonManager.registerAction(new PlayerCommandLoader());
@@ -467,7 +467,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load specifies path inventories
-        List<String> list = Config.specifyPathMenus;
+        List<String> list =Configuration.specifyPathMenus;
         for (String s : list) {
             File file = new File(s);
             if (file.isFile()) {
@@ -783,7 +783,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         loadClicks.forEach(clickType -> {
             if (clickType == null) return;
             if (clickType.equalsIgnoreCase("all") || clickType.equalsIgnoreCase("any")) {
-                clickTypes.addAll(Config.allClicksType);
+                clickTypes.addAll(Configuration.allClicksType);
             } else {
                 try {
                     clickTypes.add(ClickType.valueOf(clickType.toUpperCase()));
@@ -892,7 +892,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             inventoryLoadRequirement.removeRequirement(type, value);
 
             if (inventoryLoadRequirement.canLoad()) {
-                if (Config.enableInformationMessage) {
+                if (Configuration.enableInformationMessage) {
                     Logger.info("Conditions are met to load the file " + inventoryLoadRequirement.getFile().getPath(), LogType.SUCCESS);
                 }
 

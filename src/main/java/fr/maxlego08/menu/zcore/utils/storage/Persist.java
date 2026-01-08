@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.storage;
 
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.Folder;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
@@ -93,7 +93,7 @@ public class Persist extends ZUtils {
             return def;
         } else {
 
-            if (Config.enableLogStorageFile) {
+            if (Configuration.enableLogStorageFile) {
                 plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
             }
 
@@ -121,7 +121,7 @@ public class Persist extends ZUtils {
         try {
 
             boolean b = DiscUtils.writeCatch(file, plugin.getGson().toJson(instance));
-            if (Config.enableLogStorageFile) {
+            if (Configuration.enableLogStorageFile) {
                 plugin.getLog().log(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
             }
             return b;

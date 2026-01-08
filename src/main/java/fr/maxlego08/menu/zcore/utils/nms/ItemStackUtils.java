@@ -1,17 +1,11 @@
 package fr.maxlego08.menu.zcore.utils.nms;
 
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.zcore.utils.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +52,7 @@ public class ItemStackUtils {
                     .getMethod("a", localClass, OutputStream.class)
                     .invoke(null, localObject1, localByteArrayOutputStream);
         } catch (Exception localException) {
-            if (Config.enableDebug) {
+            if (Configuration.enableDebug) {
                 localException.printStackTrace();
             }
         }

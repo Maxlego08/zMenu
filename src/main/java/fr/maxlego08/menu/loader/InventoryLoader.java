@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
@@ -89,7 +89,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 }
             }
         } else {
-            if (Config.enableDebug){
+            if (Configuration.enableDebug){
             Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }

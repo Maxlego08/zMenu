@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -175,7 +175,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                 }
                 Set<String> keys = multiSection.getKeys(false);
                 if (keys.isEmpty()) {
-                    if (Config.enableDebug){
+                    if (Configuration.enableDebug){
                         Logger.info("A minimum of one action button is required for multi-action dialogs.", Logger.LogType.WARNING);
                     }
                     return;

@@ -4,7 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
@@ -37,7 +37,7 @@ public class CommandMenuReload extends VCommand {
         plugin.loadGlobalPlaceholders();
         plugin.getMessageLoader().load();
         plugin.reloadConfig();
-        Config config = Config.getInstance();
+        Configuration config = Configuration.getInstance();
         config.save(plugin.getConfig(),plugin.getConfigFile());
         config.load(plugin.getConfig());
 

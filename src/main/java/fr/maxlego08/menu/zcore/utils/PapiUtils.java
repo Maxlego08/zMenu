@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.placeholder.Placeholder;
-import fr.maxlego08.menu.api.configuration.Config;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -31,13 +31,13 @@ public class PapiUtils extends TranslationHelper {
         String cacheKey = placeHolder + ";" + player.getUniqueId();
         CacheEntry cachedResult = cache.get(cacheKey);
 
-        if (Config.enableCachePlaceholderAPI && cachedResult != null && cachedResult.isValid() && useCache) {
+        if (Configuration.enableCachePlaceholderAPI && cachedResult != null && cachedResult.isValid() && useCache) {
             return cachedResult.value;
         }
 
         String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
 
-        if (Config.enableCachePlaceholderAPI) {
+        if (Configuration.enableCachePlaceholderAPI) {
             this.cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
         }
 
@@ -60,7 +60,7 @@ public class PapiUtils extends TranslationHelper {
 
         public boolean isValid() {
                 // Check if the cache entry is still valid (not older than 1000 milliseconds)
-                return System.currentTimeMillis() - timeStamp < Config.cachePlaceholderAPI;
+                return System.currentTimeMillis() - timeStamp <Configuration.cachePlaceholderAPI;
             }
         }
 }

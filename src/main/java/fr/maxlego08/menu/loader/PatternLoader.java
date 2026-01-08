@@ -2,7 +2,7 @@ package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
@@ -66,7 +66,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
                 buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
             }
         } else {
-            if (Config.enableDebug) {
+            if (Configuration.enableDebug) {
                 Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }

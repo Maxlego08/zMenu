@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.plugins;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 
@@ -40,7 +40,7 @@ public class VersionChecker extends ZUtils {
      * Allows to check if the plugin version is up-to-date.
      */
     public void useLastVersion() {
-        if (Config.skipUpdateCheck) {
+        if (Configuration.skipUpdateCheck) {
             return;
         }
 

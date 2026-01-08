@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
@@ -148,12 +148,12 @@ public class VInventoryManager extends ListenerAdapter {
 
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
-        if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
+        if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
             message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
 
-        this.cooldownClick.put(player.getUniqueId(), System.currentTimeMillis() + Config.cooldownClickMilliseconds);
+        this.cooldownClick.put(player.getUniqueId(), System.currentTimeMillis() +Configuration.cooldownClickMilliseconds);
 
         ItemButton button = (inPlayerInventory ? inventory.getPlayerInventoryItems() : inventory.getItems()).getOrDefault(event.getSlot(), null);
         if (button != null) {

@@ -4,7 +4,7 @@ import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -57,7 +57,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
                 }
             }
         } else {
-            if (Config.enableDebug) {
+            if (Configuration.enableDebug) {
                 Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }
@@ -130,7 +130,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         Requirement requirement = new ZRequirement(configuration.getInt("open_requirement.minimum_requirements", permissibles.size()), permissibles, new ArrayList<>(), actions, new ArrayList<>());
         inventory.setOpenRequirement(requirement);
 
-        if (Config.enableDebug) {
+        if (Configuration.enableDebug) {
             plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");
         }
 

@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -150,7 +150,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         if (requirements.isEmpty()) {
             List<Action> globalActions = leftActions.isEmpty() ? rightActions.isEmpty() ? actions : rightActions : leftActions;
             if (!globalActions.isEmpty()) {
-                Requirement requirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), globalActions, Config.allClicksType);
+                Requirement requirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), globalActions,Configuration.allClicksType);
                 requirements.add(requirement);
             }
         }
@@ -189,7 +189,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setOrPermissions(mappedOrPermissions);
 
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
         } else buttonLoadEvent.call();
 

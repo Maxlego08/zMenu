@@ -4,21 +4,13 @@ import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.website.WebsiteManager;
-import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
-import fr.maxlego08.menu.website.buttons.ButtonFolderBack;
-import fr.maxlego08.menu.website.buttons.ButtonFolderNext;
-import fr.maxlego08.menu.website.buttons.ButtonFolderPrevious;
-import fr.maxlego08.menu.website.buttons.ButtonFolders;
-import fr.maxlego08.menu.website.buttons.ButtonInventories;
-import fr.maxlego08.menu.website.buttons.ButtonInventoryNext;
-import fr.maxlego08.menu.website.buttons.ButtonInventoryPrevious;
-import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
+import fr.maxlego08.menu.website.buttons.*;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -209,7 +201,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                     this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, true);
                 }
             } else {
-                this.plugin.saveResource(filePath, !Config.enableDebug);
+                this.plugin.saveResource(filePath, !Configuration.enableDebug);
             }
         });
     }

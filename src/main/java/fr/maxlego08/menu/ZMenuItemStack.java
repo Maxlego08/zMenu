@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeUtil;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
@@ -147,7 +147,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
         applyAttributes(itemStack);
 
-        if (!needPlaceholderAPI && Config.enableCacheItemStack) {
+        if (!needPlaceholderAPI &&Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
         }
 
@@ -155,7 +155,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        return !this.needPlaceholderAPI && this.cacheItemStack != null && Config.enableCacheItemStack && useCache;
+        return !this.needPlaceholderAPI && this.cacheItemStack != null &&Configuration.enableCacheItemStack && useCache;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {

@@ -3,9 +3,9 @@ package fr.maxlego08.menu.command.commands;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.command.ConsoleCommandSender;
@@ -33,14 +33,14 @@ public class CommandMenuOpenMainMenu extends VCommand {
         InventoryManager inventoryManager = plugin.getInventoryManager();
 
         Player player = this.argAsPlayer(1, this.player);
-        boolean displayMessage = this.argAsBoolean(2, Config.enableOpenMessage);
+        boolean displayMessage = this.argAsBoolean(2, Configuration.enableOpenMessage);
         if (player == null) {
             message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
                     : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
 
-        String mainMenu = Config.mainMenu;
+        String mainMenu = Configuration.mainMenu;
 
         Optional<Inventory> optional = inventoryManager.getInventory(mainMenu);
 

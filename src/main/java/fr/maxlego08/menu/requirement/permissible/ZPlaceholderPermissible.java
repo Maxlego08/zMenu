@@ -2,7 +2,7 @@ package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -113,7 +113,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
                 };
 
             } catch (Exception exception) {
-                if (Config.enableDebug) {
+                if (Configuration.enableDebug) {
                     exception.printStackTrace();
                 }
                 return false;

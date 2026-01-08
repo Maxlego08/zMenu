@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.command.VCommandManager;
@@ -50,7 +50,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         commands.add(command);
         this.commands.put(command.plugin().getName(), commands);
 
-        if (Config.enableInformationMessage) {
+        if (Configuration.enableInformationMessage) {
             Logger.info("Command /" + command.command() + " successfully register.", LogType.SUCCESS);
         }
     }

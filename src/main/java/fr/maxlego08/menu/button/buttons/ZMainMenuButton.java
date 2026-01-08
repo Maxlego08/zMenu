@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.button.buttons;
 
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class ZMainMenuButton extends ZHomeButton {
     @Override
     public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
-        inventoryManager.openInventory(player, Config.mainMenu);
+        inventoryManager.openInventory(player,Configuration.mainMenu);
     }
 
     @Override

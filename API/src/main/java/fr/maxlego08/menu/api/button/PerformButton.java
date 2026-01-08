@@ -2,7 +2,7 @@ package fr.maxlego08.menu.api.button;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -146,7 +146,7 @@ public abstract class PerformButton extends SlotButton {
         strings.forEach(command -> {
             command = placeholders.parse(command.replace("%player%", player.getName()));
             try {
-                if (executor instanceof Player && Config.enablePlayerCommandInChat) {
+                if (executor instanceof Player && Configuration.enablePlayerCommandInChat) {
                     player.chat("/" + plugin.parse(player, command));
                 } else {
 

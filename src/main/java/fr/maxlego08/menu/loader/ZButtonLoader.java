@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
@@ -397,7 +397,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setOptions(buttonOptions);
 
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
         } else buttonLoadEvent.call();
 

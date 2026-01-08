@@ -3,7 +3,7 @@ package fr.maxlego08.menu.command;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.Arguments;
@@ -409,7 +409,7 @@ public abstract class VCommand extends Arguments {
         try {
             return perform(plugin);
         } catch (Exception e) {
-            if (Config.enableDebug)
+            if (Configuration.enableDebug)
                 e.printStackTrace();
             return CommandType.SYNTAX_ERROR;
         }

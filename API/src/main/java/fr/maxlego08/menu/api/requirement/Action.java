@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.requirement;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
@@ -67,7 +67,7 @@ public abstract class Action {
 
     public void setChance(float chance) {
         if (chance < 0 || chance > 100) {
-            if (Config.enableDebug) {
+            if (Configuration.enableDebug) {
                 throw new IllegalArgumentException("Chance must be between 0 and 100");
             }
             chance = 100;

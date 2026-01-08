@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponent;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordWebhookComponent;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ public class DiscordComponentAction extends ActionHelper {
             try {
                 discordWebhook.execute();
             } catch (Exception exception) {
-                if (Config.enableDebug) {
+                if (Configuration.enableDebug) {
                     exception.printStackTrace();
                 }
             }

@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.DialogBodyType;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.DialogException;
@@ -192,7 +192,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         List<DialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
-        if (Config.enableInformationMessage) {
+        if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
         }
 
@@ -236,9 +236,9 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
             player.showDialog(dialog);
 
         } catch (Exception e) {
-            if (Config.enableInformationMessage){
+            if (Configuration.enableInformationMessage){
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
-                if (Config.enableDebug){
+                if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
                 }
             }

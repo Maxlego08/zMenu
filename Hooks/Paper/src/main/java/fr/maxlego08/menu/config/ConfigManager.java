@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.config;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
@@ -149,7 +149,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         try {
             ZDialogInventoryDeveloper zDialog = zDialogInventoryDev.get(pluginName);
             if (zDialog == null) {
-                if (Config.enableDebug) {
+                if (Configuration.enableDebug) {
                     Logger.info("No dialog found for plugin: " + pluginName);
                 }
                 return;
@@ -189,7 +189,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
 
             player.showDialog(dialog);
         } catch (Exception e) {
-            if (Config.enableDebug) {
+            if (Configuration.enableDebug) {
                 Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error :" + e.getMessage(), Logger.LogType.ERROR);
                 e.printStackTrace();
             }
