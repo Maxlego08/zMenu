@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.configuration.dialog;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 public class ConfigDialogBuilder {
     private final String name;
     private final String externalTitle;
@@ -18,92 +21,130 @@ public class ConfigDialogBuilder {
         this.externalTitle = externalTitle;
     }
 
-    public ConfigDialogBuilder yesText(String yesText) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder yesText(@NotNull String yesText) {
         this.yesText = yesText;
         return this;
     }
 
-    public ConfigDialogBuilder yesTooltip(String yesTooltip) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder yesTooltip(@NotNull String yesTooltip) {
         this.yesTooltip = yesTooltip;
         return this;
     }
 
+    @Contract("_ -> this")
+    @NotNull
     public ConfigDialogBuilder yesWidth(int yesWidth) {
         this.yesWidth = yesWidth;
         return this;
     }
 
-    public ConfigDialogBuilder noText(String noText) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder noText(@NotNull String noText) {
         this.noText = noText;
         return this;
     }
 
-    public ConfigDialogBuilder noTooltip(String noTooltip) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder noTooltip(@NotNull String noTooltip) {
         this.noTooltip = noTooltip;
         return this;
     }
 
+    @Contract("_ -> this")
+    @NotNull
     public ConfigDialogBuilder noWidth(int noWidth) {
         this.noWidth = noWidth;
         return this;
     }
 
-    public ConfigDialogBuilder booleanConfirmText(String booleanConfirmText) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder booleanConfirmText(@NotNull String booleanConfirmText) {
         this.booleanConfirmText = booleanConfirmText;
         return this;
     }
 
-    public ConfigDialogBuilder numberRangeConfirmText(String numberRangeConfirmText) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder numberRangeConfirmText(@NotNull String numberRangeConfirmText) {
         this.numberRangeConfirmText = numberRangeConfirmText;
         return this;
     }
 
-    public ConfigDialogBuilder textConfirmText(String textConfirmText) {
+    @Contract("_ -> this")
+    @NotNull
+    public ConfigDialogBuilder textConfirmText(@NotNull String textConfirmText) {
         this.textConfirmText = textConfirmText;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getExternalTitle() {
-        return externalTitle;
+        return this.externalTitle;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getYesText() {
-        return yesText;
+        return this.yesText;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getYesTooltip() {
-        return yesTooltip;
+        return this.yesTooltip;
     }
 
+    @Contract(pure = true)
     public int getYesWidth() {
-        return yesWidth;
+        return this.yesWidth;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getNoText() {
-        return noText;
+        return this.noText;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getNoTooltip() {
-        return noTooltip;
+        return this.noTooltip;
     }
 
+    @Contract(pure = true)
     public int getNoWidth() {
-        return noWidth;
+        return this.noWidth;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getBooleanConfirmText() {
-        return booleanConfirmText;
+        return this.booleanConfirmText;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getNumberRangeConfirmText() {
-        return numberRangeConfirmText;
+        return this.numberRangeConfirmText;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getTextConfirmText() {
-        return textConfirmText;
+        return this.textConfirmText;
     }
 }

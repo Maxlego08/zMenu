@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ZHomeButton extends HomeButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
+    public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventory, int slot, @NonNull Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
 
         if (this.inventory == null) {
@@ -35,7 +36,7 @@ public class ZHomeButton extends HomeButton {
     }
 
     @Override
-    public void onInventoryOpen(Player player, InventoryEngine inventory, Placeholders placeholders) {
+    public void onInventoryOpen(@NonNull Player player, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
 
         List<Inventory> oldInventories = inventory.getOldInventories();
         if (!oldInventories.isEmpty()) {

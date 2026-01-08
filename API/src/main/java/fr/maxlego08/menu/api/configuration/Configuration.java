@@ -8,6 +8,8 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -319,7 +321,7 @@ public class Configuration {
         return instance;
     }
 
-    public void load(FileConfiguration fileConfiguration) {
+    public void load(@NotNull FileConfiguration fileConfiguration) {
 
         enableDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_DEBUG.getPath());
         enableDebugTime = fileConfiguration.getBoolean(ConfigPath.ENABLE_DEBUG_TIME.getPath());
@@ -378,7 +380,7 @@ public class Configuration {
         enableToast = fileConfiguration.getBoolean(ConfigPath.ENABLE_TOAST.getPath(), true);
     }
 
-    public void save(FileConfiguration fileConfiguration, File file) {
+    public void save(@NotNull FileConfiguration fileConfiguration,@NotNull File file) {
         if (!updated) {
             return;
         }
@@ -477,12 +479,14 @@ public class Configuration {
       
         private final String path;
 
-        ConfigPath(String path) {
+        ConfigPath(@NotNull String path) {
             this.path = path;
         }
 
+        @Contract(pure = true)
+        @NotNull
         public String getPath() {
-            return path;
+            return this.path;
         }
     }
 }

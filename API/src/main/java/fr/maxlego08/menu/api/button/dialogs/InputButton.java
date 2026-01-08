@@ -3,6 +3,9 @@ package fr.maxlego08.menu.api.button.dialogs;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,198 +46,255 @@ public class InputButton extends Button {
     private Supplier<Float> initialValueRangeSupplier;
     private String labelFormat = "options.generic_value"; // Default label format
 
-
+    @Contract(pure = true)
     public DialogInputType getInputType() {
         return inputType;
     }
 
-    public InputButton setInputType(DialogInputType inputType) {
+    @Contract("_ -> this")
+    public InputButton setInputType(@NotNull DialogInputType inputType) {
         this.inputType = inputType;
         return this;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public String getLabel() {
         return label;
     }
 
-    public InputButton setLabel(String label) {
+    @Contract("_ -> this")
+    public InputButton setLabel(@Nullable String label) {
         this.label = label;
         return this;
     }
 
+    @Contract(pure = true)
     public boolean isLabelVisible() {
         return labelVisible;
     }
 
+    @Contract("_ -> this")
     public InputButton setLabelVisible(boolean labelVisible) {
         this.labelVisible = labelVisible;
         return this;
     }
 
+    @Contract(pure = true)
     public int getWidth() {
         return width;
     }
 
+    @Contract("_ -> this")
     public InputButton setWidth(int width) {
         this.width = width;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getDefaultText() {
         return defaultText;
     }
 
-    public InputButton setDefaultText(String defaultText) {
+    @Contract("_ -> this")
+    public InputButton setDefaultText(@NotNull String defaultText) {
         this.defaultText = defaultText;
         return this;
     }
 
+    @Contract(pure = true)
     public int getMaxLength() {
         return maxLength;
     }
 
+    @Contract("_ -> this")
     public InputButton setMaxLength(int maxLength) {
         this.maxLength = maxLength;
         return this;
     }
 
+    @Contract(pure = true)
     public int getMultilineMaxLines() {
         return multilineMaxLines;
     }
 
+    @Contract("_ -> this")
     public InputButton setMultilineMaxLines(int multilineMaxLines) {
         this.multilineMaxLines = multilineMaxLines;
         return this;
     }
 
+    @Contract(pure = true)
     public int getMultilineHeight() {
         return multilineHeight;
     }
 
+    @Contract("_ -> this")
     public InputButton setMultilineHeight(int multilineHeight) {
         this.multilineHeight = multilineHeight;
         return this;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public List<SingleOption> getSigleOptions() {
         return singleOptions;
     }
 
-    public InputButton setSigleOptions(List<SingleOption> options) {
+    @Contract("_ -> this")
+    public InputButton setSigleOptions(@Nullable List<SingleOption> options) {
         this.singleOptions = options;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getInitialValueBool() {
         return initialValueBool;
     }
 
-    public InputButton setInitialValueBool(String initialValueBool) {
+    @Contract("_ -> this")
+    public InputButton setInitialValueBool(@NotNull String initialValueBool) {
         this.initialValueBool = initialValueBool;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getTextTrue() {
         return textTrue;
     }
 
-    public InputButton setTextTrue(String textTrue) {
+    @Contract("_ -> this")
+    public InputButton setTextTrue(@NotNull String textTrue) {
         this.textTrue = textTrue;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getTextFalse() {
         return textFalse;
     }
 
-    public InputButton setTextFalse(String textFalse) {
+    @Contract("_ -> this")
+    public InputButton setTextFalse(@NotNull String textFalse) {
         this.textFalse = textFalse;
         return this;
     }
 
+    @Contract(pure = true)
     public float getStart() {
         return start;
     }
 
+    @Contract("_ -> this")
     public InputButton setStart(float start) {
         this.start = start;
         return this;
     }
 
+    @Contract(pure = true)
     public float getEnd() {
         return end;
     }
 
+    @Contract("_ -> this")
     public InputButton setEnd(float end) {
         this.end = end;
         return this;
     }
 
+    @Contract(pure = true)
     public float getStep() {
         return step;
     }
 
+    @Contract("_ -> this")
     public InputButton setStep(float step) {
         this.step = step;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getInitialValueRange() {
         return initialValueRange;
     }
 
-    public InputButton setInitialValueRange(String initialValueRange) {
+    @Contract("_ -> this")
+    public InputButton setInitialValueRange(@NotNull String initialValueRange) {
         this.initialValueRange = initialValueRange;
         return this;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public String getKey() {
         return key;
     }
 
-    public InputButton setKey(String key) {
+    @Contract("_ -> this")
+    public InputButton setKey(@Nullable String key) {
         this.key = key;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getLabelFormat() {
         return labelFormat;
     }
-    public InputButton setLabelFormat(String labelFormat) {
+
+    @Contract("_ -> this")
+    public InputButton setLabelFormat(@NotNull String labelFormat) {
         this.labelFormat = labelFormat;
         return this;
     }
+
+    @Contract(pure = true)
+    @NotNull
     public Optional<Boolean> getInitialValueSupplier() {
-        if (this.initialValueSupplier != null) {;
+        if (this.initialValueSupplier != null) {
             return Optional.ofNullable(initialValueSupplier.get());
         }
         return Optional.empty();
     }
-    public InputButton setInitialValueSupplier(Supplier<Boolean> initialValueSupplier) {
+
+    @Contract("_ -> this")
+    public InputButton setInitialValueSupplier(@Nullable Supplier<Boolean> initialValueSupplier) {
         this.initialValueSupplier = initialValueSupplier;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Optional<Float> getInitialValueRangeSupplier() {
-        if (this.initialValueRangeSupplier != null) {;
+        if (this.initialValueRangeSupplier != null) {
             return Optional.ofNullable(initialValueRangeSupplier.get());
         }
         return Optional.empty();
     }
 
-    public InputButton setInitialValueRangeSupplier(Supplier<Float> initialValueRangeSupplier) {
+    @Contract("_ -> this")
+    public InputButton setInitialValueRangeSupplier(@Nullable Supplier<Float> initialValueRangeSupplier) {
         this.initialValueRangeSupplier = initialValueRangeSupplier;
         return this;
     }
+
+    @Contract(pure = true)
+    @NotNull
     public Optional<String> getDefaultTextSupplier() {
-        if (this.defaultTextSupplier != null) {;
+        if (this.defaultTextSupplier != null) {
             return Optional.ofNullable(defaultTextSupplier.get());
         }
         return Optional.empty();
     }
-    public InputButton setDefaultTextSupplier(Supplier<String> defaultTextSupplier) {
+
+    @Contract("_ -> this")
+    public InputButton setDefaultTextSupplier(@Nullable Supplier<String> defaultTextSupplier) {
         this.defaultTextSupplier = defaultTextSupplier;
         return this;
     }
 }
-
