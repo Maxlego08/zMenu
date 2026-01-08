@@ -81,6 +81,11 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
+    public String getLegacyMessage(String message) {
+        return color(message);
+    }
+
+    @Override
     public void sendAction(Player player, String message) {
         ActionBar.sendActionBar(player, message);
     }

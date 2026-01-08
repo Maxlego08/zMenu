@@ -6,6 +6,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 
@@ -91,4 +92,7 @@ public interface MetaUpdater extends MessageSender {
      * @param lines  The lines of the book.
      */
     void openBook(Player player, String title, String author, List<String> lines);
+
+    @Contract("null -> null; !null -> !null")
+    String getLegacyMessage(String message);
 }

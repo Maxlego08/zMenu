@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -254,6 +255,11 @@ public class ComponentMeta implements MetaUpdater {
         if (player != null) {
             player.openBook(book);
         }
+    }
+
+    @Override
+    public String getLegacyMessage(String message) {
+        return LegacyComponentSerializer.legacySection().serialize(this.getComponent(message));
     }
 
     private @NotNull String convertLegacyHex(String message) {

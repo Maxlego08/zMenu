@@ -42,6 +42,11 @@
 
 # Unreleased
 
+- Fix Avast flag issue on VirusTotal
+- Introduced the actions_patterns system, which lets you define default actions applied to all buttons unless they already specify those action types.
+- MiniMessage support in toasts.
+
+
 # 1.1.0.7
 
 - Fixed NMS compatibility for **1.21.10**.

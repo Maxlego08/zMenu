@@ -70,7 +70,7 @@ public class ToastAction extends Action {
         }
 
         if (Configuration.enableToast) {
-            this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.parse(player, placeholders.parse(this.message)), this.toastType, finalModel, this.glowing, player);
+            this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.getMetaUpdater().getLegacyMessage(this.plugin.parse(player, placeholders.parse(this.message))), this.toastType, finalModel, this.glowing, player);
         }
     }
 }
