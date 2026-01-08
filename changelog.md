@@ -45,6 +45,7 @@
 - Fix Avast flag issue on VirusTotal
 - Introduced the actions_patterns system, which lets you define default actions applied to all buttons unless they already specify those action types.
 - MiniMessage support in toasts.
+- More annotations for the API.
 
 
 # 1.1.0.7

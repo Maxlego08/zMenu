@@ -28,6 +28,7 @@ import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -141,11 +142,11 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
     }
 
     @Override
-    public void openConfig(Plugin plugin, Player player) {
+    public void openConfig(@NonNull Plugin plugin, @NonNull Player player) {
         openConfig(plugin.getName(), player);
     }
 
-    public void openConfig(String pluginName, Player player) {
+    public void openConfig(@NonNull String pluginName, @NonNull Player player) {
         try {
             ZDialogInventoryDeveloper zDialog = zDialogInventoryDev.get(pluginName);
             if (zDialog == null) {
@@ -290,7 +291,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
     }
 
     @Override
-    public List<String> getRegisteredConfigs() {
+    public @NonNull List<String> getRegisteredConfigs() {
         return new ArrayList<>(zDialogInventoryDev.keySet());
     }
 

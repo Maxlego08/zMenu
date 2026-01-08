@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.configuration.dialog;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 public class ConfigDialogBuilder {
     private final String name;
     private final String externalTitle;
