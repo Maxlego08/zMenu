@@ -46,6 +46,8 @@
 - Introduced the actions_patterns system, which lets you define default actions applied to all buttons unless they already specify those action types.
 - MiniMessage support in toasts.
 - More annotations for the API.
+- The inventory name can now have several lines, will be used to simplify the configuration of inventory names with zTextGenerator.
+
 
 
 # 1.1.0.7
