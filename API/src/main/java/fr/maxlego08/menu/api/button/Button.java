@@ -390,6 +390,7 @@ public abstract class Button extends PlaceholderButton {
     }
 
     @Contract(pure = true)
+    @Override
     public boolean hasPermission() {
         return this.viewRequirement != null || super.hasPermission();
     }

@@ -146,6 +146,7 @@ public class ConfigManager extends AbstractDialogManager implements ConfigManage
         openConfig(plugin.getName(), player);
     }
 
+    @Override
     public void openConfig(@NonNull String pluginName, @NonNull Player player) {
         try {
             ZDialogInventoryDeveloper zDialog = zDialogInventoryDev.get(pluginName);
