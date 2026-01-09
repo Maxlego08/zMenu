@@ -191,7 +191,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param aliases  list of aliases
      */
     protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-        this.zCommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
+        this.zCommandManager.registerCommand(this, command,vCommand.isConsoleCanUse(), vCommand, Arrays.asList(aliases));
     }
 
     /**
