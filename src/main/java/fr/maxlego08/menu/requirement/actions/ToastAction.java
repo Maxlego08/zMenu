@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.toast.ToastType;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public class ToastAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryEngine, @NonNull Placeholders placeholders) {
 
         String finalMaterial = this.plugin.parse(player, placeholders.parse(this.material));
         String finalModelParsed = this.plugin.parse(player, placeholders.parse(this.modelId));

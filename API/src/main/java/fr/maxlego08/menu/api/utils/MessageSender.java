@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.utils;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sends messages to a {@link org.bukkit.command.CommandSender}.
@@ -14,7 +16,7 @@ public interface MessageSender {
      * @param sender  The CommandSender to whom the message will be sent.
      * @param message The message to be sent.
      */
-    void sendMessage(CommandSender sender, String message);
+    void sendMessage(@NotNull CommandSender sender,@NotNull String message);
 
     /**
      * Sends a title and subtitle to the player with specified timings for the display. This method provides a way to
@@ -29,7 +31,7 @@ public interface MessageSender {
      * @param duration The time in ticks that the title and subtitle will stay fully visible on the screen before starting to fade out.
      * @param end      The duration in ticks for the title and subtitle to fade out.
      */
-    void sendTitle(Player player, String title, String subtitle, long start, long duration, long end);
+    void sendTitle(@NotNull Player player,@Nullable String title, @Nullable String subtitle, long start, long duration, long end);
 
-    void sendAction(Player player, String message);
+    void sendAction(@NotNull Player player,@NotNull String message);
 }

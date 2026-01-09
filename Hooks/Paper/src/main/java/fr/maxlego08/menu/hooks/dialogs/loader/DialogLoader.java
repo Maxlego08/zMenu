@@ -17,6 +17,7 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     @Override
-    public DialogInventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public DialogInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
         String name = configuration.getString("name", "");
@@ -135,7 +136,7 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     @Override
-    public void save(DialogInventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(DialogInventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         //TODO: Implement save logic if needed
     }
 

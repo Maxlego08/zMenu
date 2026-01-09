@@ -12,6 +12,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -35,12 +36,12 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     }
 
     @Override
-    public String getKey() {
+    public @NonNull String getKey() {
         return this.key;
     }
 
     @Override
-    public ActionPlayerDataType getType() {
+    public @NonNull ActionPlayerDataType getType() {
         return this.type;
     }
 
@@ -50,17 +51,17 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     }
 
     @Override
-    public String getSeconds() {
+    public @NonNull String getSeconds() {
         return this.seconds;
     }
 
     @Override
-    public Data toData(OfflinePlayer player) {
+    public @NonNull Data toData(OfflinePlayer player) {
         return toData(player, new Placeholders());
     }
 
     @Override
-    public Data toData(OfflinePlayer player, Placeholders placeholders) {
+    public @NonNull Data toData(OfflinePlayer player, @NonNull Placeholders placeholders) {
         long seconds;
         try {
             seconds = Long.parseLong(papi(this.seconds,player,false));
@@ -82,12 +83,12 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     }
 
     @Override
-    public void execute(Player player, DataManager dataManager) {
+    public void execute(@NonNull Player player, @NonNull DataManager dataManager) {
         execute(player, dataManager, new Placeholders());
     }
 
     @Override
-    public void execute(Player player, DataManager dataManager, Placeholders placeholders) {
+    public void execute(@NonNull Player player, @NonNull DataManager dataManager, @NonNull Placeholders placeholders) {
         if (this.type == ActionPlayerDataType.REMOVE) {
 
             Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());

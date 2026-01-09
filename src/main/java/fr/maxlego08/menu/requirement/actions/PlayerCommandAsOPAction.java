@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class PlayerCommandAsOPAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
         scheduler.runAtEntity(player, w -> papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
             command = command.replace("%player%", player.getName());

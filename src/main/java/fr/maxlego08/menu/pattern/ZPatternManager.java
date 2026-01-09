@@ -13,6 +13,7 @@ import fr.maxlego08.menu.loader.PatternLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,27 +42,27 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
-    public Collection<Pattern> getPatterns() {
+    public @NonNull Collection<Pattern> getPatterns() {
         return patterns.values();
     }
 
     @Override
-    public Collection<ActionPattern> getActionPatterns() {
+    public @NonNull Collection<ActionPattern> getActionPatterns() {
         return actionPatterns.values();
     }
 
     @Override
-    public Optional<Pattern> getPattern(String name) {
+    public @NonNull Optional<Pattern> getPattern(String name) {
         return Optional.ofNullable(patterns.getOrDefault(name, null));
     }
 
     @Override
-    public Optional<ActionPattern> getActionPattern(String name) {
+    public @NonNull Optional<ActionPattern> getActionPattern(String name) {
         return Optional.ofNullable(actionPatterns.get(name));
     }
 
     @Override
-    public void registerPattern(Pattern pattern) {
+    public void registerPattern(@NonNull Pattern pattern) {
         patterns.put(pattern.name(), pattern);
     }
 
@@ -71,17 +72,17 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
-    public void unregisterPattern(Pattern pattern) {
+    public void unregisterPattern(@NonNull Pattern pattern) {
         patterns.remove(pattern.name());
     }
 
     @Override
-    public void unregisterActionPattern(ActionPattern pattern) {
+    public void unregisterActionPattern(@NonNull ActionPattern pattern) {
         actionPatterns.remove(pattern.name());
     }
 
     @Override
-    public Pattern loadPattern(File file) throws InventoryException {
+    public Pattern loadPattern(@NonNull File file) throws InventoryException {
 
         Loader<Pattern> loader = new PatternLoader(this.plugin);
 
@@ -102,7 +103,7 @@ public class ZPatternManager implements PatternManager {
     }
 
     @Override
-    public ActionPattern loadActionPattern(File file) throws InventoryException {
+    public ActionPattern loadActionPattern(@NonNull File file) throws InventoryException {
         Loader<ActionPattern> loader = new ActionPatternLoader(this.plugin);
 
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);

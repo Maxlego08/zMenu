@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.permissible.RegexPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,7 +24,7 @@ public class ZRegexPermissible extends RegexPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         return pattern.matcher(inventory.getPlugin().parse(player, placeholders.parse(this.placeholder))).find();
     }
 

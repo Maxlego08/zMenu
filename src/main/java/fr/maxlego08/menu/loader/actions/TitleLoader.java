@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.TitleAction;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
@@ -14,7 +15,7 @@ public class TitleLoader extends ActionLoader {
     }
 
     @Override
-    public Action load(String path, TypedMapAccessor accessor, File file) {
+    public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
 
         String title = accessor.getString("title");
         String subtitle = accessor.getString("subtitle");

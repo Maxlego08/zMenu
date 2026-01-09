@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.pattern;
 
 import fr.maxlego08.menu.api.button.Button;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -17,6 +18,7 @@ public interface Pattern {
      *
      * @return The name of this pattern.
      */
+    @NotNull
     String name();
 
     /**
@@ -37,6 +39,7 @@ public interface Pattern {
      *
      * @return The buttons that make up this pattern.
      */
+    @NotNull
     Collection<Button> buttons();
 
     /**

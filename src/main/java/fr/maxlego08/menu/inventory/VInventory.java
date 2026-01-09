@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -148,12 +149,12 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Map<Integer, ItemButton> getItems() {
+    public @NonNull Map<Integer, ItemButton> getItems() {
         return items;
     }
 
     @Override
-    public Map<Integer, ItemButton> getPlayerInventoryItems() {
+    public @NonNull Map<Integer, ItemButton> getPlayerInventoryItems() {
         return playerInventoryItems;
     }
 
@@ -183,7 +184,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Inventory getSpigotInventory() {
+    public @NonNull Inventory getSpigotInventory() {
         return inventory;
     }
 

@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 public class BooleanInputLoader extends ButtonLoader {
 
@@ -19,7 +20,7 @@ public class BooleanInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         InputButton inputButton = new InputButton();
         String label = configuration.getString(path + ".label", "");
         String defaultValue = configuration.getString(path + ".initial-value", String.valueOf(true));

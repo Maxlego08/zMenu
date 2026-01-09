@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.List;
@@ -21,7 +22,7 @@ public class PlaceholderPermissibleLoader extends PermissibleLoader {
     }
 
     @Override
-    public Permissible load(String path, TypedMapAccessor accessor, File file) {
+    public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         PlaceholderAction action = PlaceholderAction.from(accessor.getString("action").toUpperCase());
         String placeholder = accessor.getString("placeholder", accessor.getString("placeHolder"));
         String value = accessor.getString("value");

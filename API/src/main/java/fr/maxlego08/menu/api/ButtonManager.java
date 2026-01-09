@@ -36,7 +36,7 @@ public interface ButtonManager {
      *
      * @param button The {@link ButtonLoader} instance to register.
      */
-    void register(ButtonLoader button);
+    void register(@NotNull ButtonLoader button);
 
     /**
      * Unregisters an existing {@link ButtonLoader}, ceasing its button creation responsibilities.

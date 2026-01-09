@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionType;
+import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -114,22 +115,22 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     /**
      * @return the inventoryManager
      */
-    public InventoryManager getInventoryManager() {
+    public @NonNull InventoryManager getInventoryManager() {
         return inventoryManager;
     }
 
     @Override
-    public ItemStack build(Player player) {
+    public @NonNull ItemStack build(Player player) {
         return build(player, true);
     }
 
     @Override
-    public ItemStack build(Player player, boolean useCache) {
+    public @NonNull ItemStack build(Player player, boolean useCache) {
         return build(player, useCache, new Placeholders());
     }
 
     @Override
-    public ItemStack build(Player player, boolean useCache, Placeholders placeholders) {
+    public @NonNull ItemStack build(Player player, boolean useCache, Placeholders placeholders) {
 
         if (shouldUseCache(useCache)) {
             return this.cacheItemStack;
@@ -750,7 +751,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
-    public String getFilePath() {
+    public @NonNull String getFilePath() {
         return filePath;
     }
 

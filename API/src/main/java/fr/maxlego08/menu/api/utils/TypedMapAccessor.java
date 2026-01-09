@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +20,7 @@ public class TypedMapAccessor implements MapConfiguration {
      *
      * @param map The map containing key-value pairs.
      */
-    public TypedMapAccessor(Map<String, Object> map) {
+    public TypedMapAccessor(@NotNull Map<String, Object> map) {
         this.map = map;
     }
 

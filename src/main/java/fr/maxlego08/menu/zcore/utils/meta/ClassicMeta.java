@@ -12,33 +12,34 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClassicMeta extends ZUtils implements MetaUpdater {
     @Override
-    public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
+    public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, Player player) {
         itemMeta.setDisplayName(color(text));
     }
 
     @Override
-    public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
+    public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
         itemMeta.setDisplayName(color(text));
     }
 
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
+    public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, Player player) {
         updateLore(itemMeta, lore, LoreType.PREPEND);
     }
 
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlineplayer) {
+    public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @NonNull OfflinePlayer offlineplayer) {
         updateLore(itemMeta, lore, LoreType.PREPEND);
     }
 
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
+    public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @NonNull LoreType loreType) {
 
         List<String> newLore = new ArrayList<>();
 
@@ -56,27 +57,27 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
-    public Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder) {
+    public @NonNull Inventory createInventory(@NonNull String inventoryName, int size, InventoryHolder inventoryHolder) {
         return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
     }
 
     @Override
-    public Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder) {
+    public @NonNull Inventory createInventory(@NonNull String inventoryName, @NonNull InventoryType inventoryType, InventoryHolder inventoryHolder) {
         return Bukkit.createInventory(inventoryHolder, inventoryType, color(inventoryName));
     }
 
     @Override
-    public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
+    public void sendTitle(@NonNull Player player, String title, @NonNull String subtitle, long start, long duration, long end) {
         player.sendTitle(color(papi(title, player, true)), color(papi(subtitle, player, true)), (int) start, (int) duration, (int) end);
     }
 
     @Override
-    public void sendMessage(CommandSender sender, String message) {
+    public void sendMessage(@NonNull CommandSender sender, @NonNull String message) {
         sender.sendMessage(color(message));
     }
 
     @Override
-    public void openBook(Player player, String title, String author, List<String> lines) {
+    public void openBook(@NonNull Player player, @NonNull String title, @NonNull String author, @NonNull List<String> lines) {
         player.sendMessage("§cYou cant open a book with your minecraft version !");
     }
 
@@ -86,7 +87,7 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
     }
 
     @Override
-    public void sendAction(Player player, String message) {
+    public void sendAction(@NonNull Player player, @NonNull String message) {
         ActionBar.sendActionBar(player, message);
     }
 }

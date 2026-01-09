@@ -23,6 +23,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.*;
@@ -39,7 +40,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override
-    public void register(ButtonLoader button) {
+    public void register(@NonNull ButtonLoader button) {
 
         ButtonLoader existingLoader = null;
         for (List<ButtonLoader> buttonLoaders : loaders.values()) {

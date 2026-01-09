@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.requirement.permissible;
 
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public abstract class PermissionPermissible extends Permissible{
 
-    public PermissionPermissible(List<Action> denyActions, List<Action> successActions) {
+    public PermissionPermissible(@NotNull List<Action> denyActions,@NotNull List<Action> successActions) {
         super(denyActions, successActions);
     }
 
@@ -19,6 +20,7 @@ public abstract class PermissionPermissible extends Permissible{
      *
      * @return The required permission.
      */
+    @NotNull
     public abstract String getPermission();
 
     /**

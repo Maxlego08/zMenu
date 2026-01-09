@@ -37,6 +37,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -58,7 +59,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
@@ -477,7 +478,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     }
 
     @Override
-    public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Button object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         // TODO: FINISH THE SAVE METHOD
     }
 

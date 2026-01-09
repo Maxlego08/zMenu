@@ -4,7 +4,6 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -22,6 +21,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -108,28 +109,28 @@ public class ComponentMeta implements MetaUpdater {
     }
 
     @Override
-    public void updateDisplayName(ItemMeta itemMeta, String text, Player player) {
+    public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, Player player) {
         updateDisplayName(itemMeta, text);
     }
 
     @Override
-    public void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
+    public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
         updateDisplayName(itemMeta, text);
     }
 
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, Player player) {
+    public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, Player player) {
         updateLore(itemMeta, lore, LoreType.REPLACE);
     }
 
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer) {
+    public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @Nullable OfflinePlayer offlinePlayer) {
         updateLore(itemMeta, lore, LoreType.REPLACE);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType) {
+    public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @NonNull LoreType loreType) {
         List<Component> components = new ArrayList<>(lore.size());
         for (String text : lore) {
             Component component = this.cache.get(text, () -> {
@@ -186,12 +187,12 @@ public class ComponentMeta implements MetaUpdater {
     }
 
     @Override
-    public Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder) {
+    public @NonNull Inventory createInventory(@NonNull String inventoryName, int size, InventoryHolder inventoryHolder) {
         return createInventoryInternal(inventoryName, inventoryHolder, size);
     }
 
     @Override
-    public Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder) {
+    public @NonNull Inventory createInventory(@NonNull String inventoryName, @NonNull InventoryType inventoryType, InventoryHolder inventoryHolder) {
         return createInventoryInternal(inventoryName, inventoryHolder, inventoryType);
     }
 
@@ -214,33 +215,27 @@ public class ComponentMeta implements MetaUpdater {
     }
 
     @Override
-    public void sendMessage(CommandSender sender, String message) {
-        if (sender != null) {
-            Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
-            sender.sendMessage(component);
-        }
+    public void sendMessage(@NonNull CommandSender sender, @NonNull String message) {
+        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
+        sender.sendMessage(component);
     }
 
     @Override
-    public void sendAction(Player player, String message) {
-        if (player != null) {
-            Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
-            ((Audience) player).sendActionBar(component);
-        }
+    public void sendAction(@NonNull Player player, @NonNull String message) {
+        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
+        player.sendActionBar(component);
     }
 
     @Override
-    public void sendTitle(Player player, String title, String subtitle, long start, long duration, long end) {
-        if (player != null) {
-            Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
-            Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
-            Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(subtitle)));
-            player.showTitle(Title.title(componentTitle, componentSubTitle, times));
-        }
+    public void sendTitle(@NonNull Player player, String title, @NonNull String subtitle, long start, long duration, long end) {
+        Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
+        Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
+        Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(subtitle)));
+        player.showTitle(Title.title(componentTitle, componentSubTitle, times));
     }
 
     @Override
-    public void openBook(Player player, String title, String author, List<String> lines) {
+    public void openBook(@NonNull Player player, @NonNull String title, @NonNull String author, @NonNull List<String> lines) {
 
         Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
         Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(author)));
@@ -252,9 +247,7 @@ public class ComponentMeta implements MetaUpdater {
         }
 
         Book book = Book.book(titleComponent, authorComponent, linesComponent);
-        if (player != null) {
-            player.openBook(book);
-        }
+        player.openBook(book);
     }
 
     @Override

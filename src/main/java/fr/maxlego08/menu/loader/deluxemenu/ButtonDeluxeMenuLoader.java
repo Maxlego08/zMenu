@@ -22,6 +22,7 @@ import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.*;
@@ -40,7 +41,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         String buttonType = "NONE";
         String buttonName = (String) objects[0];
@@ -209,7 +210,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
     }
 
     @Override
-    public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Button object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         // TODO: FINISH THE SAVE METHOD
     }
 

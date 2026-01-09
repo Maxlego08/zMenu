@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class CommandLoader implements Loader<Command> {
     }
 
     @Override
-    public Command load(YamlConfiguration configuration, String path, Object... args) throws InventoryException {
+    public Command load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... args) throws InventoryException {
 
         File file = (File) args[0];
         String command = configuration.getString(path + "command");
@@ -101,7 +102,7 @@ public class CommandLoader implements Loader<Command> {
     }
 
     @Override
-    public void save(Command object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Command object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
         configuration.set(path + "command", object.command());
         configuration.set(path + "permission", object.permission());

@@ -13,6 +13,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
     }
 
     @Override
-    public Pattern load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Pattern load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         String name = configuration.getString("name");
@@ -75,7 +76,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
     }
 
     @Override
-    public void save(Pattern object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Pattern object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
         configuration.set("name", object.name());
         configuration.set("size", object.inventorySize());

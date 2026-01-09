@@ -13,6 +13,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
      */
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryEngine, @NonNull Placeholders placeholders) {
 
         MenuPlugin plugin = inventoryEngine.getPlugin();
         String valueAsString;

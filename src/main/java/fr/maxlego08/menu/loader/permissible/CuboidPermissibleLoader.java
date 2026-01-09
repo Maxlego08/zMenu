@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.utils.cuboid.Region;
 import fr.maxlego08.menu.requirement.permissible.ZCuboidPermissible;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class CuboidPermissibleLoader extends PermissibleLoader {
     }
 
     @Override
-    public Permissible load(String path, TypedMapAccessor accessor, File file) {
+    public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
 
         List<Action> denyActions = loadAction(this.buttonManager, accessor, "deny", path, file);
         List<Action> successActions = loadAction(this.buttonManager, accessor, "success", path, file);

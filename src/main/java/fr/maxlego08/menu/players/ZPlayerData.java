@@ -4,6 +4,8 @@ import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,47 +20,47 @@ public class ZPlayerData implements PlayerData {
     private final UUID uniqueId;
     private final Map<String, Data> datas = new HashMap<>();
 
-    public ZPlayerData(StorageManager storageManager, UUID uniqueId) {
+    public ZPlayerData(@NotNull StorageManager storageManager,@NotNull UUID uniqueId) {
         super();
         this.storageManager = storageManager;
         this.uniqueId = uniqueId;
     }
 
     @Override
-    public UUID getUniqueId() {
+    public @NonNull UUID getUniqueId() {
         return this.uniqueId;
     }
 
     @Override
-    public Collection<Data> getDatas() {
+    public @NonNull Collection<Data> getDatas() {
         return Collections.unmodifiableCollection(this.datas.values());
     }
 
     @Override
-    public void addData(Data data) {
+    public void addData(@NonNull Data data) {
         this.datas.put(data.getKey(), data);
         this.storageManager.upsertData(uniqueId, data);
     }
 
     @Override
-    public void removeData(Data data) {
+    public void removeData(@NonNull Data data) {
         this.removeData(data.getKey());
     }
 
     @Override
-    public void removeData(String key) {
+    public void removeData(@NonNull String key) {
         this.datas.remove(key);
         this.storageManager.removeData(uniqueId, key);
     }
 
     @Override
-    public boolean containsKey(String key) {
+    public boolean containsKey(@NonNull String key) {
         this.clearExpiredData();
         return this.datas.containsKey(key);
     }
 
     @Override
-    public Optional<Data> getData(String key) {
+    public @NonNull Optional<Data> getData(@NonNull String key) {
         this.clearExpiredData();
         return Optional.ofNullable(this.datas.getOrDefault(key, null));
     }

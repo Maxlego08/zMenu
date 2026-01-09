@@ -1,12 +1,13 @@
 package fr.maxlego08.menu.website.inventories;
 
-import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.ZInventory;
+import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.website.Resource;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ public class InventoryMarketplace extends ZInventory {
     }
 
     @Override
-    public int getMaxPage(Collection<Pattern> patterns, Player player, Object... objects) {
+    public int getMaxPage(@NonNull Collection<Pattern> patterns, @NonNull Player player, Object... objects) {
         List<Resource> resources = this.plugin.getWebsiteManager().getResources();
         return getMaxPage(resources, 45);
     }

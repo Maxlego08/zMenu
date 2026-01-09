@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.utils.OpenLink;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -25,17 +26,12 @@ public class ZOpenLink extends ZUtils implements OpenLink {
      * @param hover   - The hover messages
      */
     public ZOpenLink(MenuPlugin plugin, Action action, String message, String link, String replace, List<String> hover) {
-        super();
         this.plugin = plugin;
         this.action = action;
         this.message = message;
         this.link = link;
         this.replace = replace;
         this.hover = hover;
-    }
-
-    public ZOpenLink() {
-        this(null, null, null, null, null, null);
     }
 
     public String getMessage() {
@@ -60,7 +56,7 @@ public class ZOpenLink extends ZUtils implements OpenLink {
     }
 
     @Override
-    public void send(Player player, List<String> messages) {
+    public void send(@NonNull Player player, @NonNull List<String> messages) {
         if (this.isValid()) {
 
             messages.forEach(message -> {

@@ -2,6 +2,8 @@ package fr.maxlego08.menu.players;
 
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ZData implements Data {
 
@@ -9,21 +11,22 @@ public class ZData implements Data {
     private final long expiredAt;
     private Object value;
 
-    public ZData(String key, Object value, long expiredAt) {
+    public ZData(@NotNull String key, Object value, long expiredAt) {
         super();
         this.key = key;
         this.value = value;
         this.expiredAt = expiredAt;
     }
 
-    public ZData(DataDTO dto) {
+    public ZData(@NotNull DataDTO dto) {
+        assert dto.key() != null;
         this.key = dto.key();
         this.value = dto.data();
         this.expiredAt = dto.expired_at() == null ? 0 : dto.expired_at().getTime();
     }
 
     @Override
-    public String getKey() {
+    public @NonNull String getKey() {
         return this.key;
     }
 

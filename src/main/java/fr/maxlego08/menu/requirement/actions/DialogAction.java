@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class DialogAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         inventory.getPlugin().getScheduler().runNextTick(w -> {
 
             Inventory fromInventory = inventory.getMenuInventory();

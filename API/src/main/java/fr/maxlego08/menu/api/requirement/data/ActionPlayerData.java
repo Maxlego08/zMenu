@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents an action associated with player data.
@@ -16,6 +18,7 @@ public interface ActionPlayerData {
      *
      * @return The key.
      */
+    @NotNull
     String getKey();
 
     /**
@@ -23,6 +26,7 @@ public interface ActionPlayerData {
      *
      * @return The {@link ActionPlayerDataType}.
      */
+    @NotNull
     ActionPlayerDataType getType();
 
     /**
@@ -30,6 +34,7 @@ public interface ActionPlayerData {
      *
      * @return The value.
      */
+    @Nullable
     Object getValue();
 
     /**
@@ -37,6 +42,7 @@ public interface ActionPlayerData {
      *
      * @return The expiration time in seconds.
      */
+    @NotNull
     String getSeconds();
 
     /**
@@ -48,9 +54,11 @@ public interface ActionPlayerData {
      * @return The {@link Data}.
      */
     @Deprecated(since = "1.1.0.6")
-    Data toData(OfflinePlayer player);
+    @NotNull
+    Data toData(@Nullable OfflinePlayer player);
 
-    Data toData(OfflinePlayer player, Placeholders placeholders);
+    @NotNull
+    Data toData(@Nullable OfflinePlayer player,@NotNull Placeholders placeholders);
 
     /**
      * Executes the action when the player clicks.
@@ -61,7 +69,7 @@ public interface ActionPlayerData {
      * @param dataManager  The {@link DataManager}.
      */
     @Deprecated(since = "1.1.0.6")
-    void execute(Player player, DataManager dataManager);
+    void execute(@NotNull Player player,@NotNull DataManager dataManager);
 
-    void execute(Player player, DataManager dataManager, Placeholders placeholders);
+    void execute(@NotNull Player player,@NotNull DataManager dataManager,@NotNull Placeholders placeholders);
 }

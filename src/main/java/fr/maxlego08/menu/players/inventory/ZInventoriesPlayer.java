@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -24,7 +25,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     }
 
     @Override
-    public void storeInventory(Player player) {
+    public void storeInventory(@NonNull Player player) {
         if (hasSavedInventory(player.getUniqueId())) {
             // Something is wrong
             // Logger.info("The plugin tries to save an inventory while the player already has an inventory saved!");
@@ -49,27 +50,27 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     }
 
     @Override
-    public void giveInventory(Player player) {
+    public void giveInventory(@NonNull Player player) {
         restoreInventory(player, InventoryPlayer::giveInventory);
     }
 
     @Override
-    public void forceGiveInventory(Player player) {
+    public void forceGiveInventory(@NonNull Player player) {
         restoreInventory(player, InventoryPlayer::forceGiveInventory);
     }
 
     @Override
-    public boolean hasSavedInventory(UUID uniqueId) {
+    public boolean hasSavedInventory(@NonNull UUID uniqueId) {
         return inventories.containsKey(uniqueId);
     }
 
     @Override
-    public Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId) {
+    public @NonNull Optional<InventoryPlayer> getPlayerInventory(@NonNull UUID uniqueId) {
         return Optional.ofNullable(inventories.getOrDefault(uniqueId, null));
     }
 
     @Override
-    public List<ItemStack> getInventory(UUID uniqueId) {
+    public @NonNull List<ItemStack> getInventory(@NonNull UUID uniqueId) {
         Optional<InventoryPlayer> optional = this.getPlayerInventory(uniqueId);
         if (optional.isPresent()) {
             InventoryPlayer inventoryPlayer = optional.get();
@@ -79,7 +80,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     }
 
     @Override
-    public void clearInventorie(UUID uniqueId) {
+    public void clearInventorie(@NonNull UUID uniqueId) {
         inventories.remove(uniqueId);
         this.plugin.getStorageManager().removeInventory(uniqueId);
     }

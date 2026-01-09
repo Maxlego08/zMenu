@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.zcore.logger.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +27,7 @@ public class Placeholders {
      * @param key   the key of the placeholder.
      * @param value the value of the placeholder.
      */
-    public void register(String key, String value) {
+    public void register(@Nullable String key,@Nullable String value) {
         this.placeholders.put(key, value);
     }
 
@@ -34,6 +36,7 @@ public class Placeholders {
      *
      * @return the map of placeholders.
      */
+    @NotNull
     public Map<String, String> getPlaceholders() {
         return placeholders;
     }
@@ -44,7 +47,8 @@ public class Placeholders {
      * @param strings the list of strings to parse
      * @return the list of parsed strings
      */
-    public List<String> parse(List<String> strings) {
+    @NotNull
+    public List<String> parse(@NotNull List<String> strings) {
         List<String> parsed = new ArrayList<>(strings.size());
         for (String string : strings) {
             parsed.add(this.parse(string));
@@ -58,7 +62,8 @@ public class Placeholders {
      * @param string the string to parse
      * @return the parsed string
      */
-    public String parse(String string) {
+    @NotNull
+    public String parse(@NotNull String string) {
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
             string = parse(string, entry.getKey(), entry.getValue());
         }
@@ -80,7 +85,8 @@ public class Placeholders {
      * @param value  the value of the placeholder
      * @return the parsed string
      */
-    public String parse(String string, String key, String value) {
+    @NotNull
+    public String parse(@NotNull String string,@NotNull String key,@NotNull String value) {
         try {
 
             if (string.contains("%" + key + "%")) {

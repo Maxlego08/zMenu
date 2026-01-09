@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.requirement.ZRequirement;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class RequirementLoader implements Loader<Requirement> {
     }
 
     @Override
-    public Requirement load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Requirement load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         List<ActionPattern> actionPatterns = new ArrayList<>();
@@ -46,7 +47,7 @@ public class RequirementLoader implements Loader<Requirement> {
     }
 
     @Override
-    public void save(Requirement object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Requirement object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
     }
 }

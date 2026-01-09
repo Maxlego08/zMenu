@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.permissible.CuboidPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.cuboid.Region;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ZCuboidPermissible extends CuboidPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryEngine, @NonNull Placeholders placeholders) {
         return this.region.contains(player.getLocation());
     }
 }

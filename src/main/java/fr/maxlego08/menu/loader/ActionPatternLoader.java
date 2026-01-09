@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.pattern.ZActionsPattern;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
@@ -18,7 +19,7 @@ public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern>
     }
 
     @Override
-    public ActionPattern load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public ActionPattern load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
         String name = configuration.getString("name");
         if (name == null) {
@@ -28,7 +29,7 @@ public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern>
     }
 
     @Override
-    public void save(ActionPattern object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(ActionPattern object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
     }
 }

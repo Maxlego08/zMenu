@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.pattern;
 
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -17,8 +18,10 @@ public interface PatternManager {
      *
      * @return The collection of registered patterns.
      */
+    @NotNull
     Collection<Pattern> getPatterns();
 
+    @NotNull
     Collection<ActionPattern> getActionPatterns();
 
     /**
@@ -27,8 +30,10 @@ public interface PatternManager {
      * @param name The name of the pattern to retrieve.
      * @return An optional containing the pattern, if it exists.
      */
+    @NotNull
     Optional<Pattern> getPattern(String name);
 
+    @NotNull
     Optional<ActionPattern> getActionPattern(String name);
 
     /**
@@ -36,7 +41,7 @@ public interface PatternManager {
      *
      * @param pattern The pattern to be registered.
      */
-    void registerPattern(Pattern pattern);
+    void registerPattern(@NotNull Pattern pattern);
 
     void registerActionPattern(@NotNull ActionPattern pattern);
 
@@ -45,9 +50,9 @@ public interface PatternManager {
      *
      * @param pattern The pattern to be unregistered.
      */
-    void unregisterPattern(Pattern pattern);
+    void unregisterPattern(@NotNull Pattern pattern);
 
-    void unregisterActionPattern(ActionPattern pattern);
+    void unregisterActionPattern(@NotNull ActionPattern pattern);
 
     /**
      * Loads a pattern from a file.
@@ -56,9 +61,11 @@ public interface PatternManager {
      * @return The loaded {@link Pattern}.
      * @throws InventoryException If an error occurs while loading the pattern.
      */
-    Pattern loadPattern(File file) throws InventoryException;
+    @Nullable
+    Pattern loadPattern(@NotNull File file) throws InventoryException;
 
-    ActionPattern loadActionPattern(File file) throws InventoryException;
+    @Nullable
+    ActionPattern loadActionPattern(@NotNull File file) throws InventoryException;
 
     /**
      * Loads all registered patterns.

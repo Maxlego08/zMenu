@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.event;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Allows you to listen to the events of the plugin without using the Bukkit API, you gain performance
@@ -14,7 +15,7 @@ public abstract class FastEvent {
      *
      * @param event {@link ButtonLoadEvent}
      */
-    public void onButtonLoad(ButtonLoadEvent event){
+    public void onButtonLoad(@NotNull ButtonLoadEvent event){
 
     }
 
@@ -23,7 +24,7 @@ public abstract class FastEvent {
      *
      * @param event {@link InventoryLoadEvent}
      */
-    public void onInventoryLoad(InventoryLoadEvent event){
+    public void onInventoryLoad(@NotNull InventoryLoadEvent event){
 
     }
 
@@ -32,7 +33,7 @@ public abstract class FastEvent {
      *
      * @param event {@link PlayerOpenInventoryEvent}
      */
-    public void onPlayerOpenInventory(PlayerOpenInventoryEvent event){
+    public void onPlayerOpenInventory(@NotNull PlayerOpenInventoryEvent event){
 
     }
 }

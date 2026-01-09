@@ -17,6 +17,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -32,7 +33,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         String name = configuration.getString("name", configuration.getString("menu_title", configuration.getString("title")));
@@ -138,7 +139,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public void save(Inventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Inventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", object.getName());

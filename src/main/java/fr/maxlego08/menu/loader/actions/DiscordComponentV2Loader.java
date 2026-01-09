@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.DiscordComponentAction;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.discord.DiscordConfigurationComponent;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.net.HttpURLConnection;
@@ -25,7 +26,7 @@ public class DiscordComponentV2Loader extends ActionLoader {
     }
 
     @Override
-    public Action load(String path, TypedMapAccessor accessor, File file) {
+    public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         String webhookUrl = accessor.getString("webhook");
         String avatarUrl = accessor.getString("avatar_url", null);
         String username = accessor.getString("username", null);

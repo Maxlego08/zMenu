@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -16,7 +17,7 @@ public interface Loader<T> {
      * @return The loaded object.
      * @throws InventoryException If there is an error while loading the object.
      */
-    T load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException;
+    T load(@NotNull YamlConfiguration configuration, @NotNull String path, Object... objects) throws InventoryException;
 
     /**
      * Saves an object to a YAML configuration.
@@ -27,6 +28,6 @@ public interface Loader<T> {
      * @param file The file where the configuration is stored.
      * @param objects Additional parameters that might be needed for saving.
      */
-    void save(T object, YamlConfiguration configuration, String path, File file, Object... objects);
+    void save(T object,@NotNull YamlConfiguration configuration,@NotNull String path, File file, Object... objects);
 
 }

@@ -7,6 +7,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ public interface MetaUpdater extends MessageSender {
      * @param text     The text to set as the display name.
      * @param player   The player for whom MiniMessage will be applied.
      */
-    void updateDisplayName(ItemMeta itemMeta, String text, Player player);
+    void updateDisplayName(@NotNull ItemMeta itemMeta, @Nullable String text,@Nullable Player player);
 
     /**
      * Updates the display name of the {@link ItemMeta}.
@@ -32,7 +34,7 @@ public interface MetaUpdater extends MessageSender {
      * @param text          The text to set as the display name.
      * @param offlinePlayer The player for whom MiniMessage will be applied.
      */
-    void updateDisplayName(ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer);
+    void updateDisplayName(@NotNull ItemMeta itemMeta,@Nullable String text,@Nullable OfflinePlayer offlinePlayer);
 
     /**
      * Updates the lore of the {@link ItemMeta}.
@@ -42,7 +44,7 @@ public interface MetaUpdater extends MessageSender {
      * @param player   The player for whom MiniMessage will be applied.
      */
     @Deprecated
-    void updateLore(ItemMeta itemMeta, List<String> lore, Player player);
+    void updateLore(@NotNull ItemMeta itemMeta,@NotNull List<String> lore,@Nullable Player player);
 
     /**
      * Updates the lore of the {@link ItemMeta}.
@@ -52,7 +54,7 @@ public interface MetaUpdater extends MessageSender {
      * @param offlinePlayer The player for whom MiniMessage will be applied.
      */
     @Deprecated
-    void updateLore(ItemMeta itemMeta, List<String> lore, OfflinePlayer offlinePlayer);
+    void updateLore(@NotNull ItemMeta itemMeta,@NotNull List<String> lore,@Nullable OfflinePlayer offlinePlayer);
 
     /**
      * Updates the lore of the {@link ItemMeta}.
@@ -61,7 +63,7 @@ public interface MetaUpdater extends MessageSender {
      * @param lore          The lore to set.
      * @param loreType      The lore type.
      */
-    void updateLore(ItemMeta itemMeta, List<String> lore, LoreType loreType);
+    void updateLore(@NotNull ItemMeta itemMeta,@NotNull List<String> lore,@NotNull LoreType loreType);
 
     /**
      * Create an {@link Inventory}
@@ -71,7 +73,8 @@ public interface MetaUpdater extends MessageSender {
      * @param inventoryHolder Inventory Holder.
      * @return Inventory with colored name
      */
-    Inventory createInventory(String inventoryName, int size, InventoryHolder inventoryHolder);
+    @NotNull
+    Inventory createInventory(@NotNull String inventoryName, int size,@Nullable InventoryHolder inventoryHolder);
 
     /**
      * Create an {@link Inventory}
@@ -81,7 +84,8 @@ public interface MetaUpdater extends MessageSender {
      * @param inventoryType   Inventory Type.
      * @return Inventory with colored name
      */
-    Inventory createInventory(String inventoryName, InventoryType inventoryType, InventoryHolder inventoryHolder);
+    @NotNull
+    Inventory createInventory(@NotNull String inventoryName,@NotNull InventoryType inventoryType,@Nullable InventoryHolder inventoryHolder);
 
     /**
      * Opens a book for the specified player.
@@ -91,7 +95,7 @@ public interface MetaUpdater extends MessageSender {
      * @param author The author of the book.
      * @param lines  The lines of the book.
      */
-    void openBook(Player player, String title, String author, List<String> lines);
+    void openBook(@NotNull Player player,@NotNull String title,@NotNull String author,@NotNull List<String> lines);
 
     @Contract("null -> null; !null -> !null")
     String getLegacyMessage(String message);

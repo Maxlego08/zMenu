@@ -16,6 +16,7 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void login(CommandSender sender, String token) {
+    public void login(@NonNull CommandSender sender, String token) {
         if (token == null) {
             message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
@@ -99,7 +100,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void disconnect(CommandSender sender) {
+    public void disconnect(@NonNull CommandSender sender) {
 
         if (Token.token == null) {
             message(this.plugin, sender, Message.WEBSITE_DISCONNECT_ERROR);
@@ -113,7 +114,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void openMarketplace(Player player) {
+    public void openMarketplace(@NonNull Player player) {
 
         if (Token.token == null) {
             message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
@@ -378,7 +379,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void downloadFromUrl(CommandSender sender, String baseUrl, boolean force) {
+    public void downloadFromUrl(@NonNull CommandSender sender, @NonNull String baseUrl, boolean force) {
 
         message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
         plugin.getScheduler().runAsync(w -> {
