@@ -41,7 +41,7 @@ public class CommandLoader implements Loader<Command> {
         String inventory = configuration.getString(path + "inventory");
         String denyMessage = configuration.getString(path + "deny-message", null);
         List<String> aliases = configuration.getStringList(path + "aliases");
-        boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", true);
+        boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", false);
 
         List<Action> commandActions = menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
         List<CommandArgument> arguments = new ArrayList<>();
