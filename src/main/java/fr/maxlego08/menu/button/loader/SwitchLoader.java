@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.utils.SwitchCaseButton;
 import fr.maxlego08.menu.button.buttons.ZSwitchButton;
 import fr.maxlego08.menu.loader.ZButtonLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class SwitchLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
 
         var placeholder = configuration.getString(path + "key");
         var switchCaseButtons = new ArrayList<SwitchCaseButton>();

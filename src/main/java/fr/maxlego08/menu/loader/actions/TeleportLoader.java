@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.TeleportAction;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
@@ -20,7 +21,7 @@ public class TeleportLoader extends ActionLoader {
     }
 
     @Override
-    public Action load(String path, TypedMapAccessor accessor, File file) {
+    public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         String world = accessor.getString("world", "world");
         double x = Double.parseDouble(accessor.getString("x", "0.0"));
         double y = Double.parseDouble(accessor.getString("y", "0.0"));

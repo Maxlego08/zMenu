@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -17,6 +17,7 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     @Override
-    public DialogInventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public DialogInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
         String name = configuration.getString("name", "");
@@ -135,7 +136,7 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     @Override
-    public void save(DialogInventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(DialogInventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         //TODO: Implement save logic if needed
     }
 
@@ -175,7 +176,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                 }
                 Set<String> keys = multiSection.getKeys(false);
                 if (keys.isEmpty()) {
-                    if (Config.enableDebug){
+                    if (Configuration.enableDebug){
                         Logger.info("A minimum of one action button is required for multi-action dialogs.", Logger.LogType.WARNING);
                     }
                     return;

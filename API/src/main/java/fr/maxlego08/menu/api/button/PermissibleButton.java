@@ -4,6 +4,9 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,8 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return the button displayed when the current button does not have the required permissions
      */
+    @Contract(pure = true)
+    @Nullable
     public Button getElseButton() {
         return this.elseButton;
     }
@@ -29,7 +34,7 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @param elseButton the button displayed when the current button does not have the required permissions
      */
-    public void setElseButton(Button elseButton) {
+    public void setElseButton(@Nullable Button elseButton) {
         this.elseButton = elseButton;
     }
 
@@ -38,6 +43,7 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return true if this button has any permissions, false otherwise
      */
+    @Contract(pure = true)
     public boolean hasPermission() {
         return !this.permissions.isEmpty() || !this.orPermissions.isEmpty();
     }
@@ -47,6 +53,7 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return true if this button has an alternative button set using the "elseButton" method, false otherwise
      */
+    @Contract(pure = true)
     public boolean hasElseButton() {
         return this.elseButton != null;
     }
@@ -65,7 +72,8 @@ public abstract class PermissibleButton extends PerformButton {
      * @param placeholders    the placeholders
      * @return true if the player has permission, false otherwise
      */
-    public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    @Contract(pure = true)
+    public boolean checkPermission(@NotNull Player player, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
 
         if (!this.orPermissions.isEmpty()) {
             for (PermissionPermissible permission : this.orPermissions) {
@@ -95,6 +103,8 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return the parent button of this button, or null if this button does not have a parent
      */
+    @Contract(pure = true)
+    @Nullable
     public Button getParentButton() {
         return this.parentButton;
     }
@@ -106,7 +116,7 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @param parentButton the parent button of this button
      */
-    public void setParentButton(Button parentButton) {
+    public void setParentButton(@Nullable Button parentButton) {
         this.parentButton = parentButton;
     }
 
@@ -117,6 +127,8 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return the master parent button of this button
      */
+    @Contract(pure = true)
+    @NotNull
     public Button getMasterParentButton() {
         Button button = this.getParentButton();
         return button == null ? (Button) this : button.getMasterParentButton();
@@ -130,6 +142,8 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return the list of alternative permissions that can be used to satisfy the visibility requirement of this button
      */
+    @Contract(pure = true)
+    @NotNull
     public List<PermissionPermissible> getOrPermission() {
         return this.orPermissions;
     }
@@ -139,6 +153,8 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @return the list of permissions that must be met for this button to be visible
      */
+    @Contract(pure = true)
+    @NotNull
     public List<PermissionPermissible> getPermissions() {
         return this.permissions;
     }
@@ -150,7 +166,7 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @param permissions the list of permissions that must be met for this button to be visible
      */
-    public void setPermissions(List<PermissionPermissible> permissions) {
+    public void setPermissions(@NotNull List<PermissionPermissible> permissions) {
         this.permissions = permissions;
     }
 
@@ -162,7 +178,7 @@ public abstract class PermissibleButton extends PerformButton {
      *
      * @param orPermissions the list of permissions that can be used to satisfy the visibility requirement of this button
      */
-    public void setOrPermissions(List<PermissionPermissible> orPermissions) {
+    public void setOrPermissions(@NotNull List<PermissionPermissible> orPermissions) {
         this.orPermissions = orPermissions;
     }
 }

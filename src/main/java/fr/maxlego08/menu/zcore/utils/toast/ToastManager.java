@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.utils.toast.ToastType;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,17 +24,17 @@ public class ToastManager implements ToastHelper {
     }
 
     @Override
-    public void showToast(Collection<? extends Player> players, String icon, String message, ToastType style, Object modelData, boolean glowing) {
+    public void showToast(Collection<? extends Player> players, @NonNull String icon, @NonNull String message, @NonNull ToastType style, Object modelData, boolean glowing) {
         createToast().withIcon(icon).withMessage(message).withStyle(style).withModelData(modelData).setGlowing(glowing).to(players).show();
     }
 
     @Override
-    public void showToastToAll(String icon, String message, ToastType style, Object modelData, boolean glowing) {
+    public void showToastToAll(@NonNull String icon, @NonNull String message, @NonNull ToastType style, Object modelData, boolean glowing) {
         createToast().withIcon(icon).withMessage(message).withStyle(style).withModelData(modelData).setGlowing(glowing).toAll().show();
     }
 
     @Override
-    public void showToast(String icon, String message, ToastType style, Object modelData, boolean glowing, Player... players) {
+    public void showToast(@NonNull String icon, @NonNull String message, @NonNull ToastType style, Object modelData, boolean glowing, Player... players) {
         showToast(Arrays.asList(players), icon, message, style, modelData, glowing);
     }
 }

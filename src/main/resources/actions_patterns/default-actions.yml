@@ -1,0 +1,7 @@
+name: default-actions
+actions:
+  - type: sound
+    sound: ENTITY_VILLAGER_YES
+deny-actions:
+  - type: sound
+    sound: ENTITY_VILLAGER_NO

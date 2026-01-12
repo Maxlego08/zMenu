@@ -3,6 +3,8 @@ package fr.maxlego08.menu.api.checker;
 import fr.maxlego08.menu.api.Inventory;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,30 +30,39 @@ public class InventoryLoadRequirement {
         }
     }
 
+    @Contract(pure = true)
+    @NotNull
     public File getFile() {
-        return file;
+        return this.file;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Plugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public YamlConfiguration getConfiguration() {
-        return configuration;
+        return this.configuration;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Class<? extends Inventory> getClassz() {
-        return classz;
+        return this.classz;
     }
 
-    public void addRequirement(InventoryRequirementType inventoryRequirementType, String name) {
+    public void addRequirement(@NotNull InventoryRequirementType inventoryRequirementType, @NotNull String name) {
         this.requirements.get(inventoryRequirementType).add(name);
     }
 
-    public void removeRequirement(InventoryRequirementType inventoryRequirementType, String name) {
+    public void removeRequirement(@NotNull InventoryRequirementType inventoryRequirementType, @NotNull String name) {
         this.requirements.get(inventoryRequirementType).removeIf(e -> e.equalsIgnoreCase(name));
     }
 
+    @Contract(pure = true)
     public boolean canLoad() {
         for (List<String> names : this.requirements.values()) {
             if (!names.isEmpty()) {
@@ -61,11 +72,14 @@ public class InventoryLoadRequirement {
         return true;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Map<InventoryRequirementType, List<String>> getRequirements() {
-        return requirements;
+        return this.requirements;
     }
 
-
+    @Contract(pure = true)
+    @NotNull
     public String getDisplayError() {
         StringBuilder sb = new StringBuilder();
         this.requirements.forEach((type, names) -> {
@@ -79,13 +93,15 @@ public class InventoryLoadRequirement {
     }
 
     @Override
+    @Contract(pure = true)
+    @NotNull
     public String toString() {
         return "InventoryLoadRequirement{" +
-                "plugin=" + plugin +
-                ", configuration=" + configuration +
-                ", classz=" + classz +
-                ", file=" + file +
-                ", requirements=" + requirements +
+                "plugin=" + this.plugin +
+                ", configuration=" + this.configuration +
+                ", classz=" + this.classz +
+                ", file=" + this.file +
+                ", requirements=" + this.requirements +
                 '}';
     }
 }

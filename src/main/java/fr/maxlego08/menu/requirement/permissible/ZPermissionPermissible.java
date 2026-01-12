@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         return this.isReverse != player.hasPermission(inventory.getPlugin().parse(player, placeholders.parse(this.permission)));
     }
 
@@ -67,7 +68,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
      * @return The permission node.
      */
     @Override
-    public String getPermission() {
+    public @NonNull String getPermission() {
         return this.permission;
     }
 

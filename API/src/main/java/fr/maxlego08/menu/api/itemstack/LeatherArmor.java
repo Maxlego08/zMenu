@@ -4,32 +4,39 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class LeatherArmor {
     private ArmorType type;
     private Color color;
 
-    public LeatherArmor(ArmorType type, Color color) {
+    public LeatherArmor(@NotNull ArmorType type,@NotNull Color color) {
         this.type = type;
         this.color = color;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public ArmorType getType() {
         return type;
     }
 
-    public void setType(ArmorType type) {
+    public void setType(@NotNull ArmorType type) {
         this.type = type;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Color getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(@NotNull Color color) {
         this.color = color;
     }
 
+    @NotNull
     public ItemStack toItemStack(int amount) {
         Material material = switch (type) {
             case HELMET -> Material.LEATHER_HELMET;

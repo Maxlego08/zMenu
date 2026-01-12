@@ -4,10 +4,13 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record ConditionalName(String name, List<Permissible> permissibles, int priority) {
+public record ConditionalName(@NotNull String name,@NotNull List<Permissible> permissibles, int priority) {
 
     /**
      * Retrieves the name of the conditional name.
@@ -17,6 +20,8 @@ public record ConditionalName(String name, List<Permissible> permissibles, int p
      * @return the name of the conditional name.
      */
     @Override
+    @Contract(pure = true)
+    @NotNull
     public String name() {
         return this.name;
     }
@@ -30,6 +35,8 @@ public record ConditionalName(String name, List<Permissible> permissibles, int p
      * @return a list of all permissibles associated with this conditional name.
      */
     @Override
+    @Contract(pure = true)
+    @NotNull
     public List<Permissible> permissibles() {
         return this.permissibles;
     }
@@ -43,6 +50,7 @@ public record ConditionalName(String name, List<Permissible> permissibles, int p
      * @return the priority of this conditional name.
      */
     @Override
+    @Contract(pure = true)
     public int priority() {
         return this.priority;
     }
@@ -62,7 +70,7 @@ public record ConditionalName(String name, List<Permissible> permissibles, int p
      * @return true if the player has permission to access the menu, and false
      * otherwise.
      */
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    public boolean hasPermission(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine,@NotNull Placeholders placeholders) {
         for (Permissible permissible : this.permissibles) {
             if (!permissible.hasPermission(player, button, inventoryEngine, placeholders)) {
                 return false;

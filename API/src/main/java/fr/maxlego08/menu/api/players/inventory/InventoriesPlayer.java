@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.players.inventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,16 +19,16 @@ public interface InventoriesPlayer extends Listener {
      *
      * @param player Player
      */
-    void storeInventory(Player player);
+    void storeInventory(@NotNull Player player);
 
     /**
      * Allows giving the inventory back to the player
      *
      * @param player Player
      */
-    void giveInventory(Player player);
+    void giveInventory(@NotNull Player player);
 
-    void forceGiveInventory(Player player);
+    void forceGiveInventory(@NotNull Player player);
 
     /**
      * Check if the player has an inventory saved
@@ -35,7 +36,7 @@ public interface InventoriesPlayer extends Listener {
      * @param uniqueId Player {@link UUID}
      * @return boolean
      */
-    boolean hasSavedInventory(UUID uniqueId);
+    boolean hasSavedInventory(@NotNull UUID uniqueId);
 
     /**
      * Retrieve the player's inventory if it exists
@@ -43,11 +44,13 @@ public interface InventoriesPlayer extends Listener {
      * @param uniqueId Player {@link UUID}
      * @return optional
      */
-    Optional<InventoryPlayer> getPlayerInventory(UUID uniqueId);
+    @NotNull
+    Optional<InventoryPlayer> getPlayerInventory(@NotNull UUID uniqueId);
 
-    List<ItemStack> getInventory(UUID uniqueId);
+    @NotNull
+    List<ItemStack> getInventory(@NotNull UUID uniqueId);
 
-    void clearInventorie(UUID uniqueId);
+    void clearInventorie(@NotNull UUID uniqueId);
 
     void loadInventories();
 

@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.ButtonLoadEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -22,6 +22,7 @@ import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.*;
@@ -40,7 +41,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         String buttonType = "NONE";
         String buttonName = (String) objects[0];
@@ -150,7 +151,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         if (requirements.isEmpty()) {
             List<Action> globalActions = leftActions.isEmpty() ? rightActions.isEmpty() ? actions : rightActions : leftActions;
             if (!globalActions.isEmpty()) {
-                Requirement requirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), globalActions, Config.allClicksType);
+                Requirement requirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), globalActions,Configuration.allClicksType);
                 requirements.add(requirement);
             }
         }
@@ -189,7 +190,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setOrPermissions(mappedOrPermissions);
 
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             inventoryManager.getFastEvents().forEach(event -> event.onButtonLoad(buttonLoadEvent));
         } else buttonLoadEvent.call();
 
@@ -209,7 +210,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
     }
 
     @Override
-    public void save(Button object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Button object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         // TODO: FINISH THE SAVE METHOD
     }
 

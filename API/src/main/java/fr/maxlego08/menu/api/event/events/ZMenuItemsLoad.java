@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.event.events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -42,6 +43,7 @@ public class ZMenuItemsLoad extends Event {
      *
      * @return true if this is a reload, false if initial load
      */
+    @Contract(pure = true)
     public boolean isReload() {
         return isReload;
     }

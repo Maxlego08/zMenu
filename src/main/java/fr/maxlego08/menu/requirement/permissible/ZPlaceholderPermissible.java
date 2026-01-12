@@ -2,7 +2,7 @@ package fr.maxlego08.menu.requirement.permissible;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -13,6 +13,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
      */
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryEngine, @NonNull Placeholders placeholders) {
 
         MenuPlugin plugin = inventoryEngine.getPlugin();
         String valueAsString;
@@ -113,7 +114,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
                 };
 
             } catch (Exception exception) {
-                if (Config.enableDebug) {
+                if (Configuration.enableDebug) {
                     exception.printStackTrace();
                 }
                 return false;

@@ -4,6 +4,9 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -11,11 +14,10 @@ import java.util.List;
  * Represents a condition that can be checked to determine if a player has permission.
  */
 public abstract class Permissible {
-
     private final List<Action> denyActions;
     private final List<Action> successActions;
 
-    public Permissible(List<Action> denyActions, List<Action> successActions) {
+    public Permissible(@NotNull List<Action> denyActions,@NotNull List<Action> successActions) {
         this.denyActions = denyActions;
         this.successActions = successActions;
     }
@@ -33,7 +35,7 @@ public abstract class Permissible {
      * @param placeholders    The placeholders that are currently active in the inventory.
      * @return True if the player has permission; otherwise, false.
      */
-    public abstract boolean hasPermission(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
+    public abstract boolean hasPermission(@NotNull Player player, @Nullable Button button,@NotNull InventoryEngine inventoryEngine,@NotNull Placeholders placeholders);
 
     /**
      * Checks if the permissible is valid.
@@ -48,6 +50,8 @@ public abstract class Permissible {
      *
      * @return List of deny actions.
      */
+    @Contract(pure = true)
+    @NotNull
     public List<Action> getDenyActions() {
         return this.denyActions;
     }
@@ -57,6 +61,8 @@ public abstract class Permissible {
      *
      * @return List of success actions.
      */
+    @Contract(pure = true)
+    @NotNull
     public List<Action> getSuccessActions() {
         return this.successActions;
     }

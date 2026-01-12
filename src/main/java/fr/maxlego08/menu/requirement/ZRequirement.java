@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,22 +35,22 @@ public class ZRequirement implements Requirement {
     }
 
     @Override
-    public List<Permissible> getRequirements() {
+    public @NonNull List<Permissible> getRequirements() {
         return this.permissibles;
     }
 
     @Override
-    public List<Action> getDenyActions() {
+    public @NonNull List<Action> getDenyActions() {
         return this.denyActions;
     }
 
     @Override
-    public List<Action> getSuccessActions() {
+    public @NonNull List<Action> getSuccessActions() {
         return this.successActions;
     }
 
     @Override
-    public boolean execute(Player player, Button button, InventoryEngine inventoryDefault, Placeholders placeholders) {
+    public boolean execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryDefault, @NonNull Placeholders placeholders) {
 
         AtomicBoolean earlyExit = new AtomicBoolean(false);
         int requirementSuccess = 0;
@@ -80,7 +81,7 @@ public class ZRequirement implements Requirement {
     }
 
     @Override
-    public List<ClickType> getClickTypes() {
+    public @NonNull List<ClickType> getClickTypes() {
         return this.clickTypes;
     }
 }

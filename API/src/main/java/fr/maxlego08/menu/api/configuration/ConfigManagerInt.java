@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ConfigManagerInt {
     <T> void registerConfig(@NotNull ConfigDialogBuilder configDialogBuilder, @NotNull Class<T> configClass, @NotNull Plugin plugin);
-    List<String> getRegisteredConfigs();
-    void openConfig(String pluginName, Player player);
-    void openConfig(Plugin plugin, Player player);
+    @NotNull List<String> getRegisteredConfigs();
+    void openConfig(@NotNull String pluginName,@NotNull Player player);
+    void openConfig(@NotNull Plugin plugin,@NotNull Player player);
 }

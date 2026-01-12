@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.requirement.ZRefreshRequirement;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class RefreshRequiementLoader implements Loader<RefreshRequirement> {
     }
 
     @Override
-    public RefreshRequirement load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public RefreshRequirement load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         ButtonManager buttonManager = this.plugin.getButtonManager();
@@ -39,7 +40,7 @@ public class RefreshRequiementLoader implements Loader<RefreshRequirement> {
     }
 
     @Override
-    public void save(RefreshRequirement object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(RefreshRequirement object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
     }
 }

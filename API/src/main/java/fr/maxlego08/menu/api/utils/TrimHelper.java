@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.utils;
 
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class TrimHelper {
         trimMaterials.put("diamond", TrimMaterial.DIAMOND);
         trimMaterials.put("lapis", TrimMaterial.LAPIS);
         trimMaterials.put("amethyst", TrimMaterial.AMETHYST);
+        trimMaterials.put("resin", TrimMaterial.RESIN);
 
         trimPatterns.put("sentry", TrimPattern.SENTRY);
         trimPatterns.put("dune", TrimPattern.DUNE);
@@ -42,10 +44,12 @@ public class TrimHelper {
         trimPatterns.put("host", TrimPattern.HOST);
     }
 
+    @NotNull
     public Map<String, TrimMaterial> getTrimMaterials() {
         return trimMaterials;
     }
 
+    @NotNull
     public Map<String, TrimPattern> getTrimPatterns() {
         return trimPatterns;
     }

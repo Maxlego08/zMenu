@@ -32,8 +32,13 @@ allprojects {
     }
 
     java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
         withSourcesJar()
-        withJavadocJar()
+        if (project.name == "API") {
+            withJavadocJar()
+        }
     }
 
     tasks.shadowJar {
@@ -72,10 +77,12 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
-    tasks.javadoc {
-        options.encoding = "UTF-8"
-        if (JavaVersion.current().isJava9Compatible)
-            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+    if (project.name == "API"){
+        tasks.javadoc {
+            options.encoding = "UTF-8"
+            if (JavaVersion.current().isJava9Compatible)
+                (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+        }
     }
 
     dependencies {
@@ -125,9 +132,6 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    compileJava {
-        options.release = 21
-    }
 
     processResources {
         from("resources")

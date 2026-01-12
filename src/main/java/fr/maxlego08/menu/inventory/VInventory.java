@@ -2,7 +2,7 @@ package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryListener;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +107,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
             return null;
         }
 
-        if (Config.enableAntiDupe && enableAntiDupe) {
+        if (Configuration.enableAntiDupe && enableAntiDupe) {
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
 
@@ -148,12 +149,12 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Map<Integer, ItemButton> getItems() {
+    public @NonNull Map<Integer, ItemButton> getItems() {
         return items;
     }
 
     @Override
-    public Map<Integer, ItemButton> getPlayerInventoryItems() {
+    public @NonNull Map<Integer, ItemButton> getPlayerInventoryItems() {
         return playerInventoryItems;
     }
 
@@ -183,7 +184,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Inventory getSpigotInventory() {
+    public @NonNull Inventory getSpigotInventory() {
         return inventory;
     }
 

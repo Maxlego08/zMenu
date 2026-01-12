@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,21 +16,23 @@ public interface StorageManager extends Listener {
 
     boolean isEnable();
 
-    void upsertData(UUID uuid, Data data);
+    void upsertData(@NotNull UUID uuid,@NotNull Data data);
 
     void clearData();
 
-    void clearData(UUID uniqueId);
+    void clearData(@NotNull UUID uniqueId);
 
-    void removeData(UUID uuid, String key);
+    void removeData(@NotNull UUID uuid,@NotNull String key);
 
+    @NotNull
     List<DataDTO> loadPlayers();
 
+    @NotNull
     List<InventoryDTO> loadInventories();
 
-    void clearData(String key);
+    void clearData(@NotNull String key);
 
-    void storeInventory(UUID uuid, InventoryPlayer inventoryPlayer);
+    void storeInventory(@NotNull UUID uuid,@NotNull InventoryPlayer inventoryPlayer);
 
-    void removeInventory(UUID uuid);
+    void removeInventory(@NotNull UUID uuid);
 }

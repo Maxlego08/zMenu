@@ -3,6 +3,8 @@ package fr.maxlego08.menu.api.utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,7 +21,8 @@ public class CompatibilityUtil {
      * @param event The generic InventoryEvent with an InventoryView to inspect.
      * @return The top Inventory object from the event's InventoryView.
      */
-    public static Inventory getTopInventory(InventoryEvent event) {
+    @Nullable
+    public static Inventory getTopInventory(@NotNull InventoryEvent event) {
         try {
             Object view = event.getView();
             Method getTopInventory = view.getClass().getMethod("getTopInventory");
@@ -30,7 +33,8 @@ public class CompatibilityUtil {
         }
     }
 
-    public static Inventory getTopInventory(Player player) {
+    @Nullable
+    public static Inventory getTopInventory(@NotNull Player player) {
         try {
             Object view = player.getOpenInventory();
             Method getTopInventory = view.getClass().getMethod("getTopInventory");

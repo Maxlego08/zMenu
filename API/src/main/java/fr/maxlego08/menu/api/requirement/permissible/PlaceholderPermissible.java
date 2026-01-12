@@ -3,6 +3,8 @@ package fr.maxlego08.menu.api.requirement.permissible;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
  */
 public abstract class PlaceholderPermissible extends Permissible {
 
-    public PlaceholderPermissible(List<Action> denyActions, List<Action> successActions) {
+    public PlaceholderPermissible(@NotNull List<Action> denyActions,@NotNull List<Action> successActions) {
         super(denyActions, successActions);
     }
 
@@ -20,6 +22,7 @@ public abstract class PlaceholderPermissible extends Permissible {
      *
      * @return The {@link PlaceholderAction}.
      */
+    @Nullable
     public abstract PlaceholderAction getPlaceholderAction();
 
     /**
@@ -27,6 +30,7 @@ public abstract class PlaceholderPermissible extends Permissible {
      *
      * @return The placeholder string.
      */
+    @Nullable
     public abstract String getPlaceholder();
 
     /**
@@ -34,5 +38,6 @@ public abstract class PlaceholderPermissible extends Permissible {
      *
      * @return The value string.
      */
+    @Nullable
     public abstract String getValue();
 }

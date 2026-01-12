@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.engine;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +18,8 @@ public class Pagination<T> {
      * @param page          the current page (1-based index)
      * @return a sublist corresponding to the requested page
      */
-    public List<T> paginateReverse(List<T> list, int inventorySize, int page) {
+    @NotNull
+    public List<T> paginateReverse(@Nullable List<T> list, int inventorySize, int page) {
         if (list == null || list.isEmpty() || inventorySize <= 0) return Collections.emptyList();
         if (page <= 0) page = 1;
 
@@ -39,7 +43,8 @@ public class Pagination<T> {
      * @param page the current page (1-based index)
      * @return a sublist corresponding to the requested page
      */
-    public List<T> paginate(List<T> list, int size, int page) {
+    @NotNull
+    public List<T> paginate(@Nullable List<T> list, int size, int page) {
         if (list == null || list.isEmpty() || size <= 0) return Collections.emptyList();
         if (page <= 0) page = 1;
 
@@ -59,7 +64,8 @@ public class Pagination<T> {
      * @param page the current page (1-based index)
      * @return a sublist corresponding to the requested page
      */
-    public List<T> paginateReverse(Map<?, T> map, int size, int page) {
+    @NotNull
+    public List<T> paginateReverse(@Nullable Map<?, T> map, int size, int page) {
         return (map == null || map.isEmpty()) ? Collections.emptyList() : paginateReverse(new ArrayList<>(map.values()), size, page);
     }
 
@@ -71,7 +77,8 @@ public class Pagination<T> {
      * @param page the current page (1-based index)
      * @return a sublist corresponding to the requested page
      */
-    public List<T> paginate(Map<?, T> map, int size, int page) {
+    @NotNull
+    public List<T> paginate(@Nullable Map<?, T> map, int size, int page) {
         return (map == null || map.isEmpty()) ? Collections.emptyList() : paginate(new ArrayList<>(map.values()), size, page);
     }
 }

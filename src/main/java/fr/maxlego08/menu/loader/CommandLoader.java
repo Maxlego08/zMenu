@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class CommandLoader implements Loader<Command> {
     }
 
     @Override
-    public Command load(YamlConfiguration configuration, String path, Object... args) throws InventoryException {
+    public Command load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... args) throws InventoryException {
 
         File file = (File) args[0];
         String command = configuration.getString(path + "command");
@@ -41,6 +42,7 @@ public class CommandLoader implements Loader<Command> {
         String inventory = configuration.getString(path + "inventory");
         String denyMessage = configuration.getString(path + "deny-message", null);
         List<String> aliases = configuration.getStringList(path + "aliases");
+        boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", false);
 
         List<Action> commandActions = menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
         List<CommandArgument> arguments = new ArrayList<>();
@@ -96,11 +98,11 @@ public class CommandLoader implements Loader<Command> {
             }
         }
 
-        return new ZCommand(this.plugin, command, aliases, permission, inventory, arguments, commandActions, subCommands, denyMessage, path, file);
+        return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, denyMessage, path, file);
     }
 
     @Override
-    public void save(Command object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Command object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
         configuration.set(path + "command", object.command());
         configuration.set(path + "permission", object.permission());

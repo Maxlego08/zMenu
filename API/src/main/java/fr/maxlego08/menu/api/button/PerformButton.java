@@ -2,12 +2,16 @@ package fr.maxlego08.menu.api.button;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,8 @@ public abstract class PerformButton extends SlotButton {
     private List<String> consolePermissionCommands = new ArrayList<>();
     private String consolePermission;
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getCommands() {
         return this.commands;
     }
@@ -30,10 +36,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param commands the commands to set
      */
-    public void setCommands(List<String> commands) {
+    public void setCommands(@NotNull List<String> commands) {
         this.commands = commands;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getLeftCommands() {
         return this.leftCommands;
     }
@@ -41,10 +49,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param leftCommands the left click commands to set
      */
-    public void setLeftCommands(List<String> leftCommands) {
+    public void setLeftCommands(@NotNull List<String> leftCommands) {
         this.leftCommands = leftCommands;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getRightCommands() {
         return this.rightCommands;
     }
@@ -52,11 +62,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param rightCommands the right click commands to set
      */
-    public void setRightCommands(List<String> rightCommands) {
+    public void setRightCommands(@NotNull List<String> rightCommands) {
         this.rightCommands = rightCommands;
     }
 
-
+    @Contract(pure = true)
+    @NotNull
     public List<String> getConsoleCommands() {
         return this.consoleCommands;
     }
@@ -64,10 +75,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param consoleCommands the consoleCommands to set
      */
-    public void setConsoleCommands(List<String> consoleCommands) {
+    public void setConsoleCommands(@NotNull List<String> consoleCommands) {
         this.consoleCommands = consoleCommands;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getConsolePermissionCommands() {
         return this.consolePermissionCommands;
     }
@@ -75,10 +88,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param consolePermissionCommands the consolePermissionCommands to set
      */
-    public void setConsolePermissionCommands(List<String> consolePermissionCommands) {
+    public void setConsolePermissionCommands(@NotNull List<String> consolePermissionCommands) {
         this.consolePermissionCommands = consolePermissionCommands;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public String getConsolePermission() {
         return this.consolePermission;
     }
@@ -86,10 +101,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param consolePermission the consolePermission to set
      */
-    public void setConsolePermission(String consolePermission) {
+    public void setConsolePermission(@Nullable String consolePermission) {
         this.consolePermission = consolePermission;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getConsoleRightCommands() {
         return this.consoleRightCommands;
     }
@@ -97,10 +114,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param consoleRightCommands the consoleRightCommands to set
      */
-    public void setConsoleRightCommands(List<String> consoleRightCommands) {
+    public void setConsoleRightCommands(@NotNull List<String> consoleRightCommands) {
         this.consoleRightCommands = consoleRightCommands;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getConsoleLeftCommands() {
         return this.consoleLeftCommands;
     }
@@ -108,11 +127,12 @@ public abstract class PerformButton extends SlotButton {
     /**
      * @param consoleLeftCommands the consoleLeftCommands to set
      */
-    public void setConsoleLeftCommands(List<String> consoleLeftCommands) {
+    public void setConsoleLeftCommands(@NotNull List<String> consoleLeftCommands) {
         this.consoleLeftCommands = consoleLeftCommands;
     }
 
-    public void execute(MenuPlugin plugin, ClickType type, Placeholders placeholders, Player player) {
+    @Contract(pure = true)
+    public void execute(@NotNull MenuPlugin plugin, @NotNull ClickType type, @NotNull Placeholders placeholders, @NotNull Player player) {
         var scheduler = plugin.getScheduler();
 
         if (type.isRightClick()) {
@@ -142,14 +162,14 @@ public abstract class PerformButton extends SlotButton {
      * @param scheduler the PlatformScheduler used to schedule the command executions
      * @param executor  the CommandSender executing the commands
      */
-    private void execute(MenuPlugin plugin, Player player, List<String> strings, PlatformScheduler scheduler, Placeholders placeholders, CommandSender executor) {
+    @Contract(pure = true)
+    private void execute(@NotNull MenuPlugin plugin, @NotNull Player player, @NotNull List<String> strings, @NotNull PlatformScheduler scheduler, @NotNull Placeholders placeholders, @NotNull CommandSender executor) {
         strings.forEach(command -> {
             command = placeholders.parse(command.replace("%player%", player.getName()));
             try {
-                if (executor instanceof Player && Config.enablePlayerCommandInChat) {
+                if (executor instanceof Player && Configuration.enablePlayerCommandInChat) {
                     player.chat("/" + plugin.parse(player, command));
                 } else {
-
                     String finalCommand = command;
                     Runnable runnable = () -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
                     if (plugin.isFolia()) {
@@ -158,7 +178,10 @@ public abstract class PerformButton extends SlotButton {
                     } else runnable.run();
                 }
             } catch (Exception exception) {
-                exception.printStackTrace();
+                if (Configuration.enableDebug){
+                    Logger.info("An error occurred while executing command: " + command);
+                    exception.printStackTrace();
+                }
             }
         });
     }

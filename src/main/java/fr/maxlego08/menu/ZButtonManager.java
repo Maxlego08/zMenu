@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -21,6 +22,8 @@ import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.*;
@@ -37,7 +40,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override
-    public void register(ButtonLoader button) {
+    public void register(@NonNull ButtonLoader button) {
 
         ButtonLoader existingLoader = null;
         for (List<ButtonLoader> buttonLoaders : loaders.values()) {
@@ -152,7 +155,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return permissibles;
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file) {
         List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
         return loadPermissible(elements, path, file);
@@ -160,7 +163,13 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file) {
+        return loadActions(elements, path, file, new ArrayList<>(), true, true);
+    }
+
+    @Override
+    public List<Action> loadActions(List<Map<String, Object>> elements, String path, File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
         List<Action> actions = new ArrayList<>();
+        Set<String> seenTypes = new HashSet<>();
         for (Map<String, Object> map : elements) {
             String type = (String) map.getOrDefault("type", null);
             if (type == null) {
@@ -175,26 +184,44 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 if (action != null) {
                     action.setDelay(accessor.getInt("delay", 0));
                     action.setChance(accessor.getFloat("chance", 100));
+                    action.setType(type);
                     List<Map<String, Object>> denyChanceAction = accessor.getMapList("deny-chance-actions");
                     if (!denyChanceAction.isEmpty()) {
-                        List<Action> denyActions = loadActions(denyChanceAction, path + ".deny-chance-actions", file);
+                        List<Action> denyActions = loadActions(denyChanceAction, path + ".deny-chance-actions", file, defaultActions, useSuccess, stopOnEmpty);
                         if (!denyActions.isEmpty()) {
                             action.setDenyChanceActions(denyActions);
                         }
                     }
                     actions.add(action);
+                    seenTypes.add(type);
                 }
             } else {
                 Logger.info("Error, an element is invalid in " + path + " with type " + type + ", he doesn't exist!", Logger.LogType.ERROR);
             }
         }
+        if (stopOnEmpty && actions.isEmpty()) {
+            return actions;
+        }
+        for (ActionPattern actionPattern : defaultActions) {
+            for (Action action : useSuccess ? actionPattern.actions() : actionPattern.denyActions()){
+                if (!seenTypes.contains(action.getType())){
+                    actions.add(action);
+                }
+            }
+        }
         return actions;
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
         List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
         return loadActions(elements, path, file);
+    }
+
+    @Override @SuppressWarnings("unchecked")
+    public List<Action> loadActions(YamlConfiguration configuration, String path, File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+        return loadActions(elements, path, file, defaultActions, useSuccess, stopOnEmpty);
     }
 
     @Override

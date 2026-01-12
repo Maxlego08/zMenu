@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionType;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      * Load ItemStack
      */
-    public MenuItemStack load(YamlConfiguration configuration, String path, Object... objects) {
+    public MenuItemStack load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) {
 
         File file = (File) objects[0];
 
@@ -539,7 +540,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param file          the file in which to save the configuration
      * @param objects       additional objects for potential future use
      */
-    public void save(MenuItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(MenuItemStack item, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
         configuration.set(path + "material", item.getMaterial());
 

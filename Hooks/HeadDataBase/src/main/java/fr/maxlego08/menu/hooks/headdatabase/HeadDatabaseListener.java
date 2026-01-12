@@ -16,6 +16,7 @@ public class HeadDatabaseListener implements Listener {
 
     @EventHandler
     public void onRead(DatabaseLoadEvent event) {
+        this.plugin.getPatternManager().loadActionsPatterns();
         this.plugin.getPatternManager().loadPatterns();
         this.plugin.getInventoryManager().loadInventories();
     }

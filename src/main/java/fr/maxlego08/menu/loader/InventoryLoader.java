@@ -6,11 +6,12 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -24,10 +25,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -39,7 +44,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         var nameObject = configuration.get("name", configuration.get("title"));
@@ -77,6 +82,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
 
+        List<ActionPattern> actionPatterns = this.loadActionPatterns(configuration);
+
         Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
@@ -84,13 +91,13 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         if (section != null) {
             for (String buttonPath : section.getKeys(false)) {
                 try {
-                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
+                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
                     Logger.info(exception.getMessage(), Logger.LogType.ERROR);
                 }
             }
         } else {
-            if (Config.enableDebug){
+            if (Configuration.enableDebug){
             Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }
@@ -179,6 +186,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setPatterns(patterns);
     }
 
+    private List<ActionPattern> loadActionPatterns(YamlConfiguration configuration) {
+        PatternManager patternManager = this.plugin.getPatternManager();
+        List<ActionPattern> actionPatterns = new ArrayList<>();
+        for (String patternName: configuration.getStringList("action-patterns")){
+            Optional<ActionPattern> actionPattern = patternManager.getActionPattern(patternName);
+            actionPattern.ifPresent(actionPatterns::add);
+        }
+        return actionPatterns;
+    }
+
     /**
      * Loads the openWithItem section of the given configuration and assigns the relevant data to the given inventory.
      * <p>
@@ -256,7 +273,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public void save(Inventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Inventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", object.getName());

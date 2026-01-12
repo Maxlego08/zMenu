@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.utils;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -14,7 +17,8 @@ public interface MapConfiguration {
      * @param key The key to retrieve the value.
      * @return The string value associated with the key or null if the key is not present.
      */
-    String getString(String key);
+    @Nullable
+    String getString(@NotNull String key);
 
     /**
      * Retrieves a string value from the map based on the provided key.

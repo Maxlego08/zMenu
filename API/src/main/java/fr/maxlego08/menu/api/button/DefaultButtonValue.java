@@ -1,5 +1,9 @@
 package fr.maxlego08.menu.api.button;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +50,9 @@ public class DefaultButtonValue {
      *
      * @return The default slot value.
      */
+    @Contract(pure = true)
     public int getSlot() {
-        return slot;
+        return this.slot;
     }
 
     /**
@@ -64,8 +69,9 @@ public class DefaultButtonValue {
      *
      * @return The default page value.
      */
+    @Contract(pure = true)
     public int getPage() {
-        return page;
+        return this.page;
     }
 
     /**
@@ -82,8 +88,9 @@ public class DefaultButtonValue {
      *
      * @return The default list of slots.
      */
+    @Contract(pure = true)
     public List<Integer> getSlots() {
-        return slots;
+        return this.slots;
     }
 
     /**
@@ -91,7 +98,7 @@ public class DefaultButtonValue {
      *
      * @param slots The default list of slots to set.
      */
-    public void setSlots(List<Integer> slots) {
+    public void setSlots(@NotNull List<Integer> slots) {
         this.slots = slots;
     }
 
@@ -100,8 +107,9 @@ public class DefaultButtonValue {
      *
      * @return The default isPermanent value.
      */
+    @Contract(pure = true)
     public boolean isPermanent() {
-        return isPermanent;
+        return this.isPermanent;
     }
 
     /**
@@ -110,7 +118,7 @@ public class DefaultButtonValue {
      * @param permanent The default isPermanent value to set.
      */
     public void setPermanent(boolean permanent) {
-        isPermanent = permanent;
+        this.isPermanent = permanent;
     }
 
     /**
@@ -118,8 +126,9 @@ public class DefaultButtonValue {
      *
      * @return The default updateOnClick value.
      */
+    @Contract(pure = true)
     public boolean isUpdateOnClick() {
-        return updateOnClick;
+        return this.updateOnClick;
     }
 
     /**
@@ -136,8 +145,9 @@ public class DefaultButtonValue {
      *
      * @return The default closeInventory value.
      */
+    @Contract(pure = true)
     public boolean isCloseInventory() {
-        return closeInventory;
+        return this.closeInventory;
     }
 
     /**
@@ -145,6 +155,7 @@ public class DefaultButtonValue {
      *
      * @param closeInventory The default closeInventory value to set.
      */
+    @Contract(pure = true)
     public void setCloseInventory(boolean closeInventory) {
         this.closeInventory = closeInventory;
     }
@@ -154,8 +165,9 @@ public class DefaultButtonValue {
      *
      * @return The default update value.
      */
+    @Contract(pure = true)
     public boolean isUpdate() {
-        return update;
+        return this.update;
     }
 
     /**
@@ -172,8 +184,9 @@ public class DefaultButtonValue {
      *
      * @return The default refreshOnClick value.
      */
+    @Contract(pure = true)
     public boolean isRefreshOnClick() {
-        return refreshOnClick;
+        return this.refreshOnClick;
     }
 
     /**
@@ -190,8 +203,10 @@ public class DefaultButtonValue {
      *
      * @return The default playerHead value.
      */
+    @Contract(pure = true)
+    @Nullable
     public String getPlayerHead() {
-        return playerHead;
+        return this.playerHead;
     }
 
     /**
@@ -199,35 +214,41 @@ public class DefaultButtonValue {
      *
      * @param playerHead The default playerHead value to set.
      */
-    public void setPlayerHead(String playerHead) {
+    public void setPlayerHead(@Nullable String playerHead) {
         this.playerHead = playerHead;
     }
 
+    @Contract(pure = true)
     public boolean isUseCache() {
-        return useCache;
+        return this.useCache;
     }
 
     public void setUseCache(boolean useCache) {
         this.useCache = useCache;
     }
 
+    @Contract(pure = true)
     public boolean isUpdateMasterButton() {
-        return updateMasterButton;
+        return this.updateMasterButton;
     }
 
     public void setUpdateMasterButton(boolean updateMasterButton) {
         this.updateMasterButton = updateMasterButton;
     }
 
+    @Contract(pure = true)
     public int getInventorySize() {
-        return inventorySize;
+        return this.inventorySize;
     }
 
+    @Contract(pure = true)
     public Map<Character, List<Integer>> getMatrix() {
-        return matrix;
+        return this.matrix;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public File getFile() {
-        return file;
+        return this.file;
     }
 }

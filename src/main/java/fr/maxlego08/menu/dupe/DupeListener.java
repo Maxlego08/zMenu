@@ -37,7 +37,7 @@ public class DupeListener implements Listener {
             }
         } catch (Exception exception) {
             ItemStack itemStack = event.getPlayer().getItemInHand();
-            if (itemStack != null && this.dupeManager.isDupeItem(itemStack)) {
+            if (this.dupeManager.isDupeItem(itemStack)) {
                 event.setCancelled(true);
                 event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
                 sendInformation(new DupeItem(itemStack, event.getPlayer()));

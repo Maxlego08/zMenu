@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -136,7 +136,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.preEnable();
 
         this.saveDefaultConfig();
-        Config.getInstance().load(getConfig());
+       Configuration.getInstance().load(getConfig());
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
@@ -147,7 +147,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (!folder.exists()) folder.mkdirs();
 
-        if (Config.generateDefaultFile) {
+        if (Configuration.generateDefaultFile) {
             files.forEach(filePath -> {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
                     saveResource(filePath, false);
@@ -172,14 +172,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
-            if (Config.enableMiniMessageFormat){
+            if (Configuration.enableMiniMessageFormat){
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
                 this.dialogManager = new ZDialogManager(this, configManager);
                 servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                 ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
                 Logger.info(configDialogBuilder.getName());
-                configManager.registerConfig(configDialogBuilder,Config.class, this);
+                configManager.registerConfig(configDialogBuilder,Configuration.class, this);
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
             }
@@ -229,7 +229,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-        if (Config.enableAntiDupe) {
+        if (Configuration.enableAntiDupe) {
             this.addListener(new DupeListener(this.dupeManager));
         }
 
@@ -362,6 +362,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("patterns/pattern_cookies.yml");
         files.add("patterns/playtime_reward.yml");
 
+        files.add("actions_patterns/default-actions.yml");
+
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
@@ -381,7 +383,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
 
-        Config.getInstance().save(getConfig(), this.configFile);
+       Configuration.getInstance().save(getConfig(), this.configFile);
 
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
@@ -584,7 +586,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     private void loadMeta() {
-        if (!Config.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
+        if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
             getLogger().info("Use ClassicMeta");
         } else {

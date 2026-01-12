@@ -3,7 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.ZMenuItemsLoad;
 import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
@@ -71,12 +71,12 @@ public class ZItemManager implements ItemManager{
         try (Stream<Path> stream = Files.walk(Paths.get(itemsFolder.getPath()))) {
             stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(this::loadCustomItem);
             ZMenuItemsLoad event = new ZMenuItemsLoad(new HashSet<>(customItems.keySet()), !isFirstLoad);
-            menuPlugin.getServer().getPluginManager().callEvent(event);
+            this.menuPlugin.getServer().getPluginManager().callEvent(event);
             if (isFirstLoad) {
                 isFirstLoad = false;
             }
         } catch (IOException exception) {
-            if (Config.enableDebug){
+            if (Configuration.enableDebug){
                 Logger.info("Error while loading items: " + exception.getMessage(), Logger.LogType.ERROR);
             }
         }
@@ -87,7 +87,7 @@ public class ZItemManager implements ItemManager{
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         for (String itemId : config.getKeys(false)) {
             String path = itemId + ".";
-            MenuItemStack menuItemStack = menuPlugin.loadItemStack(config, path, file);
+            MenuItemStack menuItemStack = this.menuPlugin.loadItemStack(config, path, file);
             if (menuItemStack != null) {
                 Set<String> mechanicIds = new HashSet<>();
 
@@ -95,7 +95,7 @@ public class ZItemManager implements ItemManager{
                 if (mechanicSection != null) {
                     path += "mechanics.";
                     for (String mechanicId : mechanicSection.getKeys(false)) {
-                        MechanicFactory<?> factory = mechanicFactories.get(mechanicId);
+                        MechanicFactory<?> factory = this.mechanicFactories.get(mechanicId);
                         if (factory != null) {
                             factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
                             mechanicIds.add(mechanicId);
@@ -104,10 +104,15 @@ public class ZItemManager implements ItemManager{
                         }
                     }
                 }
+                ConfigurationSection itemSection = config.getConfigurationSection(itemId);
+                boolean saveOwnerInPDC = true;
+                if (itemSection != null) {
+                    saveOwnerInPDC = itemSection.getBoolean("save-owner-in-pdc", true);
+                }
 
-                customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds));
+                this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds, saveOwnerInPDC));
             } else {
-                if (Config.enableDebug){
+                if (Configuration.enableDebug){
                     Logger.info("Impossible to load item " + itemId + " from file " + file.getName());
                 }
             }
@@ -116,7 +121,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void reloadCustomItems() {
-        customItems.clear();
+        this.customItems.clear();
         for (MechanicFactory<?> factory : mechanicFactories.values()) {
             factory.clearMechanics();
         }
@@ -125,7 +130,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public boolean isCustomItem(String itemId) {
-        return customItems.containsKey(itemId);
+        return this.customItems.containsKey(itemId);
     }
 
     @Override
@@ -161,7 +166,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void unloadListeners() {
-        for (Listener listener: mechanicListeners.values()) {
+        for (Listener listener: this.mechanicListeners.values()) {
             HandlerList.unregisterAll(listener);
         }
     }
@@ -172,7 +177,7 @@ public class ZItemManager implements ItemManager{
             Logger.info("MechanicFactory " + factory.getMechanicId() + " is already registered.", Logger.LogType.WARNING);
             return;
         }
-        mechanicFactories.put(factory.getMechanicId(), factory);
+        this.mechanicFactories.put(factory.getMechanicId(), factory);
     }
 
     @Override
@@ -182,20 +187,22 @@ public class ZItemManager implements ItemManager{
             return;
         }
 
-        CustomItemData itemData = customItems.get(itemId);
+        CustomItemData itemData = this.customItems.get(itemId);
         MenuItemStack menuItemStack = itemData.menuItemStack();
-        ItemStack itemStack = menuItemStack.build(player);
+        ItemStack itemStack = menuItemStack.build(player).clone();
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
             persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, itemId);
-            persistentDataContainer.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            if (itemData.saveOwnerInPDC()) {
+                persistentDataContainer.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+            }
             itemStack.setItemMeta(itemMeta);
         }
 
         boolean shouldCancel = false;
         for (String mechanicId : itemData.mechanicIds()) {
-            MechanicListener mechanicListener = mechanicListeners.get(mechanicId);
+            MechanicListener mechanicListener = this.mechanicListeners.get(mechanicId);
             if (mechanicListener != null) {
                 boolean cancel = mechanicListener.onItemGive(player, itemStack, itemId);
                 if (cancel) shouldCancel = true;
@@ -237,20 +244,24 @@ public class ZItemManager implements ItemManager{
 
             MenuItemStack menuItemStack = itemData.menuItemStack();
             String ownerUuid = meta.getPersistentDataContainer().get(ownerKey, PersistentDataType.STRING);
-            if (ownerUuid == null) continue;
-            Player owner = this.menuPlugin.getServer().getPlayer(UUID.fromString(ownerUuid));
+            Player owner;
+            if (itemData.saveOwnerInPDC()){
+                if (ownerUuid == null) continue;
+                owner = this.menuPlugin.getServer().getPlayer(UUID.fromString(ownerUuid));
+            } else {
+                owner = player;
+            }
             if (owner == null) continue;
 
-            ItemStack built = menuItemStack.build(owner);
-            if (built == null) continue;
-
+            ItemStack built = menuItemStack.build(owner).clone();
             built.setAmount(itemStack.getAmount());
 
             ItemMeta builtMeta = built.getItemMeta();
             if (builtMeta == null) continue;
             builtMeta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, itemId);
-            builtMeta.getPersistentDataContainer().set(ownerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
-
+            if (itemData.saveOwnerInPDC()) {
+                builtMeta.getPersistentDataContainer().set(ownerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
+            }
             built.setItemMeta(builtMeta);
 
             if (!built.isSimilar(itemStack)) {

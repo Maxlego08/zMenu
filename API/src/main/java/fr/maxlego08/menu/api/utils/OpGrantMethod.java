@@ -46,5 +46,5 @@ public enum OpGrantMethod {
     }
     ;
 
-    public abstract void execute(Player player, Plugin plugin, Runnable action);
+    public abstract void execute(@NotNull Player player,@NotNull Plugin plugin,@NotNull Runnable action);
 }

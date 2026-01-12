@@ -19,13 +19,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -202,7 +198,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      * Allows displaying the button in the inventory
      */
     @Override
-    public void displayButton(Button button) {
+    public void displayButton(@NonNull Button button) {
         final Player targetPlayer = getTargetPlayer();
         var scheduler = plugin.getScheduler();
         if (button.hasSpecialRender()) {
@@ -227,7 +223,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      * Allows displaying the button and putting the actions on the clicks
      */
     @Override
-    public void displayFinalButton(Button button, int... slots) {
+    public void displayFinalButton(@NonNull Button button, int... slots) {
         final Player targetPlayer = getTargetPlayer();
         ItemStack itemStack = button.getCustomItemStack(targetPlayer);
         if (itemStack == null) {
@@ -319,7 +315,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     @Override
-    public List<Inventory> getOldInventories() {
+    public @NonNull List<Inventory> getOldInventories() {
         return this.oldInventories == null ? new ArrayList<>() : this.oldInventories;
     }
 
@@ -334,7 +330,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     @Override
-    public List<Button> getButtons() {
+    public @NonNull List<Button> getButtons() {
         return buttons;
     }
 

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.enchantment;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import org.bukkit.enchantments.Enchantment;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +15,7 @@ public class ZEnchantments implements Enchantments {
     private final List<MenuEnchantment> essentialsEnchantments = new ArrayList<>();
 
     @Override
-    public Optional<MenuEnchantment> getEnchantments(String enchantment) {
+    public @NonNull Optional<MenuEnchantment> getEnchantments(@NonNull String enchantment) {
         for (MenuEnchantment menuEnchantment : essentialsEnchantments) {
             for (String alias : menuEnchantment.aliases()) {
                 if (alias.equalsIgnoreCase(enchantment)) {
@@ -82,7 +83,7 @@ public class ZEnchantments implements Enchantments {
     }
 
     @Override
-    public List<String> getEnchantments() {
+    public @NonNull List<String> getEnchantments() {
         List<String> aliases = new ArrayList<>();
         for (MenuEnchantment menuEnchantment : this.essentialsEnchantments) {
             aliases.addAll(menuEnchantment.aliases());
