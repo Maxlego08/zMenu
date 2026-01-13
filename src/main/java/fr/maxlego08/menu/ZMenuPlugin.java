@@ -36,6 +36,8 @@ import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
+import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
+import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -92,6 +94,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final StorageManager storageManager = new ZStorageManager(this);
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
+    private final TitleAnimationManager titleAnimationManager = new ZTitleAnimationManager();
     private final CommandManager commandManager = new ZCommandManager(this);
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
@@ -111,7 +114,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private MetaUpdater metaUpdater = new ClassicMeta();
     private FoliaLib foliaLib;
     private AttributApplier attributApplier = new ApplySpigotAttribute();
-    // private final PacketUtils packetUtils = new PacketUtils(this);
+    private final PacketUtils packetUtils = new PacketUtils(this);
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -119,14 +122,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public void onLoad() {
-        // this.packetUtils.onLoad();
+        this.packetUtils.onLoad();
     }
 
     @Override
     public void onEnable() {
 
         instance = this;
-        // this.packetUtils.onEnable();
+        this.packetUtils.onEnable();
 
         this.scheduler = (this.foliaLib = new FoliaLib(this)).getScheduler();
 
@@ -170,6 +173,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
+        servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
             if (Configuration.enableMiniMessageFormat){
@@ -244,7 +248,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.websiteManager.loadPlaceholders();
         this.dataManager.loadDefaultValues();
 
-        // this.inventoryManager.registerInventoryListener(this.packetUtils);
+//         this.inventoryManager.registerInventoryListener(this.packetUtils);
 
         this.postEnable();
     }
@@ -342,6 +346,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
         }
+        if (this.isActive(Plugins.PACKETEVENTS)){
+            this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
+        }
     }
 
 
@@ -389,7 +396,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             Token.getInstance().save(this.getPersist());
         }
         this.itemManager.unloadListeners();
-        // this.packetUtils.onDisable();
+        this.packetUtils.onDisable();
+
+        getServer().getServicesManager().unregisterAll(this);
 
         this.postDisable();
     }
@@ -448,6 +457,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public AttributApplier getAttributApplier() {
         return this.attributApplier;
+    }
+
+    @Override
+    public TitleAnimationManager getTitleAnimationManager() {
+        return this.titleAnimationManager;
     }
 
     @Override

@@ -1,0 +1,14 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "theme": "tokyonight",
+    "disabled_providers": ["anthropic", "openai", "google", "aws-bedrock", "azure", "ollama", "openrouter", "gemini", "vertex", "openai-compatible", "opencode"],
+    "share": "disabled",
+    "agent": {
+        "build": {
+            "mode": "primary"
+        }
+    },
+    "keybinds": {
+        "input_paste": "ctrl+v"
+    }
+}

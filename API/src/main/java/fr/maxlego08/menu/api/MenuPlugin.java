@@ -251,4 +251,6 @@ public interface MenuPlugin extends Plugin {
     ItemManager getItemManager();
 
     AttributApplier getAttributApplier();
+
+    TitleAnimationManager getTitleAnimationManager();
 }

@@ -92,6 +92,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             } else {
                 super.createMetaInventory(super.papi(placeholders.parse(inventoryName), targetPlayer, false), this.inventory.getType());
             }
+            super.setTitleAnimation(this.inventory.getTitleAnimation());
             // Display fill items
             if (this.inventory.getFillItemStack() != null) {
                 ItemStack builtItem = this.inventory.getFillItemStack().build(player);

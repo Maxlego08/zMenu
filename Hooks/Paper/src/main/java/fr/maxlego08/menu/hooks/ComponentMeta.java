@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.LoreType;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ComponentMeta implements MetaUpdater {
+public class ComponentMeta implements PaperMetaUpdater {
 
     private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
     private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)(?<!</)#([a-fA-F0-9]{6})");
@@ -91,8 +91,9 @@ public class ComponentMeta implements MetaUpdater {
         return text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>") ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
     }
 
-    public Component getComponent(String text) {
-        return this.MINI_MESSAGE.deserialize(colorMiniMessage(text));
+    @Override
+    public @NonNull Component getComponent(String text) {
+        return this.cache.get(text, ()->this.MINI_MESSAGE.deserialize(colorMiniMessage(text)));
     }
 
     private void updateDisplayName(ItemMeta itemMeta, String text) {
