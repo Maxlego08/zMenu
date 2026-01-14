@@ -99,17 +99,19 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             menuItemStack.setItemModel(configuration.getString(path + "item-model"));
         }
 
-        ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
-        if (componentsSection != null) {
-            ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
-            for (String componentKey : componentsSection.getKeys(false)){
-                ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
-                if (componentSection == null) continue;
-                Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
-                if (optionalItemComponentLoader.isPresent()){
-                    ItemComponent itemComponent = optionalItemComponentLoader.get().load(configuration, path + "components." + componentKey + ".", componentSection);
-                    if (itemComponent != null){
-                        menuItemStack.addItemComponent(itemComponent);
+        if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
+            ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
+            if (componentsSection != null) {
+                ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
+                for (String componentKey : componentsSection.getKeys(false)) {
+                    ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
+                    if (componentSection == null) continue;
+                    Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
+                    if (optionalItemComponentLoader.isPresent()) {
+                        ItemComponent itemComponent = optionalItemComponentLoader.get().load(configuration, path + "components." + componentKey + ".", componentSection);
+                        if (itemComponent != null) {
+                            menuItemStack.addItemComponent(itemComponent);
+                        }
                     }
                 }
             }

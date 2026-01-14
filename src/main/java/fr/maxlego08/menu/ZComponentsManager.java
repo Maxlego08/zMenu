@@ -28,7 +28,7 @@ public class ZComponentsManager implements ComponentsManager {
     }
 
     @Override
-    public @NotNull Optional<ItemComponentLoader> getLoader(@NotNull String key) {
-        return Optional.ofNullable(this.components.get(key));
+    public @NotNull Optional<ItemComponentLoader> getLoader(@NotNull String name) {
+        return Optional.ofNullable(this.components.get(name));
     }
 }

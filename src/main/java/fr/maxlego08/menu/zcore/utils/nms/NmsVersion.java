@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.zcore.utils.nms;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 
 import java.util.regex.Matcher;
@@ -56,7 +57,10 @@ public enum NmsVersion {
     V_1_21_7(1217),
     V_1_21_8(1218),
     V_1_21_9(1219),
-    V_1_21_10(1210)
+    V_1_21_10(12110),
+    V_1_21_11(12111),
+
+    UNKNOWN(Integer.MAX_VALUE)
 
     ;
 
@@ -80,10 +84,28 @@ public enum NmsVersion {
         Matcher matcher = Pattern.compile("(?<version>\\d+\\.\\d+)(?<patch>\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
         int currentVersion = matcher.find() ? Integer.parseInt(matcher.group("version").replace(".", "") + (matcher.group("patch") != null ? matcher.group("patch").replace(".", "") : "0")) : 0;
 
-        // Returns the version closest to the current version
+        NmsVersion highestSupportedVersionEnum = V_1_8_8;
+        for (NmsVersion value : values()) {
+            if (value != UNKNOWN && value.version > highestSupportedVersionEnum.version) {
+                highestSupportedVersionEnum = value;
+            }
+        }
+
+        if (currentVersion > highestSupportedVersionEnum.version) {
+            Logger.info(String.format(
+                "Running Minecraft %s (newer than highest supported version %s). " +
+                "Please report this version to help us add support. " +
+                "Check for plugin updates if you experience issues.",
+                currentVersion,
+                highestSupportedVersionEnum.name()
+            ), Logger.LogType.WARNING);
+            return UNKNOWN;
+        }
+
         NmsVersion closest = V_1_12_2;
         int smallestDifference = Integer.MAX_VALUE;
         for (NmsVersion value : values()) {
+            if (value == UNKNOWN) continue;
             int difference = Math.abs(value.version - currentVersion);
             if (difference < smallestDifference) {
                 smallestDifference = difference;
