@@ -5,6 +5,7 @@ import fr.maxlego08.menu.loader.components.BlockStateItemComponentLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,11 +18,13 @@ public class ZComponentsManager implements ComponentsManager {
 
     @Override
     public void registerComponent(@NotNull ItemComponentLoader loader) {
-        String componentName = loader.getComponentName();
-        if (this.components.containsKey(componentName)) {
-            throw new IllegalArgumentException("Component with name " + componentName + " is already registered.");
+        List<String> componentNames = loader.getComponentNames();
+        for (String name : componentNames) {
+            if (this.components.containsKey(name)) {
+                throw new IllegalArgumentException("Component with name '" + name + "' is already registered.");
+            }
+            this.components.put(name, loader);
         }
-        this.components.put(componentName, loader);
     }
 
     @Override
