@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
@@ -88,6 +89,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Boolean attributeShowInTooltip;
     private MenuItemRarity itemRarity;
     private TrimConfiguration trimConfiguration;
+
+    private final List<ItemComponent> itemComponents = new ArrayList<>();
 
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;
@@ -147,6 +150,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
         applyAttributes(itemStack);
+
+        if (this.itemComponents != null && !this.itemComponents.isEmpty()) {
+            for (ItemComponent metadata : this.itemComponents) {
+                metadata.apply(itemStack, offlinePlayer);
+            }
+        }
 
         if (!needPlaceholderAPI &&Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
@@ -1143,5 +1152,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void setClearDefaultAttributes(boolean clearDefaultAttributes) {
         this.clearDefaultAttributes = clearDefaultAttributes;
+    }
+
+    @Override
+    public Collection<@NotNull ItemComponent> getItemComponents() {
+        return Collections.unmodifiableCollection(this.itemComponents);
+    }
+
+    @Override
+    public void addItemComponent(@NotNull ItemComponent itemMetadata) {
+        this.itemComponents.add(itemMetadata);
     }
 }

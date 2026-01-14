@@ -103,8 +103,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final ItemManager itemManager = new ZItemManager(this);
+    private final ComponentsManager componentsManager = new ZComponentsManager();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
+    private final AttributApplier attributApplier = new ApplySpigotAttribute();
     private final File configFile = new File(getDataFolder(), "config.yml");
     private DialogManager dialogManager;
     private CommandMenu commandMenu;
@@ -113,8 +115,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private FoliaLib foliaLib;
-    private AttributApplier attributApplier = new ApplySpigotAttribute();
-    private final PacketUtils packetUtils = new PacketUtils(this);
+    private PacketUtils packetUtils;
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -122,14 +123,19 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public void onLoad() {
-        this.packetUtils.onLoad();
+        if (this.isActive(Plugins.PACKETEVENTS)) {
+            this.packetUtils = new PacketUtils(this);
+            this.packetUtils.onLoad();
+        }
     }
 
     @Override
     public void onEnable() {
 
         instance = this;
-        this.packetUtils.onEnable();
+
+        if (this.packetUtils != null)
+            this.packetUtils.onEnable();
 
         this.scheduler = (this.foliaLib = new FoliaLib(this)).getScheduler();
 
@@ -395,8 +401,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
+
         this.itemManager.unloadListeners();
-        this.packetUtils.onDisable();
+
+        if (this.packetUtils != null)
+            this.packetUtils.onDisable();
 
         getServer().getServicesManager().unregisterAll(this);
 
@@ -462,6 +471,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public TitleAnimationManager getTitleAnimationManager() {
         return this.titleAnimationManager;
+    }
+
+    @Override
+    public ComponentsManager getComponentsManager() {
+        return this.componentsManager;
     }
 
     @Override

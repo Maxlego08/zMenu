@@ -11,7 +11,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -707,4 +709,8 @@ public interface MenuItemStack {
      * @param clearDefaultAttributes {@code true} to clear default attributes.
      */
     void setClearDefaultAttributes(boolean clearDefaultAttributes);
+
+    Collection<@NotNull ItemComponent> getItemComponents();
+
+    void addItemComponent(@NotNull ItemComponent itemMetadata);
 }

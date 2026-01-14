@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader;
 
+import fr.maxlego08.menu.ComponentsManager;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
@@ -10,6 +11,7 @@ import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.itemstack.*;
+import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
@@ -96,6 +98,23 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
             menuItemStack.setItemModel(configuration.getString(path + "item-model"));
         }
+
+        ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
+        if (componentsSection != null) {
+            ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
+            for (String componentKey : componentsSection.getKeys(false)){
+                ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
+                if (componentSection == null) continue;
+                Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
+                if (optionalItemComponentLoader.isPresent()){
+                    ItemComponent itemComponent = optionalItemComponentLoader.get().load(configuration, path + "components." + componentKey + ".", componentSection);
+                    if (itemComponent != null){
+                        menuItemStack.addItemComponent(itemComponent);
+                    }
+                }
+            }
+        }
+
         return menuItemStack;
     }
 
