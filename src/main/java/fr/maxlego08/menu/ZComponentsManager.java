@@ -1,6 +1,7 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.loader.components.*;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -27,6 +28,10 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new ContainerItemComponentLoader(plugin));
             this.registerComponent(new ContainerLootItemComponentLoader());
             this.registerComponent(new CustomDataItemComponentLoader());
+            this.registerComponent(new CustomModelDataItemComponentLoader());
+            if (plugin.isPaper() && Configuration.enableMiniMessageFormat){
+                this.registerComponent(new PaperCustomNameItemComponentLoader());
+            }
 
             if (currentVersion.is1_21_2OrNewer()){
                 this.registerComponent(new ConsumableItemComponentLoader());
