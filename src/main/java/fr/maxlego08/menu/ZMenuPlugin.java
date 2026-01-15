@@ -103,7 +103,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final ItemManager itemManager = new ZItemManager(this);
-    private final ComponentsManager componentsManager = new ZComponentsManager();
+    private final ComponentsManager componentsManager = new ZComponentsManager(this);
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
     private final AttributApplier attributApplier = new ApplySpigotAttribute();

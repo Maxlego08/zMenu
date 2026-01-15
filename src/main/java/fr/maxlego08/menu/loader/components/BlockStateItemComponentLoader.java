@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Map;
 
 public class BlockStateItemComponentLoader extends ItemComponentLoader {
@@ -17,7 +18,8 @@ public class BlockStateItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        if (componentSection == null) return null;
         Map<String, Object> blockStates = componentSection.getValues(true);
         if (blockStates.isEmpty()) return null;
         String blockStatesString = blockStates.toString();

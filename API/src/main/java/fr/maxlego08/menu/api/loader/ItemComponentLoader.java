@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +54,14 @@ public abstract class ItemComponentLoader {
     }
 
     @Nullable
-    public abstract ItemComponent load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull ConfigurationSection componentSection);
+    public abstract ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection);
+
+    protected String normalizePath(@NotNull String path) {
+        if (path.endsWith(".")) {
+            return path.substring(0, path.length() - 1);
+        }
+        return path;
+    }
 
     /**
      * Get all possible names for this component, including namespaced versions.

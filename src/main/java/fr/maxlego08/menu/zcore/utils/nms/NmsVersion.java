@@ -249,4 +249,16 @@ public enum NmsVersion {
     public boolean isDialogsVersion() {
         return version >= V_1_21_7.version;
     }
+
+    public boolean is1_21_2OrNewer() {
+        return version >= V_1_21_2.version;
+    }
+
+    public boolean is1_21_5OrNewer() {
+        return version >= V_1_21_5.version;
+    }
+
+    public boolean is1_21_11OrNewer() {
+        return version >= V_1_21_11.version;
+    }
 }

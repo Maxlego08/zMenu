@@ -105,10 +105,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
                 for (String componentKey : componentsSection.getKeys(false)) {
                     ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
-                    if (componentSection == null) continue;
                     Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
                     if (optionalItemComponentLoader.isPresent()) {
-                        ItemComponent itemComponent = optionalItemComponentLoader.get().load(configuration, path + "components." + componentKey + ".", componentSection);
+                        ItemComponent itemComponent = optionalItemComponentLoader.get().load(file, configuration, path + "components." + componentKey + ".", componentSection);
                         if (itemComponent != null) {
                             menuItemStack.addItemComponent(itemComponent);
                         }

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -15,11 +16,16 @@ public class InventoryArgument extends ZUtils {
         this.arguments = arguments;
     }
 
+    @Deprecated
     public void process(Player player) {
+        process(player, new Placeholders());
+    }
+
+    public void process(Player player, Placeholders placeholders){
         if (!this.arguments.isEmpty()) {
             for (int i = 0; i < this.arguments.size(); i++) {
                 String name = String.valueOf(i - 4);
-                String argument = papi(this.arguments.get(i), player, true);
+                String argument = papi(placeholders.parse(this.arguments.get(i)), player, true);
 
                 if (argument.contains(":")) {
                     String[] values = argument.split(":", 2);

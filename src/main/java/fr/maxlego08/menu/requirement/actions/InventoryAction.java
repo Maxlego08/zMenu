@@ -50,7 +50,7 @@ public class InventoryAction extends ActionHelper {
                 int page = this.stringPage == null ? this.intPage : getInt(this.papi(placeholders.parse(this.stringPage), player));
                 oldInventories.add(fromInventory);
 
-                this.inventoryArgument.process(player);
+                this.inventoryArgument.process(player,placeholders);
                 this.inventoryManager.openInventory(player, optional.get(), page, oldInventories);
 
             } else {

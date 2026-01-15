@@ -151,9 +151,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
         applyAttributes(itemStack);
 
-        if (this.itemComponents != null && !this.itemComponents.isEmpty()) {
+        if (!this.itemComponents.isEmpty()) {
             for (ItemComponent metadata : this.itemComponents) {
-                metadata.apply(itemStack, offlinePlayer);
+                metadata.apply(itemStack, player);
             }
         }
 

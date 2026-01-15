@@ -954,7 +954,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        String name = papi(this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName())), player, true);
+        return postProcessSkullItemStack(itemStack, button, player, new Placeholders());
+    }
+
+    @Override
+    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders){
+        String name = papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
+        Logger.info("Before : " + button.getPlayerHead()+ " After: " + name+" placeholders:"+placeholders.getPlaceholders());
         if (!isMinecraftName(name)) {
             return itemStack;
         }
