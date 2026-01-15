@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly("io.th0rgal:oraxen:1.190.0")
 }

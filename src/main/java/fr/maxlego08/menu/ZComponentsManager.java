@@ -29,12 +29,22 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new ContainerLootItemComponentLoader());
             this.registerComponent(new CustomDataItemComponentLoader());
             this.registerComponent(new CustomModelDataItemComponentLoader());
-            if (plugin.isPaper() && Configuration.enableMiniMessageFormat){
-                this.registerComponent(new PaperCustomNameItemComponentLoader());
+            this.registerComponent(new DamageItemComponentLoader());
+            this.registerComponent(new DamageResistantItemComponentLoader());
+            this.registerComponent(new DyeColorItemComponentLoader());
+            this.registerComponent(new EnchantmentGlintOverrideItemComponentLoader());
+
+            if (isPaperAndMiniMessageEnabled(plugin)){
+                this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
             }
 
             if (currentVersion.is1_21_2OrNewer()){
                 this.registerComponent(new ConsumableItemComponentLoader());
+                this.registerComponent(new EnchantableItemComponentLoader());
+
+                if (isPaperAndMiniMessageEnabled(plugin)){
+                    this.registerComponent(new PaperDeathProtectionItemComponentLoader());
+                }
 
                 if (currentVersion.is1_21_5OrNewer()){
                     this.registerComponent(new BlocksAttacksItemComponentLoader());
@@ -42,10 +52,15 @@ public class ZComponentsManager implements ComponentsManager {
 
                     if (currentVersion.is1_21_11OrNewer()){
                         this.registerComponent(new AttackRangeItemComponentLoader());
+                        this.registerComponent(new DamageTypeItemComponentLoader());
                     }
                 }
             }
         }
+    }
+
+    private boolean isPaperAndMiniMessageEnabled(MenuPlugin plugin){
+        return plugin.isPaper() && Configuration.enableMiniMessageFormat;
     }
 
     @Override

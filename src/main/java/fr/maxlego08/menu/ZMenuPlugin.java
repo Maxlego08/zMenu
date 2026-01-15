@@ -58,7 +58,6 @@ import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.PaperItemUtils;
 import fr.maxlego08.menu.zcore.utils.meta.ClassicMeta;
 import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -621,9 +620,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         } else {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
-                ComponentMeta componentMeta = new ComponentMeta(this);
-                PaperItemUtils.initialize(componentMeta);
-                this.metaUpdater = componentMeta;
+                this.metaUpdater = new ComponentMeta(this);
                 getLogger().info("Use ComponentMeta");
             } catch (Exception ignored) {
                 this.metaUpdater = new ClassicMeta();

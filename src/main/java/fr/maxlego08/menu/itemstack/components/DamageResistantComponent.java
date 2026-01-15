@@ -1,0 +1,23 @@
+package fr.maxlego08.menu.itemstack.components;
+
+import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import org.bukkit.Tag;
+import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public record DamageResistantComponent(
+    @NotNull Tag<DamageType> damageType
+) implements ItemComponent {
+    @Override
+    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta != null){
+            itemMeta.setDamageResistant(this.damageType);
+            itemStack.setItemMeta(itemMeta);
+        }
+    }
+}

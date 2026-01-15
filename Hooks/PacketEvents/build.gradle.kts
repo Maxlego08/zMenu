@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
 }

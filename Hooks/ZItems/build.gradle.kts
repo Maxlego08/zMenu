@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly(files("libs/zItems-1.0.0.jar"))
 }

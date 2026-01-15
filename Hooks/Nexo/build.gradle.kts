@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly("com.nexomc:nexo:1.9.0")
 }
