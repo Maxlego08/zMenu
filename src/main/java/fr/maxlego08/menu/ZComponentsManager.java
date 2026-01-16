@@ -39,6 +39,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new FoodItemComponentLoader());
             this.registerComponent(new InstrumentItemComponentLoader());
             this.registerComponent(new ItemNameItemComponentLoader());
+            this.registerComponent(new LodestoneTrackerItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
@@ -66,6 +67,7 @@ public class ZComponentsManager implements ComponentsManager {
                         if (currentVersion.is1_21_11OrNewer()){
                             this.registerComponent(new AttackRangeItemComponentLoader());
                             this.registerComponent(new DamageTypeItemComponentLoader());
+                            this.registerComponent(new KineticWeaponItemComponentLoader());
                         }
                     }
                 }
