@@ -43,6 +43,8 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new LoreItemComponentLoader(plugin));
             this.registerComponent(new MapColorItemComponentLoader());
             this.registerComponent(new MapIdItemComponentLoader());
+            this.registerComponent(new MaxDamageItemComponentLoader());
+            this.registerComponent(new MaxStackSizeItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
