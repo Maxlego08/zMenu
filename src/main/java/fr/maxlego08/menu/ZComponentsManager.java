@@ -40,10 +40,14 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new InstrumentItemComponentLoader());
             this.registerComponent(new ItemNameItemComponentLoader());
             this.registerComponent(new LodestoneTrackerItemComponentLoader());
+            this.registerComponent(new LoreItemComponentLoader(plugin));
+            this.registerComponent(new MapColorItemComponentLoader());
+            this.registerComponent(new MapIdItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
                 this.registerComponent(new PaperIntangibleProjectileItemComponentLoader());
+                this.registerComponent(new PaperMapDecorationsItemComponentLoader());
             }
 
             if (currentVersion.isNewItemStackAPI()){ // 1.21+
