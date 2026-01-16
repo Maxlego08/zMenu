@@ -3,8 +3,6 @@ package fr.maxlego08.menu.loader.components;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.zcore.utils.itemstack.ZKineticWeaponCondition;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,17 +39,6 @@ public class KineticWeaponItemComponentLoader extends ItemComponentLoader {
                 sound,
                 hitSound
         );
-    }
-
-    private Optional<Sound> getSound(@NotNull String soundStr) {
-        try {
-            NamespacedKey namespacedKey = NamespacedKey.fromString(soundStr);
-            if (namespacedKey == null) return Optional.empty();
-            Sound sound = Registry.SOUNDS.getOrThrow(namespacedKey);
-            return Optional.of(sound);
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
     }
 
     private Optional<KineticWeaponComponent.Condition> getCondition(@Nullable ConfigurationSection configurationSection){

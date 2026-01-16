@@ -45,6 +45,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new MapIdItemComponentLoader());
             this.registerComponent(new MaxDamageItemComponentLoader());
             this.registerComponent(new MaxStackSizeItemComponentLoader());
+            this.registerComponent(new OminousBottleAmplifierItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
@@ -76,6 +77,7 @@ public class ZComponentsManager implements ComponentsManager {
                             this.registerComponent(new DamageTypeItemComponentLoader());
                             this.registerComponent(new KineticWeaponItemComponentLoader());
                             this.registerComponent(new MinimumAttackChargeItemComponentLoader());
+                            this.registerComponent(new PiercingWeaponItemComponentLoader());
                         }
                     }
                 }

@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.api.loader;
 
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -11,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public abstract class ItemComponentLoader {
@@ -94,5 +98,24 @@ public abstract class ItemComponentLoader {
     @Nullable
     public Plugin getPlugin() {
         return this.plugin;
+    }
+
+
+    //**************\\
+    // Utils methods ||
+    //**************//
+
+    protected Optional<Sound> getSound(@Nullable String soundName){
+        if (soundName == null || soundName.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            NamespacedKey key = NamespacedKey.fromString(soundName);
+            if (key != null) {
+                return Optional.of(Registry.SOUNDS.getOrThrow(key));
+            }
+        } catch (Exception ignored) {
+        }
+        return Optional.empty();
     }
 }
