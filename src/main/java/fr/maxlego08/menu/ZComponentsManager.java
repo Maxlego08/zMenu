@@ -50,6 +50,7 @@ public class ZComponentsManager implements ComponentsManager {
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
                 this.registerComponent(new PaperIntangibleProjectileItemComponentLoader());
                 this.registerComponent(new PaperMapDecorationsItemComponentLoader());
+                this.registerComponent(new PaperNoteBlockSoundItemComponentLoader());
             }
 
             if (currentVersion.isNewItemStackAPI()){ // 1.21+
@@ -74,6 +75,7 @@ public class ZComponentsManager implements ComponentsManager {
                             this.registerComponent(new AttackRangeItemComponentLoader());
                             this.registerComponent(new DamageTypeItemComponentLoader());
                             this.registerComponent(new KineticWeaponItemComponentLoader());
+                            this.registerComponent(new MinimumAttackChargeItemComponentLoader());
                         }
                     }
                 }
