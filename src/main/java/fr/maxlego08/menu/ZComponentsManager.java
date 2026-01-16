@@ -51,6 +51,8 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new RarityItemComponentLoader());
             this.registerComponent(new RecipesItemComponentLoader());
             this.registerComponent(new RepairCostItemComponentLoader());
+            this.registerComponent(new StoredEnchantItemComponentLoader());
+            this.registerComponent(new SuspiciousStewEffectsItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
@@ -95,6 +97,7 @@ public class ZComponentsManager implements ComponentsManager {
                                 this.registerComponent(new KineticWeaponItemComponentLoader());
                                 this.registerComponent(new MinimumAttackChargeItemComponentLoader());
                                 this.registerComponent(new PiercingWeaponItemComponentLoader());
+                                this.registerComponent(new SwingAnimationItemComponentLoader());
                             }
                         }
 
