@@ -17,7 +17,7 @@ public class ZComponentsManager implements ComponentsManager {
 
     ZComponentsManager(MenuPlugin plugin){
         NmsVersion currentVersion = NmsVersion.getCurrentVersion();
-        if (currentVersion.isAttributItemStack()){
+        if (currentVersion.isAttributItemStack()){ // 1.20.5+
 
             this.registerComponent(new BlockStateItemComponentLoader());
             this.registerComponent(new AttributeModifiersItemComponentLoader());
@@ -33,26 +33,40 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new DamageResistantItemComponentLoader());
             this.registerComponent(new DyeColorItemComponentLoader());
             this.registerComponent(new EnchantmentGlintOverrideItemComponentLoader());
+            this.registerComponent(new EnchantableItemComponentLoader());
+            this.registerComponent(new FireworkExplosionItemComponentLoader());
+            this.registerComponent(new FireworksItemComponentLoader());
+            this.registerComponent(new FoodItemComponentLoader());
+            this.registerComponent(new InstrumentItemComponentLoader());
+            this.registerComponent(new ItemNameItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
+                this.registerComponent(new PaperIntangibleProjectileItemComponentLoader());
             }
 
-            if (currentVersion.is1_21_2OrNewer()){
-                this.registerComponent(new ConsumableItemComponentLoader());
-                this.registerComponent(new EnchantableItemComponentLoader());
+            if (currentVersion.isNewItemStackAPI()){ // 1.21+
+                this.registerComponent(new JukeboxPlayableItemComponentLoader());
 
-                if (isPaperAndMiniMessageEnabled(plugin)){
-                    this.registerComponent(new PaperDeathProtectionItemComponentLoader());
-                }
+                if (currentVersion.is1_21_2OrNewer()){ // 1.21.2+
+                    this.registerComponent(new ConsumableItemComponentLoader());
+                    this.registerComponent(new EnchantableItemComponentLoader());
+                    this.registerComponent(new EquippableItemComponentLoader());
+                    this.registerComponent(new GliderItemComponentLoader());
+                    this.registerComponent(new ItemModelItemComponentLoader());
 
-                if (currentVersion.is1_21_5OrNewer()){
-                    this.registerComponent(new BlocksAttacksItemComponentLoader());
-                    this.registerComponent(new BreakSoundItemComponentLoader());
+                    if (isPaperAndMiniMessageEnabled(plugin)){
+                        this.registerComponent(new PaperDeathProtectionItemComponentLoader());
+                    }
 
-                    if (currentVersion.is1_21_11OrNewer()){
-                        this.registerComponent(new AttackRangeItemComponentLoader());
-                        this.registerComponent(new DamageTypeItemComponentLoader());
+                    if (currentVersion.is1_21_5OrNewer()){
+                        this.registerComponent(new BlocksAttacksItemComponentLoader());
+                        this.registerComponent(new BreakSoundItemComponentLoader());
+
+                        if (currentVersion.is1_21_11OrNewer()){
+                            this.registerComponent(new AttackRangeItemComponentLoader());
+                            this.registerComponent(new DamageTypeItemComponentLoader());
+                        }
                     }
                 }
             }
