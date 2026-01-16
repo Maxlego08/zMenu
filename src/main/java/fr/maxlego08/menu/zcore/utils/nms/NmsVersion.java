@@ -258,6 +258,10 @@ public enum NmsVersion {
         return version >= V_1_21_5.version;
     }
 
+    public boolean is1_21_9OrNewer() {
+        return version >= V_1_21_9.version;
+    }
+
     public boolean is1_21_11OrNewer() {
         return version >= V_1_21_11.version;
     }

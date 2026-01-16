@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore;
+package fr.maxlego08.common.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;

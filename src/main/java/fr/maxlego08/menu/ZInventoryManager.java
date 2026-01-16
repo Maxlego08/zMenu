@@ -1,6 +1,7 @@
 package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
+import fr.maxlego08.common.utils.PlayerUtil;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
@@ -960,8 +961,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders){
         String name = papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
-        Logger.info("Before : " + button.getPlayerHead()+ " After: " + name+" placeholders:"+placeholders.getPlaceholders());
-        if (!isMinecraftName(name)) {
+        if (!PlayerUtil.isValidMinecraftUsername(name)) {
             return itemStack;
         }
 

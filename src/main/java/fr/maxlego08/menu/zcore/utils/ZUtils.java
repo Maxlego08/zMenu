@@ -4,11 +4,10 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import fr.maxlego08.common.utils.PlayerUtil;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.utils.SimpleCache;
-import fr.maxlego08.menu.zcore.SkinUrlDecoder;
 import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.enums.Permission;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -22,7 +21,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -37,15 +35,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.profile.PlayerProfile;
-import org.bukkit.profile.PlayerTextures;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
@@ -61,10 +54,7 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
-
     private static final Timer TIMER = new Timer();
-    private static final UUID RANDOM_UUID = UUID.fromString("92864445-51c5-4c3b-9039-517c9927d1b4"); // We reuse the same "random" UUID all the time
-    private static final SimpleCache<String, Object> cache = new SimpleCache<>();
     private static final ConcurrentHashMap<Path, CachedLines> CONFIGURATION_CACHE = new ConcurrentHashMap<>();
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
@@ -90,13 +80,6 @@ public abstract class ZUtils extends MessageUtils {
             }
         }
         return null;
-    }
-
-    protected boolean isMinecraftName(String username) {
-        String MINECRAFT_USERNAME_REGEX = "^[a-zA-Z0-9_]{3,16}$";
-        Pattern pattern = Pattern.compile(MINECRAFT_USERNAME_REGEX);
-        Matcher matcher = pattern.matcher(username);
-        return matcher.matches();
     }
 
     protected int parseInt(String value, int defaultValue) {
@@ -673,28 +656,9 @@ public abstract class ZUtils extends MessageUtils {
     private void applyTextureUrl(ItemStack itemStack, String url) {
         SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
         if (headMeta != null) {
-            Object result = cache.get(url, () -> getProfile(url));
-            if (result instanceof PlayerProfile) {
-                headMeta.setOwnerProfile((PlayerProfile) result);
-            }
+            headMeta.setOwnerProfile(PlayerUtil.Profile.getProfileFromUrl(url));
         }
         itemStack.setItemMeta(headMeta);
-    }
-
-    private PlayerProfile getProfile(String url) {
-        PlayerProfile profile = Bukkit.createPlayerProfile(RANDOM_UUID); // Get a new player profile
-        PlayerTextures textures = profile.getTextures();
-        URL urlObject;
-        try {
-            // urlObject = new URL(url); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
-            urlObject = SkinUrlDecoder.extractSkinUrl(url).toURL(); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
-        } catch (URISyntaxException | MalformedURLException exception) {
-            exception.printStackTrace();
-            return null;
-        }
-        textures.setSkin(urlObject); // Set the skin of the player profile to the URL
-        profile.setTextures(textures); // Set the textures back to the profile
-        return profile;
     }
 
     protected void applyTexture(ItemStack itemStack, String url) {

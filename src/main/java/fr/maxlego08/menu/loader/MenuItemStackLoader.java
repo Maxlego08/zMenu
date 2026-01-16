@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
@@ -15,6 +16,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.*;
@@ -107,9 +109,14 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                     ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
                     Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
                     if (optionalItemComponentLoader.isPresent()) {
-                        ItemComponent itemComponent = optionalItemComponentLoader.get().load(file, configuration, path + "components." + componentKey + ".", componentSection);
-                        if (itemComponent != null) {
-                            menuItemStack.addItemComponent(itemComponent);
+                        try {
+                            ItemComponent itemComponent = optionalItemComponentLoader.get().load(file, configuration, path + "components." + componentKey + ".", componentSection);
+                            if (itemComponent != null) {
+                                menuItemStack.addItemComponent(itemComponent);
+                            }
+                        } catch (Exception e) {
+                            if (Configuration.enableDebug)
+                                Logger.info("An error occurred while loading the item component " + componentKey + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
                         }
                     }
                 }

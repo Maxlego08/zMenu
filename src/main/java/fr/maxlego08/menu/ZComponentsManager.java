@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.itemstack.components.PotionDurationScaleItemComponentLoader;
 import fr.maxlego08.menu.loader.components.*;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.jetbrains.annotations.NotNull;
@@ -70,17 +71,29 @@ public class ZComponentsManager implements ComponentsManager {
                         this.registerComponent(new PaperDeathProtectionItemComponentLoader());
                     }
 
-                    if (currentVersion.is1_21_5OrNewer()){
+                    if (currentVersion.is1_21_5OrNewer()){ // 1.21.5+
                         this.registerComponent(new BlocksAttacksItemComponentLoader());
                         this.registerComponent(new BreakSoundItemComponentLoader());
+                        this.registerComponent(new PotionDurationScaleItemComponentLoader());
 
-                        if (currentVersion.is1_21_11OrNewer()){
-                            this.registerComponent(new AttackRangeItemComponentLoader());
-                            this.registerComponent(new DamageTypeItemComponentLoader());
-                            this.registerComponent(new KineticWeaponItemComponentLoader());
-                            this.registerComponent(new MinimumAttackChargeItemComponentLoader());
-                            this.registerComponent(new PiercingWeaponItemComponentLoader());
+                        if (isPaperAndMiniMessageEnabled(plugin)){
+                            this.registerComponent(new PaperProvidesBannerPatternsItemComponentLoader());
+                            this.registerComponent(new PaperProvidesTrimMaterialItemComponentLoader());
                         }
+
+                        if (currentVersion.is1_21_9OrNewer()){ // 1.21.9+
+
+                            this.registerComponent(new ProfileItemComponentLoader());
+
+                            if (currentVersion.is1_21_11OrNewer()){ // 1.21.11+
+                                this.registerComponent(new AttackRangeItemComponentLoader());
+                                this.registerComponent(new DamageTypeItemComponentLoader());
+                                this.registerComponent(new KineticWeaponItemComponentLoader());
+                                this.registerComponent(new MinimumAttackChargeItemComponentLoader());
+                                this.registerComponent(new PiercingWeaponItemComponentLoader());
+                            }
+                        }
+
                     }
                 }
             }
