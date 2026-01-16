@@ -71,8 +71,7 @@ public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemC
                         keys.add(TypedKey.create(RegistryKey.MOB_EFFECT, pet.key()));
                     }
 
-                    Iterable<TypedKey<PotionEffectType>> typedKeys = new ArrayList<>(keys);
-                    RegistryKeySet<PotionEffectType> effectTypes = RegistrySet.keySet(RegistryKey.MOB_EFFECT, typedKeys);
+                    RegistryKeySet<PotionEffectType> effectTypes = RegistrySet.keySet(RegistryKey.MOB_EFFECT, keys);
 
                     effects.add(ConsumeEffect.removeEffects(effectTypes));
                 }

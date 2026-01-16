@@ -48,6 +48,9 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new MaxStackSizeItemComponentLoader());
             this.registerComponent(new OminousBottleAmplifierItemComponentLoader());
             this.registerComponent(new PotionContentsItemComponentLoader());
+            this.registerComponent(new RarityItemComponentLoader());
+            this.registerComponent(new RecipesItemComponentLoader());
+            this.registerComponent(new RepairCostItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
@@ -69,6 +72,7 @@ public class ZComponentsManager implements ComponentsManager {
 
                     if (isPaperAndMiniMessageEnabled(plugin)){
                         this.registerComponent(new PaperDeathProtectionItemComponentLoader());
+                        this.registerComponent(new PaperRepairableItemComponentLoader());
                     }
 
                     if (currentVersion.is1_21_5OrNewer()){ // 1.21.5+
