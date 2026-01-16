@@ -1,12 +1,12 @@
 package fr.maxlego08.common.loader.components;
 
 import fr.maxlego08.common.enums.ConsumeEffectType;
-import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public abstract class AbstractEffectItemComponentLoader extends ItemComponentLoader {
+public abstract class AbstractEffectItemComponentLoader extends AbstractColorItemComponentLoader {
 
     protected AbstractEffectItemComponentLoader(String componentName) {
         super(componentName);
@@ -84,7 +84,7 @@ public abstract class AbstractEffectItemComponentLoader extends ItemComponentLoa
         }
     }
 
-    protected List<PotionEffect> parsePotionEffects(List<Map<?, ?>> potionEffectsRaw) {
+    protected List<PotionEffect> parsePotionEffects(@NotNull List<Map<?, ?>> potionEffectsRaw) {
         List<PotionEffect> potionEffects = new ArrayList<>();
         for (var rawPotionEffect : potionEffectsRaw) {
             @SuppressWarnings("unchecked")

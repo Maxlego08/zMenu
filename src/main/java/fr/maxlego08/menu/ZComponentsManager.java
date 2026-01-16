@@ -46,12 +46,14 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new MaxDamageItemComponentLoader());
             this.registerComponent(new MaxStackSizeItemComponentLoader());
             this.registerComponent(new OminousBottleAmplifierItemComponentLoader());
+            this.registerComponent(new PotionContentsItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
                 this.registerComponent(new PaperIntangibleProjectileItemComponentLoader());
                 this.registerComponent(new PaperMapDecorationsItemComponentLoader());
                 this.registerComponent(new PaperNoteBlockSoundItemComponentLoader());
+                this.registerComponent(new PaperPotDecorationsItemComponentLoader());
             }
 
             if (currentVersion.isNewItemStackAPI()){ // 1.21+
