@@ -54,6 +54,8 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new StoredEnchantItemComponentLoader());
             this.registerComponent(new SuspiciousStewEffectsItemComponentLoader());
             this.registerComponent(new ToolItemComponentLoader());
+            this.registerComponent(new TrimItemComponentLoader());
+            this.registerComponent(new UnbreakableItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
@@ -72,6 +74,8 @@ public class ZComponentsManager implements ComponentsManager {
                     this.registerComponent(new EquippableItemComponentLoader());
                     this.registerComponent(new GliderItemComponentLoader());
                     this.registerComponent(new ItemModelItemComponentLoader());
+                    this.registerComponent(new TooltipStyleItemComponentLoader());
+                    this.registerComponent(new UseCooldownItemComponentLoader());
 
                     if (isPaperAndMiniMessageEnabled(plugin)){
                         this.registerComponent(new PaperDeathProtectionItemComponentLoader());
