@@ -53,6 +53,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new RepairCostItemComponentLoader());
             this.registerComponent(new StoredEnchantItemComponentLoader());
             this.registerComponent(new SuspiciousStewEffectsItemComponentLoader());
+            this.registerComponent(new ToolItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
@@ -81,6 +82,7 @@ public class ZComponentsManager implements ComponentsManager {
                         this.registerComponent(new BlocksAttacksItemComponentLoader());
                         this.registerComponent(new BreakSoundItemComponentLoader());
                         this.registerComponent(new PotionDurationScaleItemComponentLoader());
+                        this.registerComponent(plugin.isPaper() ? new PaperTooltipDisplayItemComponentLoader() : new BukkitTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
 
                         if (isPaperAndMiniMessageEnabled(plugin)){
                             this.registerComponent(new PaperProvidesBannerPatternsItemComponentLoader());
