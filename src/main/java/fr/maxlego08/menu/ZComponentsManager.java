@@ -76,6 +76,7 @@ public class ZComponentsManager implements ComponentsManager {
                     this.registerComponent(new ItemModelItemComponentLoader());
                     this.registerComponent(new TooltipStyleItemComponentLoader());
                     this.registerComponent(new UseCooldownItemComponentLoader());
+                    this.registerComponent(new UseRemainderItemComponentLoader(plugin));
 
                     if (isPaperAndMiniMessageEnabled(plugin)){
                         this.registerComponent(new PaperDeathProtectionItemComponentLoader());
@@ -87,6 +88,7 @@ public class ZComponentsManager implements ComponentsManager {
                         this.registerComponent(new BreakSoundItemComponentLoader());
                         this.registerComponent(new PotionDurationScaleItemComponentLoader());
                         this.registerComponent(plugin.isPaper() ? new PaperTooltipDisplayItemComponentLoader() : new BukkitTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
+                        this.registerComponent(new WeaponItemComponentLoader());
 
                         if (isPaperAndMiniMessageEnabled(plugin)){
                             this.registerComponent(new PaperProvidesBannerPatternsItemComponentLoader());
@@ -104,6 +106,7 @@ public class ZComponentsManager implements ComponentsManager {
                                 this.registerComponent(new MinimumAttackChargeItemComponentLoader());
                                 this.registerComponent(new PiercingWeaponItemComponentLoader());
                                 this.registerComponent(new SwingAnimationItemComponentLoader());
+                                this.registerComponent(new UseEffectsItemComponentLoader());
                             }
                         }
 
