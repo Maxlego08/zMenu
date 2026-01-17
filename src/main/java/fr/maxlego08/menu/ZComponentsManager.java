@@ -56,6 +56,8 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new ToolItemComponentLoader());
             this.registerComponent(new TrimItemComponentLoader());
             this.registerComponent(new UnbreakableItemComponentLoader());
+            this.registerComponent(new WritableBookContentItemComponentLoader());
+            this.registerComponent(new WrittenBookContentItemComponentLoader());
 
             if (isPaperAndMiniMessageEnabled(plugin)){
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
