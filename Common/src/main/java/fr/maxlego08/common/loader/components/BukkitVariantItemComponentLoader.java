@@ -188,7 +188,7 @@ public class BukkitVariantItemComponentLoader implements VariantItemComponentLoa
             path = normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
-            NamespacedKey key = NamespacedKey.fromString(value);
+            NamespacedKey key = NamespacedKey.fromString(value.toLowerCase());
             if (key == null) return null;
             try {
                 return componentFactory.apply(registry.getOrThrow(key));
@@ -234,8 +234,16 @@ public class BukkitVariantItemComponentLoader implements VariantItemComponentLoa
             Object rawColor = configuration.get(path);
             if (rawColor == null) return null;
             Color color = parseColor(rawColor);
-            if (color == null) return null;
-            DyeColor dyeColor = DyeColor.getByColor(color);
+            DyeColor dyeColor;
+            if (color == null) {
+                try {
+                    dyeColor = DyeColor.valueOf(rawColor.toString().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    return null;
+                }
+            } else {
+                dyeColor = DyeColor.getByColor(color);
+            }
             if (dyeColor == null) return null;
             return componentFactory.apply(dyeColor);
         }
