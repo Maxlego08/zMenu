@@ -25,10 +25,7 @@ public class DamageResistantItemComponentLoader extends ItemComponentLoader {
         if(componentSection == null) return null;
         String damageTypeString = componentSection.getString("types");
         if(damageTypeString == null || damageTypeString.isBlank()) return null;
-        if (damageTypeString.startsWith("#")){
-            damageTypeString = damageTypeString.substring(1);
-        }
-        NamespacedKey damageTypeKey = NamespacedKey.fromString(damageTypeString);
+        NamespacedKey damageTypeKey = NamespacedKey.fromString(damageTypeString.toLowerCase());
         if(damageTypeKey == null) return null;
         Tag<DamageType> damageType = Bukkit.getTag("damage_types", damageTypeKey, DamageType.class);
         if(damageType == null) return null;

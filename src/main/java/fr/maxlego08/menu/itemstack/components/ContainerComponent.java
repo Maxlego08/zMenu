@@ -21,6 +21,7 @@ public record ContainerComponent(
 ) implements ItemComponent {
     @Override
     public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+        //TODO: Trouver pq ca ajoute pas les items dans le container
         boolean apply = ItemUtil.editMeta(itemStack, BlockStateMeta.class, blockStateMeta -> {
             if (blockStateMeta instanceof Container container) {
                 Inventory inventory = container.getInventory();

@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.loader.components;
 
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Tuples;
 import fr.maxlego08.menu.itemstack.components.AttributeModifiersComponent;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
@@ -43,8 +45,16 @@ public class AttributeModifiersItemComponentLoader extends ItemComponentLoader {
                 continue;
             }
             if (attribute == null) continue;
-            AttributeModifier deserialize = AttributeModifier.deserialize(map);
-            modifiers.add(new Tuples<>(attribute, deserialize));
+            try {
+                AttributeModifier deserialize = AttributeModifier.deserialize(map);
+                modifiers.add(new Tuples<>(attribute, deserialize));
+            } catch (IllegalArgumentException e) {
+                if (Configuration.enableDebug){
+                    Logger.info("Error deserializing attribute modifier for attribute " + attribute.name() + ": " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+            }
         }
         return modifiers.isEmpty() ? null : new AttributeModifiersComponent(modifiers);
     }

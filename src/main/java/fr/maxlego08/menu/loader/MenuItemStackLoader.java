@@ -113,12 +113,13 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                         try {
                             ItemComponent itemComponent = optionalItemComponentLoader.get().load(file, configuration, path + "components." + componentKey + ".", componentSection);
                             if (itemComponent != null) {
-                                Logger.info("Loaded "+componentKey+" sucessly");
                                 menuItemStack.addItemComponent(itemComponent);
                             }
                         } catch (Exception e) {
-                            if (Configuration.enableDebug)
+                            if (Configuration.enableDebug) {
                                 Logger.info("An error occurred while loading the item component " + componentKey + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
