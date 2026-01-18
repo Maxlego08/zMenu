@@ -1,19 +1,14 @@
-package fr.maxlego08.menu.zcore.utils.itemstack;
+package fr.maxlego08.menu.common.utils.itemstack;
 
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.itemstack.Firework;
 import fr.maxlego08.menu.api.itemstack.Potion;
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import org.bukkit.FireworkEffect;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.FireworkEffectMeta;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;

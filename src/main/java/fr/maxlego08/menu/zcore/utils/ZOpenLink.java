@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.builder;
+package fr.maxlego08.menu.common.utils.builder;
 
 import fr.maxlego08.menu.api.utils.Message;
 

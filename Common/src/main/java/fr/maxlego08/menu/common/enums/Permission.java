@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.enums;
+package fr.maxlego08.menu.common.enums;
 
 public enum Permission {
 	

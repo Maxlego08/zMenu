@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils;
+package fr.maxlego08.menu.common.utils;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.placeholder.Placeholder;

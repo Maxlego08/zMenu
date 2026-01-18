@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;

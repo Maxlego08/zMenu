@@ -4,8 +4,8 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.pattern.ZActionsPattern;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 

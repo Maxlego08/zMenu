@@ -1,16 +1,12 @@
-package fr.maxlego08.menu.zcore.utils.nms;
+package fr.maxlego08.menu.common.utils.nms;
 
 
-import fr.maxlego08.menu.zcore.utils.Base64;
+import fr.maxlego08.menu.common.utils.Base64;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 

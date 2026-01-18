@@ -1,21 +1,16 @@
-package fr.maxlego08.menu.zcore.utils;
+package fr.maxlego08.menu.common.utils;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import fr.maxlego08.menu.common.utils.PlayerUtil;
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.zcore.enums.Permission;
-import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.builder.CooldownBuilder;
-import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
-import fr.maxlego08.menu.zcore.utils.players.ActionBar;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -23,7 +18,6 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
@@ -46,11 +40,9 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
@@ -146,17 +138,6 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * Allows to obtain a random number between a and b
-     *
-     * @param first  First number
-     * @param second second number
-     * @return number between a and b
-     */
-    protected int getNumberBetween(int first, int second) {
-        return ThreadLocalRandom.current().nextInt(first, second);
-    }
-
-    /**
      * Allows you to check if the inventory is full
      *
      * @param player Target player
@@ -199,28 +180,6 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     /**
-     * Removes a specified amount of items from the player's hand.
-     *
-     * @param player the Player whose item in hand is to be removed
-     */
-    protected void removeItemInHand(Player player) {
-        removeItemInHand(player, 64);
-    }
-
-    /**
-     * Removes a specified amount of items from the player's hand.
-     *
-     * @param player the Player whose item in hand is to be removed
-     * @param how    the number of items to remove
-     */
-    protected void removeItemInHand(Player player, int how) {
-        if (player.getItemInHand().getAmount() > how)
-            player.getItemInHand().setAmount(player.getItemInHand().getAmount() - how);
-        else player.setItemInHand(new ItemStack(Material.AIR));
-        player.updateInventory();
-    }
-
-    /**
      * Checks if two locations are the same, comparing their block coordinates and world names.
      *
      * @param l  the first Location to compare
@@ -253,34 +212,6 @@ public abstract class ZUtils extends MessageUtils {
         return decimalFormat.format(decimal);
     }
 
-
-    /**
-     * Remove a certain number of items from a player's inventory
-     *
-     * @param player    - Player who will have items removed
-     * @param amount    - Number of items to remove
-     * @param itemStack - ItemStack to be removed
-     */
-    protected void removeItems(Player player, int amount, ItemStack itemStack) {
-        int slot = 0;
-        for (ItemStack is : player.getInventory().getContents()) {
-            if (is != null && is.isSimilar(itemStack) && amount > 0) {
-                int currentAmount = is.getAmount() - amount;
-                amount -= is.getAmount();
-                if (currentAmount <= 0) {
-                    if (slot == 40) {
-                        player.getInventory().setItemInOffHand(null);
-                    } else {
-                        player.getInventory().removeItem(is);
-                    }
-                } else {
-                    is.setAmount(currentAmount);
-                }
-            }
-            slot++;
-        }
-        player.updateInventory();
-    }
 
     /**
      * Converts a string to a properly formatted name by replacing underscores with spaces and capitalizing the first letter.
@@ -327,52 +258,6 @@ public abstract class ZUtils extends MessageUtils {
 
 
     /**
-     * Calculates the percentage of a value relative to a total.
-     *
-     * @param value the part value
-     * @param total the total value
-     * @return the percentage of the value relative to the total
-     */
-    protected double percent(double value, double total) {
-        return (value * 100) / total;
-    }
-
-    /**
-     * Calculates the numerical value of a given percentage of a total.
-     *
-     * @param total   the total value
-     * @param percent the percentage to be calculated
-     * @return the numerical value of the percentage of the total
-     */
-    protected double percentNum(double total, double percent) {
-        return total * (percent / 100);
-    }
-
-    /**
-     * Creates an inventory for the specified plugin and player with the given inventory type.
-     *
-     * @param plugin    the MenuPlugin for which the inventory is created
-     * @param player    the Player for whom the inventory is created
-     * @param inventory the type of EnumInventory to be created
-     */
-    protected void createInventory(ZMenuPlugin plugin, Player player, EnumInventory inventory) {
-        createInventory(plugin, player, inventory, 1);
-    }
-
-    /**
-     * Creates an inventory for the specified plugin and player with the given inventory type and page number.
-     *
-     * @param plugin    the MenuPlugin for which the inventory is created
-     * @param player    the Player for whom the inventory is created
-     * @param inventory the type of EnumInventory to be created
-     * @param page      the page number of the inventory
-     */
-    protected void createInventory(ZMenuPlugin plugin, Player player, EnumInventory inventory, int page) {
-        createInventory(plugin, player, inventory, page, new Object() {
-        });
-    }
-
-    /**
      * Creates an inventory for the specified plugin and player with the given inventory type, page number, and additional objects.
      *
      * @param plugin    the MenuPlugin for which the inventory is created
@@ -381,20 +266,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param page      the page number of the inventory
      * @param objects   additional objects to be passed for inventory creation
      */
-    protected void createInventory(ZMenuPlugin plugin, Player player, EnumInventory inventory, int page, Object... objects) {
-        plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
-    }
-
-    /**
-     * Creates an inventory for the specified plugin and player with the given inventory ID, page number, and additional objects.
-     *
-     * @param plugin    the MenuPlugin for which the inventory is created
-     * @param player    the Player for whom the inventory is created
-     * @param inventory the ID of the inventory to be created
-     * @param page      the page number of the inventory
-     * @param objects   additional objects to be passed for inventory creation
-     */
-    protected void createInventory(ZMenuPlugin plugin, Player player, int inventory, int page, Object... objects) {
+    protected void createInventory(MenuPlugin plugin, Player player, EnumInventory inventory, int page, Object... objects) {
         plugin.getVInventoryManager().createInventory(inventory, player, page, objects);
     }
 
@@ -429,7 +301,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
      * @return the scheduled TimerTask
      */
-    protected TimerTask scheduleFix(ZMenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+    protected TimerTask scheduleFix(MenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         return this.scheduleFix(plugin, delay, delay, consumer);
     }
 
@@ -442,7 +314,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
      * @return the scheduled TimerTask
      */
-    protected TimerTask scheduleFix(ZMenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
+    protected TimerTask scheduleFix(MenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -456,13 +328,6 @@ public abstract class ZUtils extends MessageUtils {
         };
         TIMER.scheduleAtFixedRate(task, startAt, delay);
         return task;
-    }
-
-    protected <T> T randomElement(List<T> element) {
-        if (element.isEmpty()) return null;
-        if (element.size() == 1) return element.getFirst();
-        Random random = new Random();
-        return element.get(random.nextInt(element.size() - 1));
     }
 
     protected String color(String message) {
@@ -540,36 +405,6 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    protected String timerFormat(Player player, String cooldown) {
-        return TimerBuilder.getStringTime(CooldownBuilder.getCooldownPlayer(cooldown, player) / 1000);
-    }
-
-    protected boolean isCooldown(Player player, String cooldown) {
-        return isCooldown(player, cooldown, 0);
-    }
-
-    protected boolean isCooldown(Player player, String cooldown, int timer) {
-        if (CooldownBuilder.isCooldown(cooldown, player)) {
-            ActionBar.sendActionBar(player, String.format("§cVous devez attendre encore §6%s §cavant de pouvoir faire cette action.", timerFormat(player, cooldown)));
-            return true;
-        }
-        if (timer > 0) CooldownBuilder.addCooldown(cooldown, player, timer);
-        return false;
-    }
-
-    protected String toList(Stream<String> list) {
-        List<String> values = new ArrayList<>();
-        Iterator<String> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            values.add(iterator.next());
-        }
-        return toList(values, "§e", "§6");
-    }
-
-    protected String toList(List<String> list) {
-        return toList(list, "§e", "§6§n");
-    }
-
     protected String toList(List<String> list, String color, String color2) {
         if (list == null || list.isEmpty()) return null;
         if (list.size() == 1) return list.getFirst();
@@ -592,38 +427,6 @@ public abstract class ZUtils extends MessageUtils {
         symbols.setGroupingSeparator(c);
         formatter.setDecimalFormatSymbols(symbols);
         return formatter.format(l);
-    }
-
-    public ItemStack playerHead(ItemStack itemStack, OfflinePlayer player) {
-
-        String name = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : null;
-
-        if (NmsVersion.nmsVersion.isNewMaterial()) {
-            if (itemStack.getType().equals(Material.PLAYER_HEAD) && name != null && name.startsWith("HEAD")) {
-                SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-                name = name.replace("HEAD", "");
-                if (name.isEmpty()) {
-                    meta.setDisplayName(null);
-                } else {
-                    meta.setDisplayName(name);
-                }
-                meta.setOwningPlayer(player);
-                itemStack.setItemMeta(meta);
-            }
-        } else {
-            if (itemStack.getType().equals(getMaterial(397)) && itemStack.getData().getData() == 3 && name != null && name.startsWith("HEAD")) {
-                SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-                name = name.replace("HEAD", "");
-                if (name.isEmpty()) {
-                    meta.setDisplayName(null);
-                } else {
-                    meta.setDisplayName(name);
-                }
-                meta.setOwner(player.getName());
-                itemStack.setItemMeta(meta);
-            }
-        }
-        return itemStack;
     }
 
     /**
@@ -678,12 +481,6 @@ public abstract class ZUtils extends MessageUtils {
         itemStack.setItemMeta(headMeta);
     }
 
-    protected boolean isPlayerHead(ItemStack itemStack) {
-        Material material = itemStack.getType();
-        if (NmsVersion.nmsVersion.isNewMaterial()) return material.equals(Material.PLAYER_HEAD);
-        return (material.equals(getMaterial(397))) && (itemStack.getDurability() == 3);
-    }
-
     protected Object getPrivateField(Object object, String field) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class<?> clazz = object.getClass();
         Field objectField = field.equals("commandMap") ? clazz.getDeclaredField(field) : field.equals("knownCommands") ? NmsVersion.nmsVersion.isNewMaterial() ? clazz.getSuperclass().getDeclaredField(field) : clazz.getDeclaredField(field) : null;
@@ -711,44 +508,6 @@ public abstract class ZUtils extends MessageUtils {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-    }
-
-    public String getProgressBar(int current, int max, int totalBars, char symbol, String completedColor, String notCompletedColor) {
-        float percent = (float) current / max;
-        int progressBars = (int) (totalBars * percent);
-
-        return Strings.repeat(completedColor + symbol, progressBars) + Strings.repeat(notCompletedColor + symbol, totalBars - progressBars);
-    }
-
-    protected boolean inventoryHasItem(Player player) {
-
-        ItemStack itemStack = player.getInventory().getBoots();
-        if (itemStack != null) {
-            return true;
-        }
-
-        itemStack = player.getInventory().getChestplate();
-        if (itemStack != null) {
-            return true;
-        }
-
-        itemStack = player.getInventory().getLeggings();
-        if (itemStack != null) {
-            return true;
-        }
-
-        itemStack = player.getInventory().getHelmet();
-        if (itemStack != null) {
-            return true;
-        }
-
-        for (ItemStack itemStack1 : player.getInventory().getContents()) {
-            if (itemStack1 != null) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

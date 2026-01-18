@@ -1,6 +1,6 @@
-package fr.maxlego08.menu.zcore.utils.nms;
+package fr.maxlego08.menu.common.utils.nms;
 
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils.EnumReflectionItemStack;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils.EnumReflectionItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemStackCompound {

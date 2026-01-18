@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.nms;
+package fr.maxlego08.menu.common.utils.nms;
 
 import org.bukkit.Bukkit;
 

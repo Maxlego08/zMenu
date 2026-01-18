@@ -2,7 +2,7 @@ package fr.maxlego08.menu.zcore.utils.meta;
 
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

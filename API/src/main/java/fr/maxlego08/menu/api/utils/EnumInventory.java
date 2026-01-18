@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.enums;
+package fr.maxlego08.menu.api.utils;
 
 public enum EnumInventory {
 

@@ -2,8 +2,8 @@ package fr.maxlego08.menu.zcore.utils.plugins;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 
 import java.io.IOException;
 import java.net.URI;

@@ -256,4 +256,6 @@ public interface MenuPlugin extends Plugin {
     TitleAnimationManager getTitleAnimationManager();
 
     ComponentsManager getComponentsManager();
+
+    VInvManager getVInventoryManager();
 }

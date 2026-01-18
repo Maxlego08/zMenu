@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
@@ -8,10 +9,10 @@ import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -29,7 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class VInventoryManager extends ListenerAdapter {
+public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
     private final ZMenuPlugin plugin;
@@ -57,8 +58,9 @@ public class VInventoryManager extends ListenerAdapter {
      * @param page          - The inventory page
      * @param objects       - The arguments used to make the inventory work
      */
+    @Override
     public void createInventory(EnumInventory enumInventory, Player player, int page, Object... objects) {
-        this.createInventory(enumInventory.getId(), player, page, objects);
+
     }
 
     /**
@@ -69,6 +71,7 @@ public class VInventoryManager extends ListenerAdapter {
      * @param page    - The inventory page
      * @param objects - The arguments used to make the inventory work
      */
+    @Override
     public void createInventory(int id, Player player, int page, Object... objects) {
         Optional<VInventory> optional = this.getInventory(id);
 

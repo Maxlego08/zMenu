@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader.materials;
 
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

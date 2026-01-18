@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils.itemstack;
+package fr.maxlego08.menu.common.utils.itemstack;
 
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -7,10 +7,10 @@ import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
+import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
@@ -19,12 +19,7 @@ import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class MenuItemStackFormMap {
 

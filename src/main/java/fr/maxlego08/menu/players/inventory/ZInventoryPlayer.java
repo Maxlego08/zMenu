@@ -2,8 +2,8 @@ package fr.maxlego08.menu.players.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
