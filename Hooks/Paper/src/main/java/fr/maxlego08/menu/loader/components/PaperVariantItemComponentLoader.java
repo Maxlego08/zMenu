@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.components;
 
-import fr.maxlego08.common.VariantComponent;
+import fr.maxlego08.common.interfaces.VariantComponent;
 import fr.maxlego08.common.loader.components.BukkitVariantItemComponentLoader;
 import fr.maxlego08.common.loader.components.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;

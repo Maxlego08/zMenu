@@ -1,4 +1,4 @@
-package fr.maxlego08.common;
+package fr.maxlego08.common.interfaces;
 
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import org.bukkit.Art;

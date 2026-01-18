@@ -48,4 +48,9 @@ target
 target-api
 *.java~
 *.kts~
+
+### OpenCode ###
+
 /AGENTS.md
+
+opencode.json

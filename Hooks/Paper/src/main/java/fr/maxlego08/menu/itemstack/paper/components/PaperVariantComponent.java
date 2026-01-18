@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.itemstack.paper.components;
 
-import fr.maxlego08.common.VariantComponent;
+import fr.maxlego08.common.interfaces.VariantComponent;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Art;
 import org.bukkit.DyeColor;

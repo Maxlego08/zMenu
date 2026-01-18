@@ -1,6 +1,6 @@
 package fr.maxlego08.common.items.components;
 
-import fr.maxlego08.common.VariantComponent;
+import fr.maxlego08.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
