@@ -11,7 +11,7 @@ import fr.maxlego08.menu.api.itemstack.TrimConfiguration;
 import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;

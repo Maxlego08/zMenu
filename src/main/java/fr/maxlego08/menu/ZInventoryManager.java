@@ -1,7 +1,7 @@
 package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
-import fr.maxlego08.common.utils.PlayerUtil;
+import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;

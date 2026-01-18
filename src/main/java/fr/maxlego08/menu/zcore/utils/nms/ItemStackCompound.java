@@ -12,8 +12,8 @@ public class ItemStackCompound {
 
     // Static block to initialize the itemStackCompound based on the NmsVersion
     static {
-        NmsVersion nmsVersion = NmsVersion.nmsVersion;
-        if (nmsVersion == NmsVersion.V_1_18_2) {
+        fr.maxlego08.menu.common.utils.nms.NmsVersion nmsVersion = fr.maxlego08.menu.common.utils.nms.NmsVersion.nmsVersion;
+        if (nmsVersion == fr.maxlego08.menu.common.utils.nms.NmsVersion.V_1_18_2) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_18_2);
         } else if (nmsVersion.getVersion() >= 1200) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_12);
