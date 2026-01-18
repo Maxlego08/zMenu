@@ -1,11 +1,15 @@
 package fr.maxlego08.menu;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public interface ComponentsManager {
+
+    void initializeDefaultComponents(MenuPlugin plugin);
+
     /**
      * Register a new ItemComponentLoader.
      * @param loader The loader to register

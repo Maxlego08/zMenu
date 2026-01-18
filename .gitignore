@@ -48,3 +48,4 @@ target
 target-api
 *.java~
 *.kts~
+/AGENTS.md

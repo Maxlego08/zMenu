@@ -1,9 +1,13 @@
 package fr.maxlego08.menu;
 
+import fr.maxlego08.common.items.components.BukkitVariantComponent;
+import fr.maxlego08.common.loader.components.BukkitVariantItemComponentLoader;
+import fr.maxlego08.common.loader.components.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.itemstack.components.PotionDurationScaleItemComponentLoader;
+import fr.maxlego08.menu.itemstack.paper.components.PaperVariantComponent;
 import fr.maxlego08.menu.loader.components.*;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +20,15 @@ import java.util.Optional;
 public class ZComponentsManager implements ComponentsManager {
     private final Map<String, ItemComponentLoader> components = new HashMap<>();
 
-    ZComponentsManager(MenuPlugin plugin){
+    private boolean isPaperAndMiniMessageEnabled(MenuPlugin plugin){
+        return plugin.isPaper() && Configuration.enableMiniMessageFormat;
+    }
+
+    @Override
+    public void initializeDefaultComponents(MenuPlugin plugin) {
         NmsVersion currentVersion = NmsVersion.getCurrentVersion();
         if (currentVersion.isAttributItemStack()){ // 1.20.5+
+            this.initializeVariantComponents(plugin);
 
             this.registerComponent(new BlockStateItemComponentLoader());
             this.registerComponent(new AttributeModifiersItemComponentLoader());
@@ -34,7 +44,6 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new DamageResistantItemComponentLoader());
             this.registerComponent(new DyeColorItemComponentLoader());
             this.registerComponent(new EnchantmentGlintOverrideItemComponentLoader());
-            this.registerComponent(new EnchantableItemComponentLoader());
             this.registerComponent(new FireworkExplosionItemComponentLoader());
             this.registerComponent(new FireworksItemComponentLoader());
             this.registerComponent(new FoodItemComponentLoader());
@@ -118,9 +127,35 @@ public class ZComponentsManager implements ComponentsManager {
         }
     }
 
-    private boolean isPaperAndMiniMessageEnabled(MenuPlugin plugin){
-        return plugin.isPaper() && Configuration.enableMiniMessageFormat;
+    private void initializeVariantComponents(MenuPlugin plugin) {
+        VariantItemComponentLoaderFactory loaderFactory =
+            plugin.isPaper() ? new PaperVariantItemComponentLoader(new PaperVariantComponent())
+                             : new BukkitVariantItemComponentLoader(new BukkitVariantComponent());
+
+        this.registerComponent(loaderFactory.getLoaderAxolotl());
+        this.registerComponent(loaderFactory.getLoaderCatCollar());
+        this.registerComponent(loaderFactory.getLoaderCatVariant());
+        this.registerComponent(loaderFactory.getLoaderChicken());
+        this.registerComponent(loaderFactory.getLoaderCow());
+        this.registerComponent(loaderFactory.getLoaderFox());
+        this.registerComponent(loaderFactory.getLoaderFrog());
+        this.registerComponent(loaderFactory.getLoaderHorse());
+        this.registerComponent(loaderFactory.getLoaderLlama());
+        this.registerComponent(loaderFactory.getLoaderMushroomCow());
+        this.registerComponent(loaderFactory.getLoaderPainting());
+        this.registerComponent(loaderFactory.getLoaderParrot());
+        this.registerComponent(loaderFactory.getLoaderPig());
+        this.registerComponent(loaderFactory.getLoaderRabbit());
+        this.registerComponent(loaderFactory.getLoaderSalmon());
+        this.registerComponent(loaderFactory.getLoaderSheep());
+        this.registerComponent(loaderFactory.getLoaderShulkerBox());
+        this.registerComponent(loaderFactory.getLoaderTropicalFishBaseColor());
+        this.registerComponent(loaderFactory.getLoaderTropicalFishPatternColor());
+        this.registerComponent(loaderFactory.getLoaderVillager());
+        this.registerComponent(loaderFactory.getLoaderWolfCollar());
+        this.registerComponent(loaderFactory.getLoaderWolfVariant());
     }
+
 
     @Override
     public void registerComponent(@NotNull ItemComponentLoader loader) {
