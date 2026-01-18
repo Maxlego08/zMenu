@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.utils;
 
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +32,7 @@ public class TypedMapAccessor implements MapConfiguration {
      * @return The string value associated with the key or null if the key is not present.
      */
     @Override
-    public String getString(String key) {
+    public String getString(@NonNull String key) {
         return String.valueOf(map.get(key));
     }
 

@@ -18,6 +18,7 @@ public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
     protected boolean showItemsAfterAnimation = false;
     protected int itemUpdateInterval = 1;
 
+    @NotNull
     protected TitleAnimationSettings loadSettings(@NotNull YamlConfiguration configuration, @NotNull String path){
         this.titles = configuration.getStringList(path + "titles");
         this.cycles = configuration.getInt(path+"cycles",-1);

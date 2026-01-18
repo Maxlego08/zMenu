@@ -11,6 +11,7 @@ public interface ActionPattern {
 
     @NotNull
     List<Action> actions();
+
     @NotNull
     List<Action> denyActions();
 }

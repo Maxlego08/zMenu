@@ -61,6 +61,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +89,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
-    public ZInventoryManager(ZMenuPlugin plugin) {
+    public ZInventoryManager(@NotNull ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
@@ -114,6 +115,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    @NotNull
     public MenuPlugin getPlugin() {
         return this.plugin;
     }

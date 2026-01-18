@@ -48,11 +48,15 @@ public class Firework {
         ItemStack itemStack = new ItemStack(material, amount);
         if (this.isStar) {
             FireworkEffectMeta fireworkEffectMeta = (FireworkEffectMeta) itemStack.getItemMeta();
-            fireworkEffectMeta.setEffect(effect);
+            if (fireworkEffectMeta != null) {
+                fireworkEffectMeta.setEffect(effect);
+            }
             itemStack.setItemMeta(fireworkEffectMeta);
         } else {
             FireworkMeta fireworkMeta = (FireworkMeta) itemStack.getItemMeta();
-            fireworkMeta.addEffect(effect);
+            if (fireworkMeta != null) {
+                fireworkMeta.addEffect(effect);
+            }
             itemStack.setItemMeta(fireworkMeta);
         }
         return itemStack;

@@ -337,7 +337,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
     }
 
-    private void applyAttributes(ItemStack itemStack) {
+    private void applyAttributes(@NotNull ItemStack itemStack) {
         if (itemStack.getType() == Material.AIR) {
             return;
         }

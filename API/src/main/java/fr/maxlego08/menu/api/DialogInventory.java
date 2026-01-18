@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
@@ -135,7 +136,7 @@ public interface DialogInventory {
 
     void setActionButtonServerLink(ActionButtonRecord actionButtonRecord);
 
-    ActionButtonRecord getActionButtonServerLink(Player player);
+    ActionButtonRecord getActionButtonServerLink(@NotNull Player player);
 
     ActionButtonRecord getActionButtonServerLink();
 

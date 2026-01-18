@@ -6,6 +6,7 @@ import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlotGroup;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 public record AttributeWrapper(Attribute attribute, AttributeModifier.Operation operation, double amount, EquipmentSlotGroup slot) {
 
-    public static AttributeWrapper deserialize(Map<String, Object> attributeMap) {
+    public static AttributeWrapper deserialize(@NotNull Map<String, Object> attributeMap) {
         var attribute = Registry.ATTRIBUTE.get(Objects.requireNonNull(NamespacedKey.fromString(((String) attributeMap.get("attribute")).toLowerCase(Locale.ROOT))));
         return new AttributeWrapper(
                 attribute,

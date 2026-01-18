@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public abstract class Button extends PlaceholderButton {
 
     private MenuPlugin plugin;

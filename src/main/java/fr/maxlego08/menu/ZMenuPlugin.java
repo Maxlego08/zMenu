@@ -106,7 +106,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ComponentsManager componentsManager = new ZComponentsManager();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
-    private final AttributApplier attributApplier = new ApplySpigotAttribute();
+    private final AttributApplier attributApplier = this.foliaLib.isPaper() ? new ApplyPaperAttribute() : new ApplySpigotAttribute();
     private final File configFile = new File(getDataFolder(), "config.yml");
     private DialogManager dialogManager;
     private CommandMenu commandMenu;

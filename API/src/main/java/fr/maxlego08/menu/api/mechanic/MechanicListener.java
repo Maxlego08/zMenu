@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class MechanicListener implements Listener {
 
-    /*
+    /**
     * Called when an item with the mechanic is given to a player.
     * Return true to cancel the item giving, false to allow it.
      */

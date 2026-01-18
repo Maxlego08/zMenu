@@ -47,7 +47,9 @@ public class LeatherArmor {
         };
         ItemStack stack = new ItemStack(material, amount);
         LeatherArmorMeta lam = (LeatherArmorMeta) stack.getItemMeta();
-        lam.setColor(color);
+        if (lam != null) {
+            lam.setColor(color);
+        }
         stack.setItemMeta(lam);
         return stack;
     }

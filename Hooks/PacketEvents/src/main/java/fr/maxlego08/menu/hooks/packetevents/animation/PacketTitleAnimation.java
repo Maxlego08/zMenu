@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.animation.PlayerTitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimationSettings;
 import org.bukkit.event.inventory.InventoryType;
+import org.jetbrains.annotations.NotNull;
 
 public class PacketTitleAnimation implements TitleAnimation {
     private final TitleAnimationSettings settings;
@@ -14,7 +15,7 @@ public class PacketTitleAnimation implements TitleAnimation {
     }
 
     @Override
-    public PlayerTitleAnimation playTitleAnimation(MenuPlugin plugin, int containerId, InventoryType type, int size, Object... args) {
+    public PlayerTitleAnimation playTitleAnimation(@NotNull MenuPlugin plugin, int containerId, @NotNull InventoryType type, int size, Object... args) {
         return new PacketPlayerTitleAnimation(plugin, this.settings, containerId, type, size, args);
     }
 }

@@ -32,6 +32,7 @@ import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -217,7 +218,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
      * Opens a specific dialog for the specified player
      */
     @Override
-    public void openDialog(Player player, DialogInventory zDialog) {
+    public void openDialog(@NotNull Player player,@NotNull DialogInventory zDialog) {
         try {
             boolean canOpen = zDialog.hasOpenRequirement(player);
             if (!canOpen){
@@ -231,7 +232,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
             DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), zDialog.isPause(), zDialog.getAfterAction());
             Dialog dialog = createDialogByType(zDialog.getDialogType(), dialogBase, bodies, inputs, zDialog, player);
 
-            activeDialogs.put(player.getUniqueId(), zDialog);
+            this.activeDialogs.put(player.getUniqueId(), zDialog);
 
             player.showDialog(dialog);
 
@@ -248,7 +249,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
     /**
      * Creates a dialog based on the dialog type
      */
-    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, DialogInventory zDialog, Player player) {
+    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, DialogInventory zDialog,@NotNull Player player) {
         return switch (dialogType) {
             case NOTICE ->
                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(ActionButton.create(paperComponent.getComponent(zDialog.getLabel(player)),paperComponent.getComponent(zDialog.getLabelTooltip(player)), zDialog.getLabelWidth(), createAction(inputs,zDialog.getActions())))).base(dialogBase.body(bodies).inputs(inputs).build())
@@ -334,11 +335,11 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
     /**
      * Removes the active dialog for a player
      */
-    public void removeActiveDialog(Player player) {
+    public void removeActiveDialog(@NotNull Player player) {
         activeDialogs.remove(player.getUniqueId());
     }
 
-    public boolean openDialogByName(Player player, String dialogName) {
+    public boolean openDialogByName(@NotNull Player player, String dialogName) {
         Optional<DialogInventory> dialog = getDialog(dialogName);
         if (dialog.isPresent()) {
             openDialog(player, dialog.get());

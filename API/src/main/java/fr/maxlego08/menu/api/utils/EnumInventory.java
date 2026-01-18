@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.utils;
 public enum EnumInventory {
 
 	INVENTORY_DEFAULT(1),
+
 	INVENTORY_MARKETPLACE(2),
 
 	;
