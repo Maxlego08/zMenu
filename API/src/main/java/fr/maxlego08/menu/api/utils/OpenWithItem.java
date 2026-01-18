@@ -13,6 +13,9 @@ import java.util.List;
 /**
  * <p>Represents the item that can be interacted with to open a menu.</p>
  */
+/**
+ * Represents an item and associated player actions that, when interacted with, trigger opening a specific menu.
+ */
 public class OpenWithItem {
     private final MenuItemStack menuItemStack;
     private final List<Action> actions;

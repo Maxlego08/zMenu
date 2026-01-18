@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Value object for encapsulating all data needed for an attribute modifier on an item: the attribute, operation, amount, and slot.
+ * Provides deserialization and conversion to Bukkit AttributeModifier.
+ */
 public record AttributeWrapper(Attribute attribute, AttributeModifier.Operation operation, double amount, EquipmentSlotGroup slot) {
 
     public static AttributeWrapper deserialize(@NotNull Map<String, Object> attributeMap) {

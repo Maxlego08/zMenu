@@ -5,6 +5,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Base Bukkit Listener for mechanics that must react to item giving events and other game hooks.
+ * Subclass to intercept and customize item behavior in plugin mechanics.
+ */
 public abstract class MechanicListener implements Listener {
 
     /**

@@ -19,7 +19,13 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public abstract class ItemComponentLoader {
     public enum ComponentOwnerType {
+        /**
+         * Component provided by Minecraft itself.
+         */
         MINECRAFT,
+        /**
+         * Component provided and managed by a plugin.
+         */
         PLUGIN
     }
 

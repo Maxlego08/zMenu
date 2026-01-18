@@ -1,10 +1,19 @@
 package fr.maxlego08.menu.api.utils;
 
+/**
+ * Enum representing different types of inventory presets, each associated with a unique ID.
+ */
 public enum EnumInventory {
 
-	INVENTORY_DEFAULT(1),
+    /**
+     * Standard/default inventory.
+     */
+    INVENTORY_DEFAULT(1),
 
-	INVENTORY_MARKETPLACE(2),
+    /**
+     * Inventory specifically for marketplace interfaces.
+     */
+    INVENTORY_MARKETPLACE(2),
 
 	;
 	
@@ -14,8 +23,13 @@ public enum EnumInventory {
 		this.id = id;
 	}
 
-	public int getId() {
-		return id;
-	}
+    /**
+     * Returns the identifier associated with this inventory type.
+     *
+     * @return the numerical ID of the inventory.
+     */
+    public int getId() {
+        return id;
+    }
 
 }

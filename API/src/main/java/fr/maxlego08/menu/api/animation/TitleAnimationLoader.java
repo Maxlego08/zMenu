@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Loader for title animation configurations, reading settings for how animated titles should display in inventories.
+ * Handles delays, intervals, cycles, item updates, and more.
+ */
 public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
     protected List<String> titles = new ArrayList<>();
     protected TimeUnit timeUnit = TimeUnit.SECONDS;
