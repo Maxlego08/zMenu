@@ -1,6 +1,7 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,9 +14,9 @@ public interface ComponentsManager {
     /**
      * Register a new ItemComponentLoader.
      * @param loader The loader to register
-     * @throws IllegalArgumentException if a loader with the same name is already registered
+     * @throws ItemComponentAlreadyRegisterException if a loader with the same name is already registered
      **/
-    void registerComponent(@NotNull ItemComponentLoader loader) throws IllegalArgumentException;
+    void registerComponent(@NotNull ItemComponentLoader loader) throws ItemComponentAlreadyRegisterException;
 
     /**
      * Get an ItemComponentLoader by its name.

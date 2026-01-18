@@ -5,8 +5,9 @@ import fr.maxlego08.common.loader.components.BukkitVariantItemComponentLoader;
 import fr.maxlego08.common.loader.components.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.itemstack.components.PotionDurationScaleItemComponentLoader;
+import fr.maxlego08.menu.itemstack.components.SpigotPotionDurationScaleItemComponentLoader;
 import fr.maxlego08.menu.itemstack.paper.components.PaperVariantComponent;
 import fr.maxlego08.menu.loader.components.*;
 import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
@@ -30,46 +31,48 @@ public class ZComponentsManager implements ComponentsManager {
         if (currentVersion.isAttributItemStack()){ // 1.20.5+
             this.initializeVariantComponents(plugin);
 
-            this.registerComponent(new BlockStateItemComponentLoader());
-            this.registerComponent(new AttributeModifiersItemComponentLoader());
-            this.registerComponent(new BannerPatternsItemComponentLoader());
-            this.registerComponent(new BaseColorItemComponentLoader());
-            this.registerComponent(new BundleContentsItemComponentLoader(plugin));
-            this.registerComponent(new ChargedProjectilesItemComponentLoader(plugin));
-            this.registerComponent(new ContainerItemComponentLoader(plugin));
-            this.registerComponent(new ContainerLootItemComponentLoader());
-            this.registerComponent(new CustomDataItemComponentLoader());
-            this.registerComponent(new CustomModelDataItemComponentLoader());
-            this.registerComponent(new DamageItemComponentLoader());
-            this.registerComponent(new DamageResistantItemComponentLoader());
-            this.registerComponent(new DyeColorItemComponentLoader());
-            this.registerComponent(new EnchantmentGlintOverrideItemComponentLoader());
-            this.registerComponent(new FireworkExplosionItemComponentLoader());
-            this.registerComponent(new FireworksItemComponentLoader());
-            this.registerComponent(new FoodItemComponentLoader());
-            this.registerComponent(new InstrumentItemComponentLoader());
-            this.registerComponent(new ItemNameItemComponentLoader());
-            this.registerComponent(new LodestoneTrackerItemComponentLoader());
-            this.registerComponent(new LoreItemComponentLoader(plugin));
-            this.registerComponent(new MapColorItemComponentLoader());
-            this.registerComponent(new MapIdItemComponentLoader());
-            this.registerComponent(new MaxDamageItemComponentLoader());
-            this.registerComponent(new MaxStackSizeItemComponentLoader());
-            this.registerComponent(new OminousBottleAmplifierItemComponentLoader());
-            this.registerComponent(new PotionContentsItemComponentLoader());
-            this.registerComponent(new RarityItemComponentLoader());
-            this.registerComponent(new RecipesItemComponentLoader());
-            this.registerComponent(new RepairCostItemComponentLoader());
-            this.registerComponent(new StoredEnchantItemComponentLoader());
-            this.registerComponent(new SuspiciousStewEffectsItemComponentLoader());
-            this.registerComponent(new ToolItemComponentLoader());
-            this.registerComponent(new TrimItemComponentLoader());
-            this.registerComponent(new UnbreakableItemComponentLoader());
-            this.registerComponent(new WritableBookContentItemComponentLoader());
-            this.registerComponent(new WrittenBookContentItemComponentLoader());
+            this.registerComponent(new SpigotBlockStateItemComponentLoader());
+            this.registerComponent(new SpigotAttributeModifiersItemComponentLoader());
+            this.registerComponent(new SpigotBannerPatternsItemComponentLoader());
+            this.registerComponent(new SpigotBaseColorItemComponentLoader());
+            this.registerComponent(new SpigotBundleContentsItemComponentLoader(plugin));
+            this.registerComponent(new SpigotChargedProjectilesItemComponentLoader(plugin));
+            this.registerComponent(new SpigotContainerItemComponentLoader(plugin));
+            this.registerComponent(new SpigotContainerLootItemComponentLoader());
+            this.registerComponent(new SpigotCustomDataItemComponentLoader());
+            this.registerComponent(new SpigotCustomModelDataItemComponentLoader());
+            this.registerComponent(new SpigotDamageItemComponentLoader());
+            this.registerComponent(new SpigotDamageResistantItemComponentLoader());
+            this.registerComponent(new SpigotDyeColorItemComponentLoader());
+            this.registerComponent(new SpigotEnchantmentGlintOverrideItemComponentLoader());
+            this.registerComponent(new SpigotFireworkExplosionItemComponentLoader());
+            this.registerComponent(new SpigotFireworksItemComponentLoader());
+            this.registerComponent(new SpigotFoodItemComponentLoader());
+            this.registerComponent(new SpigotInstrumentItemComponentLoader());
+            this.registerComponent(new SpigotItemNameItemComponentLoader());
+            this.registerComponent(new SpigotLodestoneTrackerItemComponentLoader());
+            this.registerComponent(new SpigotLoreItemComponentLoader(plugin));
+            this.registerComponent(new SpigotMapColorItemComponentLoader());
+            this.registerComponent(new SpigotMapIdItemComponentLoader());
+            this.registerComponent(new SpigotMaxDamageItemComponentLoader());
+            this.registerComponent(new SpigotMaxStackSizeItemComponentLoader());
+            this.registerComponent(new SpigotOminousBottleAmplifierItemComponentLoader());
+            this.registerComponent(new SpigotPotionContentsItemComponentLoader());
+            this.registerComponent(new SpigotRarityItemComponentLoader());
+            this.registerComponent(new SpigotRecipesItemComponentLoader());
+            this.registerComponent(new SpigotRepairCostItemComponentLoader());
+            this.registerComponent(new SpigotStoredEnchantItemComponentLoader());
+            this.registerComponent(new SpigotSuspiciousStewEffectsItemComponentLoader());
+            this.registerComponent(new SpigotToolItemComponentLoader());
+            this.registerComponent(new SpigotTrimItemComponentLoader());
+            this.registerComponent(new SpigotUnbreakableItemComponentLoader());
+            this.registerComponent(new SpigotWritableBookContentItemComponentLoader());
+            this.registerComponent(new SpigotWrittenBookContentItemComponentLoader());
 
-            if (isPaperAndMiniMessageEnabled(plugin)){
+            if (isPaperAndMiniMessageEnabled(plugin)) {
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
+            }
+            if (plugin.isPaper()) {
                 this.registerComponent(new PaperIntangibleProjectileItemComponentLoader());
                 this.registerComponent(new PaperMapDecorationsItemComponentLoader());
                 this.registerComponent(new PaperNoteBlockSoundItemComponentLoader());
@@ -77,29 +80,29 @@ public class ZComponentsManager implements ComponentsManager {
             }
 
             if (currentVersion.isNewItemStackAPI()){ // 1.21+
-                this.registerComponent(new JukeboxPlayableItemComponentLoader());
+                this.registerComponent(new SpigotJukeboxPlayableItemComponentLoader());
 
                 if (currentVersion.is1_21_2OrNewer()){ // 1.21.2+
-                    this.registerComponent(new ConsumableItemComponentLoader());
-                    this.registerComponent(new EnchantableItemComponentLoader());
-                    this.registerComponent(new EquippableItemComponentLoader());
-                    this.registerComponent(new GliderItemComponentLoader());
-                    this.registerComponent(new ItemModelItemComponentLoader());
-                    this.registerComponent(new TooltipStyleItemComponentLoader());
-                    this.registerComponent(new UseCooldownItemComponentLoader());
-                    this.registerComponent(new UseRemainderItemComponentLoader(plugin));
+                    this.registerComponent(new SpigotConsumableItemComponentLoader());
+                    this.registerComponent(new SpigotEnchantableItemComponentLoader());
+                    this.registerComponent(new SpigotEquippableItemComponentLoader());
+                    this.registerComponent(new SpigotGliderItemComponentLoader());
+                    this.registerComponent(new SpigotItemModelItemComponentLoader());
+                    this.registerComponent(new SpigotTooltipStyleItemComponentLoader());
+                    this.registerComponent(new SpigotUseCooldownItemComponentLoader());
+                    this.registerComponent(new SpigotUseRemainderItemComponentLoader(plugin));
 
-                    if (isPaperAndMiniMessageEnabled(plugin)){
+                    if (plugin.isPaper()){
                         this.registerComponent(new PaperDeathProtectionItemComponentLoader());
                         this.registerComponent(new PaperRepairableItemComponentLoader());
                     }
 
                     if (currentVersion.is1_21_5OrNewer()){ // 1.21.5+
-                        this.registerComponent(new BlocksAttacksItemComponentLoader());
-                        this.registerComponent(new BreakSoundItemComponentLoader());
-                        this.registerComponent(new PotionDurationScaleItemComponentLoader());
-                        this.registerComponent(plugin.isPaper() ? new PaperTooltipDisplayItemComponentLoader() : new BukkitTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
-                        this.registerComponent(new WeaponItemComponentLoader());
+                        this.registerComponent(new SpigotBlocksAttacksItemComponentLoader());
+                        this.registerComponent(new SpigotBreakSoundItemComponentLoader());
+                        this.registerComponent(new SpigotPotionDurationScaleItemComponentLoader());
+                        this.registerComponent(plugin.isPaper() ? new PaperTooltipDisplayItemComponentLoader() : new SpigotTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
+                        this.registerComponent(new SpigotWeaponItemComponentLoader());
 
                         if (isPaperAndMiniMessageEnabled(plugin)){
                             this.registerComponent(new PaperProvidesBannerPatternsItemComponentLoader());
@@ -108,16 +111,16 @@ public class ZComponentsManager implements ComponentsManager {
 
                         if (currentVersion.is1_21_9OrNewer()){ // 1.21.9+
 
-                            this.registerComponent(new ProfileItemComponentLoader());
+                            this.registerComponent(new SpigotProfileItemComponentLoader());
 
                             if (currentVersion.is1_21_11OrNewer()){ // 1.21.11+
-                                this.registerComponent(new AttackRangeItemComponentLoader());
-                                this.registerComponent(new DamageTypeItemComponentLoader());
-                                this.registerComponent(new KineticWeaponItemComponentLoader());
-                                this.registerComponent(new MinimumAttackChargeItemComponentLoader());
-                                this.registerComponent(new PiercingWeaponItemComponentLoader());
-                                this.registerComponent(new SwingAnimationItemComponentLoader());
-                                this.registerComponent(new UseEffectsItemComponentLoader());
+                                this.registerComponent(new SpigotAttackRangeItemComponentLoader());
+                                this.registerComponent(new SpigotDamageTypeItemComponentLoader());
+                                this.registerComponent(new SpigotKineticWeaponItemComponentLoader());
+                                this.registerComponent(new SpigotMinimumAttackChargeItemComponentLoader());
+                                this.registerComponent(new SpigotPiercingWeaponItemComponentLoader());
+                                this.registerComponent(new SpigotSwingAnimationItemComponentLoader());
+                                this.registerComponent(new SpigotUseEffectsItemComponentLoader());
                             }
                         }
 
@@ -158,11 +161,11 @@ public class ZComponentsManager implements ComponentsManager {
 
 
     @Override
-    public void registerComponent(@NotNull ItemComponentLoader loader) {
+    public void registerComponent(@NotNull ItemComponentLoader loader) throws ItemComponentAlreadyRegisterException {
         List<String> componentNames = loader.getComponentNames();
         for (String name : componentNames) {
             if (this.components.containsKey(name)) {
-                throw new IllegalArgumentException("Component with name '" + name + "' is already registered.");
+                throw new ItemComponentAlreadyRegisterException("Component with name '" + name + "' is already registered.");
             }
             this.components.put(name, loader);
         }
