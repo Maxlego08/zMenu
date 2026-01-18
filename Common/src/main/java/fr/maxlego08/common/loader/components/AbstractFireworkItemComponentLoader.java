@@ -2,7 +2,6 @@ package fr.maxlego08.common.loader.components;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -18,12 +17,10 @@ public abstract class AbstractFireworkItemComponentLoader extends AbstractColorI
         String shape = (String) data.get("shape");
         if (shape != null) {
             try {
-                NamespacedKey key = NamespacedKey.fromString(shape.toLowerCase());
-                if (key != null) {
-                    FireworkEffect.Type type = FireworkEffect.Type.valueOf(key.getKey().toUpperCase());
-                    builder.with(type);
-                }
-            } catch (IllegalArgumentException ignored) {
+                FireworkEffect.Type type = FireworkEffect.Type.valueOf(shape.toUpperCase());
+                builder.with(type);
+            } catch (IllegalArgumentException e) {
+                return Optional.empty();
             }
         } else {
             return Optional.empty();
@@ -42,10 +39,17 @@ public abstract class AbstractFireworkItemComponentLoader extends AbstractColorI
                 builder.withFade(fadeColor);
             }
         }
-        boolean hasTrail = (boolean) data.get("has_trail");
-        builder.trail(hasTrail);
-        boolean hasTwinkle = (boolean) data.get("has_twinkle");
-        builder.flicker(hasTwinkle);
+        Object hasTrailObj = data.get("has_trail");
+        if (hasTrailObj != null) {
+            boolean hasTrail = (boolean) hasTrailObj;
+            builder.trail(hasTrail);
+        }
+
+        Object hasTwinkleObj = data.get("has_twinkle");
+        if (hasTwinkleObj != null) {
+            boolean hasTwinkle = (boolean) hasTwinkleObj;
+            builder.flicker(hasTwinkle);
+        }
         return Optional.of(builder.build());
     }
 }
