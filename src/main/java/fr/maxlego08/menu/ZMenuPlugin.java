@@ -365,6 +365,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/basic_inventory.yml");
         files.add("inventories/advanced_inventory.yml");
         files.add("inventories/pro_inventory.yml");
+        files.add("inventories/animated_title_inventory.yml");
         files.add("inventories/example_punish.yml");
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
