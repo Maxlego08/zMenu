@@ -139,7 +139,7 @@ public class Potion {
     @Contract(pure = true)
     @Nullable
     public static PotionBrewer getBrewer() {
-        return this.brewer;
+        return brewer;
     }
 
     /**
