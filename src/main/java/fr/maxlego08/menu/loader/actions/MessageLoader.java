@@ -19,6 +19,11 @@ public class MessageLoader extends ActionLoader {
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         boolean miniMessage = accessor.getBoolean("minimessage", accessor.getBoolean("mini-message", true));
+        List<String> messages = extractMessages(accessor);
+        return new MessageAction(messages, miniMessage);
+    }
+
+    public static List<String> extractMessages(TypedMapAccessor accessor) {
         List<String> messages = new ArrayList<>();
         if (accessor.contains("message")) {
             messages.add(accessor.getString("message"));
@@ -30,6 +35,7 @@ public class MessageLoader extends ActionLoader {
                 messages = accessor.getStringList("messages");
             }
         }
-        return new MessageAction(messages, miniMessage);
+        return messages;
     }
+
 }

@@ -55,6 +55,7 @@
 
 # 1.1.0.7
 
+- Add `message-to` action with same args as `message` action but allow to specify the target with a placeholder (`target-player: <placeholder>` if not found player who execute the action will receive the message)
 - Fixed NMS compatibility for **1.21.10**.
 - Fixed issues with **DeluxeMenus** inventory loading.
 - Fixed **MiniMessage** regex handling.
