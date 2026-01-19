@@ -60,7 +60,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
      */
     @Override
     public void createInventory(EnumInventory enumInventory, Player player, int page, Object... objects) {
-
+        this.createInventory(enumInventory.getId(), player, page, objects);
     }
 
     /**
