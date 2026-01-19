@@ -5,14 +5,19 @@ import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Art;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntitySnapshot;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.AxolotlBucketMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class BukkitVariantComponent implements VariantComponent {
 
@@ -126,23 +131,35 @@ public class BukkitVariantComponent implements VariantComponent {
         return new WolfVariantImpl(variant);
     }
 
-    // Implementation records
+    private static <T extends Entity> void applyVariantToSpawnEgg(@NotNull SpawnEggMeta meta, @Nullable Player player, @NotNull EntityType entityType, Class<T> entityClass, Consumer<T> variantApplier) {
+        EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
+        if (spawnedEntity == null){
+            spawnedEntity = Bukkit.getEntityFactory().createEntitySnapshot("{id:\"minecraft:" + entityType.name().toLowerCase() + "\"}");
+        }
+        if (player == null) {
+            return;
+        }
+        Entity entity = spawnedEntity.createEntity(player.getWorld());
+        if (entityClass.isInstance(entity)) {
+            T typedEntity = entityClass.cast(entity);
+            variantApplier.accept(typedEntity);
+            EntitySnapshot entitySnapshot = typedEntity.createSnapshot();
+            if (entitySnapshot != null) {
+                meta.setSpawnedEntity(entitySnapshot);
+            }
+        }
+    }
+
+
     private record AxolotlImpl(
-            org.bukkit.entity.Axolotl.Variant variant
+        org.bukkit.entity.Axolotl.Variant variant
     ) implements VariantComponent.Axolotl {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
             boolean applyBucket = ItemUtil.editMeta(itemStack, AxolotlBucketMeta.class, meta -> {
                 meta.setVariant(this.variant);
             });
-            boolean applySpawnEgg = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity == null){
-//                     Bukkit.getEntityFactory().createEntitySnapshot()
-                } else if (spawnedEntity instanceof org.bukkit.entity.Axolotl axolotl) {
-                    axolotl.setVariant(this.variant);
-                }
-            });
+            boolean applySpawnEgg = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.AXOLOTL, org.bukkit.entity.Axolotl.class, axolotl -> axolotl.setVariant(this.variant)));
             if (!applyBucket && !applySpawnEgg && Configuration.enableDebug)
                 Logger.info("Could not apply Axolotl variant to item: " + itemStack.getType().name());
         }
@@ -153,12 +170,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Cat.Collar {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Cat cat) {
-                    cat.setCollarColor(this.color);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.CAT, org.bukkit.entity.Cat.class, c -> c.setCollarColor(this.color)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Cat collar to item: " + itemStack.getType().name());
         }
@@ -169,12 +181,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Cat.Variant {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Cat cat) {
-                    cat.setCatType(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.CAT, org.bukkit.entity.Cat.class, c -> c.setCatType(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Cat variant to item: " + itemStack.getType().name());
         }
@@ -185,12 +192,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Chicken {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Chicken chicken) {
-                    chicken.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.CHICKEN, org.bukkit.entity.Chicken.class, c -> c.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Chicken variant to item: " + itemStack.getType().name());
         }
@@ -201,12 +203,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Cow {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Cow cow) {
-                    cow.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.COW, org.bukkit.entity.Cow.class, c -> c.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Cow variant to item: " + itemStack.getType().name());
         }
@@ -217,12 +214,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Fox {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Fox fox) {
-                    fox.setFoxType(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.FOX, org.bukkit.entity.Fox.class, f -> f.setFoxType(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Fox variant to item: " + itemStack.getType().name());
         }
@@ -233,12 +225,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Frog {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Frog frog) {
-                    frog.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.FROG, org.bukkit.entity.Frog.class, f -> f.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Frog variant to item: " + itemStack.getType().name());
         }
@@ -249,12 +236,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Horse {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Horse horse) {
-                    horse.setColor(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.HORSE, org.bukkit.entity.Horse.class, h -> h.setColor(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Horse variant to item: " + itemStack.getType().name());
         }
@@ -265,12 +247,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Llama {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Llama llama) {
-                    llama.setColor(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.LLAMA, org.bukkit.entity.Llama.class, l -> l.setColor(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Llama variant to item: " + itemStack.getType().name());
         }
@@ -281,12 +258,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.MushroomCow {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.MushroomCow mushroomCow) {
-                    mushroomCow.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.MOOSHROOM, org.bukkit.entity.MushroomCow.class, mc -> mc.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply MushroomCow variant to item: " + itemStack.getType().name());
         }
@@ -297,12 +269,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Painting {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Painting painting) {
-                    painting.setArt(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.PAINTING, org.bukkit.entity.Painting.class, p -> p.setArt(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Painting variant to item: " + itemStack.getType().name());
         }
@@ -313,12 +280,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Parrot {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Parrot parrot) {
-                    parrot.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.PARROT, org.bukkit.entity.Parrot.class, p -> p.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Parrot variant to item: " + itemStack.getType().name());
         }
@@ -329,12 +291,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Pig {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Pig pig) {
-                    pig.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.PIG, org.bukkit.entity.Pig.class, p -> p.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Pig variant to item: " + itemStack.getType().name());
         }
@@ -345,12 +302,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Rabbit {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Rabbit rabbit) {
-                    rabbit.setRabbitType(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.RABBIT, org.bukkit.entity.Rabbit.class, r -> r.setRabbitType(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Rabbit variant to item: " + itemStack.getType().name());
         }
@@ -361,12 +313,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Salmon {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Salmon salmon) {
-                    salmon.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.SALMON, org.bukkit.entity.Salmon.class, s -> s.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Salmon variant to item: " + itemStack.getType().name());
         }
@@ -377,12 +324,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Sheep {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Sheep sheep) {
-                    sheep.setColor(this.color);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.SHEEP, org.bukkit.entity.Sheep.class, s -> s.setColor(this.color)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Sheep color to item: " + itemStack.getType().name());
         }
@@ -393,12 +335,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.ShulkerBox {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Shulker shulker) {
-                    shulker.setColor(this.color);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.SHULKER, org.bukkit.entity.Shulker.class, s -> s.setColor(this.color)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Shulker color to item: " + itemStack.getType().name());
         }
@@ -409,12 +346,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.TropicalFish.BaseColor {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.TropicalFish tropicalFish) {
-                    tropicalFish.setBodyColor(this.color);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.TROPICAL_FISH, org.bukkit.entity.TropicalFish.class, tf -> tf.setBodyColor(this.color)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply TropicalFish base color to item: " + itemStack.getType().name());
         }
@@ -425,12 +357,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.TropicalFish.PatternColor {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.TropicalFish tropicalFish) {
-                    tropicalFish.setPatternColor(this.color);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.TROPICAL_FISH, org.bukkit.entity.TropicalFish.class, tf -> tf.setPatternColor(this.color)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply TropicalFish pattern color to item: " + itemStack.getType().name());
         }
@@ -441,12 +368,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Villager {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Villager villager) {
-                    villager.setVillagerType(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.VILLAGER, org.bukkit.entity.Villager.class, v -> v.setVillagerType(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Villager variant to item: " + itemStack.getType().name());
         }
@@ -457,12 +379,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Wolf.Collar {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Wolf wolf) {
-                    wolf.setCollarColor(this.color);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.WOLF, org.bukkit.entity.Wolf.class, w -> w.setCollarColor(this.color)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Wolf collar to item: " + itemStack.getType().name());
         }
@@ -473,12 +390,7 @@ public class BukkitVariantComponent implements VariantComponent {
     ) implements VariantComponent.Wolf.Variant {
         @Override
         public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
-                EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Wolf wolf) {
-                    wolf.setVariant(this.variant);
-                }
-            });
+            boolean apply = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> applyVariantToSpawnEgg(meta, player, EntityType.WOLF, org.bukkit.entity.Wolf.class, w -> w.setVariant(this.variant)));
             if (!apply && Configuration.enableDebug)
                 Logger.info("Could not apply Wolf variant to item: " + itemStack.getType().name());
         }

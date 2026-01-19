@@ -1,16 +1,16 @@
 package fr.maxlego08.menu;
 
-import fr.maxlego08.menu.itemstack.components.spigot.BukkitVariantComponent;
-import fr.maxlego08.menu.loader.components.spigot.*;
-import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.itemstack.components.SpigotPotionDurationScaleItemComponentLoader;
 import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
+import fr.maxlego08.menu.itemstack.components.spigot.BukkitVariantComponent;
 import fr.maxlego08.menu.loader.components.paper.*;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
+import fr.maxlego08.menu.loader.components.spigot.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
