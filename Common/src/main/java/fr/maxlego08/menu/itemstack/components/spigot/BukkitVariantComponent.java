@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.itemstack.components.spigot;
 
-import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Art;
 import org.bukkit.DyeColor;
@@ -137,7 +137,9 @@ public class BukkitVariantComponent implements VariantComponent {
             });
             boolean applySpawnEgg = ItemUtil.editMeta(itemStack, SpawnEggMeta.class, meta -> {
                 EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
-                if (spawnedEntity instanceof org.bukkit.entity.Axolotl axolotl) {
+                if (spawnedEntity == null){
+//                     Bukkit.getEntityFactory().createEntitySnapshot()
+                } else if (spawnedEntity instanceof org.bukkit.entity.Axolotl axolotl) {
                     axolotl.setVariant(this.variant);
                 }
             });

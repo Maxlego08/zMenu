@@ -1,12 +1,10 @@
 package fr.maxlego08.menu.common.utils;
 
-import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
@@ -21,6 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -29,17 +28,14 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +43,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
     private static final Timer TIMER = new Timer();
-    private static final ConcurrentHashMap<Path, CachedLines> CONFIGURATION_CACHE = new ConcurrentHashMap<>();
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
 
@@ -522,79 +517,12 @@ public abstract class ZUtils extends MessageUtils {
         return pattern.matcher(file.getName()).replaceAll("").replace(" ", "_");
     }
 
-    protected YamlConfiguration loadAndReplaceConfiguration(File file, Map<String, Object> mapPlaceholders) {
-        YamlConfiguration loadConfiguration = new YamlConfiguration();
-
-        try {
-            CachedLines cachedLines = getCachedLines(file);
-            StringBuilder builder = new StringBuilder();
-            Placeholders placeholders = new Placeholders();
-            Map<String, Object> placeholdersMap = mapPlaceholders != null ? mapPlaceholders : Collections.emptyMap();
-
-            for (String originalLine : cachedLines.lines()) {
-                String line = originalLine;
-
-                for (Map.Entry<String, Object> replacement : placeholdersMap.entrySet()) {
-                    String key = replacement.getKey();
-                    Object value = replacement.getValue();
-
-                    if (line != null) {
-                        if (value instanceof List<?> && line.contains("%" + key + "%")) {
-                            int index = line.indexOf("%" + key + "%");
-                            String prefix = line.substring(0, index);
-                            String finalLine = line.substring(index);
-                            ((List<?>) value).forEach(currentValue -> {
-                                String replacementValue = currentValue != null ? currentValue.toString() : "";
-                                String currentElement = placeholders.parse(finalLine, key, replacementValue);
-                                builder.append(placeholders.parse(prefix, key, replacementValue)).append(currentElement);
-                                builder.append('\n');
-                            });
-
-                            line = null;
-                        } else {
-                            String replacementValue = value != null ? value.toString() : "";
-                            line = placeholders.parse(line, key, replacementValue);
-                        }
-                    }
-                }
-
-                if (line != null) {
-                    builder.append(line);
-                    builder.append('\n');
-                }
+    protected void loadLocalPlaceholders(@NotNull YamlConfiguration configuration, @NotNull Map<String, Object> placeholders) {
+        ConfigurationSection placeholdersSection = configuration.getConfigurationSection("local-placeholders");
+        if (placeholdersSection != null) {
+            for (String key : placeholdersSection.getKeys(false)) {
+                placeholders.put(key, placeholdersSection.get(key));
             }
-
-            loadConfiguration.loadFromString(builder.toString());
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-
-        return loadConfiguration;
-    }
-
-    protected static void clearConfigurationCache() {
-        CONFIGURATION_CACHE.clear();
-    }
-
-    private static CachedLines getCachedLines(File file) throws IOException {
-        Path path = file.toPath();
-        long lastModified = file.lastModified();
-        CachedLines cachedLines = CONFIGURATION_CACHE.get(path);
-
-        if (cachedLines == null || cachedLines.lastModified() != lastModified) {
-            List<String> lines = Files.readAllLines(path, Charsets.UTF_8);
-            cachedLines = new CachedLines(lines, lastModified);
-            CONFIGURATION_CACHE.put(path, cachedLines);
-        }
-
-        return cachedLines;
-    }
-
-    private record CachedLines(List<String> lines, long lastModified) {
-        private CachedLines {
-            lines = List.copyOf(lines);
         }
     }
-
 }

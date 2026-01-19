@@ -22,6 +22,7 @@ import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.config.ConfigManager;
@@ -106,7 +107,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ComponentsManager componentsManager = new ZComponentsManager();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
-    private final AttributApplier attributApplier = this.foliaLib.isPaper() ? new ApplyPaperAttribute() : new ApplySpigotAttribute();
+    private final AttributApplier attributApplier = new ApplySpigotAttribute();
     private final File configFile = new File(getDataFolder(), "config.yml");
     private DialogManager dialogManager;
     private CommandMenu commandMenu;
@@ -400,6 +401,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.vinventoryManager != null) this.vinventoryManager.close();
 
        Configuration.getInstance().save(getConfig(), this.configFile);
+
+        YamlFileCache.clearCache();
 
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
