@@ -1,9 +1,10 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
-import fr.maxlego08.menu.common.interfaces.VariantComponent;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
+import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,11 +16,11 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.util.function.Function;
 
-public class BukkitVariantItemComponentLoader implements VariantItemComponentLoaderFactory {
+public class SpigotVariantItemComponentLoader implements VariantItemComponentLoaderFactory {
 
     protected final VariantComponent variantFactory;
 
-    public BukkitVariantItemComponentLoader(VariantComponent variantFactory) {
+    public SpigotVariantItemComponentLoader(VariantComponent variantFactory) {
         this.variantFactory = variantFactory;
     }
 
@@ -162,7 +163,7 @@ public class BukkitVariantItemComponentLoader implements VariantItemComponentLoa
         }
 
         @Override
-        public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
             path = normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
@@ -186,7 +187,7 @@ public class BukkitVariantItemComponentLoader implements VariantItemComponentLoa
         }
 
         @Override
-        public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
             path = normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
@@ -209,7 +210,7 @@ public class BukkitVariantItemComponentLoader implements VariantItemComponentLoa
         }
 
         @Override
-        public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
             path = normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
@@ -231,7 +232,7 @@ public class BukkitVariantItemComponentLoader implements VariantItemComponentLoa
         }
 
         @Override
-        public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
             path = normalizePath(path);
             Object rawColor = configuration.get(path);
             if (rawColor == null) return null;

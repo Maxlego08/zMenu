@@ -8,7 +8,7 @@ import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.itemstack.components.SpigotPotionDurationScaleItemComponentLoader;
 import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
-import fr.maxlego08.menu.itemstack.components.spigot.BukkitVariantComponent;
+import fr.maxlego08.menu.itemstack.components.spigot.SpigotVariantComponent;
 import fr.maxlego08.menu.loader.components.paper.*;
 import fr.maxlego08.menu.loader.components.spigot.*;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +134,7 @@ public class ZComponentsManager implements ComponentsManager {
     private void initializeVariantComponents(MenuPlugin plugin) {
         VariantItemComponentLoaderFactory loaderFactory =
             plugin.isPaper() ? new PaperVariantItemComponentLoader(new PaperVariantComponent())
-                             : new BukkitVariantItemComponentLoader(new BukkitVariantComponent());
+                             : new SpigotVariantItemComponentLoader(new SpigotVariantComponent());
 
         this.registerComponent(loaderFactory.getLoaderAxolotl());
         this.registerComponent(loaderFactory.getLoaderCatCollar());

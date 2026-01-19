@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.components.paper;
 
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.itemstack.components.paper.PaperTooltipDisplayComponent;
@@ -22,7 +23,7 @@ public class PaperTooltipDisplayItemComponentLoader extends ItemComponentLoader 
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         boolean hideTooltip = componentSection.getBoolean("hide_tooltip", false);
         List<String> hiddenComponents = componentSection.getStringList("hidden_components");

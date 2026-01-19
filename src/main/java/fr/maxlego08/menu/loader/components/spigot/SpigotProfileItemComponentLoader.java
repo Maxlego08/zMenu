@@ -1,9 +1,10 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
-import fr.maxlego08.menu.common.utils.PlayerUtil;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
+import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.itemstack.components.ProfileComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -25,7 +26,7 @@ public class SpigotProfileItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) {
             path = normalizePath(path);
             String name = configuration.getString(path);

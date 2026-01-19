@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.loader;
 
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -64,7 +65,7 @@ public abstract class ItemComponentLoader {
     }
 
     @Nullable
-    public abstract ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection);
+    public abstract ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection);
 
     protected String normalizePath(@NotNull String path) {
         if (path.endsWith(".")) {

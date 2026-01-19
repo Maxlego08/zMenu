@@ -1,10 +1,11 @@
 package fr.maxlego08.menu.loader.components.paper;
 
-import fr.maxlego08.menu.common.interfaces.VariantComponent;
-import fr.maxlego08.menu.loader.components.spigot.BukkitVariantItemComponentLoader;
-import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
+import fr.maxlego08.menu.common.interfaces.VariantComponent;
+import fr.maxlego08.menu.loader.components.spigot.SpigotVariantItemComponentLoader;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
@@ -21,7 +22,7 @@ import java.util.function.Function;
  * Paper-specific variant component loader that uses Paper's RegistryAccess API
  * for better performance and compatibility.
  */
-public class PaperVariantItemComponentLoader extends BukkitVariantItemComponentLoader implements VariantItemComponentLoaderFactory {
+public class PaperVariantItemComponentLoader extends SpigotVariantItemComponentLoader implements VariantItemComponentLoaderFactory {
 
     public PaperVariantItemComponentLoader(VariantComponent variantFactory) {
         super(variantFactory);
@@ -53,7 +54,7 @@ public class PaperVariantItemComponentLoader extends BukkitVariantItemComponentL
         }
 
         @Override
-        public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
             path = normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;

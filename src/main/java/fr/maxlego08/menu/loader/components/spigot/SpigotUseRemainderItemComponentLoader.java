@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.itemstack.components.UseRemainderComponent;
 import fr.maxlego08.menu.loader.components.AbstractMenuItemStackListComponentLoaderBase;
@@ -20,7 +21,7 @@ public class SpigotUseRemainderItemComponentLoader extends AbstractMenuItemStack
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         Map<String, Object> values = componentSection.getValues(true);
         MenuItemStack menuItemStack = loadItemStack(values, file);

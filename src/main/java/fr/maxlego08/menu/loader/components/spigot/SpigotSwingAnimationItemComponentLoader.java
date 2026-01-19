@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,7 +18,7 @@ public class SpigotSwingAnimationItemComponentLoader extends ItemComponentLoader
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         int duration = componentSection.getInt("duration", 6);
         SwingAnimationComponent.Type swingAnimationType = SwingAnimationComponent.Type.WHACK;

@@ -1,7 +1,8 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
-import fr.maxlego08.menu.common.enums.ConsumeEffectType;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import fr.maxlego08.menu.zcore.utils.itemstack.*;
 import org.bukkit.NamespacedKey;
@@ -29,7 +30,7 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
         double consumeSeconds = componentSection.getDouble("consume_seconds", 1.6f);

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Tuples;
@@ -27,7 +28,7 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = normalizePath(path);
         List<Map<?, ?>> mapList = configuration.getMapList(path);
         List<Tuples<Attribute, AttributeModifier>> modifiers = new ArrayList<>();

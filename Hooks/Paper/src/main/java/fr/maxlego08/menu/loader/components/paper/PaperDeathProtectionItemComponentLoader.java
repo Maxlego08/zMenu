@@ -1,9 +1,10 @@
 package fr.maxlego08.menu.loader.components.paper;
 
-import fr.maxlego08.menu.common.enums.ConsumeEffectType;
-import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import fr.maxlego08.menu.itemstack.components.paper.DeathProtectionComponent;
+import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
@@ -29,7 +30,7 @@ public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemC
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         List<ConsumeEffect> effects = new ArrayList<>();
         List<Map<?, ?>> mapList = componentSection.getMapList("death_effects");

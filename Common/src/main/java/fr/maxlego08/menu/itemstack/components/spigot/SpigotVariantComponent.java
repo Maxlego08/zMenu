@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class BukkitVariantComponent implements VariantComponent {
+public class SpigotVariantComponent implements VariantComponent {
 
     @Override
     public Axolotl createAxolotl(org.bukkit.entity.Axolotl.Variant variant) {

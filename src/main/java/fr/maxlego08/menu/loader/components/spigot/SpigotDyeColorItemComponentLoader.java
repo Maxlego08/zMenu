@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.itemstack.components.DyeColorComponent;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
@@ -18,7 +19,7 @@ public class SpigotDyeColorItemComponentLoader extends AbstractColorItemComponen
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = normalizePath(path);
 
         Object obj = configuration.get(path);
