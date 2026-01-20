@@ -9,7 +9,6 @@ public interface BuildContext {
 
     @Nullable Player getPlayer();
 
-
     boolean isUseCache();
 
     @NotNull Placeholders getPlaceholders();

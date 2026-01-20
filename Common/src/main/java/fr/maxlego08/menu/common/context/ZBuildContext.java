@@ -14,7 +14,7 @@ public class ZBuildContext implements BuildContext {
 
     private ZBuildContext(@NotNull Builder builder) {
         this.player = builder.player;
-        this.useCache = true;
+        this.useCache = builder.useCache;
         this.placeholders = builder.placeholders;
     }
 
