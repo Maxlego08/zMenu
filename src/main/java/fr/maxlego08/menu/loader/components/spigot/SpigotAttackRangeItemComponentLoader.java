@@ -57,7 +57,7 @@ public class SpigotAttackRangeItemComponentLoader extends ItemComponentLoader {
         double mobFactor = componentSection.getDouble("mob_factor", 1f);
         if (mobFactor<0f || mobFactor>2f){
             if (Configuration.enableDebug)
-                Logger.info("Invalid mob_factor value in attack_range component at path: " + path + ". Value: " + mobFactor + ". It must be between 0 and 10. Using default value 1f.");
+                Logger.info("Invalid mob_factor value in attack_range component at path: " + path + ". Value: " + mobFactor + ". It must be between 0 and 2. Using default value 1f.");
             mobFactor = 1f;
         }
         return new AttackRangeComponent(
