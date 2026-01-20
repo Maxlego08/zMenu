@@ -2,7 +2,7 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.itemstack.components.FireworksComponent;
+import fr.maxlego08.menu.api.itemstack.components.FireworksComponent;
 import fr.maxlego08.menu.loader.components.AbstractFireworkItemComponentLoader;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;

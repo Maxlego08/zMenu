@@ -2,7 +2,7 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.itemstack.components.PotionContentsComponent;
+import fr.maxlego08.menu.api.itemstack.components.PotionContentsComponent;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;

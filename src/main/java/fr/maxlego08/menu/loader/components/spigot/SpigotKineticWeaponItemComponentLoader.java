@@ -3,7 +3,7 @@ package fr.maxlego08.menu.loader.components.spigot;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.zcore.utils.itemstack.ZKineticWeaponCondition;
+import fr.maxlego08.menu.api.utils.itemstack.ZKineticWeaponCondition;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,7 +31,7 @@ public class SpigotKineticWeaponItemComponentLoader extends ItemComponentLoader 
         float damageMultiplier = (float) componentSection.getDouble("damage_multiplier", 1d);
         Optional<Sound> sound = getSound(componentSection.getString("sound", ""));
         Optional<Sound> hitSound = getSound(componentSection.getString("hit_sound", ""));
-        return new fr.maxlego08.menu.itemstack.components.KineticWeaponComponent(delayTicks,
+        return new fr.maxlego08.menu.api.itemstack.components.KineticWeaponComponent(delayTicks,
                 damageConditions,
                 dismountConditions,
                 knockbackConditions,

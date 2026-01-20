@@ -4,9 +4,9 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.itemstack.components.ContainerComponent;
+import fr.maxlego08.menu.api.itemstack.components.ContainerComponent;
+import fr.maxlego08.menu.api.utils.itemstack.ZContainerSlot;
 import fr.maxlego08.menu.loader.components.AbstractMenuItemStackListComponentLoaderBase;
-import fr.maxlego08.menu.zcore.utils.itemstack.ContainerSlot;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ public class SpigotContainerItemComponentLoader extends AbstractMenuItemStackLis
         path = normalizePath(path);
 
         List<Map<?, ?>> mapList = configuration.getMapList(path);
-        List<ContainerSlot> contents = new ArrayList<>();
+        List<ZContainerSlot> contents = new ArrayList<>();
         int index = 0;
         for (var rawMap : mapList){
             @SuppressWarnings("unchecked")
@@ -36,7 +36,7 @@ public class SpigotContainerItemComponentLoader extends AbstractMenuItemStackLis
             MenuItemStack menuItemStack = loadItemStack(itemMap, file);
             if (menuItemStack != null) {
                 int slot = itemMap.containsKey("slot") ? (int) itemMap.get("slot") : index++;
-                contents.add(new ContainerSlot(menuItemStack, slot));
+                contents.add(new ZContainerSlot(menuItemStack, slot));
             }
 
         }

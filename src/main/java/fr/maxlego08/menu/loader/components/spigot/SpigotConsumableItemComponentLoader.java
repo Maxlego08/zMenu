@@ -2,9 +2,9 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.utils.itemstack.*;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
-import fr.maxlego08.menu.zcore.utils.itemstack.*;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
@@ -39,7 +39,7 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         boolean hasConsumeParticles = componentSection.getBoolean("has_consume_particles", true);
         List<ConsumableEffect> effects = parseEffects(componentSection.getMapList("on_consume_effects"));
 
-        return new fr.maxlego08.menu.itemstack.components.ConsumableComponent(
+        return new fr.maxlego08.menu.api.itemstack.components.ConsumableComponent(
                 (float) consumeSeconds, animation, consumeSound, hasConsumeParticles, effects
         );
     }

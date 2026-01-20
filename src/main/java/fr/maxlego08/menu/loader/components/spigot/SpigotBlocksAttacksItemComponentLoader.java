@@ -3,10 +3,10 @@ package fr.maxlego08.menu.loader.components.spigot;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.itemstack.components.BlocksAttacksComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.itemstack.components.BlocksAttacksComponent;
+import fr.maxlego08.menu.api.utils.itemstack.ZDamageReductionRecord;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.itemstack.DamageReductionRecord;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
@@ -67,7 +67,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
         }
     }
 
-    private void loadDamageReductionRecords(@NotNull ConfigurationSection componentSection, @NotNull List<DamageReductionRecord> damageReductionRecords) {
+    private void loadDamageReductionRecords(@NotNull ConfigurationSection componentSection, @NotNull List<ZDamageReductionRecord> damageReductionRecords) {
         List<Map<?, ?>> mapList = componentSection.getMapList("damage_reductions");
         for (var rawMap : mapList) {
             @SuppressWarnings("unchecked")
@@ -88,7 +88,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
             float base = parseFloatField(map, "base", 0f, "Invalid base value for BlocksAttacksComponent damage reduction, using default 0f.");
             float factor = parseFloatField(map, "factor", 0f, "Invalid factor value for BlocksAttacksComponent damage reduction, using default 0f.");
             float horizontalBlockingAngle = parseFloatField(map, "horizontal_blocking_angle", 90f, "Invalid horizontal_blocking_angle value for BlocksAttacksComponent damage reduction, using default 90f.");
-            damageReductionRecords.add(new DamageReductionRecord(
+            damageReductionRecords.add(new ZDamageReductionRecord(
                     damageTypes,
                     base,
                     factor,
@@ -107,7 +107,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
         double itemDamageThreshold = componentSection.getDouble("item_damage.threshold", 0f);
         double itemDamageBase = componentSection.getDouble("item_damage.base", 0f);
         double itemDamageFactor = componentSection.getDouble("item_damage.factor", 1.5f);
-        List<DamageReductionRecord> damageReductionRecords = new ArrayList<>();
+        List<ZDamageReductionRecord> damageReductionRecords = new ArrayList<>();
         loadDamageReductionRecords(componentSection, damageReductionRecords);
         Sound blockSound = getSoundFromSection(componentSection, "block_sound");
         Sound disabledSound = getSoundFromSection(componentSection, "disabled_sound");

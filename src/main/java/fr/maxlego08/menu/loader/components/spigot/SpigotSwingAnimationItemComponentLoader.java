@@ -27,6 +27,6 @@ public class SpigotSwingAnimationItemComponentLoader extends ItemComponentLoader
             swingAnimationType = SwingAnimationComponent.Type.valueOf(typeString.toUpperCase());
         } catch (IllegalArgumentException ignored) {
         }
-        return new fr.maxlego08.menu.itemstack.components.SwingAnimationComponent(duration, swingAnimationType);
+        return new fr.maxlego08.menu.api.itemstack.components.SwingAnimationComponent(duration, swingAnimationType);
     }
 }

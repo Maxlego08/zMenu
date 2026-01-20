@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.itemstack.components.BundleContentsComponent;
+import fr.maxlego08.menu.api.itemstack.components.BundleContentsComponent;
 import fr.maxlego08.menu.loader.components.AbstractMenuItemStackListComponentLoaderBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
