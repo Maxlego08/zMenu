@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.hooks.packetevents.animation.PacketPlayerTitleAnimation;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -67,27 +68,52 @@ public class PacketAnimationListener implements PacketListener {
             if (data != null && data.getContainerId() == containerId){
                 return;
             }
+            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+            if (topInventory == null) {
+                return;
+            }
 
-            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-            if (holder instanceof BaseInventory baseInventory){
-                TitleAnimation titleAnimation = baseInventory.getTitleAnimation();
-                if (titleAnimation == null) {
-                    return;
+            Runnable task = () -> {
+                InventoryHolder holder = topInventory.getHolder();
+                if (holder instanceof BaseInventory baseInventory){
+                    TitleAnimation titleAnimation = baseInventory.getTitleAnimation();
+                    if (titleAnimation == null) {
+                        return;
+                    }
+                    Inventory inventory = baseInventory.getInventory();
+                    PlayerTitleAnimation playerTitleAnimation = titleAnimation.playTitleAnimation(this.plugin, containerId, inventory.getType(), inventory.getSize(), wrapper);
+                    if (playerTitleAnimation != null){
+                        playerTitleAnimation.start(player, Arrays.asList(inventory.getContents()));
+                    }
+                    baseInventory.setPlayerTitleAnimation(playerTitleAnimation);
+                    this.playerAnimationData.put(playerUniqueId, new PlayerAnimationData(containerId));
                 }
-                Inventory inventory = baseInventory.getInventory();
-                PlayerTitleAnimation playerTitleAnimation = titleAnimation.playTitleAnimation(this.plugin, containerId, inventory.getType(), inventory.getSize(), wrapper);
-                if (playerTitleAnimation != null){
-                    playerTitleAnimation.start(player, Arrays.asList(inventory.getContents()));
-                }
-                baseInventory.setPlayerTitleAnimation(playerTitleAnimation);
-                this.playerAnimationData.put(playerUniqueId, new PlayerAnimationData(containerId));
+            };
+
+            if (Bukkit.isPrimaryThread()) {
+                task.run();
+            } else {
+                this.plugin.getScheduler().runNextTick(w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
             Player player = event.getPlayer();
-            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-            if (holder instanceof BaseInventory){
-                UUID playerUniqueId = player.getUniqueId();
-                this.playerAnimationData.remove(playerUniqueId);
+            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+            if (topInventory == null) {
+                return;
+            }
+
+            Runnable task = () -> {
+                InventoryHolder holder = topInventory.getHolder();
+                if (holder instanceof BaseInventory){
+                    UUID playerUniqueId = player.getUniqueId();
+                    this.playerAnimationData.remove(playerUniqueId);
+                }
+            };
+
+            if (Bukkit.isPrimaryThread()) {
+                task.run();
+            } else {
+                this.plugin.getScheduler().runNextTick(w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
             WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
@@ -107,12 +133,25 @@ public class PacketAnimationListener implements PacketListener {
             }
             data.setWindowId(windowId);
 
-            InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-            if (holder instanceof BaseInventory baseInventory && baseInventory.getPlayerTitleAnimation() instanceof PacketPlayerTitleAnimation playerTitleAnimation){
-                playerTitleAnimation.setWrapperPlayServerWindowItems(wrapper);
-                if (playerTitleAnimation.getSettings().showItemsAfterAnimation()){
-                    event.setCancelled(true);
+            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+            if (topInventory == null) {
+                return;
+            }
+
+            Runnable task = () -> {
+                InventoryHolder holder = topInventory.getHolder();
+                if (holder instanceof BaseInventory baseInventory && baseInventory.getPlayerTitleAnimation() instanceof PacketPlayerTitleAnimation playerTitleAnimation){
+                    playerTitleAnimation.setWrapperPlayServerWindowItems(wrapper);
+                    if (playerTitleAnimation.getSettings().showItemsAfterAnimation()){
+                        event.setCancelled(true);
+                    }
                 }
+            };
+
+            if (Bukkit.isPrimaryThread()) {
+                task.run();
+            } else {
+                this.plugin.getScheduler().runNextTick(w -> task.run());
             }
         }
     }
