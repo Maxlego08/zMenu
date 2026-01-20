@@ -179,7 +179,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             configManager.registerConfig(configDialogBuilder,Config.class, this);
         }
 
-        if (this.isActive(Plugins.GEYSER)){
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
             Logger.info("Geyser detected, loading Bedrock Inventory support");
             this.bedrockManager = new ZBedrockManager(this);
             this.addListener(new bedrockReplacementListener(this.bedrockManager));
