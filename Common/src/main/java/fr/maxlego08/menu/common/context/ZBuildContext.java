@@ -36,7 +36,7 @@ public class ZBuildContext implements BuildContext {
     public static class Builder {
         private Player player;
         private boolean useCache = true;
-        private Placeholders placeholders = new Placeholders();
+        private final Placeholders placeholders = new Placeholders();
 
         @Contract("_ -> this")
         public Builder player(@Nullable Player player) {
