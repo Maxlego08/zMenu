@@ -354,6 +354,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
+            this.getLogger().info("Registered BreweryX material loader");
         }
         if (this.isActive(Plugins.PACKETEVENTS)){
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());

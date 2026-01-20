@@ -11,7 +11,7 @@ import java.util.Set;
  * @param menuItemStack the ItemStack configuration for this custom item
  * @param mechanicIds set of mechanic IDs that are implemented for this item
  */
-public record CustomItemData(MenuItemStack menuItemStack, Set<String> mechanicIds, boolean saveOwnerInPDC) {
+public record CustomItemData(MenuItemStack menuItemStack, Set<String> mechanicIds, boolean saveOwnerInPDC, boolean skipItemUpdate) {
 
     /**
      * Check if this item has a specific mechanic implemented.
