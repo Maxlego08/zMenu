@@ -42,6 +42,7 @@
 
 # Unreleased
 
+- `local-placeholders` section inside inventory/pattern configuration
 - New component item system for 1.20.5+
 - Animated title (Required `PacketEvent`) [Exemple](./src/main/resources/inventories/animated_title_inventory.yml)
 - Added automatic support for newer Minecraft versions when no major API changes are present
