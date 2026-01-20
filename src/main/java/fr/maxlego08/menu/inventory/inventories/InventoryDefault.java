@@ -272,7 +272,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                     }
 
                     // Update buttons who need to be updated
-                    this.updatedButtons.forEach(updatedButton->this.buildButton(button,placeholders));
+                    this.updatedButtons.forEach(updatedButton->this.buildButton(updatedButton,placeholders));
                 });
                 itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
                 itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
