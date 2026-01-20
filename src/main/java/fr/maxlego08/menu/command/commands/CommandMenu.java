@@ -10,9 +10,9 @@ import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
-import fr.maxlego08.menu.zcore.enums.Permission;
+import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 
 public class CommandMenu extends VCommand {
 

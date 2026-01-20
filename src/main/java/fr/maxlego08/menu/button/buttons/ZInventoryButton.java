@@ -63,7 +63,7 @@ public class ZInventoryButton extends InventoryButton {
 
         oldInventories.add(fromInventory);
 
-        this.inventoryArgument.process(player);
+        this.inventoryArgument.process(player,placeholders);
 
         Inventory toInventory = optional.get();
         this.inventoryManager.openInventory(player, toInventory, this.toPage, oldInventories);

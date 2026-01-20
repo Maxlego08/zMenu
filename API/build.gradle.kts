@@ -2,6 +2,10 @@ plugins {
     id("re.alwyn974.groupez.publish") version "1.0.0"
 }
 
+dependencies{
+    implementation("net.kyori:adventure-api:4.25.0")
+}
+
 rootProject.extra.properties["sha"]?.let { sha ->
     version = sha
 }

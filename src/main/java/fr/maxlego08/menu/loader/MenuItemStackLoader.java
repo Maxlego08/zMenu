@@ -1,20 +1,24 @@
 package fr.maxlego08.menu.loader;
 
+import fr.maxlego08.menu.ComponentsManager;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.itemstack.*;
+import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -96,6 +100,33 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
             menuItemStack.setItemModel(configuration.getString(path + "item-model"));
         }
+
+        if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
+            ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
+            if (componentsSection != null) {
+                ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
+                for (String componentKey : componentsSection.getKeys(false)) {
+                    ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
+                    Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
+                    if (optionalItemComponentLoader.isPresent()) {
+                        try {
+                            ItemComponentLoader itemComponentLoader = optionalItemComponentLoader.get();
+                            ItemComponent itemComponent = itemComponentLoader.load(menuItemStack, file, configuration, path + "components." + componentKey + ".", componentSection);
+                            if (itemComponent != null) {
+                                itemComponent.setParentLoader(itemComponentLoader);
+                                menuItemStack.addItemComponent(itemComponent);
+                            }
+                        } catch (Exception e) {
+                            if (Configuration.enableDebug) {
+                                Logger.info("An error occurred while loading the item component " + componentKey + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return menuItemStack;
     }
 

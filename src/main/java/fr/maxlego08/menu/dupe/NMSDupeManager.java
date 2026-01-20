@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.dupe;
 
 import fr.maxlego08.menu.api.dupe.DupeManager;
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackCompound;
+import fr.maxlego08.menu.common.utils.nms.ItemStackCompound;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 

@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * ToDO
- * In dev, dont use that
+ * Interface for managing integration with an external website or marketplace API.
+ * Provides login/logout and marketplace actions for users. (Currently under development, do not use in production.)
  */
 public interface WebsiteManager {
 

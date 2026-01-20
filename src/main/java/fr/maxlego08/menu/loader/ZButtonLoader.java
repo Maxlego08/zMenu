@@ -26,13 +26,16 @@ import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
+import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.loader.permissible.PlaceholderPermissibleLoader;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,6 +44,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
 import java.util.*;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
@@ -89,15 +93,22 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
             if (patternPlugin == null) throw new InventoryButtonException("Impossible to load the pattern " + fileName);
 
-            File patternFile = new File(patternPlugin.getDataFolder(), "patterns/" + fileName + ".yml");
-            if (!patternFile.exists()) {
+            Path patternPath = patternPlugin.getDataFolder().toPath().resolve("patterns").resolve(fileName + ".yml");
+            Optional<YamlFileCacheEntry> yamlFileEntry = YamlFileCache.getYamlFileEntry(patternPath);
+            if (yamlFileEntry.isEmpty()) {
                 throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
             }
-            loadDefaultPatternValues(patternFile, mapPlaceholders);
+
+            YamlConfiguration patternYamlConfiguration = yamlFileEntry.get().getYamlConfiguration();
+
+            loadDefaultPatternValues(patternYamlConfiguration, mapPlaceholders);
 
             mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
-            YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
-            Button patternButton = this.load(patternConfiguration, "button.", buttonName, actionPatterns);
+
+            loadLocalPlaceholders(patternYamlConfiguration, mapPlaceholders);
+
+            patternYamlConfiguration = YamlParser.parseConfiguration(patternYamlConfiguration, mapPlaceholders);
+            Button patternButton = this.load(patternYamlConfiguration, "button.", buttonName, actionPatterns);
             // Load view requirements for the pattern button (from main config)
             loadViewRequirements(patternButton, configuration, path, file);
 
@@ -405,10 +416,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         return button;
     }
 
-    private void loadDefaultPatternValues(File patternFile, Map<String, Object> mapPlaceholders) {
-        YamlConfiguration patternConfig = YamlConfiguration.loadConfiguration(patternFile);
-        if (patternConfig.isConfigurationSection("default-values.")) {
-            Map<String, Object> defaultValues = patternConfig.getConfigurationSection("default-values.").getValues(false);
+    private void loadDefaultPatternValues(YamlConfiguration patternConfig, Map<String, Object> mapPlaceholders) {
+        ConfigurationSection defaultValueConfigurationSection = patternConfig.getConfigurationSection("default-values.");
+        if (defaultValueConfigurationSection != null) {
+            Map<String, Object> defaultValues = defaultValueConfigurationSection.getValues(true);
             for (String key : defaultValues.keySet()) {
                 if (!mapPlaceholders.containsKey(key)) {
                     mapPlaceholders.put(key, defaultValues.get(key));

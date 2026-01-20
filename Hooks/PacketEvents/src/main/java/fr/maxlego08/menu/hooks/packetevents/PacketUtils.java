@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.packetevents;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryListener;
@@ -9,6 +10,7 @@ import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.hooks.packetevents.listener.PacketAnimationListener;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.entity.Player;
@@ -35,7 +37,9 @@ public class PacketUtils implements InventoryListener {
 
     public void onEnable() {
         PacketEvents.getAPI().init();
-        PacketEvents.getAPI().getEventManager().registerListener(new PacketListener(), PacketListenerPriority.LOW);
+        EventManager eventManager = PacketEvents.getAPI().getEventManager();
+//         eventManager.registerListener(new PacketListener(), PacketListenerPriority.LOW);
+        eventManager.registerListener(new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
     }
 
     public void onDisable() {

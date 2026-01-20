@@ -5,6 +5,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly(files("libs/ShopkeepersAPI-2.15.1.jar"))
 }

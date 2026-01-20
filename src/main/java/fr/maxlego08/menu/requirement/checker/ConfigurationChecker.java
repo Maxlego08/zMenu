@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.pattern.PatternManager;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.ArrayList;

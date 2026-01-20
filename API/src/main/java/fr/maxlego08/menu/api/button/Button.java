@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public abstract class Button extends PlaceholderButton {
 
     private MenuPlugin plugin;
@@ -75,13 +76,26 @@ public abstract class Button extends PlaceholderButton {
         return this;
     }
 
+    @Deprecated
     @Contract(pure = true)
     @Nullable
     public ItemStack getCustomItemStack(@NotNull Player player) {
+        return this.getCustomItemStack(player, new Placeholders());
+    }
+
+    @Contract(pure = true)
+    @Nullable
+    public ItemStack getCustomItemStack(@NotNull Player player, @NotNull Placeholders placeholders) {
+        return this.getCustomItemStack(player, this.useCache, placeholders);
+    }
+
+    @Contract(pure = true)
+    @Nullable
+    public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders) {
         if (this.itemStack == null) return null;
-        ItemStack itemStack = this.itemStack.build(player, this.useCache);
+        ItemStack itemStack = this.itemStack.build(player, useCache,placeholders);
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player);
+            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player,placeholders);
         }
         return itemStack;
     }
@@ -179,7 +193,7 @@ public abstract class Button extends PlaceholderButton {
                 }
                 slots[i] = slot;
             }
-            inventoryEngine.displayFinalButton(this, slots);
+            inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
         }
     }
 
@@ -542,7 +556,6 @@ public abstract class Button extends PlaceholderButton {
      * @param player          the player to display the button for
      * @return the button to display
      */
-    @Contract(pure = true, value = "_, _ -> this")
     public Button getDisplayButton(InventoryEngine inventoryEngine, Player player) {
         return this;
     }

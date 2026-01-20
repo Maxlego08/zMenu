@@ -1,0 +1,47 @@
+####################################################
+#
+# zMenu Example Inventory With Title Animation
+#
+# IMPORTANT: This feature REQUIRES the PacketEvents (https://github.com/retrooper/packetevents)
+# plugin to be installed and enabled on your server. If PacketEvents is not present,
+# title-animation will NOT work (the inventory name will not animate at runtime).
+#
+####################################################
+
+size: 27
+
+# This is the static fallback title.
+name: "&bAnimated &6Inventory"
+
+enable: true
+
+# This block enables an animated inventory title using zMenu's animation system.
+title-animation:
+  # A list of titles shown in sequence (with color formatting)
+  titles:
+    - "&bWelcome to &aMenu!"
+    - "&eEnjoy &four &9Features!"
+    - "&cRotating &6Animated &2Title!"
+  # Number of times the animation cycles (use -1 for infinite)
+  cycles: 5
+  # How long to wait before animation starts (in SECONDS unless you change 'time-unit')
+  initial-delay: 1
+  # Time between each title frame (in SECONDS unless you change 'time-unit')
+  interval: 2
+  # Java TimeUnit: MUST be one of: NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS
+  time-unit: SECONDS
+  # Show all inventory items after the animation finishes
+  show-items-after-animation: true
+  # How often to update items during animation (irrelevant if not animating items)
+  item-update-interval: 1
+
+items:
+  example_button:
+    slot: 13
+    item:
+      material: DIAMOND
+      name: "&bAnimated Title Button"
+      lore:
+        - "&7The title above is animated!"
+    commands:
+      - "say You clicked the animated menu!"

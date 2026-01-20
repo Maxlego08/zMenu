@@ -42,6 +42,11 @@
 
 # Unreleased
 
+- `local-placeholders` section inside inventory/pattern configuration
+- Add `message-to` action with same args as `message` action but allow to specify the target with a placeholder (`target-player: <placeholder>` if not found player who execute the action will receive the message)
+- New component item system for 1.20.5+
+- Animated title (Required `PacketEvent`) [Exemple](./src/main/resources/inventories/animated_title_inventory.yml)
+- Added automatic support for newer Minecraft versions when no major API changes are present
 - Fix Avast flag issue on VirusTotal
 - Introduced the actions_patterns system, which lets you define default actions applied to all buttons unless they already specify those action types.
 - MiniMessage support in toasts.

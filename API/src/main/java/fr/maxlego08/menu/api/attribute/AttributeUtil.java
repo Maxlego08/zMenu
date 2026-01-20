@@ -1,9 +1,10 @@
 package fr.maxlego08.menu.api.attribute;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,8 +31,8 @@ public final class AttributeUtil {
      * @param plugin     the plugin instance
      * @param strategy   the strategy to use when merging with existing attributes
      */
-    public static void applyAttributes(ItemStack itemStack, List<AttributeWrapper> attributes, MenuPlugin plugin, AttributeMergeStrategy strategy) {
-        if (attributes == null || attributes.isEmpty()) {
+    public static void applyAttributes(@NotNull ItemStack itemStack,@NotNull List<AttributeWrapper> attributes,@NotNull MenuPlugin plugin,@Nullable AttributeMergeStrategy strategy) {
+        if (attributes.isEmpty()) {
             return;
         }
         
@@ -46,9 +47,13 @@ public final class AttributeUtil {
      * @param strategy   the merge strategy
      * @return the merged list of attribute entries
      */
-    public static List<AttributeEntry> mergeAttributes(List<AttributeEntry> existing, List<AttributeEntry> newEntries, AttributeMergeStrategy strategy) {
+    public static List<AttributeEntry> mergeAttributes(@NotNull List<AttributeEntry> existing,@NotNull List<AttributeEntry> newEntries,@Nullable AttributeMergeStrategy strategy) {
 
         List<AttributeEntry> result = new ArrayList<>();
+
+        if (strategy == null) {
+            strategy = AttributeMergeStrategy.ADD;
+        }
 
         switch (strategy) {
             case REPLACE -> {

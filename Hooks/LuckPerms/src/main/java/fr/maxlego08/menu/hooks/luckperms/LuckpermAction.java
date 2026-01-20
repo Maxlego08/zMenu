@@ -8,19 +8,25 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
+import net.luckperms.api.node.NodeBuilder;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class LuckpermAction extends Action {
 
     private final String permission;
     private final boolean value;
+    private final long expiration;
+    private final TimeUnit timeUnit;
 
-    public LuckpermAction(String permission, boolean value) {
+    public LuckpermAction(String permission, boolean value, long expiration, TimeUnit timeUnit) {
         this.permission = permission;
         this.value = value;
+        this.expiration = expiration;
+        this.timeUnit = timeUnit;
     }
 
     @Override
@@ -46,7 +52,11 @@ public class LuckpermAction extends Action {
 
         user.data().clear(n -> n.getKey().equals(permission));
 
-        Node node = Node.builder(permission).value(value).build();
+        NodeBuilder<?, ?> nodeBuilder = Node.builder(permission).value(value);
+        if (this.expiration > 0){
+            nodeBuilder.expiry(this.expiration, this.timeUnit);
+        }
+        Node node = nodeBuilder.build();
         user.data().add(node);
 
         luckPerms.getUserManager().saveUser(user);

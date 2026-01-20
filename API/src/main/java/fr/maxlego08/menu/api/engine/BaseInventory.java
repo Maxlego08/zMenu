@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.engine;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.animation.PlayerTitleAnimation;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -81,4 +83,14 @@ public interface BaseInventory extends InventoryHolder {
     boolean isDisablePlayerInventoryClick();
 
     void setDisablePlayerInventoryClick(boolean disablePlayerInventoryClick);
+
+    void setPlayerTitleAnimation(PlayerTitleAnimation playerTitleAnimation);
+
+    @Nullable
+    PlayerTitleAnimation getPlayerTitleAnimation();
+
+    void setTitleAnimation(TitleAnimation animation);
+
+    TitleAnimation getTitleAnimation();
+
 }

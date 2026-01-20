@@ -7,6 +7,9 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Encapsulates leather armor properties for creating custom-colored leather armor items.
+ */
 public class LeatherArmor {
     private ArmorType type;
     private Color color;
@@ -47,12 +50,33 @@ public class LeatherArmor {
         };
         ItemStack stack = new ItemStack(material, amount);
         LeatherArmorMeta lam = (LeatherArmorMeta) stack.getItemMeta();
-        lam.setColor(color);
+        if (lam != null) {
+            lam.setColor(color);
+        }
         stack.setItemMeta(lam);
         return stack;
     }
 
     public enum ArmorType {
-        HELMET, CHESTPLATE, LEGGINGS, BOOTS, HORSE_ARMOR
+        /**
+         * Represents a leather helmet item.
+         */
+        HELMET, 
+        /**
+         * Represents a leather chestplate item.
+         */
+        CHESTPLATE, 
+        /**
+         * Represents leather leggings.
+         */
+        LEGGINGS, 
+        /**
+         * Represents leather boots.
+         */
+        BOOTS, 
+        /**
+         * Represents leather horse armor.
+         */
+        HORSE_ARMOR
     }
 }

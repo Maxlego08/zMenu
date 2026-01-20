@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -92,6 +93,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             } else {
                 super.createMetaInventory(super.papi(placeholders.parse(inventoryName), targetPlayer, false), this.inventory.getType());
             }
+            super.setTitleAnimation(this.inventory.getTitleAnimation());
             // Display fill items
             if (this.inventory.getFillItemStack() != null) {
                 ItemStack builtItem = this.inventory.getFillItemStack().build(player);
@@ -105,7 +107,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
             // Display buttons
             for (Button button : this.buttons) {
-                buildButton(button);
+                buildButton(button,placeholders);
             }
 
             if (isAsync) {
@@ -153,6 +155,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      */
     @Override
     public void buildButton(Button button) {
+        buildButton(button, new Placeholders());
+    }
+
+    @Override
+    public void buildButton(Button button, @NonNull Placeholders placeholders) {
         if (button == null) {
             return;
         }
@@ -169,7 +176,6 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
         // If the button has a permission or a placeholder to check
         if (button.hasPermission()) {
-            Placeholders placeholders = new Placeholders();
 
             // We will check if the player has the permission to display the
             // button
@@ -179,26 +185,30 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 if (button.hasElseButton()) {
 
                     Button elseButton = button.getElseButton();
-                    this.buildButton(elseButton);
+                    this.buildButton(elseButton, placeholders);
                 }
             } else {
 
                 // If the player has the permission, the button
-                this.displayButton(button);
+                this.displayButton(button,placeholders);
             }
 
         } else {
 
             // If there is no permission, then the button
-            this.displayButton(button);
+            this.displayButton(button,placeholders);
         }
     }
-
     /**
      * Allows displaying the button in the inventory
      */
     @Override
     public void displayButton(@NonNull Button button) {
+        displayButton(button, new Placeholders());
+    }
+
+    @Override
+    public void displayButton(@NotNull Button button, @NotNull Placeholders placeholders){
         final Player targetPlayer = getTargetPlayer();
         var scheduler = plugin.getScheduler();
         if (button.hasSpecialRender()) {
@@ -211,7 +221,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
             Consumer<WrappedTask> runnable = w -> {
                 int slot = button.getRealSlot(button.isPlayerInventory() ? 36 : this.inventory.size(), this.page);
-                this.displayFinalButton(button, slot);
+                this.displayFinalButton(button, placeholders, slot);
             };
 
             if (isAsync) scheduler.runAtEntity(player, runnable);
@@ -224,8 +234,13 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      */
     @Override
     public void displayFinalButton(@NonNull Button button, int... slots) {
+        this.displayFinalButton(button, new Placeholders(), slots);
+    }
+
+    @Override
+    public void displayFinalButton(@NotNull Button button, @NotNull Placeholders placeholders, int... slots){
         final Player targetPlayer = getTargetPlayer();
-        ItemStack itemStack = button.getCustomItemStack(targetPlayer);
+        ItemStack itemStack = button.getCustomItemStack(targetPlayer, placeholders);
         if (itemStack == null) {
             return;
         }
@@ -253,11 +268,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                     if (button.isRefreshOnClick()) {
                         this.cancel(slot);
-                        this.buildButton(button.getMasterParentButton());
+                        this.buildButton(button.getMasterParentButton(), placeholders);
                     }
 
                     // Update buttons who need to be updated
-                    this.updatedButtons.forEach(this::buildButton);
+                    this.updatedButtons.forEach(updatedButton->this.buildButton(updatedButton,placeholders));
                 });
                 itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
                 itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
@@ -289,9 +304,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                         if (refreshRequirement != null && refreshRequirement.canRefresh(player, button, this, new Placeholders())) {
                             this.cancel(slot);
-                            updateItemMeta(itemStack, button, refreshRequirement, slot);
+                            updateItemMeta(itemStack, button, refreshRequirement, slot,placeholders);
                         } else if (button.isUpdated()) {
-                            handleUpdatedButton(button, itemStack, slot);
+                            handleUpdatedButton(button, itemStack, slot,placeholders);
                         }
                     });
 
@@ -334,7 +349,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         return buttons;
     }
 
-    private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot) {
+    private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot, @NotNull Placeholders placeholders) {
         boolean updated = applyMetaUpdates(button, itemStack, refreshRequirement.isRefreshLore(), refreshRequirement.isRefreshName());
         if (!updated) {
             return;
@@ -343,16 +358,16 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         this.getSpigotInventory().setItem(slot, itemStack);
 
         if (refreshRequirement.isRefreshButton()) {
-            this.buildButton(button.getMasterParentButton());
+            this.buildButton(button.getMasterParentButton(), placeholders);
         }
     }
 
-    private void handleUpdatedButton(Button button, ItemStack itemStack, int slot) {
+    private void handleUpdatedButton(Button button, ItemStack itemStack, int slot, @NotNull Placeholders placeholders) {
         Button masterButton = button.getMasterParentButton();
 
         if (button.isUpdatedMasterButton()) {
             this.cancel(slot);
-            this.buildButton(masterButton);
+            this.buildButton(masterButton,placeholders);
             return;
         }
 

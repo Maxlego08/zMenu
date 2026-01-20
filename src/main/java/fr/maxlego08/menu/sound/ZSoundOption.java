@@ -7,6 +7,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class ZSoundOption implements SoundOption {
 
@@ -60,7 +61,7 @@ public class ZSoundOption implements SoundOption {
     }
 
     @Override
-    public void play(Entity entity) {
+    public void play(@NonNull Entity entity) {
 
         if (this.soundAsString != null && this.isCustom()) {
             Location location = entity.getLocation();

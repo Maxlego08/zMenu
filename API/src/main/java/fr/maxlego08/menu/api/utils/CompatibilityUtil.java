@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Utility helper for resolving plugin compatibility issues between Bukkit versions using reflection.
+ */
 public class CompatibilityUtil {
 
 

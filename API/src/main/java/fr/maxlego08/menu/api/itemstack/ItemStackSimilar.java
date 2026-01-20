@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.api.itemstack;
 
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,8 +15,8 @@ public interface ItemStackSimilar {
      *
      * @return The name of this ItemStack comparison strategy.
      */
-    @Contract(pure = true)
-    @NotNull String getName();
+    @NotNull
+    String getName();
 
     /**
      * Compares two ItemStacks to determine if they are similar according to a defined rule.

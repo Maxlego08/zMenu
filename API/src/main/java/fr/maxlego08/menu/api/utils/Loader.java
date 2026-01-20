@@ -6,6 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
+/**
+ * Generic loader interface for loading/saving plugin objects out of YAML configuration files.
+ *
+ * @param <T> Type of object handled by this loader.
+ */
 public interface Loader<T> {
 
     /**

@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+/**
+ * Interface for showing toast notifications to players or all players in the zMenu UI.
+ */
 public interface ToastHelper {
 
     /**

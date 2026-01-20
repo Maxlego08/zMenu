@@ -34,6 +34,8 @@ public interface ItemManager {
 
     void registerMechanicFactory(MechanicFactory<?> factory);
 
+    Optional<MechanicFactory<?>> getMechanicFactory(String mechanicId);
+
     void giveItem(Player player, String itemId);
 
     void executeCheckInventoryItems(Player player);

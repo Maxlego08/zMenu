@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility/helper for looking up available trim materials and patterns by name for item customization.
+ */
 public class TrimHelper {
 
     private final Map<String, TrimMaterial> trimMaterials = new HashMap<>();

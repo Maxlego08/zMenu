@@ -5,6 +5,9 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.TitleAnimationManager;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
+import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -17,9 +20,9 @@ import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
@@ -115,6 +118,23 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         } catch (Exception exception) {
             exception.printStackTrace();
             inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
+        }
+
+        if (configuration.isConfigurationSection("title-animation")){
+            String titleAnimationPath = "title-animation.";
+            String pluginName = configuration.getString(titleAnimationPath + "plugin");
+            Optional<TitleAnimationLoader> titleAnimationLoader;
+            TitleAnimationManager titleAnimationManager = this.plugin.getTitleAnimationManager();
+            if (pluginName == null){
+                titleAnimationLoader = titleAnimationManager.getFirstLoader();
+            } else {
+                titleAnimationLoader = titleAnimationManager.getLoader(pluginName);
+            }
+            if (titleAnimationLoader.isPresent()) {
+                TitleAnimationLoader animationLoader = titleAnimationLoader.get();
+                TitleAnimation titleAnimation = animationLoader.load(configuration, titleAnimationPath, file);
+                inventory.setTitleAnimation(titleAnimation);
+            }
         }
 
         inventory.setType(inventoryType);

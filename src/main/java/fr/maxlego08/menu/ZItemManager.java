@@ -30,7 +30,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ZItemManager implements ItemManager{
+public class ZItemManager implements ItemManager {
     private final NamespacedKey itemIdKey;
     private final NamespacedKey ownerKey;
     private final MenuPlugin menuPlugin;
@@ -60,7 +60,7 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void loadCustomItems() {
-        File itemsFolder = new File(menuPlugin.getDataFolder(), "items");
+        File itemsFolder = new File(this.menuPlugin.getDataFolder(), "items");
         if (!itemsFolder.exists()) {
             if (itemsFolder.mkdirs()) {
                 Logger.info("Items folder created.");
@@ -106,11 +106,14 @@ public class ZItemManager implements ItemManager{
                 }
                 ConfigurationSection itemSection = config.getConfigurationSection(itemId);
                 boolean saveOwnerInPDC = true;
+                boolean skipItemUpdate = false;
                 if (itemSection != null) {
                     saveOwnerInPDC = itemSection.getBoolean("save-owner-in-pdc", true);
+                    skipItemUpdate = itemSection.getBoolean("skip-item-update", false);
                 }
 
-                this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds, saveOwnerInPDC));
+
+                this.customItems.put(itemId, new CustomItemData(menuItemStack, mechanicIds, saveOwnerInPDC, skipItemUpdate));
             } else {
                 if (Configuration.enableDebug){
                     Logger.info("Impossible to load item " + itemId + " from file " + file.getName());
@@ -135,19 +138,19 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public boolean isCustomItem(ItemStack itemStack) {
-        if (itemStack == null || !itemStack.hasItemMeta() || !itemStack.getItemMeta().getPersistentDataContainer().has(itemIdKey)) {
+        if (itemStack == null || !itemStack.hasItemMeta() || !itemStack.getItemMeta().getPersistentDataContainer().has(this.itemIdKey)) {
             return false;
         }
-        String itemId = itemStack.getItemMeta().getPersistentDataContainer().get(itemIdKey, PersistentDataType.STRING);
+        String itemId = itemStack.getItemMeta().getPersistentDataContainer().get(this.itemIdKey, PersistentDataType.STRING);
         return isCustomItem(itemId);
     }
 
     @Override
     public Optional<String> getItemId(ItemStack itemStack) {
-        if (itemStack == null || !itemStack.hasItemMeta() || !itemStack.getItemMeta().getPersistentDataContainer().has(itemIdKey)) {
+        if (itemStack == null || !itemStack.hasItemMeta() || !itemStack.getItemMeta().getPersistentDataContainer().has(this.itemIdKey)) {
             return Optional.empty();
         }
-        String itemId = itemStack.getItemMeta().getPersistentDataContainer().get(itemIdKey, PersistentDataType.STRING);
+        String itemId = itemStack.getItemMeta().getPersistentDataContainer().get(this.itemIdKey, PersistentDataType.STRING);
         if (itemId == null || !isCustomItem(itemId)) {
             return Optional.empty();
         }
@@ -156,12 +159,12 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void registerListeners(Plugin plugin, String mechanicId, MechanicListener listener) {
-        if (mechanicListeners.containsKey(mechanicId)) {
+        if (this.mechanicListeners.containsKey(mechanicId)) {
             Logger.info("Listener for mechanic " + mechanicId + " is already registered.", Logger.LogType.WARNING);
             return;
         }
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
-        mechanicListeners.put(mechanicId, listener);
+        this.mechanicListeners.put(mechanicId, listener);
     }
 
     @Override
@@ -173,11 +176,16 @@ public class ZItemManager implements ItemManager{
 
     @Override
     public void registerMechanicFactory(MechanicFactory<?> factory) {
-        if (mechanicFactories.containsKey(factory.getMechanicId())) {
+        if (this.mechanicFactories.containsKey(factory.getMechanicId())) {
             Logger.info("MechanicFactory " + factory.getMechanicId() + " is already registered.", Logger.LogType.WARNING);
             return;
         }
         this.mechanicFactories.put(factory.getMechanicId(), factory);
+    }
+
+    @Override
+    public Optional<MechanicFactory<?>> getMechanicFactory(String mechanicId) {
+        return Optional.ofNullable(this.mechanicFactories.get(mechanicId));
     }
 
     @Override
@@ -193,9 +201,9 @@ public class ZItemManager implements ItemManager{
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
-            persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, itemId);
+            persistentDataContainer.set(this.itemIdKey, PersistentDataType.STRING, itemId);
             if (itemData.saveOwnerInPDC()) {
-                persistentDataContainer.set(ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
+                persistentDataContainer.set(this.ownerKey, PersistentDataType.STRING, player.getUniqueId().toString());
             }
             itemStack.setItemMeta(itemMeta);
         }
@@ -226,24 +234,24 @@ public class ZItemManager implements ItemManager{
             if (itemStack == null || !itemStack.hasItemMeta()) continue;
 
             ItemMeta meta = itemStack.getItemMeta();
-            if (meta == null || !meta.getPersistentDataContainer().has(itemIdKey)) continue;
+            if (meta == null || !meta.getPersistentDataContainer().has(this.itemIdKey)) continue;
 
-            String itemId = meta.getPersistentDataContainer().get(itemIdKey, PersistentDataType.STRING);
+            String itemId = meta.getPersistentDataContainer().get(this.itemIdKey, PersistentDataType.STRING);
             if (itemId == null) continue;
 
             if (!isCustomItem(itemId)) {
-                meta.getPersistentDataContainer().remove(itemIdKey);
-                meta.getPersistentDataContainer().remove(ownerKey);
+                meta.getPersistentDataContainer().remove(this.itemIdKey);
+                meta.getPersistentDataContainer().remove(this.ownerKey);
                 itemStack.setItemMeta(meta);
                 player.getInventory().setItem(i, itemStack);
                 continue;
             }
 
             CustomItemData itemData = customItems.get(itemId);
-            if (itemData == null) continue;
+            if (itemData == null || itemData.skipItemUpdate()) continue;
 
             MenuItemStack menuItemStack = itemData.menuItemStack();
-            String ownerUuid = meta.getPersistentDataContainer().get(ownerKey, PersistentDataType.STRING);
+            String ownerUuid = meta.getPersistentDataContainer().get(this.ownerKey, PersistentDataType.STRING);
             Player owner;
             if (itemData.saveOwnerInPDC()){
                 if (ownerUuid == null) continue;
@@ -258,9 +266,9 @@ public class ZItemManager implements ItemManager{
 
             ItemMeta builtMeta = built.getItemMeta();
             if (builtMeta == null) continue;
-            builtMeta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, itemId);
+            builtMeta.getPersistentDataContainer().set(this.itemIdKey, PersistentDataType.STRING, itemId);
             if (itemData.saveOwnerInPDC()) {
-                builtMeta.getPersistentDataContainer().set(ownerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
+                builtMeta.getPersistentDataContainer().set(this.ownerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
             }
             built.setItemMeta(builtMeta);
 

@@ -8,8 +8,8 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.zcore.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.entity.Player;
 
@@ -32,7 +32,7 @@ public class CommandMenuReload extends VCommand {
 
         InventoryManager inventoryManager = plugin.getInventoryManager();
 
-        ZUtils.clearConfigurationCache();
+        YamlFileCache.clearCache();
 
         plugin.loadGlobalPlaceholders();
         plugin.getMessageLoader().load();

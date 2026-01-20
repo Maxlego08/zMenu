@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Centralized message/formatting enumeration for zMenu plugin.
+ * Provides localization keys, status messages, UI feedback, and time formatting options for commands and GUI.
+ */
 public enum Message implements IMessage {
 
     PREFIX("&8(&6zMenu&8) "),
