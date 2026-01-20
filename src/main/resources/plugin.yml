@@ -22,6 +22,8 @@ softdepend:
   - ExecutableBlocks
   - MythicMobs
   - BreweryX
+  - floodgate
+  - Geyser-Spigot
 folia-supported: true
 loadbefore:
   - SuperiorSkyblock2
