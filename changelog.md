@@ -43,6 +43,7 @@
 # Unreleased
 
 - `local-placeholders` section inside inventory/pattern configuration
+- Add `message-to` action with same args as `message` action but allow to specify the target with a placeholder (`target-player: <placeholder>` if not found player who execute the action will receive the message)
 - New component item system for 1.20.5+
 - Animated title (Required `PacketEvent`) [Exemple](./src/main/resources/inventories/animated_title_inventory.yml)
 - Added automatic support for newer Minecraft versions when no major API changes are present
@@ -56,7 +57,6 @@
 
 # 1.1.0.7
 
-- Add `message-to` action with same args as `message` action but allow to specify the target with a placeholder (`target-player: <placeholder>` if not found player who execute the action will receive the message)
 - Fixed NMS compatibility for **1.21.10**.
 - Fixed issues with **DeluxeMenus** inventory loading.
 - Fixed **MiniMessage** regex handling.
