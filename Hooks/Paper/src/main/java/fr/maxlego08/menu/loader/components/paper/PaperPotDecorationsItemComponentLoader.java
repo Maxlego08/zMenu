@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.itemstack.components.paper.PaperPotDecorationsComponent;
+import io.papermc.paper.datacomponent.item.PotDecorations;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +36,7 @@ public class PaperPotDecorationsItemComponentLoader extends ItemComponentLoader 
             if (types[i] == null) return null;
         }
 
-        return new PaperPotDecorationsComponent(types[0], types[1], types[2], types[3]);
+        return new PaperPotDecorationsComponent(PotDecorations.potDecorations(types[0], types[1], types[2], types[3]));
     }
 
     private @Nullable ItemType getItemTypeFromString(String keyString) {

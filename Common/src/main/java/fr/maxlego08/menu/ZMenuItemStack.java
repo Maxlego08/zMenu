@@ -158,7 +158,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                     metadata.apply(context, itemStack, player);
                 } catch (Exception e) {
                     if (Configuration.enableDebug){
-                        Logger.info("Error while applying ItemComponent '" + metadata.name() + "' for item " + path + " in file " + filePath + " (" + player + ")", Logger.LogType.ERROR);
+                        Logger.info("Error while applying ItemComponent '" + metadata.getParentLoader().getComponentName() + "' for item " + path + " in file " + filePath + " (" + player + ")", Logger.LogType.ERROR);
                         e.printStackTrace();
                     }
                 }
