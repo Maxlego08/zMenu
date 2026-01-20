@@ -27,9 +27,8 @@ public class BaseColorComponent extends ItemComponent {
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, ShieldMeta.class, shieldMeta -> shieldMeta.setBaseColor(baseColor));
-        if (!apply){
-            if (Configuration.enableDebug)
-                Logger.info("Failed to apply BaseColor to ItemStack of type "+itemStack.getType().name()+" check if it's a shield.");
+        if (!apply && Configuration.enableDebug){
+            Logger.info("Failed to apply BaseColor to ItemStack of type "+itemStack.getType().name()+" check if it's a shield.");
         }
     }
 }

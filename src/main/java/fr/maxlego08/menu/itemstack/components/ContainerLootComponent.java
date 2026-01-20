@@ -40,9 +40,8 @@ public class ContainerLootComponent extends ItemComponent {
                 lootableMeta.setSeed(this.seed);
             }
         });
-        if (!apply) {
-            if (Configuration.enableDebug)
-                Logger.info("Failed to apply ContainerLootComponent to itemStack: " + itemStack.getType().name() + ". This item does not support block state meta.");
+        if (!apply && Configuration.enableDebug) {
+            Logger.info("Failed to apply ContainerLootComponent to itemStack: " + itemStack.getType().name() + ". This item does not support block state meta.");
         }
     }
 

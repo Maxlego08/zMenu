@@ -29,9 +29,8 @@ public class DamageComponent extends ItemComponent {
         boolean apply = ItemUtil.editMeta(itemStack, Damageable.class, damageable -> {
             damageable.setDamage(this.damage);
         });
-        if (!apply) {
-            if (Configuration.enableDebug)
-                Logger.info("Failed to apply DamageComponent to itemStack: " + itemStack.getType().name() + ". This item does not support damageable meta.");
+        if (!apply && Configuration.enableDebug) {
+            Logger.info("Failed to apply DamageComponent to itemStack: " + itemStack.getType().name() + ". This item does not support damageable meta.");
         }
     }
 

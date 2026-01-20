@@ -24,9 +24,9 @@ public class BreakSoundComponent extends ItemComponent {
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return;
-        itemMeta.setBreakSound(this.breakSound);
-        itemStack.setItemMeta(itemMeta);
-
+        if (itemMeta != null) {
+            itemMeta.setBreakSound(this.breakSound);
+            itemStack.setItemMeta(itemMeta);
+        }
     }
 }

@@ -34,9 +34,8 @@ public class BundleContentsComponent extends ItemComponent {
                 bundleMeta.addItem(menuItemStack.build(player));
             }
         });
-        if (!apply) {
-            if (Configuration.enableDebug)
-                Logger.info("Failed to apply BundleContents to ItemStack of type " + itemStack.getType().name() + " check if it's a bundle.");
+        if (!apply && Configuration.enableDebug) {
+            Logger.info("Failed to apply BundleContents to ItemStack of type " + itemStack.getType().name() + " check if it's a bundle.");
         }
     }
 

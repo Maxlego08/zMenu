@@ -33,9 +33,8 @@ public class ChargedProjectilesComponent extends ItemComponent {
                 crossbowMeta.addChargedProjectile(menuItemStack.build(player));
             }
         });
-        if (!apply) {
-            if (Configuration.enableDebug)
-                Logger.info("Failed to apply ChargedProjectilesComponent to itemStack: " + itemStack.getType().name()+". This item does not support charged projectiles.");
+        if (!apply && Configuration.enableDebug) {
+            Logger.info("Failed to apply ChargedProjectilesComponent to itemStack: " + itemStack.getType().name()+". This item is probably not a crossbow.");
         }
     }
 }

@@ -31,9 +31,8 @@ public class ContainerComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        //TODO: Trouver pq ca ajoute pas les items dans le container
         boolean apply = ItemUtil.editMeta(itemStack, BlockStateMeta.class, blockStateMeta -> {
-            if (blockStateMeta instanceof Container container) {
+            if (blockStateMeta.getBlockState() instanceof Container container) {
                 Inventory inventory = container.getInventory();
 
                 for (ContainerSlot containerSlot : this.contents) {
@@ -41,15 +40,15 @@ public class ContainerComponent extends ItemComponent {
                     int slot = containerSlot.slot();
                     ItemStack builtItemStack = menuItemStack.build(player);
                     inventory.setItem(slot, builtItemStack);
+                    Logger.info("Added item to container at slot " + slot + ": " + builtItemStack.getType().name());
                 }
 
                 container.update();
                 blockStateMeta.setBlockState(container);
             }
         });
-        if (!apply) {
-            if (Configuration.enableDebug)
-                Logger.info("Failed to apply ContainerComponent to itemStack: " + itemStack.getType().name()+". This item does not support block state meta.");
+        if (!apply && Configuration.enableDebug) {
+            Logger.info("Failed to apply ContainerComponent to itemStack: " + itemStack.getType().name()+". This item does not support block state meta.");
         }
     }
 }
