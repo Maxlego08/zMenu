@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.itemstack.components;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -13,11 +14,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record RecipesComponent(
-    @NotNull List<@NotNull NamespacedKey> recipes
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class RecipesComponent extends ItemComponent {
+    private final @NotNull List<@NotNull NamespacedKey> recipes;
+
+    public RecipesComponent(@NotNull List<@NotNull NamespacedKey> recipes) {
+        this.recipes = recipes;
+    }
+
+    public @NotNull List<@NotNull NamespacedKey> getRecipes() {
+        return this.recipes;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, KnowledgeBookMeta.class, knowledgeBookMeta -> {
             knowledgeBookMeta.setRecipes(this.recipes);
         });

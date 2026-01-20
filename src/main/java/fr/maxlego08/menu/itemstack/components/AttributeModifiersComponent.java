@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.itemstack.components;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.Tuples;
 import org.bukkit.attribute.Attribute;
@@ -12,11 +13,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record AttributeModifiersComponent(
-        List<Tuples<@NotNull Attribute,@NotNull AttributeModifier>> modifiers
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class AttributeModifiersComponent extends ItemComponent {
+
+    private final List<Tuples<@NotNull Attribute,@NotNull AttributeModifier>> modifiers;
+
+    public AttributeModifiersComponent(List<Tuples<@NotNull Attribute,@NotNull AttributeModifier>> modifiers) {
+        this.modifiers = modifiers;
+    }
+
+    public List<Tuples<@NotNull Attribute,@NotNull AttributeModifier>> getModifiers() {
+        return this.modifiers;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) return;
         for (Tuples<Attribute, AttributeModifier> tuple : this.modifiers) {
@@ -24,4 +35,5 @@ public record AttributeModifiersComponent(
         }
         itemStack.setItemMeta(itemMeta);
     }
+
 }

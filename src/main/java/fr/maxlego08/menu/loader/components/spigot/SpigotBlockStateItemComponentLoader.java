@@ -30,6 +30,19 @@ public class SpigotBlockStateItemComponentLoader extends ItemComponentLoader {
         } else {
             blockStateBuilder.append(blockStatesString);
         }
-        return new BlockStateComponent(blockStateBuilder.toString());
+        return new BlockStateComponent(this.getFinalBlockState(blockStateBuilder.toString()));
+    }
+
+    @NotNull
+    private String getFinalBlockState(@NotNull String blockState){
+        StringBuilder finalState = new StringBuilder();
+        if (!blockState.startsWith("[")){
+            finalState.append("[");
+        }
+        finalState.append(blockState);
+        if (!blockState.endsWith("]")) {
+            finalState.append("]");
+        }
+        return finalState.toString();
     }
 }

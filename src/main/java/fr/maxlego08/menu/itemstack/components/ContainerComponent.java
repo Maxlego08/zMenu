@@ -2,6 +2,7 @@ package fr.maxlego08.menu.itemstack.components;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -16,11 +17,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record ContainerComponent(
-    List<@NotNull ContainerSlot> contents
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class ContainerComponent extends ItemComponent {
+    private final List<@NotNull ContainerSlot> contents;
+
+    public ContainerComponent(List<@NotNull ContainerSlot> contents) {
+        this.contents = contents;
+    }
+
+    public List<@NotNull ContainerSlot> getContents() {
+        return this.contents;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         //TODO: Trouver pq ca ajoute pas les items dans le container
         boolean apply = ItemUtil.editMeta(itemStack, BlockStateMeta.class, blockStateMeta -> {
             if (blockStateMeta instanceof Container container) {

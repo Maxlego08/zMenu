@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
-import fr.maxlego08.menu.itemstack.components.paper.CustomNameComponent;
+import fr.maxlego08.menu.itemstack.components.paper.PaperCustomNameComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class PaperCustomNameItemComponentLoader extends ItemComponentLoader {
         path = normalizePath(path);
         String customName = configuration.getString(path);
         if (customName != null) {
-            return new CustomNameComponent(customName, this.metaUpdater);
+            return new PaperCustomNameComponent(this.metaUpdater.getComponent(customName));
         }
         return null;
     }

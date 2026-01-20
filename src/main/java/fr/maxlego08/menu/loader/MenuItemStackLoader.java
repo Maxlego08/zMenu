@@ -110,8 +110,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                     Optional<ItemComponentLoader> optionalItemComponentLoader = componentsManager.getLoader(componentKey);
                     if (optionalItemComponentLoader.isPresent()) {
                         try {
-                            ItemComponent itemComponent = optionalItemComponentLoader.get().load(menuItemStack, file, configuration, path + "components." + componentKey + ".", componentSection);
+                            ItemComponentLoader itemComponentLoader = optionalItemComponentLoader.get();
+                            ItemComponent itemComponent = itemComponentLoader.load(menuItemStack, file, configuration, path + "components." + componentKey + ".", componentSection);
                             if (itemComponent != null) {
+                                itemComponent.setParentLoader(itemComponentLoader);
                                 menuItemStack.addItemComponent(itemComponent);
                             }
                         } catch (Exception e) {

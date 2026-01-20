@@ -3,8 +3,9 @@ package fr.maxlego08.menu.loader.components.paper;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
-import fr.maxlego08.menu.itemstack.components.paper.DeathProtectionComponent;
+import fr.maxlego08.menu.itemstack.components.paper.PaperDeathProtectionComponent;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
+import io.papermc.paper.datacomponent.item.DeathProtection;
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
@@ -78,6 +79,6 @@ public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemC
                 }
             }
         }
-        return effects.isEmpty() ? null : new DeathProtectionComponent(effects);
+        return effects.isEmpty() ? null : new PaperDeathProtectionComponent(DeathProtection.deathProtection(effects));
     }
 }

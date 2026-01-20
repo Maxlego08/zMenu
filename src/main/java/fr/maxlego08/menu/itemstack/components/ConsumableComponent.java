@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.itemstack.components;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,15 +12,44 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record ConsumableComponent(
-    float consumeSeconds,
-    org.bukkit.inventory.meta.components.consumable.ConsumableComponent.Animation animation,
-    Sound consumeSound,
-    boolean hasConsumeParticles,
-    List<ConsumableEffect> effects
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class ConsumableComponent extends ItemComponent {
+    private final float consumeSeconds;
+    private final org.bukkit.inventory.meta.components.consumable.ConsumableComponent.Animation animation;
+    private final Sound consumeSound;
+    private final boolean hasConsumeParticles;
+    private final List<ConsumableEffect> effects;
+
+    public ConsumableComponent(float consumeSeconds, org.bukkit.inventory.meta.components.consumable.ConsumableComponent.Animation animation, Sound consumeSound, boolean hasConsumeParticles, List<ConsumableEffect> effects) {
+        this.consumeSeconds = consumeSeconds;
+        this.animation = animation;
+        this.consumeSound = consumeSound;
+        this.hasConsumeParticles = hasConsumeParticles;
+        this.effects = effects;
+    }
+
+    public float getConsumeSeconds() {
+        return consumeSeconds;
+    }
+
+    public org.bukkit.inventory.meta.components.consumable.ConsumableComponent.Animation getAnimation() {
+        return animation;
+    }
+
+    public Sound getConsumeSound() {
+        return consumeSound;
+    }
+
+    public boolean isHasConsumeParticles() {
+        return hasConsumeParticles;
+    }
+
+    public List<ConsumableEffect> getEffects() {
+        return effects;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             org.bukkit.inventory.meta.components.consumable.ConsumableComponent consumable = itemMeta.getConsumable();

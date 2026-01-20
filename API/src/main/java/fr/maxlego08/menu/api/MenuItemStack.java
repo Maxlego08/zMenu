@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
@@ -18,6 +19,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface MenuItemStack extends MenuItemStackContext {
+
+    /**
+     * Build an item stack using the provided build context.
+     * This method constructs an ItemStack instance based on the given context,
+     * applying any necessary configurations and customizations.
+     *
+     * @param context The build context containing relevant information.
+     * @return The constructed ItemStack.
+     */
+    ItemStack build(BuildContext context);
 
     /**
      * Build an item stack using the provided player context.

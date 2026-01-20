@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.itemstack.components;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -11,11 +12,20 @@ import org.bukkit.inventory.meta.MusicInstrumentMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record InstrumentComponent(
-    @NotNull MusicInstrument instrument
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class InstrumentComponent extends ItemComponent {
+    private final @NotNull MusicInstrument instrument;
+
+    public InstrumentComponent(@NotNull MusicInstrument instrument) {
+        this.instrument = instrument;
+    }
+
+    public @NotNull MusicInstrument getInstrument() {
+        return this.instrument;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, MusicInstrumentMeta.class, musicInstrumentMeta -> {
             musicInstrumentMeta.setInstrument(this.instrument);
         });

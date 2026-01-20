@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.itemstack.components;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,16 +10,26 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record LoreComponent(
-    List<@NotNull String> lore
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class LoreComponent extends ItemComponent {
+
+    private final List<@NotNull String> lore;
+
+    public LoreComponent(List<@NotNull String> lore) {
+        this.lore = lore;
+    }
+
+    public List<@NotNull String> getLore() {
+        return this.lore;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             itemMeta.setLore(this.lore);
-
             itemStack.setItemMeta(itemMeta);
         }
     }
+
 }

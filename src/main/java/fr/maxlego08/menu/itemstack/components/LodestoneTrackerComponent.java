@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.itemstack.components;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -11,12 +12,26 @@ import org.bukkit.inventory.meta.CompassMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record LodestoneTrackerComponent(
-        boolean lodestoneTracked,
-        @Nullable Location lodestoneLocation
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class LodestoneTrackerComponent extends ItemComponent {
+    private final boolean lodestoneTracked;
+    private final @Nullable Location lodestoneLocation;
+
+    public LodestoneTrackerComponent(boolean lodestoneTracked, @Nullable Location lodestoneLocation) {
+        this.lodestoneTracked = lodestoneTracked;
+        this.lodestoneLocation = lodestoneLocation;
+    }
+
+    public boolean isLodestoneTracked() {
+        return this.lodestoneTracked;
+    }
+
+    public @Nullable Location getLodestoneLocation() {
+        return this.lodestoneLocation;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, CompassMeta.class, compassMeta -> {
             compassMeta.setLodestoneTracked(this.lodestoneTracked);
             compassMeta.setLodestone(this.lodestoneLocation);

@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeUtil;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
@@ -17,6 +18,7 @@ import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
@@ -124,16 +126,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player) {
-        return build(player, true);
+        return build(new ZBuildContext.Builder().player(player).build());
+
     }
 
     @Override
-    public @NonNull ItemStack build(Player player, boolean useCache) {
-        return build(player, useCache, new Placeholders());
-    }
-
-    @Override
-    public @NonNull ItemStack build(Player player, boolean useCache, Placeholders placeholders) {
+    public ItemStack build(BuildContext context) {
+        Player player = context.getPlayer();
+        boolean useCache = context.isUseCache();
+        Placeholders placeholders = context.getPlaceholders();
 
         if (shouldUseCache(useCache)) {
             return this.cacheItemStack;
@@ -153,15 +154,32 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         if (!this.itemComponents.isEmpty()) {
             for (ItemComponent metadata : this.itemComponents) {
-                metadata.apply(itemStack, player);
+                try {
+                    metadata.apply(context, itemStack, player);
+                } catch (Exception e) {
+                    if (Configuration.enableDebug){
+                        Logger.info("Error while applying ItemComponent '" + metadata.name() + "' for item " + path + " in file " + filePath + " (" + player + ")", Logger.LogType.ERROR);
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
-        if (!needPlaceholderAPI &&Configuration.enableCacheItemStack) {
+        if (!needPlaceholderAPI && Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
         }
 
         return itemStack;
+    }
+
+    @Override
+    public @NonNull ItemStack build(Player player, boolean useCache) {
+        return build(player);
+    }
+
+    @Override
+    public @NonNull ItemStack build(Player player, boolean useCache, Placeholders placeholders) {
+        return this.build(new ZBuildContext.Builder().player(player).useCache(useCache).placeholders(placeholders).build());
     }
 
     private boolean shouldUseCache(boolean useCache) {

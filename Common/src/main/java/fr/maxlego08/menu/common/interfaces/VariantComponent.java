@@ -1,8 +1,13 @@
 package fr.maxlego08.menu.common.interfaces;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import org.bukkit.Art;
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Factory interface for creating variant components.
@@ -51,97 +56,297 @@ public interface VariantComponent {
     Wolf.Collar createWolfCollar(DyeColor color);
     Wolf.Variant createWolfVariant(org.bukkit.entity.Wolf.Variant variant);
 
-    interface Axolotl extends ItemComponent {
-        org.bukkit.entity.Axolotl.Variant variant();
+    abstract class Axolotl extends ItemComponent {
+        protected final org.bukkit.entity.Axolotl.Variant variant;
+
+        protected Axolotl(@NotNull org.bukkit.entity.Axolotl.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Axolotl.Variant getVariant() {
+            return this.variant;
+        }
+
+        public abstract void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player);
     }
 
     interface Cat {
-        interface Collar extends ItemComponent {
-            DyeColor color();
+        abstract class Collar extends ItemComponent {
+            protected final DyeColor color;
+
+            protected Collar(@NotNull DyeColor color) {
+                this.color = color;
+            }
+
+            @NotNull
+            public DyeColor getColor() {
+                return this.color;
+            }
         }
 
-        interface Variant extends ItemComponent {
-            org.bukkit.entity.Cat.Type variant();
+        abstract class Variant extends ItemComponent {
+            protected final org.bukkit.entity.Cat.Type variant;
+
+            protected Variant(@NotNull org.bukkit.entity.Cat.Type variant) {
+                this.variant = variant;
+            }
+
+            @NotNull
+            public org.bukkit.entity.Cat.Type getVariant() {
+                return this.variant;
+            }
         }
     }
 
-    interface Chicken extends ItemComponent {
-        org.bukkit.entity.Chicken.Variant variant();
+    abstract class Chicken extends ItemComponent {
+        protected final org.bukkit.entity.Chicken.Variant variant;
+
+        protected Chicken(@NotNull org.bukkit.entity.Chicken.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Chicken.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Cow extends ItemComponent {
-        org.bukkit.entity.Cow.Variant variant();
+    abstract class Cow extends ItemComponent {
+        protected final org.bukkit.entity.Cow.Variant variant;
+
+        protected Cow(@NotNull org.bukkit.entity.Cow.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Cow.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Fox extends ItemComponent {
-        org.bukkit.entity.Fox.Type variant();
+    abstract class Fox extends ItemComponent {
+        protected final org.bukkit.entity.Fox.Type variant;
+
+        protected Fox(@NotNull org.bukkit.entity.Fox.Type variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Fox.Type getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Frog extends ItemComponent {
-        org.bukkit.entity.Frog.Variant variant();
+    abstract class Frog extends ItemComponent {
+        protected final org.bukkit.entity.Frog.Variant variant;
+
+        protected Frog(@NotNull org.bukkit.entity.Frog.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Frog.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Horse extends ItemComponent {
-        org.bukkit.entity.Horse.Color variant();
+    abstract class Horse extends ItemComponent {
+        protected final org.bukkit.entity.Horse.Color variant;
+
+        protected Horse(@NotNull org.bukkit.entity.Horse.Color variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Horse.Color getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Llama extends ItemComponent {
-        org.bukkit.entity.Llama.Color variant();
+    abstract class Llama extends ItemComponent {
+        protected final org.bukkit.entity.Llama.Color variant;
+
+        protected Llama(@NotNull org.bukkit.entity.Llama.Color variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Llama.Color getVariant() {
+            return this.variant;
+        }
     }
 
-    interface MushroomCow extends ItemComponent {
-        org.bukkit.entity.MushroomCow.Variant variant();
+    abstract class MushroomCow extends ItemComponent {
+        protected final org.bukkit.entity.MushroomCow.Variant variant;
+
+        protected MushroomCow(@NotNull org.bukkit.entity.MushroomCow.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.MushroomCow.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Painting extends ItemComponent {
-        Art variant();
+    abstract class Painting extends ItemComponent {
+        protected final Art variant;
+
+        protected Painting(@NotNull Art variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public Art getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Parrot extends ItemComponent {
-        org.bukkit.entity.Parrot.Variant variant();
+    abstract class Parrot extends ItemComponent {
+        protected final org.bukkit.entity.Parrot.Variant variant;
+
+        protected Parrot(@NotNull org.bukkit.entity.Parrot.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Parrot.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Pig extends ItemComponent {
-        org.bukkit.entity.Pig.Variant variant();
+    abstract class Pig extends ItemComponent {
+        protected final org.bukkit.entity.Pig.Variant variant;
+
+        protected Pig(@NotNull org.bukkit.entity.Pig.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Pig.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Rabbit extends ItemComponent {
-        org.bukkit.entity.Rabbit.Type variant();
+    abstract class Rabbit extends ItemComponent {
+        protected final org.bukkit.entity.Rabbit.Type variant;
+
+        protected Rabbit(@NotNull org.bukkit.entity.Rabbit.Type variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Rabbit.Type getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Salmon extends ItemComponent {
-        org.bukkit.entity.Salmon.Variant variant();
+    abstract class Salmon extends ItemComponent {
+        protected final org.bukkit.entity.Salmon.Variant variant;
+
+        protected Salmon(@NotNull org.bukkit.entity.Salmon.Variant variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Salmon.Variant getVariant() {
+            return this.variant;
+        }
     }
 
-    interface Sheep extends ItemComponent {
-        DyeColor color();
+    abstract class Sheep extends ItemComponent {
+        protected final DyeColor color;
+
+        protected Sheep(@NotNull DyeColor color) {
+            this.color = color;
+        }
+
+        @NotNull
+        public DyeColor getColor() {
+            return this.color;
+        }
     }
 
-    interface ShulkerBox extends ItemComponent {
-        DyeColor color();
+    abstract class ShulkerBox extends ItemComponent {
+        protected final DyeColor color;
+
+        protected ShulkerBox(@NotNull DyeColor color) {
+            this.color = color;
+        }
+
+        @NotNull
+        public DyeColor getColor() {
+            return this.color;
+        }
     }
 
     interface TropicalFish {
-        interface BaseColor extends ItemComponent {
-            DyeColor color();
+        abstract class BaseColor extends ItemComponent {
+            protected final DyeColor color;
+
+            protected BaseColor(@NotNull DyeColor color) {
+                this.color = color;
+            }
+
+            @NotNull
+            public DyeColor getColor() {
+                return this.color;
+            }
         }
 
-        interface PatternColor extends ItemComponent {
-            DyeColor color();
+        abstract class PatternColor extends ItemComponent {
+            protected final DyeColor color;
+
+            protected PatternColor(@NotNull DyeColor color) {
+                this.color = color;
+            }
+
+            @NotNull
+            public DyeColor getColor() {
+                return this.color;
+            }
         }
     }
 
-    interface Villager extends ItemComponent {
-        org.bukkit.entity.Villager.Type variant();
+    abstract class Villager extends ItemComponent {
+        protected final org.bukkit.entity.Villager.Type variant;
+
+        protected Villager(@NotNull org.bukkit.entity.Villager.Type variant) {
+            this.variant = variant;
+        }
+
+        @NotNull
+        public org.bukkit.entity.Villager.Type getVariant() {
+            return this.variant;
+        }
     }
 
     interface Wolf {
-        interface Collar extends ItemComponent {
-            DyeColor color();
+        abstract class Collar extends ItemComponent {
+            protected final DyeColor color;
+
+            protected Collar(@NotNull DyeColor color) {
+                this.color = color;
+            }
+
+            @NotNull
+            public DyeColor getColor() {
+                return this.color;
+            }
         }
 
-        interface Variant extends ItemComponent {
-            org.bukkit.entity.Wolf.Variant variant();
+        abstract class Variant extends ItemComponent {
+            protected final org.bukkit.entity.Wolf.Variant variant;
+
+            protected Variant(@NotNull org.bukkit.entity.Wolf.Variant variant) {
+                this.variant = variant;
+            }
+
+            @NotNull
+            public org.bukkit.entity.Wolf.Variant getVariant() {
+                return this.variant;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.itemstack.components;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.zcore.utils.itemstack.DamageReductionRecord;
 import org.bukkit.Sound;
@@ -11,7 +12,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record BlocksAttacksComponent(
+@SuppressWarnings("unused")
+public class BlocksAttacksComponent extends ItemComponent {
+    private final float blockDelaySeconds;
+    private final float disableCooldownScale;
+    private final List<DamageReductionRecord> damageReductions;
+    private final float itemDamageThreshold;
+    private final float itemDamageBase;
+    private final float itemDamageFactor;
+    private final Sound blockSound;
+    private final Sound disabledSound;
+
+    public BlocksAttacksComponent(
         float blockDelaySeconds,
         float disableCooldownScale,
         List<@NotNull DamageReductionRecord> damageReductions,
@@ -20,9 +32,51 @@ public record BlocksAttacksComponent(
         float itemDamageFactor,
         Sound blockSound,
         Sound disabledSound
-) implements ItemComponent {
+    ) {
+        this.blockDelaySeconds = blockDelaySeconds;
+        this.disableCooldownScale = disableCooldownScale;
+        this.damageReductions = damageReductions;
+        this.itemDamageThreshold = itemDamageThreshold;
+        this.itemDamageBase = itemDamageBase;
+        this.itemDamageFactor = itemDamageFactor;
+        this.blockSound = blockSound;
+        this.disabledSound = disabledSound;
+    }
+
+    public float getBlockDelaySeconds() {
+        return blockDelaySeconds;
+    }
+
+    public float getDisableCooldownScale() {
+        return disableCooldownScale;
+    }
+
+    public List<DamageReductionRecord> getDamageReductions() {
+        return damageReductions;
+    }
+
+    public float getItemDamageThreshold() {
+        return itemDamageThreshold;
+    }
+
+    public float getItemDamageBase() {
+        return itemDamageBase;
+    }
+
+    public float getItemDamageFactor() {
+        return itemDamageFactor;
+    }
+
+    public Sound getBlockSound() {
+        return blockSound;
+    }
+
+    public Sound getDisabledSound() {
+        return disabledSound;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             org.bukkit.inventory.meta.components.BlocksAttacksComponent blocksAttacks = itemMeta.getBlocksAttacks();

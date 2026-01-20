@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.itemstack.components.paper;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Art;
@@ -121,202 +122,245 @@ public class PaperVariantComponent implements VariantComponent {
         return new WolfVariantImpl(variant);
     }
 
-    // Implementation records using Paper's DataComponentTypes
-    private record AxolotlImpl(
-            org.bukkit.entity.Axolotl.Variant variant
-    ) implements VariantComponent.Axolotl {
+    private static class AxolotlImpl extends VariantComponent.Axolotl {
+        protected AxolotlImpl(org.bukkit.entity.Axolotl.@NotNull Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.AXOLOTL_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.AXOLOTL_VARIANT, this.getVariant());
         }
     }
 
-    private record CatCollarImpl(
-            @NotNull DyeColor color
-    ) implements VariantComponent.Cat.Collar {
+    private static class CatCollarImpl extends VariantComponent.Cat.Collar {
+        protected CatCollarImpl(DyeColor color) {
+            super(color);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.CAT_COLLAR, this.color);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.CAT_COLLAR, this.getColor());
         }
     }
 
-    private record CatVariantImpl(
-            org.bukkit.entity.Cat.Type variant
-    ) implements VariantComponent.Cat.Variant {
+    private static class CatVariantImpl extends VariantComponent.Cat.Variant {
+        protected CatVariantImpl(org.bukkit.entity.Cat.Type variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.CAT_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.CAT_VARIANT, this.getVariant());
         }
     }
 
-    private record ChickenImpl(
-            org.bukkit.entity.Chicken.Variant variant
-    ) implements VariantComponent.Chicken {
+    private static class ChickenImpl extends VariantComponent.Chicken {
+        protected ChickenImpl(org.bukkit.entity.Chicken.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.CHICKEN_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.CHICKEN_VARIANT, this.getVariant());
         }
     }
 
-    private record CowImpl(
-            org.bukkit.entity.Cow.Variant variant
-    ) implements VariantComponent.Cow {
+    private static class CowImpl extends VariantComponent.Cow {
+        protected CowImpl(org.bukkit.entity.Cow.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.COW_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.COW_VARIANT, this.getVariant());
         }
     }
 
-    private record FoxImpl(
-            org.bukkit.entity.Fox.Type variant
-    ) implements VariantComponent.Fox {
+    private static class FoxImpl extends VariantComponent.Fox {
+        protected FoxImpl(org.bukkit.entity.Fox.Type variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.FOX_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.FOX_VARIANT, this.getVariant());
         }
     }
 
-    private record FrogImpl(
-            org.bukkit.entity.Frog.Variant variant
-    ) implements VariantComponent.Frog {
+    private static class FrogImpl extends VariantComponent.Frog {
+        protected FrogImpl(org.bukkit.entity.Frog.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.FROG_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.FROG_VARIANT, this.getVariant());
         }
     }
 
-    private record HorseImpl(
-            org.bukkit.entity.Horse.Color variant
-    ) implements VariantComponent.Horse {
+    private static class HorseImpl extends VariantComponent.Horse {
+        protected HorseImpl(org.bukkit.entity.Horse.Color variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.HORSE_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.HORSE_VARIANT, this.getVariant());
         }
     }
 
-    private record LlamaImpl(
-            org.bukkit.entity.Llama.Color variant
-    ) implements VariantComponent.Llama {
+    private static class LlamaImpl extends VariantComponent.Llama {
+        protected LlamaImpl(org.bukkit.entity.Llama.Color variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.LLAMA_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.LLAMA_VARIANT, this.getVariant());
         }
     }
 
-    private record MushroomCowImpl(
-            org.bukkit.entity.MushroomCow.Variant variant
-    ) implements VariantComponent.MushroomCow {
+    private static class MushroomCowImpl extends VariantComponent.MushroomCow {
+        protected MushroomCowImpl(org.bukkit.entity.MushroomCow.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.MOOSHROOM_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.MOOSHROOM_VARIANT, this.getVariant());
         }
     }
 
-    private record PaintingImpl(
-            Art variant
-    ) implements VariantComponent.Painting {
+    private static class PaintingImpl extends VariantComponent.Painting {
+        protected PaintingImpl(Art variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.PAINTING_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.PAINTING_VARIANT, this.getVariant());
         }
     }
 
-    private record ParrotImpl(
-            org.bukkit.entity.Parrot.Variant variant
-    ) implements VariantComponent.Parrot {
+    private static class ParrotImpl extends VariantComponent.Parrot {
+        protected ParrotImpl(org.bukkit.entity.Parrot.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.PARROT_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.PARROT_VARIANT, this.getVariant());
         }
     }
 
-    private record PigImpl(
-            org.bukkit.entity.Pig.Variant variant
-    ) implements VariantComponent.Pig {
+    private static class PigImpl extends VariantComponent.Pig {
+        protected PigImpl(org.bukkit.entity.Pig.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.PIG_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.PIG_VARIANT, this.getVariant());
         }
     }
 
-    private record RabbitImpl(
-            org.bukkit.entity.Rabbit.Type variant
-    ) implements VariantComponent.Rabbit {
+    private static class RabbitImpl extends VariantComponent.Rabbit {
+        protected RabbitImpl(org.bukkit.entity.Rabbit.Type variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.RABBIT_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.RABBIT_VARIANT, this.getVariant());
         }
     }
 
-    private record SalmonImpl(
-            org.bukkit.entity.Salmon.Variant variant
-    ) implements VariantComponent.Salmon {
+    private static class SalmonImpl extends VariantComponent.Salmon {
+        protected SalmonImpl(org.bukkit.entity.Salmon.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.SALMON_SIZE, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.SALMON_SIZE, this.getVariant());
         }
     }
 
-    private record SheepImpl(
-            @NotNull DyeColor color
-    ) implements VariantComponent.Sheep {
+    private static class SheepImpl extends VariantComponent.Sheep {
+        protected SheepImpl(DyeColor color) {
+            super(color);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.SHEEP_COLOR, this.color);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.SHEEP_COLOR, this.getColor());
         }
     }
 
-    private record ShulkerBoxImpl(
-            @NotNull DyeColor color
-    ) implements VariantComponent.ShulkerBox {
+    private static class ShulkerBoxImpl extends VariantComponent.ShulkerBox {
+        protected ShulkerBoxImpl(DyeColor color) {
+            super(color);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.SHULKER_COLOR, this.color);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.SHULKER_COLOR, this.getColor());
         }
     }
 
-    private record TropicalFishBaseColorImpl(
-            @NotNull DyeColor color
-    ) implements VariantComponent.TropicalFish.BaseColor {
+    private static class TropicalFishBaseColorImpl extends VariantComponent.TropicalFish.BaseColor {
+        protected TropicalFishBaseColorImpl(DyeColor color) {
+            super(color);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.TROPICAL_FISH_BASE_COLOR, this.color);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.TROPICAL_FISH_BASE_COLOR, this.getColor());
         }
     }
 
-    private record TropicalFishPatternColorImpl(
-            @NotNull DyeColor color
-    ) implements VariantComponent.TropicalFish.PatternColor {
+    private static class TropicalFishPatternColorImpl extends VariantComponent.TropicalFish.PatternColor {
+        protected TropicalFishPatternColorImpl(DyeColor color) {
+            super(color);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.TROPICAL_FISH_PATTERN_COLOR, this.color);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.TROPICAL_FISH_PATTERN_COLOR, this.getColor());
         }
     }
 
-    private record VillagerImpl(
-            org.bukkit.entity.Villager.Type variant
-    ) implements VariantComponent.Villager {
+    private static class VillagerImpl extends VariantComponent.Villager {
+        protected VillagerImpl(org.bukkit.entity.Villager.Type variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.VILLAGER_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.VILLAGER_VARIANT, this.getVariant());
         }
     }
 
-    private record WolfCollarImpl(
-            @NotNull DyeColor color
-    ) implements VariantComponent.Wolf.Collar {
+    private static class WolfCollarImpl extends VariantComponent.Wolf.Collar {
+        protected WolfCollarImpl(DyeColor color) {
+            super(color);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.WOLF_COLLAR, this.color);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.WOLF_COLLAR, this.getColor());
         }
     }
 
-    private record WolfVariantImpl(
-            org.bukkit.entity.Wolf.Variant variant
-    ) implements VariantComponent.Wolf.Variant {
+    private static class WolfVariantImpl extends VariantComponent.Wolf.Variant {
+        protected WolfVariantImpl(org.bukkit.entity.Wolf.Variant variant) {
+            super(variant);
+        }
+
         @Override
-        public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
-            itemStack.setData(DataComponentTypes.WOLF_VARIANT, this.variant);
+        public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+            itemStack.setData(DataComponentTypes.WOLF_VARIANT, this.getVariant());
         }
     }
 }

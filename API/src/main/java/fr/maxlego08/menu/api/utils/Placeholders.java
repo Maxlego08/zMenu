@@ -128,4 +128,7 @@ public class Placeholders {
         return string;
     }
 
+    public void merge(@NotNull Placeholders placeholders) {
+        this.placeholders.putAll(placeholders.getPlaceholders());
+    }
 }

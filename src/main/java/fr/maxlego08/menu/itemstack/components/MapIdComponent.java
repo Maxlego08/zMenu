@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.itemstack.components;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -12,11 +13,20 @@ import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record MapIdComponent(
-    int mapId
-) implements ItemComponent {
+@SuppressWarnings("unused")
+public class MapIdComponent extends ItemComponent {
+    private final int mapId;
+
+    public MapIdComponent(int mapId) {
+        this.mapId = mapId;
+    }
+
+    public int getMapId() {
+        return this.mapId;
+    }
+
     @Override
-    public void apply(@NotNull ItemStack itemStack, @Nullable Player player) {
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, MapMeta.class, mapMeta -> {
             MapView mapView = mapMeta.getMapView();
             if (mapView != null) {
