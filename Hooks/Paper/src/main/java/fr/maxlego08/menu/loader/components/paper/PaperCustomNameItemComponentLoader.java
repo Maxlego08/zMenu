@@ -26,7 +26,7 @@ public class PaperCustomNameItemComponentLoader extends ItemComponentLoader {
         path = normalizePath(path);
         String customName = configuration.getString(path);
         if (customName != null) {
-            return new PaperCustomNameComponent(this.metaUpdater.getComponent(customName));
+            return new PaperCustomNameComponent(customName, this.metaUpdater);
         }
         return null;
     }
