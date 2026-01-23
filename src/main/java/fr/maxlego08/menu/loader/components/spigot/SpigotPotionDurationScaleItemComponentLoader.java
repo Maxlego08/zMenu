@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.components;
+package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotPotionDurationScaleItemComponentLoader extends ItemComponentLoader {
 
     public SpigotPotionDurationScaleItemComponentLoader(){
-        super("potion_duration_scale");
+        super("potion-duration-scale");
     }
 
     @Override
