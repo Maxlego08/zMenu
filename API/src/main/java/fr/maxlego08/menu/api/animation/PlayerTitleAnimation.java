@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
 public abstract class PlayerTitleAnimation {
+
     private final MenuPlugin plugin;
     protected final int inventoryId;
     protected PaperMetaUpdater metaUpdater;
@@ -29,7 +29,7 @@ public abstract class PlayerTitleAnimation {
 
     protected WrappedTask wrappedTask;
 
-    protected PlayerTitleAnimation(@NotNull MenuPlugin plugin,@NotNull TitleAnimationSettings settings, int inventoryId, InventoryType type, int size) {
+    protected PlayerTitleAnimation(@NotNull MenuPlugin plugin, @NotNull TitleAnimationSettings settings, int inventoryId, InventoryType type, int size) {
         this.plugin = plugin;
         this.settings = settings;
         this.inventoryId = inventoryId;
@@ -41,7 +41,7 @@ public abstract class PlayerTitleAnimation {
         this.metaUpdater = paperMetaUpdater;
     }
 
-    public void start(@NotNull Player player,@NotNull List<ItemStack> inventoryContents){
+    public void start(@NotNull Player player, @NotNull List<ItemStack> inventoryContents) {
         if (this.settings.titles().isEmpty()) {
             return;
         }
@@ -70,15 +70,15 @@ public abstract class PlayerTitleAnimation {
         this.isStarted = true;
     }
 
-    public void stop(){
-        if(this.wrappedTask != null){
+    public void stop() {
+        if (this.wrappedTask != null) {
             this.wrappedTask.cancel();
         }
         this.isStarted = false;
         this.currentIndex = 0;
     }
 
-    public abstract void sendTitle(@NotNull Player player,@NotNull String title);
+    public abstract void sendTitle(@NotNull Player player, @NotNull String title);
 
     public abstract void sendInventoryContent(@NotNull Player player, @NotNull List<ItemStack> inventoryContents);
 

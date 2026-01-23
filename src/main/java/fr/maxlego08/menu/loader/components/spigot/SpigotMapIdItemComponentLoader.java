@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotMapIdItemComponentLoader extends ItemComponentLoader {
 
     public SpigotMapIdItemComponentLoader(){
-        super("map_id");
+        super("map-id");
     }
 
     @Override

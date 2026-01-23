@@ -15,7 +15,7 @@ import java.io.File;
 public class SpigotItemModelItemComponentLoader extends ItemComponentLoader {
 
     public SpigotItemModelItemComponentLoader(){
-        super("item_model");
+        super("item-model");
     }
 
     @Override

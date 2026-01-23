@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotMaxStackSizeItemComponentLoader extends ItemComponentLoader {
 
     public SpigotMaxStackSizeItemComponentLoader(){
-        super("max_stack_size");
+        super("max-stack-size");
     }
 
     @Override

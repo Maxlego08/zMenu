@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  * Handles delays, intervals, cycles, item updates, and more.
  */
 public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
+
     protected List<String> titles = new ArrayList<>();
     protected TimeUnit timeUnit = TimeUnit.SECONDS;
     protected int initialDelay = 20;
@@ -23,11 +24,11 @@ public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
     protected int itemUpdateInterval = 1;
 
     @NotNull
-    protected TitleAnimationSettings loadSettings(@NotNull YamlConfiguration configuration, @NotNull String path){
+    protected TitleAnimationSettings loadSettings(@NotNull YamlConfiguration configuration, @NotNull String path) {
         this.titles = configuration.getStringList(path + "titles");
-        this.cycles = configuration.getInt(path+"cycles",-1);
-        this.initialDelay = configuration.getInt(path+"initial-delay",20);
-        this.interval = configuration.getInt(path+"interval",20);
+        this.cycles = configuration.getInt(path + "cycles", -1);
+        this.initialDelay = configuration.getInt(path + "initial-delay", 20);
+        this.interval = configuration.getInt(path + "interval", 20);
         this.showItemsAfterAnimation = configuration.getBoolean(path + "show-items-after-animation", false);
         this.itemUpdateInterval = configuration.getInt(path + "item-update-interval", 1);
         try {
@@ -35,7 +36,7 @@ public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
         } catch (IllegalArgumentException e) {
             this.timeUnit = TimeUnit.SECONDS;
         }
-        return new TitleAnimationSettings(this.titles,this.cycles, this.initialDelay, this.interval, this.timeUnit, this.showItemsAfterAnimation, this.itemUpdateInterval);
+        return new TitleAnimationSettings(this.titles, this.cycles, this.initialDelay, this.interval, this.timeUnit, this.showItemsAfterAnimation, this.itemUpdateInterval);
     }
 
     @Override

@@ -40,9 +40,9 @@ public class SpigotInstrumentItemComponentLoader extends ItemComponentLoader {
             return null;
         }
         String description = componentSection.getString("description", "");
-        float useDuration = (float) componentSection.getDouble("use_duration", 0);
+        float useDuration = (float) componentSection.getDouble("use-duration", 0);
         float range = (float) componentSection.getDouble("range", 0);
-        String soundKey = configuration.getString("sound_event","");
+        String soundKey = configuration.getString("sound-event","");
         NamespacedKey key = NamespacedKey.fromString(soundKey);
         if (key != null) {
             try {

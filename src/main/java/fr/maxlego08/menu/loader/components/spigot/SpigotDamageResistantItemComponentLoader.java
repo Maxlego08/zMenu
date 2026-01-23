@@ -18,7 +18,7 @@ import java.io.File;
 public class SpigotDamageResistantItemComponentLoader extends ItemComponentLoader {
 
     public SpigotDamageResistantItemComponentLoader(){
-        super("damage_resistant");
+        super("damage-resistant");
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SpigotDamageResistantItemComponentLoader extends ItemComponentLoade
         if(damageTypeString == null || damageTypeString.isBlank()) return null;
         NamespacedKey damageTypeKey = NamespacedKey.fromString(damageTypeString.toLowerCase());
         if(damageTypeKey == null) return null;
-        Tag<DamageType> damageType = Bukkit.getTag("damage_types", damageTypeKey, DamageType.class);
+        Tag<DamageType> damageType = Bukkit.getTag("damage-types", damageTypeKey, DamageType.class);
         if(damageType == null) return null;
         return new DamageResistantComponent(damageType);
     }

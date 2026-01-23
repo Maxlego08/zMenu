@@ -18,7 +18,7 @@ import java.util.List;
 public class SpigotLodestoneTrackerItemComponentLoader extends ItemComponentLoader {
 
     public SpigotLodestoneTrackerItemComponentLoader(){
-        super("lodestone_tracker");
+        super("lodestone-tracker");
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.io.File;
 public class SpigotMapColorItemComponentLoader extends AbstractColorItemComponentLoader {
 
     public SpigotMapColorItemComponentLoader(){
-        super("map_color");
+        super("map-color");
     }
 
     @Override

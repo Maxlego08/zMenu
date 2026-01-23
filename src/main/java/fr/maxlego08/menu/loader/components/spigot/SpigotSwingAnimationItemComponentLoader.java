@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotSwingAnimationItemComponentLoader extends ItemComponentLoader {
 
     public SpigotSwingAnimationItemComponentLoader(){
-        super("swing_animation");
+        super("swing-animation");
     }
 
     @Override

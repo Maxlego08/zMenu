@@ -16,7 +16,7 @@ import java.io.File;
 public class SpigotBreakSoundItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBreakSoundItemComponentLoader(){
-        super("break_sound");
+        super("break-sound");
     }
 
     @Override

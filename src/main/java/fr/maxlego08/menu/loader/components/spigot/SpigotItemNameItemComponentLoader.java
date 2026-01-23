@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotItemNameItemComponentLoader extends ItemComponentLoader {
 
     public SpigotItemNameItemComponentLoader(){
-        super("item_name");
+        super("item-name");
     }
 
     @Override

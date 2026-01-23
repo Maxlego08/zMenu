@@ -22,7 +22,7 @@ public class SpigotFoodItemComponentLoader extends ItemComponentLoader {
         if (componentSection == null) return null;
         int nutrition = componentSection.getInt("nutrition", -1);
         float saturation = (float) componentSection.getDouble("saturation", -1);
-        boolean canAlwaysEat = componentSection.getBoolean("can_always_eat", false);
+        boolean canAlwaysEat = componentSection.getBoolean("can-always-eat", false);
         if (nutrition < 0 || saturation < 0) {
             return null;
         }

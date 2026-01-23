@@ -24,7 +24,7 @@ public class SpigotFireworksItemComponentLoader extends AbstractFireworkItemComp
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        int flightDuration = componentSection.getInt("flight_duration", 1);
+        int flightDuration = componentSection.getInt("flight-duration", 1);
         List<FireworkEffect> effects = new ArrayList<>();
         List<Map<?, ?>> mapList = componentSection.getMapList("explosions");
         for (var rawMap : mapList) {

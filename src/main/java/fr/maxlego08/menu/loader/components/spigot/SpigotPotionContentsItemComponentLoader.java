@@ -20,7 +20,7 @@ import java.util.List;
 public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public SpigotPotionContentsItemComponentLoader(){
-        super("potion_contents");
+        super("potion-contents");
     }
 
     @Override
@@ -40,14 +40,14 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
         }
 
         @Nullable Color color = null;
-        Object customColor = componentSection.get("custom_color");
+        Object customColor = componentSection.get("custom-color");
         if (customColor != null) {
             color = this.parseColor(customColor);
         }
 
-        List<PotionEffect> customEffects = parsePotionEffects(componentSection.getMapList("custom_effects"));
+        List<PotionEffect> customEffects = parsePotionEffects(componentSection.getMapList("custom-effects"));
 
-        String customName = componentSection.getString("custom_name", null);
+        String customName = componentSection.getString("custom-name", null);
         return new PotionContentsComponent(basePotionType, customName, color, customEffects);
     }
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
 public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemComponentLoader {
 
     public SpigotCustomModelDataItemComponentLoader(){
-        super("custom_model_data");
+        super("custom-model-data");
     }
 
     @Override

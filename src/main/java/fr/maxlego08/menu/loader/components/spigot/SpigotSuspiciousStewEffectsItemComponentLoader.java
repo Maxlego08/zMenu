@@ -17,7 +17,7 @@ import java.util.Map;
 public class SpigotSuspiciousStewEffectsItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public SpigotSuspiciousStewEffectsItemComponentLoader() {
-        super("suspicious_stew_effects");
+        super("suspicious-stew-effects");
     }
 
     @Override

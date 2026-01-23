@@ -16,7 +16,7 @@ import java.util.Optional;
 public class SpigotFireworkExplosionItemComponentLoader extends AbstractFireworkItemComponentLoader {
 
     public SpigotFireworkExplosionItemComponentLoader(){
-        super("firework_explosion");
+        super("firework-explosion");
     }
 
     @Override

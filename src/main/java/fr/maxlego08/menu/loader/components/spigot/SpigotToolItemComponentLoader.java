@@ -25,9 +25,9 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
                                         @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        float defaultMiningSpeed = (float) componentSection.getDouble("default_mining_speed", 1.0);
-        int damagePerBlock = componentSection.getInt("damage_per_block", 1);
-        boolean canDestroyBlocksInCreative = componentSection.getBoolean("can_destroy_blocks_in_creative", true);
+        float defaultMiningSpeed = (float) componentSection.getDouble("default-mining-speed", 1.0);
+        int damagePerBlock = componentSection.getInt("damage-per-block", 1);
+        boolean canDestroyBlocksInCreative = componentSection.getBoolean("can-destroy-blocks-in-creative", true);
 
         List<Map<?, ?>> rawRulesList = componentSection.getMapList("rules");
         List<ZToolRule<Material>> materialRules = new ArrayList<>();
@@ -39,7 +39,7 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
             Map<String, Object> ruleMap = (Map<String, Object>) rawRuleMap;
 
             float miningSpeed = ((Number) ruleMap.getOrDefault("speed", 1.0)).floatValue();
-            boolean correctForDrops = (boolean) ruleMap.getOrDefault("correct_for_drops", false);
+            boolean correctForDrops = (boolean) ruleMap.getOrDefault("correct-for-drops", false);
 
             Object blocks = ruleMap.get("blocks");
 

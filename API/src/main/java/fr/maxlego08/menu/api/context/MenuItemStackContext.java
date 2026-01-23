@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface MenuItemStackContext {
+
     /**
      * Retrieves the {@link InventoryManager} responsible for managing this menu item stack.
      *

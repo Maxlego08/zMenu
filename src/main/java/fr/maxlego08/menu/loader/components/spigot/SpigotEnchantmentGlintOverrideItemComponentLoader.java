@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotEnchantmentGlintOverrideItemComponentLoader extends ItemComponentLoader {
 
     public SpigotEnchantmentGlintOverrideItemComponentLoader(){
-        super("enchantment_glint_override");
+        super("enchantment-glint-override");
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotRepairCostItemComponentLoader extends ItemComponentLoader {
 
     public SpigotRepairCostItemComponentLoader(){
-        super("repair_cost");
+        super("repair-cost");
     }
 
     @Override

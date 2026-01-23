@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ZBuildContext implements BuildContext {
+
     private final Player player;
     private final boolean useCache;
     private final Placeholders placeholders;

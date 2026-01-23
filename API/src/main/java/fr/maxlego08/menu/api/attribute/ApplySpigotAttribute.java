@@ -15,7 +15,8 @@ import java.util.List;
  * Spigot-specific implementation of the AttributApplier interface.
  * Applies attribute modifiers to items using Spigot's ItemMeta API.
  */
-public class ApplySpigotAttribute implements AttributApplier{
+public class ApplySpigotAttribute implements AttributApplier {
+
     @Override
     public void applyAttributesModern(@NotNull ItemStack itemStack, @NotNull List<AttributeWrapper> attributes, @NotNull MenuPlugin plugin, @Nullable AttributeMergeStrategy strategy) {
         ItemMeta meta = itemStack.getItemMeta();

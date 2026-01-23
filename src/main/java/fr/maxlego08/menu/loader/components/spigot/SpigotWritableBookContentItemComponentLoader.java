@@ -17,7 +17,7 @@ import java.util.Map;
 public class SpigotWritableBookContentItemComponentLoader extends ItemComponentLoader {
 
     public SpigotWritableBookContentItemComponentLoader(){
-        super("writable_book_content");
+        super("writable-book-content");
     }
 
     @Override

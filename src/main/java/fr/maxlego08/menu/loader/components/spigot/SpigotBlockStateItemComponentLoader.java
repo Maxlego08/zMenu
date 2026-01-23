@@ -15,7 +15,7 @@ import java.util.Map;
 public class SpigotBlockStateItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBlockStateItemComponentLoader(){
-        super("block_state");
+        super("block-state");
     }
 
     @Override

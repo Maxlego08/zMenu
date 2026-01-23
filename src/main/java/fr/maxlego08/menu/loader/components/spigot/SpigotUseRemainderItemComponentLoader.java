@@ -17,7 +17,7 @@ import java.util.Map;
 public class SpigotUseRemainderItemComponentLoader extends AbstractMenuItemStackListComponentLoaderBase {
 
     public SpigotUseRemainderItemComponentLoader(MenuPlugin plugin){
-        super("use_remainder", plugin);
+        super("use-remainder", plugin);
     }
 
     @Override

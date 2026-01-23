@@ -18,7 +18,7 @@ import java.util.Map;
 public class SpigotChargedProjectilesItemComponentLoader extends AbstractMenuItemStackListComponentLoaderBase {
 
     public SpigotChargedProjectilesItemComponentLoader(MenuPlugin plugin){
-        super("charged_projectiles", plugin);
+        super("charged-projectiles", plugin);
     }
 
     @Override

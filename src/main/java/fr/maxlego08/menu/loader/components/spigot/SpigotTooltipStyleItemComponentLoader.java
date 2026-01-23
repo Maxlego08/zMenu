@@ -15,7 +15,7 @@ import java.io.File;
 public class SpigotTooltipStyleItemComponentLoader extends ItemComponentLoader {
 
     public SpigotTooltipStyleItemComponentLoader(){
-        super("tooltip_style");
+        super("tooltip-style");
     }
 
     @Override

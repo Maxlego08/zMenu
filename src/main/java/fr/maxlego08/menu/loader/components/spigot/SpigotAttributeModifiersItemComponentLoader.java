@@ -24,7 +24,7 @@ import java.util.Map;
 public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLoader {
 
     public SpigotAttributeModifiersItemComponentLoader(){
-        super("attribute_modifiers");
+        super("attribute-modifiers");
     }
 
     @Override

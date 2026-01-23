@@ -33,11 +33,11 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        double consumeSeconds = componentSection.getDouble("consume_seconds", 1.6f);
+        double consumeSeconds = componentSection.getDouble("consume-seconds", 1.6f);
         ConsumableComponent.Animation animation = parseAnimation(configuration.getString("animation", "EAT"));
-        Sound consumeSound = parseSound(configuration.getString("consume_sound", "ENTITY_GENERIC_EAT")).orElse(Sound.ENTITY_GENERIC_EAT);
-        boolean hasConsumeParticles = componentSection.getBoolean("has_consume_particles", true);
-        List<ConsumableEffect> effects = parseEffects(componentSection.getMapList("on_consume_effects"));
+        Sound consumeSound = parseSound(configuration.getString("consume-sound", "ENTITY-GENERIC-EAT")).orElse(Sound.ENTITY_GENERIC_EAT);
+        boolean hasConsumeParticles = componentSection.getBoolean("has-consume-particles", true);
+        List<ConsumableEffect> effects = parseEffects(componentSection.getMapList("on-consume-effects"));
 
         return new fr.maxlego08.menu.api.itemstack.components.ConsumableComponent(
                 (float) consumeSeconds, animation, consumeSound, hasConsumeParticles, effects

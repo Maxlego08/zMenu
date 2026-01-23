@@ -18,7 +18,7 @@ import java.util.Map;
 public class SpigotBannerPatternsItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBannerPatternsItemComponentLoader(){
-        super("banner_patterns");
+        super("banner-patterns");
     }
 
     @Override

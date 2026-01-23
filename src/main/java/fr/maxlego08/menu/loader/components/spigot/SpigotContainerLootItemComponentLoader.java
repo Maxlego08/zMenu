@@ -15,13 +15,13 @@ import java.io.File;
 public class SpigotContainerLootItemComponentLoader extends ItemComponentLoader {
 
     public SpigotContainerLootItemComponentLoader(){
-        super("container_loot");
+        super("container-loot");
     }
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        String lootTable = componentSection.getString("loot_table");
+        String lootTable = componentSection.getString("loot-table");
         if (lootTable != null) {
             long seed = componentSection.getLong("seed", 0L);
             try {

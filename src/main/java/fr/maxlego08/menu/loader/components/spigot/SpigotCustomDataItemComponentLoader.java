@@ -20,7 +20,7 @@ import java.util.Optional;
 public class SpigotCustomDataItemComponentLoader extends ItemComponentLoader {
 
     public SpigotCustomDataItemComponentLoader() {
-        super("custom_data");
+        super("custom-data");
     }
 
     @Override

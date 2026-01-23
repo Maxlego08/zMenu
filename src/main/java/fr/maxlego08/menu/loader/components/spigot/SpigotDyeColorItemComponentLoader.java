@@ -15,7 +15,7 @@ import java.io.File;
 public class SpigotDyeColorItemComponentLoader extends AbstractColorItemComponentLoader {
 
     public SpigotDyeColorItemComponentLoader(){
-        super("dyed_color");
+        super("dyed-color");
     }
 
     @Override

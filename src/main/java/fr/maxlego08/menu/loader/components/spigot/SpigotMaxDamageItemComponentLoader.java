@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotMaxDamageItemComponentLoader extends ItemComponentLoader {
 
     public SpigotMaxDamageItemComponentLoader(){
-        super("max_damage");
+        super("max-damage");
     }
 
     @Override

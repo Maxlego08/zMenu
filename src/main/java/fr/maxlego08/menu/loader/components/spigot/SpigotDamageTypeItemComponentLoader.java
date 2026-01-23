@@ -16,7 +16,7 @@ import java.io.File;
 public class SpigotDamageTypeItemComponentLoader extends ItemComponentLoader {
 
     public SpigotDamageTypeItemComponentLoader(){
-        super("damage_type");
+        super("damage-type");
     }
 
     @Override

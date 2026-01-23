@@ -18,7 +18,7 @@ import java.io.File;
 public class SpigotJukeboxPlayableItemComponentLoader extends ItemComponentLoader {
 
     public SpigotJukeboxPlayableItemComponentLoader(){
-        super("jukebox_playable");
+        super("jukebox-playable");
     }
 
     @Override

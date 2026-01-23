@@ -15,7 +15,7 @@ import java.io.File;
 public class SpigotBaseColorItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBaseColorItemComponentLoader(){
-        super("base_color");
+        super("base-color");
     }
 
     @Override

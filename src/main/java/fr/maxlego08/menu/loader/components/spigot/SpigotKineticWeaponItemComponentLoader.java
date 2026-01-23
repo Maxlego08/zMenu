@@ -17,20 +17,20 @@ import java.util.Optional;
 public class SpigotKineticWeaponItemComponentLoader extends ItemComponentLoader {
 
     public SpigotKineticWeaponItemComponentLoader(){
-        super("kinetic_weapon");
+        super("kinetic-weapon");
     }
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        int delayTicks = componentSection.getInt("delay_ticks", 0);
-        Optional<KineticWeaponComponent.Condition> damageConditions = getCondition(componentSection.getConfigurationSection("damage_conditions"));
-        Optional<KineticWeaponComponent.Condition> dismountConditions = getCondition(componentSection.getConfigurationSection("dismount_conditions"));
-        Optional<KineticWeaponComponent.Condition> knockbackConditions = getCondition(componentSection.getConfigurationSection("knockback_conditions"));
-        float forwardMovement = (float) componentSection.getDouble("forward_movement", 0d);
-        float damageMultiplier = (float) componentSection.getDouble("damage_multiplier", 1d);
+        int delayTicks = componentSection.getInt("delay-ticks", 0);
+        Optional<KineticWeaponComponent.Condition> damageConditions = getCondition(componentSection.getConfigurationSection("damage-conditions"));
+        Optional<KineticWeaponComponent.Condition> dismountConditions = getCondition(componentSection.getConfigurationSection("dismount-conditions"));
+        Optional<KineticWeaponComponent.Condition> knockbackConditions = getCondition(componentSection.getConfigurationSection("knockback-conditions"));
+        float forwardMovement = (float) componentSection.getDouble("forward-movement", 0d);
+        float damageMultiplier = (float) componentSection.getDouble("damage-multiplier", 1d);
         Optional<Sound> sound = getSound(componentSection.getString("sound", ""));
-        Optional<Sound> hitSound = getSound(componentSection.getString("hit_sound", ""));
+        Optional<Sound> hitSound = getSound(componentSection.getString("hit-sound", ""));
         return new fr.maxlego08.menu.api.itemstack.components.KineticWeaponComponent(delayTicks,
                 damageConditions,
                 dismountConditions,
@@ -44,9 +44,9 @@ public class SpigotKineticWeaponItemComponentLoader extends ItemComponentLoader 
 
     private Optional<KineticWeaponComponent.Condition> getCondition(@Nullable ConfigurationSection configurationSection){
         if (configurationSection == null) return Optional.empty();
-        int maxDurationTicks = configurationSection.getInt("max_duration_ticks", -1);
-        float minSpeed = (float) configurationSection.getDouble("min_speed", 0d);
-        float minRelativeSpeed = (float) configurationSection.getDouble("min_relative_speed", 0d);
+        int maxDurationTicks = configurationSection.getInt("max-duration-ticks", -1);
+        float minSpeed = (float) configurationSection.getDouble("min-speed", 0d);
+        float minRelativeSpeed = (float) configurationSection.getDouble("min-relative-speed", 0d);
         if (maxDurationTicks < 0) return Optional.empty();
         return Optional.of(new ZKineticWeaponCondition(maxDurationTicks, minSpeed, minRelativeSpeed));
     }

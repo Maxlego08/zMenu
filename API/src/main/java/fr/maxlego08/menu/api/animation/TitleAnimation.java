@@ -22,5 +22,5 @@ public interface TitleAnimation {
      * @return A PlayerTitleAnimation if started, otherwise null.
      */
     @Nullable
-    PlayerTitleAnimation playTitleAnimation(@NotNull MenuPlugin plugin, int containerId,@NotNull InventoryType type, int size, Object... args);
+    PlayerTitleAnimation playTitleAnimation(@NotNull MenuPlugin plugin, int containerId, @NotNull InventoryType type, int size, Object... args);
 }

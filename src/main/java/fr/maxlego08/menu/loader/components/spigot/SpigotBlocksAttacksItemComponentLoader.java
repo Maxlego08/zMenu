@@ -24,7 +24,7 @@ import java.util.Map;
 public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBlocksAttacksItemComponentLoader(){
-        super("blocks_attacks");
+        super("blocks-attacks");
     }
 
     private @Nullable Sound getSoundFromSection(@NotNull ConfigurationSection section, @NotNull String keyName) {
@@ -68,7 +68,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
     }
 
     private void loadDamageReductionRecords(@NotNull ConfigurationSection componentSection, @NotNull List<ZDamageReductionRecord> damageReductionRecords) {
-        List<Map<?, ?>> mapList = componentSection.getMapList("damage_reductions");
+        List<Map<?, ?>> mapList = componentSection.getMapList("damage-reductions");
         for (var rawMap : mapList) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) rawMap;
@@ -87,7 +87,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
             if (damageTypes.isEmpty()) continue;
             float base = parseFloatField(map, "base", 0f, "Invalid base value for BlocksAttacksComponent damage reduction, using default 0f.");
             float factor = parseFloatField(map, "factor", 0f, "Invalid factor value for BlocksAttacksComponent damage reduction, using default 0f.");
-            float horizontalBlockingAngle = parseFloatField(map, "horizontal_blocking_angle", 90f, "Invalid horizontal_blocking_angle value for BlocksAttacksComponent damage reduction, using default 90f.");
+            float horizontalBlockingAngle = parseFloatField(map, "horizontal-blocking-angle", 90f, "Invalid horizontal-blocking-angle value for BlocksAttacksComponent damage reduction, using default 90f.");
             damageReductionRecords.add(new ZDamageReductionRecord(
                     damageTypes,
                     base,
@@ -102,15 +102,15 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
         if (componentSection == null) {
             return null;
         }
-        double blockDelaySeconds = componentSection.getDouble("block_delay_seconds", 0f);
-        double disableCooldownScale = componentSection.getDouble("disable_cooldown_scale", 1d);
-        double itemDamageThreshold = componentSection.getDouble("item_damage.threshold", 0f);
-        double itemDamageBase = componentSection.getDouble("item_damage.base", 0f);
-        double itemDamageFactor = componentSection.getDouble("item_damage.factor", 1.5f);
+        double blockDelaySeconds = componentSection.getDouble("block-delay-seconds", 0f);
+        double disableCooldownScale = componentSection.getDouble("disable-cooldown-scale", 1d);
+        double itemDamageThreshold = componentSection.getDouble("item-damage.threshold", 0f);
+        double itemDamageBase = componentSection.getDouble("item-damage.base", 0f);
+        double itemDamageFactor = componentSection.getDouble("item-damage.factor", 1.5f);
         List<ZDamageReductionRecord> damageReductionRecords = new ArrayList<>();
         loadDamageReductionRecords(componentSection, damageReductionRecords);
-        Sound blockSound = getSoundFromSection(componentSection, "block_sound");
-        Sound disabledSound = getSoundFromSection(componentSection, "disabled_sound");
+        Sound blockSound = getSoundFromSection(componentSection, "block-sound");
+        Sound disabledSound = getSoundFromSection(componentSection, "disabled-sound");
         return new BlocksAttacksComponent(
                 (float) blockDelaySeconds,
                 (float) disableCooldownScale,

@@ -20,8 +20,8 @@ public class SpigotWeaponItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        int itemDamagePerAttack = componentSection.getInt("item_damage_per_attack", 1);
-        float disableBlockingForSeconds = (float) componentSection.getDouble("disable_blocking_for_seconds", 0);
+        int itemDamagePerAttack = componentSection.getInt("item-damage-per-attack", 1);
+        float disableBlockingForSeconds = (float) componentSection.getDouble("disable-blocking-for-seconds", 0);
         return new WeaponComponent(itemDamagePerAttack, disableBlockingForSeconds);
     }
 }

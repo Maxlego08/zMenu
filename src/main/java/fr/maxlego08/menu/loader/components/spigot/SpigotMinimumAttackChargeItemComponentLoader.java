@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotMinimumAttackChargeItemComponentLoader extends ItemComponentLoader {
 
     public SpigotMinimumAttackChargeItemComponentLoader(){
-        super("minimum_attack_charge");
+        super("minimum-attack-charge");
     }
 
     @Override

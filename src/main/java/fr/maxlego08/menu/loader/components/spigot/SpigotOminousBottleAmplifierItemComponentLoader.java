@@ -14,7 +14,7 @@ import java.io.File;
 public class SpigotOminousBottleAmplifierItemComponentLoader extends ItemComponentLoader {
 
     public SpigotOminousBottleAmplifierItemComponentLoader(){
-        super("ominous_bottle_amplifier");
+        super("ominous-bottle-amplifier");
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.Map;
 public class SpigotStoredEnchantItemComponentLoader extends ItemComponentLoader {
 
     public SpigotStoredEnchantItemComponentLoader(){
-        super("stored_enchantments");
+        super("stored-enchantments");
     }
 
     @Override

@@ -18,7 +18,7 @@ import java.util.Map;
 public class SpigotBundleContentsItemComponentLoader extends AbstractMenuItemStackListComponentLoaderBase {
 
     public SpigotBundleContentsItemComponentLoader(MenuPlugin plugin){
-        super("bundle_contents", plugin);
+        super("bundle-contents", plugin);
     }
 
     @Override
