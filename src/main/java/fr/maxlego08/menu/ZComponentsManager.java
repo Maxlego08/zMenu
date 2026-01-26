@@ -8,7 +8,6 @@ import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
 import fr.maxlego08.menu.itemstack.components.spigot.SpigotVariantComponent;
-import fr.maxlego08.menu.loader.components.spigot.SpigotPotionDurationScaleItemComponentLoader;
 import fr.maxlego08.menu.loader.components.paper.*;
 import fr.maxlego08.menu.loader.components.spigot.*;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +31,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.initializeVariantComponents(plugin);
 
             this.registerComponent(new SpigotBlockStateItemComponentLoader());
-            this.registerComponent(new SpigotAttributeModifiersItemComponentLoader());
+            this.registerComponent(new SpigotAttributeModifiersItemComponentLoader(plugin));
             this.registerComponent(new SpigotBannerPatternsItemComponentLoader());
             this.registerComponent(new SpigotBaseColorItemComponentLoader());
             this.registerComponent(new SpigotBundleContentsItemComponentLoader(plugin));
