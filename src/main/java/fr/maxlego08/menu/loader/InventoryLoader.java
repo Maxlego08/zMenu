@@ -32,10 +32,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -53,9 +50,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         var nameObject = configuration.get("name", configuration.get("title"));
         String name = "";
 
-        if (nameObject instanceof List<?> list){
+        if (nameObject instanceof List<?> list) {
             name = String.join("", (List<String>) list);
-        } else if (nameObject instanceof String string){
+        } else if (nameObject instanceof String string) {
             name = string;
         }
 
@@ -100,8 +97,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 }
             }
         } else {
-            if (Configuration.enableDebug){
-            Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            if (Configuration.enableDebug) {
+                Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }
 
@@ -120,22 +117,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
         }
 
-        if (configuration.isConfigurationSection("title-animation")){
-            String titleAnimationPath = "title-animation.";
-            String pluginName = configuration.getString(titleAnimationPath + "plugin");
-            Optional<TitleAnimationLoader> titleAnimationLoader;
-            TitleAnimationManager titleAnimationManager = this.plugin.getTitleAnimationManager();
-            if (pluginName == null){
-                titleAnimationLoader = titleAnimationManager.getFirstLoader();
-            } else {
-                titleAnimationLoader = titleAnimationManager.getLoader(pluginName);
-            }
-            if (titleAnimationLoader.isPresent()) {
-                TitleAnimationLoader animationLoader = titleAnimationLoader.get();
-                TitleAnimation titleAnimation = animationLoader.load(configuration, titleAnimationPath, file);
-                inventory.setTitleAnimation(titleAnimation);
-            }
-        }
+        this.loadTitleAnimation(inventory, configuration, file);
 
         inventory.setType(inventoryType);
         inventory.setUpdateInterval(configuration.getInt(path + "update-interval", configuration.getInt(path + "updateInterval", 1000)));
@@ -148,6 +130,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         this.loadPatterns(configuration, inventory);
         this.loadOpenWithItem(configuration, inventory, file, menuItemStackLoader);
         this.loadOpenRequirement(configuration, inventory, file);
+        this.loadOpenAndCloseActions(configuration, inventory, file);
 
         /*Map<String, String> translatedDisplayName = new HashMap<>();
         MenuItemStackLoader.getTranslatedName(configuration, path, translatedDisplayName);
@@ -168,6 +151,12 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
 
         return inventory;
+    }
+
+    private void loadOpenAndCloseActions(@NonNull YamlConfiguration configuration, ZInventory inventory, File file) {
+        var buttonManager = this.plugin.getButtonManager();
+        inventory.setOpenActions(buttonManager.loadActions(configuration, "open-actions", file));
+        inventory.setCloseActions(buttonManager.loadActions(configuration, "close-actions", file));
     }
 
     /**
@@ -209,7 +198,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     private List<ActionPattern> loadActionPatterns(YamlConfiguration configuration) {
         PatternManager patternManager = this.plugin.getPatternManager();
         List<ActionPattern> actionPatterns = new ArrayList<>();
-        for (String patternName: configuration.getStringList("action-patterns")){
+        for (String patternName : configuration.getStringList("action-patterns")) {
             Optional<ActionPattern> actionPattern = patternManager.getActionPattern(patternName);
             actionPattern.ifPresent(actionPatterns::add);
         }
@@ -292,6 +281,25 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
     }
 
+    private void loadTitleAnimation(ZInventory inventory, YamlConfiguration configuration, File file) throws InventoryException {
+        if (configuration.isConfigurationSection("title-animation")) {
+            String titleAnimationPath = "title-animation.";
+            String pluginName = configuration.getString(titleAnimationPath + "plugin");
+            Optional<TitleAnimationLoader> titleAnimationLoader;
+            TitleAnimationManager titleAnimationManager = this.plugin.getTitleAnimationManager();
+            if (pluginName == null) {
+                titleAnimationLoader = titleAnimationManager.getFirstLoader();
+            } else {
+                titleAnimationLoader = titleAnimationManager.getLoader(pluginName);
+            }
+            if (titleAnimationLoader.isPresent()) {
+                TitleAnimationLoader animationLoader = titleAnimationLoader.get();
+                TitleAnimation titleAnimation = animationLoader.load(configuration, titleAnimationPath, file);
+                inventory.setTitleAnimation(titleAnimation);
+            }
+        }
+    }
+
     @Override
     public void save(Inventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
@@ -303,6 +311,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             itemStackLoader.save(object.getFillItemStack(), configuration, "fill-item.", file);
         }
 
-        //TODO: FINISH THE SAVE METHOD
+        // TODO: FINISH THE SAVE METHOD
     }
 }

@@ -52,6 +52,7 @@
 - MiniMessage support in toasts.
 - More annotations for the API.
 - The inventory name can now have several lines, will be used to simplify the configuration of inventory names with zTextGenerator.
+- Added ``open-actions`` and `close-actions` for inventories
 
 
 

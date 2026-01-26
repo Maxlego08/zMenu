@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
@@ -46,6 +47,8 @@ public class ZInventory extends ZUtils implements Inventory {
     private InventoryType type = InventoryType.CHEST;
     private String targetPlayerNamePlaceholder;
     private TitleAnimation titleAnimation;
+    private List<Action> openActions = new ArrayList<>();
+    private List<Action> closeActions = new ArrayList<>();
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -233,6 +236,9 @@ public class ZInventory extends ZUtils implements Inventory {
             inventoriesPlayer.storeInventory(player);
         }
 
+        var placeholders = new Placeholders();
+        this.openActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+
         return InventoryResult.SUCCESS;
     }
 
@@ -268,6 +274,9 @@ public class ZInventory extends ZUtils implements Inventory {
                 }
             }
         }, 1);
+
+        var placeholders = new Placeholders();
+        this.closeActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
     }
 
     @Override
@@ -373,5 +382,23 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
         this.targetPlayerNamePlaceholder = targetPlaceholder;
+    }
+
+    @Override
+    public List<Action> getOpenActions() {
+        return openActions;
+    }
+
+    public void setOpenActions(List<Action> openActions) {
+        this.openActions = openActions;
+    }
+
+    @Override
+    public List<Action> getCloseActions() {
+        return closeActions;
+    }
+
+    public void setCloseActions(List<Action> closeActions) {
+        this.closeActions = closeActions;
     }
 }
