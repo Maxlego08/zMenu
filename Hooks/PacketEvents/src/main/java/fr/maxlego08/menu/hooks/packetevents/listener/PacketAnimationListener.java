@@ -90,7 +90,7 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread()) {
+            if (Bukkit.isPrimaryThread() || !this.plugin.isEnabled()) {
                 task.run();
             } else {
                 this.plugin.getScheduler().runNextTick(w -> task.run());
@@ -110,7 +110,7 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread()) {
+            if (Bukkit.isPrimaryThread() || !this.plugin.isEnabled()) {
                 task.run();
             } else {
                 this.plugin.getScheduler().runNextTick(w -> task.run());
@@ -148,7 +148,7 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread()) {
+            if (Bukkit.isPrimaryThread() || !this.plugin.isEnabled()) {
                 task.run();
             } else {
                 this.plugin.getScheduler().runNextTick(w -> task.run());
