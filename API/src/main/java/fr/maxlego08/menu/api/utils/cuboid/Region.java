@@ -12,6 +12,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 
+/**
+ * Represents a group of cuboids as a region, useful for area grouping, protection, or bulk operations.
+ */
 public class Region {
     private final List<Cuboid> cuboids;
 

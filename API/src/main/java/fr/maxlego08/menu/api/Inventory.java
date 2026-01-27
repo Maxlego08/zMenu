@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
@@ -216,4 +218,12 @@ public interface Inventory {
      * @return The player name placeholder.
      */
     String getTargetPlayerNamePlaceholder();
+
+    void setTitleAnimation(TitleAnimation load);
+
+    TitleAnimation getTitleAnimation();
+
+    List<Action> getOpenActions();
+
+    List<Action> getCloseActions();
 }

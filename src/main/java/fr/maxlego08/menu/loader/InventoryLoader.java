@@ -5,25 +5,30 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.TitleAnimationManager;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
+import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -39,11 +44,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
-        String name = configuration.getString("name", configuration.getString("title"));
-        name = name == null ? "" : name;
+        var nameObject = configuration.get("name", configuration.get("title"));
+        String name = "";
+
+        if (nameObject instanceof List<?> list) {
+            name = String.join("", (List<String>) list);
+        } else if (nameObject instanceof String string) {
+            name = string;
+        }
+
         InventoryType inventoryType;
         int size;
         String nameType = configuration.getString("type", "CHEST").toUpperCase();
@@ -70,6 +82,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
 
+        List<ActionPattern> actionPatterns = this.loadActionPatterns(configuration);
+
         Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
@@ -77,14 +91,14 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         if (section != null) {
             for (String buttonPath : section.getKeys(false)) {
                 try {
-                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
+                    buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
                     Logger.info(exception.getMessage(), Logger.LogType.ERROR);
                 }
             }
         } else {
-            if (Config.enableDebug){
-            Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            if (Configuration.enableDebug) {
+                Logger.info("items section was not found in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }
 
@@ -103,6 +117,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
         }
 
+        this.loadTitleAnimation(inventory, configuration, file);
+
         inventory.setType(inventoryType);
         inventory.setUpdateInterval(configuration.getInt(path + "update-interval", configuration.getInt(path + "updateInterval", 1000)));
         inventory.setClearInventory(configuration.getBoolean(path + "clear-inventory", configuration.getBoolean(path + "clearInventory", false)));
@@ -114,6 +130,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         this.loadPatterns(configuration, inventory);
         this.loadOpenWithItem(configuration, inventory, file, menuItemStackLoader);
         this.loadOpenRequirement(configuration, inventory, file);
+        this.loadOpenAndCloseActions(configuration, inventory, file);
 
         /*Map<String, String> translatedDisplayName = new HashMap<>();
         MenuItemStackLoader.getTranslatedName(configuration, path, translatedDisplayName);
@@ -134,6 +151,12 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
 
         return inventory;
+    }
+
+    private void loadOpenAndCloseActions(@NonNull YamlConfiguration configuration, ZInventory inventory, File file) {
+        var buttonManager = this.plugin.getButtonManager();
+        inventory.setOpenActions(buttonManager.loadActions(configuration, "open-actions", file));
+        inventory.setCloseActions(buttonManager.loadActions(configuration, "close-actions", file));
     }
 
     /**
@@ -170,6 +193,16 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             pattern.ifPresent(patterns::add);
         }
         inventory.setPatterns(patterns);
+    }
+
+    private List<ActionPattern> loadActionPatterns(YamlConfiguration configuration) {
+        PatternManager patternManager = this.plugin.getPatternManager();
+        List<ActionPattern> actionPatterns = new ArrayList<>();
+        for (String patternName : configuration.getStringList("action-patterns")) {
+            Optional<ActionPattern> actionPattern = patternManager.getActionPattern(patternName);
+            actionPattern.ifPresent(actionPatterns::add);
+        }
+        return actionPatterns;
     }
 
     /**
@@ -248,8 +281,27 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
     }
 
+    private void loadTitleAnimation(ZInventory inventory, YamlConfiguration configuration, File file) throws InventoryException {
+        if (configuration.isConfigurationSection("title-animation")) {
+            String titleAnimationPath = "title-animation.";
+            String pluginName = configuration.getString(titleAnimationPath + "plugin");
+            Optional<TitleAnimationLoader> titleAnimationLoader;
+            TitleAnimationManager titleAnimationManager = this.plugin.getTitleAnimationManager();
+            if (pluginName == null) {
+                titleAnimationLoader = titleAnimationManager.getFirstLoader();
+            } else {
+                titleAnimationLoader = titleAnimationManager.getLoader(pluginName);
+            }
+            if (titleAnimationLoader.isPresent()) {
+                TitleAnimationLoader animationLoader = titleAnimationLoader.get();
+                TitleAnimation titleAnimation = animationLoader.load(configuration, titleAnimationPath, file);
+                inventory.setTitleAnimation(titleAnimation);
+            }
+        }
+    }
+
     @Override
-    public void save(Inventory object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(Inventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", object.getName());
@@ -259,6 +311,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             itemStackLoader.save(object.getFillItemStack(), configuration, "fill-item.", file);
         }
 
-        //TODO: FINISH THE SAVE METHOD
+        // TODO: FINISH THE SAVE METHOD
     }
 }

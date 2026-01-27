@@ -7,6 +7,7 @@ import io.lumine.mythic.core.items.MythicItem;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class MythicMobsItemsLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         Optional<MythicItem> mythicItem = itemManager.getItem(materialString);
         return mythicItem.map(MythicItem::getCachedBaseItem).orElse(null);
     }

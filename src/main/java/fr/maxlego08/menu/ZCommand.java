@@ -11,18 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @param plugin      The plugin where the command comes from
- * @param command     Main command
- * @param aliases     List of aliases
- * @param permission  Command Permission
- * @param inventory   Inventory name
- * @param arguments   List of arguments
- * @param actions     Actions
- * @param subCommands Sub Commands
- * @param path        file path
- * @param file        File
+ * @param plugin        The plugin where the command comes from
+ * @param command       Main command
+ * @param aliases       List of aliases
+ * @param consoleCanUse If console can use the command
+ * @param permission    Command Permission
+ * @param inventory     Inventory name
+ * @param arguments     List of arguments
+ * @param actions       Actions
+ * @param subCommands   Sub Commands
+ * @param path          file path
+ * @param file          File
  */
-public record ZCommand(Plugin plugin, String command, List<String> aliases, String permission, String inventory, List<CommandArgument> arguments,
+public record ZCommand(Plugin plugin, String command, List<String> aliases, boolean consoleCanUse, String permission, String inventory, List<CommandArgument> arguments,
                        List<Action> actions, List<Command> subCommands, String denyMessage, String path, File file) implements Command {
 
     @Override

@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.traqueur.currencies.Currencies;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 
@@ -23,7 +24,7 @@ public class CurrencyDepositAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         this.currencies.deposit(player, new BigDecimal(papi(placeholders.parse(this.amount), player)), this.economyName == null ? "default" : this.economyName, papi(placeholders.parse(this.reason), player));
     }
 }

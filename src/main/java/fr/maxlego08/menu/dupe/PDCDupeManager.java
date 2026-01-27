@@ -2,13 +2,13 @@ package fr.maxlego08.menu.dupe;
 
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 public class PDCDupeManager implements DupeManager {
 
@@ -19,14 +19,10 @@ public class PDCDupeManager implements DupeManager {
     }
 
     @Override
-    public ItemStack protectItem(ItemStack itemStack) {
+    public @NonNull ItemStack protectItem(@NonNull ItemStack itemStack) {
 
         try {
 
-            if (itemStack == null) {
-                Bukkit.getLogger().severe("Attention, you have a null ItemStack on protectItem method !");
-                return null;
-            }
             if (itemStack.getType().isAir()) {
                 return itemStack;
             }
@@ -49,10 +45,7 @@ public class PDCDupeManager implements DupeManager {
     }
 
     @Override
-    public boolean isDupeItem(ItemStack itemStack) {
-
-        if (itemStack == null) return false;
-
+    public boolean isDupeItem(@NonNull ItemStack itemStack) {
         if (!itemStack.hasItemMeta()) {
             return false;
         }

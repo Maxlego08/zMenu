@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.players;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +16,7 @@ public interface PlayerData {
      *
      * @return uniqueId
      */
+    @NotNull
     UUID getUniqueId();
 
     /**
@@ -21,6 +24,7 @@ public interface PlayerData {
      *
      * @return collections
      */
+    @NotNull
     Collection<Data> getDatas();
 
     /**
@@ -28,21 +32,21 @@ public interface PlayerData {
      *
      * @param data New {@link Data}
      */
-    void addData(Data data);
+    void addData(@NotNull Data data);
 
     /**
      * Allows you to delete a data
      *
      * @param data Old {@link Data}
      */
-    void removeData(Data data);
+    void removeData(@NotNull Data data);
 
     /**
      * Allows you to delete a {@link Data}
      *
      * @param key Data key
      */
-    void removeData(String key);
+    void removeData(@NotNull String key);
 
     /**
      * Check if data exist
@@ -50,7 +54,7 @@ public interface PlayerData {
      * @param key Data key
      * @return boolean
      */
-    boolean containsKey(String key);
+    boolean containsKey(@NotNull String key);
 
     /**
      * Get data
@@ -58,6 +62,7 @@ public interface PlayerData {
      * @param key Data key
      * @return optional
      */
-    Optional<Data> getData(String key);
+    @NotNull
+    Optional<Data> getData(@NotNull String key);
 
 }

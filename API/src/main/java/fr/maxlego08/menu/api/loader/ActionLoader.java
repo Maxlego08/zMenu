@@ -2,6 +2,9 @@ package fr.maxlego08.menu.api.loader;
 
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.List;
@@ -18,7 +21,7 @@ public abstract class ActionLoader {
      *
      * @param keys The keys that define the type of action.
      */
-    public ActionLoader(List<String> keys) {
+    public ActionLoader(@NotNull List<String> keys) {
         this.keys = keys;
     }
 
@@ -27,7 +30,7 @@ public abstract class ActionLoader {
      *
      * @param keys The keys that define the type of action.
      */
-    public ActionLoader(String... keys) {
+    public ActionLoader(@NotNull String... keys) {
         this.keys = List.of(keys);
     }
 
@@ -36,6 +39,8 @@ public abstract class ActionLoader {
      *
      * @return keys.
      */
+    @Contract(pure = true)
+    @NotNull
     public List<String> getKeys() {
         return this.keys;
     }
@@ -48,5 +53,6 @@ public abstract class ActionLoader {
      * @param file     The file where the configuration is located.
      * @return The created {@link Action}.
      */
-    public abstract Action load(String path, TypedMapAccessor accessor, File file);
+    @Nullable
+    public abstract Action load(@NotNull String path,@NotNull TypedMapAccessor accessor,@NotNull File file);
 }

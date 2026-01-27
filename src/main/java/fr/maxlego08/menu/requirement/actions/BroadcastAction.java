@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class BroadcastAction extends ActionHelper {
     }
 
     @Override
-    public void execute(Player sender, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public void execute(@NonNull Player sender, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             boolean allowed = true;
             if (!requirements.isEmpty()) {

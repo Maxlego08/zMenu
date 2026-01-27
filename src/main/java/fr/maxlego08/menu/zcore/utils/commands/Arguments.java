@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.commands;
 
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;

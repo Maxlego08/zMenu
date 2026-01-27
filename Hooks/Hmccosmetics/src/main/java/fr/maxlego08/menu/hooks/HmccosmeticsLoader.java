@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class HmccosmeticsLoader extends MaterialLoader {
 
@@ -15,7 +16,7 @@ public class HmccosmeticsLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         Player target;
         CosmeticSlot cosmeticSlot;
         if (materialString.contains("-")) {

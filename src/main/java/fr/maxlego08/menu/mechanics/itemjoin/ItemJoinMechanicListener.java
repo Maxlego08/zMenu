@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.Optional;
@@ -126,7 +127,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
     }
 
     @Override
-    public boolean onItemGive(Player player, ItemStack item, String itemId) {
+    public boolean onItemGive(@NonNull Player player, @NonNull ItemStack item, @NonNull String itemId) {
         ItemJoinMechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId);
         if (mechanic != null && mechanic.preventsInventoryChanges() && mechanic.getFixedSlot().isPresent()) {
             int slot = mechanic.getFixedSlot().getAsInt();

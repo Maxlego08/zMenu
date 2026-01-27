@@ -5,12 +5,15 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -34,27 +37,28 @@ public interface ButtonManager {
      *
      * @param button The {@link ButtonLoader} instance to register.
      */
-    void register(ButtonLoader button);
+    void register(@NotNull ButtonLoader button);
 
     /**
      * Unregisters an existing {@link ButtonLoader}, ceasing its button creation responsibilities.
      *
      * @param button The {@link ButtonLoader} instance to unregister.
      */
-    void unregister(ButtonLoader button);
+    void unregister(@NotNull ButtonLoader button);
 
     /**
      * Unregisters all {@link ButtonLoader} instances linked to a specific plugin.
      *
      * @param plugin The plugin whose loaders should be unregistered.
      */
-    void unregisters(Plugin plugin);
+    void unregisters(@NotNull Plugin plugin);
 
     /**
      * Retrieves all registered {@link ButtonLoader} instances.
      *
      * @return A collection containing all registered {@link ButtonLoader} instances.
      */
+    @NotNull
     Collection<ButtonLoader> getLoaders();
 
     /**
@@ -63,7 +67,8 @@ public interface ButtonManager {
      * @param plugin The plugin whose loaders are to be retrieved.
      * @return A collection of {@link ButtonLoader} instances or an empty collection if none are found.
      */
-    Collection<ButtonLoader> getLoaders(Plugin plugin);
+    @NotNull
+    Collection<ButtonLoader> getLoaders(@NotNull Plugin plugin);
 
     /**
      * Retrieves a {@link ButtonLoader} based on the name of the associated {@link Button}.
@@ -71,20 +76,22 @@ public interface ButtonManager {
      * @param name The name of the {@link ButtonLoader}.
      * @return An {@link Optional} containing the {@link ButtonLoader}, if found.
      */
-    Optional<ButtonLoader> getLoader(String name);
+    @NotNull
+    Optional<ButtonLoader> getLoader(@Nullable String name);
 
     /**
      * Registers a new {@link PermissibleLoader} responsible for permissible creation.
      *
      * @param permissibleLoader The {@link PermissibleLoader} instance to register.
      */
-    void registerPermissible(PermissibleLoader permissibleLoader);
+    void registerPermissible(@NotNull PermissibleLoader permissibleLoader);
 
     /**
      * Retrieves a mapping of permissible keys to their associated {@link PermissibleLoader} instances.
      *
      * @return A map linking permissible keys to their corresponding {@link PermissibleLoader} instances.
      */
+    @NotNull
     Map<String, PermissibleLoader> getPermissibles();
 
     /**
@@ -93,14 +100,15 @@ public interface ButtonManager {
      * @param key The key identifying the permissible.
      * @return An {@link Optional} containing the {@link PermissibleLoader}, if found.
      */
-    Optional<PermissibleLoader> getPermission(String key);
+    @NotNull
+    Optional<PermissibleLoader> getPermission(@NotNull String key);
 
     /**
      * Registers a new {@link ActionLoader} responsible for action creation.
      *
      * @param actionLoader The {@link ActionLoader} instance to register.
      */
-    void registerAction(ActionLoader actionLoader);
+    void registerAction(@NotNull ActionLoader actionLoader);
 
     /**
      * Retrieves an {@link Optional} {@link ActionLoader} based on a specific action key.
@@ -108,7 +116,8 @@ public interface ButtonManager {
      * @param key The key identifying the action.
      * @return An {@link Optional} containing the {@link ActionLoader}, if found.
      */
-    Optional<ActionLoader> getActionLoader(String key);
+    @NotNull
+    Optional<ActionLoader> getActionLoader(@NotNull String key);
 
     /**
      * Converts a list of map elements from a configuration file into a list of {@link Permissible} objects.
@@ -118,7 +127,8 @@ public interface ButtonManager {
      * @param file     The configuration file in use.
      * @return A list of {@link Permissible} objects derived from the configuration.
      */
-    List<Permissible> loadPermissible(List<Map<String, Object>> elements, String path, File file);
+    @NotNull
+    List<@NotNull Permissible> loadPermissible(@NotNull List<@NotNull Map<String, Object>> elements,@NotNull String path,@NotNull File file);
 
     /**
      * Converts a list of map elements from a configuration file into a list of {@link Permissible} objects.
@@ -128,7 +138,8 @@ public interface ButtonManager {
      * @param file          The file where the configuration is located.
      * @return A list of {@link Permissible} objects derived from the configuration.
      */
-    List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file);
+    @NotNull
+    List<@NotNull Permissible> loadPermissible(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file);
 
     /**
      * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
@@ -140,7 +151,11 @@ public interface ButtonManager {
      * @param file     The configuration file in use.
      * @return A list of {@link Action} objects derived from the configuration.
      */
-    List<Action> loadActions(List<Map<String, Object>> elements, String path, File file);
+    @NotNull
+    List<@NotNull Action> loadActions(@NotNull List<@NotNull Map<String, Object>> elements,@NotNull String path,@NotNull File file);
+
+    @NotNull
+    List<@NotNull Action> loadActions(@NotNull List<Map<String, Object>> elements,@NotNull String path,@NotNull File file, @NotNull List<@NotNull ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty);
 
     /**
      * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
@@ -152,11 +167,17 @@ public interface ButtonManager {
      * @param file          The configuration file in use.
      * @return A list of {@link Action} objects derived from the configuration.
      */
-    List<Action> loadActions(YamlConfiguration configuration, String path, File file);
+    @NotNull
+    List<@NotNull Action> loadActions(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file);
 
-    List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException;
+    @NotNull
+    List<@NotNull Action> loadActions(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file, @NotNull List<@NotNull ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty);
 
-    Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException;
+    @NotNull
+    List<Requirement> loadRequirements(@Nullable YamlConfiguration configuration,@NotNull String path,@NotNull File file) throws InventoryException;
+
+    @NotNull
+    Requirement loadRequirement(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file) throws InventoryException;
 
     /**
      * Retrieves a list of all empty actions from the given configuration elements.
@@ -167,7 +188,8 @@ public interface ButtonManager {
      * @param elements The list of configuration items detailing an action's entire configuration.
      * @return A list of all empty actions from the given configuration elements.
      */
-    List<String> getEmptyActions(List<Map<String, Object>> elements);
+    @NotNull
+    List<String> getEmptyActions(@NotNull List<Map<String, Object>> elements);
 
     /**
      * Retrieves a list of all empty permissibles from the given configuration elements.
@@ -178,7 +200,8 @@ public interface ButtonManager {
      * @param elements The list of configuration items detailing a permissible's entire configuration.
      * @return A list of all empty permissibles from the given configuration elements.
      */
-    List<String> getEmptyPermissible(List<Map<String, Object>> elements);
+    @NotNull
+    List<String> getEmptyPermissible(@NotNull List<Map<String, Object>> elements);
 
     /**
      * Retrieves a {@link Loader} for a {@link Button} object based on the given parameters.
@@ -186,10 +209,11 @@ public interface ButtonManager {
      * <p>This method is used to create a loader for a button object, given the plugin instance, file, size, and matrix.</p>
      *
      * @param menuPlugin The plugin instance associated with the button loader.
-     * @param file The file from which the button configuration is loaded.
-     * @param size The size of the button.
-     * @param matrix The matrix containing the button's configuration data.
+     * @param file       The file from which the button configuration is loaded.
+     * @param size       The size of the button.
+     * @param matrix     The matrix containing the button's configuration data.
      * @return A {@link Loader} for a {@link Button} object based on the given parameters.
      */
-    Loader<Button> getLoaderButton(MenuPlugin menuPlugin, File file, int size, Map<Character, List<Integer>> matrix);
+    @NotNull
+    Loader<Button> getLoaderButton(@NotNull MenuPlugin menuPlugin,@NotNull File file, int size,@NotNull Map<Character,@NotNull List<Integer>> matrix);
 }

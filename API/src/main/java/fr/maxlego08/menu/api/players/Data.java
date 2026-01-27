@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.players;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * <p>A data is composed of a key, a string, and a value, an object</p>
  */
@@ -10,6 +13,7 @@ public interface Data {
      *
      * @return key
      */
+    @NotNull
     String getKey();
 
     /**
@@ -17,6 +21,7 @@ public interface Data {
      *
      * @return value
      */
+    @Nullable
     Object getValue();
 
     /**

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.listener;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -9,6 +9,8 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.JobPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class ZJobPermissible extends JobPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         MenuPlugin plugin = inventory.getPlugin();
         Job job = Jobs.getJob(plugin.parse(player, placeholders.parse(this.jobName)));
         if (job == null) {
@@ -38,7 +40,7 @@ public class ZJobPermissible extends JobPermissible {
     }
 
     @Override
-    public String getJobName() {
+    public @Nullable String getJobName() {
         return this.jobName;
     }
 }

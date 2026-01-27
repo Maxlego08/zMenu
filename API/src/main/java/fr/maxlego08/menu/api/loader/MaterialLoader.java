@@ -3,6 +3,9 @@ package fr.maxlego08.menu.api.loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Documentation: <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
@@ -12,7 +15,7 @@ public abstract class MaterialLoader {
 
     private final String key;
 
-    public MaterialLoader(String key) {
+    public MaterialLoader(@NotNull String key) {
         this.key = key;
     }
 
@@ -21,6 +24,8 @@ public abstract class MaterialLoader {
      *
      * @return The key.
      */
+    @Contract(pure = true)
+    @NotNull
     public String getKey() {
         return this.key;
     }
@@ -34,6 +39,7 @@ public abstract class MaterialLoader {
      * @param materialString The material as a String.
      * @return The loaded ItemStack.
      */
-    public abstract ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString);
+    @Nullable
+    public abstract ItemStack load(@NotNull Player player,@Nullable YamlConfiguration configuration,@NotNull String path,@NotNull String materialString);
 
 }

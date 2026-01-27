@@ -6,6 +6,6 @@ repositories {
 
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly("com.willfp:eco:6.53.0")
 }

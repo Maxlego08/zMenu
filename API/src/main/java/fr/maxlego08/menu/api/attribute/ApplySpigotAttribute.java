@@ -5,13 +5,20 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplySpigotAttribute implements AttributApplier{
+/**
+ * Spigot-specific implementation of the AttributApplier interface.
+ * Applies attribute modifiers to items using Spigot's ItemMeta API.
+ */
+public class ApplySpigotAttribute implements AttributApplier {
+
     @Override
-    public void applyAttributesModern(ItemStack itemStack, List<AttributeWrapper> attributes, MenuPlugin plugin, AttributeMergeStrategy strategy) {
+    public void applyAttributesModern(@NotNull ItemStack itemStack, @NotNull List<AttributeWrapper> attributes, @NotNull MenuPlugin plugin, @Nullable AttributeMergeStrategy strategy) {
         ItemMeta meta = itemStack.getItemMeta();
         // Get existing modifiers
         List<AttributeEntry> existingEntries = new ArrayList<>();

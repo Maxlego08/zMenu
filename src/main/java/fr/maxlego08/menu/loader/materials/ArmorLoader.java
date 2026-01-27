@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class ArmorLoader extends MaterialLoader {
 
@@ -13,7 +14,7 @@ public class ArmorLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         return player.getEquipment().getItem(EquipmentSlot.valueOf(materialString));
     }
 }

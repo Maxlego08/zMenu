@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class NextGensGeneratorLoader extends MaterialLoader {
     private NextGens nextGens = null;
@@ -17,7 +18,7 @@ public class NextGensGeneratorLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         this.loadNextGens(); // Try to fix Circular dependency
         Generator generator = generatorManager.getGenerator(materialString);
         return generator != null ? generator.item() : null;

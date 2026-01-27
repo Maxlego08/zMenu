@@ -1,14 +1,15 @@
 package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.website.Folder;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public class ButtonInventoryPrevious extends Button {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
+    public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventory, int slot, @NonNull Placeholders placeholders) {
 
         ZWebsiteManager manager = this.plugin.getWebsiteManager();
         Optional<Folder> optional = manager.getCurrentFolder();

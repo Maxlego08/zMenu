@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.dupe;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public interface DupeManager {
 
@@ -13,16 +14,17 @@ public interface DupeManager {
      * protect an item from dupe
      *
      * @param itemStack
-     * @return
+     * @return protected itemStack
      */
-    ItemStack protectItem(ItemStack itemStack);
+    @NotNull
+    ItemStack protectItem(@NotNull ItemStack itemStack);
 
     /**
      * check if an item is a result of a dupe
      *
-     * @param itemStack
-     * @return
+     * @param itemStack the item to check
+     * @return true if the item is a dupe item
      */
-    boolean isDupeItem(ItemStack itemStack);
+    boolean isDupeItem(@NotNull ItemStack itemStack);
 
 }

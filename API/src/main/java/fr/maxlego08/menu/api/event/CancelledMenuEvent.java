@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.event;
 
 import org.bukkit.event.Cancellable;
+import org.jetbrains.annotations.Contract;
 
 public class CancelledMenuEvent extends MenuEvent implements Cancellable {
 
@@ -9,6 +10,7 @@ public class CancelledMenuEvent extends MenuEvent implements Cancellable {
     /**
      * @return the cancelled
      */
+    @Contract(pure = true)
     public boolean isCancelled() {
         return cancelled;
     }

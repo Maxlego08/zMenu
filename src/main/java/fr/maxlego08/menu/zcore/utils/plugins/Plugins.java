@@ -27,9 +27,9 @@ public enum Plugins {
     NEXTGENS("NextGens"),
     MYTHICMOBS("MythicMobs"),
 	ZMENUPLUS("zMenuPlus"),
-    BREWERYX("BreweryX")
+    BREWERYX("BreweryX"),
+    PACKETEVENTS("packetevents")
     ;
-
 	private final String name;
 
 	Plugins(String name) {
@@ -42,5 +42,4 @@ public enum Plugins {
 	public String getName() {
 		return name;
 	}
-
 }

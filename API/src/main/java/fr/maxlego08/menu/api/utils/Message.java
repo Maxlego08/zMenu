@@ -2,11 +2,16 @@ package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.api.enums.MessageType;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Centralized message/formatting enumeration for zMenu plugin.
+ * Provides localization keys, status messages, UI feedback, and time formatting options for commands and GUI.
+ */
 public enum Message implements IMessage {
 
     PREFIX("&8(&6zMenu&8) "),
@@ -211,7 +216,7 @@ public enum Message implements IMessage {
         this.type = type;
     }
 
-    public String getMessage() {
+    public @NonNull String getMessage() {
         return message;
     }
 
@@ -223,7 +228,7 @@ public enum Message implements IMessage {
         return message;
     }
 
-    public List<String> getMessages() {
+    public @NonNull List<String> getMessages() {
         return messages == null ? Collections.singletonList(message) : messages;
     }
 
@@ -243,7 +248,7 @@ public enum Message implements IMessage {
         return message.replace(a, b);
     }
 
-    public MessageType getType() {
+    public @NonNull MessageType getType() {
         return this.type;
     }
 

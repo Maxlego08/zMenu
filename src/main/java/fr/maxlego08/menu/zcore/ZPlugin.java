@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.exceptions.ListenerNullException;
 import fr.maxlego08.menu.api.players.Data;
+import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.inventory.VInventory;
@@ -12,7 +13,6 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.listener.ListenerAdapter;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.placeholder.Placeholder;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.gson.DataAdapter;
@@ -191,7 +191,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @param aliases  list of aliases
      */
     protected void registerCommand(String command, VCommand vCommand, String... aliases) {
-        this.zCommandManager.registerCommand(this, command, vCommand, Arrays.asList(aliases));
+        this.zCommandManager.registerCommand(this, command,vCommand.isConsoleCanUse(), vCommand, Arrays.asList(aliases));
     }
 
     /**

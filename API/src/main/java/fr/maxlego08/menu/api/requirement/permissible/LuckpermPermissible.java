@@ -2,15 +2,18 @@ package fr.maxlego08.menu.api.requirement.permissible;
 
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public abstract class LuckpermPermissible extends Permissible {
 
-    public LuckpermPermissible(List<Action> denyActions, List<Action> successActions) {
+    public LuckpermPermissible(@NotNull List<Action> denyActions,@NotNull List<Action> successActions) {
         super(denyActions, successActions);
     }
 
+    @Nullable
     public abstract String getGroupName();
 
 }

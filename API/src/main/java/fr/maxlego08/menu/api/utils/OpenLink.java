@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.utils;
 
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ public interface OpenLink {
      *
      * @return action
      */
+    @Nullable
     Action getAction();
 
     /**
@@ -23,6 +26,7 @@ public interface OpenLink {
      *
      * @return message
      */
+    @Nullable
     String getMessage();
 
     /**
@@ -30,6 +34,7 @@ public interface OpenLink {
      *
      * @return string
      */
+    @Nullable
     String getLink();
 
     /**
@@ -37,11 +42,13 @@ public interface OpenLink {
      *
      * @return replace
      */
+    @Nullable
     String getReplace();
 
     /**
      * @return list of string
      */
+    @Nullable
     List<String> getHover();
 
     /**
@@ -50,7 +57,7 @@ public interface OpenLink {
      * @param player The players
      * @param strings list of messages
      */
-    void send(Player player, List<String> strings);
+    void send(@NotNull Player player,@NotNull List<String> strings);
 
     /**
      * Allows to know if the object is valid

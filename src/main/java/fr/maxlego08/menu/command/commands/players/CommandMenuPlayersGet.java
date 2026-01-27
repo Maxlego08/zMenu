@@ -4,10 +4,10 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
-import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.zcore.enums.Permission;
+import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.OfflinePlayer;
 

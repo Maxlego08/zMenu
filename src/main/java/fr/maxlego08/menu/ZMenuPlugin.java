@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -16,11 +16,15 @@ import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.common.utils.nms.NMSUtils;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
@@ -36,6 +40,8 @@ import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
+import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
+import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
@@ -54,11 +60,8 @@ import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.meta.ClassicMeta;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
@@ -76,7 +79,7 @@ import java.util.*;
 
 /**
  * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
- * Documentation: <a href="https://docs.zmenu.dev/">https://docs.zmenu.dev/</a>
+ * Documentation: <a href="https://docs.groupez.dev/zmenu/getting-started/">https://docs.groupez.dev/zmenu/getting-started</a>
  * <p>
  * zMenus is a complete inventory plugin.
  * You can create your inventories and link them to custom commands. With the button system you will be able to push to the maximum the customization of your inventories.
@@ -92,6 +95,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final StorageManager storageManager = new ZStorageManager(this);
     private final ButtonManager buttonManager = new ZButtonManager(this);
     private final InventoryManager inventoryManager = new ZInventoryManager(this);
+    private final TitleAnimationManager titleAnimationManager = new ZTitleAnimationManager();
     private final CommandManager commandManager = new ZCommandManager(this);
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
@@ -100,8 +104,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final ItemManager itemManager = new ZItemManager(this);
+    private final ComponentsManager componentsManager = new ZComponentsManager();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
+    private final AttributApplier attributApplier = new ApplySpigotAttribute();
     private final File configFile = new File(getDataFolder(), "config.yml");
     private DialogManager dialogManager;
     private CommandMenu commandMenu;
@@ -110,8 +116,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private FoliaLib foliaLib;
-    private AttributApplier attributApplier = new ApplySpigotAttribute();
-    // private final PacketUtils packetUtils = new PacketUtils(this);
+    private PacketUtils packetUtils;
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -119,14 +124,19 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public void onLoad() {
-        // this.packetUtils.onLoad();
+        if (this.isActive(Plugins.PACKETEVENTS)) {
+            this.packetUtils = new PacketUtils(this);
+            this.packetUtils.onLoad();
+        }
     }
 
     @Override
     public void onEnable() {
 
         instance = this;
-        // this.packetUtils.onEnable();
+
+        if (this.packetUtils != null)
+            this.packetUtils.onEnable();
 
         this.scheduler = (this.foliaLib = new FoliaLib(this)).getScheduler();
 
@@ -136,18 +146,20 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.preEnable();
 
         this.saveDefaultConfig();
-        Config.getInstance().load(getConfig());
+       Configuration.getInstance().load(getConfig());
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
         this.loadMeta();
+
+        this.componentsManager.initializeDefaultComponents(this);
 
         List<String> files = getInventoriesFiles();
         File folder = new File(this.getDataFolder(), "inventories");
 
         if (!folder.exists()) folder.mkdirs();
 
-        if (Config.generateDefaultFile) {
+        if (Configuration.generateDefaultFile) {
             files.forEach(filePath -> {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
                     saveResource(filePath, false);
@@ -170,16 +182,17 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(PatternManager.class, this.patternManager, this, ServicePriority.Highest);
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
+        servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
-            if (Config.enableMiniMessageFormat){
+            if (Configuration.enableMiniMessageFormat){
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
                 this.dialogManager = new ZDialogManager(this, configManager);
                 servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                 ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
                 Logger.info(configDialogBuilder.getName());
-                configManager.registerConfig(configDialogBuilder,Config.class, this);
+                configManager.registerConfig(configDialogBuilder,Configuration.class, this);
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
             }
@@ -229,7 +242,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-        if (Config.enableAntiDupe) {
+        if (Configuration.enableAntiDupe) {
             this.addListener(new DupeListener(this.dupeManager));
         }
 
@@ -244,7 +257,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.websiteManager.loadPlaceholders();
         this.dataManager.loadDefaultValues();
 
-        // this.inventoryManager.registerInventoryListener(this.packetUtils);
+//         this.inventoryManager.registerInventoryListener(this.packetUtils);
 
         this.postEnable();
     }
@@ -341,6 +354,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
+            this.getLogger().info("Registered BreweryX material loader");
+        }
+        if (this.isActive(Plugins.PACKETEVENTS)){
+            this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
     }
 
@@ -350,6 +367,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/basic_inventory.yml");
         files.add("inventories/advanced_inventory.yml");
         files.add("inventories/pro_inventory.yml");
+        files.add("inventories/animated_title_inventory.yml");
         files.add("inventories/example_punish.yml");
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
@@ -361,6 +379,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("patterns/pattern_example.yml");
         files.add("patterns/pattern_cookies.yml");
         files.add("patterns/playtime_reward.yml");
+
+        files.add("actions_patterns/default-actions.yml");
 
         if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             files.add("dialogs/confirmation-dialog.yml");
@@ -381,13 +401,20 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
 
-        Config.getInstance().save(getConfig(), this.configFile);
+       Configuration.getInstance().save(getConfig(), this.configFile);
+
+        YamlFileCache.clearCache();
 
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());
         }
+
         this.itemManager.unloadListeners();
-        // this.packetUtils.onDisable();
+
+        if (this.packetUtils != null)
+            this.packetUtils.onDisable();
+
+        getServer().getServicesManager().unregisterAll(this);
 
         this.postDisable();
     }
@@ -446,6 +473,16 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public AttributApplier getAttributApplier() {
         return this.attributApplier;
+    }
+
+    @Override
+    public TitleAnimationManager getTitleAnimationManager() {
+        return this.titleAnimationManager;
+    }
+
+    @Override
+    public ComponentsManager getComponentsManager() {
+        return this.componentsManager;
     }
 
     @Override
@@ -584,7 +621,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     private void loadMeta() {
-        if (!Config.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
+        if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
             getLogger().info("Use ClassicMeta");
         } else {

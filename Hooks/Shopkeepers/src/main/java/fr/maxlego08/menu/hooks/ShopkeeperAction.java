@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class ShopkeeperAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(plugin.parse(player, placeholders.parse(this.shopName))).findFirst();
         if (optional.isPresent()) {
             optional.get().openTradingWindow(player);

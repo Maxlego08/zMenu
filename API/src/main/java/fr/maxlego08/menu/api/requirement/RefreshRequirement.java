@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -54,6 +55,7 @@ public interface RefreshRequirement {
      *
      * @return List of permissibles.
      */
+    @NotNull
     List<Permissible> getRequirements();
 
     /**
@@ -61,6 +63,7 @@ public interface RefreshRequirement {
      *
      * @return List of permissibles.
      */
+    @NotNull
     List<Permissible> getEnableRequirements();
 
     /**
@@ -72,7 +75,7 @@ public interface RefreshRequirement {
      * @param placeholders The placeholders to use.
      * @return True if the requirement should refresh the item.
      */
-    boolean needRefresh(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
+    boolean needRefresh(@NotNull Player player,@NotNull Button button,@NotNull InventoryEngine inventoryEngine,@NotNull Placeholders placeholders);
 
     /**
      * Checks if the requirement can be refreshed.
@@ -83,5 +86,5 @@ public interface RefreshRequirement {
      * @param placeholders The placeholders to use.
      * @return True if the requirement can be refreshed.
      */
-    boolean canRefresh(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders);
+    boolean canRefresh(@NotNull Player player,@NotNull Button button,@NotNull InventoryEngine inventoryEngine,@NotNull Placeholders placeholders);
 }

@@ -5,39 +5,48 @@ import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Banner {
     private DyeColor baseColor;
 
     private List<Pattern> patterns;
 
-    public Banner(DyeColor baseColor) {
+    public Banner(@NotNull DyeColor baseColor) {
         this.baseColor = baseColor;
     }
 
-    public Banner(DyeColor baseColor, List<Pattern> patterns) {
+    public Banner(@NotNull DyeColor baseColor,@NotNull List<Pattern> patterns) {
         this.baseColor = baseColor;
         this.patterns = patterns;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public DyeColor getBaseColor() {
         return baseColor;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<Pattern> getPatterns() {
         return patterns;
     }
 
-    public void setBaseColor(DyeColor baseColor) {
+    public void setBaseColor(@NotNull DyeColor baseColor) {
         this.baseColor = baseColor;
     }
 
-    public void setPatterns(List<Pattern> patterns) {
+    public void setPatterns(@NotNull List<Pattern> patterns) {
         this.patterns = patterns;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public ItemStack toItemStack(int amount){
         Material material = Material.getMaterial(baseColor.toString()+"_BANNER");
         assert material != null;

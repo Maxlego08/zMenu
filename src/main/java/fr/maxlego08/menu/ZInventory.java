@@ -2,19 +2,21 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -44,6 +46,9 @@ public class ZInventory extends ZUtils implements Inventory {
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
     private String targetPlayerNamePlaceholder;
+    private TitleAnimation titleAnimation;
+    private List<Action> openActions = new ArrayList<>();
+    private List<Action> closeActions = new ArrayList<>();
 
     /**
      * @param plugin   The plugin where the inventory comes from
@@ -231,6 +236,9 @@ public class ZInventory extends ZUtils implements Inventory {
             inventoriesPlayer.storeInventory(player);
         }
 
+        var placeholders = new Placeholders();
+        this.openActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+
         return InventoryResult.SUCCESS;
     }
 
@@ -266,6 +274,9 @@ public class ZInventory extends ZUtils implements Inventory {
                 }
             }
         }, 1);
+
+        var placeholders = new Placeholders();
+        this.closeActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
     }
 
     @Override
@@ -359,7 +370,35 @@ public class ZInventory extends ZUtils implements Inventory {
         return targetPlayerNamePlaceholder;
     }
 
+    @Override
+    public void setTitleAnimation(TitleAnimation load) {
+        this.titleAnimation = load;
+    }
+
+    @Override
+    public TitleAnimation getTitleAnimation() {
+        return this.titleAnimation;
+    }
+
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
         this.targetPlayerNamePlaceholder = targetPlaceholder;
+    }
+
+    @Override
+    public List<Action> getOpenActions() {
+        return openActions;
+    }
+
+    public void setOpenActions(List<Action> openActions) {
+        this.openActions = openActions;
+    }
+
+    @Override
+    public List<Action> getCloseActions() {
+        return closeActions;
+    }
+
+    public void setCloseActions(List<Action> closeActions) {
+        this.closeActions = closeActions;
     }
 }

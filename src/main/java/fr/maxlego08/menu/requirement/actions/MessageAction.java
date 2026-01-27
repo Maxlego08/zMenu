@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class MessageAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         papi(placeholders.parse(this.parseAndFlattenCommands(this.messages, player)), player).forEach(message -> {
             if (miniMessage) {
                 inventory.getPlugin().getMetaUpdater().sendMessage(player, message);

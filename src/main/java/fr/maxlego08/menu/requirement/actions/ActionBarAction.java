@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 public class ActionBarAction extends ActionHelper {
 
@@ -17,7 +18,7 @@ public class ActionBarAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         String finalMessage = papi(placeholders.parse(this.message), player);
         if (miniMessage) {
             inventory.getPlugin().getMetaUpdater().sendAction(player, finalMessage);

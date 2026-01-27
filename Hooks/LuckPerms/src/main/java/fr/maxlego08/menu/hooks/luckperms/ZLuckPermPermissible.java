@@ -9,6 +9,8 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class ZLuckPermPermissible extends LuckpermPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         LuckPerms api = LuckPermsProvider.get();
         User user = api.getUserManager().getUser(player.getUniqueId());
         if (user == null) return false;
@@ -36,7 +38,7 @@ public class ZLuckPermPermissible extends LuckpermPermissible {
     }
 
     @Override
-    public String getGroupName() {
+    public @Nullable String getGroupName() {
         return this.groupName;
     }
 }

@@ -3,9 +3,9 @@ package fr.maxlego08.menu.command;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.commands.CommandInventory;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -191,7 +191,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
         return null;
     }
 
-    public void registerCommand(Plugin plugin, String string, VCommand vCommand, List<String> aliases) {
+    public void registerCommand(Plugin plugin, String string,boolean consoleCanUse, VCommand vCommand, List<String> aliases) {
         try {
             PluginCommand command = constructor.newInstance(string, plugin);
             command.setExecutor(this);
@@ -200,7 +200,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
             if (vCommand.getPermission() != null && vCommand.getDenyMessage() == null) {
                 command.setPermission(vCommand.getPermission());
             }
-
+            vCommand.setConsoleCanUse(consoleCanUse);
             commands.add(vCommand.addSubCommand(string));
             vCommand.addSubCommand(aliases);
 
@@ -213,7 +213,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public void registerCommand(fr.maxlego08.menu.api.command.Command command) {
-        this.registerCommand(command.plugin(), command.command(), new CommandInventory(this.plugin, command, false), command.aliases());
+        this.registerCommand(command.plugin(), command.command(),command.consoleCanUse(), new CommandInventory(this.plugin, command, false), command.aliases());
     }
 
     public void unregisterCommand(fr.maxlego08.menu.api.command.Command command) {

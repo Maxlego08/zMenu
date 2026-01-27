@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.zcore.enums.Permission;
+import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
@@ -36,12 +36,12 @@ public class CommandDumplog extends VCommand {
             try {
                 String url = uploadLog(logPath).replace("\\","");
                 message(plugin, this.sender, Message.DUMPLOG_SUCCESS, "%url%", plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>");
-                if (Config.enableInformationMessage) {
+                if (Configuration.enableInformationMessage) {
                     Logger.info("Log uploaded: " + url);
                 }
             } catch (IOException e) {
                 message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage());
-                if (Config.enableInformationMessage) {
+                if (Configuration.enableInformationMessage) {
                     Logger.info("Error uploading log: " + e.getMessage());
                 }
             }

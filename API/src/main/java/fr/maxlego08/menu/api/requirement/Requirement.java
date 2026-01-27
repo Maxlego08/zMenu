@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ public interface Requirement {
      *
      * @return List of permissibles.
      */
+    @NotNull
     List<Permissible> getRequirements();
 
     /**
@@ -33,6 +36,7 @@ public interface Requirement {
      *
      * @return List of deny actions.
      */
+    @NotNull
     List<Action> getDenyActions();
 
     /**
@@ -40,6 +44,7 @@ public interface Requirement {
      *
      * @return List of success actions.
      */
+    @NotNull
     List<Action> getSuccessActions();
 
     /**
@@ -52,12 +57,13 @@ public interface Requirement {
      * @param placeholders The placeholders.
      * @return True if the player has permission.
      */
-    boolean execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders);
+    boolean execute(@NotNull Player player, @Nullable Button button,@NotNull InventoryEngine inventory,@NotNull Placeholders placeholders);
 
     /**
      * Gets the list of clicks that will be used for the requirement.
      *
      * @return List of ClickTypes.
      */
+    @NotNull
     List<ClickType> getClickTypes();
 }

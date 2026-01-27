@@ -2,9 +2,9 @@ package fr.maxlego08.menu.command.commands.players;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.zcore.enums.Permission;
+import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenuPlayersClearAll extends VCommand {

@@ -26,6 +26,13 @@ public interface Command {
     List<String> aliases();
 
     /**
+     * Gets whether the console can use the command.
+     *
+     * @return {@code true} if the console can use the command, otherwise {@code false}.
+     */
+    boolean consoleCanUse();
+
+    /**
      * Gets the permission required to execute the command.
      *
      * @return The permission node required executing the command.

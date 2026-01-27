@@ -6,6 +6,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public class ApplyPaperAttribute implements AttributApplier {
 
     @Override
-    public void applyAttributesModern(ItemStack itemStack, List<AttributeWrapper> attributes, MenuPlugin plugin, AttributeMergeStrategy strategy) {
+    public void applyAttributesModern(@NotNull ItemStack itemStack, @NotNull List<AttributeWrapper> attributes, @NotNull MenuPlugin plugin, AttributeMergeStrategy strategy) {
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.itemAttributes();
 
         // Get existing modifiers

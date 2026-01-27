@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlayerNamePermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -21,7 +22,7 @@ public class ZPlayerNamePermissible extends PlayerNamePermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         String name = inventory.getPlugin().parse(player, this.playerName.replace("%player%", player.getName()));
         return isMinecraftName(name);
     }

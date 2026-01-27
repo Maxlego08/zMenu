@@ -2,6 +2,7 @@ package fr.maxlego08.menu.hooks;
 
 import fr.maxlego08.menu.api.font.FontImage;
 import io.th0rgal.oraxen.OraxenPlugin;
+import org.jspecify.annotations.NonNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +12,7 @@ public class OraxenFont implements FontImage {
     private final Pattern pattern = Pattern.compile("<glyph_(\\w+)>");
 
     @Override
-    public String replace(String string) {
+    public @NonNull String replace(@NonNull String string) {
         var manager = OraxenPlugin.get().getFontManager();
         Matcher matcher = pattern.matcher(string);
         StringBuilder result = new StringBuilder();
