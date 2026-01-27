@@ -25,7 +25,7 @@ public class SliderInputBuilder implements BedrockBuilderInput {
     @Override
     public Component build(Player player, InputButton button) {
 
-        String text = this.menuPlugin.parse(player, button.getDefaultText());
+        String text = this.menuPlugin.parse(player, button.getLabel());
         float start = button.getStart();
         float end = button.getEnd();
 
