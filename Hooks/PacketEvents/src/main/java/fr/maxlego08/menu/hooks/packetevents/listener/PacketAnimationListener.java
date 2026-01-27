@@ -90,9 +90,9 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread() || this.plugin.isEnabled()) {
+            if (Bukkit.isPrimaryThread()) {
                 task.run();
-            } else {
+            } else if (this.plugin.isEnabled()) {
                 this.plugin.getScheduler().runNextTick(w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
@@ -110,9 +110,9 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread() || this.plugin.isEnabled()) {
+            if (Bukkit.isPrimaryThread()) {
                 task.run();
-            } else {
+            } else if (this.plugin.isEnabled()) {
                 this.plugin.getScheduler().runNextTick(w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
@@ -148,9 +148,9 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread() || !this.plugin.isEnabled()) {
+            if (Bukkit.isPrimaryThread()) {
                 task.run();
-            } else {
+            } else if (this.plugin.isEnabled()) {
                 this.plugin.getScheduler().runNextTick(w -> task.run());
             }
         }
