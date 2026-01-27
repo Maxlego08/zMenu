@@ -25,9 +25,10 @@ public enum Plugins {
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
 	ZMENUPLUS("zMenuPlus"),
-  GEYSER("Geyser-Spigot"),
-  NEXTGENS("NextGens"),
-  MYTHICMOBS("MythicMobs"),
+	GEYSER("Geyser-Spigot"),
+	FLOODGATE("floodgate"),
+	NEXTGENS("NextGens"),
+	MYTHICMOBS("MythicMobs"),
   
   ;
 
