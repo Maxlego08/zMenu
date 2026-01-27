@@ -76,13 +76,6 @@ public abstract class Button extends PlaceholderButton {
         return this;
     }
 
-    @Deprecated
-    @Contract(pure = true)
-    @Nullable
-    public ItemStack getCustomItemStack(@NotNull Player player) {
-        return this.getCustomItemStack(player, new Placeholders());
-    }
-
     @Contract(pure = true)
     @Nullable
     public ItemStack getCustomItemStack(@NotNull Player player, @NotNull Placeholders placeholders) {

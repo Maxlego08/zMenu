@@ -258,7 +258,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             }
 
             ItemButton itemButton = this.addItem(button.isPlayerInventory(), slot, itemStack);
-            if (button.isClickable()) {
+            if (itemButton != null && button.isClickable()) {
                 itemButton.setClick(event -> {
 
                     if (event.getClick() == ClickType.DOUBLE_CLICK) return;
@@ -271,7 +271,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                         this.buildButton(button.getMasterParentButton(), placeholders);
                     }
 
-                    // Update buttons who need to be updated
+                    // Update buttons that need to be updated
                     this.updatedButtons.forEach(updatedButton->this.buildButton(updatedButton,placeholders));
                 });
                 itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));

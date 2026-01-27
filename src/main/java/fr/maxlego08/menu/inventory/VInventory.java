@@ -107,7 +107,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         createDefaultInventory();
 
         if (itemStack == null) {
-            plugin.getLogger().severe("Attention, a null itemstack was found in slot " + slot + " ! > " + this);
+            this.plugin.getLogger().severe("Attention, a null ItemStack was found in slot " + slot + " ! > " + this);
             return null;
         }
 
