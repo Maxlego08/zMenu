@@ -400,6 +400,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.preDisable();
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
+        this.inventoriesPlayer.restoreAllInventories();
 
        Configuration.getInstance().save(getConfig(), this.configFile);
 

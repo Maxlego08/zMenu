@@ -4,6 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -120,5 +121,16 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
             loadedInventories.put(inventory.player_id(), inventoryPlayer);
         }
         this.inventories.putAll(loadedInventories);
+    }
+
+    @Override
+    public void restoreAllInventories() {
+        new HashMap<>(inventories).forEach((uuid, inventoryPlayer) -> {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                inventoryPlayer.forceGiveInventory(player);
+            }
+            inventories.remove(uuid);
+        });
     }
 }
