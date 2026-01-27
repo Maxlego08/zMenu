@@ -1,11 +1,13 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
+import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.AttributeModifiersComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.Tuples;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -22,16 +24,25 @@ import java.util.List;
 import java.util.Map;
 
 public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLoader {
+    private final MenuPlugin plugin;
 
-    public SpigotAttributeModifiersItemComponentLoader(){
+    public SpigotAttributeModifiersItemComponentLoader(MenuPlugin plugin){
         super("attribute-modifiers");
+        this.plugin = plugin;
     }
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
-        List<Map<?, ?>> mapList = configuration.getMapList(path);
-        List<Tuples<Attribute, AttributeModifier>> modifiers = new ArrayList<>();
+        if (componentSection == null) return null;
+        String mergeStrategyStr = componentSection.getString("attribute-merge-strategy", "");
+        AttributeMergeStrategy mergeStrategy;
+        try {
+            mergeStrategy = AttributeMergeStrategy.valueOf(mergeStrategyStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            mergeStrategy = AttributeMergeStrategy.ADD;
+        }
+        List<Map<?, ?>> mapList = componentSection.getMapList("modifiers");
+        List<AttributeWrapper> modifiersWrapper = new ArrayList<>();
         for (Map<?, ?> rawMap : mapList) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) rawMap;
@@ -48,7 +59,7 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
             if (attribute == null) continue;
             try {
                 AttributeModifier deserialize = AttributeModifier.deserialize(map);
-                modifiers.add(new Tuples<>(attribute, deserialize));
+                modifiersWrapper.add(new AttributeWrapper(attribute, deserialize.getOperation(), deserialize.getAmount(), deserialize.getSlotGroup()));
             } catch (IllegalArgumentException e) {
                 if (Configuration.enableDebug){
                     Logger.info("Error deserializing attribute modifier for attribute " + attribute.name() + ": " + e.getMessage());
@@ -57,6 +68,6 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
 
             }
         }
-        return modifiers.isEmpty() ? null : new AttributeModifiersComponent(modifiers);
+        return modifiersWrapper.isEmpty() ? null : new AttributeModifiersComponent(this.plugin,modifiersWrapper, mergeStrategy);
     }
 }
