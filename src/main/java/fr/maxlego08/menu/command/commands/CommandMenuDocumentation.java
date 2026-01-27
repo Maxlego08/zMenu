@@ -13,19 +13,11 @@ public class CommandMenuDocumentation extends VCommand {
         this.addSubCommand("documentation");
         this.setPermission(Permission.ZMENU_DOCUMENTATION);
         this.setDescription(Message.DESCRIPTION_DOCUMENTATION);
-        this.addOptionalArg("word");
     }
 
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
-
-        String word = this.argAsString(0, null);
-        if (word == null) {
-            message(plugin, sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.zmenu.dev/");
-        } else {
-            message(plugin, sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.zmenu.dev/?q=" + word);
-        }
-
+        message(plugin, sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.groupez.dev/zmenu/getting-started");
         return CommandType.SUCCESS;
     }
 

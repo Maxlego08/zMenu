@@ -79,7 +79,7 @@ import java.util.*;
 
 /**
  * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
- * Documentation: <a href="https://docs.zmenu.dev/">https://docs.zmenu.dev/</a>
+ * Documentation: <a href="https://docs.groupez.dev/zmenu/getting-started/">https://docs.groupez.dev/zmenu/getting-started</a>
  * <p>
  * zMenus is a complete inventory plugin.
  * You can create your inventories and link them to custom commands. With the button system you will be able to push to the maximum the customization of your inventories.

@@ -40,19 +40,35 @@
 
 - [ ] Ajouter un systéme qui permet de load un inventaire uniquement quand tout les requirements sont pr�sents
 
-# Unreleased
+# Unreleased (1.1.0.8)
 
-- `local-placeholders` section inside inventory/pattern configuration
-- Add `message-to` action with same args as `message` action but allow to specify the target with a placeholder (`target-player: <placeholder>` if not found player who execute the action will receive the message)
-- New component item system for 1.20.5+
-- Animated title (Required `PacketEvent`) [Exemple](./src/main/resources/inventories/animated_title_inventory.yml)
-- Added automatic support for newer Minecraft versions when no major API changes are present
-- Fix Avast flag issue on VirusTotal
-- Introduced the actions_patterns system, which lets you define default actions applied to all buttons unless they already specify those action types.
+## New Features
+
+- **New Item Component System (1.20.5+)** - Complete overhaul with 30+ components (Enchantments, Lore, Trim, Tool, PotionContents, WrittenBook, AttributeModifiers, etc.). Improved error handling and case sensitivity.
+- **Animated Inventory Titles** - Requires [PacketEvents](https://github.com/retrooper/packetevents).
+- **Local Placeholders** - `local-placeholders` section in inventory/pattern configs, cached with Guava for better performance.
+- **Actions Pattern System** - Define default actions for all buttons in `actions_patterns/` directory.
+- **New Actions**: `message-to` (send to specific player), `open-actions` and `close-actions` for inventories.
+- **Console Commands** - Commands can now be executed from console (`console: true`).
+- **LuckPerms** - Permission expiration support with time unit configuration.
 - MiniMessage support in toasts.
-- More annotations for the API.
-- The inventory name can now have several lines, will be used to simplify the configuration of inventory names with zTextGenerator.
-- Added ``open-actions`` and `close-actions` for inventories
+- Multi-line inventory names (useful with zTextGenerator).
+- Resin trim material support.
+
+## Bug Fixes
+
+- Fixed Avast false positive on VirusTotal.
+- Fixed async access block and container component issues.
+- Fixed PacketAnimationListener task execution when plugin is disabled.
+- Fixed button reference in updatedButtons iteration.
+- Various minor fixes.
+
+## Internal Changes
+
+- Renamed package `zcore` → `common`.
+- Moved Component classes to API module.
+- Added nullability annotations and new interfaces (`BuildContext`, `MenuItemStackContext`).
+- Improved JavaDoc documentation.
 
 
 
