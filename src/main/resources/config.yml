@@ -1,3 +1,5 @@
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+
 # Enables detailed information display in the console.
 # If you encounter an issue, enable this option and send the errors to support.
 enable-debug: false

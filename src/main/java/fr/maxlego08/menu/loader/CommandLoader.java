@@ -68,7 +68,7 @@ public class CommandLoader implements Loader<Command> {
         } else {
             List<String> strings = configuration.getStringList(path + "arguments");
             if (!strings.isEmpty()) {
-                this.plugin.getLogger().warning("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.zmenu.dev/configurations/commands) Your command will still work properly but it is advisable to update it.");
+                this.plugin.getLogger().warning("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.groupez.dev/zmenu/configurations/custom-commands) Your command will still work properly but it is advisable to update it.");
                 List<CommandArgument> mappedArguments = new ArrayList<>(strings.size());
                 for (String arg : strings) {
                     String inventoryName = null;
