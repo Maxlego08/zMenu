@@ -238,6 +238,14 @@ public enum NmsVersion {
         return version >= V_1_17.version;
     }
 
+    public boolean is1_11OrNewer() {
+        return version >= V_1_11.version;
+    }
+
+    public boolean is1_12OrNewer() {
+        return version >= V_1_12.version;
+    }
+
     public boolean isNewItemStackAPI() {
         return version >= V_1_21.version;
     }
