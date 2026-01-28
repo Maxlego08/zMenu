@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,12 @@ public interface InventoriesPlayer extends Listener {
      * @param player Player
      */
     void storeInventory(@NotNull Player player);
+
+    /**
+     * Saves the player's inventory to be stored temporarily (cached only in memory)
+     * @param player Player
+     */
+    void storeInventoryTemporary(@NonNull Player player);
 
     /**
      * Allows giving the inventory back to the player

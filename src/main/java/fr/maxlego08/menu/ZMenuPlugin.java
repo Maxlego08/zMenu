@@ -40,6 +40,7 @@ import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
+import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
@@ -104,6 +105,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final ItemManager itemManager = new ZItemManager(this);
+    private final FoliaLib foliaLib = new FoliaLib(this);
     private final ComponentsManager componentsManager = new ZComponentsManager();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
@@ -115,7 +117,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
-    private FoliaLib foliaLib;
     private PacketUtils packetUtils;
 
     public static ZMenuPlugin getInstance() {
@@ -138,7 +139,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.packetUtils != null)
             this.packetUtils.onEnable();
 
-        this.scheduler = (this.foliaLib = new FoliaLib(this)).getScheduler();
+        this.scheduler = this.foliaLib.getScheduler();
 
         this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
@@ -191,7 +192,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
                 this.dialogManager = new ZDialogManager(this, configManager);
                 servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                 ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
-                Logger.info(configDialogBuilder.getName());
                 configManager.registerConfig(configDialogBuilder,Configuration.class, this);
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
@@ -258,6 +258,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.dataManager.loadDefaultValues();
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
+        if (isActive(Plugins.PACKETEVENTS))
+            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager());
 
         this.postEnable();
     }
@@ -644,4 +646,5 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     public File getConfigFile() {
         return this.configFile;
     }
+
 }

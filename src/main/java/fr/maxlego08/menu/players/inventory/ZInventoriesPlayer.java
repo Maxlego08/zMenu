@@ -39,6 +39,19 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         this.plugin.getStorageManager().storeInventory(player.getUniqueId(), inventoryPlayer);
     }
 
+    @Override
+    public void storeInventoryTemporary(@NonNull Player player) {
+        if (hasSavedInventory(player.getUniqueId())) {
+            return;
+        }
+
+        ZInventoryPlayer inventoryPlayer = new ZInventoryPlayer(this.plugin);
+        inventoryPlayer.storeInventory(player, true);
+        inventories.put(player.getUniqueId(), inventoryPlayer);
+    }
+
+
+
     private void restoreInventory(Player player, BiConsumer<InventoryPlayer, Player> restoreAction) {
         Optional<InventoryPlayer> optional = this.getPlayerInventory(player.getUniqueId());
         if (optional.isPresent()) {
@@ -88,16 +101,22 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (hasSavedInventory(player.getUniqueId())) {
-            this.forceGiveInventory(player);
+        Optional<InventoryPlayer> playerInventory = this.getPlayerInventory(player.getUniqueId());
+        if (playerInventory.isPresent()) {
+            if (playerInventory.get().isPermanent())
+                this.forceGiveInventory(player);
+            else
+                this.clearInventorie(player.getUniqueId());
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (hasSavedInventory(player.getUniqueId())) {
-            this.giveInventory(player);
+        Optional<InventoryPlayer> playerInventory = this.getPlayerInventory(player.getUniqueId());
+        if (playerInventory.isPresent()) {
+            if (playerInventory.get().isPermanent())
+                this.giveInventory(player);
         }
     }
 

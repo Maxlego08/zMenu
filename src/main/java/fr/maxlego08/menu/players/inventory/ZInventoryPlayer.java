@@ -2,6 +2,7 @@ package fr.maxlego08.menu.players.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     private final int MAX_INVENTORY_SIZE = 36;
     private final Map<Integer, String> items = new HashMap<>();
     private final ZMenuPlugin plugin;
+    private boolean temporary = false;
 
     public ZInventoryPlayer(ZMenuPlugin plugin) {
         this.plugin = plugin;
@@ -25,22 +27,28 @@ public class ZInventoryPlayer implements InventoryPlayer {
 
     @Override
     public void storeInventory(@NonNull Player player) {
+        storeInventory(player, false);
+    }
+
+    public void storeInventory(@NonNull Player player, boolean temporary) {
+        this.temporary = temporary;
         PlayerInventory playerInventory = player.getInventory();
         ItemStack[] content = playerInventory.getContents();
         for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
-            clear(slot, playerInventory, content);
+            clear(slot, playerInventory, content,!temporary, player);
         }
         if (!NMSUtils.isOneHand()) {
-            clear(40, playerInventory, content);
+            clear(40, playerInventory, content,!temporary, player);
         }
     }
 
-    private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content) {
+    private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content, boolean removeItem, Player player) {
         ItemStack itemStack = content[slot];
         if (itemStack != null) {
             items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
         }
-        playerInventory.clear(slot);
+        ClearInvType clearInvType = removeItem ? ClearInvType.DEFAULT : ClearInvType.PACKET_EVENT;
+        clearInvType.getRemoveItem().accept(player, slot, playerInventory);
     }
 
     @Override
@@ -107,5 +115,10 @@ public class ZInventoryPlayer implements InventoryPlayer {
     @Override
     public @NonNull Map<Integer, String> getItems() {
         return this.items;
+    }
+
+    @Override
+    public boolean isPermanent() {
+        return !this.temporary;
     }
 }

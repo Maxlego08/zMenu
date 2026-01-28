@@ -18,6 +18,7 @@ import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.common.utils.ZUtils;
@@ -124,6 +125,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setClearInventory(configuration.getBoolean(path + "clear-inventory", configuration.getBoolean(path + "clearInventory", false)));
         inventory.setCancelItemPickup(configuration.getBoolean(path + "cancel-item-pickup", configuration.getBoolean(path + "cancelItemPickup", false)));
         inventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
+        String clearInvTypeStr = configuration.getString("clear-inventory-type", "DEFAULT");
+        try {
+            ClearInvType clearInvType = ClearInvType.valueOf(clearInvTypeStr.toUpperCase());
+            if (clearInvType.hasRequiredPlugin() && !this.plugin.getServer().getPluginManager().isPluginEnabled(clearInvType.getRequiredPlugin())) {
+                clearInvType = ClearInvType.DEFAULT;
+            }
+            inventory.setClearInvType(clearInvType);
+        } catch (Exception e) {
+            if (Configuration.enableDebug){
+                Logger.info("Clear inventory type " + clearInvTypeStr + " is not valid in " + file.getAbsolutePath(), Logger.LogType.ERROR);
+            }
+        }
         inventory.setFile(file);
 
         this.loadFillItem(configuration, inventory, menuItemStackLoader, file);
