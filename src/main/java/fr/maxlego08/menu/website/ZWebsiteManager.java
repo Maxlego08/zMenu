@@ -4,26 +4,19 @@ import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.website.WebsiteManager;
-import fr.maxlego08.menu.api.loader.NoneLoader;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.website.buttons.ButtonBuilderRefresh;
-import fr.maxlego08.menu.website.buttons.ButtonFolderBack;
-import fr.maxlego08.menu.website.buttons.ButtonFolderNext;
-import fr.maxlego08.menu.website.buttons.ButtonFolderPrevious;
-import fr.maxlego08.menu.website.buttons.ButtonFolders;
-import fr.maxlego08.menu.website.buttons.ButtonInventories;
-import fr.maxlego08.menu.website.buttons.ButtonInventoryNext;
-import fr.maxlego08.menu.website.buttons.ButtonInventoryPrevious;
-import fr.maxlego08.menu.website.buttons.ButtonMarketplace;
+import fr.maxlego08.menu.website.buttons.*;
 import fr.maxlego08.menu.website.request.HttpRequest;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +50,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void login(CommandSender sender, String token) {
+    public void login(@NonNull CommandSender sender, String token) {
         if (token == null) {
             message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
@@ -107,7 +100,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void disconnect(CommandSender sender) {
+    public void disconnect(@NonNull CommandSender sender) {
 
         if (Token.token == null) {
             message(this.plugin, sender, Message.WEBSITE_DISCONNECT_ERROR);
@@ -121,7 +114,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void openMarketplace(Player player) {
+    public void openMarketplace(@NonNull Player player) {
 
         if (Token.token == null) {
             message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
@@ -209,7 +202,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                     this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, true);
                 }
             } else {
-                this.plugin.saveResource(filePath, !Config.enableDebug);
+                this.plugin.saveResource(filePath, !Configuration.enableDebug);
             }
         });
     }
@@ -386,7 +379,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     @Override
-    public void downloadFromUrl(CommandSender sender, String baseUrl, boolean force) {
+    public void downloadFromUrl(@NonNull CommandSender sender, @NonNull String baseUrl, boolean force) {
 
         message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
         plugin.getScheduler().runAsync(w -> {

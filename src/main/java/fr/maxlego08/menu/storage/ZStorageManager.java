@@ -2,7 +2,7 @@ package fr.maxlego08.menu.storage;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
@@ -23,8 +23,12 @@ import fr.maxlego08.sarah.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.jspecify.annotations.NonNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ZStorageManager implements StorageManager {
@@ -137,7 +141,7 @@ public class ZStorageManager implements StorageManager {
                     StringBuilder inventoriesBuilder = new StringBuilder();
                     for (Inventory oldInventory : event.getOldInventories()) {
                         if (oldInventory != null) {
-                            if (inventoriesBuilder.length() > 0) {
+                            if (!inventoriesBuilder.isEmpty()) {
                                 inventoriesBuilder.append(',');
                             }
                             inventoriesBuilder.append(oldInventory.getFileName());
@@ -157,7 +161,7 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
-    public void upsertData(UUID uuid, Data data) {
+    public void upsertData(@NonNull UUID uuid, @NonNull Data data) {
         if (!isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()));
@@ -174,7 +178,7 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
-    public void clearData(UUID uniqueId) {
+    public void clearData(@NonNull UUID uniqueId) {
         if (!isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uniqueId));
@@ -182,7 +186,7 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
-    public void clearData(String key) {
+    public void clearData(@NonNull String key) {
         if (!isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.key().equals(key));
@@ -190,7 +194,7 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
-    public void removeData(UUID uuid, String key) {
+    public void removeData(@NonNull UUID uuid, @NonNull String key) {
         if (!isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(key));
@@ -201,25 +205,25 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
-    public List<DataDTO> loadPlayers() {
+    public @NonNull List<DataDTO> loadPlayers() {
         return this.isEnable() ? this.requestHelper.selectAll(Tables.PLAYER_DATAS, DataDTO.class) : List.of();
     }
 
     @Override
-    public List<InventoryDTO> loadInventories() {
+    public @NonNull List<InventoryDTO> loadInventories() {
         return this.isEnable() ? this.requestHelper.selectAll(Tables.PLAYER_INVENTORIES, InventoryDTO.class) : List.of();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerOpenInventory(PlayerOpenInventoryEvent event) {
 
-        if (!isEnable() || !Config.enablePlayerOpenInventoryLogs) return;
+        if (!isEnable() || !Configuration.enablePlayerOpenInventoryLogs) return;
 
         this.cache.add(event);
     }
 
     @Override
-    public void removeInventory(UUID uuid) {
+    public void removeInventory(@NonNull UUID uuid) {
 
         if (!isEnable()) return;
 
@@ -227,7 +231,7 @@ public class ZStorageManager implements StorageManager {
     }
 
     @Override
-    public void storeInventory(UUID uuid, InventoryPlayer inventoryPlayer) {
+    public void storeInventory(@NonNull UUID uuid, @NonNull InventoryPlayer inventoryPlayer) {
 
         if (!isEnable()) return;
 

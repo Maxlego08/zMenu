@@ -4,10 +4,10 @@ import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.exceptions.ItemFlagException;
 import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionType;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
     /**
      * Load ItemStack
      */
-    public ItemStack load(YamlConfiguration configuration, String path, Object... objects) {
+    public ItemStack load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) {
 
         int data = configuration.getInt(path + "data", 0);
         int amount = configuration.getInt(path + "amount", 1);
@@ -161,7 +162,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
     /**
      *
      */
-    public void save(ItemStack item, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(ItemStack item, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
         if (item == null) {
             Logger.info("Impossible de sauvegarder l'item car il est null ! Le path: " + path, LogType.ERROR);

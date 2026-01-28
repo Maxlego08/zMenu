@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.itemstack;
 
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class TrimConfiguration {
     private boolean enable;
@@ -9,21 +11,26 @@ public class TrimConfiguration {
     private TrimPattern pattern;
 
     // Constructeur
-    public TrimConfiguration(boolean enable, TrimMaterial material, TrimPattern pattern) {
+    public TrimConfiguration(boolean enable, @NotNull TrimMaterial material,@NotNull TrimPattern pattern) {
         this.enable = enable;
         this.material = material;
         this.pattern = pattern;
     }
 
     // Getters
+    @Contract(pure = true)
     public boolean isEnable() {
         return enable;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public TrimMaterial getMaterial() {
         return material;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public TrimPattern getPattern() {
         return pattern;
     }
@@ -33,11 +40,11 @@ public class TrimConfiguration {
         this.enable = enable;
     }
 
-    public void setMaterial(TrimMaterial material) {
+    public void setMaterial(@NotNull TrimMaterial material) {
         this.material = material;
     }
 
-    public void setPattern(TrimPattern pattern) {
+    public void setPattern(@NotNull TrimPattern pattern) {
         this.pattern = pattern;
     }
 

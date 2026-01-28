@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class ZItemPermissible extends ItemPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventoryDefault, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryDefault, @NonNull Placeholders placeholders) {
 
         if (this.menuItemStack == null) {
             return true;
@@ -66,7 +68,7 @@ public class ZItemPermissible extends ItemPermissible {
     }
 
     @Override
-    public ZMenuItemStack getMenuItemStack() {
+    public @Nullable ZMenuItemStack getMenuItemStack() {
         return this.menuItemStack;
     }
 

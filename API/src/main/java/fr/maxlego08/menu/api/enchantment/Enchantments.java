@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.enchantment;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +18,9 @@ public interface Enchantments {
      * @param enchantment the name of the enchantment
      * @return an {@link Optional} containing the enchantment if found, otherwise empty
      */
-    Optional<MenuEnchantment> getEnchantments(String enchantment);
+    @Contract(pure = true)
+    @NotNull
+    Optional<MenuEnchantment> getEnchantments(@NotNull String enchantment);
 
     /**
      * Registers all custom enchantments within the plugin.
@@ -27,5 +32,7 @@ public interface Enchantments {
      *
      * @return a list of enchantment names
      */
+    @Contract(pure = true)
+    @NotNull
     List<String> getEnchantments();
 }

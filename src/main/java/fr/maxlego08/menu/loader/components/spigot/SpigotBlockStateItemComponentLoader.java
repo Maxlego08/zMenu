@@ -1,0 +1,48 @@
+package fr.maxlego08.menu.loader.components.spigot;
+
+import fr.maxlego08.menu.api.context.MenuItemStackContext;
+import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.itemstack.components.BlockStateComponent;
+import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.util.Map;
+
+public class SpigotBlockStateItemComponentLoader extends ItemComponentLoader {
+
+    public SpigotBlockStateItemComponentLoader(){
+        super("block-state");
+    }
+
+    @Override
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        if (componentSection == null) return null;
+        Map<String, Object> blockStates = componentSection.getValues(true);
+        if (blockStates.isEmpty()) return null;
+        String blockStatesString = blockStates.toString();
+        StringBuilder blockStateBuilder = new StringBuilder();
+        if (blockStatesString.startsWith("{") && blockStatesString.endsWith("}")) {
+            blockStateBuilder.append(blockStatesString, 1, blockStatesString.length() - 1);
+        } else {
+            blockStateBuilder.append(blockStatesString);
+        }
+        return new BlockStateComponent(this.getFinalBlockState(blockStateBuilder.toString()));
+    }
+
+    @NotNull
+    private String getFinalBlockState(@NotNull String blockState){
+        StringBuilder finalState = new StringBuilder();
+        if (!blockState.startsWith("[")){
+            finalState.append("[");
+        }
+        finalState.append(blockState);
+        if (!blockState.endsWith("]")) {
+            finalState.append("]");
+        }
+        return finalState.toString();
+    }
+}

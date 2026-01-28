@@ -9,6 +9,9 @@ import org.bukkit.potion.PotionBrewer;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -38,7 +41,7 @@ public class Potion {
      *
      * @param type The potion type
      */
-    public Potion(PotionType type) {
+    public Potion(@NotNull PotionType type) {
         this.type = type;
     }
 
@@ -48,7 +51,7 @@ public class Potion {
      * @param type  The type of potion.
      * @param level The potion's level.
      */
-    public Potion(PotionType type, int level) {
+    public Potion(@NotNull PotionType type, int level) {
         this(type);
         this.level = level;
     }
@@ -62,7 +65,7 @@ public class Potion {
      *               {@link #Potion(PotionType)} with {@link #splash()}.
      */
 
-    public Potion(PotionType type, int level, boolean splash) {
+    public Potion(@NotNull PotionType type, int level, boolean splash) {
         this(type, level);
         this.splash = splash;
     }
@@ -79,7 +82,7 @@ public class Potion {
      * @param isArrow  Whether it is an arrow potion.
      */
 
-    public Potion(PotionType type, int level, boolean splash, boolean extended, boolean isArrow) {
+    public Potion(@NotNull PotionType type, int level, boolean splash, boolean extended, boolean isArrow) {
         this(type, level, splash);
         this.extended = extended;
         this.arrow = isArrow;
@@ -92,6 +95,7 @@ public class Potion {
      * @return the produced potion
      */
 
+    @NotNull
     public static Potion fromDamage(int damage) {
         PotionType type = switch (damage & POTION_BIT) {
 //            case 0 -> PotionType.WATER;
@@ -132,7 +136,8 @@ public class Potion {
      *
      * @return An instance of PotionBrewer
      */
-
+    @Contract(pure = true)
+    @Nullable
     public static PotionBrewer getBrewer() {
         return brewer;
     }
@@ -143,7 +148,7 @@ public class Potion {
      *
      * @param other The new PotionBrewer
      */
-    public static void setPotionBrewer(PotionBrewer other) {
+    public static void setPotionBrewer(@Nullable PotionBrewer other) {
         if (brewer != null)
             throw new IllegalArgumentException("brewer can only be set internally");
         brewer = other;
@@ -155,6 +160,7 @@ public class Potion {
      * @return The potion.
      */
 
+    @Contract("-> this")
     public Potion splash() {
         setSplash(true);
         return this;
@@ -165,7 +171,7 @@ public class Potion {
      *
      * @return The potion.
      */
-
+    @Contract("-> this")
     public Potion extend() {
         setHasExtendedDuration(true);
         return this;
@@ -177,6 +183,7 @@ public class Potion {
      *
      * @return The potion.
      */
+    @Contract("-> this")
     public Potion arrow() {
         setArrow(true);
         return this;
@@ -188,7 +195,7 @@ public class Potion {
      *
      * @param to The itemstack to apply to
      */
-    public void apply(ItemStack to) {
+    public void apply(@NotNull ItemStack to) {
         PotionMeta meta = (PotionMeta) to.getItemMeta();
         meta.setBasePotionData(new PotionData(type, extended, level == 2));
         to.setItemMeta(meta);
@@ -201,12 +208,12 @@ public class Potion {
      * @param to The entity to apply the effects to
      * @see LivingEntity#addPotionEffects(Collection)
      */
-    public void apply(LivingEntity to) {
+    public void apply(@NotNull LivingEntity to) {
         to.addPotionEffects(getEffects());
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -225,7 +232,7 @@ public class Potion {
      * @see PotionBrewer#getEffectsFromDamage(int)
      * @see Potion#toDamageValue()
      */
-
+    @NotNull
     public Collection<PotionEffect> getEffects() {
         return getBrewer().getEffects(type, level == 2, extended);
     }
@@ -235,6 +242,7 @@ public class Potion {
      *
      * @return The level of this potion
      */
+    @Contract(pure = true)
     public int getLevel() {
         return level;
     }
@@ -253,7 +261,7 @@ public class Potion {
      *
      * @return The type of this potion
      */
-
+    @NotNull
     public PotionType getType() {
         return type;
     }
@@ -263,7 +271,7 @@ public class Potion {
      *
      * @param type The new type of this potion
      */
-    public void setType(PotionType type) {
+    public void setType(@NotNull PotionType type) {
         this.type = type;
     }
 
@@ -272,6 +280,7 @@ public class Potion {
      *
      * @return The color of this potion
      */
+    @Nullable
     public Color getColor() {
         return color;
     }
@@ -281,7 +290,7 @@ public class Potion {
      *
      * @param color The new color of this potion.
      */
-    public void setColor(Color color) {
+    public void setColor(@Nullable Color color) {
         this.color = color;
     }
 
@@ -290,6 +299,7 @@ public class Potion {
      *
      * @return Whether this potion has extended duration
      */
+    @Contract(pure = true)
     public boolean hasExtendedDuration() {
         return extended;
     }
@@ -309,6 +319,7 @@ public class Potion {
      *
      * @return Whether this is a splash potion
      */
+    @Contract(pure = true)
     public boolean isSplash() {
         return splash;
     }
@@ -338,6 +349,7 @@ public class Potion {
      *
      * @return Whether this is an arrow potion
      */
+    @Contract(pure = true)
     public boolean isArrow() {
         return arrow;
     }
@@ -358,7 +370,7 @@ public class Potion {
      *
      * @return The damage value of this potion Non-functional
      */
-
+    @Contract(pure = true)
     public short toDamageValue() {
         return 0;
     }
@@ -370,7 +382,7 @@ public class Potion {
      * @param amount The amount of the ItemStack
      * @return The created ItemStack
      */
-
+    @NotNull
     public ItemStack toItemStack(int amount) {
         Material material;
         if (isArrow())
@@ -393,6 +405,7 @@ public class Potion {
      * @return the name id Non-functional
      */
 
+    @Contract(pure = true)
     public int getNameId() {
         return 0;
     }

@@ -3,13 +3,16 @@ package fr.maxlego08.menu.placeholder;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class MenuPlaceholders extends ZUtils {
 
@@ -46,6 +49,9 @@ public class MenuPlaceholders extends ZUtils {
             Object object = plugin.getGlobalPlaceholders().get(args);
             return object == null ? Message.GLOBAL_PLACEHOLDER_NOT_FOUND.getMessage() : String.valueOf(object);
         });
-    }
 
+        placeholder.register("time_unix_timestamp", (player, args) -> String.valueOf(System.currentTimeMillis()));
+        placeholder.register("time_next_day_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().plusDays(1L).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+        placeholder.register("time_today_start_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+    }
 }

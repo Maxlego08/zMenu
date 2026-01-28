@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -12,6 +11,7 @@ import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.io.File;
@@ -134,7 +134,7 @@ public interface DialogInventory extends Inventory{
 
     void setActionButtonServerLink(ActionButtonRecord actionButtonRecord);
 
-    ActionButtonRecord getActionButtonServerLink(Player player);
+    ActionButtonRecord getActionButtonServerLink(@NotNull Player player);
 
     ActionButtonRecord getActionButtonServerLink();
 

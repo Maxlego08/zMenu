@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -30,12 +31,12 @@ public class ZRefreshRequirement implements RefreshRequirement {
     }
 
     @Override
-    public List<Permissible> getRequirements() {
+    public @NonNull List<Permissible> getRequirements() {
         return this.permissibles;
     }
 
     @Override
-    public List<Permissible> getEnableRequirements() {
+    public @NonNull List<Permissible> getEnableRequirements() {
         return this.enablePermissibles;
     }
 
@@ -65,7 +66,7 @@ public class ZRefreshRequirement implements RefreshRequirement {
     }
 
     @Override
-    public boolean needRefresh(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean needRefresh(@NonNull Player player, @NonNull Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         for (Permissible permissible : this.enablePermissibles) {
             if (!permissible.hasPermission(player, button, inventory, placeholders)) {
                 return false;
@@ -75,7 +76,7 @@ public class ZRefreshRequirement implements RefreshRequirement {
     }
 
     @Override
-    public boolean canRefresh(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean canRefresh(@NonNull Player player, @NonNull Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         for (Permissible permissible : this.permissibles) {
             if (!permissible.hasPermission(player, button, inventory, placeholders)) {
                 return false;

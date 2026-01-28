@@ -7,6 +7,6 @@ repositories {
 
 
 dependencies {
-    compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly("io.lumine:Mythic-Dist:5.6.1")
 }

@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZInventoryButton;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class InventoryLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String inventoryName = configuration.getString(path + "inventory");
         String pluginName = configuration.getString(path + "plugin");
         int toPage = configuration.getInt(path + "toPage", configuration.getInt(path + "to-page", 1));

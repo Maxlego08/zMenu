@@ -1,9 +1,14 @@
 package fr.maxlego08.menu.api.utils.toast;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+/**
+ * Interface for showing toast notifications to players or all players in the zMenu UI.
+ */
 public interface ToastHelper {
 
     /**
@@ -16,7 +21,7 @@ public interface ToastHelper {
      * @param modelData the model data
      * @param glowing   whether the icon is glowing
      */
-    void showToast(Collection<? extends Player> players, String icon, String message, ToastType style, Object modelData, boolean glowing);
+    void showToast(Collection<? extends @NotNull Player> players, @NotNull String icon, @NotNull String message, @NotNull ToastType style, @Nullable Object modelData, boolean glowing);
 
     /**
      * Shows a toast to a varargs of players.
@@ -28,7 +33,7 @@ public interface ToastHelper {
      * @param glowing   whether the icon is glowing
      * @param players   the players to show the toast to
      */
-    void showToast(String icon, String message, ToastType style, Object modelData, boolean glowing, Player... players);
+    void showToast(@NotNull String icon,@NotNull String message,@NotNull ToastType style,@Nullable Object modelData, boolean glowing,@NotNull Player... players);
 
     /**
      * Shows a toast to all online players.
@@ -39,6 +44,5 @@ public interface ToastHelper {
      * @param modelData the model data
      * @param glowing   whether the icon is glowing
      */
-    void showToastToAll(String icon, String message, ToastType style, Object modelData, boolean glowing);
-
+    void showToastToAll(@NotNull String icon,@NotNull String message,@NotNull ToastType style,@Nullable Object modelData, boolean glowing);
 }

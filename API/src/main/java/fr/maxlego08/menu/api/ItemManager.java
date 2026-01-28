@@ -32,7 +32,9 @@ public interface ItemManager {
 
     void unloadListeners();
 
-    void registerMechanicFactory(MechanicFactory factory);
+    void registerMechanicFactory(MechanicFactory<?> factory);
+
+    Optional<MechanicFactory<?>> getMechanicFactory(String mechanicId);
 
     void giveItem(Player player, String itemId);
 

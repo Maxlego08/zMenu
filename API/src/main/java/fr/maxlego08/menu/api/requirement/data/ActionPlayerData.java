@@ -2,8 +2,11 @@ package fr.maxlego08.menu.api.requirement.data;
 
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents an action associated with player data.
@@ -15,6 +18,7 @@ public interface ActionPlayerData {
      *
      * @return The key.
      */
+    @NotNull
     String getKey();
 
     /**
@@ -22,6 +26,7 @@ public interface ActionPlayerData {
      *
      * @return The {@link ActionPlayerDataType}.
      */
+    @NotNull
     ActionPlayerDataType getType();
 
     /**
@@ -29,6 +34,7 @@ public interface ActionPlayerData {
      *
      * @return The value.
      */
+    @Nullable
     Object getValue();
 
     /**
@@ -36,21 +42,34 @@ public interface ActionPlayerData {
      *
      * @return The expiration time in seconds.
      */
-    long getSeconds();
+    @NotNull
+    String getSeconds();
 
     /**
      * Converts the action into player data.
+     * <p>
+     * DEPRECATED: Use {@link #toData(OfflinePlayer, Placeholders)} instead.
      *
      * @param player The player for whom the data is created.
      * @return The {@link Data}.
      */
-    Data toData(OfflinePlayer player);
+    @Deprecated(since = "1.1.0.6")
+    @NotNull
+    Data toData(@Nullable OfflinePlayer player);
+
+    @NotNull
+    Data toData(@Nullable OfflinePlayer player,@NotNull Placeholders placeholders);
 
     /**
      * Executes the action when the player clicks.
+     * <p>
+     * DEPRECATED: Use {@link #execute(Player, DataManager, Placeholders)} instead.
      *
      * @param player       The player who executes the action.
      * @param dataManager  The {@link DataManager}.
      */
-    void execute(Player player, DataManager dataManager);
+    @Deprecated(since = "1.1.0.6")
+    void execute(@NotNull Player player,@NotNull DataManager dataManager);
+
+    void execute(@NotNull Player player,@NotNull DataManager dataManager,@NotNull Placeholders placeholders);
 }

@@ -1,12 +1,13 @@
 package fr.maxlego08.menu.loader;
 
+import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
-import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.storage.StorageManager;
-import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,20 +21,24 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
     }
 
     @Override
-    public ActionPlayerData load(YamlConfiguration configuration, String path, Object... objects)
+    public ActionPlayerData load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects)
             throws InventoryException {
 
         ActionPlayerDataType type = ActionPlayerDataType.valueOf(configuration.getString(path + "type", "SET"));
         String key = configuration.getString(path + "key");
         Object object = configuration.get(path + "value", true);
-        long seconds = configuration.getLong(path + "seconds", 0);
+        String seconds = configuration.getString(path + "seconds", null);
+        if (seconds == null) {
+            seconds = String.valueOf(configuration.getLong(path + "seconds",0));
+        }
+
         boolean mathExpression = configuration.getBoolean(path + "math", false);
 
         return new ZActionPlayerData(storageManager, key, type, object, seconds, mathExpression);
     }
 
     @Override
-    public void save(ActionPlayerData object, YamlConfiguration configuration, String path, File file, Object... objects) {
+    public void save(ActionPlayerData object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
 
         configuration.set(path + "type", "SET");
         configuration.set(path + "key", object.getKey());

@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -185,7 +186,7 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public ActionButtonRecord getActionButtonServerLink(Player player) {
+    public ActionButtonRecord getActionButtonServerLink(@NotNull Player player) {
         if (actionButtonRecordServerLink != null) {
             return actionButtonRecordServerLink.parse(player);
         }

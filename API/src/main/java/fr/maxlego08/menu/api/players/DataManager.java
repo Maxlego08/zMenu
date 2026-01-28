@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.players;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,26 +16,29 @@ public interface DataManager {
      * @param uniqueId Player {@link UUID}
      * @return optional
      */
-    Optional<PlayerData> getPlayer(UUID uniqueId);
+    @NotNull
+    Optional<PlayerData> getPlayer(@NotNull UUID uniqueId);
 
     /**
      * @param uniqueId Player {@link UUID}
      * @return PlayerData
      */
-    PlayerData getOrCreate(UUID uniqueId);
+    @NotNull
+    PlayerData getOrCreate(@NotNull UUID uniqueId);
 
     /**
      * @param uniqueId Player {@link UUID}
      * @param data     New data
      */
-    void addData(UUID uniqueId, Data data);
+    void addData(@NotNull UUID uniqueId,@NotNull Data data);
 
     /**
      * @param uniqueId Player {@link UUID}
      * @param key      Data key
      * @return Optional
      */
-    Optional<Data> getData(UUID uniqueId, String key);
+    @NotNull
+    Optional<Data> getData(@NotNull UUID uniqueId,@NotNull String key);
 
     /**
      * Clear all player's data
@@ -46,7 +50,7 @@ public interface DataManager {
      *
      * @param uniqueId Player {@link UUID}
      */
-    void clearPlayer(UUID uniqueId);
+    void clearPlayer(@NotNull UUID uniqueId);
 
     /**
      * Loads default values for each player.
@@ -68,9 +72,10 @@ public interface DataManager {
      *
      * @return a list of all keys that are used in the player data.
      */
+    @NotNull
     List<String> getKeys();
 
-    void clearKey(String key);
+    void clearKey(@NotNull String key);
 
-    void convertOldDatas(CommandSender sender);
+    void convertOldDatas(@NotNull CommandSender sender);
 }

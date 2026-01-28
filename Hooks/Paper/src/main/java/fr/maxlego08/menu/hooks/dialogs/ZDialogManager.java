@@ -2,8 +2,10 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
+import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
@@ -33,6 +35,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -183,7 +186,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         List<DialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
-        if (Config.enableInformationMessage) {
+        if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
         }
 
@@ -208,8 +211,8 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
      * Opens a specific dialog for the specified player
      */
     @Override
-    public void openDialog(Player player, DialogInventory dialogInventory) {
-        openDialog(player, dialogInventory, new ArrayList<>());
+    public void openDialog(@NotNull Player player,@NotNull DialogInventory zDialog) {
+        this.openDialog(player, dialogBuilders, new ArrayList<>());
     }
 
     @Override
@@ -243,9 +246,9 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
 
             activeDialogs.put(player.getUniqueId(), dialogInventory);
         } catch (Exception e) {
-            if (Config.enableInformationMessage){
-                Logger.info("Failed to open bedrock inventory for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
-                if (Config.enableDebug){
+            if (Configuration.enableInformationMessage){
+                Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
+                if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
                 }
             }
@@ -255,7 +258,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     /**
      * Creates a dialog based on the dialog type
      */
-    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, DialogInventory zDialog, Player player) {
+    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, DialogInventory zDialog,@NotNull Player player) {
         return switch (dialogType) {
             case NOTICE ->
                     Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(ActionButton.create(paperComponent.getComponent(zDialog.getLabel(player)),paperComponent.getComponent(zDialog.getLabelTooltip(player)), zDialog.getLabelWidth(), createAction(inputs,zDialog.getActions())))).base(dialogBase.body(bodies).inputs(inputs).build())
@@ -341,11 +344,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     /**
      * Removes the active dialog for a player
      */
-    public void removeActiveDialog(Player player) {
+    public void removeActiveDialog(@NotNull Player player) {
         activeDialogs.remove(player.getUniqueId());
     }
 
-    public boolean openDialogByName(Player player, String dialogName) {
+    public boolean openDialogByName(@NotNull Player player, String dialogName) {
         Optional<DialogInventory> dialog = getDialog(dialogName);
         if (dialog.isPresent()) {
             openDialog(player, dialog.get());

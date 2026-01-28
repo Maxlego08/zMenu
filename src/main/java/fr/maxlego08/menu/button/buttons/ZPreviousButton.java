@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jspecify.annotations.NonNull;
 
 public class ZPreviousButton extends PreviousButton {
 
@@ -18,7 +19,7 @@ public class ZPreviousButton extends PreviousButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
+    public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventory, int slot, @NonNull Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
         if (inventory.getPage() != 1) {
             Inventory toInventory = inventory.getMenuInventory();
@@ -32,7 +33,7 @@ public class ZPreviousButton extends PreviousButton {
     }
 
     @Override
-    public boolean checkPermission(Player player, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean checkPermission(@NonNull Player player, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         return inventory.getPage() != 1;
     }
 }

@@ -57,6 +57,13 @@ translatedName:
 #  - "A       A"
 #  - "AAAAAAAAA"
 
+# Actions Patterns to apply to the inventory
+#
+# Automatically add actions to all buttons in the inventory if this type of action is not already defined in the button.
+#
+#action-patterns:
+#  - "default-actions"
+
 # Item section. (https://docs.zmenu.dev/configurations/inventories#items)
 #
 # This is where you will add all the items that will be present in your inventory.

@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -558,6 +559,8 @@ public interface InventoryManager extends Listener {
     List<InventoryListener> getInventoryListeners();
 
     ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player);
+
+    ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders);
 
     void sendMessage(CommandSender sender, Message message, Object... args);
 

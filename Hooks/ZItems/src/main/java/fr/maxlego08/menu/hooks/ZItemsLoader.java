@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ public class ZItemsLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         RegisteredServiceProvider<ItemManager> itemManagerRegisteredServiceProvider = plugin.getServer().getServicesManager().getRegistration(ItemManager.class);
         if (itemManagerRegisteredServiceProvider == null) return null;
         ItemManager itemManager = itemManagerRegisteredServiceProvider.getProvider();

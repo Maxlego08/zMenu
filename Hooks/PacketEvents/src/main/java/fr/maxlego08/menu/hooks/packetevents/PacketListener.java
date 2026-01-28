@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.packetevents;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
@@ -15,7 +16,8 @@ public class PacketListener implements com.github.retrooper.packetevents.event.P
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-        if (event.getPacketType() == PacketType.Play.Server.WINDOW_ITEMS) {
+        PacketTypeCommon packetType = event.getPacketType();
+        if (packetType == PacketType.Play.Server.WINDOW_ITEMS) {
             WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
             if (PacketUtils.fakeContents.containsKey(event.getUser().getUUID())) {
                 Player player = event.getPlayer();
@@ -33,7 +35,7 @@ public class PacketListener implements com.github.retrooper.packetevents.event.P
 
                 wrapper.setItems(items);
             }
-        } else if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
+        } else if (packetType == PacketType.Play.Server.SET_SLOT) {
             WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(event);
             if (PacketUtils.fakeContents.containsKey(event.getUser().getUUID())) {
                 int slot = wrapper.getSlot();

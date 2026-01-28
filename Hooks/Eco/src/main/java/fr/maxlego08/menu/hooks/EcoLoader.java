@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class EcoLoader extends MaterialLoader {
     
@@ -13,7 +14,7 @@ public class EcoLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration yamlConfiguration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration yamlConfiguration, @NonNull String path, @NonNull String materialString) {
         try {
             //eco item lookup system:
             // https://plugins.auxilor.io/all-plugins/the-item-lookup-system

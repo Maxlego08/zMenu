@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.players;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,7 +13,6 @@ public class PlayerDataLoader {
 
     public static Map<UUID, List<Data>> loadPlayerData(String path) throws IOException {
         Map<UUID, List<Data>> result = new HashMap<>();
-        Gson gson = new Gson();
 
         JsonObject root = JsonParser.parseReader(new FileReader(path)).getAsJsonObject();
         JsonObject players = root.getAsJsonObject("players");

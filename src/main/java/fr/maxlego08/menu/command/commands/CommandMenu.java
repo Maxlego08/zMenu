@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.command.commands.bedrock.CommandBedrock;
 import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
@@ -10,9 +11,9 @@ import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
-import fr.maxlego08.menu.zcore.enums.Permission;
+import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import fr.maxlego08.menu.zcore.utils.nms.NmsVersion;
 
 public class CommandMenu extends VCommand {
 
@@ -43,7 +44,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuInventories(plugin));
         // this.addSubCommand(new CommandMenuMarketplace(plugin));
 
-        if (plugin.isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+        if (plugin.isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion() &&Configuration.enableMiniMessageFormat) {
             this.addSubCommand(new CommandDialog(plugin));
         }
 

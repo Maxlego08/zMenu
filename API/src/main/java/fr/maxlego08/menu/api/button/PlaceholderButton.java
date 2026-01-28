@@ -4,6 +4,8 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,8 @@ public abstract class PlaceholderButton extends PermissibleButton {
      *
      * @return the list of placeholders that must be met for this button to be visible
      */
+    @Contract(pure = true)
+    @NotNull
     public List<PlaceholderPermissible> getPlaceholders() {
         return this.placeholders;
     }
@@ -29,7 +33,7 @@ public abstract class PlaceholderButton extends PermissibleButton {
      *
      * @param placeholders the list of placeholders that must be met for this button to be visible
      */
-    public void setPlaceholders(List<PlaceholderPermissible> placeholders) {
+    public void setPlaceholders(@NotNull List<PlaceholderPermissible> placeholders) {
         this.placeholders = placeholders;
     }
 
@@ -38,6 +42,7 @@ public abstract class PlaceholderButton extends PermissibleButton {
      *
      * @return true if this button has any placeholders, false otherwise
      */
+    @Contract(pure = true)
     public boolean hasPlaceHolder() {
         return this.placeholders != null && !this.placeholders.isEmpty();
     }
@@ -50,6 +55,7 @@ public abstract class PlaceholderButton extends PermissibleButton {
      * @return true if this button has any placeholders or permissions, false otherwise
      */
     @Override
+    @Contract(pure = true)
     public boolean hasPermission() {
         return this.hasPlaceHolder() || super.hasPermission();
     }
@@ -70,7 +76,8 @@ public abstract class PlaceholderButton extends PermissibleButton {
      * @return true if the player has permission, false otherwise
      */
     @Override
-    public boolean checkPermission(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    @Contract(pure = true)
+    public boolean checkPermission(@NotNull Player player, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         // First check if player has permission
         if (!super.checkPermission(player, inventoryEngine, placeholders)) {
             return false;

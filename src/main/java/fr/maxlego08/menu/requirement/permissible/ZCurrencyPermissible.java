@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.permissible.CurrencyPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.traqueur.currencies.Currencies;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ZCurrencyPermissible extends CurrencyPermissible {
     }
 
     @Override
-    public boolean hasPermission(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         String result = inventory.getPlugin().parse(player, placeholders.parse(this.amount));
         BigDecimal bigDecimal = new BigDecimal(result);
         BigDecimal amount = this.currencies.getBalance(player, this.economyName == null ? "default" : this.economyName);

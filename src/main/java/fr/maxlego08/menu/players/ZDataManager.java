@@ -8,12 +8,13 @@ import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
+import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
-import fr.maxlego08.menu.zcore.utils.builder.TimerBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,12 +41,12 @@ public class ZDataManager implements DataManager {
     }*/
 
     @Override
-    public Optional<PlayerData> getPlayer(UUID uniqueId) {
+    public @NonNull Optional<PlayerData> getPlayer(@NonNull UUID uniqueId) {
         return Optional.ofNullable(players.getOrDefault(uniqueId, null));
     }
 
     @Override
-    public PlayerData getOrCreate(UUID uniqueId) {
+    public @NonNull PlayerData getOrCreate(@NonNull UUID uniqueId) {
 
         Optional<PlayerData> optional = this.getPlayer(uniqueId);
         if (optional.isPresent()) {
@@ -59,13 +60,13 @@ public class ZDataManager implements DataManager {
     }
 
     @Override
-    public void addData(UUID uniqueId, Data data) {
+    public void addData(@NonNull UUID uniqueId, @NonNull Data data) {
         PlayerData playerData = this.getOrCreate(uniqueId);
         playerData.addData(data);
     }
 
     @Override
-    public Optional<Data> getData(UUID uniqueId, String key) {
+    public @NonNull Optional<Data> getData(@NonNull UUID uniqueId, @NonNull String key) {
 
         Optional<PlayerData> optional = this.getPlayer(uniqueId);
         if (optional.isEmpty()) {
@@ -107,7 +108,7 @@ public class ZDataManager implements DataManager {
     }
 
     @Override
-    public void clearPlayer(UUID uniqueId) {
+    public void clearPlayer(@NonNull UUID uniqueId) {
         players.remove(uniqueId);
         this.plugin.getStorageManager().clearData(uniqueId);
     }
@@ -137,9 +138,8 @@ public class ZDataManager implements DataManager {
     }
 
     @Override
-    public List<String> getKeys() {
-        Set<String> strings = new HashSet<>();
-        strings.addAll(this.defaultValues.keySet());
+    public @NonNull List<String> getKeys() {
+        Set<String> strings = new HashSet<>(this.defaultValues.keySet());
         for (PlayerData playerData : this.players.values()) {
             for (Data data : playerData.getDatas()) {
                 strings.add(data.getKey());
@@ -149,7 +149,7 @@ public class ZDataManager implements DataManager {
     }
 
     @Override
-    public void clearKey(String key) {
+    public void clearKey(@NonNull String key) {
         this.players.values().forEach(e -> e.removeData(key));
         this.plugin.getStorageManager().clearData(key);
     }
@@ -203,7 +203,7 @@ public class ZDataManager implements DataManager {
     }
 
     @Override
-    public void convertOldDatas(CommandSender sender) {
+    public void convertOldDatas(@NonNull CommandSender sender) {
         var manager = plugin.getStorageManager();
         try {
             var datas = PlayerDataLoader.loadPlayerData(this.plugin.getDataFolder() + "/players.json");

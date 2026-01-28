@@ -24,14 +24,14 @@ public enum Plugins {
 	CRAFTENGINE("CraftEngine"),
 	NEXO("Nexo"),
 	MAGICCOSMETICS("MagicCosmetics"),
+    NEXTGENS("NextGens"),
+    MYTHICMOBS("MythicMobs"),
 	ZMENUPLUS("zMenuPlus"),
-	GEYSER("Geyser-Spigot"),
-	FLOODGATE("floodgate"),
-	NEXTGENS("NextGens"),
-	MYTHICMOBS("MythicMobs"),
-  
-  ;
-
+    BREWERYX("BreweryX"),
+    PACKETEVENTS("packetevents"),
+    GEYSER("Geyser-Spigot"),
+    FLOODGATE("floodgate"),
+    ;
 	private final String name;
 
 	Plugins(String name) {
@@ -44,5 +44,4 @@ public enum Plugins {
 	public String getName() {
 		return name;
 	}
-
 }

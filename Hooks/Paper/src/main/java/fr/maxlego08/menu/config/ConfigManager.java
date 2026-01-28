@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.config;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
@@ -28,6 +28,7 @@ import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -141,15 +142,16 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
     }
 
     @Override
-    public void openConfig(Plugin plugin, Player player) {
+    public void openConfig(@NonNull Plugin plugin, @NonNull Player player) {
         openConfig(plugin.getName(), player);
     }
 
-    public void openConfig(String pluginName, Player player) {
+    @Override
+    public void openConfig(@NonNull String pluginName, @NonNull Player player) {
         try {
             ZDialogInventoryDeveloper zDialog = zDialogInventoryDev.get(pluginName);
             if (zDialog == null) {
-                if (Config.enableDebug) {
+                if (Configuration.enableDebug) {
                     Logger.info("No dialog found for plugin: " + pluginName);
                 }
                 return;
@@ -189,7 +191,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
 
             player.showDialog(dialog);
         } catch (Exception e) {
-            if (Config.enableDebug) {
+            if (Configuration.enableDebug) {
                 Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error :" + e.getMessage(), Logger.LogType.ERROR);
                 e.printStackTrace();
             }
@@ -290,7 +292,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
     }
 
     @Override
-    public List<String> getRegisteredConfigs() {
+    public @NonNull List<String> getRegisteredConfigs() {
         return new ArrayList<>(zDialogInventoryDev.keySet());
     }
 

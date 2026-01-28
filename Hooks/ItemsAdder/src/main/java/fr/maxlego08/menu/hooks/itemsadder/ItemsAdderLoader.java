@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 public class ItemsAdderLoader extends MaterialLoader {
 
@@ -17,7 +18,7 @@ public class ItemsAdderLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         CustomStack customStack = CustomStack.getInstance(materialString);
         if (customStack == null) {
             this.plugin.getLogger().severe("Impossible to find the item " + materialString);

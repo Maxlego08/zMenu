@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.VInvManager;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.engine.InventoryResult;
@@ -9,6 +11,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
@@ -28,7 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class VInventoryManager extends ListenerAdapter {
+public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     private final Map<Integer, VInventory> inventories = new HashMap<>();
     private final ZMenuPlugin plugin;
@@ -56,6 +59,7 @@ public class VInventoryManager extends ListenerAdapter {
      * @param page          - The inventory page
      * @param objects       - The arguments used to make the inventory work
      */
+    @Override
     public void createInventory(EnumInventory enumInventory, Player player, int page, Object... objects) {
         this.createInventory(enumInventory.getId(), player, page, objects);
     }
@@ -68,6 +72,7 @@ public class VInventoryManager extends ListenerAdapter {
      * @param page    - The inventory page
      * @param objects - The arguments used to make the inventory work
      */
+    @Override
     public void createInventory(int id, Player player, int page, Object... objects) {
         Optional<VInventory> optional = this.getInventory(id);
 
@@ -131,6 +136,8 @@ public class VInventoryManager extends ListenerAdapter {
             event.setCancelled(inventory.isDisableClick());
 
             if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+//TODO: check ici
+ //                event.setCancelled(inventory.isDisablePlayerInventoryClick());
                 if (!inventory.isDisablePlayerInventoryClick()) {
                     event.setCancelled(event.getClick() == ClickType.SHIFT_LEFT
                             || event.getClick() == ClickType.SHIFT_RIGHT);
@@ -149,12 +156,12 @@ public class VInventoryManager extends ListenerAdapter {
 
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
-        if (Config.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
+        if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
             message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
 
-        this.cooldownClick.put(player.getUniqueId(), System.currentTimeMillis() + Config.cooldownClickMilliseconds);
+        this.cooldownClick.put(player.getUniqueId(), System.currentTimeMillis() +Configuration.cooldownClickMilliseconds);
 
         ItemButton button = (inPlayerInventory ? inventory.getPlayerInventoryItems() : inventory.getItems()).getOrDefault(event.getSlot(), null);
         if (button != null) {

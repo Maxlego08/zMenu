@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.font;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * <p>
  * The {@code FontImage} interface provides the ability to replace color codes
@@ -32,6 +34,6 @@ public interface FontImage {
      * @param string The string in which the color codes are to be replaced.
      * @return The string with the color codes replaced.
      */
-    String replace(String string);
+    @NotNull String replace(@NotNull String string);
 
 }

@@ -2,13 +2,14 @@ package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.toast.ToastType;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public class ToastAction extends Action {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventoryEngine, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryEngine, @NonNull Placeholders placeholders) {
 
         String finalMaterial = this.plugin.parse(player, placeholders.parse(this.material));
         String finalModelParsed = this.plugin.parse(player, placeholders.parse(this.modelId));
@@ -69,8 +70,8 @@ public class ToastAction extends Action {
             }
         }
 
-        if (Config.enableToast) {
-            this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.parse(player, placeholders.parse(this.message)), this.toastType, finalModel, this.glowing, player);
+        if (Configuration.enableToast) {
+            this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.getMetaUpdater().getLegacyMessage(this.plugin.parse(player, placeholders.parse(this.message))), this.toastType, finalModel, this.glowing, player);
         }
     }
 }

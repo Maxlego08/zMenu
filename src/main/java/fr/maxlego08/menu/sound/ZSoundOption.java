@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class ZSoundOption implements SoundOption {
 
@@ -16,7 +18,7 @@ public class ZSoundOption implements SoundOption {
     private final float volume;
     private final boolean isCustom;
 
-    public ZSoundOption(XSound sound, String categoryName, String soundAsString, float pitch, float volume, boolean isCustom) {
+    public ZSoundOption(@Nullable XSound sound, String categoryName,@Nullable String soundAsString, float pitch, float volume, boolean isCustom) {
         super();
         XSound.Category localCategory;
         this.sound = sound;
@@ -59,7 +61,7 @@ public class ZSoundOption implements SoundOption {
     }
 
     @Override
-    public void play(Entity entity) {
+    public void play(@NonNull Entity entity) {
 
         if (this.soundAsString != null && this.isCustom()) {
             Location location = entity.getLocation();

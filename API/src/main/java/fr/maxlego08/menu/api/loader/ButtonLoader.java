@@ -4,6 +4,9 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,7 @@ public abstract class ButtonLoader {
     protected final Plugin plugin;
     protected final String name;
 
-    public ButtonLoader(Plugin plugin, String name) {
+    public ButtonLoader(@NotNull Plugin plugin,@NotNull String name) {
         this.plugin = plugin;
         this.name = name;
     }
@@ -40,7 +43,8 @@ public abstract class ButtonLoader {
      * @param slotsAsString List of slot strings
      * @return List of slots as integers
      */
-    public static List<Integer> loadSlot(List<String> slotsAsString) {
+    @NotNull
+    public static List<Integer> loadSlot(@NotNull List<String> slotsAsString) {
         List<Integer> slots = new ArrayList<>();
         if (!slotsAsString.isEmpty()) {
             for (String line : slotsAsString) {
@@ -68,6 +72,8 @@ public abstract class ButtonLoader {
      *
      * @return The button name.
      */
+    @Contract(pure = true)
+    @NotNull
     public String getName() {
         return this.name;
     }
@@ -77,6 +83,8 @@ public abstract class ButtonLoader {
      *
      * @return The plugin.
      */
+    @Contract(pure = true)
+    @NotNull
     public Plugin getPlugin() {
         return this.plugin;
     }
@@ -89,5 +97,6 @@ public abstract class ButtonLoader {
      * @param defaultButtonValue Default button values.
      * @return The loaded button.
      */
-    public abstract Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue);
+    @Nullable
+    public abstract Button load(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull DefaultButtonValue defaultButtonValue);
 }

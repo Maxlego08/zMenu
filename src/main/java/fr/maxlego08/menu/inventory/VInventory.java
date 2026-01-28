@@ -2,12 +2,14 @@ package fr.maxlego08.menu.inventory;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryListener;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.animation.PlayerTitleAnimation;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,6 +19,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +37,8 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected String guiName;
     protected boolean disableClick = true;
     protected boolean disablePlayerInventoryClick = true;
+    private TitleAnimation titleAnimation;
+    private PlayerTitleAnimation playerTitleAnimation;
 
     private boolean isClose = false;
 
@@ -102,11 +107,11 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         createDefaultInventory();
 
         if (itemStack == null) {
-            plugin.getLogger().severe("Attention, a null itemstack was found in slot " + slot + " ! > " + this);
+            this.plugin.getLogger().severe("Attention, a null ItemStack was found in slot " + slot + " ! > " + this);
             return null;
         }
 
-        if (Config.enableAntiDupe && enableAntiDupe) {
+        if (Configuration.enableAntiDupe && enableAntiDupe) {
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
 
@@ -148,12 +153,12 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Map<Integer, ItemButton> getItems() {
+    public @NonNull Map<Integer, ItemButton> getItems() {
         return items;
     }
 
     @Override
-    public Map<Integer, ItemButton> getPlayerInventoryItems() {
+    public @NonNull Map<Integer, ItemButton> getPlayerInventoryItems() {
         return playerInventoryItems;
     }
 
@@ -183,7 +188,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     @Override
-    public Inventory getSpigotInventory() {
+    public @NonNull Inventory getSpigotInventory() {
         return inventory;
     }
 
@@ -205,6 +210,9 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     protected void onPreClose(InventoryCloseEvent event, ZMenuPlugin plugin, Player player) {
         this.isClose = true;
+        if (this.playerTitleAnimation != null){
+            this.playerTitleAnimation.stop();
+        }
         this.onClose(event, plugin, player);
     }
 
@@ -246,6 +254,26 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     public void setDisablePlayerInventoryClick(boolean disablePlayerInventoryClick) {
         this.disablePlayerInventoryClick = disablePlayerInventoryClick;
+    }
+
+    @Override
+    public void setPlayerTitleAnimation(PlayerTitleAnimation playerTitleAnimation){
+        this.playerTitleAnimation = playerTitleAnimation;
+    }
+
+    @Override
+    public PlayerTitleAnimation getPlayerTitleAnimation(){
+        return this.playerTitleAnimation;
+    }
+
+    @Override
+    public void setTitleAnimation(TitleAnimation animation){
+        this.titleAnimation = animation;
+    }
+
+    @Override
+    public TitleAnimation getTitleAnimation(){
+        return this.titleAnimation;
     }
 
     public void onInventoryClick(InventoryClickEvent event, ZMenuPlugin plugin, Player player) {

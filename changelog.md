@@ -40,8 +40,64 @@
 
 - [ ] Ajouter un systéme qui permet de load un inventaire uniquement quand tout les requirements sont pr�sents
 
-# Unreleased
+# Unreleased (1.1.0.8)
 
+## New Features
+
+- **New Item Component System (1.20.5+)** - Complete overhaul with 30+ components (Enchantments, Lore, Trim, Tool, PotionContents, WrittenBook, AttributeModifiers, etc.). Improved error handling and case sensitivity.
+- **Animated Inventory Titles** - Requires [PacketEvents](https://github.com/retrooper/packetevents).
+- **Local Placeholders** - `local-placeholders` section in inventory/pattern configs, cached with Guava for better performance.
+- **Actions Pattern System** - Define default actions for all buttons in `actions_patterns/` directory.
+- **New Actions**: `message-to` (send to specific player), `open-actions` and `close-actions` for inventories.
+- **Console Commands** - Commands can now be executed from console (`console: true`).
+- **LuckPerms** - Permission expiration support with time unit configuration.
+- MiniMessage support in toasts.
+- Multi-line inventory names (useful with zTextGenerator).
+- Resin trim material support.
+
+## Bug Fixes
+
+- Fixed Avast false positive on VirusTotal.
+- Fixed async access block and container component issues.
+- Fixed PacketAnimationListener task execution when plugin is disabled.
+- Fixed button reference in updatedButtons iteration.
+- Various minor fixes.
+
+## Internal Changes
+
+- Removed `getCustomItemStack(Player player)` method. Use `getCustomItemStack(Player player, Placeholders placeholders)` instead.
+- Renamed package `zcore` → `common`.
+- Moved Component classes to API module.
+- Added nullability annotations and new interfaces (`BuildContext`, `MenuItemStackContext`).
+- Improved JavaDoc documentation.
+---
+
+# 1.1.0.7
+
+- Fixed NMS compatibility for **1.21.10**.
+- Fixed issues with **DeluxeMenus** inventory loading.
+- Fixed **MiniMessage** regex handling.
+- Added the ``ZMenuItemsLoad`` event, triggered when zMenu custom items are loaded or reloaded.
+- Improved the logging system.
+- Improved item mechanics.
+- Added ``deny-chance-actions`` support for actions.
+- Various minor fixes and general code improvements.
+- Added new placeholders:  
+  ``%zmenu_time_unix_timestamp%``,  
+  ``%zmenu_time_next_day_unix_timestamp%``,  
+  ``%zmenu_time_today_start_unix_timestamp%``
+---
+# 1.1.0.6
+
+- Fixed the removal of default attributes.
+- Improved attribute configuration, you now have more comprehensive options. More information available [here](https://docs.zmenu.dev/configurations/items#attributes).
+- Added more configuration options for patterns.
+- Added Brewery support to create your items.
+- Added an option to run actions as an administrator.
+- Added support for Oraxen fonts.
+- Fixed the loading of certain plugins.
+- Added a system to apply actions to items.
+---
 # 1.1.0.5
 
 - Improved and optimized internal code. These consist of micro-optimizations that will only be noticeable on servers with several hundred players.
@@ -50,13 +106,13 @@
 - Fixed default attributes applied to items.
 - Added support for MythicMobs.
 - Added a placeholder for global placeholders.
-
+---
 # 1.1.0.4
 
 - Update to Sarah 1.20. Added MARIADB support
 - Fixed NONE database settings
 - Improve pattern file loading
-
+---
 # 1.1.0.3
 
 - Added dialogs inventories ``/zm dialog`` [#186](https://github.com/Maxlego08/zMenu/pull/186) by [1robie](https://github.com/1robie) and [saildrag](https://github.com/saildrag)
@@ -76,7 +132,7 @@
 - New command: ``/zm addons``
 - New command: ``/zm dumplog``
 - Update to Sarah 1.19
-
+---
 # 1.1.0.2
 
 - Added [toast](https://docs.zmenu.dev/configurations/actions#toast) action
@@ -89,7 +145,7 @@
 - Updated source code to java 21 [#166](https://github.com/Maxlego08/zMenu/pull/166)
 - Updated to last CurrenciesAPI version
 - Some fixs [#170](https://github.com/Maxlego08/zMenu/pull/170)
-
+---
 # 1.1.0.1
 
 - Added player target with inventory name [#169](https://github.com/Maxlego08/zMenu/pull/169)
@@ -97,7 +153,7 @@
 - Update to last [CurrenciesAPI](https://github.com/GroupeZ-dev/CurrenciesAPI) version
 - Use EntityScheduler instead of RegionScheduler [#168](https://github.com/Maxlego08/zMenu/pull/168)
 - Fix items attributes
-
+---
 # 1.1.0.0
 
 - Codebase structure overhaul: the project now uses Gradle. This major change has enabled numerous modifications and improvements to the API. The API is now cleaner, more efficient, and easier to use. **You will need to update all your plugins that use zMenu at the same time** to avoid compatibility issues.
@@ -120,7 +176,7 @@
 - Added `refresh inventory` action to reload the inventory content.
 - Dates now include **month and year** in their display.
 - Fixed issues with the `book` action.
-
+---
 
 # 1.0.4.1
 
@@ -134,14 +190,14 @@
 - Fixed MenuItemStack attributes.
 - Change broadcast action placeholder for `%receiver%` and `%sender%`
 - Disabling the `/zm download` command by default, you must enable it in the configuration if you want to use it.
-
+---
 # 1.0.4.0
 
 - Fixed placeholders in actions
 - Fixed commands with arguments
 - Fixed minimessage [#124](https://github.com/Maxlego08/zMenu/pull/124)
 - Added RoyaleEconomy support
-
+---
 # 1.0.3.9
 
 - Added dependency management for inventory loading. If an inventory needs to be loaded but one of its dependencies is not yet loaded, it will be put on hold until all dependencies are loaded. This allows you to use any element from any other plugin in any zMenu inventory.
@@ -167,7 +223,7 @@
 - Updated `miniumRequirement` to `minimum-requirement` for requirements.
 - Updated `maxPage` to `max-page` for inventory name.
 - Register command permissions in Spigot. This prevents the command from appearing in the player's tab completion if they do not have permission.
-
+---
 # 1.0.3.8
 
 - Added [Global Placeholders](https://docs.zmenu.dev/configurations/global-placeholders), which allows you to define
@@ -183,7 +239,7 @@
 - All configuration keys are now in kebab case. Old configurations will still work but the documentation has been
   updated to reflect the new format.
 - Improved pagination performance by avoiding unnecessary list management operations
-
+---
 # 1.0.3.7
 
 - Added inventory type [#97](https://github.com/Maxlego08/zMenu/pull/97)
@@ -196,7 +252,7 @@
   using [CurrenciesAPI](https://github.com/Traqueur-dev/CurrenciesAPI)
 - Added ``deny-message`` for commands. Allows to send a custom error message if the player does not have permission.
 - Fixed the max page placeholder that says 0, it will now say 1 by default
-
+---
 # 1.0.3.6
 
 - Added the ability to use font ItemsAdder with format `:font-name:`
@@ -206,7 +262,7 @@
 - Added action ``set permission``, allows setting a permission to a player with luckperms
 - Added aliases ``command`` and `commands` for console command action.
 - Fixed max-stack-size for itemstack with 1.21
-
+---
 # 1.0.3.5
 
 - Added support for DeluxeMenus configurations. You no longer need to convert your DeluxeMenu configurations to zMenu,
@@ -215,7 +271,7 @@
 - Added key `title` for inventory name, you can use `name` or `title` now
 - Fixed itemstack with 1.21, components was added when it should not be added by default.
 - Fixed the item backup system for potions and firework (use in `/zm save` command and in `zEssentials`)
-
+---
 # 1.0.3.4
 
 - Add support for ``\n`` in item lore
@@ -258,7 +314,7 @@
 - Added ``item-rarity: <COMMON/UNCOMMON,RARE,EPIC>``, Determines the default color of its name. This enum is ordered
   from least rare to most rare.
 - Added ``trim: <trim configuration>``, Represents an armor trim that may be applied to an item.
-
+---
 # 1.0.3.3
 
 - Fix nullable player in MenuItemStack
@@ -270,7 +326,7 @@
   you can set other messages and make your server international
 - Remove ``eco`` from plugin.yml, this caused problems loading various plugins
 - Tab completes for more of the sub commands [#75](https://github.com/Maxlego08/zMenu/issues/75)
-
+---
 # 1.0.3.2
 
 - Create action ``actionbar``, allows to send a message in the action bar of the player
@@ -284,7 +340,7 @@
 - Fix placeholder API cache, its disable by default
 - Add support for 1.20.6 (There has been a big change on how to encode and decode itemstacks in base64, the old values
   will no longer work)
-
+---
 # 1.0.3.1
 
 - Fix folia commands and data manager [#63](https://github.com/Maxlego08/zMenu/issues/63)
@@ -296,7 +352,7 @@
 - Create new Button for zMenu+ ``INPUT``, allows you to choose a number or a text in the chat and perform actions
 - You can choose the pattern plugin for the button with ``pluginName``
 - Fix MenuItemStackLoader for save model id
-
+---
 # 1.0.3.0
 
 - Create new placeholder ``%zmenu_player_next_page%``, return player next page
@@ -311,7 +367,7 @@
 - New features for Commands (Perform action and Auto-completion) [#26](https://github.com/Maxlego08/zMenu/issues/26)
 - You can now open a book
 - Create ``/zm download <link>`` command. You can download configuration files from links, discord links for example.
-
+---
 # 1.0.2.9
 
 - Added support for [zHead](https://www.spigotmc.org/resources/zhead-database-plugin-for-heads.115717/). A free and open
@@ -332,14 +388,14 @@
 3. DONUTSMP HOME - zMenu Configurations: https://minecraft-inventory-builder.com/resources/7
 4. zAuctionHouse - Hypixel AuctionHouse: https://minecraft-inventory-builder.com/resources/6
 5. zAuctionHouse - DonutSMP AuctionHouse: https://minecraft-inventory-builder.com/resources/5
-
+---
 # 1.0.2.8
 
 - Add /zm inventories - Allows access to the inventories of the online inventory editor
 - Add PlayerInteractEvent in DupeListener
 - Fix classic meta with PAPI color
 - Fix NPE with ButtonOption
-
+---
 # 1.0.2.7
 
 - Start of development of the [zMenu+](https://m.zmenu.dev/4) paid addon. This addon will be available with the purchase
@@ -359,7 +415,7 @@
 - Fix CONTAINS_STRING action for placeholder
 - Fix NMS with 1.20.4
 - Fix method ``getRealSlot`` with isPermanent
-
+---
 # 1.0.2.6
 
 - Add BlockPlaceEvent for Anti Dupe
@@ -369,7 +425,7 @@
   several times the same placeholder used, it will only be called once.
 - Fix sound action, pitch and volume was reversed
 - Fix commands async
-
+---
 # 1.0.2.5
 
 - Add new lore as string support
@@ -381,7 +437,7 @@
 - Added ability to add arguments and select page for INVENTORY
   button [#45](https://github.com/Maxlego08/zMenu/issues/45)
 - Change update interval to milliseconds [#37](https://github.com/Maxlego08/zMenu/issues/37)
-
+---
 # 1.0.2.4
 
 - Added replacement of , by . for placeholders requirements. If your placeholder returns a number with a comma instead
@@ -394,19 +450,19 @@
 - Change `/zm save <item name> <base64/yml>`, saves an element in YML or base64 format. The base64 format will save the
   itemStack with all its data.
 - Change `page` from JUMP Button to `toPage`
-
+---
 # 1.0.2.3
 
 - Fixed the pattern display, they will now appear first and let the more important buttons pass over
 - Fixed MenuItemStack build method, add boolean for use cache or not
 - Fixed PAPI use if player is null
 - Create new button type: JUMP [#34](https://github.com/Maxlego08/zMenu/pull/34)
-
+---
 # 1.0.2.2
 
 - Added open menu with item interaction [#29](https://github.com/Maxlego08/zMenu/pull/29) by EnzoShoes
 - Added ``/zm giveopenitem <inventory> [<player>]``
-
+---
 # 1.0.2.1
 
 - Added the ability to perform actions when clicking. For simple actions you no longer need to use a click_requirements.
@@ -421,6 +477,7 @@
 - Fixed command /zm open. The opening arguments were only taken into account if the command had more than 5 arguments
   instead of starting from 5.
 - Fixed command /zm reload with commands.
+---
 
 # 1.0.2.0
 
@@ -431,12 +488,14 @@
 - Fix error with Meta
 - Fix error with slot page and else button
 - Fix checkPermission with view requirement who made it check placeholders and permissions impossible
+---
 
 # 1.0.1.9
 
 - Added back type for action requirements
 - Improved ItemStackLoader. This class is used for converting inventories from GuiPlus.
 - Fixed loaded messages
+---
 
 # 1.0.1.8
 
@@ -446,6 +505,7 @@
 - Set ``enableAntiDupeDiscordNotification`` to false by default
 - Fix ItemStackCompound
 - Fix PDC dupe, replace BOOLEAN by INT
+---
 
 # 1.0.1.7
 
@@ -461,6 +521,7 @@
 material: POTION
 durability: 16454
 ```
+---
 
 # 1.0.1.6
 
@@ -584,6 +645,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Add pro_inventory.yml in inventory folder
 - Fix component for inventory name
 - Add cache system for ComponentMeta (optimizes code and makes it more efficient)
+---
 
 # 1.0.1.5
 
@@ -592,6 +654,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Add method ``setMaxPage`` in InventoryDefault class
 - Add event cancel before use the button. It is now possible to activate the click of items in the inventory from the
   api
+---
 
 # 1.0.1.4
 
@@ -599,6 +662,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Fix commands register and unregister. The commands are now saved in the plugin that will load the command.
 - Fix Firework meta for firework rocket
 - Improve documentation: https://github.com/Maxlego08/zMenu/issues/15
+---
 
 # 1.0.1.3
 
@@ -610,6 +674,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Previous and Next button are now permanent button by default
 - Else button doesnt need to set slot and page
 - Fix error with 1.20.2 (PlayerSkin#getFromPlayer)
+---
 
 # 1.0.1.2
 
@@ -619,6 +684,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Add new default inventory, basic_inventory. An inventory with lots of explanation for beginners.
 - Fix ``ComponentMeta`` with old color tag
 - Disable double click action
+---
 
 # 1.0.1.1
 
@@ -635,6 +701,7 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Fix Leather color material case
 - Fix GameProfile with null name
 - Change ButtonLoadEvent to ButtonLoaderRegisterEvent
+---
 
 # 1.0.1.0
 
@@ -653,12 +720,14 @@ More information on the plugin documentation: https://docs.zmenu.dev/
 - Fix item lore with lore is empty
 - Fix message translation for hex color
 - Fix Component meta regex
+---
 
 # 1.0.0.9
 
 - Add %player% variable for messages on button
 - Add PlaceholderAPI support for custom model data (modelID)
 - Add argument for command /zm open
+---
 
 # 1.0.0.8
 

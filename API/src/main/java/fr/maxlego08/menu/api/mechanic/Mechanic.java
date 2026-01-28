@@ -1,27 +1,36 @@
 package fr.maxlego08.menu.api.mechanic;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class Mechanic {
+@SuppressWarnings("unused")
+public abstract class Mechanic<T extends MechanicFactory<?>> {
     private final ConfigurationSection mechanicSection;
-    private final MechanicFactory mechanicFactory;
+    private final T mechanicFactory;
     private final String itemId;
 
-    public Mechanic(final String itemId, final MechanicFactory mechanicFactory, final ConfigurationSection mechanicSection) {
+    public Mechanic(@NotNull final String itemId, @NotNull final T mechanicFactory,@NotNull final ConfigurationSection mechanicSection) {
         this.mechanicFactory = mechanicFactory;
         this.mechanicSection = mechanicSection;
         this.itemId = itemId;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public ConfigurationSection getMechanicSection() {
-        return mechanicSection;
+        return this.mechanicSection;
     }
 
-    public MechanicFactory getMechanicFactory() {
-        return mechanicFactory;
+    @Contract(pure = true)
+    @NotNull
+    public T getMechanicFactory() {
+        return this.mechanicFactory;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public String getItemId() {
-        return itemId;
+        return this.itemId;
     }
 }

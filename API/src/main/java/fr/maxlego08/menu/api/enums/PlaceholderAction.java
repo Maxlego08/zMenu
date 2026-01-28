@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.enums;
 
-import java.util.ArrayList;
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public enum PlaceholderAction {
                 }
             }
         }
-        System.err.println("Impossible to find the " + string + " action for placeholder");
+        Logger.info("Impossible to find the " + string + " action for placeholder", Logger.LogType.ERROR);
         return null;
     }
 

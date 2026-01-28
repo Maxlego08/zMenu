@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderInput;
@@ -49,7 +49,7 @@ public class NumberRangeInputBuilder implements DialogBuilderInput {
         }
         float step = button.getStep();
         if (initialValueFloat>end || initialValueFloat<start) {
-            if (Config.enableInformationMessage){
+            if (Configuration.enableInformationMessage){
                 Logger.info("The initial value of the number range input is out of bounds. Start: " + start + ", End: " + end + ", Initial Value: " + initialValueFloat + ". Setting to middle value.");
             }
             initialValueFloat = (start + end) / 2;

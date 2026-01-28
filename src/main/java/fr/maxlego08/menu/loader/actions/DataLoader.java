@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.requirement.actions.DataAction;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
@@ -20,11 +21,14 @@ public class DataLoader extends ActionLoader {
     }
 
     @Override
-    public Action load(String path, TypedMapAccessor accessor, File file) {
+    public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("action", "SET").toUpperCase());
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
-        long seconds = accessor.getLong("seconds", 0L);
+        String seconds = accessor.getString("seconds");
+        if (seconds == null) {
+            seconds = String.valueOf(accessor.getLong("seconds", 0L));
+        }
         boolean mathExpression = accessor.getBoolean("math", false);
         return new DataAction(new ZActionPlayerData(this.plugin.getStorageManager(), key, type, object, seconds, mathExpression), this.plugin);
     }

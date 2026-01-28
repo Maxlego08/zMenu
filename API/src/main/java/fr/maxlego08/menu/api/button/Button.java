@@ -18,6 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public abstract class Button extends PlaceholderButton {
 
     private MenuPlugin plugin;
@@ -52,10 +56,14 @@ public abstract class Button extends PlaceholderButton {
     private int priority; // only use for convert DeluxeMenus config to zmenu object
     private boolean isInPlayerInventory;
 
+    @Contract(pure = true)
+    @Nullable
     public String getName() {
         return this.buttonName;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public MenuItemStack getItemStack() {
         return this.itemStack;
     }
@@ -63,20 +71,26 @@ public abstract class Button extends PlaceholderButton {
     /**
      * @param itemStack the itemStack to set
      */
-    public Button setItemStack(MenuItemStack itemStack) {
+    @Contract("_ -> this")
+    public Button setItemStack(@Nullable MenuItemStack itemStack) {
         this.itemStack = itemStack;
         return this;
     }
 
-    public ItemStack getCustomItemStack(Player player) {
+    @Contract(pure = true)
+    @Nullable
+    public ItemStack getCustomItemStack(@NotNull Player player, @NotNull Placeholders placeholders) {
+        return this.getCustomItemStack(player, this.useCache, placeholders);
+    }
+
+    @Contract(pure = true)
+    @Nullable
+    public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders) {
         if (this.itemStack == null) return null;
-
-        ItemStack itemStack = this.itemStack.build(player, this.useCache);
-
+        ItemStack itemStack = this.itemStack.build(player, useCache,placeholders);
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player);
+            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player,placeholders);
         }
-
         return itemStack;
     }
 
@@ -87,6 +101,7 @@ public abstract class Button extends PlaceholderButton {
     /**
      * @param slot the slot to set
      */
+    @Contract("_ -> this")
     public Button setSlot(int slot) {
         this.slots = new ArrayList<>();
         this.slots.add(slot);
@@ -97,6 +112,7 @@ public abstract class Button extends PlaceholderButton {
         return true;
     }
 
+    @Contract(pure = true)
     public boolean isPermanent() {
         return this.isPermanent;
     }
@@ -104,42 +120,59 @@ public abstract class Button extends PlaceholderButton {
     /**
      * @param isPermanent the isPermanent to set
      */
+    @Contract("_ -> this")
+    @NotNull
     public Button setPermanent(boolean isPermanent) {
         this.isPermanent = isPermanent;
         return this;
     }
 
+    @Contract(pure = true)
+    @NotNull
     public List<String> getMessages() {
         return this.messages;
     }
 
-    public Button setMessages(List<String> messages) {
+    @Contract("_ -> this")
+    @NotNull
+    public Button setMessages(@NotNull List<String> messages) {
         this.messages = messages;
         return this;
     }
 
+    @Contract(pure = true)
     public int getRealSlot(int inventorySize, int page) {
         int slot = getSlot();
         return this.isPermanent() ? slot : slot - ((page - 1) * inventorySize);
     }
 
+    @Contract(pure = true)
+    @Nullable
     public SoundOption getSound() {
         return this.soundOption;
     }
 
+    @Contract(pure = true)
     public boolean hasSpecialRender() {
         return this.getSlots().size() > 1;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public String getPlayerHead() {
         return this.playerHead;
     }
 
-    public Button setPlayerHead(String playerHead) {
+    /**
+     * @param playerHead the playerHead to set
+     */
+    @Contract("_ -> this")
+    public Button setPlayerHead(@Nullable String playerHead) {
         this.playerHead = playerHead;
         return this;
     }
 
+    @Contract(pure = true)
     public void onRender(Player player, InventoryEngine inventoryEngine) {
         if (inventoryEngine.getPage() == this.getPage() || this.isPermanent()) {
 
@@ -154,23 +187,50 @@ public abstract class Button extends PlaceholderButton {
                 }
                 slots[i] = slot;
             }
-            inventoryEngine.displayFinalButton(this, slots);
+            inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
         }
     }
 
-    public void onLeftClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
+    /**
+     * Called when the left mouse button is clicked
+     * @param player the player
+     * @param event the inventory click event
+     * @param inventory the inventory
+     * @param slot the slot
+     */
+    public void onLeftClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot) {
     }
 
-    public void onRightClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
+    /**
+     * Called when the right mouse button is clicked
+     * @param player the player
+     * @param event the inventory click event
+     * @param inventory the inventory
+     * @param slot the slot
+     */
+    public void onRightClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot) {
     }
 
-    public void onMiddleClick(Player player, InventoryClickEvent event, InventoryEngine inventory, int slot) {
+    /**
+     * Called when the middle mouse button is clicked
+     * @param player the player
+     * @param event the inventory click event
+     * @param inventory the inventory
+     * @param slot the slot
+     */
+    public void onMiddleClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot) {
     }
 
-    public void onInventoryClose(Player player, InventoryEngine inventory) {
+    /**
+     * Called when the inventory is closed
+     * @param player the player
+     * @param inventory the inventory
+     */
+    public void onInventoryClose(@NotNull Player player,@NotNull InventoryEngine inventory) {
     }
 
-    public void onClick(Player player, @Nullable InventoryClickEvent event, InventoryEngine inventory, int slot, Placeholders placeholders) {
+    @Contract(pure = true)
+    public void onClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot,@NotNull Placeholders placeholders) {
         if (this.closeInventory()) {
             player.closeInventory();
         }
@@ -179,7 +239,7 @@ public abstract class Button extends PlaceholderButton {
 
             DataManager dataManager = this.plugin.getDataManager();
             for (ActionPlayerData actionPlayerData : this.datas) {
-                actionPlayerData.execute(player, dataManager);
+                actionPlayerData.execute(player, dataManager, placeholders);
             }
         }
 
@@ -198,7 +258,7 @@ public abstract class Button extends PlaceholderButton {
         AtomicBoolean isSuccess = new AtomicBoolean(true);
 
         this.clickRequirements.forEach(requirement -> {
-            if (event == null || requirement.getClickTypes().contains(event.getClick())) {
+            if (requirement.getClickTypes().contains(event.getClick())) {
                 isSuccess.set(requirement.execute(player, this, inventory, placeholders));
             }
         });
@@ -206,33 +266,46 @@ public abstract class Button extends PlaceholderButton {
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(this.plugin, event == null ? ClickType.LEFT : event.getClick(), placeholders, player);
+        this.execute(this.plugin, event.getClick(), placeholders, player);
     }
 
-    public void onInventoryOpen(Player player, InventoryEngine inventory, Placeholders placeholders) {
+    /**
+     * Called when the inventory is opened
+     * @param player the player
+     * @param inventory the inventory
+     * @param placeholders the placeholders
+     */
+    public void onInventoryOpen(@NotNull Player player,@NotNull InventoryEngine inventory,@NotNull Placeholders placeholders) {
 
     }
 
+    @Contract(pure = true)
     public boolean closeInventory() {
         return this.closeInventory;
     }
 
+    @Contract("_ -> this")
+    @NotNull
     public Button setButtonName(String buttonName) {
         this.buttonName = buttonName;
         return this;
     }
 
+    @Contract("_ -> this")
+    @NotNull
     public Button setCloseInventory(boolean closeInventory) {
         this.closeInventory = closeInventory;
         return this;
     }
 
+    @Contract("_ -> this")
+    @NotNull
     public Button setSoundOption(SoundOption soundOption) {
         this.soundOption = soundOption;
         return this;
     }
 
-
+    @Contract(pure = true)
     public OpenLink getOpenLink() {
         return this.openLink;
     }
@@ -241,7 +314,7 @@ public abstract class Button extends PlaceholderButton {
         this.openLink = openLink;
     }
 
-
+    @Contract(pure = true)
     public boolean isUpdated() {
         return this.isUpdated;
     }
@@ -250,7 +323,7 @@ public abstract class Button extends PlaceholderButton {
         this.isUpdated = isUpdated;
     }
 
-
+    @Contract(pure = true)
     public boolean isRefreshOnClick() {
         return this.refreshOnClick;
     }
@@ -259,6 +332,8 @@ public abstract class Button extends PlaceholderButton {
         this.refreshOnClick = refreshOnClick;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public boolean isRefreshOnDrag() {
         return this.refreshOnDrag;
     }
@@ -267,19 +342,21 @@ public abstract class Button extends PlaceholderButton {
         this.refreshOnDrag = refreshOnDrag;
     }
 
+    @Contract(pure = true)
+
     public List<ActionPlayerData> getData() {
         return this.datas;
     }
 
-    public void setDatas(List<ActionPlayerData> datas) {
+    public void setDatas(@Nullable List<ActionPlayerData> datas) {
         this.datas = datas;
     }
 
-    public void setPlugin(MenuPlugin plugin) {
+    public void setPlugin(@Nullable MenuPlugin plugin) {
         this.plugin = plugin;
     }
 
-
+    @Contract(pure = true)
     public boolean updateOnClick() {
         return this.updateOnClick;
     }
@@ -288,57 +365,87 @@ public abstract class Button extends PlaceholderButton {
         this.updateOnClick = updateOnClick;
     }
 
-
+    @Contract(pure = true)
     public List<String> buildLore(Player player) {
         return this.itemStack.getLore();
     }
 
-
+    @Contract(pure = true)
     public String buildDisplayName(Player player) {
         return this.itemStack.getDisplayName();
     }
 
-    public void onBackClick(Player player, InventoryClickEvent event, InventoryEngine inventory, List<Inventory> oldInventories, Inventory toInventory, int slot) {
+    /**
+     * Called when the back button is clicked
+     * @param player the player
+     * @param event the inventory click event
+     * @param inventory the inventory
+     * @param oldInventories the old inventories
+     * @param toInventory the to inventory
+     * @param slot the slot
+     */
+    public void onBackClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory,@NotNull List<Inventory> oldInventories,@NotNull Inventory toInventory, int slot) {
     }
 
+    @Contract(pure = true)
+    @Nullable
     public List<Requirement> getClickRequirements() {
         return this.clickRequirements;
     }
 
-    public void setClickRequirements(List<Requirement> clickRequirements) {
+    public void setClickRequirements(@Nullable List<Requirement> clickRequirements) {
         this.clickRequirements = clickRequirements;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public Requirement getViewRequirement() {
         return this.viewRequirement;
     }
 
-    public void setViewRequirement(Requirement viewRequirement) {
+    public void setViewRequirement(@Nullable Requirement viewRequirement) {
         this.viewRequirement = viewRequirement;
     }
 
+    @Contract(pure = true)
+    @Override
     public boolean hasPermission() {
         return this.viewRequirement != null || super.hasPermission();
     }
 
-    public boolean checkPermission(Player player, InventoryEngine inventory, Placeholders placeholders) {
+    public boolean checkPermission(@NotNull Player player,@NotNull InventoryEngine inventory,@NotNull Placeholders placeholders) {
         return super.checkPermission(player, inventory, placeholders) && (this.viewRequirement == null || this.viewRequirement.execute(player, this, inventory, placeholders));
     }
 
+    @Contract(pure = true)
+    @Nullable
     public List<Action> getActions() {
         return this.actions;
     }
 
-    public void setActions(List<Action> actions) {
+    public void setActions(@Nullable List<Action> actions) {
         this.actions = actions;
     }
 
-    public void onDrag(InventoryDragEvent event, Player player, InventoryEngine inventoryDefault) {
+    /**
+     * Called when the inventory is dragged
+     * @param event the inventory drag event
+     * @param player the player
+     * @param inventoryDefault the inventory engine
+     */
+    public void onDrag(@NotNull InventoryDragEvent event,@NotNull Player player,@NotNull InventoryEngine inventoryDefault) {
     }
 
-    public void onInventoryClick(InventoryClickEvent event, Player player, InventoryEngine inventoryDefault) {
+    /**
+     * Called when the inventory is clicked
+     * @param event the inventory click event
+     * @param player the player
+     * @param inventoryDefault the inventory engine
+     */
+    public void onInventoryClick(@NotNull InventoryClickEvent event,@NotNull Player player,@NotNull InventoryEngine inventoryDefault) {
     }
 
+    @Contract(pure = true)
     public boolean isUseCache() {
         return this.useCache;
     }
@@ -347,49 +454,56 @@ public abstract class Button extends PlaceholderButton {
         this.useCache = useCache;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public List<ButtonOption> getOptions() {
         return this.options;
     }
 
-    public void setOptions(List<ButtonOption> options) {
+    public void setOptions(@Nullable List<ButtonOption> options) {
         this.options = options;
     }
 
+    @Contract(pure = true)
     public boolean hasCustomRender() {
         return false;
     }
 
+    @Contract(pure = true)
     public boolean isUpdatedMasterButton() {
         return this.isMasterButtonUpdated;
     }
 
     public void setMasterButtonUpdated(boolean masterButtonUpdated) {
-        isMasterButtonUpdated = masterButtonUpdated;
+        this.isMasterButtonUpdated = masterButtonUpdated;
     }
 
+    @Contract(pure = true)
     public boolean isOpenAsync() {
-        return isOpenAsync;
+        return this.isOpenAsync;
     }
 
     public void setOpenAsync(boolean openAsync) {
-        isOpenAsync = openAsync;
+        this.isOpenAsync = openAsync;
     }
-
 
     public boolean hasRefreshRequirement() {
         return this.refreshRequirement != null;
     }
 
+    @Contract(pure = true)
+    @Nullable
     public RefreshRequirement getRefreshRequirement() {
-        return refreshRequirement;
+        return this.refreshRequirement;
     }
 
-    public void setRefreshRequirement(RefreshRequirement refreshRequirement) {
+    public void setRefreshRequirement(@Nullable RefreshRequirement refreshRequirement) {
         this.refreshRequirement = refreshRequirement;
     }
 
+    @Contract(pure = true)
     public int getPriority() {
-        return priority;
+        return this.priority;
     }
 
     public void setPriority(int priority) {
@@ -407,7 +521,7 @@ public abstract class Button extends PlaceholderButton {
      *                  itself
      * @param <T>       the type of the elements
      */
-    protected <T> void paginate(List<T> elements, InventoryEngine inventory, BiConsumer<Integer, T> consumer) {
+    protected <T> void paginate(@NotNull List<T> elements,@NotNull InventoryEngine inventory,@NotNull BiConsumer<Integer, T> consumer) {
         Pagination<T> pagination = new Pagination<>();
         elements = pagination.paginate(elements, this.slots.size(), inventory.getPage());
 
@@ -418,12 +532,12 @@ public abstract class Button extends PlaceholderButton {
         }
     }
 
-
     /**
      * Returns whether this button is displayed in the player's inventory.
      *
      * @return true if this button is displayed in the player's inventory, false otherwise
      */
+    @Contract(pure = true)
     public boolean isPlayerInventory() {
         return this.isInPlayerInventory;
     }
@@ -468,7 +582,7 @@ public abstract class Button extends PlaceholderButton {
      * @param placeholders the placeholders to use
      * @return the built item stack
      */
-    protected ItemStack buildAsOwner(Player player, OfflinePlayer owner, Placeholders placeholders) {
+    protected ItemStack buildAsOwner(@NotNull Player player,@NotNull OfflinePlayer owner,@NotNull Placeholders placeholders) {
         ItemStack itemStack = getItemStack().build(player, false, placeholders);
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
         skullMeta.setOwningPlayer(owner);

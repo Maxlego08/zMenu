@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.0.5"
+version = "1.1.0.8"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -32,8 +32,13 @@ allprojects {
     }
 
     java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
         withSourcesJar()
-        withJavadocJar()
+        if (project.name == "API") {
+            withJavadocJar()
+        }
     }
 
     tasks.shadowJar {
@@ -72,15 +77,17 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
-    tasks.javadoc {
-        options.encoding = "UTF-8"
-        if (JavaVersion.current().isJava9Compatible)
-            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+    if (project.name == "API"){
+        tasks.javadoc {
+            options.encoding = "UTF-8"
+            if (JavaVersion.current().isJava9Compatible)
+                (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+        }
     }
 
     dependencies {
         if (project.name != "Paper") {
-            compileOnly("org.spigotmc:spigot-api:1.21.10-R0.1-SNAPSHOT")
+            compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
         }
         compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
@@ -100,6 +107,7 @@ repositories {
 
 dependencies {
     api(projects.api)
+    api(projects.common)
     api(projects.hooks)
     implementation("de.tr7zw:item-nbt-api:2.15.0")
 }
@@ -125,9 +133,6 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    compileJava {
-        options.release = 21
-    }
 
     processResources {
         from("resources")

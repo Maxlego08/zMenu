@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.website;
 
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 
 import java.util.Map;
 

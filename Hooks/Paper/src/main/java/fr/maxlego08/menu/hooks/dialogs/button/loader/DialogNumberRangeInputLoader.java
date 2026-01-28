@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogNumberRangeInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 public class DialogNumberRangeInputLoader extends ButtonLoader {
 
@@ -16,7 +17,7 @@ public class DialogNumberRangeInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String label = configuration.getString(path + ".label", "");
         int width = configuration.getInt(path + ".width", 200);
         float start = (float) configuration.getDouble(path + ".start", 0);

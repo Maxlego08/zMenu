@@ -6,12 +6,15 @@ import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -131,12 +134,18 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
             String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", null));
             Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
             if (patternPlugin != null) {
-                File patternFile = new File(patternPlugin.getDataFolder(), "patterns/" + fileName + ".yml");
-                if (patternFile.exists()) {
+                Path patternPath = patternPlugin.getDataFolder().toPath().resolve("patterns").resolve(fileName + ".yml");
+                Optional<YamlConfiguration> yamlConfiguration = YamlFileCache.getYamlConfiguration(patternPath);
+                if (yamlConfiguration.isPresent()) {
+
+                    YamlConfiguration patternFile = yamlConfiguration.get();
 
                     mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
-                    YamlConfiguration patternConfiguration = loadAndReplaceConfiguration(patternFile, mapPlaceholders);
-                    this.checkButton(patternConfiguration, inventoryLoadRequirement, "button.");
+
+                    loadLocalPlaceholders(patternFile, mapPlaceholders);
+
+                    patternFile = YamlParser.parseConfiguration(patternFile, mapPlaceholders);
+                    this.checkButton(patternFile, inventoryLoadRequirement, "button.");
                     return;
                 }
             }

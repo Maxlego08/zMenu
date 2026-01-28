@@ -2,8 +2,9 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.enums.DialogInputType;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderInput;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -49,7 +50,7 @@ public class TextInputBuilder implements DialogBuilderInput {
             multilineOptions = TextDialogInput.MultilineOptions.create(multilineMaxLines, multilineHeight);
         }
         if (defaultText.length() > maxLength) {
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info("The default text of the text input is longer than the maximum length. Truncating to fit the maximum length.");
             }
             defaultText = defaultText.substring(0, maxLength);

@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.enchantment;
 
 import org.bukkit.enchantments.Enchantment;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -15,6 +17,8 @@ public interface MenuEnchantment {
      *
      * @return the {@link Enchantment} associated with this custom enchantment
      */
+    @Contract(pure = true)
+    @NotNull
     Enchantment enchantment();
 
     /**
@@ -23,5 +27,7 @@ public interface MenuEnchantment {
      *
      * @return a list of aliases for the enchantment
      */
+    @Contract(pure = true)
+    @NotNull
     List<String> aliases();
 }

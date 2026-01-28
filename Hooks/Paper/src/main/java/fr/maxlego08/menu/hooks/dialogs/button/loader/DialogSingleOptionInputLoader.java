@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogSingleOptionInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+
         String label = configuration.getString(path + ".label", "");
         boolean labelVisible = configuration.getBoolean(path + ".label-visible", true);
         List<SingleOption> singleOptionList = new ArrayList<>();

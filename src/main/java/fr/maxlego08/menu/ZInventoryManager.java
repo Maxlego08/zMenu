@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
@@ -30,6 +30,20 @@ import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogBooleanInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogNumberRangeInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogSingleOptionInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.DialogTextInputLoader;
+import fr.maxlego08.menu.common.utils.PlayerUtil;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
+import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.common.utils.nms.NMSUtils;
+import fr.maxlego08.menu.common.utils.yaml.YamlParser;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -38,14 +52,9 @@ import fr.maxlego08.menu.loader.actions.*;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.*;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PlayerSkin;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
-import fr.maxlego08.menu.zcore.utils.itemstack.MenuItemStackFormMap;
-import fr.maxlego08.menu.zcore.utils.nms.ItemStackUtils;
-import fr.maxlego08.menu.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -62,6 +71,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +99,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
-    public ZInventoryManager(ZMenuPlugin plugin) {
+    public ZInventoryManager(@NotNull ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
@@ -97,6 +107,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void load() {
         this.loadButtons();
+        this.plugin.getPatternManager().loadActionsPatterns();
         this.plugin.getPatternManager().loadPatterns();
         this.loadInventories();
         DialogManager dialogManager = this.plugin.getDialogManager();
@@ -118,6 +129,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    @NotNull
     public MenuPlugin getPlugin() {
         return this.plugin;
     }
@@ -156,11 +168,22 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        YamlConfiguration configuration = loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+        Optional<YamlFileCacheEntry> yamlFileEntry = YamlFileCache.getYamlFileEntry(file.toPath());
+
+        if (yamlFileEntry.isEmpty())
+            throw new InventoryFileNotFound("Cannot find " + file.getAbsolutePath()+". File does not exist.");
+
+        YamlConfiguration configuration = yamlFileEntry.get().getYamlConfiguration();
+
+        Map<String, Object> placeholders = this.plugin.getGlobalPlaceholders();
+
+        loadLocalPlaceholders(configuration, placeholders);
+
+        configuration = YamlParser.parseConfiguration(configuration, placeholders);
 
         boolean enableInventoryLoad = configuration.getBoolean("enable", true);
         if (!enableInventoryLoad) {
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info("The inventory " + file.getPath() + " is disabled, so it will not be loaded.", LogType.WARNING);
             }
             return null;
@@ -170,7 +193,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         Optional<InventoryLoadRequirement> optional = checker.canLoadInventory(configuration, plugin, file, classz);
         if (optional.isPresent()) {
 
-            if (Config.enableInformationMessage) {
+            if (Configuration.enableInformationMessage) {
                 Logger.info("Cannot load inventory " + file.getPath() + ", inventory is waiting.", LogType.WARNING);
 
                 InventoryLoadRequirement inventoryLoadRequirement = optional.get();
@@ -191,12 +214,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
 
-        if (Config.enableInformationMessage) {
+        if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
         }
 
         InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
-        if (Config.enableFastEvent) getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
+        if (Configuration.enableFastEvent) getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
         else inventoryLoadEvent.call();
 
         return inventory;
@@ -312,7 +335,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
 
@@ -354,6 +377,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Load actions
         buttonManager.registerAction(new BroadcastLoader(this.plugin));
         buttonManager.registerAction(new MessageLoader());
+        buttonManager.registerAction(new MessageToLoader());
         buttonManager.registerAction(new BookLoader());
         buttonManager.registerAction(new SoundLoader());
         buttonManager.registerAction(new BroadcastSoundLoader());
@@ -362,7 +386,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new DataLoader(this.plugin));
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
         buttonManager.registerAction(new ChatLoader());
-        if (Config.enablePlayerCommandsAsOPAction){ // Disabled by default for security reasons
+        if (Configuration.enablePlayerCommandsAsOPAction){ // Disabled by default for security reasons
             buttonManager.registerAction(new PlayerCommandAsOPLoader());
         }
         buttonManager.registerAction(new PlayerCommandLoader());
@@ -487,7 +511,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load specifies path inventories
-        List<String> list = Config.specifyPathMenus;
+        List<String> list =Configuration.specifyPathMenus;
         for (String s : list) {
             File file = new File(s);
             if (file.isFile()) {
@@ -803,7 +827,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         loadClicks.forEach(clickType -> {
             if (clickType == null) return;
             if (clickType.equalsIgnoreCase("all") || clickType.equalsIgnoreCase("any")) {
-                clickTypes.addAll(Config.allClicksType);
+                clickTypes.addAll(Configuration.allClicksType);
             } else {
                 try {
                     clickTypes.add(ClickType.valueOf(clickType.toUpperCase()));
@@ -900,7 +924,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public YamlConfiguration loadYamlConfiguration(File file) {
-        return loadAndReplaceConfiguration(file, this.plugin.getGlobalPlaceholders());
+        return YamlParser.loadAndParseFile(file, this.plugin.getGlobalPlaceholders());
     }
 
     @Override
@@ -912,7 +936,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             inventoryLoadRequirement.removeRequirement(type, value);
 
             if (inventoryLoadRequirement.canLoad()) {
-                if (Config.enableInformationMessage) {
+                if (Configuration.enableInformationMessage) {
                     Logger.info("Conditions are met to load the file " + inventoryLoadRequirement.getFile().getPath(), LogType.SUCCESS);
                 }
 
@@ -974,8 +998,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        String name = papi(this.plugin.parse(player, button.getPlayerHead().replace("%player%", player.getName())), player, true);
-        if (!isMinecraftName(name)) {
+        return postProcessSkullItemStack(itemStack, button, player, new Placeholders());
+    }
+
+    @Override
+    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders){
+        String name = papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
+        if (!PlayerUtil.isValidMinecraftUsername(name)) {
             return itemStack;
         }
 

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.itemstack;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The ItemStackSimilar interface defines methods for comparing ItemStacks in Minecraft.
@@ -14,6 +15,7 @@ public interface ItemStackSimilar {
      *
      * @return The name of this ItemStack comparison strategy.
      */
+    @NotNull
     String getName();
 
     /**
@@ -24,6 +26,6 @@ public interface ItemStackSimilar {
      * @param itemStackB The second ItemStack to be compared.
      * @return true if the two ItemStacks are considered similar, false otherwise.
      */
-    boolean isSimilar(ItemStack itemStackA, ItemStack itemStackB);
+    boolean isSimilar(@NotNull ItemStack itemStackA,@NotNull ItemStack itemStackB);
 
 }
