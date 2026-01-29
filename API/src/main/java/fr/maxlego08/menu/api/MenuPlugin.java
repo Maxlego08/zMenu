@@ -210,6 +210,12 @@ public interface MenuPlugin extends Plugin {
     boolean isPaper();
 
     /**
+     * Checks if the plugin is a Paper or Folia plugin.
+     * @return true if the plugin is a Paper or Folia plugin, false otherwise
+     */
+    boolean isPaperOrFolia();
+
+    /**
      * Checks if the plugin is a Spigot plugin.
      * @return true if the plugin is a Spigot plugin, false otherwise
      */

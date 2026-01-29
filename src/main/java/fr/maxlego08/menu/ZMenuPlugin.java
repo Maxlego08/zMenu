@@ -136,8 +136,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         instance = this;
 
-        if (this.packetUtils != null)
+        this.saveDefaultConfig();
+        Configuration.getInstance().load(getConfig());
+
+        if (this.packetUtils != null) {
             this.packetUtils.onEnable();
+        }
 
         this.scheduler = this.foliaLib.getScheduler();
 
@@ -146,8 +150,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.preEnable();
 
-        this.saveDefaultConfig();
-       Configuration.getInstance().load(getConfig());
+
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
@@ -185,7 +188,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
+        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()){
             if (Configuration.enableMiniMessageFormat){
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
@@ -384,7 +387,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+        if (isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -500,6 +503,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public boolean isPaper() {
         return this.foliaLib.isPaper();
+    }
+
+    @Override
+    public boolean isPaperOrFolia() {
+        return this.foliaLib.isPaper() || this.foliaLib.isFolia();
     }
 
     @Override
