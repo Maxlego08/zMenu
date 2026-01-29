@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import fr.maxlego08.menu.api.ComponentsManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;

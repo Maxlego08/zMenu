@@ -543,6 +543,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return commandMenu;
     }
 
+    public PacketUtils getPacketUtils() {
+        return packetUtils;
+    }
+
     @Override
     public DataManager getDataManager() {
         return dataManager;

@@ -275,7 +275,6 @@ public class ZInventory extends ZUtils implements Inventory {
         ZMenuPlugin.getInstance().getScheduler().runAtEntityLater(player, task -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
-                Logger.info("Not clearing inventory for player " + player.getName() + " because they have another inventory open.");
                 clearPlayerInventoryButtons(player, inventoryDefault);
 
                 if (this.clearInventory) {
