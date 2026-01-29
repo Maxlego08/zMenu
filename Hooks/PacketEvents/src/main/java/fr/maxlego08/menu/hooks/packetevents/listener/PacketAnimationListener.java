@@ -93,7 +93,7 @@ public class PacketAnimationListener implements PacketListener {
             if (Bukkit.isPrimaryThread()) {
                 task.run();
             } else if (this.plugin.isEnabled()) {
-                this.plugin.getScheduler().runNextTick(w -> task.run());
+                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
             Player player = event.getPlayer();
@@ -113,7 +113,7 @@ public class PacketAnimationListener implements PacketListener {
             if (Bukkit.isPrimaryThread()) {
                 task.run();
             } else if (this.plugin.isEnabled()) {
-                this.plugin.getScheduler().runNextTick(w -> task.run());
+                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
             WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
@@ -151,7 +151,7 @@ public class PacketAnimationListener implements PacketListener {
             if (Bukkit.isPrimaryThread()) {
                 task.run();
             } else if (this.plugin.isEnabled()) {
-                this.plugin.getScheduler().runNextTick(w -> task.run());
+                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
             }
         }
     }
