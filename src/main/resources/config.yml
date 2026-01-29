@@ -154,7 +154,7 @@ enable-cooldown-click: true
 # Cooldown duration in milliseconds between clicks.
 cooldown-click-milliseconds: 100
 
-# Enable packet event click limiter.
+# Enable packet event click limiter. Limits all click packets received from players (not just inside zMenu inventories).
 # Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits. (Requires PacketEvent plugin)
 enable-packet-event-click-limiter: false
 
