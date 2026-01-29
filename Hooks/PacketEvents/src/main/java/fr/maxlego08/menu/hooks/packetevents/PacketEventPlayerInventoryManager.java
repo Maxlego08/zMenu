@@ -65,8 +65,9 @@ public class PacketEventPlayerInventoryManager implements InventoryListener {
     }
 
     public void onButtonClick(Player player, ItemButton button){
-        this.addItemInstantly(player, button.getSlot(), button.getDisplayItem());
-
+        if (button.isInPlayerInventory() && button.getBaseInventory().getClearInvType() == ClearInvType.PACKET_EVENT) {
+            this.addItemInstantly(player, button.getSlot(), button.getDisplayItem());
+        }
     }
 
     public void addItemInstantly(@NotNull Player player, int slot, @NotNull ItemStack itemStack){

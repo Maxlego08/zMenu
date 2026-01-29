@@ -117,7 +117,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
 
-        ItemButton button = new ItemButton(itemStack, slot);
+        ItemButton button = new ItemButton(itemStack, slot, inPlayerInventory, this);
 
         boolean needCancel = false;
         for (InventoryListener inventoryListener : this.plugin.getInventoryManager().getInventoryListeners()) {
