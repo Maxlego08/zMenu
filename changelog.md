@@ -40,7 +40,20 @@
 
 - [ ] Ajouter un systéme qui permet de load un inventaire uniquement quand tout les requirements sont pr�sents
 
-# Unreleased (1.1.0.8)
+# Unreleased 
+
+# 1.1.0.9
+
+- **Dynamic Inventory Title Updates**: Added `PacketEventChangeTitleName` and `PacketTitleListener` for changing inventory titles dynamically without reopening the inventory
+- **ClearInvType for Inventory Management**: Introduced `ClearInvType` enum and temporary inventory storage system for better inventory state management
+- **Enhanced ItemButton Context**: `ItemButton` now includes inventory context for improved button logic and interactions
+- **Map Parsing in Arrays**: Fixed parsing of map structures inside arrays in YAML configuration
+- **Folia Scheduler Issue**: Resolved scheduler compatibility issue with Folia
+- **Shutdown Task Registration**: Fixed task registration during plugin shutdown
+- **Variant Component Initialization**: Enhanced variant component initialization with proper error handling and version checks
+- Updated `config.yml` to clarify packet event click limiter functionality
+
+# 1.1.0.8
 
 ## New Features
 
