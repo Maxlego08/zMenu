@@ -15,12 +15,15 @@ public class ItemButton {
     private final int slot;
     private final ItemStack displayItem;
     private final Map<ClickType, Consumer<InventoryClickEvent>> onClickType = new HashMap<>();
+    private final boolean inPlayerInventory;
+    private final BaseInventory baseInventory;
     private Consumer<InventoryClickEvent> onClick;
 
-    public ItemButton(@NotNull ItemStack displayItem, int slot) {
-        super();
+    public ItemButton(@NotNull ItemStack displayItem, int slot, boolean inPlayerInventory, @NotNull BaseInventory baseInventory) {
         this.displayItem = displayItem;
         this.slot = slot;
+        this.inPlayerInventory = inPlayerInventory;
+        this.baseInventory = baseInventory;
     }
 
     @Contract(pure = true)
@@ -82,6 +85,17 @@ public class ItemButton {
     @NotNull
     public ItemStack getDisplayItem() {
         return this.displayItem;
+    }
+
+    @Contract(pure = true)
+    public boolean isInPlayerInventory() {
+        return this.inPlayerInventory;
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public BaseInventory getBaseInventory() {
+        return this.baseInventory;
     }
 
     public void onClick(@NotNull InventoryClickEvent event) {

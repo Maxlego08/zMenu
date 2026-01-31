@@ -42,4 +42,6 @@ public interface InventoryPlayer {
 
     @NotNull
     Map<Integer, String> getItems();
+
+    boolean isPermanent();
 }

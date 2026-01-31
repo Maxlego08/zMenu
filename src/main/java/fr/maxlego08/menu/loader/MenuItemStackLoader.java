@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.ComponentsManager;
 import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.api.ComponentsManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;

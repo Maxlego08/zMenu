@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.engine;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.PlayerTitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -16,7 +17,7 @@ import java.util.Map;
 public interface BaseInventory extends InventoryHolder {
 
     @Contract(pure = true)
-    @Nullable
+    @NotNull
     MenuPlugin getPlugin();
 
     @Contract(pure = true)
@@ -93,4 +94,7 @@ public interface BaseInventory extends InventoryHolder {
 
     TitleAnimation getTitleAnimation();
 
+    void setClearInvType(ClearInvType clearInvType);
+
+    ClearInvType getClearInvType();
 }

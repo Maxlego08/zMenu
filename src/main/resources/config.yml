@@ -154,6 +154,14 @@ enable-cooldown-click: true
 # Cooldown duration in milliseconds between clicks.
 cooldown-click-milliseconds: 100
 
+# Enable packet event click limiter. Limits all click packets received from players (not just inside zMenu inventories).
+# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits. (Requires PacketEvent plugin)
+enable-packet-event-click-limiter: false
+
+# Packet event click limiter duration in milliseconds.
+# Minimum time required between packet-level click events. Lower values are more permissive.
+packet-event-click-limiter-milliseconds: 50
+
 # PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
 # Defines how often placeholders should be refreshed.
 cache-placeholder-api: 20

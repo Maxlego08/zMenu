@@ -1,8 +1,9 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 

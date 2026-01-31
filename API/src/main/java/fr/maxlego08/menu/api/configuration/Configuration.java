@@ -282,6 +282,24 @@ public class Configuration {
     )
     public static boolean enablePlayerCommandsAsOPAction = false;
 
+    @ConfigOption(
+        key = "enablePacketEventClickLimiter",
+        type = DialogInputType.BOOLEAN,
+        trueText = "<green>Enabled",
+        falseText = "<red>Disabled",
+        label = "Enable packet event click limiter"
+    )
+    public static boolean enablePacketEventClickLimiter = false;
+
+    @ConfigOption(
+        key = "packetEventClickLimiterMilliseconds",
+        type = DialogInputType.NUMBER_RANGE,
+        label = "Packet event click limiter milliseconds",
+        endRange = 1000,
+        stepRange = 10
+    )
+    public static long packetEventClickLimiterMilliseconds = 50L;
+
     public static OpGrantMethod opGrantMethod = OpGrantMethod.ATTACHMENT;
 
     @ConfigOption(
@@ -378,6 +396,9 @@ public class Configuration {
             opGrantMethod = OpGrantMethod.ATTACHMENT;
         }
         enableToast = fileConfiguration.getBoolean(ConfigPath.ENABLE_TOAST.getPath(), true);
+
+        enablePacketEventClickLimiter = fileConfiguration.getBoolean(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath());
+        packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 50L);
     }
 
     public void save(@NotNull FileConfiguration fileConfiguration,@NotNull File file) {
@@ -426,6 +447,8 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath(), enablePlayerCommandsAsOPAction);
         fileConfiguration.set(ConfigPath.OP_GRANT_METHOD.getPath(), opGrantMethod.name());
         fileConfiguration.set(ConfigPath.ENABLE_TOAST.getPath(), enableToast);
+        fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
+        fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
         updated = false;
         try {
             fileConfiguration.save(file);
@@ -475,8 +498,11 @@ public class Configuration {
 
         ENABLE_PLAYER_COMMANDS_AS_OP_ACTION("enable-player-commands-as-op-action"),
         OP_GRANT_METHOD("op-grant-method"),
-        ENABLE_TOAST("enable-toast");
-      
+        ENABLE_TOAST("enable-toast"),
+
+        ENABLE_PACKET_EVENT_CLICK_LIMITER("enable-packet-event-click-limiter"),
+        PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds");
+
         private final String path;
 
         ConfigPath(@NotNull String path) {

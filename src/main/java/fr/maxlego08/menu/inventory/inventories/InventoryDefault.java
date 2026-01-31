@@ -50,6 +50,8 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return result;
         }
 
+        super.setClearInvType(this.inventory.getClearInvType());
+
         this.oldInventories = extractOldInventories(args);
 
         Collection<Pattern> patterns = this.inventory.getPatterns();

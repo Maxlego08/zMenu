@@ -37,6 +37,7 @@ import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
+import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -397,6 +398,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new ToastLoader(this.plugin));
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
+        }
+        if (this.plugin.isEnable(Plugins.PACKETEVENTS)){
+            if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater)
+                buttonManager.registerAction(new PacketEventChangeTitleNameLoader(paperMetaUpdater, this.plugin.getPacketUtils().getPacketTitleListener()));
         }
 
         // Loading ButtonLoader
