@@ -176,10 +176,10 @@ public class ComponentMeta implements PaperMetaUpdater {
     private Inventory createInventoryInternal(String inventoryName, InventoryHolder inventoryHolder, Object inventoryTypeOrSize) {
         Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
         try {
-            if (inventoryTypeOrSize instanceof Integer) {
-                return (Inventory) inventoryMethod.invoke(null, inventoryHolder, inventoryTypeOrSize, component);
-            } else if (inventoryTypeOrSize instanceof InventoryType) {
-                return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryTypeOrSize, component);
+            if (inventoryTypeOrSize instanceof Integer integer) {
+                return (Inventory) inventoryMethod.invoke(null, inventoryHolder, integer, component);
+            } else if (inventoryTypeOrSize instanceof InventoryType inventoryType) {
+                return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryType, component);
             }
         } catch (IllegalAccessException | InvocationTargetException exception) {
             exception.printStackTrace();

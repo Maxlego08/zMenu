@@ -105,10 +105,15 @@ public class YamlParser {
                 }
                 case Map<?,?> nestedMap -> {
                     Map<String, Object> parsedMap = new HashMap<>();
-                    //noinspection unchecked
-                    parseMap((Map<String, Object>) nestedMap, parsedMap, placeholders);
+                    Map<String, Object> convertedMap = convertMapKeys(nestedMap);
+                    parseMap(convertedMap, parsedMap, placeholders);
                     destination.put(key, parsedMap);
                 }
+                case Integer i -> destination.put(key, i);
+                case Double d -> destination.put(key, d);
+                case Float f -> destination.put(key, f);
+                case Long l -> destination.put(key, l);
+                case Boolean b -> destination.put(key, b);
                 case null, default -> destination.put(key, value);
             }
         }
@@ -126,10 +131,15 @@ public class YamlParser {
                 case String string -> processStringValue(string, listPlaceholders, placeholders, result::add);
                 case Map<?,?> map -> {
                     Map<String, Object> parsedMap = new HashMap<>();
-                    //noinspection unchecked
-                    parseMap((Map<String, Object>) map, parsedMap, placeholders);
+                    Map<String, Object> convertedMap = convertMapKeys(map);
+                    parseMap(convertedMap, parsedMap, placeholders);
                     result.add(parsedMap);
                 }
+                case Integer i -> result.add(i);
+                case Double d -> result.add(d);
+                case Float f -> result.add(f);
+                case Long l -> result.add(l);
+                case Boolean b -> result.add(b);
                 case null, default -> result.add(item);
             }
         }
@@ -231,5 +241,22 @@ public class YamlParser {
             }
         }
         return null;
+    }
+
+    /**
+     * Converts a Map with potentially non-String keys to a Map with String keys.
+     * This is necessary because YAML can have integer keys or other types.
+     *
+     * @param map the map to convert
+     * @return a new map with String keys
+     */
+    @NotNull
+    private static Map<String, Object> convertMapKeys(@NotNull Map<?, ?> map) {
+        Map<String, Object> result = new HashMap<>();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = entry.getKey() != null ? entry.getKey().toString() : "null";
+            result.put(key, entry.getValue());
+        }
+        return result;
     }
 }

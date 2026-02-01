@@ -43,6 +43,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private boolean clearInventory;
     private ClearInvType clearInvType = ClearInvType.DEFAULT;
     private boolean ItemPickupDisabled;
+    private boolean isClickLimiterEnabled = true;
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
@@ -414,6 +415,15 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public ClearInvType getClearInvType() {
         return this.clearInvType;
+    }
+
+    @Override
+    public boolean isClickLimiterEnabled() {
+        return this.isClickLimiterEnabled;
+    }
+
+    public void setClickLimiterEnabled(boolean enabled) {
+        this.isClickLimiterEnabled = enabled;
     }
 
     public void setClearInvType(ClearInvType clearInvType) {

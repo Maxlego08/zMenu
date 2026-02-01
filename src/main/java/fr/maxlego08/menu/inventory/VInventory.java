@@ -38,6 +38,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected String guiName;
     protected boolean disableClick = true;
     protected boolean disablePlayerInventoryClick = true;
+    protected boolean isClickLimiterEnabled = true;
     private TitleAnimation titleAnimation;
     private PlayerTitleAnimation playerTitleAnimation;
     private ClearInvType clearInvType = ClearInvType.DEFAULT;
@@ -286,6 +287,16 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     @Override
     public ClearInvType getClearInvType() {
         return this.clearInvType;
+    }
+
+    @Override
+    public void setClickLimiterEnabled(boolean enabled) {
+        this.isClickLimiterEnabled = enabled;
+    }
+
+    @Override
+    public boolean isClickLimiterEnabled() {
+        return this.isClickLimiterEnabled;
     }
 
     public void onInventoryClick(InventoryClickEvent event, ZMenuPlugin plugin, Player player) {
