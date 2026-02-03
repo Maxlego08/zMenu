@@ -16,6 +16,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
+import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -125,6 +126,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                     }
                 }
             }
+        }
+
+        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack) {
+            menuItemStack.build(new ZBuildContext.Builder().build());
         }
 
         return menuItemStack;

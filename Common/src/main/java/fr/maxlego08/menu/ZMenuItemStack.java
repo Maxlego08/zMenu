@@ -46,6 +46,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private final InventoryManager inventoryManager;
     private final String filePath;
     private final String path;
+    private final List<ItemComponent> itemComponents = new ArrayList<>();
     private String material;
     private String targetPlayer;
     private String amount;
@@ -72,11 +73,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private LeatherArmor leatherArmor;
     private boolean needPlaceholderAPI = false;
     private ItemStack cacheItemStack;
-
     private boolean centerName;
     private boolean centerLore;
     private LoreType loreType = LoreType.REPLACE;
-
     private int maxStackSize;
     private int maxDamage;
     private int damage;
@@ -91,8 +90,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Boolean attributeShowInTooltip;
     private MenuItemRarity itemRarity;
     private TrimConfiguration trimConfiguration;
-
-    private final List<ItemComponent> itemComponents = new ArrayList<>();
 
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;
@@ -157,7 +154,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 try {
                     metadata.apply(context, itemStack, player);
                 } catch (Exception e) {
-                    if (Configuration.enableDebug){
+                    if (Configuration.enableDebug) {
                         Logger.info("Error while applying ItemComponent '" + metadata.getParentLoader().getComponentName() + "' for item " + path + " in file " + filePath + " (" + player + ")", Logger.LogType.ERROR);
                         e.printStackTrace();
                     }
@@ -183,7 +180,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        return !this.needPlaceholderAPI && this.cacheItemStack != null &&Configuration.enableCacheItemStack && useCache;
+        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
