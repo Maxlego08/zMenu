@@ -29,19 +29,19 @@ public interface BaseInventory extends InventoryHolder {
 
     @Contract("_, null -> null")
     @Nullable
-    ItemButton addItem(int slot,@Nullable ItemStack itemStack);
+    ItemButton addItem(int slot, @Nullable ItemStack itemStack);
 
     @Contract("_, null,_ -> null")
     @Nullable
-    ItemButton addItem(int slot,@Nullable ItemStack itemStack, boolean enableAntiDupe);
+    ItemButton addItem(int slot, @Nullable ItemStack itemStack, boolean enableAntiDupe);
 
     @Contract("_, _, null -> null")
     @Nullable
-    ItemButton addItem(boolean inPlayerInventory, int slot,@Nullable ItemStack itemStack);
+    ItemButton addItem(boolean inPlayerInventory, int slot, @Nullable ItemStack itemStack);
 
     @Contract("_, _, null, _ -> null")
     @Nullable
-    ItemButton addItem(boolean inPlayerInventory, int slot,@Nullable ItemStack itemStack, boolean enableAntiDupe);
+    ItemButton addItem(boolean inPlayerInventory, int slot, @Nullable ItemStack itemStack, boolean enableAntiDupe);
 
     @Contract(pure = true)
     @Nullable
@@ -97,4 +97,9 @@ public interface BaseInventory extends InventoryHolder {
     void setClearInvType(ClearInvType clearInvType);
 
     ClearInvType getClearInvType();
+
+    void setClickLimiterEnabled(boolean enabled);
+
+    boolean isClickLimiterEnabled();
+
 }

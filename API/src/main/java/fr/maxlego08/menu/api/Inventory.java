@@ -229,4 +229,6 @@ public interface Inventory {
     List<Action> getCloseActions();
 
     ClearInvType getClearInvType();
+
+    boolean isClickLimiterEnabled();
 }

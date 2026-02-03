@@ -33,7 +33,10 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -137,6 +140,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 Logger.info("Clear inventory type " + clearInvTypeStr + " is not valid in " + file.getAbsolutePath(), Logger.LogType.ERROR);
             }
         }
+        inventory.setClickLimiterEnabled(configuration.getBoolean(path + "click-limiter-enabled", true));
         inventory.setFile(file);
 
         this.loadFillItem(configuration, inventory, menuItemStackLoader, file);
