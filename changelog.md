@@ -40,18 +40,26 @@
 
 - [ ] Ajouter un systéme qui permet de load un inventaire uniquement quand tout les requirements sont pr�sents
 
-# Unreleased 
+# Unreleased
 
-# 1.1.0.9
+# 1.1.1.0
 
-- **Dynamic Inventory Title Updates**: Added `PacketEventChangeTitleName` and `PacketTitleListener` for changing inventory titles dynamically without reopening the inventory
-- **ClearInvType for Inventory Management**: Introduced `ClearInvType` enum and temporary inventory storage system for better inventory state management
-- **Enhanced ItemButton Context**: `ItemButton` now includes inventory context for improved button logic and interactions
-- **Map Parsing in Arrays**: Fixed parsing of map structures inside arrays in YAML configuration
-- **Folia Scheduler Issue**: Resolved scheduler compatibility issue with Folia
-- **Shutdown Task Registration**: Fixed task registration during plugin shutdown
-- **Variant Component Initialization**: Enhanced variant component initialization with proper error handling and version checks
-- Updated `config.yml` to clarify packet event click limiter functionality
+## New Features
+
+- **Dynamic Inventory Title Updates**: Added `PacketEventChangeTitleName` and `PacketTitleListener` for changing inventory titles dynamically without reopening the inventory. Requires [PacketEvents](https://github.com/retrooper/packetevents).
+- **ClearInvType for Inventory Management**: Introduced `ClearInvType` enum and temporary inventory storage system for better inventory state management.
+- **Per-Inventory Click Limiter**: The click limiter now only applies to zMenu inventories and can be configured per inventory with `click-limiter-enabled: true/false`. It no longer interferes with non-zMenu inventories.
+- **Enhanced ItemButton Context**: `ItemButton` now includes inventory context for improved button logic and interactions.
+
+## Bug Fixes
+
+- Fixed parsing of map structures inside arrays in YAML configuration. [#219](https://github.com/Maxlego08/zMenu/pull/219)
+- Fixed click limiter applying to all inventories instead of only zMenu inventories. [#219](https://github.com/Maxlego08/zMenu/pull/219)
+- Fixed inventory restoration on plugin disable. [#215](https://github.com/Maxlego08/zMenu/pull/215)
+- Fixed PacketEvents warning on plugin disable. [#215](https://github.com/Maxlego08/zMenu/pull/215)
+- Resolved scheduler compatibility issue with Folia.
+- Fixed task registration during plugin shutdown.
+- Enhanced variant component initialization with proper error handling and version checks.
 
 # 1.1.0.8
 
