@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.requirement.actions;
+package fr.maxlego08.menu.common.utils;
 
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.placeholder.Placeholder;

@@ -50,6 +50,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return result;
         }
 
+        super.setClearInvType(this.inventory.getClearInvType());
+        super.setClickLimiterEnabled(this.inventory.isClickLimiterEnabled());
+
         this.oldInventories = extractOldInventories(args);
 
         Collection<Pattern> patterns = this.inventory.getPatterns();

@@ -14,6 +14,8 @@ import java.util.*;
 
 public class YamlParser {
 
+    private static final Placeholders PLACEHOLDER_PARSER = new Placeholders();
+
     /**
      * Parse a YamlConfiguration with placeholders replacements.
      * Iterates through the configuration structure recursively.
@@ -61,50 +63,83 @@ public class YamlParser {
 
     private static void parseSection(@NotNull ConfigurationSection source, @NotNull ConfigurationSection destination,
                               @NotNull String currentPath, @NotNull Map<String, Object> placeholders) {
-        Placeholders placeholderParser = new Placeholders();
-
         for (String key : source.getKeys(false)) {
             String fullPath = currentPath.isEmpty() ? key : currentPath + "." + key;
             Object value = source.get(key);
 
             switch (value) {
                 case ConfigurationSection section -> parseSection(section, destination.createSection(key), fullPath, placeholders);
-                case List<?> list -> destination.set(key, parseList(list, placeholders, placeholderParser));
-                case String string -> destination.set(key, parseStringValue(string, placeholders, placeholderParser));
+                case List<?> list -> destination.set(key, parseList(list, placeholders));
+                case String string -> destination.set(key, parseStringValue(string, placeholders));
                 case null, default -> destination.set(key, value);
             }
         }
     }
 
+    private static void parseMap(@NotNull Map<String, Object> map, @NotNull Map<String, Object> destination,
+                                 @NotNull Map<String, Object> placeholders) {
+        Map<String, List<?>> listPlaceholders = extractListPlaceholders(placeholders);
+        
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            switch (value) {
+                case ConfigurationSection section -> destination.put(key, configurationSectionToMap(section, placeholders));
+                case List<?> list -> destination.put(key, parseList(list, placeholders));
+                case String string -> {
+                    String listPlaceholderKey = findListPlaceholderInString(string, listPlaceholders);
+
+                    if (listPlaceholderKey != null) {
+                        List<?> listValue = listPlaceholders.get(listPlaceholderKey);
+                        List<String> expandedStrings = expandStringWithListPlaceholder(string, listPlaceholderKey, listValue, placeholders);
+                        
+                        if (expandedStrings.size() == 1) {
+                            destination.put(key, expandedStrings.getFirst());
+                        } else {
+                            destination.put(key, expandedStrings);
+                        }
+                    } else {
+                        destination.put(key, parseStringValue(string, placeholders));
+                    }
+                }
+                case Map<?,?> nestedMap -> {
+                    Map<String, Object> parsedMap = new HashMap<>();
+                    Map<String, Object> convertedMap = convertMapKeys(nestedMap);
+                    parseMap(convertedMap, parsedMap, placeholders);
+                    destination.put(key, parsedMap);
+                }
+                case Integer i -> destination.put(key, i);
+                case Double d -> destination.put(key, d);
+                case Float f -> destination.put(key, f);
+                case Long l -> destination.put(key, l);
+                case Boolean b -> destination.put(key, b);
+                case null, default -> destination.put(key, value);
+            }
+        }
+    }
+
     @NotNull
-    private static List<Object> parseList(@NotNull List<?> list, @NotNull Map<String, Object> placeholders, @NotNull Placeholders placeholderParser) {
+    private static List<Object> parseList(@NotNull List<?> list, @NotNull Map<String, Object> placeholders) {
         List<Object> result = new ArrayList<>();
+        Map<String, List<?>> listPlaceholders = extractListPlaceholders(placeholders);
 
         for (Object item : list) {
             switch (item) {
-                case ConfigurationSection section -> {
-                    YamlConfiguration temp = new YamlConfiguration();
-                    parseSection(section, temp, "", placeholders);
-                    result.add(temp.getValues(true));
+                case ConfigurationSection section -> result.add(configurationSectionToMap(section, placeholders));
+                case List<?> nestedList -> result.add(parseList(nestedList, placeholders));
+                case String string -> processStringValue(string, listPlaceholders, placeholders, result::add);
+                case Map<?,?> map -> {
+                    Map<String, Object> parsedMap = new HashMap<>();
+                    Map<String, Object> convertedMap = convertMapKeys(map);
+                    parseMap(convertedMap, parsedMap, placeholders);
+                    result.add(parsedMap);
                 }
-                case List<?> nestedList -> result.add(parseList(nestedList, placeholders, placeholderParser));
-                case String string -> {
-                    String listPlaceholderKey = findListPlaceholderInString(string, placeholders);
-
-                    if (listPlaceholderKey != null) {
-                        List<?> listValue = (List<?>) placeholders.get(listPlaceholderKey);
-                        for (Object listElement : listValue) {
-                            Map<String, Object> tempPlaceholders = new HashMap<>(placeholders);
-                            tempPlaceholders.put(listPlaceholderKey, listElement);
-
-                            String expandedLine = parseStringValue(string, tempPlaceholders, placeholderParser);
-                            result.add(expandedLine);
-                        }
-                    } else {
-                        String parsedValue = parseStringValue(string, placeholders, placeholderParser);
-                        result.add(parsedValue);
-                    }
-                }
+                case Integer i -> result.add(i);
+                case Double d -> result.add(d);
+                case Float f -> result.add(f);
+                case Long l -> result.add(l);
+                case Boolean b -> result.add(b);
                 case null, default -> result.add(item);
             }
         }
@@ -114,29 +149,114 @@ public class YamlParser {
 
 
     @NotNull
-    private static String parseStringValue(@NotNull String value, @NotNull Map<String, Object> placeholders, @NotNull Placeholders placeholderParser) {
+    private static String parseStringValue(@NotNull String value, @NotNull Map<String, Object> placeholders) {
         String result = value;
 
         for (Map.Entry<String, Object> entry : placeholders.entrySet()) {
             String key = entry.getKey();
             Object placeholderValue = entry.getValue();
             String replacementValue = placeholderValue != null ? placeholderValue.toString() : "";
-            result = placeholderParser.parse(result, key, replacementValue);
+            
+            result = PLACEHOLDER_PARSER.parse(result, key, replacementValue);
         }
 
         return result;
     }
 
-    @Nullable
-    private static String findListPlaceholderInString(@NotNull String string, @NotNull Map<String, Object> placeholders) {
+    /**
+     * Converts a ConfigurationSection to a Map by parsing it.
+     *
+     * @param section the ConfigurationSection to convert
+     * @param placeholders the placeholders map
+     * @return the parsed Map
+     */
+    @NotNull
+    private static Map<String, Object> configurationSectionToMap(@NotNull ConfigurationSection section, @NotNull Map<String, Object> placeholders) {
+        YamlConfiguration temp = new YamlConfiguration();
+        parseSection(section, temp, "", placeholders);
+        return temp.getValues(true);
+    }
+
+    /**
+     * Expands a string that contains list placeholders by creating multiple entries.
+     * Returns a list containing the expanded strings.
+     *
+     * @param string the string to expand
+     * @param listPlaceholderKey the key of the list placeholder
+     * @param listValue the list of values to expand
+     * @param placeholders the base placeholders map
+     * @return list of expanded strings
+     */
+    @NotNull
+    private static List<String> expandStringWithListPlaceholder(@NotNull String string, @NotNull String listPlaceholderKey,
+                                                                  @NotNull List<?> listValue, @NotNull Map<String, Object> placeholders) {
+        List<String> expandedStrings = new ArrayList<>();
+        for (Object listElement : listValue) {
+            Map<String, Object> tempPlaceholders = new HashMap<>(placeholders);
+            tempPlaceholders.put(listPlaceholderKey, listElement);
+            expandedStrings.add(parseStringValue(string, tempPlaceholders));
+        }
+        return expandedStrings;
+    }
+
+    /**
+     * Processes a string value, either expanding it if it contains list placeholders
+     * or just parsing it with regular placeholders.
+     *
+     * @param string the string to process
+     * @param listPlaceholders the pre-filtered list placeholders
+     * @param placeholders the full placeholders map
+     * @param addToResult consumer to add results (allows flexibility for list vs single value)
+     */
+    private static void processStringValue(@NotNull String string, @NotNull Map<String, List<?>> listPlaceholders,
+                                           @NotNull Map<String, Object> placeholders, @NotNull java.util.function.Consumer<Object> addToResult) {
+        String listPlaceholderKey = findListPlaceholderInString(string, listPlaceholders);
+
+        if (listPlaceholderKey != null) {
+            List<?> listValue = listPlaceholders.get(listPlaceholderKey);
+            List<String> expandedStrings = expandStringWithListPlaceholder(string, listPlaceholderKey, listValue, placeholders);
+            expandedStrings.forEach(addToResult);
+        } else {
+            addToResult.accept(parseStringValue(string, placeholders));
+        }
+    }
+
+    @NotNull
+    private static Map<String, List<?>> extractListPlaceholders(@NotNull Map<String, Object> placeholders) {
+        Map<String, List<?>> listPlaceholders = new HashMap<>();
         for (Map.Entry<String, Object> entry : placeholders.entrySet()) {
-            if (entry.getValue() instanceof List<?>) {
-                String placeholderPattern = "%" + entry.getKey() + "%";
-                if (string.contains(placeholderPattern)) {
-                    return entry.getKey();
-                }
+            if (entry.getValue() instanceof List<?> list) {
+                listPlaceholders.put(entry.getKey(), list);
+            }
+        }
+        return listPlaceholders;
+    }
+
+    @Nullable
+    private static String findListPlaceholderInString(@NotNull String string, @NotNull Map<String, List<?>> listPlaceholders) {
+        for (String key : listPlaceholders.keySet()) {
+            String placeholderPattern = "%" + key + "%";
+            if (string.contains(placeholderPattern)) {
+                return key;
             }
         }
         return null;
+    }
+
+    /**
+     * Converts a Map with potentially non-String keys to a Map with String keys.
+     * This is necessary because YAML can have integer keys or other types.
+     *
+     * @param map the map to convert
+     * @return a new map with String keys
+     */
+    @NotNull
+    private static Map<String, Object> convertMapKeys(@NotNull Map<?, ?> map) {
+        Map<String, Object> result = new HashMap<>();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = entry.getKey() != null ? entry.getKey().toString() : "null";
+            result.put(key, entry.getValue());
+        }
+        return result;
     }
 }

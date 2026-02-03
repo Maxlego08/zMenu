@@ -4,6 +4,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -38,6 +39,19 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
 
         this.plugin.getStorageManager().storeInventory(player.getUniqueId(), inventoryPlayer);
     }
+
+    @Override
+    public void storeInventoryTemporary(@NonNull Player player) {
+        if (hasSavedInventory(player.getUniqueId())) {
+            return;
+        }
+
+        ZInventoryPlayer inventoryPlayer = new ZInventoryPlayer(this.plugin);
+        inventoryPlayer.storeInventory(player, true);
+        inventories.put(player.getUniqueId(), inventoryPlayer);
+    }
+
+
 
     private void restoreInventory(Player player, BiConsumer<InventoryPlayer, Player> restoreAction) {
         Optional<InventoryPlayer> optional = this.getPlayerInventory(player.getUniqueId());
@@ -88,16 +102,22 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (hasSavedInventory(player.getUniqueId())) {
-            this.forceGiveInventory(player);
+        Optional<InventoryPlayer> playerInventory = this.getPlayerInventory(player.getUniqueId());
+        if (playerInventory.isPresent()) {
+            if (playerInventory.get().isPermanent())
+                this.forceGiveInventory(player);
+            else
+                this.clearInventorie(player.getUniqueId());
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (hasSavedInventory(player.getUniqueId())) {
-            this.giveInventory(player);
+        Optional<InventoryPlayer> playerInventory = this.getPlayerInventory(player.getUniqueId());
+        if (playerInventory.isPresent()) {
+            if (playerInventory.get().isPermanent())
+                this.giveInventory(player);
         }
     }
 
@@ -120,5 +140,16 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
             loadedInventories.put(inventory.player_id(), inventoryPlayer);
         }
         this.inventories.putAll(loadedInventories);
+    }
+
+    @Override
+    public void restoreAllInventories() {
+        new HashMap<>(inventories).forEach((uuid, inventoryPlayer) -> {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                inventoryPlayer.forceGiveInventory(player);
+            }
+            inventories.remove(uuid);
+        });
     }
 }

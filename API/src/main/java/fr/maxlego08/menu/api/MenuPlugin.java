@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.api;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
-import fr.maxlego08.menu.ComponentsManager;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
@@ -208,6 +207,12 @@ public interface MenuPlugin extends Plugin {
      * @return true if the plugin is a Paper plugin, false otherwise
      */
     boolean isPaper();
+
+    /**
+     * Checks if the plugin is a Paper or Folia plugin.
+     * @return true if the plugin is a Paper or Folia plugin, false otherwise
+     */
+    boolean isPaperOrFolia();
 
     /**
      * Checks if the plugin is a Spigot plugin.

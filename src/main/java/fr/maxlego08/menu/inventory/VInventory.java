@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -37,8 +38,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected String guiName;
     protected boolean disableClick = true;
     protected boolean disablePlayerInventoryClick = true;
+    protected boolean isClickLimiterEnabled = true;
     private TitleAnimation titleAnimation;
     private PlayerTitleAnimation playerTitleAnimation;
+    private ClearInvType clearInvType = ClearInvType.DEFAULT;
 
     private boolean isClose = false;
 
@@ -115,7 +118,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
             itemStack = this.plugin.getDupeManager().protectItem(itemStack);
         }
 
-        ItemButton button = new ItemButton(itemStack, slot);
+        ItemButton button = new ItemButton(itemStack, slot, inPlayerInventory, this);
 
         boolean needCancel = false;
         for (InventoryListener inventoryListener : this.plugin.getInventoryManager().getInventoryListeners()) {
@@ -196,7 +199,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         return guiName;
     }
 
-    protected InventoryResult preOpenInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
+    protected InventoryResult preOpenInventory(@NotNull ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
 
         this.page = page;
         this.args = args;
@@ -222,7 +225,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected void onDrag(InventoryDragEvent event, ZMenuPlugin plugin, Player player) {
     }
 
-    public ZMenuPlugin getPlugin() {
+    public @NonNull ZMenuPlugin getPlugin() {
         return plugin;
     }
 
@@ -274,6 +277,26 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     @Override
     public TitleAnimation getTitleAnimation(){
         return this.titleAnimation;
+    }
+
+    @Override
+    public void setClearInvType(ClearInvType clearInvType) {
+        this.clearInvType = clearInvType;
+    }
+
+    @Override
+    public ClearInvType getClearInvType() {
+        return this.clearInvType;
+    }
+
+    @Override
+    public void setClickLimiterEnabled(boolean enabled) {
+        this.isClickLimiterEnabled = enabled;
+    }
+
+    @Override
+    public boolean isClickLimiterEnabled() {
+        return this.isClickLimiterEnabled;
     }
 
     public void onInventoryClick(InventoryClickEvent event, ZMenuPlugin plugin, Player player) {

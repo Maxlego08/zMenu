@@ -6,11 +6,14 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.hooks.packetevents.listener.PacketAnimationListener;
+import fr.maxlego08.menu.hooks.packetevents.listener.PacketEventClickLimiterListener;
+import fr.maxlego08.menu.hooks.packetevents.listener.PacketTitleListener;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.entity.Player;
@@ -22,6 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PacketUtils implements InventoryListener {
+    private PacketAnimationListener packetAnimationListener;
+    private PacketTitleListener packetTitleListener;
 
     public static final Map<UUID, FakeInventory> fakeContents = new HashMap<>();
     private final MenuPlugin plugin;
@@ -39,7 +44,12 @@ public class PacketUtils implements InventoryListener {
         PacketEvents.getAPI().init();
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
 //         eventManager.registerListener(new PacketListener(), PacketListenerPriority.LOW);
-        eventManager.registerListener(new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
+        ;
+        eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
+        eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW);
+        if (Configuration.enablePacketEventClickLimiter){
+            eventManager.registerListener(new PacketEventClickLimiterListener(), PacketListenerPriority.HIGH);
+        }
     }
 
     public void onDisable() {
@@ -91,5 +101,13 @@ public class PacketUtils implements InventoryListener {
     @Override
     public void onButtonClick(Player player, ItemButton button) {
         // ToDo
+    }
+
+    public PacketAnimationListener getPacketAnimationListener() {
+        return packetAnimationListener;
+    }
+
+    public PacketTitleListener getPacketTitleListener() {
+        return packetTitleListener;
     }
 }

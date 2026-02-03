@@ -1,6 +1,5 @@
-package fr.maxlego08.menu;
+package fr.maxlego08.menu.api;
 
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.jetbrains.annotations.NotNull;

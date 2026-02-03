@@ -12,16 +12,16 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import org.bukkit.Material;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -41,7 +41,9 @@ public class ZInventory extends ZUtils implements Inventory {
     private int updateInterval;
     private File file;
     private boolean clearInventory;
+    private ClearInvType clearInvType = ClearInvType.DEFAULT;
     private boolean ItemPickupDisabled;
+    private boolean isClickLimiterEnabled = true;
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
@@ -230,10 +232,18 @@ public class ZInventory extends ZUtils implements Inventory {
             if (inventoryHolder.getMenuInventory().cleanInventory() && !this.clearInventory) {
                 inventoriesPlayer.giveInventory(player);
             } else if (this.clearInventory) {
-                inventoriesPlayer.storeInventory(player);
+                if (this.clearInvType == ClearInvType.DEFAULT){
+                    inventoriesPlayer.storeInventory(player);
+                } else {
+                    inventoriesPlayer.storeInventoryTemporary(player);
+                }
             }
         } else if (this.clearInventory) {
-            inventoriesPlayer.storeInventory(player);
+            if (this.clearInvType == ClearInvType.DEFAULT) {
+                inventoriesPlayer.storeInventory(player);
+            } else {
+                inventoriesPlayer.storeInventoryTemporary(player);
+            }
         }
 
         var placeholders = new Placeholders();
@@ -247,7 +257,8 @@ public class ZInventory extends ZUtils implements Inventory {
             if (button.isPlayerInventory()) {
                 for (int slot : button.getSlots()) {
                     if (slot >= 0 && slot <= 36) {
-                        player.getInventory().setItem(slot, new ItemStack(Material.AIR));
+                        Logger.info("Clearing player inventory slot " + slot + " for player " + player.getName());
+                        this.clearInvType.getOnButtonClear().accept(player, slot);
                     }
                 }
             }
@@ -265,12 +276,11 @@ public class ZInventory extends ZUtils implements Inventory {
         ZMenuPlugin.getInstance().getScheduler().runAtEntityLater(player, task -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
-
                 clearPlayerInventoryButtons(player, inventoryDefault);
 
                 if (this.clearInventory) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
-                    inventoriesPlayer.giveInventory(player);
+                    this.clearInvType.getOnInventoryClose().accept(inventoriesPlayer, player);
                 }
             }
         }, 1);
@@ -400,5 +410,23 @@ public class ZInventory extends ZUtils implements Inventory {
 
     public void setCloseActions(List<Action> closeActions) {
         this.closeActions = closeActions;
+    }
+
+    @Override
+    public ClearInvType getClearInvType() {
+        return this.clearInvType;
+    }
+
+    @Override
+    public boolean isClickLimiterEnabled() {
+        return this.isClickLimiterEnabled;
+    }
+
+    public void setClickLimiterEnabled(boolean enabled) {
+        this.isClickLimiterEnabled = enabled;
+    }
+
+    public void setClearInvType(ClearInvType clearInvType) {
+        this.clearInvType = clearInvType;
     }
 }

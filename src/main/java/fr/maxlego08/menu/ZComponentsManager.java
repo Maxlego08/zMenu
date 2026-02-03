@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import fr.maxlego08.menu.api.ComponentsManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
@@ -10,6 +11,7 @@ import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
 import fr.maxlego08.menu.itemstack.components.spigot.SpigotVariantComponent;
 import fr.maxlego08.menu.loader.components.paper.*;
 import fr.maxlego08.menu.loader.components.spigot.*;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -21,14 +23,21 @@ public class ZComponentsManager implements ComponentsManager {
     private final Map<String, ItemComponentLoader> components = new HashMap<>();
 
     private boolean isPaperAndMiniMessageEnabled(MenuPlugin plugin){
-        return plugin.isPaper() && Configuration.enableMiniMessageFormat;
+        return plugin.isPaperOrFolia() && Configuration.enableMiniMessageFormat;
     }
 
     @Override
     public void initializeDefaultComponents(MenuPlugin plugin) {
         NmsVersion currentVersion = NmsVersion.getCurrentVersion();
         if (currentVersion.isAttributItemStack()){ // 1.20.5+
-            this.initializeVariantComponents(plugin);
+            try {
+                this.initializeVariantComponents(plugin);
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.info("Failed to initialize variant item components:");
+                    e.printStackTrace();
+                }
+            }
 
             this.registerComponent(new SpigotBlockStateItemComponentLoader());
             this.registerComponent(new SpigotAttributeModifiersItemComponentLoader(plugin));
@@ -72,7 +81,7 @@ public class ZComponentsManager implements ComponentsManager {
             if (isPaperAndMiniMessageEnabled(plugin)) {
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
             }
-            if (plugin.isPaper()) {
+            if (plugin.isPaperOrFolia()) {
                 this.registerComponent(new PaperIntangibleProjectileItemComponentLoader());
                 this.registerComponent(new PaperMapDecorationsItemComponentLoader());
                 this.registerComponent(new PaperNoteBlockSoundItemComponentLoader());
@@ -92,7 +101,7 @@ public class ZComponentsManager implements ComponentsManager {
                     this.registerComponent(new SpigotUseCooldownItemComponentLoader());
                     this.registerComponent(new SpigotUseRemainderItemComponentLoader(plugin));
 
-                    if (plugin.isPaper()){
+                    if (plugin.isPaperOrFolia()){
                         this.registerComponent(new PaperDeathProtectionItemComponentLoader());
                         this.registerComponent(new PaperRepairableItemComponentLoader());
                     }
@@ -101,7 +110,7 @@ public class ZComponentsManager implements ComponentsManager {
                         this.registerComponent(new SpigotBlocksAttacksItemComponentLoader());
                         this.registerComponent(new SpigotBreakSoundItemComponentLoader());
                         this.registerComponent(new SpigotPotionDurationScaleItemComponentLoader());
-                        this.registerComponent(plugin.isPaper() ? new PaperTooltipDisplayItemComponentLoader() : new SpigotTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
+                        this.registerComponent(plugin.isPaperOrFolia() ? new PaperTooltipDisplayItemComponentLoader() : new SpigotTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
                         this.registerComponent(new SpigotWeaponItemComponentLoader());
 
                         if (isPaperAndMiniMessageEnabled(plugin)){
@@ -131,32 +140,77 @@ public class ZComponentsManager implements ComponentsManager {
     }
 
     private void initializeVariantComponents(MenuPlugin plugin) {
+        NmsVersion currentVersion = NmsVersion.getCurrentVersion();
         VariantItemComponentLoaderFactory loaderFactory =
-            plugin.isPaper() ? new PaperVariantItemComponentLoader(new PaperVariantComponent())
+            plugin.isPaperOrFolia() ? new PaperVariantItemComponentLoader(new PaperVariantComponent())
                              : new SpigotVariantItemComponentLoader(new SpigotVariantComponent());
 
-        this.registerComponent(loaderFactory.getLoaderAxolotl());
         this.registerComponent(loaderFactory.getLoaderCatCollar());
         this.registerComponent(loaderFactory.getLoaderCatVariant());
-        this.registerComponent(loaderFactory.getLoaderChicken());
-        this.registerComponent(loaderFactory.getLoaderCow());
-        this.registerComponent(loaderFactory.getLoaderFox());
-        this.registerComponent(loaderFactory.getLoaderFrog());
         this.registerComponent(loaderFactory.getLoaderHorse());
-        this.registerComponent(loaderFactory.getLoaderLlama());
-        this.registerComponent(loaderFactory.getLoaderMushroomCow());
-        this.registerComponent(loaderFactory.getLoaderPainting());
-        this.registerComponent(loaderFactory.getLoaderParrot());
-        this.registerComponent(loaderFactory.getLoaderPig());
         this.registerComponent(loaderFactory.getLoaderRabbit());
-        this.registerComponent(loaderFactory.getLoaderSalmon());
         this.registerComponent(loaderFactory.getLoaderSheep());
-        this.registerComponent(loaderFactory.getLoaderShulkerBox());
         this.registerComponent(loaderFactory.getLoaderTropicalFishBaseColor());
         this.registerComponent(loaderFactory.getLoaderTropicalFishPatternColor());
         this.registerComponent(loaderFactory.getLoaderVillager());
-        this.registerComponent(loaderFactory.getLoaderWolfCollar());
-        this.registerComponent(loaderFactory.getLoaderWolfVariant());
+
+        if (currentVersion.isNewMaterial()){ // 1.13+
+            this.registerComponent(loaderFactory.getLoaderFox());
+            this.registerComponent(loaderFactory.getLoaderMushroomCow());
+        }
+        if (currentVersion.isNewNMSVersion()){ // 1.17+
+            this.registerComponent(loaderFactory.getLoaderAxolotl());
+        }
+        if (currentVersion.isAttributItemStack()){ // 1.20.5+
+            this.registerComponent(loaderFactory.getLoaderWolfCollar());
+            this.registerComponent(loaderFactory.getLoaderWolfVariant());
+            this.registerComponent(loaderFactory.getLoaderPainting());
+        }
+        if (currentVersion.is1_21_5OrNewer()){ // 1.21.5+
+            try {
+                this.registerComponent(loaderFactory.getLoaderChicken());
+            } catch (Exception e) {
+                if (Configuration.enableDebug){
+                    Logger.info("Failed to register Chicken variant component:");
+                    e.printStackTrace();
+                }
+            }
+            try {
+                this.registerComponent(loaderFactory.getLoaderCow());
+            } catch (Exception e) {
+                if (Configuration.enableDebug){
+                    Logger.info("Failed to register Cow variant component:");
+                    e.printStackTrace();
+                }
+            }
+            try {
+                this.registerComponent(loaderFactory.getLoaderPig());
+            } catch (Exception e) {
+                if (Configuration.enableDebug){
+                    Logger.info("Failed to register Pig variant component:");
+                    e.printStackTrace();
+                }
+            }
+            try {
+                this.registerComponent(loaderFactory.getLoaderSalmon());
+            } catch (Exception e) {
+                if (Configuration.enableDebug){
+                    Logger.info("Failed to register Salmon variant component:");
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (currentVersion.isNewNBTVersion()) { // 1.18+
+            this.registerComponent(loaderFactory.getLoaderFrog());
+        }
+        if (currentVersion.is1_11OrNewer()){ // 1.11+
+            this.registerComponent(loaderFactory.getLoaderLlama());
+            this.registerComponent(loaderFactory.getLoaderShulkerBox());
+        }
+        if (currentVersion.is1_12OrNewer()) { // 1.12+
+            this.registerComponent(loaderFactory.getLoaderParrot());
+        }
+
     }
 
 
