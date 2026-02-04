@@ -12,6 +12,7 @@ enable-debug-time: false
 # Measures and logs execution time for each step (button building, item rendering, etc.).
 # Set threshold-ms to 0 to see all operations. Use filter to focus on specific operations.
 enable-performance-debug: false
+
 performance-debug:
   # Minimum execution time (in ms) for an operation to appear in the output.
   threshold-ms: 10
