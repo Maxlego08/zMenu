@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -79,16 +80,27 @@ public abstract class Button extends PlaceholderButton {
     @Contract(pure = true)
     @Nullable
     public ItemStack getCustomItemStack(@NotNull Player player, @NotNull Placeholders placeholders) {
-        return this.getCustomItemStack(player, this.useCache, placeholders);
+        return this.getCustomItemStack(player, this.useCache, placeholders, PerformanceDebug.disabled());
     }
 
     @Contract(pure = true)
     @Nullable
     public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders) {
+        return this.getCustomItemStack(player, useCache, placeholders, PerformanceDebug.disabled());
+    }
+
+    @Contract(pure = true)
+    @Nullable
+    public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders, @NotNull PerformanceDebug perfDebug) {
         if (this.itemStack == null) return null;
-        ItemStack itemStack = this.itemStack.build(player, useCache,placeholders);
+        perfDebug.start("itemStack.build." + getName());
+        ItemStack itemStack = this.itemStack.build(player, useCache, placeholders);
+        perfDebug.end();
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player,placeholders);
+            perfDebug.start("skullProcessing." + getName());
+            ItemStack result = this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player, placeholders);
+            perfDebug.end();
+            return result;
         }
         return itemStack;
     }
@@ -175,6 +187,9 @@ public abstract class Button extends PlaceholderButton {
     public void onRender(Player player, InventoryEngine inventoryEngine) {
         if (inventoryEngine.getPage() == this.getPage() || this.isPermanent()) {
 
+            PerformanceDebug perfDebug = inventoryEngine.getPerformanceDebug();
+
+            perfDebug.start("onRender.slotCalc." + getName());
             int inventorySize = this.isPlayerInventory() ? 36 : inventoryEngine.getInventory().getSize();
 
             List<Integer> slotList = new ArrayList<>(this.getSlots());
@@ -186,7 +201,11 @@ public abstract class Button extends PlaceholderButton {
                 }
                 slots[i] = slot;
             }
+            perfDebug.end();
+
+            perfDebug.start("onRender.displayFinalButton." + getName());
             inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
+            perfDebug.end();
         }
     }
 
@@ -403,7 +422,22 @@ public abstract class Button extends PlaceholderButton {
     }
 
     public boolean checkPermission(@NotNull Player player,@NotNull InventoryEngine inventory,@NotNull Placeholders placeholders) {
-        return super.checkPermission(player, inventory, placeholders) && (this.viewRequirement == null || this.viewRequirement.execute(player, this, inventory, placeholders));
+        PerformanceDebug perfDebug = inventory.getPerformanceDebug();
+
+        perfDebug.start("checkPermission.permissions." + getName());
+        boolean permissionResult = super.checkPermission(player, inventory, placeholders);
+        perfDebug.end();
+
+        if (!permissionResult) return false;
+
+        if (this.viewRequirement != null) {
+            perfDebug.start("checkPermission.viewRequirement." + getName());
+            boolean viewResult = this.viewRequirement.execute(player, this, inventory, placeholders);
+            perfDebug.end();
+            return viewResult;
+        }
+
+        return true;
     }
 
     @Contract(pure = true)

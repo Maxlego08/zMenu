@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
@@ -32,6 +33,7 @@ import java.util.function.Consumer;
 public class InventoryDefault extends VInventory implements InventoryEngine {
 
     private final Map<Integer, TimerTask> timers = new ConcurrentHashMap<>();
+    private PerformanceDebug perfDebug;
     private Inventory inventory;
     private List<Inventory> oldInventories = new ArrayList<>();
     private List<Button> buttons = Collections.emptyList();
@@ -44,8 +46,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     public InventoryResult openInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
 
         this.inventory = (Inventory) args[0];
+        this.perfDebug = PerformanceDebug.create("inventory:" + this.inventory.getFileName());
 
+        perfDebug.start("openInventory.permissionCheck");
         InventoryResult result = this.inventory.openInventory(player, this);
+        perfDebug.end();
         if (result != InventoryResult.SUCCESS) {
             return result;
         }
@@ -57,13 +62,20 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
         Collection<Pattern> patterns = this.inventory.getPatterns();
 
+        perfDebug.start("openInventory.getMaxPage");
         this.maxPage = Math.max(1, this.inventory.getMaxPage(patterns, player, args));
+        perfDebug.end();
 
         List<Button> computedButtons = new ArrayList<>();
+        perfDebug.start("openInventory.sortPatterns");
         for (Pattern pattern : patterns) {
             computedButtons.addAll(this.inventory.sortPatterns(pattern, page, args));
         }
+        perfDebug.end();
+
+        perfDebug.start("openInventory.sortButtons");
         computedButtons.addAll(this.inventory.sortButtons(page, args));
+        perfDebug.end();
         this.buttons = computedButtons;
 
         List<Button> clickableUpdates = new ArrayList<>();
@@ -84,20 +96,32 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         var scheduler = this.plugin.getScheduler();
         Consumer<WrappedTask> runnable = w -> {
             Placeholders placeholders = new Placeholders();
+            perfDebug.start("openInventory.onInventoryOpen");
             for (Button button : this.buttons) {
                 button.onInventoryOpen(player, this, placeholders);
             }
+            perfDebug.end();
 
+            perfDebug.start("openInventory.resolveInventoryName");
             String inventoryName = this.plugin.getFontImage().replace(this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage));
             Player targetPlayer = getTargetPlayer();
+            perfDebug.end();
 
+            perfDebug.start("openInventory.papiInventoryName");
+            String parsedName = super.papi(placeholders.parse(inventoryName), targetPlayer, false);
+            perfDebug.end();
+
+            perfDebug.start("openInventory.createMetaInventory");
             if (this.inventory.getType() == InventoryType.CHEST) {
-                super.createMetaInventory(super.papi(placeholders.parse(inventoryName), targetPlayer, false), this.inventory.size());
+                super.createMetaInventory(parsedName, this.inventory.size());
             } else {
-                super.createMetaInventory(super.papi(placeholders.parse(inventoryName), targetPlayer, false), this.inventory.getType());
+                super.createMetaInventory(parsedName, this.inventory.getType());
             }
             super.setTitleAnimation(this.inventory.getTitleAnimation());
+            perfDebug.end();
+
             // Display fill items
+            perfDebug.start("openInventory.fillItems");
             if (this.inventory.getFillItemStack() != null) {
                 ItemStack builtItem = this.inventory.getFillItemStack().build(player);
                 if (builtItem != null) {
@@ -107,11 +131,16 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                     }
                 }
             }
+            perfDebug.end();
 
             // Display buttons
             for (Button button : this.buttons) {
-                buildButton(button,placeholders);
+                perfDebug.start("buildButton." + button.getName());
+                buildButton(button, placeholders);
+                perfDebug.end();
             }
+
+            perfDebug.printSummary();
 
             if (isAsync) {
                 scheduler.runAtEntity(player, w2 -> player.openInventory(this.getSpigotInventory()));
@@ -168,11 +197,15 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
         final Player targetPlayer = getTargetPlayer();
         if (button.hasCustomRender()) {
+            perfDebug.start("onRender." + button.getName());
             button.onRender(targetPlayer, this);
+            perfDebug.end();
             return;
         }
 
+        perfDebug.start("getDisplayButton." + button.getName());
         button = button.getDisplayButton(this, this.player);
+        perfDebug.end();
         if (button == null) {
             return;
         }
@@ -180,9 +213,13 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         // If the button has a permission or a placeholder to check
         if (button.hasPermission()) {
 
+            perfDebug.start("checkPermission." + button.getName());
+            boolean hasPermission = button.checkPermission(targetPlayer, this, placeholders);
+            perfDebug.end();
+
             // We will check if the player has the permission to display the
             // button
-            if (!button.checkPermission(targetPlayer, this, placeholders)) {
+            if (!hasPermission) {
 
                 // If there is an ElseButton we will display it
                 if (button.hasElseButton()) {
@@ -214,22 +251,27 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     public void displayButton(@NotNull Button button, @NotNull Placeholders placeholders){
         final Player targetPlayer = getTargetPlayer();
         var scheduler = plugin.getScheduler();
+        Consumer<WrappedTask> runnable;
         if (button.hasSpecialRender()) {
 
-            Consumer<WrappedTask> runnable = w -> button.onRender(targetPlayer, this);
-            if (isAsync) scheduler.runAtEntity(player, runnable);
-            else runnable.accept(null);
+            runnable = w -> {
+                perfDebug.start("specialRender." + button.getName());
+                button.onRender(targetPlayer, this);
+                perfDebug.end();
+            };
 
         } else {
 
-            Consumer<WrappedTask> runnable = w -> {
+            runnable = w -> {
+                perfDebug.start("getRealSlot." + button.getName());
                 int slot = button.getRealSlot(button.isPlayerInventory() ? 36 : this.inventory.size(), this.page);
+                perfDebug.end();
                 this.displayFinalButton(button, placeholders, slot);
             };
 
-            if (isAsync) scheduler.runAtEntity(player, runnable);
-            else runnable.accept(null);
         }
+        if (isAsync) scheduler.runAtEntity(player, runnable);
+        else runnable.accept(null);
     }
 
     /**
@@ -243,7 +285,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     @Override
     public void displayFinalButton(@NotNull Button button, @NotNull Placeholders placeholders, int... slots){
         final Player targetPlayer = getTargetPlayer();
-        ItemStack itemStack = button.getCustomItemStack(targetPlayer, placeholders);
+        perfDebug.start("getCustomItemStack." + button.getName());
+        ItemStack itemStack = button.getCustomItemStack(targetPlayer, button.isUseCache(), placeholders, perfDebug);
+        perfDebug.end();
         if (itemStack == null) {
             return;
         }
@@ -260,7 +304,10 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 continue;
             }
 
+            perfDebug.start("addItem." + button.getName() + "[" + slot + "]");
             ItemButton itemButton = this.addItem(button.isPlayerInventory(), slot, itemStack);
+            perfDebug.end();
+
             if (itemButton != null && button.isClickable()) {
                 itemButton.setClick(event -> {
 
@@ -285,7 +332,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             if (button.hasRefreshRequirement() || button.isUpdated()) {
 
                 RefreshRequirement refreshRequirement = button.hasRefreshRequirement() ? button.getRefreshRequirement() : null;
+                perfDebug.start("refreshCheck." + button.getName() + "[" + slot + "]");
                 boolean needRefresh = refreshRequirement != null && refreshRequirement.needRefresh(player, button, this, new Placeholders());
+                perfDebug.end();
 
                 if (needRefresh || button.isUpdated()) {
                     long interval = refreshRequirement != null ? refreshRequirement.getUpdateInterval() : this.inventory.getUpdateInterval();
@@ -325,6 +374,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         if (task != null) {
             task.cancel();
         }
+    }
+
+    @Override
+    public @NotNull PerformanceDebug getPerformanceDebug() {
+        return this.perfDebug != null ? this.perfDebug : PerformanceDebug.disabled();
     }
 
     @Override

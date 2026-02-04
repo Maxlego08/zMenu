@@ -42,6 +42,21 @@
 
 # Unreleased
 
+## New Features
+
+- **Performance Debug System**: Added per-operation performance monitoring for inventory opening. Measures execution time for each step (permission checks, button building, item rendering, etc.) and logs results to console. Configurable via `enable-performance-debug`, with threshold filtering and whitelist/blacklist support for operation names.
+
+## Performance
+
+- **ItemStack Build Optimization**: Optimized `ZMenuItemStack.build()` to reduce redundant work on each inventory open:
+  - Eliminated duplicate PlaceholderAPI resolution for material strings (was called twice per build)
+  - Pre-resolve `Material` at load time when no placeholders are present, skipping PAPI parsing at runtime
+  - Replaced exception-based control flow for numeric material IDs with a simple numeric check
+  - Pre-compute `NamespacedKey` for `tooltipStyle`, `itemModel`, and `equippedModel` in setters instead of splitting/creating on every build
+  - Cache the glowing enchantment lookup instead of querying the enchantment registry on every build
+  - Pre-split lore lines containing `\n` at load time instead of splitting on every build
+  - Added early exit in `Placeholders.parse()` when the string contains no `%` character, avoiding unnecessary iteration over all placeholder entries
+
 # 1.1.0.9
 
 ## New Features
