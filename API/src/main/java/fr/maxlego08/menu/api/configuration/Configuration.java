@@ -289,7 +289,7 @@ public class Configuration {
         falseText = "<red>Disabled",
         label = "Enable packet event click limiter"
     )
-    public static boolean enablePacketEventClickLimiter = false;
+    public static boolean enablePacketEventClickLimiter = true;
 
     @ConfigOption(
         key = "packetEventClickLimiterMilliseconds",
