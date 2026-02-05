@@ -430,4 +430,12 @@ public class ColorUtilsTest extends MiniMessageColorUtils {
         String expected = "<#ff0000>[<#ff9900>Admin<#ff0000>]<reset> <green>PlayerName<white>: Message";
         Assertions.assertEquals(expected, colorMiniMessage(input));
     }
+
+    @Test
+    @DisplayName("Preserve existing MiniMessage color tags")
+    void testMiniMessageColorTagsPreserved() {
+        String input = "<color:#FF5555>This is a <color:#55FF55>test!";
+        String expected = "<color:#FF5555>This is a <color:#55FF55>test!";
+        Assertions.assertEquals(expected, colorMiniMessage(input));
+    }
 }
