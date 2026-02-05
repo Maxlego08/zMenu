@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +36,7 @@ import java.util.regex.Pattern;
 public class ComponentMeta implements PaperMetaUpdater {
 
     private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
-    private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)(?<!</)#([a-fA-F0-9]{6})");
+    private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)(?<!</)(&?)#([a-fA-F0-9]{6})");
     private final MenuPlugin plugin;
     private final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
     private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
@@ -90,9 +89,6 @@ public class ComponentMeta implements PaperMetaUpdater {
 
     private TextDecoration.State getState(String text) {
         return text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>") ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
-    }
-
-    private void test(ItemStack itemStack){
     }
 
     @Override
@@ -278,7 +274,7 @@ public class ComponentMeta implements PaperMetaUpdater {
         StringBuilder sb = new StringBuilder();
 
         while (matcher.find()) {
-            matcher.appendReplacement(sb, "<#" + matcher.group(1) + ">");
+            matcher.appendReplacement(sb, "<#" + matcher.group(2) + ">");
         }
 
         matcher.appendTail(sb);
