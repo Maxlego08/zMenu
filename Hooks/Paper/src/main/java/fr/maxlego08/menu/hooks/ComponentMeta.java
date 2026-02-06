@@ -166,9 +166,6 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
         return createInventoryInternal(inventoryName, inventoryHolder, inventoryType);
     }
 
-
-
-
     @Override
     public void sendMessage(@NonNull CommandSender sender, @NonNull String message) {
         Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
