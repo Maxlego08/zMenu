@@ -207,6 +207,6 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
 
     @Override
     public String getLegacyMessage(String message) {
-        return LegacyComponentSerializer.legacySection().serialize(this.getComponent(message));
+        return message == null ? null : LegacyComponentSerializer.legacySection().serialize(this.getComponent(message));
     }
 }
