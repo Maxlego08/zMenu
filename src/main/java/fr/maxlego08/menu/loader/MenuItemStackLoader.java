@@ -97,9 +97,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
             loadTrims(menuItemStack, configuration, path, file);
         }
-        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
-            menuItemStack.setItemModel(configuration.getString(path + "item-model"));
-        }
+        this.loadItemModel(configuration, menuItemStack, path, file);
 
         if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
@@ -149,6 +147,25 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
         menuItemStack.setLore(lore);
+    }
+
+    private void loadItemModel(@NonNull YamlConfiguration configuration, ZMenuItemStack menuItemStack, @NonNull String path, File file) {
+        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
+            String itemModel = configuration.getString(path + "item-model");
+            if (itemModel != null) {
+                try {
+                    NamespacedKey namespacedKey = NamespacedKey.fromString(itemModel.toLowerCase());
+                    if (namespacedKey != null) {
+                        menuItemStack.setItemModel(namespacedKey);
+                    }
+                } catch (Exception e) {
+                    if (Configuration.enableDebug) {
+                        Logger.info("An error occurred while loading the item model " + itemModel + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -472,10 +489,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (tooltypestyleString != null) {
             menuItemStack.setToolTipStyle(tooltypestyleString);
         }
-        String itemModelString = configuration.getString(path + "item-model", null);
-        if (itemModelString != null) {
-            menuItemStack.setItemModel(itemModelString);
-        }
+        this.loadItemModel(configuration, menuItemStack, path, file);
         String equippedModel = configuration.getString(path + "equipped-model", null);
         if (equippedModel != null) {
             menuItemStack.setEquippedModel(equippedModel);

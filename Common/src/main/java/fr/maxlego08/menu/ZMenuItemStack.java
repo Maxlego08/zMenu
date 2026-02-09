@@ -61,7 +61,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
-    private String itemModel;
+    private NamespacedKey itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -474,10 +474,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         if (this.itemModel != null) {
-            String[] itemModelSplit = this.itemModel.split(":", 2);
-            if (itemModelSplit.length == 2) {
-                itemMeta.setItemModel(new NamespacedKey(itemModelSplit[0], itemModelSplit[1]));
-            }
+            itemMeta.setItemModel(this.itemModel);
         }
 
         if (this.equippedModel != null) {
@@ -768,12 +765,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
-    public String getItemModel() {
+    public NamespacedKey getItemModel() {
         return itemModel;
     }
 
     @Override
-    public void setItemModel(String itemModel) {
+    public void setItemModel(NamespacedKey itemModel) {
         this.itemModel = itemModel;
     }
 
