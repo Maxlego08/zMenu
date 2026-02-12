@@ -79,28 +79,11 @@ public abstract class Button extends PlaceholderButton {
 
     @Contract(pure = true)
     @Nullable
-    public ItemStack getCustomItemStack(@NotNull Player player, @NotNull Placeholders placeholders) {
-        return this.getCustomItemStack(player, this.useCache, placeholders, PerformanceDebug.disabled());
-    }
-
-    @Contract(pure = true)
-    @Nullable
     public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders) {
-        return this.getCustomItemStack(player, useCache, placeholders, PerformanceDebug.disabled());
-    }
-
-    @Contract(pure = true)
-    @Nullable
-    public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders, @NotNull PerformanceDebug perfDebug) {
         if (this.itemStack == null) return null;
-        perfDebug.start("itemStack.build." + getName());
         ItemStack itemStack = this.itemStack.build(player, useCache, placeholders);
-        perfDebug.end();
         if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            perfDebug.start("skullProcessing." + getName());
-            ItemStack result = this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player, placeholders);
-            perfDebug.end();
-            return result;
+            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player, placeholders);
         }
         return itemStack;
     }
@@ -211,44 +194,48 @@ public abstract class Button extends PlaceholderButton {
 
     /**
      * Called when the left mouse button is clicked
-     * @param player the player
-     * @param event the inventory click event
+     *
+     * @param player    the player
+     * @param event     the inventory click event
      * @param inventory the inventory
-     * @param slot the slot
+     * @param slot      the slot
      */
-    public void onLeftClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot) {
+    public void onLeftClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot) {
     }
 
     /**
      * Called when the right mouse button is clicked
-     * @param player the player
-     * @param event the inventory click event
+     *
+     * @param player    the player
+     * @param event     the inventory click event
      * @param inventory the inventory
-     * @param slot the slot
+     * @param slot      the slot
      */
-    public void onRightClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot) {
+    public void onRightClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot) {
     }
 
     /**
      * Called when the middle mouse button is clicked
-     * @param player the player
-     * @param event the inventory click event
+     *
+     * @param player    the player
+     * @param event     the inventory click event
      * @param inventory the inventory
-     * @param slot the slot
+     * @param slot      the slot
      */
-    public void onMiddleClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot) {
+    public void onMiddleClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot) {
     }
 
     /**
      * Called when the inventory is closed
-     * @param player the player
+     *
+     * @param player    the player
      * @param inventory the inventory
      */
-    public void onInventoryClose(@NotNull Player player,@NotNull InventoryEngine inventory) {
+    public void onInventoryClose(@NotNull Player player, @NotNull InventoryEngine inventory) {
     }
 
     @Contract(pure = true)
-    public void onClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory, int slot,@NotNull Placeholders placeholders) {
+    public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         if (this.closeInventory()) {
             player.closeInventory();
         }
@@ -289,11 +276,12 @@ public abstract class Button extends PlaceholderButton {
 
     /**
      * Called when the inventory is opened
-     * @param player the player
-     * @param inventory the inventory
+     *
+     * @param player       the player
+     * @param inventory    the inventory
      * @param placeholders the placeholders
      */
-    public void onInventoryOpen(@NotNull Player player,@NotNull InventoryEngine inventory,@NotNull Placeholders placeholders) {
+    public void onInventoryOpen(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull Placeholders placeholders) {
 
     }
 
@@ -385,14 +373,15 @@ public abstract class Button extends PlaceholderButton {
 
     /**
      * Called when the back button is clicked
-     * @param player the player
-     * @param event the inventory click event
-     * @param inventory the inventory
+     *
+     * @param player         the player
+     * @param event          the inventory click event
+     * @param inventory      the inventory
      * @param oldInventories the old inventories
-     * @param toInventory the to inventory
-     * @param slot the slot
+     * @param toInventory    the to inventory
+     * @param slot           the slot
      */
-    public void onBackClick(@NotNull Player player,@NotNull InventoryClickEvent event,@NotNull InventoryEngine inventory,@NotNull List<Inventory> oldInventories,@NotNull Inventory toInventory, int slot) {
+    public void onBackClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, @NotNull List<Inventory> oldInventories, @NotNull Inventory toInventory, int slot) {
     }
 
     @Contract(pure = true)
@@ -421,7 +410,7 @@ public abstract class Button extends PlaceholderButton {
         return this.viewRequirement != null || super.hasPermission();
     }
 
-    public boolean checkPermission(@NotNull Player player,@NotNull InventoryEngine inventory,@NotNull Placeholders placeholders) {
+    public boolean checkPermission(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull Placeholders placeholders) {
         PerformanceDebug perfDebug = inventory.getPerformanceDebug();
 
         perfDebug.start("checkPermission.permissions." + getName());
@@ -452,20 +441,22 @@ public abstract class Button extends PlaceholderButton {
 
     /**
      * Called when the inventory is dragged
-     * @param event the inventory drag event
-     * @param player the player
+     *
+     * @param event            the inventory drag event
+     * @param player           the player
      * @param inventoryDefault the inventory engine
      */
-    public void onDrag(@NotNull InventoryDragEvent event,@NotNull Player player,@NotNull InventoryEngine inventoryDefault) {
+    public void onDrag(@NotNull InventoryDragEvent event, @NotNull Player player, @NotNull InventoryEngine inventoryDefault) {
     }
 
     /**
      * Called when the inventory is clicked
-     * @param event the inventory click event
-     * @param player the player
+     *
+     * @param event            the inventory click event
+     * @param player           the player
      * @param inventoryDefault the inventory engine
      */
-    public void onInventoryClick(@NotNull InventoryClickEvent event,@NotNull Player player,@NotNull InventoryEngine inventoryDefault) {
+    public void onInventoryClick(@NotNull InventoryClickEvent event, @NotNull Player player, @NotNull InventoryEngine inventoryDefault) {
     }
 
     @Contract(pure = true)
@@ -544,7 +535,7 @@ public abstract class Button extends PlaceholderButton {
      *                  itself
      * @param <T>       the type of the elements
      */
-    protected <T> void paginate(@NotNull List<T> elements,@NotNull InventoryEngine inventory,@NotNull BiConsumer<Integer, T> consumer) {
+    protected <T> void paginate(@NotNull List<T> elements, @NotNull InventoryEngine inventory, @NotNull BiConsumer<Integer, T> consumer) {
         Pagination<T> pagination = new Pagination<>();
         elements = pagination.paginate(elements, this.slots.size(), inventory.getPage());
 
@@ -596,7 +587,7 @@ public abstract class Button extends PlaceholderButton {
      * @param placeholders the placeholders to use
      * @return the built item stack
      */
-    protected ItemStack buildAsOwner(@NotNull Player player,@NotNull OfflinePlayer owner,@NotNull Placeholders placeholders) {
+    protected ItemStack buildAsOwner(@NotNull Player player, @NotNull OfflinePlayer owner, @NotNull Placeholders placeholders) {
         ItemStack itemStack = getItemStack().build(player, false, placeholders);
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
         skullMeta.setOwningPlayer(owner);

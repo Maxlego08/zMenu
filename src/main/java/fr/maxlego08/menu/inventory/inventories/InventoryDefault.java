@@ -230,15 +230,16 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             } else {
 
                 // If the player has the permission, the button
-                this.displayButton(button,placeholders);
+                this.displayButton(button, placeholders);
             }
 
         } else {
 
             // If there is no permission, then the button
-            this.displayButton(button,placeholders);
+            this.displayButton(button, placeholders);
         }
     }
+
     /**
      * Allows displaying the button in the inventory
      */
@@ -248,7 +249,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     @Override
-    public void displayButton(@NotNull Button button, @NotNull Placeholders placeholders){
+    public void displayButton(@NotNull Button button, @NotNull Placeholders placeholders) {
         final Player targetPlayer = getTargetPlayer();
         var scheduler = plugin.getScheduler();
         Consumer<WrappedTask> runnable;
@@ -283,11 +284,13 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     @Override
-    public void displayFinalButton(@NotNull Button button, @NotNull Placeholders placeholders, int... slots){
+    public void displayFinalButton(@NotNull Button button, @NotNull Placeholders placeholders, int... slots) {
         final Player targetPlayer = getTargetPlayer();
+
         perfDebug.start("getCustomItemStack." + button.getName());
-        ItemStack itemStack = button.getCustomItemStack(targetPlayer, button.isUseCache(), placeholders, perfDebug);
+        ItemStack itemStack = button.getCustomItemStack(targetPlayer, button.isUseCache(), placeholders);
         perfDebug.end();
+
         if (itemStack == null) {
             return;
         }
@@ -322,7 +325,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                     }
 
                     // Update buttons that need to be updated
-                    this.updatedButtons.forEach(updatedButton->this.buildButton(updatedButton,placeholders));
+                    this.updatedButtons.forEach(updatedButton -> this.buildButton(updatedButton, placeholders));
                 });
                 itemButton.setLeftClick(event -> button.onLeftClick(this.player, event, this, slot));
                 itemButton.setRightClick(event -> button.onRightClick(this.player, event, this, slot));
@@ -356,9 +359,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                         if (refreshRequirement != null && refreshRequirement.canRefresh(player, button, this, new Placeholders())) {
                             this.cancel(slot);
-                            updateItemMeta(itemStack, button, refreshRequirement, slot,placeholders);
+                            updateItemMeta(itemStack, button, refreshRequirement, slot, placeholders);
                         } else if (button.isUpdated()) {
-                            handleUpdatedButton(button, itemStack, slot,placeholders);
+                            handleUpdatedButton(button, itemStack, slot, placeholders);
                         }
                     });
 
@@ -424,7 +427,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
         if (button.isUpdatedMasterButton()) {
             this.cancel(slot);
-            this.buildButton(masterButton,placeholders);
+            this.buildButton(masterButton, placeholders);
             return;
         }
 
