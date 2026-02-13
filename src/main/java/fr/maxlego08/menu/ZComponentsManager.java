@@ -51,7 +51,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new SpigotCustomModelDataItemComponentLoader());
             this.registerComponent(new SpigotDamageItemComponentLoader());
             this.registerComponent(new SpigotDamageResistantItemComponentLoader());
-            this.registerComponent(new SpigotDyeColorItemComponentLoader());
+            this.registerComponent(new SpigotDyedColorItemComponentLoader());
             this.registerComponent(new SpigotEnchantmentGlintOverrideItemComponentLoader());
             this.registerComponent(new SpigotFireworkExplosionItemComponentLoader());
             this.registerComponent(new SpigotFireworksItemComponentLoader());
