@@ -12,7 +12,7 @@ import java.util.List;
 public class PlayerCommandLoader extends ActionLoader {
 
     public PlayerCommandLoader() {
-        super("player_command", "player_commands", "player command", "player commands", "player-command,player-commands");
+        super("player_command", "player_commands", "player command", "player commands", "player-command", "player-commands");
     }
 
     @Override
