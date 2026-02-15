@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.0
+
 ## New Features
 
 - **Performance Debug System**: Added per-operation performance monitoring for inventory opening. Measures execution time for each step (permission checks, button building, item rendering, etc.) and logs results to console. Configurable via `enable-performance-debug`, with threshold filtering and whitelist/blacklist support for operation names.
@@ -56,6 +58,18 @@
   - Cache the glowing enchantment lookup instead of querying the enchantment registry on every build
   - Pre-split lore lines containing `\n` at load time instead of splitting on every build
   - Added early exit in `Placeholders.parse()` when the string contains no `%` character, avoiding unnecessary iteration over all placeholder entries
+
+## Internal Changes
+
+- **MiniMessage Color Parsing Refactor**: Consolidated color parsing methods into `MiniMessageColorUtils` class for better maintainability and code reuse.
+- Added unit tests to verify preservation of MiniMessage color tags.
+
+## Bug Fixes
+
+- Fixed hex color parsing regex to correctly handle edge cases.
+- Fixed typo in `PlayerCommandLoader` constructor parameter list.
+
+---
 
 # 1.1.0.9
 
