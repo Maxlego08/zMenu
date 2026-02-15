@@ -1,7 +1,5 @@
 package fr.maxlego08.menu.common.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
@@ -430,7 +428,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return itemstack
      */
     protected ItemStack playerHead() {
-        return NmsVersion.nmsVersion.isNewMaterial() ? new ItemStack(Material.PLAYER_HEAD) : new ItemStack(getMaterial(397), 1, (byte) 3);
+        return new ItemStack(Material.PLAYER_HEAD);
     }
 
     protected ItemStack createSkull(String url) {
@@ -438,41 +436,17 @@ public abstract class ZUtils extends MessageUtils {
         if (url == null) return null;
 
         ItemStack head = playerHead();
-        if (url.isEmpty()) {
-            return head;
-        }
+        if (url.isEmpty()) return head;
 
-        if (NMSUtils.isNewHeadApi()) {
-            this.applyTextureUrl(head, url);
-        } else {
-            this.applyTexture(head, url);
-        }
+        this.applyTextureUrl(head, url);
 
         return head;
     }
 
     private void applyTextureUrl(ItemStack itemStack, String url) {
         SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
-        if (headMeta != null) {
-            headMeta.setOwnerProfile(PlayerUtil.Profile.getProfileFromUrl(url));
-        }
-        itemStack.setItemMeta(headMeta);
-    }
-
-    protected void applyTexture(ItemStack itemStack, String url) {
-        SkullMeta headMeta = (SkullMeta) itemStack.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "zmenu_head");
-
-        profile.getProperties().put("textures", new Property("textures", url));
-
-        try {
-            Field profileField = headMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(headMeta, profile);
-
-        } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
-            error.printStackTrace();
-        }
+        if (headMeta == null) return;
+        headMeta.setOwnerProfile(PlayerUtil.Profile.getProfileFromUrl(url));
         itemStack.setItemMeta(headMeta);
     }
 

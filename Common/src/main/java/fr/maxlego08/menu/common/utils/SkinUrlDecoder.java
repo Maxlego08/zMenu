@@ -34,9 +34,6 @@ public class SkinUrlDecoder {
 
     private static String extractUrlFromJson(String jsonString) {
         JsonElement element = JsonParser.parseString(jsonString);
-        return element.getAsJsonObject()
-                .get(KEY_TEXTURES).getAsJsonObject()
-                .get(KEY_SKIN).getAsJsonObject()
-                .get(KEY_URL).getAsString();
+        return element.getAsJsonObject().get(KEY_TEXTURES).getAsJsonObject().get(KEY_SKIN).getAsJsonObject().get(KEY_URL).getAsString();
     }
 }
