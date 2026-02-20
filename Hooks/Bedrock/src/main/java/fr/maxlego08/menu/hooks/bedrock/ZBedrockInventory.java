@@ -40,6 +40,10 @@ public class ZBedrockInventory implements BedrockInventory {
     private Requirement openRequirement;
     private InventoryReplacement inventoryReplacement;
 
+    private List<Action> openActions = new ArrayList<>();
+    private List<Action> closeActions = new ArrayList<>();
+
+
     public ZBedrockInventory(MenuPlugin plugin, String fileName, String name, String content) {
         this.menuPlugin = plugin;
         this.name = name;
@@ -169,12 +173,20 @@ public class ZBedrockInventory implements BedrockInventory {
 
     @Override
     public List<Action> getOpenActions() {
-        return List.of();
+        return this.openActions;
+    }
+
+    public void setOpenActions(List<Action> openActions) {
+        this.openActions = openActions;
     }
 
     @Override
     public List<Action> getCloseActions() {
-        return List.of();
+        return this.closeActions;
+    }
+
+    public void setCloseActions(List<Action> closeActions) {
+        this.closeActions = closeActions;
     }
 
     @Override

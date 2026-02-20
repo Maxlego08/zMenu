@@ -71,6 +71,9 @@ public class BedrockLoader implements Loader<BedrockInventory> {
             bedrockInventory.setInventoryReplacement(inventoryReplacement);
         }
 
+        bedrockInventory.setOpenActions(this.menuPlugin.getButtonManager().loadActions(configuration, "open-actions", file));
+        bedrockInventory.setCloseActions(this.menuPlugin.getButtonManager().loadActions(configuration, "close-actions", file));
+
         loadSpecificItems(bedrockType, configuration, bedrockInventory, file);
 
         bedrockInventory.setFile(file);
