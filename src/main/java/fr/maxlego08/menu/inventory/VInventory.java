@@ -281,6 +281,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     @Override
     public void setClearInvType(ClearInvType clearInvType) {
+        if (clearInvType == null) return;
         this.clearInvType = clearInvType;
     }
 

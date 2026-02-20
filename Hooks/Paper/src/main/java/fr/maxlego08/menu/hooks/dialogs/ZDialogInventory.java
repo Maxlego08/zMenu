@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
@@ -240,6 +241,16 @@ public class ZDialogInventory implements DialogInventory {
     @Override
     public List<Action> getCloseActions() {
         return List.of();
+    }
+
+    @Override
+    public ClearInvType getClearInvType() {
+        return null;
+    }
+
+    @Override
+    public boolean isClickLimiterEnabled() {
+        return false;
     }
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {

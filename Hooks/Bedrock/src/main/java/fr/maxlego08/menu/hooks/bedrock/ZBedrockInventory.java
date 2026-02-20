@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
@@ -174,6 +175,16 @@ public class ZBedrockInventory implements BedrockInventory {
     @Override
     public List<Action> getCloseActions() {
         return List.of();
+    }
+
+    @Override
+    public ClearInvType getClearInvType() {
+        return null;
+    }
+
+    @Override
+    public boolean isClickLimiterEnabled() {
+        return false;
     }
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {

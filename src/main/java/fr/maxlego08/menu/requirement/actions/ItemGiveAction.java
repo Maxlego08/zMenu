@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
