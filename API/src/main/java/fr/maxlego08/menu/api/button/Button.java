@@ -234,18 +234,25 @@ public abstract class Button extends PlaceholderButton {
 
     @Contract(pure = true)
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
-        AtomicBoolean isSuccess = handleClickCommon(player, inventory, event.getClick(), placeholders);
+        AtomicBoolean isSuccess = handleClickCommon(player, inventory, event.getClick(), placeholders, true);
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
         this.execute(this.plugin, event.getClick(), placeholders, player);
     }
 
+    /**
+     * Used for bedrock inventory click, because bedrock inventory click event doesn't have click type, so we need to use this method to handle the click.
+     * @param player the player
+     * @param inventory the inventory
+     * @param slot the slot
+     * @param placeholders the placeholders
+     */
     public void onClick(@NotNull Player player, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         ClickType clickType = ClickType.LEFT; // Default to left click for this method
-        handleClickCommon(player, inventory, clickType, placeholders);
+        handleClickCommon(player, inventory, clickType, placeholders, false);
         this.execute(this.plugin, clickType, placeholders, player);
     }
 
-    private AtomicBoolean handleClickCommon(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull ClickType clickType, @NotNull Placeholders placeholders) {
+    private AtomicBoolean handleClickCommon(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull ClickType clickType, @NotNull Placeholders placeholders, boolean clickRequirementsCheck) {
         if (this.closeInventory()) {
             player.closeInventory();
         }
@@ -271,11 +278,18 @@ public abstract class Button extends PlaceholderButton {
 
         AtomicBoolean isSuccess = new AtomicBoolean(true);
 
-        this.clickRequirements.forEach(requirement -> {
-            if (requirement.getClickTypes().contains(clickType)) {
+        if (clickRequirementsCheck) {
+            this.clickRequirements.forEach(requirement -> {
+                if (requirement.getClickTypes().contains(clickType)) {
+                    isSuccess.set(requirement.execute(player, this, inventory, placeholders));
+                }
+            });
+        } else {
+            this.clickRequirements.forEach(requirement -> {
                 isSuccess.set(requirement.execute(player, this, inventory, placeholders));
-            }
-        });
+            });
+        }
+
 
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
 
