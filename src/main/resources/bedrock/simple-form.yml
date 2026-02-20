@@ -9,6 +9,8 @@ buttons:
     text: "Button 1"
     click-requirement:
       1:
+        clicks: # Required to work, otherwise it will not work
+          - ALL
         success:
           - type: message
             messages:
@@ -20,6 +22,8 @@ buttons:
     image-value: "https://github.com/GeyserMC.png?size=200"
     click-requirement:
       1:
+        clicks: # Required to work, otherwise it will not work
+          - ALL
         success:
           - type: message
             messages:
@@ -31,6 +35,8 @@ buttons:
     image-value: "textures/i/glyph_world_template.png"
     click-requirement:
       1:
+        clicks: # Required to work, otherwise it will not work
+          - ALL
         success:
           - type: message
             messages:

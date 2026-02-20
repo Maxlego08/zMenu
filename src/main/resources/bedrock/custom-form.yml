@@ -25,7 +25,7 @@ buttons:
     options:
       option1:
         id: "survival"
-        display: "🌱 Survival Mode"
+        display: "Survival Mode"
         initial: true
       option2:
         id: "creative"

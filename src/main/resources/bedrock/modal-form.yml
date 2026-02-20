@@ -10,6 +10,8 @@ buttons:
     text: "Button 1"
     click-requirement:
       1:
+        clicks: # Required to work, otherwise it will not work
+          - ALL
         success:
           - type: message
             messages:
@@ -19,6 +21,8 @@ buttons:
     text: "Button 2"
     click-requirement:
       1:
+        clicks: # Required to work, otherwise it will not work
+          - ALL
         success:
           - type: message
             messages:
