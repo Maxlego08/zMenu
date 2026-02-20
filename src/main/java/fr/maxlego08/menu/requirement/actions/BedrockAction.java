@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ public class BedrockAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         inventory.getPlugin().getScheduler().runNextTick(w -> {
 
             Inventory fromInventory = inventory.getMenuInventory();

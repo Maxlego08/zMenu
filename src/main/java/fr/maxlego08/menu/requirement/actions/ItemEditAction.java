@@ -9,6 +9,7 @@ import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class ItemEditAction extends ActionHelper {
 
@@ -21,7 +22,7 @@ public class ItemEditAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         ItemStack item = ItemPlaceholders.getItem(player, slot);
         if (item == null) return;
 

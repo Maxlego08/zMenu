@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class ItemGiveAction extends ActionHelper {
     }
 
     @Override
-    protected void execute(Player player, Button button, InventoryEngine inventory, Placeholders placeholders) {
+    protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         ItemStack itemStack = this.menuItemStack.build(player);
 
         Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
