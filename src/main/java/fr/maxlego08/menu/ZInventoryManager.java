@@ -29,10 +29,16 @@ import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
-import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.*;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.ItemBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.PlainMessageBodyLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.BooleanInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.NumberRangeInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.SingleOptionInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.TextInputLoader;
+import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
@@ -43,7 +49,7 @@ import fr.maxlego08.menu.loader.permissible.*;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.zcore.utils.PlayerSkin;
+import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -159,8 +165,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         Optional<YamlFileCacheEntry> yamlFileEntry = YamlFileCache.getYamlFileEntry(file.toPath());
 
-        if (yamlFileEntry.isEmpty())
-            throw new InventoryFileNotFound("Cannot find " + file.getAbsolutePath()+". File does not exist.");
+        if (yamlFileEntry.isEmpty()) throw new InventoryFileNotFound("Cannot find " + file.getAbsolutePath() + ". File does not exist.");
 
         YamlConfiguration configuration = yamlFileEntry.get().getYamlConfiguration();
 
@@ -375,7 +380,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new DataLoader(this.plugin));
         buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
         buttonManager.registerAction(new ChatLoader());
-        if (Configuration.enablePlayerCommandsAsOPAction){ // Disabled by default for security reasons
+        if (Configuration.enablePlayerCommandsAsOPAction) { // Disabled by default for security reasons
             buttonManager.registerAction(new PlayerCommandAsOPLoader());
         }
         buttonManager.registerAction(new PlayerCommandLoader());
@@ -399,6 +404,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new ToastLoader(this.plugin));
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
+        }
+        if (this.plugin.isEnable(Plugins.PACKETEVENTS)) {
+            if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater)
+                buttonManager.registerAction(new PacketEventChangeTitleNameLoader(paperMetaUpdater, this.plugin.getPacketUtils().getPacketTitleListener()));
         }
         if (this.plugin.getBedrockManager() != null) {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
@@ -500,7 +509,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // Load specifies path inventories
-        List<String> list =Configuration.specifyPathMenus;
+        List<String> list = Configuration.specifyPathMenus;
         for (String s : list) {
             File file = new File(s);
             if (file.isFile()) {
@@ -991,31 +1000,32 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders){
+    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders) {
+
+        PerformanceDebug performanceDebug = PerformanceDebug.create("Skull item stack processing");
+
+        performanceDebug.start("papi");
         String name = papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
+        performanceDebug.end();
+
         if (!PlayerUtil.isValidMinecraftUsername(name)) {
+            performanceDebug.printSummary();
             return itemStack;
         }
 
-        if (NMSUtils.isNewHeadApi()) {
+        performanceDebug.start("findOfflinePlayer");
+        OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
+        performanceDebug.end();
 
-            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
-            if (offlinePlayer != null) {
-                SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
-                itemStack.setItemMeta(skullMeta);
-            }
-        } else {
-            String texture = PlayerSkin.getTexture(name);
-            if (texture == null) {
-
-                SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-                skullMeta.setOwner(name);
-                itemStack.setItemMeta(skullMeta);
-            } else {
-                this.applyTexture(itemStack, texture);
-            }
+        if (itemStack.getItemMeta() instanceof SkullMeta skullMeta) {
+            performanceDebug.start("applyOwnerProfile");
+            skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
+            itemStack.setItemMeta(skullMeta);
+            performanceDebug.end();
         }
+
+        performanceDebug.printSummary();
+
         return itemStack;
     }
 

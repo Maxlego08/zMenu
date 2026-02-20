@@ -21,8 +21,8 @@ public class SpigotDamageTypeItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
-        String damageType = configuration.getString(path);
+        if (componentSection == null) return null;
+        String damageType = componentSection.getString("types");
         if (damageType != null) {
             NamespacedKey key = NamespacedKey.fromString(damageType);
             if (key != null) {

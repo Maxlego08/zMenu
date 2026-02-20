@@ -24,6 +24,7 @@ import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -46,6 +47,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private final InventoryManager inventoryManager;
     private final String filePath;
     private final String path;
+    private final List<ItemComponent> itemComponents = new ArrayList<>();
     private String material;
     private String targetPlayer;
     private String amount;
@@ -61,7 +63,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
-    private String itemModel;
+    private NamespacedKey itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -72,11 +74,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private LeatherArmor leatherArmor;
     private boolean needPlaceholderAPI = false;
     private ItemStack cacheItemStack;
-
     private boolean centerName;
     private boolean centerLore;
     private LoreType loreType = LoreType.REPLACE;
-
     private int maxStackSize;
     private int maxDamage;
     private int damage;
@@ -91,8 +91,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Boolean attributeShowInTooltip;
     private MenuItemRarity itemRarity;
     private TrimConfiguration trimConfiguration;
-
-    private final List<ItemComponent> itemComponents = new ArrayList<>();
 
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;
@@ -136,40 +134,64 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         boolean useCache = context.isUseCache();
         Placeholders placeholders = context.getPlaceholders();
 
+        var performanceDebug = PerformanceDebug.create("menuItemStack:" + path + ":" + filePath);
+
+        performanceDebug.start("build.shouldUseCache");
         if (shouldUseCache(useCache)) {
+            performanceDebug.end();
+            performanceDebug.printSummary();
             return this.cacheItemStack;
         }
+        performanceDebug.end();
 
-        // If the material is null, then by default it will be stone, stone is a
-        // material present in all versions, so no conflict problem.
+        performanceDebug.start("build.createDefaultMaterial");
         if (this.material == null) {
             this.material = "STONE";
         }
+        performanceDebug.end();
 
+        performanceDebug.start("build.resolveOfflinePlayer");
         OfflinePlayer offlinePlayer = resolveOfflinePlayer(player, placeholders);
+        performanceDebug.end();
+
+        performanceDebug.start("build.parseAmount");
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
+        performanceDebug.end();
 
+        performanceDebug.start("build.createItemStack");
         ItemStack itemStack = context.getItemStack() != null ? context.getItemStack() : createItemStack(player, placeholders, offlinePlayer, amount);
+        performanceDebug.end();
 
+        performanceDebug.start("build.applyItemMeta");
         applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
-        applyAttributes(itemStack);
+        performanceDebug.end();
 
+        performanceDebug.start("build.applyAttributes");
+        applyAttributes(itemStack);
+        performanceDebug.end();
+
+        performanceDebug.start("build.itemComponents");
         if (!this.itemComponents.isEmpty()) {
             for (ItemComponent metadata : this.itemComponents) {
                 try {
+                    performanceDebug.start("build.itemComponents.apply." + metadata.getParentLoader().getComponentName());
                     metadata.apply(context, itemStack, player);
+                    performanceDebug.end();
                 } catch (Exception e) {
-                    if (Configuration.enableDebug){
+                    if (Configuration.enableDebug) {
                         Logger.info("Error while applying ItemComponent '" + metadata.getParentLoader().getComponentName() + "' for item " + path + " in file " + filePath + " (" + player + ")", Logger.LogType.ERROR);
                         e.printStackTrace();
                     }
                 }
             }
         }
+        performanceDebug.end();
 
         if (!needPlaceholderAPI && Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
         }
+
+        performanceDebug.printSummary();
 
         return itemStack;
     }
@@ -185,7 +207,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        return !this.needPlaceholderAPI && this.cacheItemStack != null &&Configuration.enableCacheItemStack && useCache;
+        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
@@ -356,9 +378,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private void applyAttributes(@NotNull ItemStack itemStack) {
-        if (itemStack.getType() == Material.AIR) {
-            return;
-        }
+        if (this.attributes.isEmpty() || itemStack.getType() == Material.AIR) return;
 
         AttributeUtil.applyAttributes(itemStack, this.attributes, this.inventoryManager.getPlugin(), this.attributeMergeStrategy);
     }
@@ -474,10 +494,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         if (this.itemModel != null) {
-            String[] itemModelSplit = this.itemModel.split(":", 2);
-            if (itemModelSplit.length == 2) {
-                itemMeta.setItemModel(new NamespacedKey(itemModelSplit[0], itemModelSplit[1]));
-            }
+            itemMeta.setItemModel(this.itemModel);
         }
 
         if (this.equippedModel != null) {
@@ -796,12 +813,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
-    public String getItemModel() {
+    public NamespacedKey getItemModel() {
         return itemModel;
     }
 
     @Override
-    public void setItemModel(String itemModel) {
+    public void setItemModel(NamespacedKey itemModel) {
         this.itemModel = itemModel;
     }
 

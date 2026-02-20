@@ -3,6 +3,8 @@ package fr.maxlego08.menu.api.configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.PerformanceFilterMode;
 import fr.maxlego08.menu.api.utils.OpGrantMethod;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
@@ -282,6 +284,24 @@ public class Configuration {
     )
     public static boolean enablePlayerCommandsAsOPAction = false;
 
+    @ConfigOption(
+        key = "enablePacketEventClickLimiter",
+        type = DialogInputType.BOOLEAN,
+        trueText = "<green>Enabled",
+        falseText = "<red>Disabled",
+        label = "Enable packet event click limiter"
+    )
+    public static boolean enablePacketEventClickLimiter = false;
+
+    @ConfigOption(
+        key = "packetEventClickLimiterMilliseconds",
+        type = DialogInputType.NUMBER_RANGE,
+        label = "Packet event click limiter milliseconds",
+        endRange = 1000,
+        stepRange = 10
+    )
+    public static long packetEventClickLimiterMilliseconds = 50L;
+
     public static OpGrantMethod opGrantMethod = OpGrantMethod.ATTACHMENT;
 
     @ConfigOption(
@@ -292,6 +312,18 @@ public class Configuration {
         label = "Enable toast"
     )
     public static boolean enableToast = true;
+
+    @ConfigOption(
+        key = "enablePerformanceDebug",
+        type = DialogInputType.BOOLEAN,
+        trueText = "<green>Enabled",
+        falseText = "<red>Disabled",
+        label = "Enable performance debug"
+    )
+    public static boolean enablePerformanceDebug = false;
+    public static PerformanceFilterMode performanceFilterMode = PerformanceFilterMode.DISABLED;
+    public static List<String> performanceFilterOperations = new ArrayList<>();
+    public static long performanceThresholdMs = 10;
 
     @ConfigUpdate
     public static boolean updated = false;
@@ -378,6 +410,19 @@ public class Configuration {
             opGrantMethod = OpGrantMethod.ATTACHMENT;
         }
         enableToast = fileConfiguration.getBoolean(ConfigPath.ENABLE_TOAST.getPath(), true);
+
+        enablePacketEventClickLimiter = fileConfiguration.getBoolean(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath());
+        packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 50L);
+
+        enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
+        performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
+        performanceFilterOperations = fileConfiguration.getStringList(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath());
+        try {
+            performanceFilterMode = PerformanceFilterMode.valueOf(fileConfiguration.getString(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), PerformanceFilterMode.DISABLED.name()).toUpperCase());
+        } catch (IllegalArgumentException e) {
+            Logger.info("Invalid performance filter mode in config, defaulting to DISABLED.");
+            performanceFilterMode = PerformanceFilterMode.DISABLED;
+        }
     }
 
     public void save(@NotNull FileConfiguration fileConfiguration,@NotNull File file) {
@@ -426,6 +471,12 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath(), enablePlayerCommandsAsOPAction);
         fileConfiguration.set(ConfigPath.OP_GRANT_METHOD.getPath(), opGrantMethod.name());
         fileConfiguration.set(ConfigPath.ENABLE_TOAST.getPath(), enableToast);
+        fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
+        fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
+        fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
+        fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
+        fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
+        fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath(), performanceFilterOperations);
         updated = false;
         try {
             fileConfiguration.save(file);
@@ -475,8 +526,16 @@ public class Configuration {
 
         ENABLE_PLAYER_COMMANDS_AS_OP_ACTION("enable-player-commands-as-op-action"),
         OP_GRANT_METHOD("op-grant-method"),
-        ENABLE_TOAST("enable-toast");
-      
+        ENABLE_TOAST("enable-toast"),
+
+        ENABLE_PACKET_EVENT_CLICK_LIMITER("enable-packet-event-click-limiter"),
+        PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds"),
+
+        ENABLE_PERFORMANCE_DEBUG("enable-performance-debug"),
+        PERFORMANCE_DEBUG_THRESHOLD_MS("performance-debug.threshold-ms"),
+        PERFORMANCE_DEBUG_FILTER_MODE("performance-debug.filter.mode"),
+        PERFORMANCE_DEBUG_FILTER_OPERATIONS("performance-debug.filter.operations");
+
         private final String path;
 
         ConfigPath(@NotNull String path) {

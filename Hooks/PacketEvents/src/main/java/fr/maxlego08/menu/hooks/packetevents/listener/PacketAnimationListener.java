@@ -62,6 +62,7 @@ public class PacketAnimationListener implements PacketListener {
             WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(event);
             int containerId = wrapper.getContainerId();
             Player player = event.getPlayer();
+            if (player == null) return;
             UUID playerUniqueId = player.getUniqueId();
 
             PlayerAnimationData data = this.playerAnimationData.get(playerUniqueId);
@@ -90,13 +91,14 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread() || this.plugin.isEnabled()) {
+            if (Bukkit.isPrimaryThread()) {
                 task.run();
-            } else {
-                this.plugin.getScheduler().runNextTick(w -> task.run());
+            } else if (this.plugin.isEnabled()) {
+                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
             Player player = event.getPlayer();
+            if (player == null) return;
             Inventory topInventory = CompatibilityUtil.getTopInventory(player);
             if (topInventory == null) {
                 return;
@@ -110,14 +112,15 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread() || this.plugin.isEnabled()) {
+            if (Bukkit.isPrimaryThread()) {
                 task.run();
-            } else {
-                this.plugin.getScheduler().runNextTick(w -> task.run());
+            } else if (this.plugin.isEnabled()) {
+                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
             }
         } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
             WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
             Player player = event.getPlayer();
+            if (player == null) return;
             UUID playerUniqueId = player.getUniqueId();
 
             int windowId = wrapper.getWindowId();
@@ -148,10 +151,10 @@ public class PacketAnimationListener implements PacketListener {
                 }
             };
 
-            if (Bukkit.isPrimaryThread() || !this.plugin.isEnabled()) {
+            if (Bukkit.isPrimaryThread()) {
                 task.run();
-            } else {
-                this.plugin.getScheduler().runNextTick(w -> task.run());
+            } else if (this.plugin.isEnabled()) {
+                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
             }
         }
     }

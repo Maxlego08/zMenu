@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader;
 
-import fr.maxlego08.menu.ComponentsManager;
 import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.api.ComponentsManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
@@ -16,6 +16,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.TrimHelper;
+import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -97,9 +98,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
             loadTrims(menuItemStack, configuration, path, file);
         }
-        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
-            menuItemStack.setItemModel(configuration.getString(path + "item-model"));
-        }
+        this.loadItemModel(configuration, menuItemStack, path, file);
 
         if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
@@ -127,6 +126,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
+        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack) {
+            menuItemStack.build(new ZBuildContext.Builder().build());
+        }
+
         return menuItemStack;
     }
 
@@ -149,6 +152,25 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
         menuItemStack.setLore(lore);
+    }
+
+    private void loadItemModel(@NonNull YamlConfiguration configuration, ZMenuItemStack menuItemStack, @NonNull String path, File file) {
+        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
+            String itemModel = configuration.getString(path + "item-model");
+            if (itemModel != null) {
+                try {
+                    NamespacedKey namespacedKey = NamespacedKey.fromString(itemModel.toLowerCase());
+                    if (namespacedKey != null) {
+                        menuItemStack.setItemModel(namespacedKey);
+                    }
+                } catch (Exception e) {
+                    if (Configuration.enableDebug) {
+                        Logger.info("An error occurred while loading the item model " + itemModel + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -472,10 +494,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (tooltypestyleString != null) {
             menuItemStack.setToolTipStyle(tooltypestyleString);
         }
-        String itemModelString = configuration.getString(path + "item-model", null);
-        if (itemModelString != null) {
-            menuItemStack.setItemModel(itemModelString);
-        }
+        this.loadItemModel(configuration, menuItemStack, path, file);
         String equippedModel = configuration.getString(path + "equipped-model", null);
         if (equippedModel != null) {
             menuItemStack.setEquippedModel(equippedModel);

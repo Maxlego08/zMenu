@@ -119,9 +119,9 @@ public enum Message implements IMessage {
     RELOAD_INVENTORY("&aYou have just reloaded the inventories files. &8(&7%inventories% inventories&8)"),
     RELOAD_DIALOGS("&aYou have just reloaded the dialogs files. &8(&7%dialogs% dialogs&8)"),
     RELOAD_BEDROCK("&aYou have just reloaded the bedrock inventory files. &8(&7%bedrock% bedrocks&8)"),
-    RELOAD_INVENTORY_FILE("&aVous have just reloaded the inventory &f%name%&a."),
+    RELOAD_INVENTORY_FILE("&aYou have just reloaded the inventory &f%name%&a."),
     RELOAD_COMMAND("&aYou have just reloaded the commands files."),
-    RELOAD_COMMAND_FILE("&aVous have just reloaded the command &f%name%&a."),
+    RELOAD_COMMAND_FILE("&aYou have just reloaded the command &f%name%&a."),
     RELOAD_COMMAND_ERROR("&cIt is not possible to reload the command &f%name%&c."),
     RELOAD_FILES("&aYou have just reloaded config.json and messages.yml files."),
 

@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -398,7 +399,7 @@ public interface MenuItemStack extends MenuItemStackContext {
      *
      * @param itemModel the item model identifier to set.
      */
-    void setItemModel(String itemModel);
+    void setItemModel(NamespacedKey itemModel);
 
     /**
      * Sets the equipped model identifier used for wearable items.

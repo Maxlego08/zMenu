@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.0.8"
+version = "1.1.1.0"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -85,6 +85,10 @@ allprojects {
         }
     }
 
+    tasks.test {
+        useJUnitPlatform()
+    }
+
     dependencies {
         if (project.name != "Paper") {
             compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
@@ -98,6 +102,10 @@ allprojects {
 
         implementation("com.github.cryptomorin:XSeries:13.3.0")
         implementation("net.objecthunter:exp4j:0.4.8")
+
+        testImplementation(platform("org.junit:junit-bom:5.10.0"))
+        testImplementation("org.junit.jupiter:junit-jupiter")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 }
 

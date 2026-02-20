@@ -44,7 +44,7 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandMenuInventories(plugin));
         // this.addSubCommand(new CommandMenuMarketplace(plugin));
 
-        if (plugin.isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion() &&Configuration.enableMiniMessageFormat) {
+        if (plugin.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion() &&Configuration.enableMiniMessageFormat) {
             this.addSubCommand(new CommandDialog(plugin));
         }
 

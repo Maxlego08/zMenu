@@ -42,6 +42,7 @@ import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
+import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
@@ -106,6 +107,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
     private final ItemManager itemManager = new ZItemManager(this);
+    private final FoliaLib foliaLib = new FoliaLib(this);
     private final ComponentsManager componentsManager = new ZComponentsManager();
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
@@ -118,7 +120,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
-    private FoliaLib foliaLib;
     private PacketUtils packetUtils;
 
     public static ZMenuPlugin getInstance() {
@@ -138,18 +139,21 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         instance = this;
 
-        if (this.packetUtils != null)
-            this.packetUtils.onEnable();
+        this.saveDefaultConfig();
+        Configuration.getInstance().load(getConfig());
 
-        this.scheduler = (this.foliaLib = new FoliaLib(this)).getScheduler();
+        if (this.packetUtils != null) {
+            this.packetUtils.onEnable();
+        }
+
+        this.scheduler = this.foliaLib.getScheduler();
 
         this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
 
         this.preEnable();
 
-        this.saveDefaultConfig();
-        Configuration.getInstance().load(getConfig());
+
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
@@ -187,14 +191,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()){
+        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()){
             if (Configuration.enableMiniMessageFormat){
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
                 this.dialogManager = new ZDialogManager(this, configManager);
                 servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                 ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
-                Logger.info(configDialogBuilder.getName());
                 configManager.registerConfig(configDialogBuilder,Configuration.class, this);
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
@@ -269,7 +272,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.websiteManager.loadPlaceholders();
         this.dataManager.loadDefaultValues();
 
-        // this.inventoryManager.registerInventoryListener(this.packetUtils);
+//         this.inventoryManager.registerInventoryListener(this.packetUtils);
+        if (isActive(Plugins.PACKETEVENTS))
+            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager());
 
         this.postEnable();
     }
@@ -361,7 +366,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (isPaper() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+        if (isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -382,9 +387,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onDisable() {
 
+        if (this.packetUtils != null)
+            this.packetUtils.onDisable();
+
         this.preDisable();
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
+        this.inventoriesPlayer.restoreAllInventories();
 
         Configuration.getInstance().save(getConfig(), this.configFile);
 
@@ -395,9 +404,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         this.itemManager.unloadListeners();
-
-        if (this.packetUtils != null)
-            this.packetUtils.onDisable();
 
         getServer().getServicesManager().unregisterAll(this);
 
@@ -494,6 +500,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     @Override
+    public boolean isPaperOrFolia() {
+        return this.foliaLib.isPaper() || this.foliaLib.isFolia();
+    }
+
+    @Override
     public boolean isSpigot() {
         return this.foliaLib.isSpigot();
     }
@@ -524,6 +535,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      */
     public CommandMenu getCommandMenu() {
         return commandMenu;
+    }
+
+    public PacketUtils getPacketUtils() {
+        return packetUtils;
     }
 
     @Override
@@ -637,4 +652,5 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     public File getConfigFile() {
         return this.configFile;
     }
+
 }

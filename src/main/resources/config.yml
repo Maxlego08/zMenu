@@ -8,6 +8,22 @@ enable-debug: false
 # Useful for identifying bottlenecks and optimizing performance.
 enable-debug-time: false
 
+# Enables per-operation performance debugging for inventory opening.
+# Measures and logs execution time for each step (button building, item rendering, etc.).
+# Set threshold-ms to 0 to see all operations. Use filter to focus on specific operations.
+enable-performance-debug: false
+
+performance-debug:
+  # Minimum execution time (in ms) for an operation to appear in the output.
+  threshold-ms: 10
+  filter:
+    # DISABLED - show all operations above threshold
+    # WHITELIST - only show operations matching the list below
+    # BLACKLIST - hide operations matching the list below
+    # Supports wildcards: "buildButton.*" matches all buildButton operations
+    mode: DISABLED
+    operations: []
+
 # Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
 enable-information-message: true
 
@@ -153,6 +169,14 @@ enable-cooldown-click: true
 
 # Cooldown duration in milliseconds between clicks.
 cooldown-click-milliseconds: 100
+
+# Enable packet event click limiter. Limits all click packets received from players (only for zMenu inventories).
+# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits. (Requires PacketEvent plugin)
+enable-packet-event-click-limiter: false
+
+# Packet event click limiter duration in milliseconds.
+# Minimum time required between packet-level click events. Lower values are more permissive.
+packet-event-click-limiter-milliseconds: 50
 
 # PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
 # Defines how often placeholders should be refreshed.
