@@ -249,7 +249,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
             case MODAL -> {
                 List<BedrockButton> buttons = inventory.getBedrockButtons(player);
                 ModalForm.Builder builder = ModalForm.builder()
-                        .title(inventory.getName(player, null, new Placeholders()))
+                        .title(inventory.getName(player, this.inventoryManager.getFakeInventory(), new Placeholders()))
                         .content(inventory.getContent(player))
                         .button1(buttons.get(0).getText(player))
                         .button2(buttons.get(1).getText(player))
@@ -258,9 +258,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                             placeholders.register("content", form.content());
 
                             int id = responseData.clickedButtonId();
-                            for (Requirement requirement : buttons.get(id).getClickRequirements()) {
-                                requirement.execute(player, null, inventoryManager.getFakeInventory(), placeholders);
-                            }
+                            buttons.get(id).onClick(player, inventoryManager.getFakeInventory(), id, placeholders);
                         });
                 
                 yield withDefaultResultHandler(builder, player, inventory);
@@ -277,8 +275,11 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                     builder.button(buttonBuilder.build(player, button));
                 });
                 builder.validResultHandler((form, responseData) -> {
+                    Placeholders placeholders = new Placeholders();
+                    placeholders.register("content", form.content());
                     int slot = responseData.clickedButtonId();
-                    buttons.get(slot).onClick(player, null, inventoryManager.getFakeInventory(), slot, new Placeholders());
+                    BedrockButton bedrockButton = buttons.get(slot);
+                    bedrockButton.onClick(player, this.inventoryManager.getFakeInventory(), slot, placeholders);
                 });
                 yield withDefaultResultHandler(builder, player, inventory);
             }

@@ -17,10 +17,11 @@ import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -233,12 +234,23 @@ public abstract class Button extends PlaceholderButton {
 
     @Contract(pure = true)
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
+        AtomicBoolean isSuccess = handleClickCommon(player, inventory, event.getClick(), placeholders);
+        this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
+        this.execute(this.plugin, event.getClick(), placeholders, player);
+    }
+
+    public void onClick(@NotNull Player player, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
+        ClickType clickType = ClickType.LEFT; // Default to left click for this method
+        handleClickCommon(player, inventory, clickType, placeholders);
+        this.execute(this.plugin, clickType, placeholders, player);
+    }
+
+    private AtomicBoolean handleClickCommon(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull ClickType clickType, @NotNull Placeholders placeholders) {
         if (this.closeInventory()) {
             player.closeInventory();
         }
 
         if (!this.datas.isEmpty()) {
-
             DataManager dataManager = this.plugin.getDataManager();
             for (ActionPlayerData actionPlayerData : this.datas) {
                 actionPlayerData.execute(player, dataManager, placeholders);
@@ -260,15 +272,14 @@ public abstract class Button extends PlaceholderButton {
         AtomicBoolean isSuccess = new AtomicBoolean(true);
 
         this.clickRequirements.forEach(requirement -> {
-            if (requirement.getClickTypes().contains(event.getClick())) {
+            if (requirement.getClickTypes().contains(clickType)) {
                 isSuccess.set(requirement.execute(player, this, inventory, placeholders));
             }
         });
 
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
-        this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(this.plugin, event.getClick(), placeholders, player);
+        return isSuccess;
     }
 
     /**

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class ZItemDragButton extends ItemDragButton {
     }
 
     @Override
-    public void onInventoryClose(Player player, InventoryEngine inventory) {
+    public void onInventoryClose(@NonNull Player player, @NonNull InventoryEngine inventory) {
         this.slots.forEach(slot -> {
             ItemStack itemStack = inventory.getInventory().getItem(slot);
 
@@ -107,7 +108,7 @@ public class ZItemDragButton extends ItemDragButton {
     }
 
     @Override
-    public void onClick(Player player, InventoryClickEvent event, InventoryEngine inventoryEngine, int slot, Placeholders placeholders) {
+    public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventoryEngine, int slot, @NonNull Placeholders placeholders) {
         if (event == null) return;
 
         ItemStack currentItem = event.getCurrentItem();
