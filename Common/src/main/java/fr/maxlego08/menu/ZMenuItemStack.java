@@ -159,7 +159,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.createItemStack");
-        ItemStack itemStack = context.getItemStack() != null ? context.getItemStack() : createItemStack(player, placeholders, offlinePlayer, amount);
+        ItemStack itemStack = applySpecialItemStack(player, offlinePlayer, placeholders, amount, context.getItemStack() != null ? context.getItemStack() : createItemStack(player, placeholders, offlinePlayer, amount));
         performanceDebug.end();
 
         performanceDebug.start("build.applyItemMeta");
@@ -221,8 +221,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (itemStack == null) {
             itemStack = createDefaultItemStack(player, material, amount);
         }
-
-        itemStack = applySpecialItemStack(player, offlinePlayer, placeholders, amount, itemStack);
 
         return itemStack;
     }
