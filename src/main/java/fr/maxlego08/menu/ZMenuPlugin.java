@@ -48,6 +48,7 @@ import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoad
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.AdapterListener;
+import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
@@ -219,8 +220,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(new AdapterListener(this));
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
-        //TODO: CHECH ce listener
-//         this.addListener(new ItemUpdaterListener(this.itemManager));
+        this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addSimpleListener(this.inventoryManager);
 
         this.inventoryManager.registerMaterialLoader(new Base64Loader());
