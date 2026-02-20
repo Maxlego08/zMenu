@@ -223,6 +223,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
         button.setMasterButtonUpdated(configuration.getBoolean(path + "updateMasterButton", configuration.getBoolean(path + "update-master-button", defaultButtonValue.isUpdateMasterButton())));
         button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", configuration.getBoolean(path + "refresh-on-click", defaultButtonValue.isRefreshOnClick())));
+        button.setRefreshOnDrag(configuration.getBoolean(path + "refreshOnDrag", configuration.getBoolean(path + "refresh-on-drag", defaultButtonValue.isRefreshOnDrag())));
         button.setUseCache(configuration.getBoolean(path + "useCache", configuration.getBoolean(path + "use-cache", defaultButtonValue.isUseCache())));
         button.setOpenAsync(configuration.getBoolean(path + "openAsync", configuration.getBoolean(path + "open-async", false)));
 

@@ -54,7 +54,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String url;
     private String data;
     private String tooltipStyle;
-    private int durability;
+    private String durability;
     private Potion potion;
     private List<String> lore = new ArrayList<>();
     private List<ItemFlag> flags = new ArrayList<>();
@@ -159,7 +159,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.createItemStack");
-        ItemStack itemStack = createItemStack(player, placeholders, offlinePlayer, amount);
+        ItemStack itemStack = applySpecialItemStack(player, offlinePlayer, placeholders, amount, context.getItemStack() != null ? context.getItemStack() : createItemStack(player, placeholders, offlinePlayer, amount));
         performanceDebug.end();
 
         performanceDebug.start("build.applyItemMeta");
@@ -222,16 +222,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             itemStack = createDefaultItemStack(player, material, amount);
         }
 
-        itemStack = applySpecialItemStack(player, amount, itemStack);
-        if (itemStack == null) {
-            itemStack = new ItemStack(Material.STONE);
-        }
-
-        itemStack.setAmount(Math.max(1, amount));
-        if (this.durability != 0) {
-            itemStack.setDurability((short) this.durability);
-        }
-
         return itemStack;
     }
 
@@ -279,7 +269,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
     }
 
-    private ItemStack applySpecialItemStack(Player player, int amount, ItemStack itemStack) {
+    private ItemStack applySpecialItemStack(Player player, OfflinePlayer offlinePlayer, Placeholders placeholders, int amount, ItemStack itemStack) {
         if (this.url != null && !url.equalsIgnoreCase("null")) {
             String urlResult = this.papi(this.url, player, false);
             if (urlResult != null) {
@@ -302,6 +292,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.leatherArmor != null) {
             itemStack = leatherArmor.toItemStack(amount);
         }
+        itemStack.setAmount(Math.max(1 , amount));
+
+        if (this.durability != null) {
+            int dura = this.parseDura(offlinePlayer == null ? player : offlinePlayer, placeholders);
+            itemStack.setDurability((short) dura);
+        }
+
         return itemStack;
     }
 
@@ -310,7 +307,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (itemMeta == null) {
             return;
         }
-
         Material finalMaterial = itemStack.getType();
         String locale = findPlayerLocale(player);
         FontImage fontImage = this.inventoryManager.getFontImage();
@@ -592,13 +588,41 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the durability
      */
     public int getDurability() {
+        int dura = 1;
+        try {
+            dura = Integer.parseInt(this.durability);
+        } catch (Exception ignored) {
+        }
+        return dura;
+    }
+
+    public String getDura() {
         return durability;
+    }
+
+    @Override
+    public int parseDura(Player player) {
+        return parseDura(player, new Placeholders());
+    }
+
+    @Override
+    public int parseDura(OfflinePlayer offlinePlayer, Placeholders placeholders) {
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(papi(placeholders.parse(this.durability), offlinePlayer, true));
+        } catch (Exception ignored) {
+        }
+        return amount;
     }
 
     /**
      * @param durability the durability to set
      */
     public void setDurability(int durability) {
+        this.durability = Integer.toString(durability);
+    }
+
+    public void setDurability(String durability) {
         this.durability = durability;
     }
 
@@ -808,12 +832,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public int parseAmount(Player player) {
-        int amount = 1;
-        try {
-            amount = Integer.parseInt(papi(this.amount, player, true));
-        } catch (Exception ignored) {
-        }
-        return amount;
+        return parseAmount(player, new Placeholders());
     }
 
     @Override
@@ -849,7 +868,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public void setTypeMapAccessor(MapConfiguration configuration) {
 
         setData(configuration.getString("data", "0"));
-        setDurability(configuration.getInt("durability", 0));
+        setDurability(configuration.getString("durability", null));
         setAmount(configuration.getString("amount", "1"));
         setMaterial(configuration.getString("material", null));
         setTargetPlayer(configuration.getString("target", null));

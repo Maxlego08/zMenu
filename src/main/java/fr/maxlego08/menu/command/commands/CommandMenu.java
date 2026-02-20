@@ -3,6 +3,7 @@ package fr.maxlego08.menu.command.commands;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.command.commands.bedrock.CommandBedrock;
 import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
@@ -45,6 +46,10 @@ public class CommandMenu extends VCommand {
 
         if (plugin.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion() &&Configuration.enableMiniMessageFormat) {
             this.addSubCommand(new CommandDialog(plugin));
+        }
+
+        if (plugin.getBedrockManager() != null){
+            this.addSubCommand(new CommandBedrock(plugin));
         }
     }
 

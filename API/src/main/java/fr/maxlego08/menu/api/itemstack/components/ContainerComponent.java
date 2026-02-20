@@ -40,7 +40,6 @@ public class ContainerComponent extends ItemComponent {
                     int slot = containerSlot.slot();
                     ItemStack builtItemStack = menuItemStack.build(player);
                     inventory.setItem(slot, builtItemStack);
-                    Logger.info("Added item to container at slot " + slot + ": " + builtItemStack.getType().name());
                 }
 
                 container.update();

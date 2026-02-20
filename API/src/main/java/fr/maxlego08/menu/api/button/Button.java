@@ -17,6 +17,7 @@ import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -46,6 +47,7 @@ public abstract class Button extends PlaceholderButton {
     private boolean isUpdated = false;
     private boolean isMasterButtonUpdated = false;
     private boolean refreshOnClick = false;
+    private boolean refreshOnDrag = false;
     private List<ActionPlayerData> datas = new ArrayList<>();
     private boolean updateOnClick = false;
     private boolean isOpenAsync = false;
@@ -232,12 +234,30 @@ public abstract class Button extends PlaceholderButton {
 
     @Contract(pure = true)
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
+        AtomicBoolean isSuccess = handleClickCommon(player, inventory, event.getClick(), placeholders, true);
+        this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
+        this.execute(this.plugin, event.getClick(), placeholders, player);
+    }
+
+    /**
+     * Used for bedrock inventory click, because bedrock inventory click event doesn't have click type, so we need to use this method to handle the click.
+     * @param player the player
+     * @param inventory the inventory
+     * @param slot the slot
+     * @param placeholders the placeholders
+     */
+    public void onClick(@NotNull Player player, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
+        ClickType clickType = ClickType.LEFT; // Default to left click for this method
+        handleClickCommon(player, inventory, clickType, placeholders, false);
+        this.execute(this.plugin, clickType, placeholders, player);
+    }
+
+    private AtomicBoolean handleClickCommon(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull ClickType clickType, @NotNull Placeholders placeholders, boolean clickRequirementsCheck) {
         if (this.closeInventory()) {
             player.closeInventory();
         }
 
         if (!this.datas.isEmpty()) {
-
             DataManager dataManager = this.plugin.getDataManager();
             for (ActionPlayerData actionPlayerData : this.datas) {
                 actionPlayerData.execute(player, dataManager, placeholders);
@@ -258,16 +278,22 @@ public abstract class Button extends PlaceholderButton {
 
         AtomicBoolean isSuccess = new AtomicBoolean(true);
 
-        this.clickRequirements.forEach(requirement -> {
-            if (requirement.getClickTypes().contains(event.getClick())) {
+        if (clickRequirementsCheck) {
+            this.clickRequirements.forEach(requirement -> {
+                if (requirement.getClickTypes().contains(clickType)) {
+                    isSuccess.set(requirement.execute(player, this, inventory, placeholders));
+                }
+            });
+        } else {
+            this.clickRequirements.forEach(requirement -> {
                 isSuccess.set(requirement.execute(player, this, inventory, placeholders));
-            }
-        });
+            });
+        }
+
 
         this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
-        this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
 
-        this.execute(this.plugin, event.getClick(), placeholders, player);
+        return isSuccess;
     }
 
     /**
@@ -336,6 +362,16 @@ public abstract class Button extends PlaceholderButton {
 
     @Contract(pure = true)
     @Nullable
+    public boolean isRefreshOnDrag() {
+        return this.refreshOnDrag;
+    }
+
+    public void setRefreshOnDrag(boolean refreshOnDrag) {
+        this.refreshOnDrag = refreshOnDrag;
+    }
+
+    @Contract(pure = true)
+
     public List<ActionPlayerData> getData() {
         return this.datas;
     }
@@ -559,6 +595,15 @@ public abstract class Button extends PlaceholderButton {
      */
     public void setPlayerInventory(boolean inPlayerInventory) {
         isInPlayerInventory = inPlayerInventory;
+    }
+
+    /**
+     * Returns whether this button allow draggable in the button slot.
+     *
+     * @return true if this button can allow drag in this button, false otherwise
+     */
+    public boolean isDraggable() {
+        return false;
     }
 
     /**

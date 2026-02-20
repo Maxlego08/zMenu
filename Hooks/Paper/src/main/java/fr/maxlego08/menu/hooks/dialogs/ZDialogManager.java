@@ -1,14 +1,13 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.DialogInventory;
-import fr.maxlego08.menu.api.DialogManager;
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
-import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
+import fr.maxlego08.menu.api.enums.dialog.DialogType;
+import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -19,8 +18,9 @@ import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilder;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderBody;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -29,6 +29,7 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.*;
 import net.kyori.adventure.text.event.ClickCallback;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -42,7 +43,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ZDialogManager extends AbstractDialogManager implements DialogManager {
+public class ZDialogManager extends DialogBuilderManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
     private static InventoryManager inventoryManager;
@@ -57,7 +58,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
-        this.dialogBuilders = new DialogBuilderClass(this);
+        this.dialogBuilders = new DialogBuilderClass(this, this.menuPlugin);
         inventoryManager = menuPlugin.getInventoryManager();
     }
 
@@ -84,7 +85,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
     public Optional<DialogInventory> getDialogOptional(String name) {
         for (List<DialogInventory> dialogList : dialogs.values()) {
             for (DialogInventory dialog : dialogList) {
-                if (dialog.getFileName().equals(name) || dialog.getName(null).equals(name)) {
+                if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -96,12 +97,9 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         List<DialogInventory> pluginDialogs = dialogs.get(pluginName);
         if (pluginDialogs == null) return Optional.empty();
 
-        for (DialogInventory dialog : pluginDialogs) {
-            if (dialog.getFileName().equals(fileName) || dialog.getName(null).equals(fileName)) {
-                return Optional.of(dialog);
-            }
-        }
-        return Optional.empty();
+        return pluginDialogs.stream()
+                .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName().equals(fileName))
+                .findFirst();
     }
 
     @Override
@@ -109,19 +107,16 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         List<DialogInventory> pluginDialogs = dialogs.get(plugin.getName());
         if (pluginDialogs == null) return Optional.empty();
 
-        for (DialogInventory dialog : pluginDialogs) {
-            if (dialog.getFileName().equals(fileName)) {
-                return Optional.of(dialog);
-            }
-        }
-        return Optional.empty();
+        return pluginDialogs.stream()
+                .filter(dialog -> dialog.getFileName().equals(fileName))
+                .findFirst();
     }
 
     @Override
     public void deleteDialog(String name) {
         for (List<DialogInventory> dialogList : dialogs.values()) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equals(name) || dialog.getName(null).equals(name)
+                    dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
         }
     }
@@ -140,22 +135,18 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         }
 
         try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
-            Iterator<Path> iterator = stream.iterator();
-            if (iterator.hasNext()) {
-                iterator.next();
-            }
-            while (iterator.hasNext()) {
-                Path path = iterator.next();
-                File file = path.toFile();
-                if (file.isFile() && file.getName().endsWith(".yml")) {
-                    try {
-                        this.loadInventory(this.menuPlugin, file);
-                    } catch (DialogException | InventoryException exception) {
-                        Logger.info("Failed to load dialog from file: " + file.getName(), Logger.LogType.WARNING);
+            stream.skip(1)
+                    .map(Path::toFile)
+                    .filter(File::isFile)
+                    .filter(file -> file.getName().endsWith(".yml"))
+                    .forEach(file -> {
+                        try {
+                            this.loadInventory(this.menuPlugin, file);
+                        } catch (DialogException | InventoryException exception) {
+                            Logger.info("Failed to load dialog from file: " + file.getName(), Logger.LogType.WARNING);
 
-                    }
-                }
-            }
+                        }
+                    });
         } catch (IOException exception) {
             Logger.info("Failed to load dialogs", Logger.LogType.WARNING);
         }
@@ -200,7 +191,7 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         return dialog;
     }
 
-    public void registerBuilder(DialogBuilder builder) {
+    public void registerBuilder(DialogBuilderBody builder) {
         this.dialogBuilders.registerBuilder(builder);
     }
 
@@ -219,23 +210,39 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
      */
     @Override
     public void openDialog(@NotNull Player player,@NotNull DialogInventory zDialog) {
+        this.openDialog(player, zDialog, new ArrayList<>());
+    }
+
+    @Override
+    public void openDialog(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
+        PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, dialogInventory, 1, oldInventories);
+        if (Configuration.enableFastEvent) {
+            this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
+        } else playerOpenInventoryEvent.call();
+        if (playerOpenInventoryEvent.isCancelled()) return;
+
+
+        Player targetPlayer = Bukkit.getPlayer(this.menuPlugin.parse(player, dialogInventory.getTargetPlayerNamePlaceholder()));
+        if (targetPlayer == null) {
+            targetPlayer = player;
+        }
+
         try {
-            boolean canOpen = zDialog.hasOpenRequirement(player);
+            boolean canOpen = checkRequirement(dialogInventory.getOpenRequirement(), player);
             if (!canOpen){
                 return;
             }
 
-            ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogBody> bodies = getDialogBodies(player, zDialog.getDialogBodies(player));
-            List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
+            ZDialogInventoryBuild dialogBuild = dialogInventory.getBuild(targetPlayer);
+            List<DialogBody> bodies = getDialogBodies(targetPlayer, dialogInventory.getDialogBodies(targetPlayer));
+            List<DialogInput> inputs = getDialogInputs(targetPlayer, dialogInventory.getDialogInputs(targetPlayer));
 
-            DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), zDialog.isPause(), zDialog.getAfterAction());
-            Dialog dialog = createDialogByType(zDialog.getDialogType(), dialogBase, bodies, inputs, zDialog, player);
-
-            this.activeDialogs.put(player.getUniqueId(), zDialog);
+            DialogBase.Builder dialogBase = createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), dialogInventory.isPause(), dialogInventory.getAfterAction());
+            Dialog dialog = createDialogByType(dialogInventory.getDialogType(), dialogBase, bodies, inputs, dialogInventory, player);
 
             player.showDialog(dialog);
 
+            activeDialogs.put(player.getUniqueId(), dialogInventory);
         } catch (Exception e) {
             if (Configuration.enableInformationMessage){
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
@@ -355,17 +362,13 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
         }
         return Collections.unmodifiableCollection(allDialogs);
     }
-    @Override
-    public InventoryManager getInventoryManager() {
-        return inventoryManager;
-    }
 
     @Override
     public ConfigManagerInt getConfigManager(){
         return this.configManager;
     }
 
-    public Optional<DialogBuilder> getDialogBuilder(DialogBodyType type) {
+    public Optional<DialogBuilderBody> getDialogBuilder(DialogBodyType type) {
         return DialogBuilderClass.getDialogBuilder(type);
     }
 
@@ -377,5 +380,12 @@ public class ZDialogManager extends AbstractDialogManager implements DialogManag
                 DialogBuilderClass::getDialogBuilder,
                 (builder, button) -> builder.build(player, button)
         );
+    }
+
+    protected boolean checkRequirement(Requirement requirement, Player player) {
+        if (requirement == null) return true;
+        InventoryEngine fakeInventory = menuPlugin.getInventoryManager().getFakeInventory();
+        Placeholders placeholder = new Placeholders();
+        return requirement.execute(player, null, fakeInventory, placeholder);
     }
 }

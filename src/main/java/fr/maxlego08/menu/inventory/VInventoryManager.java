@@ -180,8 +180,9 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     @Override
     protected void onInventoryDrag(InventoryDragEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
-        if (holder instanceof VInventory vInventory) {
-            vInventory.onDrag(event, this.plugin, player);
+        if (holder instanceof VInventory inventory) {
+            event.setCancelled(true);
+            inventory.onDrag(event, this.plugin, player);
         }
     }
 

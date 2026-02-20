@@ -1,12 +1,13 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.DialogInventory;
+import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -17,13 +18,13 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 public class DialogLoader implements Loader<DialogInventory> {
     private final MenuPlugin menuPlugin;
@@ -75,64 +76,77 @@ public class DialogLoader implements Loader<DialogInventory> {
 
         loadSpecificItems(dialogType, configuration, dialogInventory, file);
 
-        List<BodyButton> bodyButtons = loadBodyButtons(configuration, file);
+        List<BodyButton> bodyButtons = loadButtons(configuration, file, "body", BodyButton.class, null);
         dialogInventory.setBodyButtons(bodyButtons);
 
-        List<InputButton> inputButtons = loadInputButtons(configuration, file);
+        List<InputButton> inputButtons = loadButtons(configuration, file, "inputs", InputButton.class, InputButton::setKey);
         dialogInventory.setInputButtons(inputButtons);
 
         dialogInventory.setFile(file);
+        dialogInventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
 
+        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
+        for (InventoryOption inventoryOption : inventoryOptions) {
+            inventoryOption.loadInventory(dialogInventory, file, configuration, this.menuPlugin.getInventoryManager(), this.menuPlugin.getButtonManager());
+        }
         return dialogInventory;
     }
 
     /**
-     * Loads body buttons from the configuration
+     * Loads InventoryOption
      */
-    private List<BodyButton> loadBodyButtons(YamlConfiguration configuration, File file) {
-        List<BodyButton> bodyButtons = new ArrayList<>();
-
-        ConfigurationSection bodySection = configuration.getConfigurationSection("body");
-
-        if (bodySection == null) {
-            return bodyButtons;
-        }
-
-        Loader<Button> loader = this.menuPlugin.getButtonManager().getLoaderButton(this.menuPlugin, file, 54, new HashMap<>());
-        for (String bodyKey : bodySection.getKeys(false)) {
-            String path = "body." + bodyKey + ".";
+    private InventoryOption createInstance(Plugin plugin, Class<? extends InventoryOption> aClass) {
+        try {
+            Constructor<? extends InventoryOption> constructor = aClass.getConstructor(Plugin.class);
+            return constructor.newInstance(plugin);
+        } catch (NoSuchMethodException ignored) {
             try {
-                Button button = loader.load(configuration, path, bodyKey);
-                BodyButton bodyButton = getButtonType(button, BodyButton.class, path, file);
-                bodyButtons.add(bodyButton);
-            } catch (Exception exception) {
-                Logger.info(exception.getMessage(), Logger.LogType.ERROR);
+                return aClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                return null;
             }
+        } catch (Exception ignored) {
+            return null;
         }
-        return bodyButtons;
     }
-    private List<InputButton> loadInputButtons(YamlConfiguration configuration, File file) {
-        List<InputButton> inputButtons = new ArrayList<>();
 
-        ConfigurationSection inputSection = configuration.getConfigurationSection("inputs");
+    /**
+     * Loads buttons from the configuration
+     */
+    private <T extends Button> List<T> loadButtons(
+            YamlConfiguration configuration,
+            File file,
+            String sectionKey,
+            Class<T> buttonClass,
+            BiConsumer<T, String> postProcess
+    ) {
+        List<T> buttons = new ArrayList<>();
 
-        if (inputSection == null) {
-            return inputButtons;
+        ConfigurationSection section = configuration.getConfigurationSection(sectionKey);
+
+        if (section == null) {
+            return buttons;
         }
 
-        Loader<Button> loader = this.menuPlugin.getButtonManager().getLoaderButton(this.menuPlugin, file, 54, new HashMap<>());
-        for (String inputKey : inputSection.getKeys(false)) {
-            String path = "inputs." + inputKey + ".";
+        Loader<Button> loader = this.menuPlugin.getButtonManager()
+                .getLoaderButton(this.menuPlugin, file, 54, new HashMap<>());
+
+        for (String key : section.getKeys(false)) {
+            String path = sectionKey + "." + key + ".";
             try {
-                Button button = loader.load(configuration, path, inputKey);
-                InputButton inputButton = getButtonType(button, InputButton.class, path, file);
-                inputButton.setKey(inputKey);
-                inputButtons.add(inputButton);
+                Button button = loader.load(configuration, path, key);
+                T typedButton = getButtonType(button, buttonClass, path, file);
+
+                if (postProcess != null) {
+                    postProcess.accept(typedButton, key);
+                }
+
+                buttons.add(typedButton);
             } catch (Exception exception) {
                 Logger.info(exception.getMessage(), Logger.LogType.ERROR);
             }
         }
-        return inputButtons;
+        return buttons;
     }
 
     @Override

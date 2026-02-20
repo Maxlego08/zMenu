@@ -34,6 +34,8 @@ public class DefaultButtonValue {
     private boolean updateMasterButton = false;
     // Default refreshOnClick value
     private boolean refreshOnClick = false;
+    // Default refreshOnDrag value
+    private boolean refreshOnDrag = false;
     // Default useCache value
     private boolean useCache = true;
     // Default playerHead value
@@ -196,6 +198,24 @@ public class DefaultButtonValue {
      */
     public void setRefreshOnClick(boolean refreshOnClick) {
         this.refreshOnClick = refreshOnClick;
+    }
+
+    /**
+     * Gets the default refreshOnDrag value.
+     *
+     * @return The default refreshOnDrag value.
+     */
+    public boolean isRefreshOnDrag() {
+        return refreshOnDrag;
+    }
+
+    /**
+     * Sets the default refreshOnDrag value.
+     *
+     * @param refreshOnDrag The default refreshOnDrag value to set.
+     */
+    public void setRefreshOnDrag(boolean refreshOnDrag) {
+        this.refreshOnDrag = refreshOnDrag;
     }
 
     /**

@@ -32,6 +32,8 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
+import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
@@ -51,6 +53,7 @@ import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
+import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
 import fr.maxlego08.menu.placeholder.Placeholder;
@@ -112,6 +115,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final AttributApplier attributApplier = new ApplySpigotAttribute();
     private final File configFile = new File(getDataFolder(), "config.yml");
     private DialogManager dialogManager;
+    private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
     private PlatformScheduler scheduler;
     private DupeManager dupeManager;
@@ -201,6 +205,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             }
         }
 
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
+            Logger.info("Geyser or Floodgate detected, loading Bedrock Inventory support");
+            this.bedrockManager = new ZBedrockManager(this);
+            this.addListener(new BedrockReplacementListener(this.bedrockManager));
+            servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
+        }
+
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
@@ -231,6 +242,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.websiteManager.registerPlaceholders();
         new MenuPlaceholders().register(this);
+        new ItemPlaceholders().register(this);
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
@@ -277,95 +289,61 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.isActive(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-            this.getLogger().info("Registered HeadDatabase material loader");
         }
-
         if (this.isActive(Plugins.ZHEAD)) {
             this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
-            this.getLogger().info("Registered ZHead material loader");
         }
-
         if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
-            this.fontImage = new OraxenFont();
-            this.getLogger().info("Registered Oraxen material loader and font");
         }
-
         if (this.isActive(Plugins.CRAFTENGINE)) {
             this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
-            this.getLogger().info("Registered CraftEngine material loader");
         }
-
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
-            this.getLogger().info("Registered Nexo material loader");
         }
-
-        if (this.isActive(Plugins.MAGICCOSMETICS)) {
+        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
-            this.getLogger().info("Registered MagicCosmetics material loader");
         }
-
-        if (this.isActive(Plugins.HMCCOSMETICS)) {
+        if (this.isEnable(Plugins.HMCCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
-            this.getLogger().info("Registered HMC Cosmetics material loader");
         }
-
-        if (this.isActive(Plugins.ITEMSADDER)) {
+        if (this.isEnable(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
-            this.getLogger().info("Registered ItemsAdder material loader and font");
         }
-
         if (this.isActive(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
-            this.getLogger().info("Registered SlimeFun material loader");
         }
-
         if (this.isActive(Plugins.NOVA)) {
             this.inventoryManager.registerMaterialLoader(new NovaLoader());
-            this.getLogger().info("Registered Nova material loader");
         }
-
         if (this.isActive(Plugins.ECO)) {
             this.inventoryManager.registerMaterialLoader(new EcoLoader());
-            this.getLogger().info("Registered Eco material loader");
         }
-
         if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
-            this.getLogger().info("Registered zItems material loader");
         }
-
         if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
-            this.getLogger().info("Registered ExecutableItems material loader");
         }
-
         if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
-            this.getLogger().info("Registered ExecutableBlocks material loader");
         }
-
         if (this.isActive(Plugins.NEXTGENS)) {
             this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
-            this.getLogger().info("Registered NextGens material loader");
         }
-
         if (this.isActive(Plugins.MYTHICMOBS)) {
             this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
             this.addListener(new MythicManager(this));
-            this.getLogger().info("Registered MythicMobs material loader and listener");
         }
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
-            this.getLogger().info("Registered BreweryX material loader");
         }
         if (this.isActive(Plugins.PACKETEVENTS)){
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
     }
-
 
     private List<String> getInventoriesFiles() {
         List<String> files = new ArrayList<>();
@@ -377,6 +355,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
         files.add("inventories/examples/switch.yml");
+        files.add("inventories/examples/item_drag.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");
@@ -392,6 +371,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
             files.add("dialogs/server_link-dialog.yml");
+        }
+
+        if (this.isActive(Plugins.GEYSER)){
+            files.add("bedrock/custom-form.yml");
+            files.add("bedrock/modal-form.yml");
+            files.add("bedrock/simple-form.yml");
         }
 
         files.add("items/default-items.yml");
@@ -410,7 +395,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.vinventoryManager != null) this.vinventoryManager.close();
         this.inventoriesPlayer.restoreAllInventories();
 
-       Configuration.getInstance().save(getConfig(), this.configFile);
+        Configuration.getInstance().save(getConfig(), this.configFile);
 
         YamlFileCache.clearCache();
 
@@ -464,7 +449,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     /**
      * Returns the class that will manager the dialogs
      *
-     * @return the zDialogManager
+     * @return the DialogManager
      */
     @Override
     public DialogManager getDialogManager() {
@@ -490,6 +475,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     public ComponentsManager getComponentsManager() {
         return this.componentsManager;
     }
+
+    /**
+     * Returns the class that will manager the bedrock inventory
+     *
+     * @return the BedrockManager
+     */
+    @Override
+    public BedrockManager getBedrockManager() {return this.bedrockManager;}
 
     @Override
     public StorageManager getStorageManager() {

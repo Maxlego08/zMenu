@@ -28,7 +28,9 @@ public enum Plugins {
     MYTHICMOBS("MythicMobs"),
 	ZMENUPLUS("zMenuPlus"),
     BREWERYX("BreweryX"),
-    PACKETEVENTS("packetevents")
+    PACKETEVENTS("packetevents"),
+    GEYSER("Geyser-Spigot"),
+    FLOODGATE("floodgate"),
     ;
 	private final String name;
 

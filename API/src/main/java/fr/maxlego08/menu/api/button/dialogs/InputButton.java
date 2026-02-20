@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.enums.DialogInputType;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class InputButton extends Button {
-    private DialogInputType inputType = DialogInputType.BOOLEAN;
+public abstract class InputButton extends Button {
+    private final DialogInputType inputType;
     private String key; // Unique identifier for the input button
     private String label;
 
@@ -46,19 +46,16 @@ public class InputButton extends Button {
     private Supplier<Float> initialValueRangeSupplier;
     private String labelFormat = "options.generic_value"; // Default label format
 
+    public InputButton(DialogInputType inputType) {
+        super();
+        this.inputType = inputType;
+    }
+
     @Contract(pure = true)
     public DialogInputType getInputType() {
         return inputType;
     }
 
-    @Contract("_ -> this")
-    public InputButton setInputType(@NotNull DialogInputType inputType) {
-        this.inputType = inputType;
-        return this;
-    }
-
-    @Contract(pure = true)
-    @Nullable
     public String getLabel() {
         return label;
     }

@@ -6,14 +6,14 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
-import fr.maxlego08.menu.api.enums.DialogInputType;
-import fr.maxlego08.menu.api.enums.DialogType;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessor;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorFactory;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorRegistry;
 import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.AbstractDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventoryDeveloper;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ConfigManager extends AbstractDialogManager implements ConfigManagerInt {
+public class ConfigManager extends DialogBuilderManager implements ConfigManagerInt {
     private final MenuPlugin menuPlugin;
     private final Map<String, ZDialogInventoryDeveloper> zDialogInventoryDev = new HashMap<>();
     private final ComponentMeta paperComponent;

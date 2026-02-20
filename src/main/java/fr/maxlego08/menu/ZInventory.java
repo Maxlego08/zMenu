@@ -375,7 +375,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public String getTargetPlayerNamePlaceholder() {
-        return targetPlayerNamePlaceholder;
+        return this.targetPlayerNamePlaceholder;
     }
 
     @Override

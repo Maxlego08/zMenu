@@ -1,0 +1,25 @@
+# Enhanced Bedrock Configuration Example
+
+type: modal # Available: modal, simple, custom
+name: "Modal Form"
+content: "Welcome to content"
+
+buttons:
+  button1:
+    type: "bedrock_modal_button"
+    text: "Button 1"
+    click-requirement:
+      1:
+        success:
+          - type: message
+            messages:
+              - "Thank you for your feedback! text : %content%"
+  button2:
+    type: "bedrock_modal_button"
+    text: "Button 2"
+    click-requirement:
+      1:
+        success:
+          - type: message
+            messages:
+              - "We're sorry to hear that! Please let us know how we can improve. %content%"

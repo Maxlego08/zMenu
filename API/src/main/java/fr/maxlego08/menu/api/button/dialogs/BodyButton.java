@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BodyButton extends Button {
-    private DialogBodyType bodyType;
+public abstract class BodyButton extends Button {
+    private final DialogBodyType bodyType;
 
     // Item-specific properties
     private int width = 256; // Default width
@@ -22,15 +22,13 @@ public class BodyButton extends Button {
 
     private int messageWidth = 300;
 
+    public BodyButton(DialogBodyType bodyType) {
+        this.bodyType = bodyType;
+    }
+
     @Contract(pure = true)
     public DialogBodyType getBodyType() {
         return this.bodyType;
-    }
-
-    @Contract("_ -> this")
-    public BodyButton setBodyType(DialogBodyType bodyType) {
-        this.bodyType = bodyType;
-        return this;
     }
 
     @Contract(pure = true)

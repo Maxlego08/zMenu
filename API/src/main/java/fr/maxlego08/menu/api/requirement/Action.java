@@ -49,7 +49,6 @@ public abstract class Action {
             }
             return;
         }
-        ;
         if (delay == 0) execute(player, button, inventoryEngine, placeholders);
         else {
             inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> execute(player, button, inventoryEngine, placeholders), this.delay);
@@ -77,7 +76,6 @@ public abstract class Action {
             }
             chance = 100;
         }
-        ;
         this.chance = chance;
     }
 
