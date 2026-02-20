@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;

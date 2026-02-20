@@ -140,9 +140,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             return this.cacheItemStack;
         }
 
-        ItemStack itemStack = defaultItemStack;
-        Material material = (itemStack != null) ? itemStack.getType() : null;
-
         // If the material is null, then by default it will be stone, stone is a
         // material present in all versions, so no conflict problem.
         if (this.material == null) {
@@ -152,7 +149,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         OfflinePlayer offlinePlayer = resolveOfflinePlayer(player, placeholders);
         int amount = this.parseAmount(offlinePlayer == null ? player : offlinePlayer, placeholders);
 
-        ItemStack itemStack = createItemStack(player, placeholders, offlinePlayer, amount);
+        ItemStack itemStack = context.getItemStack() != null ? context.getItemStack() : createItemStack(player, placeholders, offlinePlayer, amount);
 
         applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
         applyAttributes(itemStack);
@@ -203,15 +200,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             itemStack = createDefaultItemStack(player, material, amount);
         }
 
-        itemStack = applySpecialItemStack(player, amount, itemStack);
-        if (itemStack == null) {
-            itemStack = new ItemStack(Material.STONE);
-        }
-
-        itemStack.setAmount(Math.max(1, amount));
-        if (this.durability != 0) {
-            itemStack.setDurability((short) this.durability);
-        }
+        itemStack = applySpecialItemStack(player, offlinePlayer, placeholders, amount, itemStack);
 
         return itemStack;
     }
@@ -260,7 +249,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
     }
 
-    private ItemStack applySpecialItemStack(Player player, int amount, ItemStack itemStack) {
+    private ItemStack applySpecialItemStack(Player player, OfflinePlayer offlinePlayer, Placeholders placeholders, int amount, ItemStack itemStack) {
         if (this.url != null && !url.equalsIgnoreCase("null")) {
             String urlResult = this.papi(this.url, player, false);
             if (urlResult != null) {
@@ -283,15 +272,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.leatherArmor != null) {
             itemStack = leatherArmor.toItemStack(amount);
         }
-        return itemStack;
-    }
-
-        itemStack.setAmount(amount <= 0 ? 1 : amount);
+        itemStack.setAmount(Math.max(1 , amount));
 
         if (this.durability != null) {
             int dura = this.parseDura(offlinePlayer == null ? player : offlinePlayer, placeholders);
             itemStack.setDurability((short) dura);
         }
+
+        return itemStack;
     }
 
     private void applyItemMeta(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, boolean useCache, ItemStack itemStack) {

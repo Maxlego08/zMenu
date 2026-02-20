@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,6 +25,6 @@ public class ItemEditAction extends ActionHelper {
         if (item == null) return;
 
         //This edit the item directly
-        this.menuItemStack.build(player, false, new Placeholders(), item);
+        this.menuItemStack.build(new ZBuildContext.Builder().player(player).useCache(false).baseItemStack(item).build());
     }
 }

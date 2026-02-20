@@ -2,11 +2,13 @@ package fr.maxlego08.menu.hooks.bedrock;
 
 import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
@@ -149,6 +151,31 @@ public class ZBedrockInventory implements BedrockInventory {
     public String getTargetPlayerNamePlaceholder() {
         return this.targetPlayerNamePlaceholder;
     }
+
+    @Override
+    public void setTitleAnimation(TitleAnimation load) {
+        // Not supported
+    }
+
+    /**
+     * Get the title animation
+     * @return null (not supported)
+     */
+    @Override
+    public TitleAnimation getTitleAnimation() {
+        return null;
+    }
+
+    @Override
+    public List<Action> getOpenActions() {
+        return List.of();
+    }
+
+    @Override
+    public List<Action> getCloseActions() {
+        return List.of();
+    }
+
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
         this.targetPlayerNamePlaceholder = targetPlaceholder;
     }

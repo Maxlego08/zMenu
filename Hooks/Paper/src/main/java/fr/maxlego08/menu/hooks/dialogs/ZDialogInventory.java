@@ -2,11 +2,13 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
+import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -216,6 +218,30 @@ public class ZDialogInventory implements DialogInventory {
     public String getTargetPlayerNamePlaceholder() {
         return this.targetPlayerNamePlaceholder;
     }
+
+    @Override
+    public void setTitleAnimation(TitleAnimation load) {
+        // NotSupported
+    }
+
+    //Not supported by dialogs
+    @Override
+    public TitleAnimation getTitleAnimation() {
+        return null;
+    }
+
+    //TODO
+    @Override
+    public List<Action> getOpenActions() {
+        return List.of();
+    }
+
+    //TODO
+    @Override
+    public List<Action> getCloseActions() {
+        return List.of();
+    }
+
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
         this.targetPlayerNamePlaceholder = targetPlaceholder;
     }

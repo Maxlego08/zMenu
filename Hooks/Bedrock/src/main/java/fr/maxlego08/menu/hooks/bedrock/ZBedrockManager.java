@@ -3,7 +3,7 @@ package fr.maxlego08.menu.hooks.bedrock;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.configuration.Config;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
@@ -175,7 +175,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         List<BedrockInventory> dialogsList = this.bedrockInventory.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
-        if (Config.enableInformationMessage) {
+        if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
         }
 
@@ -209,7 +209,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         }
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, bedrockInventory, 1, oldInventories);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
         if (playerOpenInventoryEvent.isCancelled()) return;
@@ -230,9 +230,9 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
 
             activeBedrockInventory.put(player.getUniqueId(), bedrockInventory);
         } catch (Exception e) {
-            if (Config.enableInformationMessage){
+            if (Configuration.enableInformationMessage){
                 Logger.info("Failed to open bedrock inventory for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
-                if (Config.enableDebug){
+                if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
                 }
             }

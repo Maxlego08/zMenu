@@ -3,11 +3,13 @@ package fr.maxlego08.menu.placeholder;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.*;
 
 public class ItemPlaceholders extends ZUtils {

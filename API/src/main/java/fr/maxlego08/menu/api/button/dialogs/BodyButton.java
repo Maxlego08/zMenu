@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
+import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

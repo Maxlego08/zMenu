@@ -3,8 +3,6 @@ package fr.maxlego08.menu.inventory;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.configuration.Config;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
@@ -15,13 +13,14 @@ import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
-import fr.maxlego08.menu.zcore.enums.EnumInventory;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
@@ -136,12 +135,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
             event.setCancelled(inventory.isDisableClick());
 
             if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
-//TODO: check ici
- //                event.setCancelled(inventory.isDisablePlayerInventoryClick());
-                if (!inventory.isDisablePlayerInventoryClick()) {
-                    event.setCancelled(event.getClick() == ClickType.SHIFT_LEFT
-                            || event.getClick() == ClickType.SHIFT_RIGHT);
-                }
+
+                event.setCancelled(inventory.isDisablePlayerInventoryClick());
 
                 inventory.onInventoryClick(event, this.plugin, player);
                 handleClick(true, player, inventory, event);

@@ -4,8 +4,6 @@ import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.enums.DialogBodyType;
-import fr.maxlego08.menu.api.enums.DialogType;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
@@ -212,13 +210,13 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
      */
     @Override
     public void openDialog(@NotNull Player player,@NotNull DialogInventory zDialog) {
-        this.openDialog(player, dialogBuilders, new ArrayList<>());
+        this.openDialog(player, zDialog, new ArrayList<>());
     }
 
     @Override
     public void openDialog(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, dialogInventory, 1, oldInventories);
-        if (Config.enableFastEvent) {
+        if (Configuration.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
         if (playerOpenInventoryEvent.isCancelled()) return;

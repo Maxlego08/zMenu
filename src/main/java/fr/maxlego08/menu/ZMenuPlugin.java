@@ -614,7 +614,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     private void loadMeta() {
-        if (!Config.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
+        if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
             getLogger().info("Use ClassicMeta");
         } else {
