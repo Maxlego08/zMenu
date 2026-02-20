@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 
 public class ZBedrockManager extends BedrockBuilderManager implements BedrockManager {
     private final MenuPlugin menuPlugin;
-    private static InventoryManager inventoryManager;
+    private final InventoryManager inventoryManager;
     private final Map<String, List<BedrockInventory>> bedrockInventory = new HashMap<>();
     private final Map<UUID, BedrockInventory> activeBedrockInventory = new HashMap<>();
     private final BedrockBuilderClass dialogBuilders;
@@ -49,7 +49,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.dialogBuilders = new BedrockBuilderClass(this.menuPlugin);
-        inventoryManager = menuPlugin.getInventoryManager();
+        this.inventoryManager = menuPlugin.getInventoryManager();
     }
 
     @Override
@@ -227,6 +227,9 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
             Form form = createBedrockByType(bedrockInventory, targetPlayer);
             FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
 
+            InventoryEngine fakeInventory = this.inventoryManager.getFakeInventory();
+            bedrockInventory.getOpenActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
+
             activeBedrockInventory.put(player.getUniqueId(), bedrockInventory);
         } catch (Exception e) {
             if (Configuration.enableInformationMessage){
@@ -318,9 +321,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     protected  <B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> Form withDefaultResultHandler(B builder, Player player, BedrockInventory inventory) {
-        /*builder.closedOrInvalidResultHandler((form, responseData) -> {
-            player.sendMessage("Formulaire fermé ou invalide !");
-        });*/
+        builder.closedResultHandler((form) -> {
+            this.activeBedrockInventory.remove(player.getUniqueId());
+
+            InventoryEngine fakeInventory = this.inventoryManager.getFakeInventory();
+            inventory.getCloseActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
+        });
         return builder.build();
     }
 
@@ -369,8 +375,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     @Override
-    public boolean isBedrockPlayer(String value) {
-        Player player = this.menuPlugin.getServer().getPlayerExact(value);
+    public boolean isBedrockPlayer(String playerName) {
+        Player player = this.menuPlugin.getServer().getPlayerExact(playerName);
         return player != null && isBedrockPlayer(player);
     }
 }
