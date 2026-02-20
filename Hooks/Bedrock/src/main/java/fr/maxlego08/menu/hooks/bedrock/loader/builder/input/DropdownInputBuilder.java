@@ -31,11 +31,13 @@ public class DropdownInputBuilder implements BedrockBuilderInput {
 
         List<String> options = new ArrayList<>();
         int defaultOption = 0;
-        for (int i = 0; i < optionList.size(); i++) {
-            SingleOption option = optionList.get(i);
-            options.add(option.display());
-            if (option.initialValue()) {
-                defaultOption = i;
+        if (optionList != null) {
+            for (int i = 0; i < optionList.size(); i++) {
+                SingleOption option = optionList.get(i);
+                options.add(option.display());
+                if (option.initialValue()) {
+                    defaultOption = i;
+                }
             }
         }
 

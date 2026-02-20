@@ -2,12 +2,11 @@ package fr.maxlego08.menu.hooks.bedrock.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.bedrock.button.buttons.ZBedrockSliderInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
 
 public class BedrockSliderInputLoader extends ButtonLoader {
 
@@ -16,7 +15,7 @@ public class BedrockSliderInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
         float start = (float) configuration.getDouble(path + ".start", 0);
         float end = (float) configuration.getDouble(path + ".end", 100);

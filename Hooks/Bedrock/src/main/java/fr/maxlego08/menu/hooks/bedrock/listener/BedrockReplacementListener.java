@@ -7,11 +7,11 @@ import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class bedrockReplacementListener implements Listener {
+public class BedrockReplacementListener implements Listener {
 
     private final BedrockManager bedrockManager;
 
-    public bedrockReplacementListener(BedrockManager bedrockManager) {
+    public BedrockReplacementListener(BedrockManager bedrockManager) {
         this.bedrockManager = bedrockManager;
     }
 

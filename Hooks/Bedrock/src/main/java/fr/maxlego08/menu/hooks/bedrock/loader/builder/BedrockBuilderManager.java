@@ -20,7 +20,6 @@ public abstract class BedrockBuilderManager {
 
     protected List<Component> getInputComponents(Player player, List<InputButton> inputButtons) {
         return buildComponents(
-                player,
                 inputButtons,
                 InputButton::getInputType,
                 BedrockBuilderClass::getDialogInputBuilder,
@@ -29,7 +28,6 @@ public abstract class BedrockBuilderManager {
     }
 
     protected <B, T, TYPE, BUILDER> List<T> buildComponents(
-            Player player,
             List<B> buttons,
             Function<B, TYPE> typeExtractor,
             Function<TYPE, Optional<BUILDER>> builderResolver,
