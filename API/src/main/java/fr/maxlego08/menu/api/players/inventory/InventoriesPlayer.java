@@ -61,4 +61,6 @@ public interface InventoriesPlayer extends Listener {
 
     void loadInventories();
 
+    void restoreAllInventories();
+
 }

@@ -63,8 +63,11 @@ public class ZInventoryPlayer implements InventoryPlayer {
         for (int slot = 0; slot <= MAX_INVENTORY_SIZE; slot++) {
             if (items.containsKey(slot)) {
                 playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(items.get(slot)));
-            } else if (this.plugin.getDupeManager().isDupeItem(playerInventory.getItem(slot))) {
-                playerInventory.setItem(slot, null);
+            } else {
+                ItemStack itemStack = playerInventory.getItem(slot);
+                if (itemStack != null && this.plugin.getDupeManager().isDupeItem(itemStack)) {
+                    playerInventory.setItem(slot, null);
+                }
             }
         }
     }

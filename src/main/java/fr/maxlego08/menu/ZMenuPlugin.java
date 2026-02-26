@@ -402,9 +402,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onDisable() {
 
+        if (this.packetUtils != null)
+            this.packetUtils.onDisable();
+
         this.preDisable();
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
+        this.inventoriesPlayer.restoreAllInventories();
 
        Configuration.getInstance().save(getConfig(), this.configFile);
 
@@ -415,9 +419,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         this.itemManager.unloadListeners();
-
-        if (this.packetUtils != null)
-            this.packetUtils.onDisable();
 
         getServer().getServicesManager().unregisterAll(this);
 

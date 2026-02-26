@@ -64,6 +64,7 @@ public class Placeholders {
      */
     @NotNull
     public String parse(@NotNull String string) {
+        if (!string.contains("%")) return string;
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
             string = parse(string, entry.getKey(), entry.getValue());
         }
@@ -88,6 +89,7 @@ public class Placeholders {
     @NotNull
     public String parse(@NotNull String string,@NotNull String key,@NotNull String value) {
         try {
+            if (!string.contains("%")) return string;
 
             if (string.contains("%" + key + "%")) {
                 string = string.replace("%" + key + "%", value);

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.engine;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface InventoryEngine extends BaseInventory {
+
+    default @NotNull PerformanceDebug getPerformanceDebug() {
+        return PerformanceDebug.disabled();
+    }
 
     @Contract(pure = true)
     @NotNull
