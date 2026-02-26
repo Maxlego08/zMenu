@@ -57,12 +57,22 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         File file = (File) objects[0];
 
         ZMenuItemStack menuItemStack = new ZMenuItemStack(this.manager, file.getPath(), path);
-        menuItemStack.setMaterial(configuration.getString(path + "material", null));
+
+        var material = configuration.getString(path + "material", null);
+
+        if (material != null && material.startsWith("basehead-")) {
+            menuItemStack.setUrl(material.replace("basehead-", ""));
+        } else {
+            menuItemStack.setMaterial(material);
+        }
+
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getString(path + "durability", null));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
-        menuItemStack.setUrl(configuration.getString(path + "url", null));
+
+        var url = configuration.getString(path + "url", null);
+        if (url != null) menuItemStack.setUrl(url);
 
         this.loadLeather(menuItemStack, configuration, path);
         this.loadPotions(menuItemStack, configuration, path);
