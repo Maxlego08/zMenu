@@ -14,6 +14,7 @@ public class PlayerArgumentValidator implements CommandArgumentValidator {
 
     @Override
     public boolean isValid(String value) {
+        if (value.equalsIgnoreCase("%player%")) return true;
         return this.plugin.getServer().getOfflinePlayer(value).hasPlayedBefore();
     }
 
