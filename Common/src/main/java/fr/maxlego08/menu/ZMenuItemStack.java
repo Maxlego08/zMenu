@@ -124,8 +124,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player) {
-        return build(new ZBuildContext.Builder().player(player).build());
-
+        return build(player, true);
     }
 
     @Override
@@ -198,7 +197,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player, boolean useCache) {
-        return build(player);
+        return build(new ZBuildContext.Builder().player(player).useCache(useCache).build());
     }
 
     @Override
@@ -405,7 +404,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.displayName != null) {
             try {
                 String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
+                if (displayName != null)
+                    itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
