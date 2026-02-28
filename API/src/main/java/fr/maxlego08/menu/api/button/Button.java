@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -78,14 +79,9 @@ public abstract class Button extends PlaceholderButton {
     }
 
     @Contract(pure = true)
-    @Nullable
+    @NotNull
     public ItemStack getCustomItemStack(@NotNull Player player, boolean useCache, @NotNull Placeholders placeholders) {
-        if (this.itemStack == null) return null;
-        ItemStack itemStack = this.itemStack.build(player, useCache, placeholders);
-        if (this.playerHead != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            return this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, this, player, placeholders);
-        }
-        return itemStack;
+        return itemStack == null ? new ItemStack(Material.STONE) : this.itemStack.build(player, useCache, placeholders);
     }
 
     public int getSlot() {

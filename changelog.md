@@ -42,6 +42,10 @@
 
 # Unreleased
 
+## Performance
+
+- Performance improvement for items that will use a player’s nickname to be displayed
+
 # 1.1.1.0
 
 ## New Features
