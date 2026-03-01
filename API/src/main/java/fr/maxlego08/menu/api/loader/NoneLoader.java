@@ -21,13 +21,15 @@ public class NoneLoader extends ButtonLoader {
     @Nullable
     public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         try {
-            return this.clazz.getConstructor(Plugin.class).newInstance(this.plugin);
-        } catch (Exception exception) {
-            try {
-                return this.clazz.getDeclaredConstructor().newInstance();
-            } catch (Exception exception2) {
-                exception.printStackTrace();
+            for (var constructor : this.clazz.getConstructors()) {
+                var params = constructor.getParameterTypes();
+                if (params.length == 1 && params[0].isInstance(this.plugin)) {
+                    return (Button) constructor.newInstance(this.plugin);
+                }
             }
+            return this.clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
         return null;
     }
