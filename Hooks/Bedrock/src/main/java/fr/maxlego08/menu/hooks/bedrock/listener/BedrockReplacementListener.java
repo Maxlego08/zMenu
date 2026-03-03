@@ -2,10 +2,14 @@ package fr.maxlego08.menu.hooks.bedrock.listener;
 
 import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.BedrockManager;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import java.util.Optional;
 
 public class BedrockReplacementListener implements Listener {
 
@@ -17,19 +21,23 @@ public class BedrockReplacementListener implements Listener {
 
     @EventHandler
     public void onPlayerOpenInventory(PlayerOpenInventoryEvent event) {
-        if (event.getInventory() instanceof BedrockInventory) {
+        Inventory inventory = event.getInventory();
+        if (inventory instanceof BedrockInventory) {
             return;
         }
-
-        for (BedrockInventory inventory : this.bedrockManager.getBedrockInventory()) {
-            InventoryReplacement replacement = inventory.getInventoryReplacement();
-            if (replacement == null) {
-                continue;
-            }
-            if (replacement.shouldTrigger(event)) {
-                event.setCancelled(true);
-                this.bedrockManager.openBedrockInventory(event.getPlayer(), inventory);
-                return;
+        if (this.bedrockManager.isBedrockPlayer(event.getPlayer())) {
+            InventoryReplacement inventoryReplacement = inventory.getInventoryReplacement();
+            if (inventoryReplacement != null) {
+                Optional<BedrockInventory> optionalBedrockInventory = this.bedrockManager.getBedrockInventory(inventoryReplacement.getPlugin(), inventoryReplacement.getInventoryName());
+                if (optionalBedrockInventory.isEmpty()) {
+                    Logger.info("Bedrock inventory not found for replacement: " + inventoryReplacement.getInventoryName() + " (plugin: " + inventoryReplacement.getPlugin() + ")");
+                    return;
+                }
+                BedrockInventory bedrockInventory = optionalBedrockInventory.get();
+                if (inventoryReplacement.shouldTrigger(bedrockInventory, event.getPage())) {
+                    event.setCancelled(true);
+                    this.bedrockManager.openBedrockInventory(event.getPlayer(), bedrockInventory);
+                }
             }
         }
     }

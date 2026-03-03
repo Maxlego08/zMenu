@@ -1,14 +1,10 @@
 package fr.maxlego08.menu.api.utils;
 
-import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.Inventory;
 
 import java.util.List;
 import java.util.Objects;
 
-
-/**
- * <p>Represents the item that can be interacted with to open a menu.</p>
- */
 public class InventoryReplacement {
     private final String inventoryName;
     private final String plugin;
@@ -16,7 +12,7 @@ public class InventoryReplacement {
 
     public InventoryReplacement(String inventoryName, String plugin, List<Integer> pages) {
         this.inventoryName = inventoryName;
-        this.plugin = plugin;
+        this.plugin = plugin == null || plugin.equalsIgnoreCase("") ? "zMenu" : plugin;
         this.pages = pages;
     }
 
@@ -25,25 +21,25 @@ public class InventoryReplacement {
     }
 
     public String getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     public List<Integer> getPages() {
         return pages;
     }
 
-    public boolean shouldTrigger(PlayerOpenInventoryEvent event) {
+    public boolean shouldTrigger(Inventory inventory, int page) {
 
         // Inventory Name
-        if (!Objects.equals(this.inventoryName, event.getInventory().getFileName())) {
+        if (!Objects.equals(this.inventoryName, inventory.getFileName())) {
             return false;
         }
         // Plugin Name
-        if (!Objects.equals(this.plugin, "") && !Objects.equals(this.plugin, event.getInventory().getPlugin().getName())) {
+        if (!Objects.equals(this.plugin, inventory.getPlugin().getName())) {
             return false;
         }
 
         // Page
-        return this.pages.isEmpty() || this.pages.contains(event.getPage());
+        return this.pages.isEmpty() || this.pages.contains(page);
     }
 }

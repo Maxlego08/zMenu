@@ -19,6 +19,7 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
+import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.common.utils.ZUtils;
@@ -142,6 +143,13 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
         inventory.setClickLimiterEnabled(configuration.getBoolean(path + "click-limiter-enabled", true));
         inventory.setFile(file);
+        if (configuration.isConfigurationSection("inventory-replacement")){
+            String replacementName = configuration.getString("inventory-replacement.name", "");
+            String replacementPlugin = configuration.getString("inventory-replacement.plugin", "zMenu");
+            List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
+            InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
+            inventory.setInventoryReplacement(inventoryReplacement);
+        }
 
         this.loadFillItem(configuration, inventory, menuItemStackLoader, file);
         this.loadPatterns(configuration, inventory);

@@ -373,7 +373,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/server_link-dialog.yml");
         }
 
-        if (this.isActive(Plugins.GEYSER)){
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
             files.add("bedrock/custom-form.yml");
             files.add("bedrock/modal-form.yml");
             files.add("bedrock/simple-form.yml");

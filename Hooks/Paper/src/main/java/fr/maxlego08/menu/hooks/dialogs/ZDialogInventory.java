@@ -12,11 +12,13 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
+import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class ZDialogInventory implements DialogInventory {
     private final MenuPlugin menuPlugin;
     private final String fileName;
     private File file;
+    private InventoryReplacement inventoryReplacement;
 
     private final String name;
     private final String externalTitle;
@@ -251,6 +254,16 @@ public class ZDialogInventory implements DialogInventory {
     @Override
     public boolean isClickLimiterEnabled() {
         return false;
+    }
+
+    @Override
+    public @Nullable InventoryReplacement getInventoryReplacement() {
+        return this.inventoryReplacement;
+    }
+
+    @Override
+    public void setInventoryReplacement(InventoryReplacement inventoryReplacement) {
+        this.inventoryReplacement = inventoryReplacement;
     }
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {

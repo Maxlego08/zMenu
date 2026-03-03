@@ -12,16 +12,14 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.ClearInvType;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -34,6 +32,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final int size;
     private final List<Button> buttons;
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
+    private InventoryReplacement inventoryReplacement;
     private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
@@ -418,6 +417,16 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public boolean isClickLimiterEnabled() {
         return this.isClickLimiterEnabled;
+    }
+
+    @Override
+    public @Nullable InventoryReplacement getInventoryReplacement() {
+        return this.inventoryReplacement;
+    }
+
+    @Override
+    public void setInventoryReplacement(InventoryReplacement inventoryReplacement) {
+        this.inventoryReplacement = inventoryReplacement;
     }
 
     public void setClickLimiterEnabled(boolean enabled) {

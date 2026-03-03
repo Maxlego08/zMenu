@@ -9,11 +9,13 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
+import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -231,4 +233,9 @@ public interface Inventory {
     ClearInvType getClearInvType();
 
     boolean isClickLimiterEnabled();
+
+    @Nullable
+    InventoryReplacement getInventoryReplacement();
+
+    void setInventoryReplacement(InventoryReplacement inventoryReplacement);
 }

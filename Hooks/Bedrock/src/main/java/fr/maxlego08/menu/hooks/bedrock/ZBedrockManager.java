@@ -153,19 +153,16 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     @Override
-    public BedrockInventory loadInventory(Plugin plugin, String fileName, Class<? extends BedrockInventory> dialogClass)
-            throws DialogException, InventoryException {
+    public BedrockInventory loadInventory(Plugin plugin, String fileName, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException {
         File file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
-            throw new DialogFileNotFound("Dialog file not found: " + fileName + " in " +
-                    plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
+            throw new DialogFileNotFound("Dialog file not found: " + fileName + " in " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
         }
         return this.loadInventory(plugin, file, dialogClass);
     }
 
     @Override
-    public BedrockInventory loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory> dialogClass)
-            throws DialogException, InventoryException {
+    public BedrockInventory loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
         Loader<BedrockInventory> loader = new BedrockLoader(this.menuPlugin, this);

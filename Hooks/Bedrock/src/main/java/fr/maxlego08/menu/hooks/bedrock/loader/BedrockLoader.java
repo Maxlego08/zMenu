@@ -10,7 +10,6 @@ import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockInventory;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
@@ -61,14 +60,6 @@ public class BedrockLoader implements Loader<BedrockInventory> {
             } catch (InventoryException e) {
                 Logger.info("Failed to load open requirement: " + e.getMessage(), Logger.LogType.WARNING);
             }
-        }
-
-        if (configuration.isConfigurationSection("inventory-replacement")){
-            String replacementName = configuration.getString("inventory-replacement.name", "");
-            String replacementPlugin = configuration.getString("inventory-replacement.plugin", "");
-            List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
-            InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
-            bedrockInventory.setInventoryReplacement(inventoryReplacement);
         }
 
         bedrockInventory.setOpenActions(this.menuPlugin.getButtonManager().loadActions(configuration, "open-actions", file));
