@@ -1200,4 +1200,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public void addItemComponent(@NotNull ItemComponent itemMetadata) {
         this.itemComponents.add(itemMetadata);
     }
+
+    public boolean isDynamicMaterial() {
+        if (this.material == null) return false;
+        if (this.material.contains("%")) return true;
+        if (this.material.contains(":")) {
+            String[] values = this.material.split(":", 2);
+            if (values.length == 2) {
+                return this.inventoryManager.getMaterialLoader(values[0]).isPresent();
+            }
+        }
+        return false;
+    }
 }
