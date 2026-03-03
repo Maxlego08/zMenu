@@ -197,7 +197,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player, boolean useCache) {
-        return build(new ZBuildContext.Builder().player(player).useCache(useCache).build());
+        return build(player, useCache, new Placeholders());
     }
 
     @Override
