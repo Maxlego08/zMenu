@@ -38,6 +38,7 @@ import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
+import fr.maxlego08.menu.hooks.mmoitems.MMOItemsLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
@@ -360,6 +361,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
             this.getLogger().info("Registered BreweryX material loader");
+        }
+        if (this.isActive(Plugins.MMOITEMS)) {
+            this.inventoryManager.registerMaterialLoader(new MMOItemsLoader());
+            this.getLogger().info("Registered MMOItems material loader");
         }
         if (this.isActive(Plugins.PACKETEVENTS)){
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
