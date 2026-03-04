@@ -28,8 +28,8 @@ public enum Plugins {
     MYTHICMOBS("MythicMobs"),
 	ZMENUPLUS("zMenuPlus"),
     BREWERYX("BreweryX"),
-    PACKETEVENTS("packetevents")
-    ;
+    PACKETEVENTS("packetevents"),
+    MMOITEMS("MMOItems");
 	private final String name;
 
 	Plugins(String name) {
