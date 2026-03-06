@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.utils;
 
-import fr.maxlego08.menu.placeholder.Placeholder;
+import fr.maxlego08.menu.api.placeholder.Placeholder;
 import org.bukkit.entity.Player;
 
 import java.util.List;

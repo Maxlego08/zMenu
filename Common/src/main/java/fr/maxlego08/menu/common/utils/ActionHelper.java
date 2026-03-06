@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.common.utils;
 
+import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.placeholder.Placeholder;
 import org.bukkit.entity.Player;
 
 import java.util.List;
