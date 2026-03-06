@@ -17,7 +17,7 @@ import java.time.ZoneId;
 public class MenuPlaceholders extends ZUtils {
 
     public void register(MenuPlugin plugin) {
-        LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+        fr.maxlego08.menu.api.placeholder.LocalPlaceholder placeholder = fr.maxlego08.menu.api.placeholder.LocalPlaceholder.getInstance();
 
         var inventoryManager = plugin.getInventoryManager();
         placeholder.register("test", (a, b) -> "&ctest");

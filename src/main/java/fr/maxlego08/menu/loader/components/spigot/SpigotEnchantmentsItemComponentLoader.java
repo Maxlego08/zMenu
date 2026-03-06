@@ -25,7 +25,7 @@ public class SpigotEnchantmentsItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        Map<String, Object> values = configuration.getValues(false);
+        Map<String, Object> values = componentSection.getValues(false);
         Map<Enchantment,Integer> enchantments = new HashMap<>();
         for (var entry : values.entrySet()) {
             String enchantmentName = entry.getKey();

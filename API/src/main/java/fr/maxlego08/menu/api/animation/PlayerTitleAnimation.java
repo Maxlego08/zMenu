@@ -60,7 +60,7 @@ public abstract class PlayerTitleAnimation {
                 }
             }
             String title = this.settings.titles().get(this.currentIndex++);
-            this.sendTitle(player, title);
+            this.sendTitle(player, this.plugin.parse(player, title));
             if (!this.settings.showItemsAfterAnimation()) {
                 if (this.settings.itemUpdateInterval() > 0 && this.currentIndex % this.settings.itemUpdateInterval() == 0) {
                     this.sendInventoryContent(player, inventoryContents);

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
@@ -34,8 +35,8 @@ public class WritableBookContentComponent extends ItemComponent {
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, BookMeta.class, bookMeta -> {
-            bookMeta.setTitle(this.title);
-            bookMeta.setPages(this.pages);
+            bookMeta.setTitle(this.title != null ? Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.title)) : null);
+            bookMeta.setPages(Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.pages)));
         });
         if (!apply && Configuration.enableDebug)
             Logger.info("Could not apply WritableBookContentComponent to item: " + itemStack.getType().name());
