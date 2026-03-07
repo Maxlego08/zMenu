@@ -263,7 +263,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
             try {
 
-                String[] splitEnchant = enchantString.split(",");
+                String[] splitEnchant = enchantString.contains(":") ? enchantString.split(":") : enchantString.split(",");
 
                 if (splitEnchant.length == 1)
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
