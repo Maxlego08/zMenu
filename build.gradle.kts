@@ -33,15 +33,15 @@ allprojects {
         maven(url = "https://repo.codemc.io/repository/maven-snapshots/")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://hub.spigotmc.org/nexus/content/groups/public/")
+        maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        maven(url = "https://libraries.minecraft.net/")
+        maven(url = "https://repo.jsinco.dev/releases")
         maven {
             url = uri("https://jitpack.io")
             content {
                 excludeGroup("org.spigotmc")
             }
         }
-        maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        maven(url = "https://libraries.minecraft.net/")
-        maven(url = "https://repo.jsinco.dev/releases")
     }
 
     java {
