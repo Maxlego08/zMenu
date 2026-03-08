@@ -35,6 +35,7 @@ allprojects {
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven(url = "https://libraries.minecraft.net/")
+        maven(url = "https://hub.spigotmc.org/nexus/content/groups/public/")
     }
 
     java {
@@ -83,7 +84,7 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
-    if (project.name == "API"){
+    if (project.name == "API") {
         tasks.javadoc {
             options.encoding = "UTF-8"
             if (JavaVersion.current().isJava9Compatible)
