@@ -24,6 +24,10 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
+        maven {
+            name = "groupezReleases"
+            url = uri("https://repo.groupez.dev/releases")
+        }
         maven(url = "https://repo.tcoded.com/releases")
         maven(url = "https://repo.codemc.io/repository/maven-releases/")
         maven(url = "https://repo.codemc.io/repository/maven-snapshots/")
