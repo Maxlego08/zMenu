@@ -99,11 +99,10 @@ allprojects {
         if (project.name != "Paper") {
             compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
         }
-        compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
 
-        implementation("fr.maxlego08.sarah:sarah:1.20")
-        implementation("fr.traqueur.currencies:currenciesapi:1.0.10")
+        implementation("fr.maxlego08.sarah:sarah:1.22")
+        implementation("fr.traqueur.currencies:currenciesapi:1.0.11")
         implementation("com.tcoded:FoliaLib:0.5.1")
 
         implementation("com.github.cryptomorin:XSeries:13.3.0")
