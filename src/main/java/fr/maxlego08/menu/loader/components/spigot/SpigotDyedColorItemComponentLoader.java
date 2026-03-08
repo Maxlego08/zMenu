@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-public class SpigotDyeColorItemComponentLoader extends AbstractColorItemComponentLoader {
+public class SpigotDyedColorItemComponentLoader extends AbstractColorItemComponentLoader {
 
-    public SpigotDyeColorItemComponentLoader(){
+    public SpigotDyedColorItemComponentLoader(){
         super("dyed-color");
     }
 

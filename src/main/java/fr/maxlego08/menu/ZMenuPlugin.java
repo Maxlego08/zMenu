@@ -13,6 +13,8 @@ import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.pattern.PatternManager;
+import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
+import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
@@ -38,6 +40,7 @@ import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
 import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
+import fr.maxlego08.menu.hooks.mmoitems.MMOItemsLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
@@ -51,9 +54,7 @@ import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
-import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
-import fr.maxlego08.menu.placeholder.Placeholder;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.save.MessageLoader;
@@ -360,6 +361,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
             this.getLogger().info("Registered BreweryX material loader");
+        }
+        if (this.isActive(Plugins.MMOITEMS)) {
+            this.inventoryManager.registerMaterialLoader(new MMOItemsLoader());
+            this.getLogger().info("Registered MMOItems material loader");
         }
         if (this.isActive(Plugins.PACKETEVENTS)){
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());

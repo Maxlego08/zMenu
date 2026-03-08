@@ -41,7 +41,7 @@ public abstract class Action {
      */
     protected abstract void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders);
 
-    public void preExecute(@NotNull Player player,@Nullable Button button,@NotNull InventoryEngine inventoryEngine,@NotNull Placeholders placeholders) {
+    public void preExecute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         placeholders.register("player", player.getName());
         if (chance < 100 && Math.random() > (chance / 100.0f)) {
             for (Action denyChanceAction : denyChanceActions) {

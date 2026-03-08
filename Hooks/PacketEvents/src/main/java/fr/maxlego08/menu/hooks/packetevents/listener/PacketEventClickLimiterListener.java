@@ -23,6 +23,7 @@ public class PacketEventClickLimiterListener implements PacketListener {
         PacketTypeCommon packetType = event.getPacketType();
         if (packetType == PacketType.Play.Client.CLICK_WINDOW) {
             Player player = event.getPlayer();
+            if (player == null) return;
             Inventory topInventory = CompatibilityUtil.getTopInventory(player);
             try {
                 if (topInventory != null && topInventory.getHolder() instanceof BaseInventory baseInventory && baseInventory.isClickLimiterEnabled()) {

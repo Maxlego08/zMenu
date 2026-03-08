@@ -63,7 +63,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
-    private String itemModel;
+    private NamespacedKey itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -124,8 +124,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player) {
-        return build(new ZBuildContext.Builder().player(player).build());
-
+        return build(player, true);
     }
 
     @Override
@@ -198,7 +197,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player, boolean useCache) {
-        return build(player);
+        return build(player, useCache, new Placeholders());
     }
 
     @Override
@@ -405,7 +404,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.displayName != null) {
             try {
                 String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
+                if (displayName != null)
+                    itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -496,10 +496,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         if (this.itemModel != null) {
-            String[] itemModelSplit = this.itemModel.split(":", 2);
-            if (itemModelSplit.length == 2) {
-                itemMeta.setItemModel(new NamespacedKey(itemModelSplit[0], itemModelSplit[1]));
-            }
+            itemMeta.setItemModel(this.itemModel);
         }
 
         if (this.equippedModel != null) {
@@ -790,12 +787,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
-    public String getItemModel() {
+    public NamespacedKey getItemModel() {
         return itemModel;
     }
 
     @Override
-    public void setItemModel(String itemModel) {
+    public void setItemModel(NamespacedKey itemModel) {
         this.itemModel = itemModel;
     }
 
@@ -1202,5 +1199,17 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void addItemComponent(@NotNull ItemComponent itemMetadata) {
         this.itemComponents.add(itemMetadata);
+    }
+
+    public boolean isDynamicMaterial() {
+        if (this.material == null) return false;
+        if (this.material.contains("%")) return true;
+        if (this.material.contains(":")) {
+            String[] values = this.material.split(":", 2);
+            if (values.length == 2) {
+                return this.inventoryManager.getMaterialLoader(values[0]).isPresent();
+            }
+        }
+        return false;
     }
 }

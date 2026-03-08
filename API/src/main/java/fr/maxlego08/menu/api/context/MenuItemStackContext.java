@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -326,7 +327,7 @@ public interface MenuItemStackContext {
      *
      * @return the item model identifier.
      */
-    String getItemModel();
+    NamespacedKey getItemModel();
 
     /**
      * Retrieves the equipped model identifier used for wearable items.

@@ -57,12 +57,22 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         File file = (File) objects[0];
 
         ZMenuItemStack menuItemStack = new ZMenuItemStack(this.manager, file.getPath(), path);
-        menuItemStack.setMaterial(configuration.getString(path + "material", null));
+
+        var material = configuration.getString(path + "material", null);
+
+        if (material != null && material.startsWith("basehead-")) {
+            menuItemStack.setUrl(material.replace("basehead-", ""));
+        } else {
+            menuItemStack.setMaterial(material);
+        }
+
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getInt(path + "durability", 0));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
-        menuItemStack.setUrl(configuration.getString(path + "url", null));
+
+        var url = configuration.getString(path + "url", null);
+        if (url != null) menuItemStack.setUrl(url);
 
         this.loadLeather(menuItemStack, configuration, path);
         this.loadPotions(menuItemStack, configuration, path);
@@ -98,9 +108,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
             loadTrims(menuItemStack, configuration, path, file);
         }
-        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
-            menuItemStack.setItemModel(configuration.getString(path + "item-model"));
-        }
+        this.loadItemModel(configuration, menuItemStack, path, file);
 
         if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
@@ -128,8 +136,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack) {
-            menuItemStack.build(new ZBuildContext.Builder().build());
+        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial()) {
+            try {
+                menuItemStack.build(new ZBuildContext.Builder().build());
+            } catch (Exception ignored) { // Fail when a item requires a player to be built.
+            }
         }
 
         return menuItemStack;
@@ -154,6 +165,25 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
         menuItemStack.setLore(lore);
+    }
+
+    private void loadItemModel(@NonNull YamlConfiguration configuration, ZMenuItemStack menuItemStack, @NonNull String path, File file) {
+        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
+            String itemModel = configuration.getString(path + "item-model");
+            if (itemModel != null) {
+                try {
+                    NamespacedKey namespacedKey = NamespacedKey.fromString(itemModel.toLowerCase());
+                    if (namespacedKey != null) {
+                        menuItemStack.setItemModel(namespacedKey);
+                    }
+                } catch (Exception e) {
+                    if (Configuration.enableDebug) {
+                        Logger.info("An error occurred while loading the item model " + itemModel + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -223,14 +253,17 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      */
     private void loadEnchantements(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         Enchantments helperEnchantments = this.manager.getEnchantments();
+
         List<String> enchants = configuration.getStringList(path + "enchants");
+        if (enchants.isEmpty()) enchants = configuration.getStringList(path + "enchantments");
+
         Map<Enchantment, Integer> enchantments = new HashMap<>();
 
         for (String enchantString : enchants) {
 
             try {
 
-                String[] splitEnchant = enchantString.split(",");
+                String[] splitEnchant = enchantString.contains(":") ? enchantString.split(":") : enchantString.split(",");
 
                 if (splitEnchant.length == 1)
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
@@ -477,10 +510,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (tooltypestyleString != null) {
             menuItemStack.setToolTipStyle(tooltypestyleString);
         }
-        String itemModelString = configuration.getString(path + "item-model", null);
-        if (itemModelString != null) {
-            menuItemStack.setItemModel(itemModelString);
-        }
+        this.loadItemModel(configuration, menuItemStack, path, file);
         String equippedModel = configuration.getString(path + "equipped-model", null);
         if (equippedModel != null) {
             menuItemStack.setEquippedModel(equippedModel);

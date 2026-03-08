@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.placeholder;
+package fr.maxlego08.menu.api.placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;

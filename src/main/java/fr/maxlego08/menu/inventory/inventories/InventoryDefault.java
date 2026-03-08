@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -291,9 +292,19 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         ItemStack itemStack = button.getCustomItemStack(targetPlayer, button.isUseCache(), placeholders);
         perfDebug.end();
 
-        if (itemStack == null) {
-            return;
+        int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
+
+        if (button.getPlayerHead() != null && itemStack.getItemMeta() instanceof SkullMeta) {
+            this.plugin.getScheduler().runAsync(w -> {
+                var updatedItemStack = this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, button, player, placeholders);
+                for (int slot : slots) {
+                    if (slot < 0 || slot >= maxSlotSize) continue;
+
+                    this.getSpigotInventory().setItem(slot, updatedItemStack);
+                }
+            });
         }
+
         for (int slot : slots) {
 
             if (slot < 0) {
@@ -301,7 +312,6 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 continue;
             }
 
-            int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
             if (slot >= maxSlotSize) {
                 Logger.info("slot is out of range ! (" + slot + ") Button: " + button.getName() + " in inventory " + this.inventory.getFileName(), Logger.LogType.ERROR);
                 continue;

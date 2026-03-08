@@ -18,7 +18,6 @@ import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
@@ -257,7 +256,6 @@ public class ZInventory extends ZUtils implements Inventory {
             if (button.isPlayerInventory()) {
                 for (int slot : button.getSlots()) {
                     if (slot >= 0 && slot <= 36) {
-                        Logger.info("Clearing player inventory slot " + slot + " for player " + player.getName());
                         this.clearInvType.getOnButtonClear().accept(player, slot);
                     }
                 }

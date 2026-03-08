@@ -42,6 +42,43 @@
 
 # Unreleased
 
+# 1.1.1.1
+
+## New Features
+
+- **MMOItems Support**: Added material loader for MMOItems plugin integration.
+- **Enchantments Component**: Added enchantments component support for item configuration.
+
+## Performance
+
+- Performance improvement for items that will use a player's nickname to be displayed (player-head optimization).
+
+## Bug Fixes
+
+- Fixed enchant key parsing in configuration.
+- Fixed enchantments component initialization.
+- Fixed title parsing before sending to player in `PlayerTitleAnimation`.
+- Fixed dynamic material check in menu item stack caching logic.
+- Fixed `%player%` as a valid player argument in validators.
+- Fixed error handling and formatting in various loaders and actions.
+- Fixed basehead itemstack rendering.
+- Fixed French translations in message strings.
+- Fixed wrong format issues.
+- Fixed null checks for player in packet listeners.
+- Fixed `[]` display when placeholder returns an empty list.
+- Fixed null message handling in `getLegacyMessage` method.
+
+## Internal Changes
+
+- Refactored placeholder package structure and usage.
+- Renamed `SpigotDyeColorItemComponentLoader` to `SpigotDyedColorItemComponentLoader`.
+- Changed item model type from `String` to `NamespacedKey` in MenuItemStack classes.
+- Updated `@Contract` annotations in `BaseInventory.java` for clarity.
+- Removed unnecessary whitespace in `ComponentMeta.java`.
+- Removed debug messages.
+
+---
+
 # 1.1.1.0
 
 ## New Features

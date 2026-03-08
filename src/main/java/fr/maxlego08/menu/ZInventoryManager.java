@@ -47,6 +47,7 @@ import fr.maxlego08.menu.loader.permissible.*;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
+import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -978,16 +979,31 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders) {
+
+        PerformanceDebug performanceDebug = PerformanceDebug.create("Skull item stack processing");
+
+        performanceDebug.start("papi");
         String name = papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
+        performanceDebug.end();
+
         if (!PlayerUtil.isValidMinecraftUsername(name)) {
+            performanceDebug.printSummary();
             return itemStack;
         }
 
+        performanceDebug.start("findOfflinePlayer");
         OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
+        performanceDebug.end();
+
         if (itemStack.getItemMeta() instanceof SkullMeta skullMeta) {
+            performanceDebug.start("applyOwnerProfile");
             skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
             itemStack.setItemMeta(skullMeta);
+            performanceDebug.end();
         }
+
+        performanceDebug.printSummary();
+
         return itemStack;
     }
 

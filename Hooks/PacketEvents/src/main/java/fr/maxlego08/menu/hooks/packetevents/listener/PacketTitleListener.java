@@ -43,16 +43,19 @@ public class PacketTitleListener implements PacketListener {
         if (packetType == PacketType.Play.Server.OPEN_WINDOW){
             WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(event);
             Player player = event.getPlayer();
+            if (player == null) return;
             UUID playerUniqueId = player.getUniqueId();
             this.playerPacketInformation.computeIfAbsent(playerUniqueId, k -> new PlayerPacketInformation())
                     .setWrapperPlayServerOpenWindow(wrapper);
         } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
             Player player = event.getPlayer();
+            if (player == null) return;
             UUID playerUniqueId = player.getUniqueId();
             this.playerPacketInformation.remove(playerUniqueId);
         } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
             WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
             Player player = event.getPlayer();
+            if (player == null) return;
             UUID playerUniqueId = player.getUniqueId();
             this.playerPacketInformation.computeIfAbsent(playerUniqueId, k -> new PlayerPacketInformation())
                     .setWrapperPlayServerWindowItems(wrapper);

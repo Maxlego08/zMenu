@@ -27,19 +27,19 @@ public interface BaseInventory extends InventoryHolder {
     @Contract(pure = true)
     boolean isClose();
 
-    @Contract("_, null -> null")
+    @Contract("_, null -> null; _, !null -> !null")
     @Nullable
     ItemButton addItem(int slot, @Nullable ItemStack itemStack);
 
-    @Contract("_, null,_ -> null")
+    @Contract("_, null, _ -> null; _, !null, _ -> !null")
     @Nullable
     ItemButton addItem(int slot, @Nullable ItemStack itemStack, boolean enableAntiDupe);
 
-    @Contract("_, _, null -> null")
+    @Contract("_, _, null -> null; _, _, !null -> !null")
     @Nullable
     ItemButton addItem(boolean inPlayerInventory, int slot, @Nullable ItemStack itemStack);
 
-    @Contract("_, _, null, _ -> null")
+    @Contract("_, _, null, _ -> null; _, _, !null, _ -> !null")
     @Nullable
     ItemButton addItem(boolean inPlayerInventory, int slot, @Nullable ItemStack itemStack, boolean enableAntiDupe);
 

@@ -148,13 +148,18 @@ public class YamlParser {
     }
 
 
-    @NotNull
-    private static String parseStringValue(@NotNull String value, @NotNull Map<String, Object> placeholders) {
+    @Nullable
+    private static Object parseStringValue(@NotNull String value, @NotNull Map<String, Object> placeholders) {
         String result = value;
 
         for (Map.Entry<String, Object> entry : placeholders.entrySet()) {
             String key = entry.getKey();
             Object placeholderValue = entry.getValue();
+
+            if (placeholderValue instanceof List<?> list && list.isEmpty() && result.equalsIgnoreCase("%" + key + "%")) {
+                return null;
+            }
+
             String replacementValue = placeholderValue != null ? placeholderValue.toString() : "";
             
             result = PLACEHOLDER_PARSER.parse(result, key, replacementValue);
@@ -194,7 +199,10 @@ public class YamlParser {
         for (Object listElement : listValue) {
             Map<String, Object> tempPlaceholders = new HashMap<>(placeholders);
             tempPlaceholders.put(listPlaceholderKey, listElement);
-            expandedStrings.add(parseStringValue(string, tempPlaceholders));
+            Object parsedValue = parseStringValue(string, tempPlaceholders);
+            if (parsedValue instanceof String parsedString) {
+                expandedStrings.add(parsedString);
+            }
         }
         return expandedStrings;
     }
