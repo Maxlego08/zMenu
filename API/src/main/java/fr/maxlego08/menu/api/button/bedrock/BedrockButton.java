@@ -1,11 +1,7 @@
 package fr.maxlego08.menu.api.button.bedrock;
 
-import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
-import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 
@@ -30,8 +26,8 @@ public class BedrockButton extends Button {
         this.text = text;
     }
 
-    public String getText(Player player) {
-        return this.text;
+    public String getText(Placeholders placeholders) {
+        return placeholders.parse(this.text);
     }
 
     public void setImageType(BedrockImageType imageType) {
@@ -46,7 +42,7 @@ public class BedrockButton extends Button {
         this.imageData = imageData;
     }
 
-    public String getImageData(Player player) {
-        return this.imageData;
+    public String getImageData(Player player, Placeholders placeholders) {
+        return placeholders.parse(this.imageData);
     }
 }

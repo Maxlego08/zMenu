@@ -6,12 +6,12 @@ import fr.maxlego08.menu.hooks.bedrock.loader.builder.bedrock.ButtonBuilder;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.input.*;
 import fr.maxlego08.menu.zcore.logger.Logger;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class BedrockBuilderClass {
-    private static final Map<DialogInputType, BedrockBuilderInput> dialogInputBuilders = new HashMap<>();
+    private static final Map<DialogInputType, BedrockBuilderInput<?>> dialogInputBuilders = new EnumMap<>(DialogInputType.class);
     private final ButtonBuilder bedrockButtonBuilder;
     private final MenuPlugin menuPlugin;
 
@@ -29,7 +29,7 @@ public class BedrockBuilderClass {
         this.registerInputBuilder(new ToggleInputBuilder(this.menuPlugin));
     }
 
-    public void registerInputBuilder(BedrockBuilderInput builder) {
+    public void registerInputBuilder(BedrockBuilderInput<?> builder) {
         if (dialogInputBuilders.containsKey(builder.getType())) {
             Logger.info("DialogInputBuilder " + builder.getType() + " is already registered!", Logger.LogType.WARNING);
         } else {
@@ -41,7 +41,7 @@ public class BedrockBuilderClass {
         return this.bedrockButtonBuilder;
     }
 
-    public static Optional<BedrockBuilderInput> getDialogInputBuilder(DialogInputType type) {
+    public static Optional<BedrockBuilderInput<?>> getDialogInputBuilder(DialogInputType type) {
         return Optional.ofNullable(dialogInputBuilders.get(type));
     }
 

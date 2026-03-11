@@ -2,6 +2,7 @@ package fr.maxlego08.menu.hooks.bedrock.loader.builder;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.component.Component;
 
@@ -18,12 +19,12 @@ public abstract class BedrockBuilderManager {
         this.menuPlugin = menuPlugin;
     }
 
-    protected List<Component> getInputComponents(Player player, List<InputButton> inputButtons) {
+    protected List<Component> getInputComponents(Player player, List<InputButton> inputButtons, Placeholders placeholders) {
         return buildComponents(
                 inputButtons,
                 InputButton::getInputType,
                 BedrockBuilderClass::getDialogInputBuilder,
-                (builder, button) -> builder.build(player, button)
+                (builder, button) -> builder.build(player, button, placeholders)
         );
     }
 

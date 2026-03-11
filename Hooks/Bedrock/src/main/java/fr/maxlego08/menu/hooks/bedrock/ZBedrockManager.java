@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderClass;
@@ -44,12 +45,14 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     private final Map<String, List<BedrockInventory>> bedrockInventory = new HashMap<>();
     private final Map<UUID, BedrockInventory> activeBedrockInventory = new HashMap<>();
     private final BedrockBuilderClass dialogBuilders;
+    private final MetaUpdater metaUpdater;
 
     public ZBedrockManager(final MenuPlugin menuPlugin) {
         super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.dialogBuilders = new BedrockBuilderClass(this.menuPlugin);
         this.inventoryManager = menuPlugin.getInventoryManager();
+        this.metaUpdater = menuPlugin.getMetaUpdater();
     }
 
     @Override
@@ -244,14 +247,15 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     private Form createBedrockByType(BedrockInventory inventory, Player player) {
         return switch (inventory.getBedrockType()) {
             case MODAL -> {
+                Placeholders placeholders = new Placeholders();
+                placeholders.register("player", player.getName());
                 List<BedrockButton> buttons = inventory.getBedrockButtons(player);
                 ModalForm.Builder builder = ModalForm.builder()
-                        .title(inventory.getName(player, this.inventoryManager.getFakeInventory(), new Placeholders()))
+                        .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, this.inventoryManager.getFakeInventory(), placeholders)))
                         .content(inventory.getContent(player))
-                        .button1(buttons.get(0).getText(player))
-                        .button2(buttons.get(1).getText(player))
+                        .button1(this.metaUpdater.getLegacyMessage(this.menuPlugin.parse(player, buttons.get(0).getText(placeholders))))
+                        .button2(this.metaUpdater.getLegacyMessage(this.menuPlugin.parse(player, buttons.get(1).getText(placeholders))))
                         .validResultHandler((form, responseData) -> {
-                            Placeholders placeholders = new Placeholders();
                             placeholders.register("content", form.content());
 
                             int id = responseData.clickedButtonId();
@@ -262,17 +266,18 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
             }
 
             case SIMPLE -> {
+                Placeholders placeholders = new Placeholders();
+                placeholders.register("player", player.getName());
                 SimpleForm.Builder builder = SimpleForm.builder()
-                        .title(inventory.getName(player, null, new Placeholders()))
+                        .title(inventory.getName(player, null, placeholders))
                         .content(inventory.getContent(player));
                 
                 List<BedrockButton> buttons = inventory.getBedrockButtons(player);
                 ButtonBuilder buttonBuilder = this.dialogBuilders.getBedrockButtonBuilder();
                 buttons.forEach(button -> {
-                    builder.button(buttonBuilder.build(player, button));
+                    builder.button(buttonBuilder.build(player, button, placeholders));
                 });
                 builder.validResultHandler((form, responseData) -> {
-                    Placeholders placeholders = new Placeholders();
                     placeholders.register("content", form.content());
                     int slot = responseData.clickedButtonId();
                     BedrockButton bedrockButton = buttons.get(slot);
@@ -282,16 +287,16 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
             }
 
             case CUSTOM -> {
+                Placeholders placeholders = new Placeholders();
+                placeholders.register("player", player.getName());
                 CustomForm.Builder builder = CustomForm.builder()
-                        .title(inventory.getName(player, null, new Placeholders()));
+                        .title(inventory.getName(player, null, placeholders));
 
                 
                 List<InputButton> buttons = inventory.getInputButtons(player);
-                getInputComponents(player, buttons).forEach(builder::component);
+                getInputComponents(player, buttons, placeholders).forEach(builder::component);
 
                 builder.validResultHandler((form, responseData) -> {
-                    Placeholders placeholders = new Placeholders();
-
                     for (int i = 0; i < buttons.size(); i++) {
                         InputButton input = buttons.get(i);
                         String key = input.getKey();
