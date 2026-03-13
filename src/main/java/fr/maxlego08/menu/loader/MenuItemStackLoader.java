@@ -96,7 +96,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         List<String> flagStrings = configuration.getStringList(path + "flags");
         List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
         for (String flagName : flagStrings) {
-            flags.add(this.getFlag(flagName));
+            ItemFlag flag = this.getFlag(flagName);
+            if (flag != null)
+                flags.add(flag);
         }
         menuItemStack.setFlags(flags);
 

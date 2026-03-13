@@ -358,9 +358,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     private void applyFlags(ItemMeta itemMeta) {
         for (ItemFlag flag : this.flags) {
-            if (flag != null) {
-                itemMeta.addItemFlags(flag);
-            }
+            itemMeta.addItemFlags(flag);
         }
     }
 
