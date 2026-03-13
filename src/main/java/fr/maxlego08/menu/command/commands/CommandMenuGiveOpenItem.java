@@ -19,7 +19,7 @@ public class CommandMenuGiveOpenItem extends VCommand {
 
     public CommandMenuGiveOpenItem(ZMenuPlugin plugin) {
         super(plugin);
-        this.setPermission(Permission.ZMENU_OPEN_ITEM);
+        this.setPermission(Permission.ZMENU_GIVE_OPEN_ITEM);
         this.setDescription(Message.DESCRIPTION_OPEN_ITEM);
         this.addSubCommand("giveopenitem");
         this.addSubCommand("goi");
