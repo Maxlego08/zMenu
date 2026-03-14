@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.1.0"
+version = "1.1.1.1"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -25,6 +25,8 @@ allprojects {
         mavenCentral()
 
         maven(url = "https://repo.tcoded.com/releases")
+        maven(url = "https://repo.codemc.io/repository/maven-releases/")
+        maven(url = "https://repo.codemc.io/repository/maven-snapshots/")
         maven(url = "https://jitpack.io")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")

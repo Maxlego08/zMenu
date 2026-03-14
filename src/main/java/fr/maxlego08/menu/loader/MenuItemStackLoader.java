@@ -255,14 +255,17 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      */
     private void loadEnchantements(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         Enchantments helperEnchantments = this.manager.getEnchantments();
+
         List<String> enchants = configuration.getStringList(path + "enchants");
+        if (enchants.isEmpty()) enchants = configuration.getStringList(path + "enchantments");
+
         Map<Enchantment, Integer> enchantments = new HashMap<>();
 
         for (String enchantString : enchants) {
 
             try {
 
-                String[] splitEnchant = enchantString.split(",");
+                String[] splitEnchant = enchantString.contains(":") ? enchantString.split(":") : enchantString.split(",");
 
                 if (splitEnchant.length == 1)
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
