@@ -59,7 +59,7 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
             if (attribute == null) continue;
             try {
                 AttributeModifier deserialize = AttributeModifier.deserialize(map);
-                modifiersWrapper.add(new AttributeWrapper(attribute, deserialize.getOperation(), deserialize.getAmount(), deserialize.getSlotGroup()));
+                modifiersWrapper.add(new AttributeWrapper(attribute, deserialize.getOperation(), deserialize.getAmount(), deserialize.getSlotGroup(), deserialize.getKey()));
             } catch (IllegalArgumentException e) {
                 if (Configuration.enableDebug){
                     Logger.info("Error deserializing attribute modifier for attribute " + attribute.name() + ": " + e.getMessage());

@@ -53,6 +53,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * Load ItemStack
      */
     public MenuItemStack load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) {
+        if (!path.isEmpty() && !path.endsWith("."))
+            path = path + ".";
+
 
         File file = (File) objects[0];
 

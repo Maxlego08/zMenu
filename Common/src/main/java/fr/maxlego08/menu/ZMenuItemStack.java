@@ -20,7 +20,6 @@ import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -39,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.util.*;
 
 public class ZMenuItemStack extends ZUtils implements MenuItemStack {
@@ -100,19 +98,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     public static ZMenuItemStack fromItemStack(InventoryManager manager, ItemStack itemStack) {
         return MenuItemStackFromItemStack.fromItemStack(manager, itemStack);
-    }
-
-    /**
-     * Build a MenuItemStack from a map.
-     *
-     * @param inventoryManager the inventoryManager of the item
-     * @param file             the file where the item is saved
-     * @param path             the path of the item in the file
-     * @param map              the map which contains the item data
-     * @return the menuItemStack
-     */
-    public static ZMenuItemStack fromMap(InventoryManager inventoryManager, File file, String path, Map<String, Object> map) {
-        return MenuItemStackFormMap.fromMap(inventoryManager, file, path, map);
     }
 
     /**
