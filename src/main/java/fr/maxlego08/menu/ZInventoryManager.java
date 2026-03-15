@@ -311,7 +311,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         List<Inventory> oldInventories = new ArrayList<>();
 
-        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault inventoryDefault) {
+
+        var topInventory = CompatibilityUtil.getTopInventory(player);
+        if (topInventory != null && topInventory.getHolder() instanceof InventoryDefault inventoryDefault) {
             Inventory fromInventory = inventoryDefault.getMenuInventory();
             oldInventories = inventoryDefault.getOldInventories();
             oldInventories.add(fromInventory);
