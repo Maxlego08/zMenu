@@ -35,9 +35,11 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.*;
 
 public class ZMenuItemStack extends ZUtils implements MenuItemStack {
