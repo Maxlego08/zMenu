@@ -28,3 +28,4 @@ loadbefore:
   - SuperiorSkyblock2
 libraries:
   - org.mariadb.jdbc:mariadb-java-client:3.5.6
+  - net.kyori:adventure-text-minimessage:4.26.1

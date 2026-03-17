@@ -42,6 +42,34 @@
 
 # Unreleased
 
+# 1.1.1.2
+
+## Bug Fixes
+
+- Fixed `openWithOldInventories` method crash on 1.20 by using `CompatibilityUtil.getTopInventory()` for safe inventory access.
+- Fixed trim pattern and material validation: now uses Bukkit `Registry` instead of the hardcoded `TrimHelper`, with proper error messages listing all available patterns/materials when a key is not found.
+- Fixed null `ItemFlag` entries causing errors when applying flags to item meta.
+- Fixed `EnchantmentGlintOverrideComponent` not handling `false` values correctly — previously only `true` was applied, now both `true` and `false` are respected.
+- Fixed click requirements defaulting to an empty click list when none are specified — now defaults to all click types.
+- Fixed `AttributeWrapper` to support an optional `NamespacedKey` instead of always generating a random UUID, preventing attribute duplication on item rebuild.
+- Fixed database connection logger initialization order in `ZStorageManager`.
+- Fixed item loading from map (`loadItemStack`) to use `MenuItemStackLoader` instead of the removed `MenuItemStackFormMap` class.
+
+## Improvements
+
+- **Command Permissions**: Added dedicated permissions for `CommandMenuEditor` (`ZMENU_EDITOR`), `CommandMenuVersion` (`ZMENU_VERSION`), and `CommandMenuGiveOpenItem` (`ZMENU_GIVE_OPEN_ITEM`).
+- **API**: Added `getClickRequirementKeys()` method to `MenuPlugin` interface, allowing addons to retrieve the supported click requirement configuration keys.
+- **Default Configs**: Updated default configuration files (`pro_inventory.yml`, `playtime_reward.yml`) to use kebab-case (`view-requirement`, `click-requirement`, `open-requirement`) matching current conventions.
+- **Dependencies**: Added `adventure-text-minimessage` as a library dependency in `plugin.yml`.
+
+## Internal Changes
+
+- Removed unused `PlayerSkin` class.
+- Removed unused `MenuItemStackFormMap` class and associated `fromMap` static method.
+- Cleaned up imports and formatting across multiple files.
+
+---
+
 # 1.1.1.1
 
 ## New Features
