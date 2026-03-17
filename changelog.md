@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.2
+
 ## Bug Fixes
 
 - Fixed `openWithOldInventories` method crash on 1.20 by using `CompatibilityUtil.getTopInventory()` for safe inventory access.
