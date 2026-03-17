@@ -252,7 +252,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                 List<BedrockButton> buttons = inventory.getBedrockButtons(player);
                 ModalForm.Builder builder = ModalForm.builder()
                         .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, this.inventoryManager.getFakeInventory(), placeholders)))
-                        .content(inventory.getContent(player))
+                        .content(this.metaUpdater.getLegacyMessage(inventory.getContent(player)))
                         .button1(this.metaUpdater.getLegacyMessage(this.menuPlugin.parse(player, buttons.get(0).getText(placeholders))))
                         .button2(this.metaUpdater.getLegacyMessage(this.menuPlugin.parse(player, buttons.get(1).getText(placeholders))))
                         .validResultHandler((form, responseData) -> {
@@ -269,8 +269,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                 Placeholders placeholders = new Placeholders();
                 placeholders.register("player", player.getName());
                 SimpleForm.Builder builder = SimpleForm.builder()
-                        .title(inventory.getName(player, null, placeholders))
-                        .content(inventory.getContent(player));
+                        .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, null, placeholders)))
+                        .content(this.metaUpdater.getLegacyMessage(inventory.getContent(player)));
                 
                 List<BedrockButton> buttons = inventory.getBedrockButtons(player);
                 ButtonBuilder buttonBuilder = this.dialogBuilders.getBedrockButtonBuilder();
@@ -290,8 +290,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                 Placeholders placeholders = new Placeholders();
                 placeholders.register("player", player.getName());
                 CustomForm.Builder builder = CustomForm.builder()
-                        .title(inventory.getName(player, null, placeholders));
-
+                        .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, null, placeholders)));
                 
                 List<InputButton> buttons = inventory.getInputButtons(player);
                 getInputComponents(player, buttons, placeholders).forEach(builder::component);

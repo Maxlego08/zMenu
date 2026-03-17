@@ -30,6 +30,10 @@ public class BedrockButton extends Button {
         return placeholders.parse(this.text);
     }
 
+    public String getRawText() {
+        return this.text;
+    }
+
     public void setImageType(BedrockImageType imageType) {
         this.imageType = imageType;
     }
@@ -42,7 +46,7 @@ public class BedrockButton extends Button {
         this.imageData = imageData;
     }
 
-    public String getImageData(Player player, Placeholders placeholders) {
-        return placeholders.parse(this.imageData);
+    public String getImageData() {
+        return this.imageData;
     }
 }

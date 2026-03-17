@@ -63,10 +63,10 @@ public class ZBedrockInventory implements BedrockInventory {
 
             if (optional.isPresent()) {
                 ConditionalName conditionalName = optional.get();
-                return conditionalName.name();
+                return this.menuPlugin.parse(player, placeholders.parse(conditionalName.name()));
             }
         }
-        return this.menuPlugin.parse(player, this.name);
+        return this.menuPlugin.parse(player, placeholders.parse(this.name));
     }
 
     @Override
