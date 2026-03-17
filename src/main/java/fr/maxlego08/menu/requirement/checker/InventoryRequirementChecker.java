@@ -179,7 +179,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      */
     private void checkClickRequirements(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
 
-        String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
+        String[] sectionStrings = this.plugin.getClickRequirementKeys();
         ConfigurationSection section = null;
         String sectionString = "";
         for (String string : sectionStrings) {

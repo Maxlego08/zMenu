@@ -263,4 +263,6 @@ public interface MenuPlugin extends Plugin {
     ComponentsManager getComponentsManager();
 
     VInvManager getVInventoryManager();
+
+    String[] getClickRequirementKeys();
 }
