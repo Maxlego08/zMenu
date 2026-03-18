@@ -23,7 +23,7 @@ public class CommandDialogOpen extends VCommand {
         this.addRequireArg("dialog name", (a, b) -> {
             List<String> dialogs = new ArrayList<>();
             for (DialogInventory dialog : dialogManager.getDialogs()) {
-                dialogs.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()).toLowerCase());
+                dialogs.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()));
             }
             return dialogs;
         });
