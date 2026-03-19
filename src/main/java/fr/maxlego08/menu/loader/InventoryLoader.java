@@ -19,6 +19,7 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
+import fr.maxlego08.menu.api.utils.ClickAction;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.common.utils.ZUtils;
@@ -33,10 +34,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -248,18 +246,20 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
                 List<String> actionStrings = configuration.getStringList(loadString + ".actions");
-                List<Action> actions = new ArrayList<>(actionStrings.size());
+                Set<Action> actions = new HashSet<>();
                 for (String string : actionStrings) {
                     try {
-                        actions.add(Action.valueOf(string.toUpperCase()));
+                        actions.addAll(ClickAction.valueOf(string.toUpperCase()).asActions());
                     } catch (Exception ignored) {
+                        if (Configuration.enableDebug)
+                            Logger.info("Invalid click action " + string + " in " + file.getAbsolutePath() + " for openWithItem, skipping it.", Logger.LogType.WARNING);
                     }
                 }
 
                 String type = configuration.getString(loadString + ".type", "full");
                 ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
 
-                inventory.setOpenWithItem(new OpenWithItem(loadedItem, actions, itemStackSimilar));
+                inventory.setOpenWithItem(new OpenWithItem(loadedItem, new ArrayList<>(actions), itemStackSimilar));
             }
         } catch (Exception ignored) {
         }
