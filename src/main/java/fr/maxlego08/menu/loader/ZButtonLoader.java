@@ -390,7 +390,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         loadRefreshRequirements(button, configuration, path, file);
         // Load actions
         boolean stopOnEmpty = configuration.getBoolean(path + "stop-on-empty", true);
-        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file, actionPatterns,true,stopOnEmpty);
+        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file, actionPatterns, true, stopOnEmpty);
 
         button.setActions(actions);
 
@@ -436,8 +436,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadClickRequirements(Button button, YamlConfiguration configuration, String path, File file,List<ActionPattern> actionPatterns) throws InventoryException {
-        String[] sectionStrings = {"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
+    private void loadClickRequirements(Button button, YamlConfiguration configuration, String path, File file, List<ActionPattern> actionPatterns) throws InventoryException {
+
+        String[] sectionStrings = this.plugin.getClickRequirementKeys();
         ConfigurationSection section = null;
         String sectionString = "";
         for (String string : sectionStrings) {
@@ -450,7 +451,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         List<Requirement> requirements = new ArrayList<>();
         for (String key : section.getKeys(false)) {
-            requirements.add(loader.load(configuration, path + sectionString + key + ".", file,actionPatterns));
+            requirements.add(loader.load(configuration, path + sectionString + key + ".", file, actionPatterns));
         }
         button.setClickRequirements(requirements);
     }

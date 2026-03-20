@@ -189,14 +189,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()){
-            if (Configuration.enableMiniMessageFormat){
+        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+            if (Configuration.enableMiniMessageFormat) {
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
                 this.dialogManager = new ZDialogManager(this, configManager);
                 servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                 ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
-                configManager.registerConfig(configDialogBuilder,Configuration.class, this);
+                configManager.registerConfig(configDialogBuilder, Configuration.class, this);
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
             }
@@ -366,7 +366,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.inventoryManager.registerMaterialLoader(new MMOItemsLoader());
             this.getLogger().info("Registered MMOItems material loader");
         }
-        if (this.isActive(Plugins.PACKETEVENTS)){
+        if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
     }
@@ -415,7 +415,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.vinventoryManager != null) this.vinventoryManager.close();
         this.inventoriesPlayer.restoreAllInventories();
 
-       Configuration.getInstance().save(getConfig(), this.configFile);
+        Configuration.getInstance().save(getConfig(), this.configFile);
 
         YamlFileCache.clearCache();
 
@@ -494,6 +494,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public ComponentsManager getComponentsManager() {
         return this.componentsManager;
+    }
+
+    @Override
+    public String[] getClickRequirementKeys() {
+        return new String[]{"click_requirement.", "click-requirement.", "click_requirements.", "click-requirements.", "clicks_requirement.", "clicks-requirement.", "clicks_requirements.", "clicks-requirements."};
     }
 
     @Override

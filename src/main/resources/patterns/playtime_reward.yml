@@ -4,7 +4,7 @@ button:
   updateOnClick: true
   page: '%page%'
   slot: '%slot%'
-  view_requirement:
+  view-requirement:
     requirements:
       - type: placeholder
         placeholder: "%zmenu_player_value_playtime_level%"
@@ -27,7 +27,7 @@ button:
       sound: ENTITY_VILLAGER_NO
   else:
     updateOnClick: true
-    view_requirement:
+    view-requirement:
       requirements:
         - type: placeholder
           placeholder: "%zmenu_statistic_hours_played%"
@@ -50,7 +50,7 @@ button:
         - '#ff0000✘ ʏᴏᴜ ᴅᴏɴ’ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴘʟᴀʏ ᴛɪᴍᴇ'
     else:
       updateOnClick: true
-      view_requirement:
+      view-requirement:
         requirements:
           - type: placeholder
             placeholder: "%zmenu_player_value_playtime_level%"
@@ -72,7 +72,7 @@ button:
         updateOnClick: true
         refreshOnClick: true
 
-        click_requirement:
+        click-requirement:
           right_click:
             clicks:
               - ALL
