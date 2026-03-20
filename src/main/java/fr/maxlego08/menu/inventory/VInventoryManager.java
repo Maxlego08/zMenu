@@ -267,5 +267,6 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     @Override
     protected void onQuit(PlayerQuitEvent event, Player player) {
         this.cooldownClick.remove(player.getUniqueId());
+        this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
     }
 }

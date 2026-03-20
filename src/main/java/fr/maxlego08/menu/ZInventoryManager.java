@@ -18,6 +18,7 @@ import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
+import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
@@ -43,6 +44,7 @@ import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.*;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.*;
+import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
@@ -75,6 +77,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
+    private final PaginationManager paginationManager = new ZPaginationManager();
 
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
@@ -132,6 +135,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.set("item", map);
         return new MenuItemStackLoader(this).load(configuration, "item", file);
+    }
+
+    @Override
+    public PaginationManager getPaginationManager() {
+        return this.paginationManager;
     }
 
     @Override
@@ -420,6 +428,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
         buttonManager.register(new SwitchLoader(this.plugin));
+        buttonManager.register(new PaginationNextButtonLoader(this.plugin));
+        buttonManager.register(new PaginationPreviousButtonLoader(this.plugin));
 
         // Loading Button Dialog
         // Register Button Dialog Body
