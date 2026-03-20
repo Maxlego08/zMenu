@@ -815,6 +815,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         });
+
+        if (clickTypes.isEmpty()) { // Use all clicks by default
+            clickTypes.addAll(Configuration.allClicksType);
+        }
+
         return clickTypes;
     }
 
