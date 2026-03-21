@@ -50,8 +50,8 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return true if advanced, false if already at the last page
      */
     public final boolean nextPage(@NotNull Player player) {
-        int maxPage = getMaxPage(player);
         int currentPage = getCurrentPage(player);
+        int maxPage = getMaxPage(player);
         if (currentPage < maxPage) {
             getPaginationManager().nextPage(player.getUniqueId(), getContextId(player));
             return true;
@@ -85,6 +85,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
 
     /**
      * Calculates the maximum page number (0-based index).
+     * This caches the page size to avoid multiple getSlots() calls.
      *
      * @param player the player
      * @return the maximum page
@@ -93,7 +94,21 @@ public abstract class GenericPaginateButton extends PaginateButton {
         int totalSize = getPaginationSize(player);
         int pageSize = getSlots().size();
         if (pageSize <= 0) return 0;
-        return Math.max(0, (int) Math.ceil((double) totalSize / pageSize) - 1);
+        return Math.max(0, (totalSize - 1) / pageSize);
+    }
+
+    /**
+     * Calculates the maximum page number with pre-calculated page size (0-based index).
+     * Use this when page size is already available to avoid redundant getSlots() calls.
+     *
+     * @param player the player
+     * @param pageSize the page size
+     * @return the maximum page
+     */
+    public final int getMaxPage(@NotNull Player player, int pageSize) {
+        if (pageSize <= 0) return 0;
+        int totalSize = getPaginationSize(player);
+        return Math.max(0, (totalSize - 1) / pageSize);
     }
 
     /**
@@ -103,7 +118,8 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return true if there's a next page
      */
     public final boolean hasNextPage(@NotNull Player player) {
-        return getCurrentPage(player) < getMaxPage(player);
+        int currentPage = getCurrentPage(player);
+        return currentPage < getMaxPage(player);
     }
 
     /**
