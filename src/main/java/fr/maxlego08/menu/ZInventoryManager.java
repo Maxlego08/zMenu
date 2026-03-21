@@ -396,6 +396,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
         buttonManager.registerAction(new RefreshInventoryLoader());
+        buttonManager.registerAction(new ResetPaginationLoader(this.paginationManager));
         buttonManager.registerAction(new DiscordLoader());
         buttonManager.registerAction(new DiscordComponentV2Loader());
         buttonManager.registerAction(new TeleportLoader(this.plugin));
