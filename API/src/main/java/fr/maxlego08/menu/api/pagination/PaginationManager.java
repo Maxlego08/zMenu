@@ -96,6 +96,24 @@ public interface PaginationManager {
     void removePlayerStates(@NotNull UUID playerId);
 
     /**
+     * Gets the maximum page for a player and context.
+     *
+     * @param playerId  the player's UUID
+     * @param contextId the context identifier
+     * @return the maximum page (0-based index), or 0 if not found
+     */
+    int getMaxPage(@NotNull UUID playerId, @NotNull String contextId);
+
+    /**
+     * Sets the maximum page for a player and context.
+     *
+     * @param playerId  the player's UUID
+     * @param contextId the context identifier
+     * @param maxPage   the maximum page to set (0-based index)
+     */
+    void setMaxPage(@NotNull UUID playerId, @NotNull String contextId, int maxPage);
+
+    /**
      * Clears all pagination states.
      */
     void clearAll();

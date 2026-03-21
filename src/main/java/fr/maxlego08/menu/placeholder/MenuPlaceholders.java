@@ -41,13 +41,33 @@ public class MenuPlaceholders extends ZUtils {
         
         placeholder.register("pagination_next_page_", (player, contextId) -> {
             if (paginationManager == null) return "0";
-            return String.valueOf(paginationManager.getPage(player.getUniqueId(), contextId) + 1);
+            return String.valueOf(paginationManager.getPage(player.getUniqueId(), contextId) + 2);
         });
         
         placeholder.register("pagination_previous_page_", (player, contextId) -> {
             if (paginationManager == null) return "0";
             int currentPage = paginationManager.getPage(player.getUniqueId(), contextId);
             return String.valueOf(Math.max(0, currentPage - 1));
+        });
+        
+        placeholder.register("pagination_max_page_", (player, contextId) -> {
+            if (paginationManager == null) return "1";
+            
+            String actualContextId = contextId;
+            int defaultMaxPage = 0;
+            
+            if (contextId.contains(":")) {
+                String[] parts = contextId.split(":", 2);
+                actualContextId = parts[0];
+                try {
+                    defaultMaxPage = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            
+            int storedMaxPage = paginationManager.getMaxPage(player.getUniqueId(), actualContextId);
+            int maxPage = Math.max(storedMaxPage, defaultMaxPage);
+            return String.valueOf(maxPage + 1);
         });
         
         placeholder.register("player_previous_inventories", (playeofflinePlayer, s) -> {

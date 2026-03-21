@@ -43,10 +43,12 @@ public abstract class GenericPaginationButton <T> extends GenericPaginateButton 
         int pageSize = slots.size();
         int currentPage = getCurrentPageOneIndexed(player);
         
-        int maxPage = getMaxPage(player, pageSize) + 1;
+        int maxPage = getMaxPage(player, pageSize);
+        
+        getPaginationManager().setMaxPage(player.getUniqueId(), getContextId(player), maxPage);
 
         Pagination<T> pagination = new Pagination<>();
-        List<T> paginatedElements = pagination.paginate(elements, pageSize, currentPage - 1);
+        List<T> paginatedElements = pagination.paginate(elements, pageSize, currentPage);
 
         int slotIndex = 0;
         for (Integer slot : slots) {
@@ -55,7 +57,7 @@ public abstract class GenericPaginationButton <T> extends GenericPaginateButton 
             T element = paginatedElements.get(slotIndex);
             Placeholders placeholders = new Placeholders();
             placeholders.register("page", String.valueOf(currentPage));
-            placeholders.register("max_page", String.valueOf(maxPage));
+            placeholders.register("max_page", String.valueOf(maxPage + 1));
 
             renderElement(player, inventory, slot, element, placeholders);
             slotIndex++;

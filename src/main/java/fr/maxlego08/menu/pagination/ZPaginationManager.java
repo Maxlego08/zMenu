@@ -46,6 +46,17 @@ public class ZPaginationManager implements PaginationManager {
     }
 
     @Override
+    public int getMaxPage(@NotNull UUID playerId, @NotNull String contextId) {
+        PaginationState state = getState(playerId, contextId);
+        return state != null ? state.getMaxPage() : 0;
+    }
+
+    @Override
+    public void setMaxPage(@NotNull UUID playerId, @NotNull String contextId, int maxPage) {
+        getOrCreateState(playerId, contextId).setMaxPage(maxPage);
+    }
+
+    @Override
     public @Nullable PaginationState getState(@NotNull UUID playerId, @NotNull String contextId) {
         Map<String, PaginationState> playerStates = paginationStates.get(playerId);
         return playerStates != null ? playerStates.get(contextId) : null;
