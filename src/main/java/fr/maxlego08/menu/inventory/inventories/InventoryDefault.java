@@ -321,7 +321,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             ItemButton itemButton = this.addItem(button.isPlayerInventory(), slot, itemStack);
             perfDebug.end();
 
-            if (itemButton != null && button.isClickable()) {
+            if (button.isClickable()) {
                 itemButton.setClick(event -> {
 
                     if (event.getClick() == ClickType.DOUBLE_CLICK) return;
