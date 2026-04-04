@@ -410,8 +410,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
         if (this.plugin.isEnable(Plugins.PACKETEVENTS)) {
-            if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater)
-                buttonManager.registerAction(new PacketEventChangeTitleNameLoader(paperMetaUpdater, this.plugin.getPacketUtils().getPacketTitleListener()));
+
+            Optional<PacketManager> packetManager = this.plugin.getPacketManager();
+            packetManager.ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         }
 
         // Loading ButtonLoader
