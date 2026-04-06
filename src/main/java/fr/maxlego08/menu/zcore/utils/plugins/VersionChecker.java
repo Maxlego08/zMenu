@@ -44,18 +44,18 @@ public class VersionChecker extends ZUtils {
             return;
         }
 
-        String pluginVersion = plugin.getDescription().getVersion();
+        String pluginVersion = this.plugin.getDescription().getVersion();
         AtomicBoolean atomicBoolean = new AtomicBoolean();
         this.getVersion(version -> {
             long ver = Long.parseLong(version.replace(".", ""));
             long plVersion = Long.parseLong(pluginVersion.replace(".", ""));
             atomicBoolean.set(plVersion >= ver);
             this.useLastVersion = atomicBoolean.get();
-            if (useLastVersion) {
+            if (this.useLastVersion) {
                 Logger.info("No update available.");
             } else {
                 Logger.info("New update available. Your version: " + pluginVersion + ", latest version: " + version);
-                Logger.info("Download plugin here: " + String.format(URL_RESOURCE, this.pluginID));
+                Logger.info("Download plugin here: " + String.format(this.URL_RESOURCE, this.pluginID));
             }
         });
 
@@ -67,8 +67,8 @@ public class VersionChecker extends ZUtils {
      * @param consumer - Do something after
      */
     public void getVersion(Consumer<String> consumer) {
-        plugin.getScheduler().runAsync(w -> {
-            final String apiURL = String.format(URL_API, this.pluginID);
+        this.plugin.getScheduler().runAsync(w -> {
+            final String apiURL = String.format(this.URL_API, this.pluginID);
             try {
                 URL url = URI.create(apiURL).toURL();
                 URLConnection hc = url.openConnection();

@@ -17,7 +17,7 @@ public class CommandMenuDocumentation extends VCommand {
 
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
-        message(plugin, sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.groupez.dev/zmenu/getting-started");
+        this.message(plugin, this.sender, Message.DOCUMENTATION_INFORMATION_LINK, "%link%", "https://docs.groupez.dev/zmenu/getting-started");
         return CommandType.SUCCESS;
     }
 

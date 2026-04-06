@@ -21,7 +21,7 @@ public class MythicMobsItemsLoader extends MaterialLoader {
 
     @Override
     public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
-        Optional<MythicItem> mythicItem = itemManager.getItem(materialString);
+        Optional<MythicItem> mythicItem = this.itemManager.getItem(materialString);
         return mythicItem.map(MythicItem::getCachedBaseItem).orElse(null);
     }
 }

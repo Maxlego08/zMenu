@@ -25,7 +25,7 @@ public record Inventory(int id, int folderId, int userId, String fileName, Strin
 
     @Override
     public @NotNull String toString() {
-        return "Inventory{" + "id=" + id + ", folderId=" + folderId + ", userId=" + userId + ", fileName='" + fileName + '\'' + ", name='" + name + '\'' + ", size=" + size + ", updateInterval=" + updateInterval + ", clearInventory=" + clearInventory + ", createdAt='" + createdAt + '\'' + ", updatedAt='" + updatedAt + '\'' + '}';
+        return "Inventory{" + "id=" + this.id + ", folderId=" + this.folderId + ", userId=" + this.userId + ", fileName='" + this.fileName + '\'' + ", name='" + this.name + '\'' + ", size=" + this.size + ", updateInterval=" + this.updateInterval + ", clearInventory=" + this.clearInventory + ", createdAt='" + this.createdAt + '\'' + ", updatedAt='" + this.updatedAt + '\'' + '}';
     }
 
     public String toCreateDate() {

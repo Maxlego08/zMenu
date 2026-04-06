@@ -11,9 +11,9 @@ import java.lang.reflect.Field;
 public class TextFieldProcessor extends AbstractConfigFieldProcessor {
     @Override
     public void processField(Field field, ConfigOption configOption, ConfigFieldContext context) {
-        validateField(field, configOption);
+        this.validateField(field, configOption);
 
-        InputButton inputButton = createBaseInputButton(configOption, DialogInputType.TEXT);
+        InputButton inputButton = this.createBaseInputButton(configOption, DialogInputType.TEXT);
 
         inputButton.setWidth(configOption.width());
         inputButton.setMaxLength(configOption.maxLength());
@@ -32,7 +32,7 @@ public class TextFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 return (String) field.get(null);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("get string value", field.getName(), e);
+                throw this.createReflectionException("get string value", field.getName(), e);
             }
         });
 
@@ -41,7 +41,7 @@ public class TextFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 field.set(null, value);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("set string value", field.getName(), e);
+                throw this.createReflectionException("set string value", field.getName(), e);
             }
         });
 

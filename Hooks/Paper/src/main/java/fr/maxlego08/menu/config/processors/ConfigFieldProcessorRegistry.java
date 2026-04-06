@@ -18,7 +18,7 @@ public class ConfigFieldProcessorRegistry {
      * @param processor The processor
      */
     public void registerProcessor(DialogInputType inputType, ConfigFieldProcessor processor) {
-        processors.put(inputType, processor);
+        this.processors.put(inputType, processor);
     }
 
     /**
@@ -27,7 +27,7 @@ public class ConfigFieldProcessorRegistry {
      * @return The processor, or null if not found
      */
     public ConfigFieldProcessor getProcessor(DialogInputType inputType) {
-        return processors.get(inputType);
+        return this.processors.get(inputType);
     }
 
     /**
@@ -36,7 +36,7 @@ public class ConfigFieldProcessorRegistry {
      * @return The processor wrapped in Optional
      */
     public Optional<ConfigFieldProcessor> getProcessorOptional(DialogInputType inputType) {
-        return Optional.ofNullable(processors.get(inputType));
+        return Optional.ofNullable(this.processors.get(inputType));
     }
 
     /**
@@ -45,7 +45,7 @@ public class ConfigFieldProcessorRegistry {
      * @return true if a processor is registered
      */
     public boolean hasProcessor(DialogInputType inputType) {
-        return processors.containsKey(inputType);
+        return this.processors.containsKey(inputType);
     }
 
     /**
@@ -53,13 +53,13 @@ public class ConfigFieldProcessorRegistry {
      * @param inputType The input type
      */
     public void unregisterProcessor(DialogInputType inputType) {
-        processors.remove(inputType);
+        this.processors.remove(inputType);
     }
 
     /**
      * Clear all registered processors
      */
     public void clear() {
-        processors.clear();
+        this.processors.clear();
     }
 }

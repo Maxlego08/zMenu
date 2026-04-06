@@ -25,7 +25,7 @@ public class SpigotContainerItemComponentLoader extends AbstractMenuItemStackLis
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
 
         List<Map<?, ?>> mapList = configuration.getMapList(path);
         List<ZContainerSlot> contents = new ArrayList<>();
@@ -33,7 +33,7 @@ public class SpigotContainerItemComponentLoader extends AbstractMenuItemStackLis
         for (var rawMap : mapList){
             @SuppressWarnings("unchecked")
             Map<String, Object> itemMap = (Map<String, Object>) rawMap;
-            MenuItemStack menuItemStack = loadItemStack(itemMap, file);
+            MenuItemStack menuItemStack = this.loadItemStack(itemMap, file);
             if (menuItemStack != null) {
                 int slot = itemMap.containsKey("slot") ? (int) itemMap.get("slot") : index++;
                 contents.add(new ZContainerSlot(menuItemStack, slot));

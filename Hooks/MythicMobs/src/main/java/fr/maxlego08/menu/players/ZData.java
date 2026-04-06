@@ -47,13 +47,13 @@ public class ZData implements Data {
 
     @Override
     public void add(int amount) {
-        int value = safeStringToInt(this.value.toString());
+        int value = this.safeStringToInt(this.value.toString());
         this.value = value + amount;
     }
 
     @Override
     public void remove(int amount) {
-        int value = safeStringToInt(this.value.toString());
+        int value = this.safeStringToInt(this.value.toString());
         this.value = value - amount;
     }
 

@@ -162,7 +162,7 @@ public class Potion {
 
     @Contract("-> this")
     public Potion splash() {
-        setSplash(true);
+        this.setSplash(true);
         return this;
     }
 
@@ -173,7 +173,7 @@ public class Potion {
      */
     @Contract("-> this")
     public Potion extend() {
-        setHasExtendedDuration(true);
+        this.setHasExtendedDuration(true);
         return this;
     }
 
@@ -185,7 +185,7 @@ public class Potion {
      */
     @Contract("-> this")
     public Potion arrow() {
-        setArrow(true);
+        this.setArrow(true);
         return this;
     }
 
@@ -197,7 +197,7 @@ public class Potion {
      */
     public void apply(@NotNull ItemStack to) {
         PotionMeta meta = (PotionMeta) to.getItemMeta();
-        meta.setBasePotionData(new PotionData(type, extended, level == 2));
+        meta.setBasePotionData(new PotionData(this.type, this.extended, this.level == 2));
         to.setItemMeta(meta);
     }
 
@@ -209,7 +209,7 @@ public class Potion {
      * @see LivingEntity#addPotionEffects(Collection)
      */
     public void apply(@NotNull LivingEntity to) {
-        to.addPotionEffects(getEffects());
+        to.addPotionEffects(this.getEffects());
     }
 
     @Override
@@ -217,11 +217,11 @@ public class Potion {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (obj == null || this.getClass() != obj.getClass()) {
             return false;
         }
         Potion other = (Potion) obj;
-        return extended == other.extended && splash == other.splash && level == other.level && type == other.type;
+        return this.extended == other.extended && this.splash == other.splash && this.level == other.level && this.type == other.type;
     }
 
     /**
@@ -234,7 +234,7 @@ public class Potion {
      */
     @NotNull
     public Collection<PotionEffect> getEffects() {
-        return getBrewer().getEffects(type, level == 2, extended);
+        return getBrewer().getEffects(this.type, this.level == 2, this.extended);
     }
 
     /**
@@ -244,7 +244,7 @@ public class Potion {
      */
     @Contract(pure = true)
     public int getLevel() {
-        return level;
+        return this.level;
     }
 
     /**
@@ -263,7 +263,7 @@ public class Potion {
      */
     @NotNull
     public PotionType getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -282,7 +282,7 @@ public class Potion {
      */
     @Nullable
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     /**
@@ -301,16 +301,16 @@ public class Potion {
      */
     @Contract(pure = true)
     public boolean hasExtendedDuration() {
-        return extended;
+        return this.extended;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = prime + level;
-        result = prime * result + (extended ? 1231 : 1237);
-        result = prime * result + (splash ? 1231 : 1237);
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        int result = prime + this.level;
+        result = prime * result + (this.extended ? 1231 : 1237);
+        result = prime * result + (this.splash ? 1231 : 1237);
+        result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
         return result;
     }
 
@@ -321,7 +321,7 @@ public class Potion {
      */
     @Contract(pure = true)
     public boolean isSplash() {
-        return splash;
+        return this.splash;
     }
 
     /**
@@ -331,7 +331,7 @@ public class Potion {
      * @param isSplash Whether this is a splash potion
      */
     public void setSplash(boolean isSplash) {
-        splash = isSplash;
+        this.splash = isSplash;
     }
 
     /**
@@ -341,7 +341,7 @@ public class Potion {
      * @param isExtended Whether the potion should have extended duration
      */
     public void setHasExtendedDuration(boolean isExtended) {
-        extended = isExtended;
+        this.extended = isExtended;
     }
 
     /**
@@ -351,7 +351,7 @@ public class Potion {
      */
     @Contract(pure = true)
     public boolean isArrow() {
-        return arrow;
+        return this.arrow;
     }
 
     /**
@@ -385,16 +385,16 @@ public class Potion {
     @NotNull
     public ItemStack toItemStack(int amount) {
         Material material;
-        if (isArrow())
+        if (this.isArrow())
             material = Material.TIPPED_ARROW;
-        else if (isSplash())
+        else if (this.isSplash())
             material = Material.SPLASH_POTION;
         else
             material = Material.POTION;
         ItemStack itemStack = new ItemStack(material, amount);
         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
-        meta.setBasePotionData(new PotionData(type, extended, level == 2));
-        if (color != null) meta.setColor(color);
+        meta.setBasePotionData(new PotionData(this.type, this.extended, this.level == 2));
+        if (this.color != null) meta.setColor(this.color);
         itemStack.setItemMeta(meta);
         return itemStack;
     }

@@ -24,7 +24,7 @@ public interface Placeholder {
         public Api() {
             PlaceholderExpansion expansion = new fr.maxlego08.menu.placeholder.DistantPlaceholder(LocalPlaceholder.getInstance());
             expansion.register();
-            localPlaceholder = new Local();
+            this.localPlaceholder = new Local();
         }
 
         @Override
@@ -34,7 +34,7 @@ public interface Placeholder {
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
-            return PlaceholderAPI.setPlaceholders(player, localPlaceholder.setPlaceholders(player, string));
+            return PlaceholderAPI.setPlaceholders(player, this.localPlaceholder.setPlaceholders(player, string));
         }
 
         @Override

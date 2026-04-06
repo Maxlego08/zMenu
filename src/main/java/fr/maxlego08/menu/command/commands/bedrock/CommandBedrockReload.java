@@ -20,7 +20,7 @@ public class CommandBedrockReload extends VCommand {
         BedrockManager bedrockManager = plugin.getBedrockManager();
         bedrockManager.reloadBedrockInventory();
 
-        message(plugin, this.sender, Message.RELOAD_BEDROCK,"%bedrock%", bedrockManager.getBedrockInventory().size());
+        this.message(plugin, this.sender, Message.RELOAD_BEDROCK,"%bedrock%", bedrockManager.getBedrockInventory().size());
         return CommandType.SUCCESS;
     }
 }

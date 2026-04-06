@@ -33,7 +33,7 @@ public class ButtonMarketplace extends Button {
     @Override
     public void onRender(Player player, InventoryEngine inventory) {
 
-        List<Resource> resources = plugin.getWebsiteManager().getResources();
+        List<Resource> resources = this.plugin.getWebsiteManager().getResources();
         Pagination<Resource> pagination = new Pagination<>();
         AtomicInteger slot = new AtomicInteger();
         pagination.paginate(resources, 45, inventory.getPage()).forEach(resource -> {

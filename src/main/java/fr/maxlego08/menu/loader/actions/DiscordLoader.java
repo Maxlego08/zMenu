@@ -38,7 +38,7 @@ public class DiscordLoader extends ActionLoader {
             values = (List<Map<?, ?>>) accessor.getObject("embeds");
         }
 
-        if (checkWebhookExists(webhookUrl)) {
+        if (this.checkWebhookExists(webhookUrl)) {
             DiscordConfiguration config = new DiscordConfiguration(webhookUrl, avatarUrl, message, username, DiscordEmbedConfiguration.convertToEmbedObjects(values));
             return new DiscordAction(config);
         } else {

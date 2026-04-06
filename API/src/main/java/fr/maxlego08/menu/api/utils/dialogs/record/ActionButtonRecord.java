@@ -9,7 +9,7 @@ import java.util.List;
 
 public record ActionButtonRecord(@NotNull String label,@NotNull String tooltip, int width,@NotNull List<Requirement> actions) {
     public ActionButtonRecord parse(@NotNull Player player) {
-        return new ActionButtonRecord(parsePlaceholder(label,player), parsePlaceholder(tooltip,player), width, actions);
+        return new ActionButtonRecord(this.parsePlaceholder(this.label,player), this.parsePlaceholder(this.tooltip,player), this.width, this.actions);
     }
     private String parsePlaceholder(@NotNull String text,@NotNull Player player) {
         return text.isEmpty() ? "" : PlaceholderAPI.setPlaceholders(player, text);

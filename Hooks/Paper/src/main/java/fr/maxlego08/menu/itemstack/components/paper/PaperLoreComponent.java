@@ -29,7 +29,7 @@ public class PaperLoreComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemLore.Builder builder = ItemLore.lore();
         for (String loreLine : this.lore){
-            builder.addLine(this.paperMetaUpdater.getComponent(placeholder.setPlaceholders(context.getPlayer(), context.getPlaceholders().parse(loreLine))));
+            builder.addLine(this.paperMetaUpdater.getComponent(this.placeholder.setPlaceholders(context.getPlayer(), context.getPlaceholders().parse(loreLine))));
         }
         itemStack.setData(DataComponentTypes.LORE, builder.build());
     }

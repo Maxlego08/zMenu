@@ -21,6 +21,6 @@ public class PaperCustomNameComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        itemStack.setData(DataComponentTypes.CUSTOM_NAME, this.paperMetaUpdater.getComponent(context.getPlaceholders().parse(Placeholder.Placeholders.getPlaceholder().setPlaceholders(context.getPlayer(), customName))));
+        itemStack.setData(DataComponentTypes.CUSTOM_NAME, this.paperMetaUpdater.getComponent(context.getPlaceholders().parse(Placeholder.Placeholders.getPlaceholder().setPlaceholders(context.getPlayer(), this.customName))));
     }
 }

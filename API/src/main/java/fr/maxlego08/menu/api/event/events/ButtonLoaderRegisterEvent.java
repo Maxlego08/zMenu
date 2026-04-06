@@ -27,13 +27,13 @@ public class ButtonLoaderRegisterEvent extends MenuEvent {
     @Contract(pure = true)
     @NotNull
     public InventoryManager getInventoryManager() {
-        return inventoryManager;
+        return this.inventoryManager;
     }
 
     @Contract(pure = true)
     @NotNull
     public PatternManager getPatternManager() {
-        return patternManager;
+        return this.patternManager;
     }
 
     /**

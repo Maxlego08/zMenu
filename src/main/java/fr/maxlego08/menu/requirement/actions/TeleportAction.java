@@ -21,6 +21,6 @@ public class TeleportAction extends Action {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        this.plugin.getScheduler().runAtEntity(player, w -> plugin.getScheduler().teleportAsync(player, location));
+        this.plugin.getScheduler().runAtEntity(player, w -> this.plugin.getScheduler().teleportAsync(player, this.location));
     }
 }

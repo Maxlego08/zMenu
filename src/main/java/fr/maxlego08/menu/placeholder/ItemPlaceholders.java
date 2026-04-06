@@ -31,7 +31,7 @@ public class ItemPlaceholders extends ZUtils {
                 ItemStack item = getItem(player, parts[0]);
                 if (item == null) return "";
 
-                return getProperty(plugin.getDupeManager(), item, parts[1]);
+                return this.getProperty(plugin.getDupeManager(), item, parts[1]);
             } catch (Exception e) {
                 return "exception";
             }

@@ -71,12 +71,12 @@ public class CommandInventory extends VCommand {
 
         String inventoryName = this.command.inventory();
         InventoryManager manager = plugin.getInventoryManager();
-        Optional<Inventory> optional = getInventoryByName(inventoryName);
+        Optional<Inventory> optional = this.getInventoryByName(inventoryName);
         CommandArgument lastArgument = null;
         Placeholders placeholders = new Placeholders();
         Map<String, String> playerArguments = new HashMap<>();
         Player targetPlayer = null;
-        if (sender instanceof Player) {
+        if (this.sender instanceof Player) {
             targetPlayer = this.player;
         }
 
@@ -109,7 +109,7 @@ public class CommandInventory extends VCommand {
 
                 Optional<String> optionalInventory = argument.getInventory();
                 if (optionalInventory.isPresent()) {
-                    optional = getInventoryByName(optionalInventory.get());
+                    optional = this.getInventoryByName(optionalInventory.get());
                 }
 
                 if (value.isEmpty() && !argument.isRequired()) {
@@ -126,7 +126,7 @@ public class CommandInventory extends VCommand {
                         }
 
                         if (!validator.isValid(result)) {
-                            message(this.plugin, sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
+                            this.message(this.plugin, this.sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
                             return CommandType.DEFAULT;
                         }
                     }
@@ -138,7 +138,7 @@ public class CommandInventory extends VCommand {
         }
 
         if (targetPlayer == null){
-            message(this.plugin, sender, Message.COMMAND_NO_CONSOLE);
+            this.message(this.plugin, this.sender, Message.COMMAND_NO_CONSOLE);
             return CommandType.DEFAULT;
         }
         Player finalTargetPlayer = targetPlayer;

@@ -31,6 +31,6 @@ public class InventoryMarketplace extends ZInventory {
     @Override
     public int getMaxPage(@NonNull Collection<Pattern> patterns, @NonNull Player player, Object... objects) {
         List<Resource> resources = this.plugin.getWebsiteManager().getResources();
-        return getMaxPage(resources, 45);
+        return this.getMaxPage(resources, 45);
     }
 }

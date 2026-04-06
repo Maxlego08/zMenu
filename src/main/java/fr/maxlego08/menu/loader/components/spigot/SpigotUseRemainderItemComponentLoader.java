@@ -24,7 +24,7 @@ public class SpigotUseRemainderItemComponentLoader extends AbstractMenuItemStack
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         Map<String, Object> values = componentSection.getValues(true);
-        MenuItemStack menuItemStack = loadItemStack(values, file);
+        MenuItemStack menuItemStack = this.loadItemStack(values, file);
         return menuItemStack == null ? null : new UseRemainderComponent(menuItemStack);
     }
 }

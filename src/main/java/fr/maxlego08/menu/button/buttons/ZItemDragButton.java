@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
@@ -30,6 +32,7 @@ public class ZItemDragButton extends ItemDragButton {
     //Error item section
     private boolean enableErrorItem = false;
     private MenuItemStack errorItems;
+    private boolean useErrorItemCache = true;
     private final Map<UUID, Map<Integer, Boolean>> activeTasks = new HashMap<>();
     private int ticks;
     private PlatformScheduler scheduler;
@@ -45,11 +48,12 @@ public class ZItemDragButton extends ItemDragButton {
         this.itemStackSimilar = itemStackSimilar;
     }
 
-    public void setErrorItem(MenuItemStack menuItemStack, PlatformScheduler scheduler, int ticks) {
+    public void setErrorItem(MenuItemStack menuItemStack, PlatformScheduler scheduler, int ticks, boolean useCache) {
         this.enableErrorItem = true;
         this.errorItems = menuItemStack;
         this.scheduler = scheduler;
         this.ticks = ticks;
+        this.useErrorItemCache = useCache;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class ZItemDragButton extends ItemDragButton {
                     })
                     .mapToInt(Integer::intValue)
                     .toArray();
-            inventoryEngine.displayFinalButton(this, slots);
+            inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
         }
     }
 
@@ -109,22 +113,25 @@ public class ZItemDragButton extends ItemDragButton {
 
     @Override
     public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventoryEngine, int slot, @NonNull Placeholders placeholders) {
-        if (event == null) return;
 
         ItemStack currentItem = event.getCurrentItem();
         ItemStack cursorItem = event.getCursor();
 
+        if (currentItem == null || currentItem.getType() == Material.AIR) {
+            return;
+        }
+
         if (!this.dupeManager.isDupeItem(currentItem)){
             event.setCancelled(false);
 
-            if (isAirItem(cursorItem)) {
-                refreshInventory(inventoryEngine, player);
+            if (this.isAirItem(cursorItem)) {
+                this.refreshInventory(inventoryEngine, player, placeholders);
                 return;
             }
             return;
         }
 
-        if (isAirItem(cursorItem)) {
+        if (this.isAirItem(cursorItem)) {
             return;
         }
 
@@ -133,26 +140,29 @@ public class ZItemDragButton extends ItemDragButton {
         }
 
         ItemStack itemStackCheck = this.checkItems.build(player);
-        boolean isSuccess = this.itemStackSimilar.isSimilar(itemStackCheck, event.getCursor());
+        boolean isSuccess = this.itemStackSimilar.isSimilar(itemStackCheck, cursorItem);
 
         if (isSuccess){
-            if (this.dupeManager.isDupeItem(event.getCurrentItem())){
+            if (this.dupeManager.isDupeItem(currentItem)){
                 event.setCurrentItem(new ItemStack(Material.AIR));
             }
             event.setCancelled(false);
-            refreshInventory(inventoryEngine, player);
+            this.refreshInventory(inventoryEngine, player, placeholders);
         }
 
-        /*Credits Maxlego08*/
+        /*
+        Credits Maxlego08
+        */
         if (!isSuccess & this.enableErrorItem) {
-            errorItems(inventoryEngine, player, slot);
+            this.errorItems(inventoryEngine, player, slot, placeholders);
         }
     }
 
-    protected void refreshInventory(InventoryEngine inventoryEngine, Player player){
+    protected void refreshInventory(@NotNull InventoryEngine inventoryEngine,@NotNull Player player,@NotNull Placeholders placeholders){
         this.scheduler.runAtLocationLater(player.getLocation(), () -> {
             for (Button button : inventoryEngine.getButtons()) {
-                if (button.isRefreshOnDrag()) inventoryEngine.buildButton(button);
+                if (button.isRefreshOnDrag())
+                    inventoryEngine.buildButton(button, placeholders);
             }
         }, 2);
     }
@@ -160,7 +170,7 @@ public class ZItemDragButton extends ItemDragButton {
     /***
      * Credits Maxlego08
      * */
-    protected void errorItems(InventoryEngine inventoryEngine, Player player, int slot){
+    protected void errorItems(@NotNull InventoryEngine inventoryEngine,@NotNull Player player, int slot, @NonNull Placeholders placeholders){
         UUID playerUUID = player.getUniqueId();
         this.activeTasks.putIfAbsent(playerUUID, new HashMap<>()); // Initialiser la map pour ce joueur
         Map<Integer, Boolean> playerTasks = this.activeTasks.get(playerUUID);
@@ -175,14 +185,14 @@ public class ZItemDragButton extends ItemDragButton {
 
         Inventory inventory = inventoryEngine.getSpigotInventory();
         ItemStack itemStack = inventory.getItem(slot);
-        inventory.setItem(slot, this.errorItems.build(player));
+        inventory.setItem(slot, this.errorItems.build(player, this.useErrorItemCache, placeholders));
 
-        this.scheduler.runAtLocationLater(player.getLocation(), () -> {
+        this.scheduler.runAtEntityLater(player, w -> {
 
             try {
                 Inventory topInventory = player.getOpenInventory().getTopInventory();
-                if (topInventory.getHolder() instanceof InventoryEngine && topInventory.getHolder().equals(inventoryEngine)) {
-                    inventory.setItem(slot, itemStack);
+                if (topInventory.getHolder() instanceof InventoryEngine invEng && topInventory.getHolder().equals(inventoryEngine)) {
+                    invEng.addItem(slot, itemStack);
                 }
             } finally {
                 // Libérer le slot après l'exécution
@@ -190,12 +200,13 @@ public class ZItemDragButton extends ItemDragButton {
 
                 // Nettoyer la map du joueur si elle est vide
                 if (playerTasks.values().stream().noneMatch(Boolean::booleanValue)) {
-                    activeTasks.remove(playerUUID);
+                    this.activeTasks.remove(playerUUID);
                 }
             }
         }, this.ticks);
     }
 
+    @Contract("null -> true")
     protected boolean isAirItem(ItemStack itemStack){
         return itemStack == null || itemStack.getType() == Material.AIR;
     }

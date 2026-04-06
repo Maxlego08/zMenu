@@ -228,19 +228,19 @@ public enum Message implements IMessage {
     }
 
     public @NonNull String getMessage() {
-        return message;
+        return this.message;
     }
 
     public String toMsg() {
-        return message;
+        return this.message;
     }
 
     public String msg() {
-        return message;
+        return this.message;
     }
 
     public @NonNull List<String> getMessages() {
-        return messages == null ? Collections.singletonList(message) : messages;
+        return this.messages == null ? Collections.singletonList(this.message) : this.messages;
     }
 
     public void setMessages(List<String> messages) {
@@ -248,7 +248,7 @@ public enum Message implements IMessage {
     }
 
     public boolean isMessage() {
-        return messages != null && messages.size() > 1;
+        return this.messages != null && this.messages.size() > 1;
     }
 
     public void setMessage(String message) {
@@ -256,7 +256,7 @@ public enum Message implements IMessage {
     }
 
     public String replace(String a, String b) {
-        return message.replace(a, b);
+        return this.message.replace(a, b);
     }
 
     public @NonNull MessageType getType() {
@@ -268,7 +268,7 @@ public enum Message implements IMessage {
     }
 
     public ItemStack getItemStack() {
-        return itemStack;
+        return this.itemStack;
     }
 
     public void setItemStack(ItemStack itemStack) {

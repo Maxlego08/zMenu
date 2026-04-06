@@ -44,7 +44,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     public void register(@NonNull ButtonLoader button) {
 
         ButtonLoader existingLoader = null;
-        for (List<ButtonLoader> buttonLoaders : loaders.values()) {
+        for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
             for (ButtonLoader loader : buttonLoaders) {
                 if (loader.getName().equalsIgnoreCase(button.getName())) {
                     existingLoader = loader;
@@ -141,7 +141,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
             Permissible permissible = null;
             String type = (String) map.getOrDefault("type", null);
             if (type != null) {
-                Optional<PermissibleLoader> optional = getPermission(type);
+                Optional<PermissibleLoader> optional = this.getPermission(type);
                 if (optional.isPresent()) {
                     PermissibleLoader permissibleLoader = optional.get();
                     permissible = permissibleLoader.load(path, new TypedMapAccessor(map), file);
@@ -159,12 +159,12 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override @SuppressWarnings("unchecked")
     public @NotNull List<Permissible> loadPermissible(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull File file) {
         List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
-        return loadPermissible(elements, path, file);
+        return this.loadPermissible(elements, path, file);
     }
 
     @Override
     public @NotNull List<@NotNull Action> loadActions(@NotNull List<@NotNull Map<String, Object>> elements, @NotNull String path, @NotNull File file) {
-        return loadActions(elements, path, file, new ArrayList<>(), true, true);
+        return this.loadActions(elements, path, file, new ArrayList<>(), true, true);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 Logger.info("Error, an element is invalid in " + path + ", type is invalid", Logger.LogType.ERROR);
                 continue;
             }
-            Optional<ActionLoader> optional = getActionLoader(type);
+            Optional<ActionLoader> optional = this.getActionLoader(type);
             if (optional.isPresent()) {
                 ActionLoader actionLoader = optional.get();
                 TypedMapAccessor accessor = new TypedMapAccessor(map);
@@ -188,7 +188,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                     action.setType(type);
                     List<Map<String, Object>> denyChanceAction = accessor.getMapList("deny-chance-actions");
                     if (!denyChanceAction.isEmpty()) {
-                        List<Action> denyActions = loadActions(denyChanceAction, path + ".deny-chance-actions", file, defaultActions, useSuccess, stopOnEmpty);
+                        List<Action> denyActions = this.loadActions(denyChanceAction, path + ".deny-chance-actions", file, defaultActions, useSuccess, stopOnEmpty);
                         if (!denyActions.isEmpty()) {
                             action.setDenyChanceActions(denyActions);
                         }
@@ -216,13 +216,13 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override @SuppressWarnings("unchecked")
     public @NonNull List<Action> loadActions(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull File file) {
         List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
-        return loadActions(elements, path, file);
+        return this.loadActions(elements, path, file);
     }
 
     @Override @SuppressWarnings("unchecked")
     public @NonNull List<Action> loadActions(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
         List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
-        return loadActions(elements, path, file, defaultActions, useSuccess, stopOnEmpty);
+        return this.loadActions(elements, path, file, defaultActions, useSuccess, stopOnEmpty);
     }
 
     @Override
@@ -234,7 +234,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
         List<Requirement> requirements = new ArrayList<>();
         for (String key : section.getKeys(false)) {
-            requirements.add(loadRequirement(configuration, path + "." + key + ".", file));
+            requirements.add(this.loadRequirement(configuration, path + "." + key + ".", file));
         }
         return requirements;
     }
@@ -250,7 +250,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         List<String> invalid = new ArrayList<>();
         for (Map<String, Object> element : elements) {
             Object typeObj = element.get("type");
-            if (typeObj instanceof String type && getActionLoader(type).isEmpty()) {
+            if (typeObj instanceof String type && this.getActionLoader(type).isEmpty()) {
                 invalid.add(type);
             }
         }
@@ -262,7 +262,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         List<String> invalid = new ArrayList<>();
         for (Map<String, Object> element : elements) {
             Object typeObj = element.get("type");
-            if (typeObj instanceof String type && getPermission(type).isEmpty()) {
+            if (typeObj instanceof String type && this.getPermission(type).isEmpty()) {
                 invalid.add(type);
             }
         }

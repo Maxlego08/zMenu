@@ -29,7 +29,7 @@ public class CustomDataComponent extends ItemComponent {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             for (ZPersistentDataType<?,?> entry : this.pdcEntries) {
-                applyPdcEntry(itemMeta, entry);
+                this.applyPdcEntry(itemMeta, entry);
             }
             itemStack.setItemMeta(itemMeta);
         }

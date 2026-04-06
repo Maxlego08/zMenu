@@ -103,10 +103,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         this.loadAttributes(menuItemStack, configuration, path);
 
         if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
-            loadNewItemStacks(menuItemStack, configuration, path, file);
+            this.loadNewItemStacks(menuItemStack, configuration, path, file);
         }
         if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
-            loadTrims(menuItemStack, configuration, path, file);
+            this.loadTrims(menuItemStack, configuration, path, file);
         }
         this.loadItemModel(configuration, menuItemStack, path, file);
 
@@ -197,7 +197,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase());
             String materialName = material.toString();
             if (materialName.startsWith("LEATHER_")) {
-                Color armorColor = getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
+                Color armorColor = this.getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
                 String type = materialName.replace("LEATHER_", "");
                 menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
             }
@@ -306,7 +306,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     private void loadPotions(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         if (configuration.contains(path + "potion")) {
 
-            Color potionColor = getColor(configuration, path + "color", null);
+            Color potionColor = this.getColor(configuration, path + "color", null);
             PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
             int level = configuration.getInt(path + "level", 1);
             boolean splash = configuration.getBoolean(path + "splash", false);
@@ -376,8 +376,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 builder.flicker(section.getBoolean("flicker"));
                 builder.trail(section.getBoolean("trail"));
                 builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
-                builder.withColor(getColors(section, "colors"));
-                builder.withFade(getColors(section, "fadeColors"));
+                builder.withColor(this.getColors(section, "colors"));
+                builder.withFade(this.getColors(section, "fadeColors"));
                 menuItemStack.setFirework(new Firework(isStar, builder.build()));
             }
         }
@@ -395,8 +395,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param path          the path to the configuration key for the translated name and lore
      */
     private void loadTranslation(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
-        loadTranslatedName(menuItemStack, configuration, path);
-        loadTranslatedLore(menuItemStack, configuration, path);
+        this.loadTranslatedName(menuItemStack, configuration, path);
+        this.loadTranslatedLore(menuItemStack, configuration, path);
     }
 
     /**
@@ -487,14 +487,14 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setMaxDamage(configuration.getInt(path + "max-damage", 0));
         menuItemStack.setDamage(configuration.getInt(path + "damage", 0));
         menuItemStack.setRepairCost(configuration.getInt(path + "repair-cost", 0));
-        menuItemStack.setUnbreakableEnabled(getOrNull(configuration.get(path + "unbreakable", null)));
-        menuItemStack.setUnbreakableShowInTooltip(getOrNull(configuration.get(path + "unbreakable-show-in-tooltip", null)));
-        menuItemStack.setFireResistant(getOrNull(configuration.get(path + "fire-resistant", null)));
-        menuItemStack.setHideTooltip(getOrNull(configuration.get(path + "hide-tooltip", null)));
-        menuItemStack.setHideAdditionalTooltip(getOrNull(configuration.get(path + "hide-additional-tooltip", null)));
-        menuItemStack.setEnchantmentGlint(getOrNull(configuration.get(path + "enchantment-glint", null)));
-        menuItemStack.setEnchantmentShowInTooltip(getOrNull(configuration.get(path + "enchantment-show-in-tooltip", null)));
-        menuItemStack.setAttributeShowInTooltip(getOrNull(configuration.get(path + "attribute-show-in-tooltip", null)));
+        menuItemStack.setUnbreakableEnabled(this.getOrNull(configuration.get(path + "unbreakable", null)));
+        menuItemStack.setUnbreakableShowInTooltip(this.getOrNull(configuration.get(path + "unbreakable-show-in-tooltip", null)));
+        menuItemStack.setFireResistant(this.getOrNull(configuration.get(path + "fire-resistant", null)));
+        menuItemStack.setHideTooltip(this.getOrNull(configuration.get(path + "hide-tooltip", null)));
+        menuItemStack.setHideAdditionalTooltip(this.getOrNull(configuration.get(path + "hide-additional-tooltip", null)));
+        menuItemStack.setEnchantmentGlint(this.getOrNull(configuration.get(path + "enchantment-glint", null)));
+        menuItemStack.setEnchantmentShowInTooltip(this.getOrNull(configuration.get(path + "enchantment-show-in-tooltip", null)));
+        menuItemStack.setAttributeShowInTooltip(this.getOrNull(configuration.get(path + "attribute-show-in-tooltip", null)));
 
         String rarityString = configuration.getString("item-rarity", null);
         if (rarityString != null) {

@@ -11,15 +11,15 @@ import java.lang.reflect.Field;
 public class BooleanFieldProcessor extends AbstractConfigFieldProcessor {
     @Override
     public void processField(Field field, ConfigOption configOption, ConfigFieldContext context) {
-        validateField(field, configOption);
+        this.validateField(field, configOption);
 
-        InputButton inputButton = createBaseInputButton(configOption, DialogInputType.BOOLEAN);
+        InputButton inputButton = this.createBaseInputButton(configOption, DialogInputType.BOOLEAN);
 
         inputButton.setInitialValueSupplier(() -> {
             try {
                 return field.getBoolean(null);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("get boolean value", field.getName(), e);
+                throw this.createReflectionException("get boolean value", field.getName(), e);
             }
         });
 
@@ -31,7 +31,7 @@ public class BooleanFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 field.setBoolean(null, value);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("set boolean value", field.getName(), e);
+                throw this.createReflectionException("set boolean value", field.getName(), e);
             }
         });
 

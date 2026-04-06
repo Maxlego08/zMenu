@@ -26,19 +26,19 @@ public class CustomModelDataComponent extends ItemComponent {
     }
 
     public @NotNull Optional<@NotNull List<@NotNull Color>> getColors() {
-        return colors;
+        return this.colors;
     }
 
     public @NotNull Optional<@NotNull List<@NotNull Boolean>> getFlags() {
-        return flags;
+        return this.flags;
     }
 
     public @NotNull Optional<@NotNull List<@NotNull Float>> getFloats() {
-        return floats;
+        return this.floats;
     }
 
     public @NotNull Optional<@NotNull List<@NotNull String>> getString() {
-        return string;
+        return this.string;
     }
 
     @Override

@@ -206,7 +206,7 @@ public class DefaultButtonValue {
      * @return The default refreshOnDrag value.
      */
     public boolean isRefreshOnDrag() {
-        return refreshOnDrag;
+        return this.refreshOnDrag;
     }
 
     /**

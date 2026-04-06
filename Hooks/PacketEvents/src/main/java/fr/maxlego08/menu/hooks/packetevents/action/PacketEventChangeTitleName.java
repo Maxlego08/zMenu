@@ -28,7 +28,7 @@ public class PacketEventChangeTitleName extends ActionHelper {
 
     @Override
     protected void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
-        Component component = metaUpdater.getComponent(papi(placeholders.parse(this.newInventoryName), player));
+        Component component = this.metaUpdater.getComponent(this.papi(placeholders.parse(this.newInventoryName), player));
         PacketTitleListener.PlayerPacketInformation playerPacketInformation = this.packetTitleListener.getPlayerPacketInformation(player.getUniqueId());
         if (playerPacketInformation != null) {
             WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow = playerPacketInformation.getWrapperPlayServerOpenWindow();

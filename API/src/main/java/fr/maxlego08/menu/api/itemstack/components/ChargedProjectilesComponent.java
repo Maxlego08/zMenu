@@ -29,7 +29,7 @@ public class ChargedProjectilesComponent extends ItemComponent {
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, CrossbowMeta.class, crossbowMeta -> {
-            for (MenuItemStack menuItemStack : projectiles) {
+            for (MenuItemStack menuItemStack : this.projectiles) {
                 crossbowMeta.addChargedProjectile(menuItemStack.build(player));
             }
         });

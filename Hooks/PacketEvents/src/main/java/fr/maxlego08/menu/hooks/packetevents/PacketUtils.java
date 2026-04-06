@@ -104,10 +104,10 @@ public class PacketUtils implements InventoryListener {
     }
 
     public PacketAnimationListener getPacketAnimationListener() {
-        return packetAnimationListener;
+        return this.packetAnimationListener;
     }
 
     public PacketTitleListener getPacketTitleListener() {
-        return packetTitleListener;
+        return this.packetTitleListener;
     }
 }

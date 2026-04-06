@@ -38,7 +38,7 @@ public class ButtonBuilderRefresh extends Button {
 
         ItemStack itemStack = new ItemStack(Material.BARRIER);
         ItemMeta meta = itemStack.getItemMeta();
-        plugin.getMetaUpdater().updateLore(meta, List.of("&cPlease wait"), LoreType.APPEND);
+        this.plugin.getMetaUpdater().updateLore(meta, List.of("&cPlease wait"), LoreType.APPEND);
         itemStack.setItemMeta(meta);
         inventory.getSpigotInventory().setItem(slot, itemStack);
 

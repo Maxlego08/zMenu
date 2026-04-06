@@ -23,8 +23,8 @@ public class CurrencyPermissibleLoader extends PermissibleLoader {
 
     @Override
     public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
-        List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
+        List<Action> denyActions = this.loadAction(this.buttonManager, accessor, "deny", path, file);
+        List<Action> successActions = this.loadAction(this.buttonManager, accessor, "success", path, file);
         String amount = accessor.getString("amount");
         Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase());
         String economyName = accessor.getString("economy", null);

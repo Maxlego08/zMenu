@@ -29,18 +29,18 @@ public class CommandDumplog extends VCommand {
     protected CommandType perform(ZMenuPlugin plugin) {
         Path logPath = Path.of("logs/latest.log");
         if (!Files.exists(logPath)) {
-            message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", "Log file not found.");
+            this.message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", "Log file not found.");
             return CommandType.SUCCESS;
         }
         plugin.getScheduler().runAsync(var -> {
             try {
-                String url = uploadLog(logPath).replace("\\","");
-                message(plugin, this.sender, Message.DUMPLOG_SUCCESS, "%url%", plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>");
+                String url = this.uploadLog(logPath).replace("\\","");
+                this.message(plugin, this.sender, Message.DUMPLOG_SUCCESS, "%url%", plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>");
                 if (Configuration.enableInformationMessage) {
                     Logger.info("Log uploaded: " + url);
                 }
             } catch (IOException e) {
-                message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage());
+                this.message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage());
                 if (Configuration.enableInformationMessage) {
                     Logger.info("Error uploading log: " + e.getMessage());
                 }

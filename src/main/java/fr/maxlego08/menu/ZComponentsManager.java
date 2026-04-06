@@ -78,7 +78,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new SpigotWrittenBookContentItemComponentLoader());
             this.registerComponent(new SpigotEnchantmentsItemComponentLoader());
 
-            if (isPaperAndMiniMessageEnabled(plugin)) {
+            if (this.isPaperAndMiniMessageEnabled(plugin)) {
                 this.registerComponent(new PaperCustomNameItemComponentLoader(plugin));
             }
             if (plugin.isPaperOrFolia()) {
@@ -113,7 +113,7 @@ public class ZComponentsManager implements ComponentsManager {
                         this.registerComponent(plugin.isPaperOrFolia() ? new PaperTooltipDisplayItemComponentLoader() : new SpigotTooltipDisplayComponentLoader()); // Bukkit does not have support for hidden components
                         this.registerComponent(new SpigotWeaponItemComponentLoader());
 
-                        if (isPaperAndMiniMessageEnabled(plugin)){
+                        if (this.isPaperAndMiniMessageEnabled(plugin)){
                             this.registerComponent(new PaperProvidesBannerPatternsItemComponentLoader());
                             this.registerComponent(new PaperProvidesTrimMaterialItemComponentLoader());
                         }

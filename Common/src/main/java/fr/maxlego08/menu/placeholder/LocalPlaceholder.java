@@ -77,7 +77,7 @@ public class LocalPlaceholder {
         }
         List<String> parsed = new ArrayList<>(lore.size());
         for (String entry : lore) {
-            parsed.add(setPlaceholders(offlinePlayer, entry));
+            parsed.add(this.setPlaceholders(offlinePlayer, entry));
         }
         return parsed;
     }
@@ -96,11 +96,11 @@ public class LocalPlaceholder {
     }
 
     public String getPrefix() {
-        return prefix;
+        return this.prefix;
     }
 
     public MenuPlugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     /**

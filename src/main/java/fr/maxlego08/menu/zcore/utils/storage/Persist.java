@@ -38,38 +38,38 @@ public class Persist extends ZUtils {
     // ------------------------------------------------------------ //
 
     public File getFile(String name) {
-        return new File(plugin.getDataFolder(), name + ".json");
+        return new File(this.plugin.getDataFolder(), name + ".json");
     }
 
     public File getFile(Class<?> clazz) {
-        return getFile(getName(clazz));
+        return this.getFile(getName(clazz));
     }
 
     public File getFile(Object obj) {
-        return getFile(getName(obj));
+        return this.getFile(getName(obj));
     }
 
     public File getFile(Type type) {
-        return getFile(getName(type));
+        return this.getFile(getName(type));
     }
 
     // NICE WRAPPERS
 
     public <T> T loadOrSaveDefault(T def, Class<T> clazz) {
-        return loadOrSaveDefault(def, clazz, getFile(clazz));
+        return this.loadOrSaveDefault(def, clazz, this.getFile(clazz));
     }
 
     public <T> T loadOrSaveDefault(T def, Class<T> clazz, String name) {
-        return loadOrSaveDefault(def, clazz, getFile(name));
+        return this.loadOrSaveDefault(def, clazz, this.getFile(name));
     }
 
     public <T> T loadOrSaveDefault(T def, Class<T> clazz, Folder folder, String name) {
-        return loadOrSaveDefault(def, clazz, getFile(folder.toFolder() + File.separator + name));
+        return this.loadOrSaveDefault(def, clazz, this.getFile(folder.toFolder() + File.separator + name));
     }
 
     public <T> T loadOrSaveDefault(T def, Class<T> clazz, File file) {
         if (!file.exists()) {
-            plugin.getLog().log("Creating default: " + file, LogType.SUCCESS);
+            this.plugin.getLog().log("Creating default: " + file, LogType.SUCCESS);
             this.save(def, file);
             return def;
         }
@@ -77,7 +77,7 @@ public class Persist extends ZUtils {
         T loaded = this.load(clazz, file);
 
         if (loaded == null) {
-            plugin.getLog().log("Using default as I failed to load: " + file, LogType.WARNING);
+            this.plugin.getLog().log("Using default as I failed to load: " + file, LogType.WARNING);
 
             /*
              * Create new config backup
@@ -86,7 +86,7 @@ public class Persist extends ZUtils {
             File backup = new File(file.getPath() + "_bad");
             if (backup.exists())
                 backup.delete();
-            plugin.getLog().log("Backing up copy of bad file to: " + backup, LogType.WARNING);
+            this.plugin.getLog().log("Backing up copy of bad file to: " + backup, LogType.WARNING);
 
             file.renameTo(backup);
 
@@ -94,7 +94,7 @@ public class Persist extends ZUtils {
         } else {
 
             if (Configuration.enableLogStorageFile) {
-                plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
+                this.plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
             }
 
         }
@@ -105,29 +105,29 @@ public class Persist extends ZUtils {
     // SAVE
 
     public boolean save(Object instance) {
-        return save(instance, getFile(instance));
+        return this.save(instance, this.getFile(instance));
     }
 
     public boolean save(Object instance, String name) {
-        return save(instance, getFile(name));
+        return this.save(instance, this.getFile(name));
     }
 
     public boolean save(Object instance, Folder folder, String name) {
-        return save(instance, getFile(folder.toFolder() + File.separator + name));
+        return this.save(instance, this.getFile(folder.toFolder() + File.separator + name));
     }
 
     public boolean save(Object instance, File file) {
 
         try {
 
-            boolean b = DiscUtils.writeCatch(file, plugin.getGson().toJson(instance));
+            boolean b = DiscUtils.writeCatch(file, this.plugin.getGson().toJson(instance));
             if (Configuration.enableLogStorageFile) {
-                plugin.getLog().log(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
+                this.plugin.getLog().log(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
             }
             return b;
 
         } catch (Exception e) {
-            plugin.getLog().log("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
+            this.plugin.getLog().log("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
             e.printStackTrace();
 
             return false;
@@ -137,11 +137,11 @@ public class Persist extends ZUtils {
     // LOAD BY CLASS
 
     public <T> T load(Class<T> clazz) {
-        return load(clazz, getFile(clazz));
+        return this.load(clazz, this.getFile(clazz));
     }
 
     public <T> T load(Class<T> clazz, String name) {
-        return load(clazz, getFile(name));
+        return this.load(clazz, this.getFile(name));
     }
 
     public <T> T load(Class<T> clazz, File file) {
@@ -151,11 +151,11 @@ public class Persist extends ZUtils {
         }
 
         try {
-            return plugin.getGson().fromJson(content, clazz);
+            return this.plugin.getGson().fromJson(content, clazz);
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely
-            plugin.getLog().log(ex.getMessage(), LogType.ERROR);
+            this.plugin.getLog().log(ex.getMessage(), LogType.ERROR);
         }
 
         return null;
@@ -163,7 +163,7 @@ public class Persist extends ZUtils {
 
     // LOAD BY TYPE
     public <T> T load(Type typeOfT, String name) {
-        return load(typeOfT, getFile(name));
+        return this.load(typeOfT, this.getFile(name));
     }
 
     public <T> T load(Type typeOfT, File file) {
@@ -173,11 +173,11 @@ public class Persist extends ZUtils {
         }
 
         try {
-            return plugin.getGson().fromJson(content, typeOfT);
+            return this.plugin.getGson().fromJson(content, typeOfT);
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely
-            plugin.getLog().log(ex.getMessage(), LogType.ERROR);
+            this.plugin.getLog().log(ex.getMessage(), LogType.ERROR);
         }
 
         return null;

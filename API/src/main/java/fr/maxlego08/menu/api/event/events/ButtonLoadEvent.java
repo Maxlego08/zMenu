@@ -31,30 +31,30 @@ public class ButtonLoadEvent extends MenuEvent {
     @Contract(pure = true)
     @NotNull
     public YamlConfiguration getConfiguration() {
-        return configuration;
+        return this.configuration;
     }
 
     @Contract(pure = true)
     @NotNull
     public String getPath() {
-        return path;
+        return this.path;
     }
 
     @Contract(pure = true)
     @NotNull
     public ButtonManager getButtonManager() {
-        return buttonManager;
+        return this.buttonManager;
     }
 
     @Contract(pure = true)
     @NotNull
     public ButtonLoader getButtonLoader() {
-        return buttonLoader;
+        return this.buttonLoader;
     }
 
     @Contract(pure = true)
     @NotNull
     public Button getButton() {
-        return button;
+        return this.button;
     }
 }

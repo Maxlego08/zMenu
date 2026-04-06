@@ -29,7 +29,7 @@ public enum EnumInventory {
      * @return the numerical ID of the inventory.
      */
     public int getId() {
-        return id;
+        return this.id;
     }
 
 }

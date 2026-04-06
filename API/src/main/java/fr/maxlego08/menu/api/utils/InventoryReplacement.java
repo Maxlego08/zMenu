@@ -17,7 +17,7 @@ public class InventoryReplacement {
     }
 
     public String getInventoryName() {
-        return inventoryName;
+        return this.inventoryName;
     }
 
     public String getPlugin() {
@@ -25,7 +25,7 @@ public class InventoryReplacement {
     }
 
     public List<Integer> getPages() {
-        return pages;
+        return this.pages;
     }
 
     public boolean shouldTrigger(Inventory inventory, int page) {

@@ -33,14 +33,14 @@ public class DupeListener implements Listener {
             if (itemStack != null && this.dupeManager.isDupeItem(itemStack)) {
                 event.setCancelled(true);
                 event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
-                sendInformation(new DupeItem(itemStack, event.getPlayer()));
+                this.sendInformation(new DupeItem(itemStack, event.getPlayer()));
             }
         } catch (Exception exception) {
             ItemStack itemStack = event.getPlayer().getItemInHand();
             if (this.dupeManager.isDupeItem(itemStack)) {
                 event.setCancelled(true);
                 event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
-                sendInformation(new DupeItem(itemStack, event.getPlayer()));
+                this.sendInformation(new DupeItem(itemStack, event.getPlayer()));
             }
         }
     }
@@ -54,7 +54,7 @@ public class DupeListener implements Listener {
         ItemStack itemStack = item.getItemStack();
         if (this.dupeManager.isDupeItem(itemStack)) {
             item.remove();
-            sendInformation(new DupeItem(itemStack, event.getPlayer()));
+            this.sendInformation(new DupeItem(itemStack, event.getPlayer()));
         }
     }
 
@@ -68,7 +68,7 @@ public class DupeListener implements Listener {
             if (this.dupeManager.isDupeItem(itemStack)) {
                 event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
                 event.setCancelled(true);
-                sendInformation(new DupeItem(itemStack, event.getPlayer()));
+                this.sendInformation(new DupeItem(itemStack, event.getPlayer()));
             }
         } catch (Exception ignored) {
 
@@ -85,7 +85,7 @@ public class DupeListener implements Listener {
         if (this.dupeManager.isDupeItem(itemStack)) {
             item.remove();
             event.setCancelled(true);
-            sendInformation(new DupeItem(itemStack, event.getPlayer()));
+            this.sendInformation(new DupeItem(itemStack, event.getPlayer()));
         }
     }
 
@@ -100,7 +100,7 @@ public class DupeListener implements Listener {
             if (this.dupeManager.isDupeItem(itemStack)) {
                 event.setCurrentItem(new ItemStack(Material.AIR));
                 event.setCancelled(true);
-                sendInformation(new DupeItem(itemStack, player));
+                this.sendInformation(new DupeItem(itemStack, player));
             }
         }
 
@@ -109,7 +109,7 @@ public class DupeListener implements Listener {
             if (this.dupeManager.isDupeItem(itemStack)) {
                 event.setCursor(new ItemStack(Material.AIR));
                 event.setCancelled(true);
-                sendInformation(new DupeItem(itemStack, player));
+                this.sendInformation(new DupeItem(itemStack, player));
             }
         }
 

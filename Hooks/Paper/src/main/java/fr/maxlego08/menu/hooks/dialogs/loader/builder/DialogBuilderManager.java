@@ -8,9 +8,7 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -25,7 +23,7 @@ public abstract class DialogBuilderManager {
     }
 
     protected List<DialogInput> getDialogInputs(Player player, List<InputButton> inputButtons) {
-        return buildDialogs(
+        return this.buildDialogs(
                 player,
                 inputButtons,
                 InputButton::getInputType,
@@ -59,8 +57,8 @@ public abstract class DialogBuilderManager {
     }
 
     protected DialogBase.Builder createDialogBase(String dialogName, String externalTitle, boolean canCloseWithEscape, boolean canPauseGame, String afterAction){
-        DialogBase.Builder dialogBuilder = DialogBase.builder(toComponent(dialogName))
-                .externalTitle(toComponent(externalTitle))
+        DialogBase.Builder dialogBuilder = DialogBase.builder(this.toComponent(dialogName))
+                .externalTitle(this.toComponent(externalTitle))
                 .canCloseWithEscape(canCloseWithEscape)
                 .pause(canPauseGame)
                 .afterAction(DialogBase.DialogAfterAction.valueOf(afterAction));
@@ -68,10 +66,10 @@ public abstract class DialogBuilderManager {
     }
 
     public ComponentMeta getPaperComponent() {
-        return paperComponent;
+        return this.paperComponent;
     }
 
     public Component toComponent(String text) {
-        return paperComponent.getComponent(text);
+        return this.paperComponent.getComponent(text);
     }
 }

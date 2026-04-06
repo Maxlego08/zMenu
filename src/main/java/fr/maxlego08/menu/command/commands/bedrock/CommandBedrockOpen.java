@@ -34,21 +34,21 @@ public class CommandBedrockOpen extends VCommand {
         Player targetPlayer = this.argAsPlayer(1,this.player);
         boolean displayMessage = this.argAsBoolean(1, true);
         if (targetPlayer == null){
-            message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.BEDROCK_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
+            this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? Message.BEDROCK_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
         Optional<BedrockInventory> optional = bedrockManager.getBedrockInventory(dialogName);
 
         if (optional.isEmpty()) {
-            message(plugin, this.sender, Message.BEDROCK_OPEN_ERROR_NOT_FOUND,"%name%", dialogName);
+            this.message(plugin, this.sender, Message.BEDROCK_OPEN_ERROR_NOT_FOUND,"%name%", dialogName);
             return CommandType.DEFAULT;
         }
 
         if (displayMessage) {
             if (this.sender == targetPlayer) {
-                message(plugin, this.sender, Message.BEDROCK_OPEN_SUCCESS, "%name%", dialogName);
+                this.message(plugin, this.sender, Message.BEDROCK_OPEN_SUCCESS, "%name%", dialogName);
             } else {
-                message(plugin, this.sender, Message.BEDROCK_OPEN_SUCCESS_OTHER, "%name%", dialogName, "%player%", targetPlayer.getName());
+                this.message(plugin, this.sender, Message.BEDROCK_OPEN_SUCCESS_OTHER, "%name%", dialogName, "%player%", targetPlayer.getName());
             }
         }
 

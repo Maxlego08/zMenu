@@ -36,35 +36,35 @@ public class KineticWeaponComponent extends ItemComponent {
     }
 
     public int getDelayTicks() {
-        return delayTicks;
+        return this.delayTicks;
     }
 
     public @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> getDamageCondition() {
-        return damageCondition;
+        return this.damageCondition;
     }
 
     public @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> getDismountCondition() {
-        return dismountCondition;
+        return this.dismountCondition;
     }
 
     public @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> getKnockbackCondition() {
-        return knockbackCondition;
+        return this.knockbackCondition;
     }
 
     public float getForwardMovement() {
-        return forwardMovement;
+        return this.forwardMovement;
     }
 
     public float getDamageMultiplier() {
-        return damageMultiplier;
+        return this.damageMultiplier;
     }
 
     public @NotNull Optional<Sound> getSound() {
-        return sound;
+        return this.sound;
     }
 
     public @NotNull Optional<Sound> getHitSound() {
-        return hitSound;
+        return this.hitSound;
     }
 
     @Override

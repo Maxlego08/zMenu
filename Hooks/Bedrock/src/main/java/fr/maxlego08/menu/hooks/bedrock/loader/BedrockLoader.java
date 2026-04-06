@@ -42,7 +42,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
         String title = configuration.getString("name", "");
         String content = configuration.getString("content", "");
 
-        ZBedrockInventory bedrockInventory = new ZBedrockInventory(menuPlugin, file.getName(), title, content);
+        ZBedrockInventory bedrockInventory = new ZBedrockInventory(this.menuPlugin, file.getName(), title, content);
 
         String typeString = configuration.getString("type", "SIMPLE");
         BedrockType bedrockType;
@@ -55,7 +55,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
 
         if (configuration.isConfigurationSection("open-requirement")){
             try {
-                Requirement openRequirement = loadRequirement(configuration, "open-requirement.", file);
+                Requirement openRequirement = this.loadRequirement(configuration, "open-requirement.", file);
                 bedrockInventory.setOpenRequirement(openRequirement);
             } catch (InventoryException e) {
                 Logger.info("Failed to load open requirement: " + e.getMessage(), Logger.LogType.WARNING);
@@ -65,12 +65,12 @@ public class BedrockLoader implements Loader<BedrockInventory> {
         bedrockInventory.setOpenActions(this.menuPlugin.getButtonManager().loadActions(configuration, "open-actions", file));
         bedrockInventory.setCloseActions(this.menuPlugin.getButtonManager().loadActions(configuration, "close-actions", file));
 
-        loadSpecificItems(bedrockType, configuration, bedrockInventory, file);
+        this.loadSpecificItems(bedrockType, configuration, bedrockInventory, file);
 
         bedrockInventory.setFile(file);
         bedrockInventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
 
-        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
+        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> this.createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
         for (InventoryOption inventoryOption : inventoryOptions) {
             inventoryOption.loadInventory(bedrockInventory, file, configuration, this.menuPlugin.getInventoryManager(), this.menuPlugin.getButtonManager());
         }
@@ -120,7 +120,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
             String path = sectionKey + "." + key + ".";
             try {
                 Button button = loader.load(configuration, path, key);
-                T typedButton = getButtonType(button, buttonClass, path, file);
+                T typedButton = this.getButtonType(button, buttonClass, path, file);
 
                 if (postProcess != null) {
                     postProcess.accept(typedButton, key);
@@ -142,7 +142,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
     private void loadSpecificItems(BedrockType bedrockType, YamlConfiguration configuration, ZBedrockInventory bedrockInventory, File file) throws InventoryException {
         switch (bedrockType) {
             case MODAL -> {
-                List<BedrockButton> bodyButtons = loadButtons(configuration, file, "buttons", BedrockButton.class, null);
+                List<BedrockButton> bodyButtons = this.loadButtons(configuration, file, "buttons", BedrockButton.class, null);
                 int buttonSize = bodyButtons.size();
                 if (buttonSize < 2){
                     throw new InventoryException("Invalid buttons count for type MODAL: " + buttonSize);
@@ -152,12 +152,12 @@ public class BedrockLoader implements Loader<BedrockInventory> {
                 bedrockInventory.setBedrockButtons(bodyButtons.subList(0, 2));
             }
             case SIMPLE -> {
-                List<BedrockButton> bodyButtons = loadButtons(configuration, file, "buttons", BedrockButton.class, null);
+                List<BedrockButton> bodyButtons = this.loadButtons(configuration, file, "buttons", BedrockButton.class, null);
                 bedrockInventory.setBedrockButtons(bodyButtons);
             }
             case CUSTOM -> {
-                List<InputButton> inputButtons = loadButtons(configuration, file, "buttons", InputButton.class, InputButton::setKey);
-                List<Requirement> actions = loadRequirements(configuration, "actions", file);
+                List<InputButton> inputButtons = this.loadButtons(configuration, file, "buttons", InputButton.class, InputButton::setKey);
+                List<Requirement> actions = this.loadRequirements(configuration, "actions", file);
                 bedrockInventory.setInputButtons(inputButtons);
                 bedrockInventory.setRequirements(actions);
             }
@@ -165,17 +165,17 @@ public class BedrockLoader implements Loader<BedrockInventory> {
     }
 
     protected List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException {
-        return menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
+        return this.menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
     }
     protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
-        return menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
+        return this.menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }
 
     @SuppressWarnings("unchecked")
     protected <T extends Button> T getButtonType(Button button, Class<T> verifClass, String path, File file) throws InventoryButtonException {
         if (verifClass.isInstance(button)) {
             if (button.getElseButton() != null){
-                return getButtonType(button.getElseButton(), verifClass, path, file);
+                return this.getButtonType(button.getElseButton(), verifClass, path, file);
             }
             return (T) button;
         } else {

@@ -30,32 +30,32 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         Map<String, Function<String, Action>> actionMap = new HashMap<>();
 
         actionMap.put("[close]", cmd -> new CloseAction());
-        actionMap.put("[console]", cmd -> new ConsoleCommandAction(Collections.singletonList(removePrefix(cmd, "[console]"))));
-        actionMap.put("[player]", cmd -> new PlayerCommandAction(Collections.singletonList(removePrefix(cmd, "[player]")), false));
-        actionMap.put("[commandevent]", cmd -> new PlayerCommandAction(Collections.singletonList(removePrefix(cmd, "[commandevent]")), true));
-        actionMap.put("[minimessage]", cmd -> new MessageAction(Collections.singletonList(removePrefix(cmd, "[minimessage]")), true));
-        actionMap.put("[minibroadcast]", cmd -> new BroadcastAction(Collections.singletonList(removePrefix(cmd, "[minibroadcast]")), true, new ArrayList<>()));
-        actionMap.put("[message]", cmd -> new MessageAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false));
-        actionMap.put("[broadcast]", cmd -> new BroadcastAction(Collections.singletonList(color(removePrefix(cmd, "[message]"))), false, new ArrayList<>()));
-        actionMap.put("[openguimenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openguimenu]"), "zMenu", "1", new ArrayList<>()));
-        actionMap.put("[openmenu]", cmd -> new InventoryAction(inventoryManager, commandManager, removePrefix(cmd, "[openmenu]"), "zMenu", "1", new ArrayList<>()));
-        actionMap.put("[connect]", cmd -> new ConnectAction(removePrefix(cmd, "[connect]"), plugin));
+        actionMap.put("[console]", cmd -> new ConsoleCommandAction(Collections.singletonList(this.removePrefix(cmd, "[console]"))));
+        actionMap.put("[player]", cmd -> new PlayerCommandAction(Collections.singletonList(this.removePrefix(cmd, "[player]")), false));
+        actionMap.put("[commandevent]", cmd -> new PlayerCommandAction(Collections.singletonList(this.removePrefix(cmd, "[commandevent]")), true));
+        actionMap.put("[minimessage]", cmd -> new MessageAction(Collections.singletonList(this.removePrefix(cmd, "[minimessage]")), true));
+        actionMap.put("[minibroadcast]", cmd -> new BroadcastAction(Collections.singletonList(this.removePrefix(cmd, "[minibroadcast]")), true, new ArrayList<>()));
+        actionMap.put("[message]", cmd -> new MessageAction(Collections.singletonList(this.color(this.removePrefix(cmd, "[message]"))), false));
+        actionMap.put("[broadcast]", cmd -> new BroadcastAction(Collections.singletonList(this.color(this.removePrefix(cmd, "[message]"))), false, new ArrayList<>()));
+        actionMap.put("[openguimenu]", cmd -> new InventoryAction(inventoryManager, commandManager, this.removePrefix(cmd, "[openguimenu]"), "zMenu", "1", new ArrayList<>()));
+        actionMap.put("[openmenu]", cmd -> new InventoryAction(inventoryManager, commandManager, this.removePrefix(cmd, "[openmenu]"), "zMenu", "1", new ArrayList<>()));
+        actionMap.put("[connect]", cmd -> new ConnectAction(this.removePrefix(cmd, "[connect]"), plugin));
         actionMap.put("[refresh]", cmd -> new RefreshAction());
-        actionMap.put("[broadcastsound]", cmd -> new BroadcastSoundAction(getSoundOption(removePrefix(cmd, "[broadcastsound]"))));
-        actionMap.put("[broadcastsoundworld]", cmd -> new BroadcastSoundAction(getSoundOption(removePrefix(cmd, "[broadcastsoundworld]"))));
-        actionMap.put("[sound]", cmd -> new SoundAction(getSoundOption(removePrefix(cmd, "[sound]"))));
-        actionMap.put("[takemoney]", cmd -> new CurrencyWithdrawAction(removePrefix(cmd, "[takemoney]"), Currencies.VAULT, null, "no reason"));
-        actionMap.put("[givemoney]", cmd -> new CurrencyDepositAction(removePrefix(cmd, "[givemoney]"), Currencies.VAULT, null, "no reason"));
+        actionMap.put("[broadcastsound]", cmd -> new BroadcastSoundAction(this.getSoundOption(this.removePrefix(cmd, "[broadcastsound]"))));
+        actionMap.put("[broadcastsoundworld]", cmd -> new BroadcastSoundAction(this.getSoundOption(this.removePrefix(cmd, "[broadcastsoundworld]"))));
+        actionMap.put("[sound]", cmd -> new SoundAction(this.getSoundOption(this.removePrefix(cmd, "[sound]"))));
+        actionMap.put("[takemoney]", cmd -> new CurrencyWithdrawAction(this.removePrefix(cmd, "[takemoney]"), Currencies.VAULT, null, "no reason"));
+        actionMap.put("[givemoney]", cmd -> new CurrencyDepositAction(this.removePrefix(cmd, "[givemoney]"), Currencies.VAULT, null, "no reason"));
 
         for (String command : commands) {
-            CommandDelayResult result = extractAndRemoveDelayAndChance(command);
+            CommandDelayResult result = this.extractAndRemoveDelayAndChance(command);
             String cleanedCommand = result.command();
             int delay = result.delay();
             float chance = result.chance();
 
             for (Map.Entry<String, Function<String, Action>> entry : actionMap.entrySet()) {
                 if (cleanedCommand.startsWith(entry.getKey())) {
-                    String finalCommand = removePrefix(cleanedCommand, entry.getKey());
+                    String finalCommand = this.removePrefix(cleanedCommand, entry.getKey());
                     Action action = entry.getValue().apply(finalCommand);
 
                     if (delay > 0) {
@@ -115,7 +115,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
             ConfigurationSection requirementSection = configurationSection.getConfigurationSection(key);
             if (requirementSection == null) continue;
 
-            Permissible permissible = loadPermissible(inventoryManager, commandManager, plugin, requirementSection);
+            Permissible permissible = this.loadPermissible(inventoryManager, commandManager, plugin, requirementSection);
             if (permissible != null) {
                 permissibles.add(permissible);
             }
@@ -128,7 +128,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         String type = section.getString("type");
         if (type == null) return null;
 
-        List<Action> denyActions = loadActions(inventoryManager, commandManager, plugin, section.getStringList("deny_commands"));
+        List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, section.getStringList("deny_commands"));
 
         String permission = section.getString("permission");
         switch (type.toLowerCase()) {
@@ -149,42 +149,42 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
             case "string contains":
             case "stringcontains":
             case "contains":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.CONTAINS_STRING);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.CONTAINS_STRING);
 
             case "string equals":
             case "stringequals":
             case "equals":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.EQUALS_STRING);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.EQUALS_STRING);
 
             case "stringequalsignorecase":
             case "string equals ignorecase":
             case "equalsignorecase":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.EQUALSIGNORECASE_STRING);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.EQUALSIGNORECASE_STRING);
 
             case ">":
             case "greater than":
             case "greaterthan":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.SUPERIOR);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.SUPERIOR);
 
             case ">=":
             case "greater than or equal to":
             case "greaterthanorequalto":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.SUPERIOR_OR_EQUAL);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.SUPERIOR_OR_EQUAL);
 
             case "==":
             case "equal to":
             case "equalto":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.EQUAL_TO);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.EQUAL_TO);
 
             case "<=":
             case "less than or equal to":
             case "lessthanorequalto":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.LOWER_OR_EQUAL);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.LOWER_OR_EQUAL);
 
             case "<":
             case "less than":
             case "lessthan":
-                return createPlaceholderPermissible(section, denyActions, PlaceholderAction.LOWER);
+                return this.createPlaceholderPermissible(section, denyActions, PlaceholderAction.LOWER);
 
             case "regex matches":
             case "regex":

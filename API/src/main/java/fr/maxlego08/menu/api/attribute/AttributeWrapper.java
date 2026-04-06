@@ -30,6 +30,6 @@ public record AttributeWrapper(Attribute attribute, AttributeModifier.Operation 
     }
 
     public AttributeModifier toAttributeModifier(MenuPlugin plugin) {
-        return new AttributeModifier(new NamespacedKey(plugin, UUID.randomUUID().toString()), amount, operation, slot);
+        return new AttributeModifier(new NamespacedKey(plugin, UUID.randomUUID().toString()), this.amount, this.operation, this.slot);
     }
 }

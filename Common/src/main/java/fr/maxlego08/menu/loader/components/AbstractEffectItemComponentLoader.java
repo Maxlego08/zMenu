@@ -36,11 +36,11 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
         List<PotionEffectType> potionEffectTypes = new ArrayList<>();
 
         if (effectObj instanceof String effectString) {
-            parsePotionEffectType(effectString).ifPresent(potionEffectTypes::add);
+            this.parsePotionEffectType(effectString).ifPresent(potionEffectTypes::add);
         } else if (effectObj instanceof List<?> effectList) {
             for (Object obj : effectList) {
                 if (obj instanceof String effectString) {
-                    parsePotionEffectType(effectString).ifPresent(potionEffectTypes::add);
+                    this.parsePotionEffectType(effectString).ifPresent(potionEffectTypes::add);
                 }
             }
         }
@@ -50,7 +50,7 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
 
     protected Optional<Sound> parseSound(String soundString) {
         try {
-            NamespacedKey key = parseNamespacedKey(soundString);
+            NamespacedKey key = this.parseNamespacedKey(soundString);
             if (key == null) return Optional.empty();
             return Optional.of(Registry.SOUNDS.getOrThrow(key));
         } catch (IllegalArgumentException e) {
@@ -76,7 +76,7 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
 
     protected Optional<PotionEffectType> parsePotionEffectType(String effectString) {
         try {
-            NamespacedKey key = parseNamespacedKey(effectString);
+            NamespacedKey key = this.parseNamespacedKey(effectString);
             if (key == null) return Optional.empty();
             return Optional.of(Registry.EFFECT.getOrThrow(key));
         } catch (IllegalArgumentException e) {
@@ -89,7 +89,7 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
         for (var rawPotionEffect : potionEffectsRaw) {
             @SuppressWarnings("unchecked")
             Map<String, Object> potionEffectMap = (Map<String, Object>) rawPotionEffect;
-            parsePotionEffect(potionEffectMap).ifPresent(potionEffects::add);
+            this.parsePotionEffect(potionEffectMap).ifPresent(potionEffects::add);
         }
         return potionEffects;
     }
@@ -97,7 +97,7 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
     protected Optional<PotionEffect> parsePotionEffect(Map<String, Object> potionEffectMap) {
         try {
             String potionEffectTypeString = (String) potionEffectMap.get("id");
-            NamespacedKey key = parseNamespacedKey(potionEffectTypeString);
+            NamespacedKey key = this.parseNamespacedKey(potionEffectTypeString);
             if (key == null) return Optional.empty();
 
             PotionEffectType potionEffectType = Registry.EFFECT.getOrThrow(key);

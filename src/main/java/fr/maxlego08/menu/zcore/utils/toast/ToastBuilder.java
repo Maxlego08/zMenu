@@ -134,13 +134,13 @@ public class ToastBuilder {
      * Notifications are generated and displayed to specified players
      */
     public void show() {
-        if (isToAll) {
-            advancementHandler.showToastToAll(icon, message, style, modelData, modelDataType, glowing);
+        if (this.isToAll) {
+            this.advancementHandler.showToastToAll(this.icon, this.message, this.style, this.modelData, this.modelDataType, this.glowing);
         } else {
-            if (players == null || players.isEmpty()) {
+            if (this.players == null || this.players.isEmpty()) {
                 throw new IllegalStateException("[ERROR TOAST POP-UP] No player found!");
             }
-            advancementHandler.showToast(players, icon, message, style, modelData, modelDataType, glowing);
+            this.advancementHandler.showToast(this.players, this.icon, this.message, this.style, this.modelData, this.modelDataType, this.glowing);
         }
     }
 }

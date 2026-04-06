@@ -41,7 +41,7 @@ public class LocationAdapter extends TypeAdapter<Location> {
             jsonWriter.nullValue();
             return;
         }
-        jsonWriter.value(getRaw(location));
+        jsonWriter.value(this.getRaw(location));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class LocationAdapter extends TypeAdapter<Location> {
             jsonReader.nextNull();
             return null;
         }
-        return fromRaw(jsonReader.nextString());
+        return this.fromRaw(jsonReader.nextString());
     }
 
     private String getRaw(Location location) {
@@ -61,7 +61,7 @@ public class LocationAdapter extends TypeAdapter<Location> {
         serial.put(Z, Double.toString(location.getZ()));
         serial.put(YAW, Float.toString(location.getYaw()));
         serial.put(PITCH, Float.toString(location.getPitch()));
-        return plugin.getGson().toJson(serial);
+        return this.plugin.getGson().toJson(serial);
     }
 
     private Location fromRaw(String raw) {

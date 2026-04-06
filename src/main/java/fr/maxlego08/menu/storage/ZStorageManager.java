@@ -73,12 +73,12 @@ public class ZStorageManager implements StorageManager {
             databaseConnection = new HikariDatabaseConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, storageType.equalsIgnoreCase("MYSQL") ? DatabaseType.MYSQL : DatabaseType.MARIADB));
         }
 
-        Logger logger = JULogger.from(plugin.getLogger());
+        Logger logger = JULogger.from(this.plugin.getLogger());
         this.requestHelper = new RequestHelper(databaseConnection, logger);
 
         if (!databaseConnection.isValid()) {
             this.plugin.getLogger().severe("Unable to connect to database !");
-            Bukkit.getPluginManager().disablePlugin(plugin);
+            Bukkit.getPluginManager().disablePlugin(this.plugin);
             return;
         } else {
             this.plugin.getLogger().info("The database connection is valid ! (" + (storageType.equalsIgnoreCase("SQLITE") ? "SQLITE" : databaseConnection.getDatabaseConfiguration().getHost()) + ")");
@@ -94,7 +94,7 @@ public class ZStorageManager implements StorageManager {
 
         if (seconds <= 0) return;
 
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.plugin.getScheduler().runTimerAsync(() -> {
             this.storeOpenInventories();
@@ -105,7 +105,7 @@ public class ZStorageManager implements StorageManager {
 
     private void storePlayerData() {
 
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         List<Schema> schemas = new ArrayList<>();
 
@@ -126,7 +126,7 @@ public class ZStorageManager implements StorageManager {
 
     private void storeOpenInventories() {
 
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         List<Schema> schemas = new ArrayList<>();
         var iterator = this.cache.get(PlayerOpenInventoryEvent.class).iterator();
@@ -162,7 +162,7 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void upsertData(@NonNull UUID uuid, @NonNull Data data) {
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()));
         this.cache.add(new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt())));
@@ -170,7 +170,7 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void clearData() {
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.cache.clear(DataDTO.class);
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
@@ -179,7 +179,7 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void clearData(@NonNull UUID uniqueId) {
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uniqueId));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
@@ -187,7 +187,7 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void clearData(@NonNull String key) {
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
@@ -195,7 +195,7 @@ public class ZStorageManager implements StorageManager {
 
     @Override
     public void removeData(@NonNull UUID uuid, @NonNull String key) {
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
@@ -217,7 +217,7 @@ public class ZStorageManager implements StorageManager {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerOpenInventory(PlayerOpenInventoryEvent event) {
 
-        if (!isEnable() || !Configuration.enablePlayerOpenInventoryLogs) return;
+        if (!this.isEnable() || !Configuration.enablePlayerOpenInventoryLogs) return;
 
         this.cache.add(event);
     }
@@ -225,7 +225,7 @@ public class ZStorageManager implements StorageManager {
     @Override
     public void removeInventory(@NonNull UUID uuid) {
 
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
     }
@@ -233,7 +233,7 @@ public class ZStorageManager implements StorageManager {
     @Override
     public void storeInventory(@NonNull UUID uuid, @NonNull InventoryPlayer inventoryPlayer) {
 
-        if (!isEnable()) return;
+        if (!this.isEnable()) return;
 
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.insert(Tables.PLAYER_INVENTORIES, table -> {
             table.uuid("player_id", uuid);

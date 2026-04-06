@@ -23,7 +23,7 @@ public class PaperCustomNameItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String customName = configuration.getString(path);
         if (customName != null) {
             return new PaperCustomNameComponent(customName, this.metaUpdater);

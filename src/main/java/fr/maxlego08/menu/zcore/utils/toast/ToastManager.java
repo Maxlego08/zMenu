@@ -25,16 +25,16 @@ public class ToastManager implements ToastHelper {
 
     @Override
     public void showToast(Collection<? extends Player> players, @NonNull String icon, @NonNull String message, @NonNull ToastType style, Object modelData, boolean glowing) {
-        createToast().withIcon(icon).withMessage(message).withStyle(style).withModelData(modelData).setGlowing(glowing).to(players).show();
+        this.createToast().withIcon(icon).withMessage(message).withStyle(style).withModelData(modelData).setGlowing(glowing).to(players).show();
     }
 
     @Override
     public void showToastToAll(@NonNull String icon, @NonNull String message, @NonNull ToastType style, Object modelData, boolean glowing) {
-        createToast().withIcon(icon).withMessage(message).withStyle(style).withModelData(modelData).setGlowing(glowing).toAll().show();
+        this.createToast().withIcon(icon).withMessage(message).withStyle(style).withModelData(modelData).setGlowing(glowing).toAll().show();
     }
 
     @Override
     public void showToast(@NonNull String icon, @NonNull String message, @NonNull ToastType style, Object modelData, boolean glowing, Player... players) {
-        showToast(Arrays.asList(players), icon, message, style, modelData, glowing);
+        this.showToast(Arrays.asList(players), icon, message, style, modelData, glowing);
     }
 }

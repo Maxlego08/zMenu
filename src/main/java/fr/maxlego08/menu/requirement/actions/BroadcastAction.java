@@ -27,8 +27,8 @@ public class BroadcastAction extends ActionHelper {
     public void execute(@NonNull Player sender, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> {
             boolean allowed = true;
-            if (!requirements.isEmpty()) {
-                for (Permissible requirement : requirements) {
+            if (!this.requirements.isEmpty()) {
+                for (Permissible requirement : this.requirements) {
                     if (!requirement.hasPermission(player, button, inventory, placeholders)) {
                         allowed = false;
                         break;
@@ -36,10 +36,10 @@ public class BroadcastAction extends ActionHelper {
                 }
             }
             if (allowed) {
-                papi(placeholders.parse(this.messages), player).forEach(message -> {
+                this.papi(placeholders.parse(this.messages), player).forEach(message -> {
                     message = message.replace("%sender%", sender.getName());
                     message = message.replace("%receiver%", player.getName());
-                    if (miniMessage) {
+                    if (this.miniMessage) {
                         inventory.getPlugin().getMetaUpdater().sendMessage(player, message);
                     } else {
                         player.sendMessage(message);

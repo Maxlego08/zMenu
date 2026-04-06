@@ -17,7 +17,7 @@ public record AutoPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, 
      */
     @Override
     public String startWith() {
-        return startWith;
+        return this.startWith;
     }
 
     /**
@@ -25,7 +25,7 @@ public record AutoPlaceholder(String startWith, ReturnBiConsumer<OfflinePlayer, 
      */
     @Override
     public ReturnBiConsumer<OfflinePlayer, String, String> biConsumer() {
-        return biConsumer;
+        return this.biConsumer;
     }
 
     public String accept(OfflinePlayer offlinePlayer, String value) {

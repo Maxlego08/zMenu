@@ -45,7 +45,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
 
         String buttonType = "NONE";
         String buttonName = (String) objects[0];
-        DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue(inventorySize, new HashMap<>(), file);
+        DefaultButtonValue defaultButtonValue = objects.length == 2 ? (DefaultButtonValue) objects[1] : new DefaultButtonValue(this.inventorySize, new HashMap<>(), this.file);
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
@@ -73,12 +73,12 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
                 slot = Integer.parseInt(strings[1]);
             } else {
 
-                slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
-                page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
+                slot = this.parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+                page = this.parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
             }
         } catch (Exception ignored) {
-            slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
-            page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
+            slot = this.parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+            page = this.parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
         }
 
         page = Math.max(page, 1);
@@ -97,7 +97,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setPage(page);
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
-        MenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", file);
+        MenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", this.file);
         button.setItemStack(itemStack);
         button.setButtonName(buttonName);
 
@@ -109,42 +109,42 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         List<String> shiftLeftClickCommands = configuration.getStringList(path + "shift_left_click_commands");
         List<String> shiftRightClickCommands = configuration.getStringList(path + "shift_right_click_commands");
 
-        List<Action> actions = loadActions(inventoryManager, plugin.getCommandManager(), plugin, clickCommands);
-        List<Action> leftActions = loadActions(inventoryManager, plugin.getCommandManager(), plugin, leftClickCommands);
-        List<Action> rightActions = loadActions(inventoryManager, plugin.getCommandManager(), plugin, rightClickCommands);
-        List<Action> middleActions = loadActions(inventoryManager, plugin.getCommandManager(), plugin, middleClickCommands);
-        List<Action> shiftLeftActions = loadActions(inventoryManager, plugin.getCommandManager(), plugin, shiftLeftClickCommands);
-        List<Action> shiftRightActions = loadActions(inventoryManager, plugin.getCommandManager(), plugin, shiftRightClickCommands);
+        List<Action> actions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, clickCommands);
+        List<Action> leftActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, leftClickCommands);
+        List<Action> rightActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, rightClickCommands);
+        List<Action> middleActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, middleClickCommands);
+        List<Action> shiftLeftActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, shiftLeftClickCommands);
+        List<Action> shiftRightActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, shiftRightClickCommands);
 
         List<Requirement> requirements = new ArrayList<>();
 
         ConfigurationSection leftClickRequirementSection = configuration.getConfigurationSection(path + "left_click_requirement");
         if (leftClickRequirementSection != null) {
-            Requirement requirement = loadRequirement(leftActions.isEmpty() ? actions : leftActions, leftClickRequirementSection, ClickType.LEFT);
+            Requirement requirement = this.loadRequirement(leftActions.isEmpty() ? actions : leftActions, leftClickRequirementSection, ClickType.LEFT);
             requirements.add(requirement);
         }
 
         ConfigurationSection rightClickRequirementSection = configuration.getConfigurationSection(path + "right_click_requirement");
         if (rightClickRequirementSection != null) {
-            Requirement requirement = loadRequirement(rightActions.isEmpty() ? actions : rightActions, rightClickRequirementSection, ClickType.RIGHT);
+            Requirement requirement = this.loadRequirement(rightActions.isEmpty() ? actions : rightActions, rightClickRequirementSection, ClickType.RIGHT);
             requirements.add(requirement);
         }
 
         ConfigurationSection shiftLeftClickRequirement = configuration.getConfigurationSection(path + "shift_left_click_requirement");
         if (shiftLeftClickRequirement != null) {
-            Requirement requirement = loadRequirement(shiftLeftActions, shiftLeftClickRequirement, ClickType.SHIFT_LEFT);
+            Requirement requirement = this.loadRequirement(shiftLeftActions, shiftLeftClickRequirement, ClickType.SHIFT_LEFT);
             requirements.add(requirement);
         }
 
         ConfigurationSection shiftRightClickRequirement = configuration.getConfigurationSection(path + "shift_right_click_requirement");
         if (shiftRightClickRequirement != null) {
-            Requirement requirement = loadRequirement(shiftRightActions, shiftRightClickRequirement, ClickType.SHIFT_RIGHT);
+            Requirement requirement = this.loadRequirement(shiftRightActions, shiftRightClickRequirement, ClickType.SHIFT_RIGHT);
             requirements.add(requirement);
         }
 
         ConfigurationSection middleClickRequirement = configuration.getConfigurationSection(path + "middle_click_requirement");
         if (middleClickRequirement != null) {
-            Requirement requirement = loadRequirement(middleActions, middleClickRequirement, ClickType.SHIFT_RIGHT);
+            Requirement requirement = this.loadRequirement(middleActions, middleClickRequirement, ClickType.SHIFT_RIGHT);
             requirements.add(requirement);
         }
 
@@ -161,7 +161,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         // View Requirements
         ConfigurationSection viewRequirementSection = configuration.getConfigurationSection(path + "view_requirement");
         if (viewRequirementSection != null) {
-            Requirement requirement = loadRequirement(new ArrayList<>(), viewRequirementSection);
+            Requirement requirement = this.loadRequirement(new ArrayList<>(), viewRequirementSection);
             button.setViewRequirement(requirement);
         }
 
@@ -201,10 +201,10 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         List<Permissible> permissibles = new ArrayList<>();
         ConfigurationSection configurationSectionRequirements = configurationSection.getConfigurationSection("requirements");
         if (configurationSectionRequirements != null) {
-            permissibles = loadPermissibles(plugin.getInventoryManager(), plugin.getCommandManager(), plugin, configurationSectionRequirements);
+            permissibles = this.loadPermissibles(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configurationSectionRequirements);
         }
 
-        List<Action> denyActions = loadActions(plugin.getInventoryManager(), plugin.getCommandManager(), plugin, configurationSection.getStringList("deny_commands"));
+        List<Action> denyActions = this.loadActions(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configurationSection.getStringList("deny_commands"));
 
         return new ZRequirement(configurationSection.getInt("minimum_requirements", permissibles.size()), permissibles, denyActions, actions, Arrays.asList(clickTypes));
     }

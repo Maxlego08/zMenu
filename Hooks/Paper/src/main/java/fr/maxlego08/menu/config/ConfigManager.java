@@ -13,8 +13,8 @@ import fr.maxlego08.menu.config.processors.ConfigFieldProcessor;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorFactory;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorRegistry;
 import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventoryDeveloper;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -48,25 +48,25 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         this.menuPlugin = menuPlugin;
         this.paperComponent = (ComponentMeta) menuPlugin.getMetaUpdater();
         this.processorRegistry = new ConfigFieldProcessorRegistry();
-        initializeDefaultProcessors();
+        this.initializeDefaultProcessors();
     }
 
     private void initializeDefaultProcessors() {
         ConfigFieldProcessorFactory factory = new ConfigFieldProcessorFactory();
-        processorRegistry.registerProcessor(DialogInputType.BOOLEAN, factory.createBooleanProcessor());
-        processorRegistry.registerProcessor(DialogInputType.NUMBER_RANGE, factory.createNumberRangeProcessor());
-        processorRegistry.registerProcessor(DialogInputType.TEXT, factory.createTextProcessor());
+        this.processorRegistry.registerProcessor(DialogInputType.BOOLEAN, factory.createBooleanProcessor());
+        this.processorRegistry.registerProcessor(DialogInputType.NUMBER_RANGE, factory.createNumberRangeProcessor());
+        this.processorRegistry.registerProcessor(DialogInputType.TEXT, factory.createTextProcessor());
     }
 
     @Override
     public <T> void registerConfig(@NotNull ConfigDialogBuilder configDialogBuilder, @NotNull Class<T> configClass, @NotNull Plugin plugin) {
         String configName = plugin.getName() + ":" + configClass.getSimpleName();
-        ConfigFieldContext context = processConfigFields(configClass);
+        ConfigFieldContext context = this.processConfigFields(configClass);
 
-        ZDialogInventoryDeveloper dialogInventory = createDialogInventory(configDialogBuilder, configName, context.getUpdateConsumer());
+        ZDialogInventoryDeveloper dialogInventory = this.createDialogInventory(configDialogBuilder, configName, context.getUpdateConsumer());
 
-        applyContextToDialog(dialogInventory, context);
-        zDialogInventoryDev.put(plugin.getName(), dialogInventory);
+        this.applyContextToDialog(dialogInventory, context);
+        this.zDialogInventoryDev.put(plugin.getName(), dialogInventory);
     }
 
     private ZDialogInventoryDeveloper createDialogInventory(ConfigDialogBuilder configDialog, String configName, Consumer<Boolean> updateConsumer) {
@@ -99,7 +99,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
 
         for (Field field : configClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(ConfigOption.class)) {
-                processField(field, context);
+                this.processField(field, context);
             } else if (field.isAnnotationPresent(ConfigUpdate.class)){
                 field.setAccessible(true);
                 context.setUpdateConsumer(value-> {
@@ -124,7 +124,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         field.setAccessible(true);
 
         DialogInputType inputType = configOption.type();
-        ConfigFieldProcessor processor = processorRegistry.getProcessor(inputType);
+        ConfigFieldProcessor processor = this.processorRegistry.getProcessor(inputType);
 
         if (processor != null) {
             processor.processField(field, configOption, context);
@@ -149,7 +149,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
     @Override
     public void openConfig(@NonNull String pluginName, @NonNull Player player) {
         try {
-            ZDialogInventoryDeveloper zDialog = zDialogInventoryDev.get(pluginName);
+            ZDialogInventoryDeveloper zDialog = this.zDialogInventoryDev.get(pluginName);
             if (zDialog == null) {
                 if (Configuration.enableDebug) {
                     Logger.info("No dialog found for plugin: " + pluginName);
@@ -158,8 +158,8 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
             }
 
             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogInput> inputs = getDialogInputs(player, zDialog.getDialogInputs(player));
-            DialogBase.Builder dialogBase = createDialogBase(
+            List<DialogInput> inputs = this.getDialogInputs(player, zDialog.getDialogInputs(player));
+            DialogBase.Builder dialogBase = this.createDialogBase(
                     dialogBuild.name(),
                     dialogBuild.externalTitle(),
                     dialogBuild.canCloseWithEscape(),
@@ -170,19 +170,19 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
             Dialog dialog = Dialog.create(builder -> builder.empty()
                     .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
                             ActionButton.create(
-                                    paperComponent.getComponent(zDialog.getYesText(player)),
-                                    paperComponent.getComponent(zDialog.getYesTooltip(player)),
+                                    this.paperComponent.getComponent(zDialog.getYesText(player)),
+                                    this.paperComponent.getComponent(zDialog.getYesTooltip(player)),
                                     zDialog.getYesWidth(),
-                                    createAction(inputs, zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),
+                                    this.createAction(inputs, zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),
                                             zDialog.getFloatConsumerMap(), zDialog.getIntegerConsumerMap(),
                                             zDialog.getNumberRangeConfirmText(), zDialog.getStringConsumerMap(),
                                             zDialog.getStringConfirmText(), zDialog.getUpdateConsumer())
                             ),
                             ActionButton.create(
-                                    paperComponent.getComponent(zDialog.getNoText(player)),
-                                    paperComponent.getComponent(zDialog.getNoTooltip(player)),
+                                    this.paperComponent.getComponent(zDialog.getNoText(player)),
+                                    this.paperComponent.getComponent(zDialog.getNoTooltip(player)),
                                     zDialog.getNoWidth(),
-                                    createAction(new ArrayList<>(), new HashMap<>(), "", new HashMap<>(),
+                                    this.createAction(new ArrayList<>(), new HashMap<>(), "", new HashMap<>(),
                                             new HashMap<>(), "", new HashMap<>(), "", null)
                             )
                     ))
@@ -209,11 +209,11 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
 
             for (DialogInput input : inputs) {
                 String key = input.key();
-                processInputResult(input, key, view, sb, consumerMap, booleanText, floatMap,
+                this.processInputResult(input, key, view, sb, consumerMap, booleanText, floatMap,
                         consumerMapInt, numberRangeText, stringMap, stringText, updateConsumer );
             }
 
-            getPaperComponent().sendMessage((Player) audience, sb.toString());
+            this.getPaperComponent().sendMessage((Player) audience, sb.toString());
         }, ClickCallback.Options.builder().uses(-1).build());
     }
 
@@ -223,12 +223,9 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
                                     Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt,
                                     String numberRangeText, Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
         switch (input) {
-            case NumberRangeDialogInput numberRangeDialogInput ->
-                    processNumberRangeInput(key, view, sb, floatMap, consumerMapInt, numberRangeText, updateConsumer);
-            case TextDialogInput textDialogInput ->
-                    processTextInput(key, view, sb, stringMap, stringText, updateConsumer);
-            case BooleanDialogInput booleanDialogInput ->
-                    processBooleanInput(key, view, sb, consumerMap, booleanText, booleanDialogInput, updateConsumer);
+            case NumberRangeDialogInput numberRangeDialogInput -> this.processNumberRangeInput(key, view, sb, floatMap, consumerMapInt, numberRangeText, updateConsumer);
+            case TextDialogInput textDialogInput -> this.processTextInput(key, view, sb, stringMap, stringText, updateConsumer);
+            case BooleanDialogInput booleanDialogInput -> this.processBooleanInput(key, view, sb, consumerMap, booleanText, booleanDialogInput, updateConsumer);
             default -> {
             }
         }
@@ -240,11 +237,11 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         if (consumerMapInt.containsKey(key)) {
             int intValue = view.getFloat(key) == null ? 0 : (int) view.getFloat(key).floatValue();
             consumerMapInt.get(key).accept(intValue);
-            executeUpdateConsumer(updateConsumer);
+            this.executeUpdateConsumer(updateConsumer);
         } else if (floatMap.containsKey(key)) {
             float floatValue = view.getFloat(key);
             floatMap.get(key).accept(floatValue);
-            executeUpdateConsumer(updateConsumer);
+            this.executeUpdateConsumer(updateConsumer);
         }
         String line = numberRangeText.replace("%key%", key)
                 .replace("%value%", String.valueOf(view.getFloat(key)));
@@ -256,7 +253,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         String stringValue = view.getText(key);
         if (stringMap.containsKey(key)) {
             stringMap.get(key).accept(stringValue);
-            executeUpdateConsumer(updateConsumer);
+            this.executeUpdateConsumer(updateConsumer);
         }
         if (stringValue != null) {
             String line = stringText.replace("%key%", key).replace("%text%", stringValue);
@@ -270,7 +267,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         Boolean booleanValue = view.getBoolean(key);
         if (booleanValue != null && consumerMap.containsKey(key)) {
             consumerMap.get(key).accept(booleanValue);
-            executeUpdateConsumer(updateConsumer);
+            this.executeUpdateConsumer(updateConsumer);
         }
 
         if (booleanValue != null) {
@@ -293,10 +290,10 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
 
     @Override
     public @NonNull List<String> getRegisteredConfigs() {
-        return new ArrayList<>(zDialogInventoryDev.keySet());
+        return new ArrayList<>(this.zDialogInventoryDev.keySet());
     }
 
     public ConfigFieldProcessorRegistry getProcessorRegistry() {
-        return processorRegistry;
+        return this.processorRegistry;
     }
 }

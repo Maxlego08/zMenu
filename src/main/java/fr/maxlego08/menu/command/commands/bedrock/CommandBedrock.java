@@ -17,7 +17,7 @@ public class CommandBedrock extends VCommand {
 
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
-        sendSyntax();
+        this.sendSyntax();
         return CommandType.SUCCESS;
     }
 }

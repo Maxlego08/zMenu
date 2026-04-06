@@ -38,7 +38,7 @@ public abstract class BodyButton extends Button {
 
     @Contract("_ -> this")
     public BodyButton setWidth(int width) {
-        this.width = Math.max(1, Math.min(width, bodyType == DialogBodyType.ITEM ? 256 : 1024));
+        this.width = Math.max(1, Math.min(width, this.bodyType == DialogBodyType.ITEM ? 256 : 1024));
         return this;
     }
 

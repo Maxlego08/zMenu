@@ -47,11 +47,11 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     @Override
     public boolean isClose() {
-        return isClose;
+        return this.isClose;
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public VInventory setId(int id) {
@@ -60,7 +60,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     protected void createInventory(String name) {
-        createInventory(name, 54);
+        this.createInventory(name, 54);
     }
 
     protected void createInventory(String name, int size) {
@@ -91,23 +91,23 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     @Override
     public ItemButton addItem(int slot, ItemStack itemStack) {
-        return addItem(false, slot, itemStack, true);
+        return this.addItem(false, slot, itemStack, true);
     }
 
     @Override
     public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack) {
-        return addItem(inPlayerInventory, slot, itemStack, true);
+        return this.addItem(inPlayerInventory, slot, itemStack, true);
     }
 
     @Override
     public ItemButton addItem(int slot, ItemStack itemStack, boolean enableAntiDupe) {
-        return addItem(false, slot, itemStack, enableAntiDupe);
+        return this.addItem(false, slot, itemStack, enableAntiDupe);
     }
 
     @Override
     public ItemButton addItem(boolean inPlayerInventory, int slot, ItemStack itemStack, boolean enableAntiDupe) {
 
-        createDefaultInventory();
+        this.createDefaultInventory();
 
         if (itemStack == null) {
             this.plugin.getLogger().severe("Attention, a null ItemStack was found in slot " + slot + " ! > " + this);
@@ -157,17 +157,17 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     @Override
     public @NonNull Map<Integer, ItemButton> getItems() {
-        return items;
+        return this.items;
     }
 
     @Override
     public @NonNull Map<Integer, ItemButton> getPlayerInventoryItems() {
-        return playerInventoryItems;
+        return this.playerInventoryItems;
     }
 
     @Override
     public boolean isDisableClick() {
-        return disableClick;
+        return this.disableClick;
     }
 
     @Override
@@ -177,26 +177,26 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     @Override
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     @Override
     public int getPage() {
-        return page;
+        return this.page;
     }
 
     @Override
     public Object[] getArgs() {
-        return args;
+        return this.args;
     }
 
     @Override
     public @NonNull Inventory getSpigotInventory() {
-        return inventory;
+        return this.inventory;
     }
 
     public String getGuiName() {
-        return guiName;
+        return this.guiName;
     }
 
     protected InventoryResult preOpenInventory(@NotNull ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
@@ -206,7 +206,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         this.player = player;
         this.plugin = main;
 
-        return openInventory(main, player, page, args);
+        return this.openInventory(main, player, page, args);
     }
 
     public abstract InventoryResult openInventory(ZMenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException;
@@ -226,7 +226,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     public @NonNull ZMenuPlugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     public void setPlugin(ZMenuPlugin plugin) {
@@ -236,7 +236,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     @Override
     protected VInventory clone() {
         try {
-            return getClass().newInstance();
+            return this.getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

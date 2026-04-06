@@ -11,9 +11,9 @@ import java.lang.reflect.Field;
 public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
     @Override
     public void processField(Field field, ConfigOption configOption, ConfigFieldContext context) {
-        validateField(field, configOption);
+        this.validateField(field, configOption);
 
-        InputButton inputButton = createBaseInputButton(configOption, DialogInputType.NUMBER_RANGE);
+        InputButton inputButton = this.createBaseInputButton(configOption, DialogInputType.NUMBER_RANGE);
 
         inputButton.setStart(configOption.startRange());
         inputButton.setEnd(configOption.endRange());
@@ -23,13 +23,13 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
         Class<?> fieldType = field.getType();
 
         if (fieldType == int.class || fieldType == Integer.class) {
-            setupIntegerField(field, inputButton, context, key);
+            this.setupIntegerField(field, inputButton, context, key);
         } else if (fieldType == long.class || fieldType == Long.class) {
-            setupLongField(field, inputButton, context, key);
+            this.setupLongField(field, inputButton, context, key);
         } else if (fieldType == float.class || fieldType == Float.class) {
-            setupFloatField(field, inputButton, context, key);
+            this.setupFloatField(field, inputButton, context, key);
         } else if (fieldType == double.class || fieldType == Double.class) {
-            setupDoubleField(field, inputButton, context, key);
+            this.setupDoubleField(field, inputButton, context, key);
         }
 
         context.addInputButton(inputButton);
@@ -40,7 +40,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 return (float) field.getInt(null);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("get int value", field.getName(), e);
+                throw this.createReflectionException("get int value", field.getName(), e);
             }
         });
 
@@ -48,7 +48,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 field.setInt(null, value);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("set int value", field.getName(), e);
+                throw this.createReflectionException("set int value", field.getName(), e);
             }
         });
     }
@@ -58,7 +58,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 return (float) field.getLong(null);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("get long value", field.getName(), e);
+                throw this.createReflectionException("get long value", field.getName(), e);
             }
         });
 
@@ -66,7 +66,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 field.setLong(null, value);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("set long value", field.getName(), e);
+                throw this.createReflectionException("set long value", field.getName(), e);
             }
         });
     }
@@ -76,7 +76,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 return field.getFloat(null);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("get float value", field.getName(), e);
+                throw this.createReflectionException("get float value", field.getName(), e);
             }
         });
 
@@ -84,7 +84,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 field.setFloat(null, value);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("set float value", field.getName(), e);
+                throw this.createReflectionException("set float value", field.getName(), e);
             }
         });
     }
@@ -94,7 +94,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 return (float) field.getDouble(null);
             } catch (IllegalAccessException e) {
-                throw createReflectionException("get double value", field.getName(), e);
+                throw this.createReflectionException("get double value", field.getName(), e);
             }
         });
 
@@ -102,7 +102,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
             try {
                 field.setDouble(null, value.doubleValue());
             } catch (IllegalAccessException e) {
-                throw createReflectionException("set double value", field.getName(), e);
+                throw this.createReflectionException("set double value", field.getName(), e);
             }
         });
     }
@@ -110,7 +110,7 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
     @Override
     protected void validateField(Field field, ConfigOption configOption) {
         Class<?> fieldType = field.getType();
-        if (!isNumericType(fieldType)) {
+        if (!this.isNumericType(fieldType)) {
             throw new IllegalArgumentException("Field " + field.getName() + " must be numeric type for NUMBER_RANGE input");
         }
     }

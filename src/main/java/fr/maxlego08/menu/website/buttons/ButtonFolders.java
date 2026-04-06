@@ -2,12 +2,12 @@ package fr.maxlego08.menu.website.buttons;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.engine.Pagination;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.website.Folder;
 import fr.maxlego08.menu.website.ZWebsiteManager;
-import fr.maxlego08.menu.api.engine.Pagination;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -50,7 +50,7 @@ public class ButtonFolders extends Button {
 
             int slot = this.slots.get(i);
             Folder currentFolder = folders.get(i);
-            displayFolder(slot, currentFolder, player, inventory, manager);
+            this.displayFolder(slot, currentFolder, player, inventory, manager);
         }
     }
 

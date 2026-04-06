@@ -98,17 +98,17 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public String getFileName() {
-        return fileName;
+        return this.fileName;
     }
 
     @Override
     public MenuPlugin getPlugin() {
-        return menuPlugin;
+        return this.menuPlugin;
     }
 
     @Override
     public File getFile() {
-        return file;
+        return this.file;
     }
 
     public void setFile(File file) {
@@ -117,7 +117,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public boolean isPause() {
-        return pause;
+        return this.pause;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public boolean canCloseWithEscape() {
-        return canCloseWithEscape;
+        return this.canCloseWithEscape;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public String getExternalTitle() {
-        return externalTitle;
+        return this.externalTitle;
     }
     @Override
     public void setDialogType(DialogType dialogType) {
@@ -144,17 +144,17 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public DialogType getDialogType() {
-        return dialogType;
+        return this.dialogType;
     }
 
     @Override
     public List<BodyButton> getBodyButtons() {
-        return bodyButtons;
+        return this.bodyButtons;
     }
 
     @Override
     public List<InputButton> getInputButtons() {
-        return inputButtons;
+        return this.inputButtons;
     }
 
 
@@ -170,7 +170,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public String getAfterAction() {
-        return afterAction;
+        return this.afterAction;
     }
 
     @Override
@@ -182,7 +182,7 @@ public class ZDialogInventory implements DialogInventory {
     public ZDialogInventoryBuild getBuild(Player player) {
         return new ZDialogInventoryBuild(
                 this.menuPlugin.parse(player, this.name),
-                this.menuPlugin.parse(player, this.externalTitle), canCloseWithEscape
+                this.menuPlugin.parse(player, this.externalTitle), this.canCloseWithEscape
         );
     }
 
@@ -193,15 +193,15 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public ActionButtonRecord getActionButtonServerLink(@NotNull Player player) {
-        if (actionButtonRecordServerLink != null) {
-            return actionButtonRecordServerLink.parse(player);
+        if (this.actionButtonRecordServerLink != null) {
+            return this.actionButtonRecordServerLink.parse(player);
         }
         return null;
     }
 
     @Override
     public ActionButtonRecord getActionButtonServerLink() {
-        return actionButtonRecordServerLink;
+        return this.actionButtonRecordServerLink;
     }
 
     public void setOpenRequirement(Requirement openRequirement) {
@@ -277,7 +277,7 @@ public class ZDialogInventory implements DialogInventory {
 
     @Override
     public List<BodyButton> getDialogBodies(Player player) {
-        return filterByViewRequirement(this.bodyButtons, player);
+        return this.filterByViewRequirement(this.bodyButtons, player);
     }
 
     @Override
@@ -286,7 +286,7 @@ public class ZDialogInventory implements DialogInventory {
     }
     @Override
     public List<InputButton> getDialogInputs(Player player) {
-        return filterByViewRequirement(this.inputButtons, player);
+        return this.filterByViewRequirement(this.inputButtons, player);
     }
 
     @Override
@@ -475,7 +475,7 @@ public class ZDialogInventory implements DialogInventory {
         for (T button : buttons) {
             Button masterParent = button.getMasterParentButton();
             if (button.getClass().isInstance(masterParent)) {
-                T visible = getFirstVisibleButtonRecursive((T) masterParent, player);
+                T visible = this.getFirstVisibleButtonRecursive((T) masterParent, player);
                 if (visible != null) {
                     visibleButtons.add(visible);
                 }
@@ -490,7 +490,7 @@ public class ZDialogInventory implements DialogInventory {
             boolean hasPermission = button.checkPermission(player, this.menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
             if (!hasPermission) {
                 if (button.hasElseButton()) {
-                    return getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
+                    return this.getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
                 } else {
                     return null;
                 }

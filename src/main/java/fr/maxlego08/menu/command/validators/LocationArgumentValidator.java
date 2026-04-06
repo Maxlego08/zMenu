@@ -19,7 +19,7 @@ public class LocationArgumentValidator implements CommandArgumentValidator {
             String[] parts = value.split(",");
             if (parts.length != 4) return false;
 
-            World world = plugin.getServer().getWorld(parts[0]);
+            World world = this.plugin.getServer().getWorld(parts[0]);
             if (world == null) return false;
 
             Double.parseDouble(parts[1]);

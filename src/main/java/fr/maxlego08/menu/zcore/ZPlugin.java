@@ -55,11 +55,11 @@ public abstract class ZPlugin extends JavaPlugin {
         this.enableTime = System.currentTimeMillis();
 
         this.log.log("=== ENABLE START ===");
-        this.log.log("Plugin Version V<&>c" + getDescription().getVersion(), LogType.INFO);
+        this.log.log("Plugin Version V<&>c" + this.getDescription().getVersion(), LogType.INFO);
 
         this.getDataFolder().mkdirs();
 
-        this.gson = getGsonBuilder().create();
+        this.gson = this.getGsonBuilder().create();
         this.persist = new Persist(this);
 
         Placeholder.Placeholders.getPlaceholder();
@@ -71,7 +71,7 @@ public abstract class ZPlugin extends JavaPlugin {
             this.zCommandManager.validCommands();
         }
 
-        this.log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+        this.log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(this.enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
     }
 
@@ -81,7 +81,7 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     protected void postDisable() {
-        this.log.log("=== DISABLE DONE <&>7(<&>6" + Math.abs(enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+        this.log.log("=== DISABLE DONE <&>7(<&>6" + Math.abs(this.enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
     }
 
@@ -158,7 +158,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @return true is its enable
      */
     public boolean isEnable(Plugins pluginName) {
-        Plugin plugin = getPlugin(pluginName);
+        Plugin plugin = this.getPlugin(pluginName);
         return plugin != null && plugin.isEnabled();
     }
 
@@ -169,7 +169,7 @@ public abstract class ZPlugin extends JavaPlugin {
      * @return true is its enable
      */
     public boolean isActive(Plugins pluginName) {
-        Plugin plugin = getPlugin(pluginName);
+        Plugin plugin = this.getPlugin(pluginName);
         return plugin != null;
     }
 
@@ -218,16 +218,16 @@ public abstract class ZPlugin extends JavaPlugin {
             if (in == null) {
                 throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in " + this.getFile());
             } else {
-                File outFile = new File(getDataFolder(), toPath);
+                File outFile = new File(this.getDataFolder(), toPath);
                 int lastIndex = toPath.lastIndexOf(47);
-                File outDir = new File(getDataFolder(), toPath.substring(0, Math.max(lastIndex, 0)));
+                File outDir = new File(this.getDataFolder(), toPath.substring(0, Math.max(lastIndex, 0)));
                 if (!outDir.exists()) {
                     outDir.mkdirs();
                 }
 
                 try {
                     if (outFile.exists() && !replace) {
-                        getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+                        this.getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
                     } else {
                         OutputStream out = Files.newOutputStream(outFile.toPath());
                         byte[] buf = new byte[1024];
@@ -241,7 +241,7 @@ public abstract class ZPlugin extends JavaPlugin {
                         in.close();
                     }
                 } catch (IOException var10) {
-                    getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, var10);
+                    this.getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, var10);
                 }
 
             }
@@ -251,10 +251,10 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     public Persist getPersist() {
-        return persist;
+        return this.persist;
     }
 
     public Gson getGson() {
-        return gson;
+        return this.gson;
     }
 }

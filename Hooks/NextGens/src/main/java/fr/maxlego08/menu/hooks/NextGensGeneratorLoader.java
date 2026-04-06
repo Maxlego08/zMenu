@@ -20,13 +20,13 @@ public class NextGensGeneratorLoader extends MaterialLoader {
     @Override
     public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         this.loadNextGens(); // Try to fix Circular dependency
-        Generator generator = generatorManager.getGenerator(materialString);
+        Generator generator = this.generatorManager.getGenerator(materialString);
         return generator != null ? generator.item() : null;
     }
 
     private void loadNextGens() {
         if (this.nextGens != null) return;
         this.nextGens = NextGens.getInstance();
-        this.generatorManager = nextGens.getGeneratorManager();
+        this.generatorManager = this.nextGens.getGeneratorManager();
     }
 }

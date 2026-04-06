@@ -14,7 +14,7 @@ public class OraxenFont implements FontImage {
     @Override
     public @NonNull String replace(@NonNull String string) {
         var manager = OraxenPlugin.get().getFontManager();
-        Matcher matcher = pattern.matcher(string);
+        Matcher matcher = this.pattern.matcher(string);
         StringBuilder result = new StringBuilder();
         while (matcher.find()) {
             var value = manager.getGlyphFromID(matcher.group(1));

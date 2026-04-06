@@ -52,63 +52,63 @@ public enum EnumReflectionCompound {
         }
 
         public String getMethodGetTag() {
-            return methodGetTag;
+            return this.methodGetTag;
         }
 
         public String getMethodSetTag() {
-            return methodSetTag;
+            return this.methodSetTag;
         }
 
         public String getMethodHasKey() {
-            return methodHasKey;
+            return this.methodHasKey;
         }
 
         public String getMethodGetBoolean() {
-            return methodGetBoolean;
+            return this.methodGetBoolean;
         }
 
         public String getMethodGetFloat() {
-            return methodGetFloat;
+            return this.methodGetFloat;
         }
 
         public String getMethodGetDouble() {
-            return methodGetDouble;
+            return this.methodGetDouble;
         }
 
         public String getMethodGetLong() {
-            return methodGetLong;
+            return this.methodGetLong;
         }
 
         public String getMethodGetInt() {
-            return methodGetInt;
+            return this.methodGetInt;
         }
 
         public String getMethodGetString() {
-            return methodGetString;
+            return this.methodGetString;
         }
 
         public String getMethodSetBoolean() {
-            return methodSetBoolean;
+            return this.methodSetBoolean;
         }
 
         public String getMethodSetFloat() {
-            return methodSetFloat;
+            return this.methodSetFloat;
         }
 
         public String getMethodSetDouble() {
-            return methodSetDouble;
+            return this.methodSetDouble;
         }
 
         public String getMethodSetLong() {
-            return methodSetLong;
+            return this.methodSetLong;
         }
 
         public String getMethodSetInt() {
-            return methodSetInt;
+            return this.methodSetInt;
         }
 
         public String getMethodSetString() {
-            return methodSetString;
+            return this.methodSetString;
         }
 
     }

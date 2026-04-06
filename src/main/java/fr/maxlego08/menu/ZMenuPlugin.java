@@ -113,7 +113,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
     private final AttributApplier attributApplier = new ApplySpigotAttribute();
-    private final File configFile = new File(getDataFolder(), "config.yml");
+    private final File configFile = new File(this.getDataFolder(), "config.yml");
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
@@ -141,7 +141,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         instance = this;
 
         this.saveDefaultConfig();
-        Configuration.getInstance().load(getConfig());
+        Configuration.getInstance().load(this.getConfig());
 
         if (this.packetUtils != null) {
             this.packetUtils.onEnable();
@@ -162,7 +162,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.componentsManager.initializeDefaultComponents(this);
 
-        List<String> files = getInventoriesFiles();
+        List<String> files = this.getInventoriesFiles();
         File folder = new File(this.getDataFolder(), "inventories");
 
         if (!folder.exists()) folder.mkdirs();
@@ -170,7 +170,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Configuration.generateDefaultFile) {
             files.forEach(filePath -> {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
-                    saveResource(filePath, false);
+                    this.saveResource(filePath, false);
                 }
             });
         }
@@ -261,7 +261,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.addListener(new DupeListener(this.dupeManager));
         }
 
-        if (!isActive(Plugins.ZMENUPLUS)) {
+        if (!this.isActive(Plugins.ZMENUPLUS)) {
             Logger.info("");
             Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
             Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
@@ -273,7 +273,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.dataManager.loadDefaultValues();
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
-        if (isActive(Plugins.PACKETEVENTS))
+        if (this.isActive(Plugins.PACKETEVENTS))
             this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager());
 
         this.postEnable();
@@ -366,7 +366,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -395,7 +395,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.vinventoryManager != null) this.vinventoryManager.close();
         this.inventoriesPlayer.restoreAllInventories();
 
-        Configuration.getInstance().save(getConfig(), this.configFile);
+        Configuration.getInstance().save(this.getConfig(), this.configFile);
 
         YamlFileCache.clearCache();
 
@@ -405,7 +405,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.itemManager.unloadListeners();
 
-        getServer().getServicesManager().unregisterAll(this);
+        this.getServer().getServicesManager().unregisterAll(this);
 
         this.postDisable();
     }
@@ -443,7 +443,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the commandManager
      */
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     /**
@@ -525,7 +525,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the websitemanager
      */
     public ZWebsiteManager getWebsiteManager() {
-        return websiteManager;
+        return this.websiteManager;
     }
 
     /**
@@ -534,41 +534,41 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the commandMenu
      */
     public CommandMenu getCommandMenu() {
-        return commandMenu;
+        return this.commandMenu;
     }
 
     public PacketUtils getPacketUtils() {
-        return packetUtils;
+        return this.packetUtils;
     }
 
     @Override
     public DataManager getDataManager() {
-        return dataManager;
+        return this.dataManager;
     }
 
     @Override
     public PlatformScheduler getScheduler() {
-        return scheduler;
+        return this.scheduler;
     }
 
     @Override
     public InventoriesPlayer getInventoriesPlayer() {
-        return inventoriesPlayer;
+        return this.inventoriesPlayer;
     }
 
     @Override
     public PatternManager getPatternManager() {
-        return patternManager;
+        return this.patternManager;
     }
 
     @Override
     public DupeManager getDupeManager() {
-        return dupeManager;
+        return this.dupeManager;
     }
 
     @Override
     public Enchantments getEnchantments() {
-        return enchantments;
+        return this.enchantments;
     }
 
     @Override
@@ -600,9 +600,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public <T> T getProvider(Class<T> classPath) {
-        RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classPath);
+        RegisteredServiceProvider<T> provider = this.getServer().getServicesManager().getRegistration(classPath);
         if (provider == null) {
-            getLogger().info("Unable to retrieve the provider " + classPath);
+            this.getLogger().info("Unable to retrieve the provider " + classPath);
             return null;
         }
         return provider.getProvider();
@@ -631,15 +631,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private void loadMeta() {
         if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
-            getLogger().info("Use ClassicMeta");
+            this.getLogger().info("Use ClassicMeta");
         } else {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
                 this.metaUpdater = new ComponentMeta(this);
-                getLogger().info("Use ComponentMeta");
+                this.getLogger().info("Use ComponentMeta");
             } catch (Exception ignored) {
                 this.metaUpdater = new ClassicMeta();
-                getLogger().info("Use ClassicMeta");
+                this.getLogger().info("Use ClassicMeta");
             }
         }
     }

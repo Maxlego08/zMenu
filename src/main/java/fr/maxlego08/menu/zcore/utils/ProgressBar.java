@@ -16,7 +16,7 @@ public record ProgressBar(int lenght, char symbol, String completedColor, String
      */
     @Override
     public int lenght() {
-        return lenght;
+        return this.lenght;
     }
 
     /**
@@ -24,7 +24,7 @@ public record ProgressBar(int lenght, char symbol, String completedColor, String
      */
     @Override
     public char symbol() {
-        return symbol;
+        return this.symbol;
     }
 
     /**
@@ -32,7 +32,7 @@ public record ProgressBar(int lenght, char symbol, String completedColor, String
      */
     @Override
     public String completedColor() {
-        return completedColor;
+        return this.completedColor;
     }
 
     /**
@@ -40,7 +40,7 @@ public record ProgressBar(int lenght, char symbol, String completedColor, String
      */
     @Override
     public String notCompletedColor() {
-        return notCompletedColor;
+        return this.notCompletedColor;
     }
 
 }

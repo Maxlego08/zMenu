@@ -165,7 +165,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
             for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
-                InventoryOption instance = createInstance(entry.getKey(), optionClass);
+                InventoryOption instance = this.createInstance(entry.getKey(), optionClass);
                 if (instance != null) {
                     inventoryOptions.add(instance);
                 }

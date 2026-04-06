@@ -29,7 +29,7 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     protected void messageWO(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
+        plugin.getMetaUpdater().sendMessage(sender, this.getMessage(message, args));
     }
 
     /**
@@ -42,8 +42,8 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     protected void messageWO(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        String result = getMessage(message, args);
-        plugin.getMetaUpdater().sendMessage(sender, sender instanceof Player ? papi(result, (Player) sender, false) : result);
+        String result = this.getMessage(message, args);
+        plugin.getMetaUpdater().sendMessage(sender, sender instanceof Player ? this.papi(result, (Player) sender, false) : result);
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     protected void message(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(message, args));
     }
 
     /**
@@ -72,9 +72,9 @@ public abstract class MessageUtils extends LocationUtils {
 
         if (sender instanceof ConsoleCommandSender) {
             if (!message.getMessages().isEmpty()) {
-                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(msg, args)));
             } else {
-                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(message, args));
             }
         } else {
 
@@ -82,20 +82,20 @@ public abstract class MessageUtils extends LocationUtils {
             switch (message.getType()) {
                 case CENTER:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(getMessage(msg, args))));
+                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(this.getMessage(msg, args))));
                     } else {
-                        plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(getMessage(message, args)));
+                        plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(this.getMessage(message, args)));
                     }
 
                     break;
                 case ACTION:
-                    plugin.getMetaUpdater().sendAction(player, getMessage(message, args));
+                    plugin.getMetaUpdater().sendAction(player, this.getMessage(message, args));
                     break;
                 case TCHAT:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(msg, args)));
                     } else {
-                        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+                        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(message, args));
                     }
                     break;
                 default:
@@ -105,7 +105,7 @@ public abstract class MessageUtils extends LocationUtils {
     }
 
     protected String getMessage(IMessage message, Object... args) {
-        return getMessage(message.getMessage(), args);
+        return this.getMessage(message.getMessage(), args);
     }
 
     protected String getMessage(String message, Object... args) {
@@ -136,16 +136,16 @@ public abstract class MessageUtils extends LocationUtils {
         }
 
         try {
-            Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\": \"" + title + "\"}");
-            Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
-            Object packet = titleConstructor.newInstance(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle, fadeInTime, showTime, fadeOutTime);
+            Object chatTitle = this.getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\": \"" + title + "\"}");
+            Constructor<?> titleConstructor = this.getNMSClass("PacketPlayOutTitle").getConstructor(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], this.getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
+            Object packet = titleConstructor.newInstance(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle, fadeInTime, showTime, fadeOutTime);
 
-            Object chatsTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\": \"" + subtitle + "\"}");
-            Constructor<?> timingTitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
-            Object timingPacket = timingTitleConstructor.newInstance(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatsTitle, fadeInTime, showTime, fadeOutTime);
+            Object chatsTitle = this.getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\": \"" + subtitle + "\"}");
+            Constructor<?> timingTitleConstructor = this.getNMSClass("PacketPlayOutTitle").getConstructor(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], this.getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
+            Object timingPacket = timingTitleConstructor.newInstance(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatsTitle, fadeInTime, showTime, fadeOutTime);
 
-            sendPacket(player, packet);
-            sendPacket(player, timingPacket);
+            this.sendPacket(player, packet);
+            this.sendPacket(player, timingPacket);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -155,7 +155,7 @@ public abstract class MessageUtils extends LocationUtils {
         try {
             Object handle = player.getClass().getMethod("getHandle").invoke(player);
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+            playerConnection.getClass().getMethod("sendPacket", this.getNMSClass("Packet")).invoke(playerConnection, packet);
         } catch (Exception e) {
             e.printStackTrace();
         }

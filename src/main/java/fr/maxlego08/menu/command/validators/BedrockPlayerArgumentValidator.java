@@ -16,7 +16,7 @@ public class BedrockPlayerArgumentValidator implements CommandArgumentValidator 
 
     @Override
     public boolean isValid(String value) {
-        return this.geyserSupport && bedrockManager.isBedrockPlayer(value);
+        return this.geyserSupport && this.bedrockManager.isBedrockPlayer(value);
     }
 
     @Override

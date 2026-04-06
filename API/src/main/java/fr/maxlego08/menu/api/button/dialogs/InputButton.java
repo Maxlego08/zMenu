@@ -53,11 +53,11 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public DialogInputType getInputType() {
-        return inputType;
+        return this.inputType;
     }
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     @Contract("_ -> this")
@@ -68,7 +68,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public boolean isLabelVisible() {
-        return labelVisible;
+        return this.labelVisible;
     }
 
     @Contract("_ -> this")
@@ -79,7 +79,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     @Contract("_ -> this")
@@ -91,7 +91,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @NotNull
     public String getDefaultText() {
-        return defaultText;
+        return this.defaultText;
     }
 
     @Contract("_ -> this")
@@ -102,7 +102,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public int getMaxLength() {
-        return maxLength;
+        return this.maxLength;
     }
 
     @Contract("_ -> this")
@@ -113,7 +113,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public int getMultilineMaxLines() {
-        return multilineMaxLines;
+        return this.multilineMaxLines;
     }
 
     @Contract("_ -> this")
@@ -124,7 +124,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public int getMultilineHeight() {
-        return multilineHeight;
+        return this.multilineHeight;
     }
 
     @Contract("_ -> this")
@@ -136,7 +136,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @Nullable
     public List<SingleOption> getSigleOptions() {
-        return singleOptions;
+        return this.singleOptions;
     }
 
     @Contract("_ -> this")
@@ -148,7 +148,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @NotNull
     public String getInitialValueBool() {
-        return initialValueBool;
+        return this.initialValueBool;
     }
 
     @Contract("_ -> this")
@@ -160,7 +160,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @NotNull
     public String getTextTrue() {
-        return textTrue;
+        return this.textTrue;
     }
 
     @Contract("_ -> this")
@@ -172,7 +172,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @NotNull
     public String getTextFalse() {
-        return textFalse;
+        return this.textFalse;
     }
 
     @Contract("_ -> this")
@@ -183,7 +183,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public float getStart() {
-        return start;
+        return this.start;
     }
 
     @Contract("_ -> this")
@@ -194,7 +194,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public float getEnd() {
-        return end;
+        return this.end;
     }
 
     @Contract("_ -> this")
@@ -205,7 +205,7 @@ public abstract class InputButton extends Button {
 
     @Contract(pure = true)
     public float getStep() {
-        return step;
+        return this.step;
     }
 
     @Contract("_ -> this")
@@ -217,7 +217,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @NotNull
     public String getInitialValueRange() {
-        return initialValueRange;
+        return this.initialValueRange;
     }
 
     @Contract("_ -> this")
@@ -229,7 +229,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @Nullable
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     @Contract("_ -> this")
@@ -241,7 +241,7 @@ public abstract class InputButton extends Button {
     @Contract(pure = true)
     @NotNull
     public String getLabelFormat() {
-        return labelFormat;
+        return this.labelFormat;
     }
 
     @Contract("_ -> this")
@@ -254,7 +254,7 @@ public abstract class InputButton extends Button {
     @NotNull
     public Optional<Boolean> getInitialValueSupplier() {
         if (this.initialValueSupplier != null) {
-            return Optional.ofNullable(initialValueSupplier.get());
+            return Optional.ofNullable(this.initialValueSupplier.get());
         }
         return Optional.empty();
     }
@@ -269,7 +269,7 @@ public abstract class InputButton extends Button {
     @NotNull
     public Optional<Float> getInitialValueRangeSupplier() {
         if (this.initialValueRangeSupplier != null) {
-            return Optional.ofNullable(initialValueRangeSupplier.get());
+            return Optional.ofNullable(this.initialValueRangeSupplier.get());
         }
         return Optional.empty();
     }
@@ -284,7 +284,7 @@ public abstract class InputButton extends Button {
     @NotNull
     public Optional<String> getDefaultTextSupplier() {
         if (this.defaultTextSupplier != null) {
-            return Optional.ofNullable(defaultTextSupplier.get());
+            return Optional.ofNullable(this.defaultTextSupplier.get());
         }
         return Optional.empty();
     }

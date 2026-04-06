@@ -30,7 +30,7 @@ public class ZCommandArgument implements CommandArgument {
 
     @Override
     public boolean isRequired() {
-        return isRequired;
+        return this.isRequired;
     }
 
     @Override
@@ -60,11 +60,11 @@ public class ZCommandArgument implements CommandArgument {
 
     @Override
     public String getArgument() {
-        return argument;
+        return this.argument;
     }
 
     @Override
     public Optional<String> getInventory() {
-        return Optional.ofNullable(inventory);
+        return Optional.ofNullable(this.inventory);
     }
 }

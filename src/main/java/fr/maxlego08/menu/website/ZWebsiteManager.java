@@ -52,35 +52,35 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     @Override
     public void login(@NonNull CommandSender sender, String token) {
         if (token == null) {
-            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
+            this.message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }
 
         if (Token.token != null) {
-            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_ALREADY);
+            this.message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_ALREADY);
             return;
         }
 
         String[] parts = token.split("\\|");
         if (parts.length != 2) {
-            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
+            this.message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }
 
         String code = parts[1];
         if (code.length() < 40) {
-            message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
+            this.message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_TOKEN);
             return;
         }
 
         if (this.isLogin) {
-            message(this.plugin, sender, Message.WEBSITE_LOGIN_PROCESS);
+            this.message(this.plugin, sender, Message.WEBSITE_LOGIN_PROCESS);
             return;
         }
 
         this.isLogin = true;
 
-        message(this.plugin, sender, Message.WEBSITE_LOGIN_PROCESS);
+        this.message(this.plugin, sender, Message.WEBSITE_LOGIN_PROCESS);
 
         JsonObject data = new JsonObject();
         HttpRequest request = new HttpRequest(this.API_URL + "auth/test", data);
@@ -91,9 +91,9 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             if (status) {
                 Token.token = token;
                 Token.getInstance().save(this.plugin.getPersist());
-                message(this.plugin, sender, Message.WEBSITE_LOGIN_SUCCESS);
+                this.message(this.plugin, sender, Message.WEBSITE_LOGIN_SUCCESS);
             } else {
-                message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_INFO);
+                this.message(this.plugin, sender, Message.WEBSITE_LOGIN_ERROR_INFO);
             }
         });
 
@@ -103,13 +103,13 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void disconnect(@NonNull CommandSender sender) {
 
         if (Token.token == null) {
-            message(this.plugin, sender, Message.WEBSITE_DISCONNECT_ERROR);
+            this.message(this.plugin, sender, Message.WEBSITE_DISCONNECT_ERROR);
             return;
         }
 
         Token.token = null;
         Token.getInstance().save(this.plugin.getPersist());
-        message(this.plugin, sender, Message.WEBSITE_DISCONNECT_SUCCESS);
+        this.message(this.plugin, sender, Message.WEBSITE_DISCONNECT_SUCCESS);
 
     }
 
@@ -117,7 +117,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void openMarketplace(@NonNull Player player) {
 
         if (Token.token == null) {
-            message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
+            this.message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
             return;
         }
 
@@ -125,10 +125,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         // Pas besoin de télécharger les resources
         if (this.lastResourceUpdate > System.currentTimeMillis()) {
 
-            openMarketplaceInventory(player);
+            this.openMarketplaceInventory(player);
         } else {
 
-            message(this.plugin, player, Message.WEBSITE_MARKETPLACE_WAIT);
+            this.message(this.plugin, player, Message.WEBSITE_MARKETPLACE_WAIT);
 
             if (this.isDownloadResource) return;
             this.isDownloadResource = true;
@@ -150,13 +150,13 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 }
                 this.resources = loadedResources;
 
-                this.plugin.getScheduler().runAtEntity(player, w -> openMarketplaceInventory(player));
+                this.plugin.getScheduler().runAtEntity(player, w -> this.openMarketplaceInventory(player));
             });
         }
     }
 
     public List<Resource> getResources() {
-        return resources;
+        return this.resources;
     }
 
     public void registerPlaceholders() {
@@ -198,7 +198,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         files.forEach(filePath -> {
             if (NmsVersion.nmsVersion.isNewMaterial()) {
-                if (!new File(plugin.getDataFolder(), filePath).exists()) {
+                if (!new File(this.plugin.getDataFolder(), filePath).exists()) {
                     this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, true);
                 }
             } else {
@@ -222,16 +222,16 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void fetchInventories(Player player) {
 
         if (Token.token == null) {
-            message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
+            this.message(this.plugin, player, Message.WEBSITE_NOT_CONNECT);
             return;
         }
 
         if (!this.folders.isEmpty()) {
-            openInventoriesInventory(player, 1, 1, this.baseFolderId);
+            this.openInventoriesInventory(player, 1, 1, this.baseFolderId);
             return;
         }
 
-        message(this.plugin, player, Message.WEBSITE_MARKETPLACE_WAIT);
+        this.message(this.plugin, player, Message.WEBSITE_MARKETPLACE_WAIT);
 
         JsonObject data = new JsonObject();
         HttpRequest request = new HttpRequest(this.API_URL + "inventories", data);
@@ -258,15 +258,15 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 }
                 this.baseFolderId = baseId;
 
-                this.plugin.getScheduler().runAtEntity(player, w -> openInventoriesInventory(player, 1, 1, this.baseFolderId));
+                this.plugin.getScheduler().runAtEntity(player, w -> this.openInventoriesInventory(player, 1, 1, this.baseFolderId));
             } else {
-                message(this.plugin, player, Message.WEBSITE_MARKETPLACE_ERROR);
+                this.message(this.plugin, player, Message.WEBSITE_MARKETPLACE_ERROR);
             }
         });
     }
 
     public int getFolderPage() {
-        return folderPage;
+        return this.folderPage;
     }
 
     public void setFolderPage(int folderPage) {
@@ -274,7 +274,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     public int getInventoryPage() {
-        return inventoryPage;
+        return this.inventoryPage;
     }
 
     public void setInventoryPage(int inventoryPage) {
@@ -283,7 +283,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
     public Optional<Folder> getCurrentFolder() {
         for (Folder folder : this.folders) {
-            if (folder.id() == currentFolderId) {
+            if (folder.id() == this.currentFolderId) {
                 return Optional.of(folder);
             }
         }
@@ -312,7 +312,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public void loadPlaceholders() {
         LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
         placeholder.register("folder_name", (player, args) -> {
-            Optional<Folder> optional = getCurrentFolder();
+            Optional<Folder> optional = this.getCurrentFolder();
             return optional.isPresent() ? optional.get().name() : "Not found";
         });
     }
@@ -321,31 +321,31 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         if (folder.parentId() == -1) {
             return path;
         }
-        Optional<Folder> optional = getFolder(folder.parentId());
+        Optional<Folder> optional = this.getFolder(folder.parentId());
         if (optional.isPresent()) {
             Folder parrentFolder = optional.get();
-            return getFolderPath(parrentFolder, folder.name() + "/" + path);
+            return this.getFolderPath(parrentFolder, folder.name() + "/" + path);
         }
         return folder.name() + "/" + path;
     }
 
     private File getFolderPath(Inventory inventory) {
-        Optional<Folder> optional = getFolder(inventory.folderId());
-        return optional.map(folder -> new File(this.plugin.getDataFolder(), "inventories/" + getFolderPath(folder, ""))).orElseGet(() -> new File(this.plugin.getDataFolder(), "inventories"));
+        Optional<Folder> optional = this.getFolder(inventory.folderId());
+        return optional.map(folder -> new File(this.plugin.getDataFolder(), "inventories/" + this.getFolderPath(folder, ""))).orElseGet(() -> new File(this.plugin.getDataFolder(), "inventories"));
     }
 
     public void downloadInventory(Player player, Inventory inventory, boolean forceDownload) {
 
-        File folder = getFolderPath(inventory);
+        File folder = this.getFolderPath(inventory);
         File file = new File(folder, inventory.fileName() + ".yml");
 
         if (file.exists() && !forceDownload) {
-            message(this.plugin, player, Message.WEBSITE_INVENTORY_EXIST);
+            this.message(this.plugin, player, Message.WEBSITE_INVENTORY_EXIST);
             return;
         }
 
         player.closeInventory();
-        message(this.plugin, player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.fileName());
+        this.message(this.plugin, player, Message.WEBSITE_INVENTORY_WAIT, "%name%", inventory.fileName());
 
         HttpRequest request = new HttpRequest(this.API_URL + String.format("inventory/%s/download", inventory.id()), new JsonObject());
         request.setBearer(Token.token);
@@ -353,7 +353,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
         folder.mkdirs();
 
-        request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.fileName()));
+        request.submitForFileDownload(this.plugin, file, isSuccess -> this.message(this.plugin, player, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", inventory.fileName()));
     }
 
     public void refreshInventories(Player player) {
@@ -381,25 +381,25 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     @Override
     public void downloadFromUrl(@NonNull CommandSender sender, @NonNull String baseUrl, boolean force) {
 
-        message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
-        plugin.getScheduler().runAsync(w -> {
+        this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
+        this.plugin.getScheduler().runAsync(w -> {
 
             try {
-                String finalUrl = followRedirection(baseUrl);
+                String finalUrl = this.followRedirection(baseUrl);
 
                 // ToDo, add a configuration for "allowed urls"
 
                 URL url = new URL(finalUrl);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                String fileName = getFileNameFromContentDisposition(httpURLConnection);
+                String fileName = this.getFileNameFromContentDisposition(httpURLConnection);
 
                 if (fileName == null) {
-                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
+                    this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
                     return;
                 }
 
-                if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
-                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+                if (!this.isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
+                    this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
                     return;
                 }
 
@@ -408,17 +408,17 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 File file = new File(folder, fileName);
 
                 if (file.exists() && !force) {
-                    message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
+                    this.message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
                     return;
                 }
 
                 HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
                 request.setMethod("GET");
 
-                request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
+                request.submitForFileDownload(this.plugin, file, isSuccess -> this.message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
             } catch (IOException exception) {
                 exception.printStackTrace();
-                message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+                this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
             }
         });
     }
@@ -448,6 +448,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 return contentDisposition.substring(index + 9).replaceAll("\"", "");
             }
         }
-        return generateRandomString(16);
+        return this.generateRandomString(16);
     }
 }

@@ -43,7 +43,7 @@ public class DialogLoader implements Loader<DialogInventory> {
         String name = configuration.getString("name", "");
         String externalTitle = configuration.getString("external-title", "");
 
-        ZDialogInventory dialogInventory = new ZDialogInventory(menuPlugin, name, file.getName(), externalTitle);
+        ZDialogInventory dialogInventory = new ZDialogInventory(this.menuPlugin, name, file.getName(), externalTitle);
 
         boolean canCloseWithEscape = configuration.getBoolean("can-close-with-escape", true);
         dialogInventory.setCanCloseWithEscape(canCloseWithEscape);
@@ -68,7 +68,7 @@ public class DialogLoader implements Loader<DialogInventory> {
         }
         if (configuration.isConfigurationSection("open-requirement")){
             try {
-                Requirement openRequirement = loadRequirement(configuration, "open-requirement.", file);
+                Requirement openRequirement = this.loadRequirement(configuration, "open-requirement.", file);
                 dialogInventory.setOpenRequirement(openRequirement);
             } catch (InventoryException e) {
                 Logger.info("Failed to load open requirement: " + e.getMessage(), Logger.LogType.WARNING);
@@ -82,18 +82,18 @@ public class DialogLoader implements Loader<DialogInventory> {
             dialogInventory.setInventoryReplacement(inventoryReplacement);
         }
 
-        loadSpecificItems(dialogType, configuration, dialogInventory, file);
+        this.loadSpecificItems(dialogType, configuration, dialogInventory, file);
 
-        List<BodyButton> bodyButtons = loadButtons(configuration, file, "body", BodyButton.class, null);
+        List<BodyButton> bodyButtons = this.loadButtons(configuration, file, "body", BodyButton.class, null);
         dialogInventory.setBodyButtons(bodyButtons);
 
-        List<InputButton> inputButtons = loadButtons(configuration, file, "inputs", InputButton.class, InputButton::setKey);
+        List<InputButton> inputButtons = this.loadButtons(configuration, file, "inputs", InputButton.class, InputButton::setKey);
         dialogInventory.setInputButtons(inputButtons);
 
         dialogInventory.setFile(file);
         dialogInventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
 
-        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
+        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> this.createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
         for (InventoryOption inventoryOption : inventoryOptions) {
             inventoryOption.loadInventory(dialogInventory, file, configuration, this.menuPlugin.getInventoryManager(), this.menuPlugin.getButtonManager());
         }
@@ -143,7 +143,7 @@ public class DialogLoader implements Loader<DialogInventory> {
             String path = sectionKey + "." + key + ".";
             try {
                 Button button = loader.load(configuration, path, key);
-                T typedButton = getButtonType(button, buttonClass, path, file);
+                T typedButton = this.getButtonType(button, buttonClass, path, file);
 
                 if (postProcess != null) {
                     postProcess.accept(typedButton, key);
@@ -165,7 +165,7 @@ public class DialogLoader implements Loader<DialogInventory> {
     private void loadSpecificItems(DialogType dialogType, YamlConfiguration configuration, ZDialogInventory dialogInventory, File file) throws InventoryException {
         switch (dialogType) {
             case NOTICE -> {
-                dialogInventory.addAction(loadRequirements(configuration, "actions", file));
+                dialogInventory.addAction(this.loadRequirements(configuration, "actions", file));
                 String noticeText = configuration.getString("notice.text","");
                 String noticeTooltip = configuration.getString("notice.tooltip","");
                 int noticeWidth = configuration.getInt("notice.width", 200);
@@ -187,8 +187,8 @@ public class DialogLoader implements Loader<DialogInventory> {
                 dialogInventory.setNoTooltip(noTooltip);
                 dialogInventory.setYesWidth(yesWidth);
                 dialogInventory.setNoWidth(noWidth);
-                dialogInventory.addYesAction(loadRequirements(configuration, "yes-actions", file));
-                dialogInventory.addNoAction(loadRequirements(configuration, "no-actions", file));
+                dialogInventory.addYesAction(this.loadRequirements(configuration, "yes-actions", file));
+                dialogInventory.addNoAction(this.loadRequirements(configuration, "no-actions", file));
             }
             case MULTI_ACTION -> {
                 int numberOfColumns = configuration.getInt("number-of-columns", 3);
@@ -208,7 +208,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                     String text = configuration.getString(path + ".text", "");
                     String tooltip = configuration.getString(path + ".tooltip", "");
                     int width = configuration.getInt(path + ".width", 100);
-                    List<Requirement> requirement = loadRequirements(configuration, path+".actions", file);
+                    List<Requirement> requirement = this.loadRequirements(configuration, path+".actions", file);
                     ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
                     dialogInventory.addActionButton(record);
                 }
@@ -218,7 +218,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                 String text = configuration.getString("server-links.text", "");
                 String tooltip = configuration.getString("server-links.tooltip", "");
                 int width = configuration.getInt("server-links.width", 100);
-                List<Requirement> requirement = loadRequirements(configuration, "server-links.actions", file);
+                List<Requirement> requirement = this.loadRequirements(configuration, "server-links.actions", file);
                 int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
                 ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
                 dialogInventory.setActionButtonServerLink(record);
@@ -228,17 +228,17 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     protected List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException {
-        return menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
+        return this.menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
     }
     protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
-        return menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
+        return this.menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }
 
     @SuppressWarnings("unchecked")
     protected <T extends Button> T getButtonType(Button button, Class<T> verifClass, String path, File file) throws InventoryButtonException {
         if (verifClass.isInstance(button)) {
             if (button.getElseButton() != null){
-                return getButtonType(button.getElseButton(), verifClass, path, file);
+                return this.getButtonType(button.getElseButton(), verifClass, path, file);
             }
             return (T) button;
         } else {

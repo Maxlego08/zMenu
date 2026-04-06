@@ -25,11 +25,11 @@ public class ItemDragLoader extends ButtonLoader {
 
     @Override
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
-        ZItemDragButton button = new ZItemDragButton(dupeManager);
+        ZItemDragButton button = new ZItemDragButton(this.dupeManager);
         String check_element = configuration.contains(path + "check_item") ? "check_item" : configuration.contains(path + "check-item") ? "check-item" : null;
 
         if (check_element != null) {
-            MenuItemStack menuItemStack = inventoryManager.loadItemStack(configuration, path + check_element + ".item.", defaultButtonValue.getFile());
+            MenuItemStack menuItemStack = this.inventoryManager.loadItemStack(configuration, path + check_element + ".item.", defaultButtonValue.getFile());
             String type = configuration.getString(path + check_element + ".type", "full");
             ItemStackSimilar itemStackSimilar = this.inventoryManager.getItemStackVerification(type).orElseGet(FullSimilar::new);
             button.setCheckItem(menuItemStack, itemStackSimilar);
@@ -38,8 +38,9 @@ public class ItemDragLoader extends ButtonLoader {
         String error_element = configuration.contains(path + "error_item") ? "error_item" : configuration.contains(path + "error-item") ? "error-item" : null;
         if (error_element != null) {
             int ticks = configuration.getInt(path + error_element + ".duration", 20);
-            MenuItemStack menuItemStack = inventoryManager.loadItemStack(configuration, path + error_element + ".item.", defaultButtonValue.getFile());
-            button.setErrorItem(menuItemStack, this.inventoryManager.getScheduler(), ticks);
+            boolean useCache = configuration.getBoolean(path + error_element + ".use_cache", true);
+            MenuItemStack menuItemStack = this.inventoryManager.loadItemStack(configuration, path + error_element + ".item.", defaultButtonValue.getFile());
+            button.setErrorItem(menuItemStack, this.inventoryManager.getScheduler(), ticks, useCache);
         }
 
         return button;

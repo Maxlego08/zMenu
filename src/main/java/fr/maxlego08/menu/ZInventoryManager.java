@@ -165,7 +165,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         Map<String, Object> placeholders = this.plugin.getGlobalPlaceholders();
 
-        loadLocalPlaceholders(configuration, placeholders);
+        this.loadLocalPlaceholders(configuration, placeholders);
 
         configuration = YamlParser.parseConfiguration(configuration, placeholders);
 
@@ -207,7 +207,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
-        if (Configuration.enableFastEvent) getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
+        if (Configuration.enableFastEvent) this.getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
         else inventoryLoadEvent.call();
 
         return inventory;
@@ -324,7 +324,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);
         if (Configuration.enableFastEvent) {
-            getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
+            this.getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
         } else playerOpenInventoryEvent.call();
 
         if (playerOpenInventoryEvent.isCancelled()) return;
@@ -444,12 +444,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new BedrockDropDownInputLoader(this.plugin));
 
         // Register ItemStackSimilar
-        registerItemStackVerification(new FullSimilar());
-        registerItemStackVerification(new LoreSimilar());
-        registerItemStackVerification(new MaterialSimilar());
-        registerItemStackVerification(new ModelIdSimilar());
-        registerItemStackVerification(new NameSimilar());
-        registerItemStackVerification(new ItemModelSimilar()); // 1.21.4+
+        this.registerItemStackVerification(new FullSimilar());
+        this.registerItemStackVerification(new LoreSimilar());
+        this.registerItemStackVerification(new MaterialSimilar());
+        this.registerItemStackVerification(new ModelIdSimilar());
+        this.registerItemStackVerification(new NameSimilar());
+        this.registerItemStackVerification(new ItemModelSimilar()); // 1.21.4+
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
@@ -464,10 +464,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
-        commandManager.registerArgumentValidator(new OnlinePlayerArgumentValidator(plugin));
-        commandManager.registerArgumentValidator(new PlayerArgumentValidator(plugin));
-        commandManager.registerArgumentValidator(new LocationArgumentValidator(plugin));
-        commandManager.registerArgumentValidator(new WorldArgumentValidator(plugin));
+        commandManager.registerArgumentValidator(new OnlinePlayerArgumentValidator(this.plugin));
+        commandManager.registerArgumentValidator(new PlayerArgumentValidator(this.plugin));
+        commandManager.registerArgumentValidator(new LocationArgumentValidator(this.plugin));
+        commandManager.registerArgumentValidator(new WorldArgumentValidator(this.plugin));
     }
 
     @Override
@@ -554,7 +554,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
+            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
             return;
         }
 
@@ -563,7 +563,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventory(Player player, String pluginName, String inventoryName) {
-        openInventory(player, pluginName, inventoryName, 1);
+        this.openInventory(player, pluginName, inventoryName, 1);
     }
 
     @Override
@@ -572,7 +572,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
+            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
             return;
         }
 
@@ -586,7 +586,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
+            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
             return;
         }
 
@@ -595,7 +595,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventory(Player player, String inventoryName) {
-        openInventory(player, inventoryName, 1);
+        this.openInventory(player, inventoryName, 1);
     }
 
     @Override
@@ -670,7 +670,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void sendInventories(CommandSender sender) {
 
         if (this.inventories.isEmpty()) {
-            message(this.plugin, sender, Message.LIST_EMPTY);
+            this.message(this.plugin, sender, Message.LIST_EMPTY);
             return;
         }
 
@@ -679,8 +679,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             for (Inventory inventory : inventories) {
                 fileNames.add(inventory.getFileName());
             }
-            String inventoriesAsString = toList(fileNames, "§8", "§7");
-            messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
+            String inventoriesAsString = this.toList(fileNames, "§8", "§7");
+            this.messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
         });
     }
 
@@ -690,13 +690,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         fileName = fileName.replace(".yml", "");
         File file = new File(this.plugin.getDataFolder(), "inventories/" + fileName + ".yml");
         if (file.exists()) {
-            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
+            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
             return;
         }
         try {
             file.createNewFile();
         } catch (IOException exception) {
-            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -708,15 +708,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         try {
             configuration.save(file);
         } catch (IOException exception) {
-            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
-        message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
+        this.message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
 
         try {
-            loadInventory(this.plugin, file);
+            this.loadInventory(this.plugin, file);
         } catch (InventoryException exception) {
-            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
     }
 
@@ -735,7 +735,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin.getScheduler().runAtEntity(player, w -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (holder instanceof InventoryDefault inventoryDefault) {
-                this.openInventory(player, inventoryDefault.getMenuInventory(), getPage(player), inventoryDefault.getOldInventories());
+                this.openInventory(player, inventoryDefault.getMenuInventory(), this.getPage(player), inventoryDefault.getOldInventories());
             }
         });
     }
@@ -770,7 +770,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (configurationSection != null) {
             Set<String> names = configurationSection.getKeys(false);
             if (names.contains(name)) {
-                message(this.plugin, sender, Message.SAVE_ERROR_NAME);
+                this.message(this.plugin, sender, Message.SAVE_ERROR_NAME);
                 return;
             }
         }
@@ -790,11 +790,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
 
         } else {
-            message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
+            this.message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
             return;
         }
 
-        message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
+        this.message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
 
     }
 
@@ -805,10 +805,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        for (Inventory inventory : getInventories()) {
+        for (Inventory inventory : this.getInventories()) {
             OpenWithItem openWithItem = inventory.getOpenWithItem();
             if (openWithItem != null && openWithItem.shouldTrigger(event)) {
-                openInventory(event.getPlayer(), inventory);
+                this.openInventory(event.getPlayer(), inventory);
             }
         }
     }
@@ -866,7 +866,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption) {
 
-        if (getOption(buttonOption.getName()).isPresent()) return;
+        if (this.getOption(buttonOption.getName()).isPresent()) return;
 
         this.buttonOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(buttonOption);
     }
@@ -946,7 +946,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption) {
 
-        if (getInventoryOption(inventoryOption.getName()).isPresent()) return;
+        if (this.getInventoryOption(inventoryOption.getName()).isPresent()) return;
 
         this.inventoryOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(inventoryOption);
     }
@@ -985,12 +985,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public List<InventoryListener> getInventoryListeners() {
-        return inventoryListeners;
+        return this.inventoryListeners;
     }
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        return postProcessSkullItemStack(itemStack, button, player, new Placeholders());
+        return this.postProcessSkullItemStack(itemStack, button, player, new Placeholders());
     }
 
     @Override
@@ -999,7 +999,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         PerformanceDebug performanceDebug = PerformanceDebug.create("Skull item stack processing");
 
         performanceDebug.start("papi");
-        String name = papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
+        String name = this.papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
         performanceDebug.end();
 
         if (!PlayerUtil.isValidMinecraftUsername(name)) {
@@ -1025,6 +1025,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void sendMessage(CommandSender sender, Message message, Object... args) {
-        message(this.plugin, sender, message, args);
+        this.message(this.plugin, sender, message, args);
     }
 }

@@ -28,13 +28,13 @@ public class Banner {
     @Contract(pure = true)
     @NotNull
     public DyeColor getBaseColor() {
-        return baseColor;
+        return this.baseColor;
     }
 
     @Contract(pure = true)
     @NotNull
     public List<Pattern> getPatterns() {
-        return patterns;
+        return this.patterns;
     }
 
     public void setBaseColor(@NotNull DyeColor baseColor) {
@@ -48,11 +48,11 @@ public class Banner {
     @Contract(pure = true)
     @NotNull
     public ItemStack toItemStack(int amount){
-        Material material = Material.getMaterial(baseColor.toString()+"_BANNER");
+        Material material = Material.getMaterial(this.baseColor.toString()+"_BANNER");
         assert material != null;
         ItemStack itemStack = new ItemStack(material, amount);
         BannerMeta bannerMeta = (BannerMeta) itemStack.getItemMeta();
-        bannerMeta.setPatterns(patterns);
+        bannerMeta.setPatterns(this.patterns);
         itemStack.setItemMeta(bannerMeta);
         return itemStack;
     }

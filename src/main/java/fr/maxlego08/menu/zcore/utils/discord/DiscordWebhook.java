@@ -180,7 +180,7 @@ public class DiscordWebhook {
         private Author author;
 
         public String getTitle() {
-            return title;
+            return this.title;
         }
 
         public EmbedObject setTitle(String title) {
@@ -189,7 +189,7 @@ public class DiscordWebhook {
         }
 
         public String getDescription() {
-            return description;
+            return this.description;
         }
 
         public EmbedObject setDescription(String description) {
@@ -198,7 +198,7 @@ public class DiscordWebhook {
         }
 
         public String getUrl() {
-            return url;
+            return this.url;
         }
 
         public EmbedObject setUrl(String url) {
@@ -207,7 +207,7 @@ public class DiscordWebhook {
         }
 
         public Color getColor() {
-            return color;
+            return this.color;
         }
 
         public EmbedObject setColor(Color color) {
@@ -216,11 +216,11 @@ public class DiscordWebhook {
         }
 
         public Footer getFooter() {
-            return footer;
+            return this.footer;
         }
 
         public Thumbnail getThumbnail() {
-            return thumbnail;
+            return this.thumbnail;
         }
 
         public EmbedObject setThumbnail(String url) {
@@ -229,7 +229,7 @@ public class DiscordWebhook {
         }
 
         public Image getImage() {
-            return image;
+            return this.image;
         }
 
         public EmbedObject setImage(String url) {
@@ -238,11 +238,11 @@ public class DiscordWebhook {
         }
 
         public Author getAuthor() {
-            return author;
+            return this.author;
         }
 
         public List<Field> getFields() {
-            return fields;
+            return this.fields;
         }
 
         public EmbedObject setFooter(String text, String icon) {

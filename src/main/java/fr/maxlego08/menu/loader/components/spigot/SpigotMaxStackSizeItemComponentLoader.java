@@ -19,7 +19,7 @@ public class SpigotMaxStackSizeItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         int maxStackSize = configuration.getInt(path);
         return maxStackSize > 0 ? new MaxStackSizeComponent(maxStackSize) : null;
     }

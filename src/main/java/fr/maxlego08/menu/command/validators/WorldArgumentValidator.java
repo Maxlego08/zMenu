@@ -14,7 +14,7 @@ public class WorldArgumentValidator implements CommandArgumentValidator {
 
     @Override
     public boolean isValid(String value) {
-        return plugin.getServer().getWorld(value) != null;
+        return this.plugin.getServer().getWorld(value) != null;
     }
 
     @Override

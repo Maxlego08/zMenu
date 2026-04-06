@@ -29,12 +29,12 @@ public class AttributeModifiersComponent extends ItemComponent {
 
     @NotNull
     public List<AttributeWrapper> getAttributes() {
-        return attributes;
+        return this.attributes;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        attributApplier.applyAttributesModern(itemStack, this.attributes, this.plugin, this.mergeStrategy);
+        this.attributApplier.applyAttributesModern(itemStack, this.attributes, this.plugin, this.mergeStrategy);
     }
 
 }

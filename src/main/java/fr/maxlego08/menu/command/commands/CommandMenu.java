@@ -57,8 +57,8 @@ public class CommandMenu extends VCommand {
     protected CommandType perform(ZMenuPlugin plugin) {
         this.sender.sendMessage();
         String message = plugin.isSpigot() ? "§fInventory Builder/Marketplace§8: §ahttps://minecraft-inventory-builder.com/" : "<white>Inventory Builder/Marketplace§8: <click:open_url:'https://minecraft-inventory-builder.com/'><green>https://minecraft-inventory-builder.com/</click>";
-        message(plugin, this.sender, message);
-        sendSyntax();
+        this.message(plugin, this.sender, message);
+        this.sendSyntax();
         return CommandType.SUCCESS;
     }
 

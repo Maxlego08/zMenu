@@ -20,7 +20,7 @@ public abstract class BedrockBuilderManager {
     }
 
     protected List<Component> getInputComponents(Player player, List<InputButton> inputButtons, Placeholders placeholders) {
-        return buildComponents(
+        return this.buildComponents(
                 inputButtons,
                 InputButton::getInputType,
                 BedrockBuilderClass::getDialogInputBuilder,

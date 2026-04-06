@@ -43,7 +43,7 @@ public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemC
         } else {
             List<Color> colors = new ArrayList<>();
             for (Object obj : colorsList) {
-                Color color = parseColor(obj);
+                Color color = this.parseColor(obj);
                 if (color != null) {
                     colors.add(color);
                 }

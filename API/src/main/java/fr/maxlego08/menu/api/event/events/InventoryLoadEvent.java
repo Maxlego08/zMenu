@@ -23,17 +23,17 @@ public class InventoryLoadEvent extends MenuEvent {
     @Contract(pure = true)
     @NotNull
     public Plugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     @Contract(pure = true)
     public File getFile() {
-        return file;
+        return this.file;
     }
 
     @Contract(pure = true)
     @NotNull
     public Inventory getInventory() {
-        return inventory;
+        return this.inventory;
     }
 }

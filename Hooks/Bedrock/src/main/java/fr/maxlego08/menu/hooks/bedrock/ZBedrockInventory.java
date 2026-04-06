@@ -76,17 +76,17 @@ public class ZBedrockInventory implements BedrockInventory {
 
     @Override
     public String getFileName() {
-        return fileName;
+        return this.fileName;
     }
 
     @Override
     public MenuPlugin getPlugin() {
-        return menuPlugin;
+        return this.menuPlugin;
     }
 
     @Override
     public File getFile() {
-        return file;
+        return this.file;
     }
     public void setFile(File file) {
         this.file = file;
@@ -98,7 +98,7 @@ public class ZBedrockInventory implements BedrockInventory {
 
     @Override
     public BedrockType getBedrockType() {
-        return bedrockType;
+        return this.bedrockType;
     }
 
     public void setBedrockButtons(List<BedrockButton> bedrockButtons) {
@@ -112,7 +112,7 @@ public class ZBedrockInventory implements BedrockInventory {
 
     @Override
     public List<BedrockButton> getBedrockButtons(Player player) {
-        return filterByViewRequirement(this.bedrockButtons, player);
+        return this.filterByViewRequirement(this.bedrockButtons, player);
     }
 
     public void setInputButtons(List<InputButton> inputButtons) {
@@ -126,7 +126,7 @@ public class ZBedrockInventory implements BedrockInventory {
 
     @Override
     public List<InputButton> getInputButtons(Player player) {
-        return filterByViewRequirement(this.inputButtons, player);
+        return this.filterByViewRequirement(this.inputButtons, player);
     }
 
     public void setOpenRequirement(Requirement openRequirement) {
@@ -209,7 +209,7 @@ public class ZBedrockInventory implements BedrockInventory {
 
     @Override
     public List<Requirement> getRequirements() {
-        return actions;
+        return this.actions;
     }
 
     @SuppressWarnings("unchecked")
@@ -218,7 +218,7 @@ public class ZBedrockInventory implements BedrockInventory {
         for (T button : buttons) {
             Button masterParent = button.getMasterParentButton();
             if (button.getClass().isInstance(masterParent)) {
-                T visible = getFirstVisibleButtonRecursive((T) masterParent, player);
+                T visible = this.getFirstVisibleButtonRecursive((T) masterParent, player);
                 if (visible != null) {
                     visibleButtons.add(visible);
                 }
@@ -230,10 +230,10 @@ public class ZBedrockInventory implements BedrockInventory {
     @SuppressWarnings("unchecked")
     private <T extends Button> T getFirstVisibleButtonRecursive(T button, Player player) {
         if (button.hasPermission()) {
-            boolean hasPermission = button.checkPermission(player, menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
+            boolean hasPermission = button.checkPermission(player, this.menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
             if (!hasPermission) {
                 if (button.hasElseButton()) {
-                    return getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
+                    return this.getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
                 } else {
                     return null;
                 }

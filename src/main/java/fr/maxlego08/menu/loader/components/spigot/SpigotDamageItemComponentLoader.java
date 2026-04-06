@@ -19,7 +19,7 @@ public class SpigotDamageItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         int damages = configuration.getInt(path, 0);
         if (damages > 0) {
             return new DamageComponent(damages);

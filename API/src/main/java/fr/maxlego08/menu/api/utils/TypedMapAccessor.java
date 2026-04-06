@@ -33,7 +33,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public String getString(@NonNull String key) {
-        return String.valueOf(map.get(key));
+        return String.valueOf(this.map.get(key));
     }
 
     /**
@@ -46,7 +46,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public String getString(String key, String defaultValue) {
-        return map.containsKey(key) ? String.valueOf(map.get(key)) : defaultValue;
+        return this.map.containsKey(key) ? String.valueOf(this.map.get(key)) : defaultValue;
     }
 
     /**
@@ -57,7 +57,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public int getInt(String key) {
-        return getInt(key, 0);
+        return this.getInt(key, 0);
     }
 
     /**
@@ -70,7 +70,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public int getInt(String key, int defaultValue) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         try {
             if (value instanceof Number) {
                 return ((Number) value).intValue();
@@ -90,7 +90,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public long getLong(String key) {
-        return getLong(key, 0L);
+        return this.getLong(key, 0L);
     }
 
     /**
@@ -103,7 +103,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public long getLong(String key, long defaultValue) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         try {
             if (value instanceof Number) {
                 return ((Number) value).longValue();
@@ -123,7 +123,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public List<String> getStringList(String key) {
-        return (List<String>) map.getOrDefault(key, Collections.emptyList());
+        return (List<String>) this.map.getOrDefault(key, Collections.emptyList());
     }
 
     /**
@@ -136,7 +136,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public List<String> getStringList(String key, List<String> defaultValue) {
-        return (List<String>) map.getOrDefault(key, defaultValue);
+        return (List<String>) this.map.getOrDefault(key, defaultValue);
     }
 
     /**
@@ -148,9 +148,9 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public List<Integer> getIntList(String key) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         if (value instanceof List<?> list) {
-            return convertToIntegerList(list);
+            return this.convertToIntegerList(list);
         }
         return Collections.emptyList();
     }
@@ -166,9 +166,9 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public List<Integer> getIntList(String key, List<Integer> defaultValue) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         if (value instanceof List<?> list) {
-            return convertToIntegerList(list);
+            return this.convertToIntegerList(list);
         }
         return defaultValue;
     }
@@ -199,7 +199,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public boolean getBoolean(String key) {
-        return (boolean) map.getOrDefault(key, false);
+        return (boolean) this.map.getOrDefault(key, false);
     }
 
     /**
@@ -212,7 +212,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public boolean getBoolean(String key, boolean defaultValue) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         if (value instanceof Boolean) {
             return (Boolean) value;
         } else if (value instanceof String) {
@@ -229,7 +229,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public double getDouble(String key) {
-        return getDouble(key, 0.0);
+        return this.getDouble(key, 0.0);
     }
 
     /**
@@ -242,7 +242,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public double getDouble(String key, double defaultValue) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         try {
             if (value instanceof Number) {
                 return ((Number) value).doubleValue();
@@ -263,7 +263,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public Object getObject(String key) {
-        return map.get(key);
+        return this.map.get(key);
     }
 
     /**
@@ -275,7 +275,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public Object getObject(String key, Object defaultValue) {
-        return map.getOrDefault(key, defaultValue);
+        return this.map.getOrDefault(key, defaultValue);
     }
 
     /**
@@ -286,7 +286,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public float getFloat(String key) {
-        return getFloat(key, 0f);
+        return this.getFloat(key, 0f);
     }
 
     /**
@@ -299,7 +299,7 @@ public class TypedMapAccessor implements MapConfiguration {
      */
     @Override
     public float getFloat(String key, float defaultValue) {
-        Object value = map.get(key);
+        Object value = this.map.get(key);
         try {
             if (value instanceof Number) {
                 return ((Number) value).floatValue();
@@ -313,25 +313,25 @@ public class TypedMapAccessor implements MapConfiguration {
 
     @Override
     public List<?> getList(String key) {
-        return (List<?>) map.get(key);
+        return (List<?>) this.map.get(key);
     }
 
     @Override
     public boolean contains(String key) {
-        return map.containsKey(key);
+        return this.map.containsKey(key);
     }
 
     @Override
     public String toString() {
         return "TypedMapAccessor{" +
-                "map=" + map +
+                "map=" + this.map +
                 '}';
     }
 
     @SuppressWarnings("unchecked")
     public List<Map<String,Object>> getMapList(String key) {
         try {
-            return (List<Map<String, Object>>) map.getOrDefault(key, new ArrayList<Map<String, Object>>());
+            return (List<Map<String, Object>>) this.map.getOrDefault(key, new ArrayList<Map<String, Object>>());
         } catch (ClassCastException e){
             return new ArrayList<>();
         }

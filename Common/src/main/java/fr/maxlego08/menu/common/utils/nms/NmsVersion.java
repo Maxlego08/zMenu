@@ -121,7 +121,7 @@ public enum NmsVersion {
      * @return True if PlayerProfiles are supported, else False.
      */
     public boolean hasPlayerProfiles() {
-        return version >= NmsVersion.V_1_18_1.version;
+        return this.version >= NmsVersion.V_1_18_1.version;
     }
 
     /**
@@ -130,7 +130,7 @@ public enum NmsVersion {
      * @return True if names are obfuscated, else False.
      */
     public boolean hasObfuscatedNames() {
-        return version >= NmsVersion.V_1_17.version;
+        return this.version >= NmsVersion.V_1_17.version;
     }
 
     /**
@@ -140,7 +140,7 @@ public enum NmsVersion {
      * @return True if components are supported, else False.
      */
     public boolean isComponent(boolean isPaper) {
-        return isPaper && version >= NmsVersion.V_1_16_5.version;
+        return isPaper && this.version >= NmsVersion.V_1_16_5.version;
     }
 
     /**
@@ -149,7 +149,7 @@ public enum NmsVersion {
      * @return True if the version is legacy, else False.
      */
     public boolean isItemLegacy() {
-        return version < NmsVersion.V_1_13.version;
+        return this.version < NmsVersion.V_1_13.version;
     }
 
     /**
@@ -158,7 +158,7 @@ public enum NmsVersion {
      * @return True if PersistentDataContainer is supported, else False.
      */
     public boolean isPdcVersion() {
-        return version >= NmsVersion.V_1_14.version;
+        return this.version >= NmsVersion.V_1_14.version;
     }
 
     /**
@@ -167,7 +167,7 @@ public enum NmsVersion {
      * @return True if the version is legacy, else False.
      */
     public boolean isSkullOwnerLegacy() {
-        return version <= NmsVersion.V_1_12.version;
+        return this.version <= NmsVersion.V_1_12.version;
     }
 
     /**
@@ -176,7 +176,7 @@ public enum NmsVersion {
      * @return True if CustomModelData is supported, else False.
      */
     public boolean isCustomModelData() {
-        return version >= NmsVersion.V_1_14.version;
+        return this.version >= NmsVersion.V_1_14.version;
     }
 
     /**
@@ -185,7 +185,7 @@ public enum NmsVersion {
      * @return True if the version is hexadecimal, else False.
      */
     public boolean isHexVersion() {
-        return version >= NmsVersion.V_1_16.version;
+        return this.version >= NmsVersion.V_1_16.version;
     }
 
     /**
@@ -194,7 +194,7 @@ public enum NmsVersion {
      * @return True if the version is Attribute, else False.
      */
     public boolean isAttributeVersion() {
-        return version != NmsVersion.V_1_8_8.version;
+        return this.version != NmsVersion.V_1_8_8.version;
     }
 
     /**
@@ -203,74 +203,74 @@ public enum NmsVersion {
      * @return The version number.
      */
     public int getVersion() {
-        return version;
+        return this.version;
     }
 
     public boolean isAttributItemStack() {
-        return version >= NmsVersion.V_1_20_5.version;
+        return this.version >= NmsVersion.V_1_20_5.version;
     }
 
     public boolean isOneHand() {
-        return version == NmsVersion.V_1_8_8.version;
+        return this.version == NmsVersion.V_1_8_8.version;
     }
 
     public boolean isBarrel() {
-        return version >= V_1_14.version;
+        return this.version >= V_1_14.version;
     }
 
     public boolean isShulker() {
-        return version >= V_1_9.version;
+        return this.version >= V_1_9.version;
     }
 
     public boolean isNewMaterial() {
-        return version >= V_1_13.version;
+        return this.version >= V_1_13.version;
     }
 
     public boolean isNewNBTVersion() {
-        return version >= V_1_18.version;
+        return this.version >= V_1_18.version;
     }
 
     public boolean isNewHeadApi() {
-        return version >= V_1_20.version;
+        return this.version >= V_1_20.version;
     }
 
     public boolean isNewNMSVersion() {
-        return version >= V_1_17.version;
+        return this.version >= V_1_17.version;
     }
 
     public boolean is1_11OrNewer() {
-        return version >= V_1_11.version;
+        return this.version >= V_1_11.version;
     }
 
     public boolean is1_12OrNewer() {
-        return version >= V_1_12.version;
+        return this.version >= V_1_12.version;
     }
 
     public boolean isNewItemStackAPI() {
-        return version >= V_1_21.version;
+        return this.version >= V_1_21.version;
     }
 
     public boolean isNewItemModelAPI() {
-        return version >= V_1_21_4.version;
+        return this.version >= V_1_21_4.version;
     }
 
     public boolean isDialogsVersion() {
-        return version >= V_1_21_7.version;
+        return this.version >= V_1_21_7.version;
     }
 
     public boolean is1_21_2OrNewer() {
-        return version >= V_1_21_2.version;
+        return this.version >= V_1_21_2.version;
     }
 
     public boolean is1_21_5OrNewer() {
-        return version >= V_1_21_5.version;
+        return this.version >= V_1_21_5.version;
     }
 
     public boolean is1_21_9OrNewer() {
-        return version >= V_1_21_9.version;
+        return this.version >= V_1_21_9.version;
     }
 
     public boolean is1_21_11OrNewer() {
-        return version >= V_1_21_11.version;
+        return this.version >= V_1_21_11.version;
     }
 }

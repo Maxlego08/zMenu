@@ -33,8 +33,8 @@ public class ItemPermissibleLoader extends PermissibleLoader {
         int amount = accessor.getInt("amount");
         ItemVerification itemVerification = ItemVerification.valueOf(accessor.getString("verification", ItemVerification.SIMILAR.name()));
 
-        List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
-        List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
+        List<Action> denyActions = this.loadAction(buttonManager, accessor, "deny", path, file);
+        List<Action> successActions = this.loadAction(buttonManager, accessor, "success", path, file);
 
         return new ZItemPermissible(menuItemStack, amount, denyActions, successActions, itemVerification);
     }

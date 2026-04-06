@@ -25,7 +25,7 @@ public class ZJumpButton extends ZNextButton {
         super.onClick(player, event, inventory, slot, placeholders);
 
         Inventory toInventory = inventory.getMenuInventory();
-        this.inventoryManager.openInventory(player, toInventory, page, new ArrayList<>());
+        this.inventoryManager.openInventory(player, toInventory, this.page, new ArrayList<>());
     }
 
     @Override

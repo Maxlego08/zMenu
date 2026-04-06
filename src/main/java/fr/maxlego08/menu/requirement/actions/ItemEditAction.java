@@ -23,7 +23,7 @@ public class ItemEditAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        ItemStack item = ItemPlaceholders.getItem(player, slot);
+        ItemStack item = ItemPlaceholders.getItem(player, this.slot);
         if (item == null) return;
 
         //This edit the item directly

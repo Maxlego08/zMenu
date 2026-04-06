@@ -24,7 +24,7 @@ public class ZPlayerNamePermissible extends PlayerNamePermissible {
     @Override
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         String name = inventory.getPlugin().parse(player, this.playerName.replace("%player%", player.getName()));
-        return isMinecraftName(name);
+        return this.isMinecraftName(name);
     }
 
     @Override
