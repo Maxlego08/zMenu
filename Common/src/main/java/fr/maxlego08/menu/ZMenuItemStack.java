@@ -71,7 +71,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Firework firework;
     private LeatherArmor leatherArmor;
     private boolean needPlaceholderAPI = false;
-    private ItemStack cacheItemStack;
     private boolean centerName;
     private boolean centerLore;
     private LoreType loreType = LoreType.REPLACE;
@@ -89,6 +88,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Boolean attributeShowInTooltip;
     private MenuItemRarity itemRarity;
     private TrimConfiguration trimConfiguration;
+
+    private transient ItemStack cacheItemStack;
 
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;

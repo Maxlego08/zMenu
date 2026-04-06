@@ -40,6 +40,6 @@ public abstract class MaterialLoader {
      * @return The loaded ItemStack.
      */
     @Nullable
-    public abstract ItemStack load(@NotNull Player player,@Nullable YamlConfiguration configuration,@NotNull String path,@NotNull String materialString);
+    public abstract ItemStack load(@NotNull Player player, @Nullable YamlConfiguration configuration,@NotNull String path,@NotNull String materialString);
 
 }
