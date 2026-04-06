@@ -132,7 +132,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
-        return MenuItemStackFormMap.fromMap(this, file, path, map);
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.set("item", map);
+        return new MenuItemStackLoader(this).load(configuration, "item", file);
+    }
+
+    @Override
+    public PaginationManager getPaginationManager() {
+        return this.paginationManager;
     }
 
     @Override
