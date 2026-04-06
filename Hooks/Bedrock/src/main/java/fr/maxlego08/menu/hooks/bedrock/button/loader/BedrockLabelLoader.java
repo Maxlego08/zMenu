@@ -15,7 +15,7 @@ public class BedrockLabelLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
         return new ZBedrockLabel(text);
     }

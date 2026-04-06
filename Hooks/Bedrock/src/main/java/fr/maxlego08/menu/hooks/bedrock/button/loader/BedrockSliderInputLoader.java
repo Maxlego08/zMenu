@@ -15,7 +15,7 @@ public class BedrockSliderInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
         float start = (float) configuration.getDouble(path + ".start", 0);
         float end = (float) configuration.getDouble(path + ".end", 100);

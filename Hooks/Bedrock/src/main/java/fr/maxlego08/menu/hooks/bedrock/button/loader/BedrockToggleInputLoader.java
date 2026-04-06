@@ -15,7 +15,7 @@ public class BedrockToggleInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
         String defaultValue = configuration.getString(path + ".initial-value", String.valueOf(true));
 

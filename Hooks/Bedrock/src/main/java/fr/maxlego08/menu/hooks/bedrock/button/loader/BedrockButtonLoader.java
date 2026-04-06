@@ -16,7 +16,7 @@ public class BedrockButtonLoader extends ButtonLoader {
     }
 
     @Override
-    public BedrockButton load(YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public BedrockButton load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
 
         // Type d'image

@@ -15,7 +15,7 @@ public class BedrockTextInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
         String defaultValue = configuration.getString(path + ".default-value", "");
         return new ZBedrockTextInput(text, defaultValue);

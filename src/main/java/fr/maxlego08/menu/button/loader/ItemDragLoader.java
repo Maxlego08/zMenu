@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZItemDragButton;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 public class ItemDragLoader extends ButtonLoader {
 
@@ -24,7 +25,7 @@ public class ItemDragLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         ZItemDragButton button = new ZItemDragButton(this.dupeManager);
         String check_element = configuration.contains(path + "check_item") ? "check_item" : configuration.contains(path + "check-item") ? "check-item" : null;
 
