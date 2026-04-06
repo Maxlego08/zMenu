@@ -3,28 +3,36 @@ package fr.maxlego08.menu.hooks.packetevents;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.EventManager;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.manager.player.PlayerManager;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.PacketManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.hooks.packetevents.listener.PacketAnimationListener;
 import fr.maxlego08.menu.hooks.packetevents.listener.PacketEventClickLimiterListener;
 import fr.maxlego08.menu.hooks.packetevents.listener.PacketTitleListener;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class PacketUtils implements InventoryListener {
+public class PacketUtils implements InventoryListener, PacketManager {
+    private final PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
+
     private PacketAnimationListener packetAnimationListener;
     private PacketTitleListener packetTitleListener;
 
@@ -35,11 +43,13 @@ public class PacketUtils implements InventoryListener {
         this.plugin = plugin;
     }
 
+    @Override
     public void onLoad() {
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this.plugin));
         PacketEvents.getAPI().load();
     }
 
+    @Override
     public void onEnable() {
         PacketEvents.getAPI().init();
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
@@ -52,6 +62,7 @@ public class PacketUtils implements InventoryListener {
         }
     }
 
+    @Override
     public void onDisable() {
         PacketEvents.getAPI().terminate();
     }
@@ -109,5 +120,25 @@ public class PacketUtils implements InventoryListener {
 
     public PacketTitleListener getPacketTitleListener() {
         return this.packetTitleListener;
+    }
+
+    @Override
+    public void editInventoryTitleName(@NotNull Player player, @NotNull Component title) {
+        this.packetTitleListener.getPlayerPacketInformation(player.getUniqueId()).ifPresent(playerPacketInformation -> {
+            WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow = playerPacketInformation.getWrapperPlayServerOpenWindow();
+            WrapperPlayServerOpenWindow newWrapperPlayServerOpenWindow1 = new WrapperPlayServerOpenWindow(wrapperPlayServerOpenWindow.getContainerId(),
+                    wrapperPlayServerOpenWindow.getType(),
+                    title);
+            this.playerManager.sendPacket(player, newWrapperPlayServerOpenWindow1);
+            this.playerManager.sendPacket(player, playerPacketInformation.getWrapperPlayServerWindowItems());
+        });
+    }
+
+    @Override
+    public void editInventoryTitleName(@NotNull Player player, @NotNull String title) {
+        if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater) {
+            Component component = paperMetaUpdater.getComponent(title);
+            this.editInventoryTitleName(player, component);
+        }
     }
 }

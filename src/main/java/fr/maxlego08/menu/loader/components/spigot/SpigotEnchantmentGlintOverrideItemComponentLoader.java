@@ -20,7 +20,8 @@ public class SpigotEnchantmentGlintOverrideItemComponentLoader extends ItemCompo
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        boolean hasGlint = configuration.getBoolean(path, false);
-        return hasGlint ? new EnchantmentGlintOverrideComponent(true) : null;
+        Object obj = configuration.get(path);
+        if (obj == null) return null;
+        return obj instanceof Boolean hasGlint ? new EnchantmentGlintOverrideComponent(hasGlint) : null;
     }
 }

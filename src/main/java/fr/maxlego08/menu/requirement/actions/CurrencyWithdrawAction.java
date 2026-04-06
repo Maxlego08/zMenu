@@ -26,6 +26,6 @@ public class CurrencyWithdrawAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        this.currencies.withdraw(player, new BigDecimal(this.papi(placeholders.parse(this.amount), player)), this.economyName == null ? "default" : this.economyName, this.papi(placeholders.parse(this.reason), player));
+        this.currencies.withdraw(player.getUniqueId(), new BigDecimal(this.papi(placeholders.parse(this.amount), player)), this.economyName == null ? "default" : this.economyName, this.papi(placeholders.parse(this.reason), player));
     }
 }

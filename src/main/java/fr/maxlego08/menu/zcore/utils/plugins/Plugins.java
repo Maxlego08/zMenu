@@ -31,7 +31,7 @@ public enum Plugins {
     PACKETEVENTS("packetevents"),
     GEYSER("Geyser-Spigot"),
     FLOODGATE("floodgate"),
-    ;
+    MMOITEMS("MMOItems");
 	private final String name;
 
 	Plugins(String name) {

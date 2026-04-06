@@ -2,6 +2,7 @@ package fr.maxlego08.menu.players;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.interfaces.ReturnConsumer;
+import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
@@ -9,7 +10,6 @@ import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
-import fr.maxlego08.menu.placeholder.LocalPlaceholder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;

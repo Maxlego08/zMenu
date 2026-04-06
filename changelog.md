@@ -42,9 +42,92 @@
 
 # Unreleased
 
+## New Features
+
+- **Pagination Management System**: Introduced `PaginationManager` with `PaginationButton`, `PaginationNextButton`, and `PaginationPreviousButton` classes, allowing a single button to handle pagination. Includes max page tracking and optimized page size handling.
+- **Pagination Placeholders**: Added pagination-related placeholders to `MenuPlaceholders` for enhanced inventory navigation.
+- **Reset Pagination Action**: New `ResetPaginationAction` and loader to reset pagination state for button paginations.
+- **Skip Close Actions on Inventory Switch**: Added `skip-close-actions-on-switch` configuration option to prevent close actions from firing when switching between inventories, fixing issues with back/inventory actions triggering on close.
+- **PacketManager Interface**: Introduced `PacketManager` API interface and refactored title name handling in packet events for cleaner architecture.
+- **ClickAction Enum**: Added `ClickAction` enum to streamline action handling in `InventoryLoader`.
+
+## Bug Fixes
+
+- Fixed `CustomModelDataComponent` data handling (removed Optional) and added Paper-specific implementation (`PaperCustomModelDataComponent`) for proper Paper compatibility.
+- Fixed head cache issue in `ZMenuItemStack`.
+- Fixed unnecessary `toLowerCase` conversion on dialog names in `CommandDialogOpen`.
+- Fixed item button click handling by removing redundant null check for clickable buttons.
+
+## Internal Changes
+
+- Added javadocs.
+- API fixes.
+- Removed unused class.
+
+# 1.1.1.2
+
+## Bug Fixes
+
+- Fixed `openWithOldInventories` method crash on 1.20 by using `CompatibilityUtil.getTopInventory()` for safe inventory access.
+- Fixed trim pattern and material validation: now uses Bukkit `Registry` instead of the hardcoded `TrimHelper`, with proper error messages listing all available patterns/materials when a key is not found.
+- Fixed null `ItemFlag` entries causing errors when applying flags to item meta.
+- Fixed `EnchantmentGlintOverrideComponent` not handling `false` values correctly — previously only `true` was applied, now both `true` and `false` are respected.
+- Fixed click requirements defaulting to an empty click list when none are specified — now defaults to all click types.
+- Fixed `AttributeWrapper` to support an optional `NamespacedKey` instead of always generating a random UUID, preventing attribute duplication on item rebuild.
+- Fixed database connection logger initialization order in `ZStorageManager`.
+- Fixed item loading from map (`loadItemStack`) to use `MenuItemStackLoader` instead of the removed `MenuItemStackFormMap` class.
+
+## Improvements
+
+- **Command Permissions**: Added dedicated permissions for `CommandMenuEditor` (`ZMENU_EDITOR`), `CommandMenuVersion` (`ZMENU_VERSION`), and `CommandMenuGiveOpenItem` (`ZMENU_GIVE_OPEN_ITEM`).
+- **API**: Added `getClickRequirementKeys()` method to `MenuPlugin` interface, allowing addons to retrieve the supported click requirement configuration keys.
+- **Default Configs**: Updated default configuration files (`pro_inventory.yml`, `playtime_reward.yml`) to use kebab-case (`view-requirement`, `click-requirement`, `open-requirement`) matching current conventions.
+- **Dependencies**: Added `adventure-text-minimessage` as a library dependency in `plugin.yml`.
+
+## Internal Changes
+
+- Removed unused `PlayerSkin` class.
+- Removed unused `MenuItemStackFormMap` class and associated `fromMap` static method.
+- Cleaned up imports and formatting across multiple files.
+
+---
+
+# 1.1.1.1
+
+## New Features
+
+- **MMOItems Support**: Added material loader for MMOItems plugin integration.
+- **Enchantments Component**: Added enchantments component support for item configuration.
+
 ## Performance
 
-- Performance improvement for items that will use a player’s nickname to be displayed
+- Performance improvement for items that will use a player's nickname to be displayed (player-head optimization).
+
+## Bug Fixes
+
+- Fixed enchant key parsing in configuration.
+- Fixed enchantments component initialization.
+- Fixed title parsing before sending to player in `PlayerTitleAnimation`.
+- Fixed dynamic material check in menu item stack caching logic.
+- Fixed `%player%` as a valid player argument in validators.
+- Fixed error handling and formatting in various loaders and actions.
+- Fixed basehead itemstack rendering.
+- Fixed French translations in message strings.
+- Fixed wrong format issues.
+- Fixed null checks for player in packet listeners.
+- Fixed `[]` display when placeholder returns an empty list.
+- Fixed null message handling in `getLegacyMessage` method.
+
+## Internal Changes
+
+- Refactored placeholder package structure and usage.
+- Renamed `SpigotDyeColorItemComponentLoader` to `SpigotDyedColorItemComponentLoader`.
+- Changed item model type from `String` to `NamespacedKey` in MenuItemStack classes.
+- Updated `@Contract` annotations in `BaseInventory.java` for clarity.
+- Removed unnecessary whitespace in `ComponentMeta.java`.
+- Removed debug messages.
+
+---
 
 # 1.1.1.0
 

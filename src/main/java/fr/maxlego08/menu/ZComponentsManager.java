@@ -48,7 +48,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new SpigotContainerItemComponentLoader(plugin));
             this.registerComponent(new SpigotContainerLootItemComponentLoader());
             this.registerComponent(new SpigotCustomDataItemComponentLoader());
-            this.registerComponent(new SpigotCustomModelDataItemComponentLoader());
+            this.registerComponent(plugin.isPaperOrFolia() ? new PaperCustomModelDataComponentLoader() : new SpigotCustomModelDataItemComponentLoader());
             this.registerComponent(new SpigotDamageItemComponentLoader());
             this.registerComponent(new SpigotDamageResistantItemComponentLoader());
             this.registerComponent(new SpigotDyedColorItemComponentLoader());

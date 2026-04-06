@@ -20,7 +20,6 @@ import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -36,10 +35,9 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-import javax.annotation.Nullable;
-import java.io.File;
 import java.util.*;
 
 public class ZMenuItemStack extends ZUtils implements MenuItemStack {
@@ -103,19 +101,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     /**
-     * Build a MenuItemStack from a map.
-     *
-     * @param inventoryManager the inventoryManager of the item
-     * @param file             the file where the item is saved
-     * @param path             the path of the item in the file
-     * @param map              the map which contains the item data
-     * @return the menuItemStack
-     */
-    public static ZMenuItemStack fromMap(InventoryManager inventoryManager, File file, String path, Map<String, Object> map) {
-        return MenuItemStackFormMap.fromMap(inventoryManager, file, path, map);
-    }
-
-    /**
      * @return the inventoryManager
      */
     public @NonNull InventoryManager getInventoryManager() {
@@ -124,8 +109,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player) {
-        return this.build(new ZBuildContext.Builder().player(player).build());
-
+        return this.build(player, true);
     }
 
     @Override
@@ -207,7 +191,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache;
+        var isItem = this.material != null && (this.material.equals("PLAYER_HEAD") || this.material.equals("SKULL_ITEM")) && this.url == null;
+        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache && !isItem;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
@@ -355,9 +340,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     private void applyFlags(ItemMeta itemMeta) {
         for (ItemFlag flag : this.flags) {
-            if (flag != null) {
-                itemMeta.addItemFlags(flag);
-            }
+            itemMeta.addItemFlags(flag);
         }
     }
 
@@ -401,7 +384,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.displayName != null) {
             try {
                 String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
-                itemName = fontImage.replace(this.papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
+                if (displayName != null)
+                    itemName = fontImage.replace(this.papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
@@ -1218,5 +1202,17 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void addItemComponent(@NotNull ItemComponent itemMetadata) {
         this.itemComponents.add(itemMetadata);
+    }
+
+    public boolean isDynamicMaterial() {
+        if (this.material == null) return false;
+        if (this.material.contains("%")) return true;
+        if (this.material.contains(":")) {
+            String[] values = this.material.split(":", 2);
+            if (values.length == 2) {
+                return this.inventoryManager.getMaterialLoader(values[0]).isPresent();
+            }
+        }
+        return false;
     }
 }

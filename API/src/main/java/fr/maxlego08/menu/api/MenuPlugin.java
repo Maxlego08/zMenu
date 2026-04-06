@@ -21,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface MenuPlugin extends Plugin {
 
@@ -133,6 +134,8 @@ public interface MenuPlugin extends Plugin {
      * @return An instance of {@link FontImage} for handling font images.
      */
     FontImage getFontImage();
+
+    Optional<PacketManager> getPacketManager();
 
     /**
      * Returns the data manager.
@@ -265,4 +268,6 @@ public interface MenuPlugin extends Plugin {
     ComponentsManager getComponentsManager();
 
     VInvManager getVInventoryManager();
+
+    String[] getClickRequirementKeys();
 }

@@ -15,7 +15,6 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
-import fr.maxlego08.menu.api.utils.TrimHelper;
 import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
@@ -35,6 +34,7 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack> {
@@ -53,6 +53,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * Load ItemStack
      */
     public MenuItemStack load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) {
+        if (!path.isEmpty() && !path.endsWith("."))
+            path = path + ".";
+
 
         File file = (File) objects[0];
 
@@ -96,7 +99,9 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         List<String> flagStrings = configuration.getStringList(path + "flags");
         List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
         for (String flagName : flagStrings) {
-            flags.add(this.getFlag(flagName));
+            ItemFlag flag = this.getFlag(flagName);
+            if (flag != null)
+                flags.add(flag);
         }
         menuItemStack.setFlags(flags);
 
@@ -136,8 +141,11 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack) {
-            menuItemStack.build(new ZBuildContext.Builder().build());
+        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial()) {
+            try {
+                menuItemStack.build(new ZBuildContext.Builder().build());
+            } catch (Exception ignored) { // Fail when a item requires a player to be built.
+            }
         }
 
         return menuItemStack;
@@ -250,14 +258,17 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      */
     private void loadEnchantements(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         Enchantments helperEnchantments = this.manager.getEnchantments();
+
         List<String> enchants = configuration.getStringList(path + "enchants");
+        if (enchants.isEmpty()) enchants = configuration.getStringList(path + "enchantments");
+
         Map<Enchantment, Integer> enchantments = new HashMap<>();
 
         for (String enchantString : enchants) {
 
             try {
 
-                String[] splitEnchant = enchantString.split(",");
+                String[] splitEnchant = enchantString.contains(":") ? enchantString.split(":") : enchantString.split(",");
 
                 if (splitEnchant.length == 1)
                     throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString + " for file " + file.getAbsolutePath() + " with path " + path);
@@ -514,18 +525,47 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     private void loadTrims(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         boolean enableTrim = configuration.getBoolean(path + "trim.enable", false);
         if (enableTrim) {
-            TrimHelper trimHelper = new TrimHelper();
-            TrimPattern trimPattern = trimHelper.getTrimPatterns().get(configuration.getString(path + "trim.pattern", "").toLowerCase());
-            if (trimPattern == null) {
+            String patternKey = configuration.getString(path + "trim.pattern", "").toLowerCase();
+            TrimPattern trimPattern = null;
+            try {
+                NamespacedKey patternNamespace = NamespacedKey.fromString(patternKey);
+                if (patternNamespace != null) {
+                    trimPattern = Registry.TRIM_PATTERN.get(patternNamespace);
+                }
+                if (trimPattern == null) {
+                    enableTrim = false;
+                    String joinedNames = Registry.TRIM_PATTERN.stream()
+                            .map(TrimPattern::getKey)
+                            .map(NamespacedKey::toString)
+                            .collect(Collectors.joining(", "));
+                    Logger.info("Trim pattern '" + patternKey + "' was not found for item '" + file.getAbsolutePath() + "'. Available patterns: " + joinedNames, Logger.LogType.ERROR);
+                }
+            } catch (Exception e) {
                 enableTrim = false;
-                Bukkit.getLogger().severe("Trim pattern " + configuration.getString(path + "trim.pattern", "") + " was not found for item " + file.getAbsolutePath());
+                Logger.info("Invalid namespace for trim pattern: '" + patternKey + "' in file '" + file.getAbsolutePath() + "'", Logger.LogType.ERROR);
             }
-            TrimMaterial trimMaterial = trimHelper.getTrimMaterials().get(configuration.getString(path + "trim.material", "").toLowerCase());
-            if (trimMaterial == null) {
+
+            String materialKey = configuration.getString(path + "trim.material", "").toLowerCase();
+            TrimMaterial trimMaterial = null;
+            try {
+                NamespacedKey materialNamespace = NamespacedKey.fromString(materialKey);
+                if (materialNamespace != null) {
+                    trimMaterial = Registry.TRIM_MATERIAL.get(materialNamespace);
+                }
+                if (trimMaterial == null) {
+                    enableTrim = false;
+                    String joinedNames = Registry.TRIM_MATERIAL.stream()
+                            .map(TrimMaterial::getKey)
+                            .map(NamespacedKey::toString)
+                            .collect(Collectors.joining(", "));
+                    Logger.info("Trim material '" + materialKey + "' was not found for item '" + file.getAbsolutePath() + "'. Available materials: " + joinedNames, Logger.LogType.ERROR);
+                }
+            } catch (Exception e) {
                 enableTrim = false;
-                Bukkit.getLogger().severe("Trim material " + configuration.getString(path + "trim.material", "") + " was not found for item " + file.getAbsolutePath());
+                Logger.info("Invalid namespace for trim material: '" + materialKey + "' in file '" + file.getAbsolutePath() + "'", Logger.LogType.ERROR);
             }
-            menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
+            if (trimMaterial != null && trimPattern != null)
+                menuItemStack.setTrimConfiguration(new TrimConfiguration(enableTrim, trimMaterial, trimPattern));
         }
     }
 

@@ -10,35 +10,34 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CustomModelDataComponent extends ItemComponent {
-    private final @NotNull Optional<@NotNull List<@NotNull Color>> colors;
-    private final @NotNull Optional<@NotNull List<@NotNull Boolean>> flags;
-    private final @NotNull Optional<@NotNull List<@NotNull Float>> floats;
-    private final @NotNull Optional<@NotNull List<@NotNull String>> string;
+    private final @NotNull List<@NotNull Color> colors;
+    private final @NotNull List<@NotNull Boolean> flags;
+    private final @NotNull List<@NotNull Float> floats;
+    private final @NotNull List<@NotNull String> strings;
 
-    public CustomModelDataComponent(@NotNull Optional<@NotNull List<@NotNull Color>> colors, @NotNull Optional<@NotNull List<@NotNull Boolean>> flags, @NotNull Optional<@NotNull List<@NotNull Float>> floats, @NotNull Optional<@NotNull List<@NotNull String>> string) {
+    public CustomModelDataComponent(@NotNull List<@NotNull Color> colors, @NotNull List<@NotNull Boolean> flags, @NotNull List<@NotNull Float> floats, @NotNull List<@NotNull String> strings) {
         this.colors = colors;
         this.flags = flags;
         this.floats = floats;
-        this.string = string;
+        this.strings = strings;
     }
 
-    public @NotNull Optional<@NotNull List<@NotNull Color>> getColors() {
-        return this.colors;
+    public @NotNull List<@NotNull Color> getColors() {
+        return colors;
     }
 
-    public @NotNull Optional<@NotNull List<@NotNull Boolean>> getFlags() {
+    public @NotNull List<@NotNull Boolean> getFlags() {
         return this.flags;
     }
 
-    public @NotNull Optional<@NotNull List<@NotNull Float>> getFloats() {
+    public @NotNull List<@NotNull Float> getFloats() {
         return this.floats;
     }
 
-    public @NotNull Optional<@NotNull List<@NotNull String>> getString() {
-        return this.string;
+    public @NotNull List<@NotNull String> getStrings() {
+        return this.strings;
     }
 
     @Override
@@ -47,10 +46,18 @@ public class CustomModelDataComponent extends ItemComponent {
         if (itemMeta != null) {
             org.bukkit.inventory.meta.components.CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
 
-            this.colors.ifPresent(customModelDataComponent::setColors);
-            this.flags.ifPresent(customModelDataComponent::setFlags);
-            this.floats.ifPresent(customModelDataComponent::setFloats);
-            this.string.ifPresent(customModelDataComponent::setStrings);
+            if (!this.colors.isEmpty()) {
+                customModelDataComponent.setColors(this.colors);
+            }
+            if (!this.flags.isEmpty()) {
+                customModelDataComponent.setFlags(this.flags);
+            }
+            if (!this.floats.isEmpty()) {
+                customModelDataComponent.setFloats(this.floats);
+            }
+            if (!this.strings.isEmpty()) {
+                customModelDataComponent.setStrings(this.strings);
+            }
 
             itemStack.setItemMeta(itemMeta);
         }

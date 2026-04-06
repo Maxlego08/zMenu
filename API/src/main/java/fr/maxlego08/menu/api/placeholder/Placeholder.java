@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.placeholder;
+package fr.maxlego08.menu.api.placeholder;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -22,7 +22,7 @@ public interface Placeholder {
         private final Placeholder localPlaceholder;
 
         public Api() {
-            PlaceholderExpansion expansion = new fr.maxlego08.menu.placeholder.DistantPlaceholder(LocalPlaceholder.getInstance());
+            PlaceholderExpansion expansion = new fr.maxlego08.menu.api.placeholder.DistantPlaceholder(LocalPlaceholder.getInstance());
             expansion.register();
             this.localPlaceholder = new Local();
         }

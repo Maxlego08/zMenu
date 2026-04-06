@@ -39,7 +39,7 @@ public class ZCurrencyPermissible extends CurrencyPermissible {
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         String result = inventory.getPlugin().parse(player, placeholders.parse(this.amount));
         BigDecimal bigDecimal = new BigDecimal(result);
-        BigDecimal amount = this.currencies.getBalance(player, this.economyName == null ? "default" : this.economyName);
+        BigDecimal amount = this.currencies.getBalance(player.getUniqueId(), this.economyName == null ? "default" : this.economyName);
         return amount.compareTo(bigDecimal) >= 0;
     }
 

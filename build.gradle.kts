@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.1.0"
+version = "1.1.1.2"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -24,11 +24,24 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
+        maven {
+            name = "groupezReleases"
+            url = uri("https://repo.groupez.dev/releases")
+        }
         maven(url = "https://repo.tcoded.com/releases")
-        maven(url = "https://jitpack.io")
+        maven(url = "https://repo.codemc.io/repository/maven-releases/")
+        maven(url = "https://repo.codemc.io/repository/maven-snapshots/")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        maven(url = "https://hub.spigotmc.org/nexus/content/groups/public/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven(url = "https://libraries.minecraft.net/")
+        maven(url = "https://repo.jsinco.dev/releases")
+        maven {
+            url = uri("https://jitpack.io")
+            content {
+                excludeGroup("org.spigotmc")
+            }
+        }
     }
 
     java {
@@ -77,7 +90,7 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
-    if (project.name == "API"){
+    if (project.name == "API") {
         tasks.javadoc {
             options.encoding = "UTF-8"
             if (JavaVersion.current().isJava9Compatible)
@@ -93,11 +106,10 @@ allprojects {
         if (project.name != "Paper") {
             compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
         }
-        compileOnly("com.mojang:authlib:1.5.26")
         compileOnly("me.clip:placeholderapi:2.11.6")
 
-        implementation("fr.maxlego08.sarah:sarah:1.20")
-        implementation("fr.traqueur.currencies:currenciesapi:1.0.10")
+        implementation("fr.maxlego08.sarah:sarah:1.22")
+        implementation("fr.traqueur.currencies:currenciesapi:1.0.13")
         implementation("com.tcoded:FoliaLib:0.5.1")
 
         implementation("com.github.cryptomorin:XSeries:13.3.0")

@@ -2,8 +2,8 @@ package fr.maxlego08.menu.itemstack.components.paper;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
-import fr.maxlego08.menu.placeholder.Placeholder;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

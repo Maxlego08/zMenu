@@ -18,6 +18,7 @@ import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.NoneLoader;
+import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
@@ -27,7 +28,6 @@ import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
-import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFormMap;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
@@ -40,6 +40,7 @@ import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.*;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.loader.permissible.*;
+import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
@@ -72,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
+    private final PaginationManager paginationManager = new ZPaginationManager();
 
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
@@ -310,7 +312,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         List<Inventory> oldInventories = new ArrayList<>();
 
-        if (player.getOpenInventory().getTopInventory().getHolder() instanceof InventoryDefault inventoryDefault) {
+
+        var topInventory = CompatibilityUtil.getTopInventory(player);
+        if (topInventory != null && topInventory.getHolder() instanceof InventoryDefault inventoryDefault) {
             Inventory fromInventory = inventoryDefault.getMenuInventory();
             oldInventories = inventoryDefault.getOldInventories();
             oldInventories.add(fromInventory);
@@ -400,8 +404,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
         if (this.plugin.isEnable(Plugins.PACKETEVENTS)) {
-            if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater)
-                buttonManager.registerAction(new PacketEventChangeTitleNameLoader(paperMetaUpdater, this.plugin.getPacketUtils().getPacketTitleListener()));
+
+            Optional<PacketManager> packetManager = this.plugin.getPacketManager();
+            packetManager.ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         }
         if (this.plugin.getBedrockManager() != null) {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
@@ -422,6 +427,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.register(new MainMenuLoader(this.plugin));
         buttonManager.register(new JumpLoader(this.plugin));
         buttonManager.register(new SwitchLoader(this.plugin));
+        buttonManager.register(new PaginationNextButtonLoader(this.plugin));
+        buttonManager.register(new PaginationPreviousButtonLoader(this.plugin));
         buttonManager.register(new ItemDragLoader(this.plugin));
 
         // Loading Button Dialog
@@ -828,6 +835,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         });
+
+        if (clickTypes.isEmpty()) { // Use all clicks by default
+            clickTypes.addAll(Configuration.allClicksType);
+        }
+
         return clickTypes;
     }
 

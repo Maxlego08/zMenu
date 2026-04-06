@@ -17,14 +17,59 @@ import java.time.ZoneId;
 public class MenuPlaceholders extends ZUtils {
 
     public void register(MenuPlugin plugin) {
-        LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+        fr.maxlego08.menu.api.placeholder.LocalPlaceholder placeholder = fr.maxlego08.menu.api.placeholder.LocalPlaceholder.getInstance();
 
         var inventoryManager = plugin.getInventoryManager();
+        var paginationManager = inventoryManager.getPaginationManager();
+
         placeholder.register("test", (a, b) -> "&ctest");
+        
         placeholder.register("player_page", (player, s) -> String.valueOf(inventoryManager.getPage(player)));
         placeholder.register("player_next_page", (player, s) -> String.valueOf(inventoryManager.getPage(player) + 1));
         placeholder.register("player_previous_page", (player, s) -> String.valueOf(inventoryManager.getPage(player) - 1));
         placeholder.register("player_max_page", (player, s) -> String.valueOf(inventoryManager.getMaxPage(player)));
+        
+        placeholder.register("pagination_page_", (player, contextId) -> {
+            if (paginationManager == null) return "0";
+            return String.valueOf(paginationManager.getPage(player.getUniqueId(), contextId));
+        });
+        
+        placeholder.register("pagination_page_one_indexed_", (player, contextId) -> {
+            if (paginationManager == null) return "0";
+            return String.valueOf(paginationManager.getPage(player.getUniqueId(), contextId) + 1);
+        });
+        
+        placeholder.register("pagination_next_page_", (player, contextId) -> {
+            if (paginationManager == null) return "0";
+            return String.valueOf(paginationManager.getPage(player.getUniqueId(), contextId) + 2);
+        });
+        
+        placeholder.register("pagination_previous_page_", (player, contextId) -> {
+            if (paginationManager == null) return "0";
+            int currentPage = paginationManager.getPage(player.getUniqueId(), contextId);
+            return String.valueOf(Math.max(0, currentPage - 1));
+        });
+        
+        placeholder.register("pagination_max_page_", (player, contextId) -> {
+            if (paginationManager == null) return "1";
+            
+            String actualContextId = contextId;
+            int defaultMaxPage = 0;
+            
+            if (contextId.contains(":")) {
+                String[] parts = contextId.split(":", 2);
+                actualContextId = parts[0];
+                try {
+                    defaultMaxPage = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            
+            int storedMaxPage = paginationManager.getMaxPage(player.getUniqueId(), actualContextId);
+            int maxPage = Math.max(storedMaxPage, defaultMaxPage);
+            return String.valueOf(maxPage + 1);
+        });
+        
         placeholder.register("player_previous_inventories", (playeofflinePlayer, s) -> {
             if (playeofflinePlayer.isOnline()) {
                 Player player = playeofflinePlayer.getPlayer();

@@ -43,7 +43,7 @@ name: "#454545sʜᴏᴘ"
 #
 # In the example if below, if the player to the permission "zmenu.shop.show" then the inventory will open, otherwise a message will be sent
 #
-open_requirement:
+open-requirement:
   requirements:
     - type: permission
       permission: "zmenu.shop.show"
@@ -85,9 +85,9 @@ items:
       - 35-44 # slot 35 to 44
 
   #
-  # The item if below will use the click_requirement and view_requirement.
-  # You will have the same configuration items as for the open_requirement.
-  # Attention, for the click_requirement you will have to define several requirements according to your need.
+  # The item if below will use the click-requirement and view-requirement.
+  # You will have the same configuration items as for the open-requirement.
+  # Attention, for the click-requirement you will have to define several requirements according to your need.
   # You also need to specify clicks. So you can create multiple requirements for each click.
   #
   # In the example if below, if the player has enough money, and he has the zmenu.shop.use permission then the item will be displayed, otherwise another item will be displayed.
@@ -96,7 +96,7 @@ items:
   # You want to make a shop with zMenu ? Use zShop https://www.spigotmc.org/resources/zshop-1-8-1-20-advanced-inventory-plugin.74073/
   shop1:
     slot: 22
-    view_requirement:
+    view-requirement:
       requirements:
         - type: placeholder
           placeholder: "%vault_eco_balance%"
@@ -104,7 +104,7 @@ items:
           action: SUPERIOR_OR_EQUAL
         - type: permission
           permission: "zmenu.shop.use"
-    click_requirement:
+    click-requirement:
       purchase:
         clicks:
           - ANY # or ALL for all clicks type

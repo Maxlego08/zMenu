@@ -66,14 +66,14 @@ public class ZStorageManager implements StorageManager {
             return;
         }
 
+        Logger logger = JULogger.from(plugin.getLogger());
         DatabaseConnection databaseConnection;
         if (storageType.equalsIgnoreCase("SQLITE")) {
-            databaseConnection = new SqliteConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, DatabaseType.SQLITE), this.plugin.getDataFolder());
+            databaseConnection = new SqliteConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, DatabaseType.SQLITE), this.plugin.getDataFolder(), logger);
         } else {
-            databaseConnection = new HikariDatabaseConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, storageType.equalsIgnoreCase("MYSQL") ? DatabaseType.MYSQL : DatabaseType.MARIADB));
+            databaseConnection = new HikariDatabaseConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, storageType.equalsIgnoreCase("MYSQL") ? DatabaseType.MYSQL : DatabaseType.MARIADB), logger);
         }
 
-        Logger logger = JULogger.from(this.plugin.getLogger());
         this.requestHelper = new RequestHelper(databaseConnection, logger);
 
         if (!databaseConnection.isValid()) {

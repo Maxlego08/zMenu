@@ -97,6 +97,15 @@ enable-player-commands-as-op-action: false
 # This setting only applies when enable-player-commands-as-op-action is true.
 op-grant-method: ATTACHMENT
 
+# Skip close actions on inventory switch.
+# Prevents certain action types from executing when a player opens a new zMenu inventory.
+# This prevents actions like "open another inventory" or "go back" from reopening old menus.
+# List the action types you want to skip (e.g., "inventory", "inv", "back").
+skip-close-actions-on-inventory-switch:
+  - inventory
+  - inv
+  - back
+
 # Enable FastEvent system.
 # Replaces some Bukkit events with a faster alternative. Enables better performance at the cost of API changes.
 # Refer to documentation before enabling this.
