@@ -28,7 +28,7 @@ public class ResetPaginationLoader extends ActionLoader {
             ResetPaginationAction.ResetType resetType = ResetPaginationAction.ResetType.valueOf(typeStr.toUpperCase());
 
             if (resetType == ResetPaginationAction.ResetType.CONTEXT) {
-                List<String> contextIds = loadContextIds(accessor);
+                List<String> contextIds = this.loadContextIds(accessor);
                 if (contextIds.isEmpty()) {
                     return null;
                 }

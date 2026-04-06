@@ -15,7 +15,7 @@ public class PaginationNextButton extends PaginationButton {
     }
 
     protected void onNextPage(@NotNull Player player, @NotNull InventoryEngine inventory) {
-        refreshInventory(player);
+        this.refreshInventory(player);
     }
 
     protected void onCannotNextPage(@NotNull Player player, @NotNull InventoryEngine inventory) {
@@ -23,15 +23,15 @@ public class PaginationNextButton extends PaginationButton {
 
     @Override
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
-        GenericPaginateButton paginateButton = findPaginateButton(inventory, player);
+        GenericPaginateButton paginateButton = this.findPaginateButton(inventory, player);
         if (paginateButton == null) return;
 
         int currentPage = this.manager.getPage(player.getUniqueId(), this.contextId);
         if (currentPage < paginateButton.getMaxPage(player)) {
             this.manager.nextPage(player.getUniqueId(), this.contextId);
-            onNextPage(player, inventory);
+            this.onNextPage(player, inventory);
         } else {
-            onCannotNextPage(player, inventory);
+            this.onCannotNextPage(player, inventory);
         }
     }
 }

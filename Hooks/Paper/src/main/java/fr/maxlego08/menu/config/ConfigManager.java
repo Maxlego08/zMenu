@@ -143,7 +143,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
 
     @Override
     public void openConfig(@NonNull Plugin plugin, @NonNull Player player) {
-        openConfig(plugin.getName(), player);
+        this.openConfig(plugin.getName(), player);
     }
 
     @Override

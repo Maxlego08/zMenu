@@ -66,8 +66,8 @@ public class ResetPaginationAction extends Action {
     @Override
     public String toString() {
         return "ResetPaginationAction{" +
-                "resetType=" + resetType +
-                ", contextIds=" + contextIds +
+                "resetType=" + this.resetType +
+                ", contextIds=" + this.contextIds +
                 '}';
     }
 }

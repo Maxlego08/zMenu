@@ -66,7 +66,7 @@ public class ZStorageManager implements StorageManager {
             return;
         }
 
-        Logger logger = JULogger.from(plugin.getLogger());
+        Logger logger = JULogger.from(this.plugin.getLogger());
         DatabaseConnection databaseConnection;
         if (storageType.equalsIgnoreCase("SQLITE")) {
             databaseConnection = new SqliteConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, DatabaseType.SQLITE), this.plugin.getDataFolder(), logger);

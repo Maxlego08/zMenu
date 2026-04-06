@@ -14,7 +14,7 @@ public class PaginationPreviousButton extends PaginationButton {
     }
 
     protected void onPreviousPage(@NotNull Player player, @NotNull InventoryEngine inventory) {
-        refreshInventory(player);
+        this.refreshInventory(player);
     }
 
     protected void onCannotPreviousPage(@NotNull Player player, @NotNull InventoryEngine inventory) {
@@ -25,9 +25,9 @@ public class PaginationPreviousButton extends PaginationButton {
         int currentPage = this.manager.getPage(player.getUniqueId(), this.contextId);
         if (currentPage > 0) {
             this.manager.previousPage(player.getUniqueId(), this.contextId);
-            onPreviousPage(player, inventory);
+            this.onPreviousPage(player, inventory);
         } else {
-            onCannotPreviousPage(player, inventory);
+            this.onCannotPreviousPage(player, inventory);
         }
     }
 }

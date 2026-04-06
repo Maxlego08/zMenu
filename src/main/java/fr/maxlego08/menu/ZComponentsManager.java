@@ -120,7 +120,7 @@ public class ZComponentsManager implements ComponentsManager {
 
                         if (currentVersion.is1_21_9OrNewer()){ // 1.21.9+
 
-                            this.registerComponent(new SpigotProfileItemComponentLoader());
+                            this.registerComponent(plugin.isPaperOrFolia() ? new PaperProfileComponentLoader() : new SpigotProfileItemComponentLoader());
 
                             if (currentVersion.is1_21_11OrNewer()){ // 1.21.11+
                                 this.registerComponent(new SpigotAttackRangeItemComponentLoader());

@@ -20,7 +20,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return the current page
      */
     public final int getCurrentPage(@NotNull Player player) {
-        return getPaginationManager().getPage(player.getUniqueId(), getContextId(player));
+        return this.getPaginationManager().getPage(player.getUniqueId(), this.getContextId(player));
     }
 
     /**
@@ -30,7 +30,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return the current page (1-based)
      */
     public final int getCurrentPageOneIndexed(@NotNull Player player) {
-        return getCurrentPage(player) + 1;
+        return this.getCurrentPage(player) + 1;
     }
 
     /**
@@ -40,7 +40,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @param page   the page to set (0-based index)
      */
     public final void setCurrentPage(@NotNull Player player, int page) {
-        getPaginationManager().setPage(player.getUniqueId(), getContextId(player), page);
+        this.getPaginationManager().setPage(player.getUniqueId(), this.getContextId(player), page);
     }
 
     /**
@@ -50,10 +50,10 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return true if advanced, false if already at the last page
      */
     public final boolean nextPage(@NotNull Player player) {
-        int currentPage = getCurrentPage(player);
-        int maxPage = getMaxPage(player);
+        int currentPage = this.getCurrentPage(player);
+        int maxPage = this.getMaxPage(player);
         if (currentPage < maxPage) {
-            getPaginationManager().nextPage(player.getUniqueId(), getContextId(player));
+            this.getPaginationManager().nextPage(player.getUniqueId(), this.getContextId(player));
             return true;
         }
         return false;
@@ -66,9 +66,9 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return true if went back, false if already at the first page
      */
     public final boolean previousPage(@NotNull Player player) {
-        int currentPage = getCurrentPage(player);
+        int currentPage = this.getCurrentPage(player);
         if (currentPage > 0) {
-            getPaginationManager().previousPage(player.getUniqueId(), getContextId(player));
+            this.getPaginationManager().previousPage(player.getUniqueId(), this.getContextId(player));
             return true;
         }
         return false;
@@ -80,7 +80,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @param player the player
      */
     public final void resetPagination(@NotNull Player player) {
-        getPaginationManager().reset(player.getUniqueId(), getContextId(player));
+        this.getPaginationManager().reset(player.getUniqueId(), this.getContextId(player));
     }
 
     /**
@@ -91,8 +91,8 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return the maximum page
      */
     public final int getMaxPage(@NotNull Player player) {
-        int totalSize = getPaginationSize(player);
-        int pageSize = getSlots().size();
+        int totalSize = this.getPaginationSize(player);
+        int pageSize = this.getSlots().size();
         if (pageSize <= 0) return 0;
         return Math.max(0, (totalSize - 1) / pageSize);
     }
@@ -107,7 +107,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
      */
     public final int getMaxPage(@NotNull Player player, int pageSize) {
         if (pageSize <= 0) return 0;
-        int totalSize = getPaginationSize(player);
+        int totalSize = this.getPaginationSize(player);
         return Math.max(0, (totalSize - 1) / pageSize);
     }
 
@@ -118,8 +118,8 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return true if there's a next page
      */
     public final boolean hasNextPage(@NotNull Player player) {
-        int currentPage = getCurrentPage(player);
-        return currentPage < getMaxPage(player);
+        int currentPage = this.getCurrentPage(player);
+        return currentPage < this.getMaxPage(player);
     }
 
     /**
@@ -129,7 +129,7 @@ public abstract class GenericPaginateButton extends PaginateButton {
      * @return true if there's a previous page
      */
     public final boolean hasPreviousPage(@NotNull Player player) {
-        return getCurrentPage(player) > 0;
+        return this.getCurrentPage(player) > 0;
     }
 
 }
