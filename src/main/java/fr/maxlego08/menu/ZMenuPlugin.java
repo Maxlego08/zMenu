@@ -118,7 +118,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
-    private PacketUtils packetUtils;
+    private PacketManager packetManager;
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -127,8 +127,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onLoad() {
         if (this.isActive(Plugins.PACKETEVENTS)) {
-            this.packetUtils = new PacketUtils(this);
-            this.packetUtils.onLoad();
+            this.packetManager = new PacketUtils(this);
+        }
+        if (this.packetManager != null) {
+            this.packetManager.onLoad();
         }
     }
 
@@ -140,8 +142,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.saveDefaultConfig();
         Configuration.getInstance().load(getConfig());
 
-        if (this.packetUtils != null) {
-            this.packetUtils.onEnable();
+        if (this.packetManager != null) {
+            this.packetManager.onEnable();
         }
 
         this.scheduler = this.foliaLib.getScheduler();
@@ -407,8 +409,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onDisable() {
 
-        if (this.packetUtils != null)
-            this.packetUtils.onDisable();
+        if (this.packetManager != null) {
+            this.packetManager.onDisable();
+        }
 
         this.preDisable();
 
@@ -536,6 +539,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return this.inventoryManager.loadItemStack(configuration, path, file);
     }
 
+    @Override
+    public Optional<PacketManager> getPacketManager() {
+        return Optional.ofNullable(this.packetManager);
+
+    }
+
     /**
      * Returns the class that will manage the website
      *
@@ -552,10 +561,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      */
     public CommandMenu getCommandMenu() {
         return commandMenu;
-    }
-
-    public PacketUtils getPacketUtils() {
-        return packetUtils;
     }
 
     @Override

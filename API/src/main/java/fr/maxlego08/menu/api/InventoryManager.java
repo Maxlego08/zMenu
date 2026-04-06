@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.button.GenericPaginationButton;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -12,6 +13,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -595,4 +597,28 @@ public interface InventoryManager extends Listener {
      * <p>
      */
     MenuItemStack loadItemStack(File file, String path, Map<String, Object> map);
+
+    /**
+     * Provides access to the pagination manager for handling paginated content in inventories.
+     *
+     * <p>The PaginationManager is responsible for managing multi-page inventory displays,
+     * allowing buttons to paginate through large collections of items or data. It tracks
+     * the current page for each player and manages navigation between pages.</p>
+     *
+     * <p>This is typically used in conjunction with {@link GenericPaginationButton} or
+     * other paginated button implementations to display collections that exceed a single
+     * inventory page's capacity.</p>
+     *
+     * <p>Example usage:</p>
+     * <pre>{@code
+     * PaginationManager manager = inventoryManager.getPaginationManager();
+     * // Use manager to control pagination state
+     * }</pre>
+     *
+     * @return An instance of {@link PaginationManager} for managing pagination state in inventories.
+     * @see GenericPaginationButton
+     * @see PaginationManager
+     */
+    PaginationManager getPaginationManager();
+
 }

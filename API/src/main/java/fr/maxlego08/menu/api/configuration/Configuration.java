@@ -320,6 +320,9 @@ public class Configuration {
         label = "Enable performance debug"
     )
     public static boolean enablePerformanceDebug = false;
+
+    public static List<String> skipCloseActionsOnInventorySwitch = Arrays.asList("inventory", "inv", "back");
+    
     public static PerformanceFilterMode performanceFilterMode = PerformanceFilterMode.DISABLED;
     public static List<String> performanceFilterOperations = new ArrayList<>();
     public static long performanceThresholdMs = 10;
@@ -416,6 +419,7 @@ public class Configuration {
         enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
         performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
         performanceFilterOperations = fileConfiguration.getStringList(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath());
+        skipCloseActionsOnInventorySwitch = fileConfiguration.getStringList(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath());
         try {
             performanceFilterMode = PerformanceFilterMode.valueOf(fileConfiguration.getString(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), PerformanceFilterMode.DISABLED.name()).toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -470,6 +474,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath(), enablePlayerCommandsAsOPAction);
         fileConfiguration.set(ConfigPath.OP_GRANT_METHOD.getPath(), opGrantMethod.name());
         fileConfiguration.set(ConfigPath.ENABLE_TOAST.getPath(), enableToast);
+        fileConfiguration.set(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath(), skipCloseActionsOnInventorySwitch);
         fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
         fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
         fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
@@ -526,6 +531,7 @@ public class Configuration {
         ENABLE_PLAYER_COMMANDS_AS_OP_ACTION("enable-player-commands-as-op-action"),
         OP_GRANT_METHOD("op-grant-method"),
         ENABLE_TOAST("enable-toast"),
+        SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH("skip-close-actions-on-inventory-switch"),
 
         ENABLE_PACKET_EVENT_CLICK_LIMITER("enable-packet-event-click-limiter"),
         PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds"),
