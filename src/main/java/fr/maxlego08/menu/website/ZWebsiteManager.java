@@ -29,21 +29,11 @@ import java.util.Optional;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
-    /**
-     * Represents the outcome of a {@link #downloadFromUrl} call.
-     * Each value maps to a distinct failure reason or success, allowing
-     * callers to switch on the result and send the appropriate message.
-     */
     public enum DownloadResult {
-        /** File was downloaded and saved successfully. */
         SUCCESS,
-        /** The resolved host is not in {@code Configuration.allowedDownloadableWebsite}. */
         ERROR_HOST_NOT_ALLOWED,
-        /** The response is not a .yml / YAML file. */
         ERROR_INVALID_FILE_TYPE,
-        /** The file already exists on disk and {@code force} is false. */
         ERROR_FILE_ALREADY_EXISTS,
-        /** A generic I/O or network failure occurred. */
         ERROR_IO
     }
 
