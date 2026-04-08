@@ -20,10 +20,8 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +29,27 @@ import java.util.Optional;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
+    /**
+     * Represents the outcome of a {@link #downloadFromUrl} call.
+     * Each value maps to a distinct failure reason or success, allowing
+     * callers to switch on the result and send the appropriate message.
+     */
+    public enum DownloadResult {
+        /** File was downloaded and saved successfully. */
+        SUCCESS,
+        /** The resolved host is not in {@code Configuration.allowedDownloadableWebsite}. */
+        ERROR_HOST_NOT_ALLOWED,
+        /** The response is not a .yml / YAML file. */
+        ERROR_INVALID_FILE_TYPE,
+        /** The file already exists on disk and {@code force} is false. */
+        ERROR_FILE_ALREADY_EXISTS,
+        /** A generic I/O or network failure occurred. */
+        ERROR_IO
+    }
+
     // private final String API_URL = "http://mib.test/api/v1/";
     private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
+
     private final ZMenuPlugin plugin;
     private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
@@ -378,49 +395,71 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         }
     }
 
+    private String getHostFromUrl(String urlString) {
+        try {
+            return new URL(urlString).getHost();
+        } catch (MalformedURLException e) {
+            return urlString;
+        }
+    }
+
     @Override
     public void downloadFromUrl(@NonNull CommandSender sender, @NonNull String baseUrl, boolean force) {
 
         message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
         plugin.getScheduler().runAsync(w -> {
-
-            try {
-                String finalUrl = followRedirection(baseUrl);
-
-                // ToDo, add a configuration for "allowed urls"
-
-                URL url = new URL(finalUrl);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                String fileName = getFileNameFromContentDisposition(httpURLConnection);
-
-                if (fileName == null) {
-                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
-                    return;
-                }
-
-                if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
-                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
-                    return;
-                }
-
-                File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
-                if (!folder.exists()) folder.mkdirs();
-                File file = new File(folder, fileName);
-
-                if (file.exists() && !force) {
-                    message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
-                    return;
-                }
-
-                HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
-                request.setMethod("GET");
-
-                request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
-            } catch (IOException exception) {
-                exception.printStackTrace();
-                message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+            DownloadResult result = performDownload(baseUrl, force, sender);
+            switch (result) {
+                case SUCCESS -> {}
+                case ERROR_HOST_NOT_ALLOWED -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_HOST,
+                        "%host%", getHostFromUrl(baseUrl),
+                        "%allowed%", String.join(", ", Configuration.allowedDownloadableWebsite));
+                case ERROR_IO -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+                case ERROR_INVALID_FILE_TYPE -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+                case ERROR_FILE_ALREADY_EXISTS -> message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
             }
         });
+    }
+
+    private DownloadResult performDownload(String baseUrl, boolean force, CommandSender sender) {
+        try {
+            String finalUrl = followRedirection(baseUrl);
+
+            if (!isValidHost(finalUrl)) {
+                return DownloadResult.ERROR_HOST_NOT_ALLOWED;
+            }
+
+            URL url = new URL(finalUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            String fileName = getFileNameFromContentDisposition(httpURLConnection);
+
+            if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
+                return DownloadResult.ERROR_INVALID_FILE_TYPE;
+            }
+
+            File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
+            if (!folder.exists()) folder.mkdirs();
+            File file = new File(folder, fileName);
+
+            if (file.exists() && !force) {
+                return DownloadResult.ERROR_FILE_ALREADY_EXISTS;
+            }
+
+            HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
+            request.setMethod("GET");
+            request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
+
+            return DownloadResult.SUCCESS;
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return DownloadResult.ERROR_IO;
+        }
+    }
+
+    private boolean isValidHost(String urlString) throws IOException {
+        String host = getHostFromUrl(urlString).toLowerCase();
+        return Configuration.allowedDownloadableWebsite.stream()
+                .anyMatch(host::endsWith);
     }
 
     private String followRedirection(String urlString) throws IOException {
@@ -442,12 +481,27 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
     private String getFileNameFromContentDisposition(HttpURLConnection conn) {
         String contentDisposition = conn.getHeaderField("Content-Disposition");
+        String fileName = null;
+
         if (contentDisposition != null) {
             int index = contentDisposition.indexOf("filename=");
             if (index > 0) {
-                return contentDisposition.substring(index + 9).replaceAll("\"", "");
+                fileName = contentDisposition.substring(index + 9)
+                        .replaceAll("\"", "")
+                        .trim();
             }
         }
-        return generateRandomString(16);
+
+        if (fileName == null || fileName.isBlank()) {
+            return generateRandomString(16) + ".yml";
+        }
+
+        fileName = Paths.get(fileName).getFileName().toString();
+
+        if (!fileName.matches("[a-zA-Z0-9_\\-]{1,64}\\.yml")) {
+            return generateRandomString(16) + ".yml";
+        }
+
+        return fileName;
     }
 }
