@@ -20,7 +20,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -374,23 +376,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         this.fetchInventories(player);
     }
 
-    private String getFileNameFromUrl(String url) {
-        URI uri = null;
-        try {
-            uri = new URI(url);
-        } catch (URISyntaxException exception) {
-            exception.printStackTrace();
-            return null;
-        }
-        String path = uri.getPath();
-        String[] segments = path.split("/");
-        if (segments.length > 0) {
-            return segments[segments.length - 1];
-        } else {
-            return null;
-        }
-    }
-
     private String getHostFromUrl(String urlString) {
         try {
             return new URL(urlString).getHost();
@@ -424,13 +409,18 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         try {
             String finalUrl = followRedirection(baseUrl);
 
+            String fileName;
             URL url = new URL(finalUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setInstanceFollowRedirects(false);
-            String fileName = getFileNameFromContentDisposition(httpURLConnection);
+            try {
+                fileName = getFileNameFromContentDisposition(httpURLConnection);
 
-            if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
-                return DownloadResult.ERROR_INVALID_FILE_TYPE;
+                if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
+                    return DownloadResult.ERROR_INVALID_FILE_TYPE;
+                }
+            } finally {
+                httpURLConnection.disconnect();
             }
 
             File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
@@ -441,9 +431,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
                 return DownloadResult.ERROR_FILE_ALREADY_EXISTS;
             }
 
+            final String finalFileName = fileName;
             HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
             request.setMethod("GET");
-            request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
+            request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", finalFileName));
 
             return DownloadResult.SUCCESS;
         } catch (DisallowedHostException exception) {
