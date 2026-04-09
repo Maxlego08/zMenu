@@ -37,6 +37,12 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         ERROR_IO
     }
 
+    private static class DisallowedHostException extends IOException {
+        public DisallowedHostException(String message) {
+            super(message);
+        }
+    }
+
     // private final String API_URL = "http://mib.test/api/v1/";
     private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
 
@@ -418,12 +424,9 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         try {
             String finalUrl = followRedirection(baseUrl);
 
-            if (!isValidHost(finalUrl)) {
-                return DownloadResult.ERROR_HOST_NOT_ALLOWED;
-            }
-
             URL url = new URL(finalUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setInstanceFollowRedirects(false);
             String fileName = getFileNameFromContentDisposition(httpURLConnection);
 
             if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
@@ -443,6 +446,9 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
 
             return DownloadResult.SUCCESS;
+        } catch (DisallowedHostException exception) {
+            exception.printStackTrace();
+            return DownloadResult.ERROR_HOST_NOT_ALLOWED;
         } catch (IOException exception) {
             exception.printStackTrace();
             return DownloadResult.ERROR_IO;
@@ -460,14 +466,31 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     private String followRedirection(String urlString) throws IOException {
+        return resolveRedirectChain(urlString, 0);
+    }
+
+    private String resolveRedirectChain(String urlString, int hopCount) throws IOException {
+        if (hopCount > 10) {
+            throw new IOException("Too many redirects (>10 hops)");
+        }
+
+        if (!isValidHost(urlString)) {
+            throw new DisallowedHostException("Disallowed host in redirect chain");
+        }
+
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setInstanceFollowRedirects(true);
+        conn.setInstanceFollowRedirects(false);
         int status = conn.getResponseCode();
-        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-                || status == HttpURLConnection.HTTP_SEE_OTHER) {
-            return conn.getHeaderField("Location");
+
+        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
+            String location = conn.getHeaderField("Location");
+            if (location == null || location.isBlank()) {
+                throw new IOException("Redirect has no Location header");
+            }
+            return resolveRedirectChain(location, hopCount + 1);
         }
+
         return urlString;
     }
 
