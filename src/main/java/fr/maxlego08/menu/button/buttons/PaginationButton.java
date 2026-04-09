@@ -32,7 +32,7 @@ public abstract class PaginationButton extends Button {
     }
 
     protected void refreshInventory(@NotNull Player player) {
-        this.plugin.getInventoryManager().updateInventory(player, this.plugin);
+        this.plugin.getInventoryManager().updateInventory(player);
     }
 
     @Override
