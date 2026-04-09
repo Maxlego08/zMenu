@@ -389,7 +389,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         try {
             return new URL(urlString).getHost();
         } catch (MalformedURLException e) {
-            return urlString;
+            return null;
         }
     }
 
@@ -401,9 +401,12 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             DownloadResult result = performDownload(baseUrl, force, sender);
             switch (result) {
                 case SUCCESS -> {}
-                case ERROR_HOST_NOT_ALLOWED -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_HOST,
-                        "%host%", getHostFromUrl(baseUrl),
-                        "%allowed%", String.join(", ", Configuration.allowedDownloadableWebsite));
+                case ERROR_HOST_NOT_ALLOWED -> {
+                    String host = getHostFromUrl(baseUrl);
+                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_HOST,
+                            "%host%", host != null ? host : "<invalid>",
+                            "%allowed%", String.join(", ", Configuration.allowedDownloadableWebsite));
+                }
                 case ERROR_IO -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
                 case ERROR_INVALID_FILE_TYPE -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
                 case ERROR_FILE_ALREADY_EXISTS -> message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
@@ -447,7 +450,11 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     private boolean isValidHost(String urlString) throws IOException {
-        String host = getHostFromUrl(urlString).toLowerCase();
+        String host = getHostFromUrl(urlString);
+        if (host == null || host.isBlank()) {
+            return false;
+        }
+        host = host.toLowerCase();
         return Configuration.allowedDownloadableWebsite.stream()
                 .anyMatch(host::endsWith);
     }
