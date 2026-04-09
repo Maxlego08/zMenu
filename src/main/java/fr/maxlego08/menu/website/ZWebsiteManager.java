@@ -414,11 +414,11 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setInstanceFollowRedirects(false);
             try {
-                fileName = getFileNameFromContentDisposition(httpURLConnection);
-
-                if (!isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
+                if (!isYmlFile(httpURLConnection)) {
                     return DownloadResult.ERROR_INVALID_FILE_TYPE;
                 }
+
+                fileName = getFileNameFromContentDisposition(httpURLConnection);
             } finally {
                 httpURLConnection.disconnect();
             }
@@ -504,16 +504,13 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             }
         }
 
-        if (fileName == null || fileName.isBlank()) {
-            return generateRandomString(16) + ".yml";
+        if (fileName != null && !fileName.isBlank()) {
+            fileName = Paths.get(fileName).getFileName().toString();
+            if (fileName.matches("[a-zA-Z0-9_\\-]{1,64}\\.yml")) {
+                return fileName;
+            }
         }
 
-        fileName = Paths.get(fileName).getFileName().toString();
-
-        if (!fileName.matches("[a-zA-Z0-9_\\-]{1,64}\\.yml")) {
-            return generateRandomString(16) + ".yml";
-        }
-
-        return fileName;
+        return generateRandomString(16) + ".yml";
     }
 }
