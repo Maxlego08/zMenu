@@ -460,9 +460,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         if (host == null || host.isBlank()) {
             return false;
         }
-        host = host.toLowerCase();
+        final String lowerCaseHost = host.toLowerCase();
         return Configuration.allowedDownloadableWebsite.stream()
-                .anyMatch(host::endsWith);
+                .map(String::toLowerCase)
+                .anyMatch(lowerCaseHost::equals);
     }
 
     private String followRedirection(String urlString) throws IOException {
