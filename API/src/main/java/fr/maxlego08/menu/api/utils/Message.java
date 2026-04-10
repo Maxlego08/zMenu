@@ -160,6 +160,7 @@ public enum Message implements IMessage {
     WEBSITE_DOWNLOAD_ERROR_NAME("&cCannot find file name."),
     WEBSITE_DOWNLOAD_ERROR_CONSOLE("&cAn error has occurred, look at the console."),
     WEBSITE_DOWNLOAD_START("&7Start downloading inventory, please wait."),
+    WEBSITE_DOWNLOAD_ERROR_HOST("&cDownload rejected: &7%host% &cis not allowed. &8(&7Allowed: &f%allowed%&8)"),
 
     PLACEHOLDER_NEVER("never"),
 
