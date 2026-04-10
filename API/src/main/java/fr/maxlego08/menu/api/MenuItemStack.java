@@ -101,7 +101,25 @@ public interface MenuItemStack extends MenuItemStackContext {
      *
      * @param durability the durability to apply.
      */
+    /**
+     * This méthod is deprecated, now use placeholder support
+     * Use getDura or parseDura
+     * @return durability
+     */
+    @Deprecated
+    int getDurability();
+
+    String getDura();
+
+    int parseDura(Player player);
+
+    int parseDura(OfflinePlayer offlinePlayer, Placeholders placeholders);
+
     void setDurability(int durability);
+
+    void setDurability(String durability);
+
+    Potion getPotion();
 
     /**
      * Applies a potion configuration to this item stack.

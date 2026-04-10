@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.attribute.AttributeUtil;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
+import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
@@ -18,7 +19,6 @@ import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
@@ -52,7 +52,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String url;
     private String data;
     private String tooltipStyle;
-    private int durability;
+    private String durability;
     private Potion potion;
     private List<String> lore = new ArrayList<>();
     private List<ItemFlag> flags = new ArrayList<>();
@@ -71,7 +71,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Firework firework;
     private LeatherArmor leatherArmor;
     private boolean needPlaceholderAPI = false;
-    private ItemStack cacheItemStack;
     private boolean centerName;
     private boolean centerLore;
     private LoreType loreType = LoreType.REPLACE;
@@ -90,6 +89,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private MenuItemRarity itemRarity;
     private TrimConfiguration trimConfiguration;
 
+    private transient ItemStack cacheItemStack;
+
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;
         this.filePath = filePath;
@@ -104,12 +105,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the inventoryManager
      */
     public @NonNull InventoryManager getInventoryManager() {
-        return inventoryManager;
+        return this.inventoryManager;
     }
 
     @Override
     public @NonNull ItemStack build(Player player) {
-        return build(player, true);
+        return this.build(player, true);
     }
 
     @Override
@@ -118,10 +119,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         boolean useCache = context.isUseCache();
         Placeholders placeholders = context.getPlaceholders();
 
-        var performanceDebug = PerformanceDebug.create("menuItemStack:" + path + ":" + filePath);
+        var performanceDebug = PerformanceDebug.create("menuItemStack:" + this.path + ":" + this.filePath);
 
         performanceDebug.start("build.shouldUseCache");
-        if (shouldUseCache(useCache)) {
+        if (this.shouldUseCache(useCache)) {
             performanceDebug.end();
             performanceDebug.printSummary();
             return this.cacheItemStack;
@@ -135,7 +136,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.resolveOfflinePlayer");
-        OfflinePlayer offlinePlayer = resolveOfflinePlayer(player, placeholders);
+        OfflinePlayer offlinePlayer = this.resolveOfflinePlayer(player, placeholders);
         performanceDebug.end();
 
         performanceDebug.start("build.parseAmount");
@@ -143,15 +144,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.createItemStack");
-        ItemStack itemStack = createItemStack(player, placeholders, offlinePlayer, amount);
+        ItemStack itemStack = this.applySpecialItemStack(player, offlinePlayer, placeholders, amount, context.getItemStack() != null ? context.getItemStack() : this.createItemStack(player, placeholders, offlinePlayer, amount));
         performanceDebug.end();
 
         performanceDebug.start("build.applyItemMeta");
-        applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
+        this.applyItemMeta(player, placeholders, offlinePlayer, useCache, itemStack);
         performanceDebug.end();
 
         performanceDebug.start("build.applyAttributes");
-        applyAttributes(itemStack);
+        this.applyAttributes(itemStack);
         performanceDebug.end();
 
         performanceDebug.start("build.itemComponents");
@@ -163,7 +164,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                     performanceDebug.end();
                 } catch (Exception e) {
                     if (Configuration.enableDebug) {
-                        Logger.info("Error while applying ItemComponent '" + metadata.getParentLoader().getComponentName() + "' for item " + path + " in file " + filePath + " (" + player + ")", Logger.LogType.ERROR);
+                        Logger.info("Error while applying ItemComponent '" + metadata.getParentLoader().getComponentName() + "' for item " + this.path + " in file " + this.filePath + " (" + player + ")", Logger.LogType.ERROR);
                         e.printStackTrace();
                     }
                 }
@@ -171,7 +172,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
         performanceDebug.end();
 
-        if (!needPlaceholderAPI && Configuration.enableCacheItemStack) {
+        if (!this.needPlaceholderAPI && Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
         }
 
@@ -182,7 +183,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull ItemStack build(Player player, boolean useCache) {
-        return build(player, useCache, new Placeholders());
+        return this.build(player, useCache, new Placeholders());
     }
 
     @Override
@@ -191,39 +192,30 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache;
+        var isItem = this.material != null && (this.material.equals("PLAYER_HEAD") || this.material.equals("SKULL_ITEM")) && this.url == null;
+        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache && !isItem;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
-        return this.targetPlayer != null ? OfflinePlayerCache.get(papi(placeholders.parse(this.targetPlayer), player, false)) : null;
+        return this.targetPlayer != null ? OfflinePlayerCache.get(this.papi(placeholders.parse(this.targetPlayer), player, false)) : null;
     }
 
     private ItemStack createItemStack(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, int amount) {
-        Material material = resolveMaterial(player, placeholders, offlinePlayer);
-        ItemStack itemStack = resolveCustomItem(player, placeholders, material);
+        Material material = this.resolveMaterial(player, placeholders, offlinePlayer);
+        ItemStack itemStack = this.resolveCustomItem(player, placeholders, material);
 
         if (itemStack == null) {
-            itemStack = createDefaultItemStack(player, material, amount);
-        }
-
-        itemStack = applySpecialItemStack(player, amount, itemStack);
-        if (itemStack == null) {
-            itemStack = new ItemStack(Material.STONE);
-        }
-
-        itemStack.setAmount(Math.max(1, amount));
-        if (this.durability != 0) {
-            itemStack.setDurability((short) this.durability);
+            itemStack = this.createDefaultItemStack(player, material, amount);
         }
 
         return itemStack;
     }
 
     private Material resolveMaterial(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer) {
-        String papiMaterial = papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
+        String papiMaterial = this.papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
 
         try {
-            return getMaterial(Integer.parseInt(papiMaterial));
+            return this.getMaterial(Integer.parseInt(papiMaterial));
         } catch (Exception ignored) {
         }
 
@@ -235,7 +227,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private ItemStack resolveCustomItem(Player player, Placeholders placeholders, Material material) {
-        String papiMaterial = papi(placeholders.parse(this.material), player, true);
+        String papiMaterial = this.papi(placeholders.parse(this.material), player, true);
         if (material != null && !material.equals(Material.AIR)) {
             return null;
         }
@@ -249,7 +241,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
                 if (optional.isPresent()) {
                     MaterialLoader loader = optional.get();
-                    return loader.load(player, null, path, value);
+                    return loader.load(player, null, this.path, value);
                 }
             }
         }
@@ -260,11 +252,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (material == null) {
             material = Material.STONE;
         }
-        return data != null && !data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
+        return this.data != null && !this.data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
     }
 
-    private ItemStack applySpecialItemStack(Player player, int amount, ItemStack itemStack) {
-        if (this.url != null && !url.equalsIgnoreCase("null")) {
+    private ItemStack applySpecialItemStack(Player player, OfflinePlayer offlinePlayer, Placeholders placeholders, int amount, ItemStack itemStack) {
+        if (this.url != null && !this.url.equalsIgnoreCase("null")) {
             String urlResult = this.papi(this.url, player, false);
             if (urlResult != null) {
                 itemStack = this.createSkull(urlResult);
@@ -272,20 +264,27 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (this.potion != null) {
-            itemStack = potion.toItemStack(amount);
+            itemStack = this.potion.toItemStack(amount);
         }
 
         if (this.banner != null) {
-            itemStack = banner.toItemStack(amount);
+            itemStack = this.banner.toItemStack(amount);
         }
 
         if (this.firework != null) {
-            itemStack = firework.toItemStack(amount);
+            itemStack = this.firework.toItemStack(amount);
         }
 
         if (this.leatherArmor != null) {
-            itemStack = leatherArmor.toItemStack(amount);
+            itemStack = this.leatherArmor.toItemStack(amount);
         }
+        itemStack.setAmount(Math.max(1 , amount));
+
+        if (this.durability != null) {
+            int dura = this.parseDura(offlinePlayer == null ? player : offlinePlayer, placeholders);
+            itemStack.setDurability((short) dura);
+        }
+
         return itemStack;
     }
 
@@ -294,17 +293,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (itemMeta == null) {
             return;
         }
-
         Material finalMaterial = itemStack.getType();
-        String locale = findPlayerLocale(player);
+        String locale = this.findPlayerLocale(player);
         FontImage fontImage = this.inventoryManager.getFontImage();
 
-        applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
-        applyGlowing(itemMeta);
-        applyCustomModelData(player, placeholders, offlinePlayer, itemMeta);
-        applyEnchantments(finalMaterial, itemMeta);
-        applyFlags(itemMeta);
-        applyVersionSpecificMeta(itemStack, itemMeta, player, placeholders);
+        this.applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
+        this.applyGlowing(itemMeta);
+        this.applyCustomModelData(player, placeholders, offlinePlayer, itemMeta);
+        this.applyEnchantments(finalMaterial, itemMeta);
+        this.applyFlags(itemMeta);
+        this.applyVersionSpecificMeta(itemStack, itemMeta, player, placeholders);
 
         itemStack.setItemMeta(itemMeta);
     }
@@ -314,7 +312,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             return;
         }
 
-        Enchantments helperEnchantments = inventoryManager.getEnchantments();
+        Enchantments helperEnchantments = this.inventoryManager.getEnchantments();
         helperEnchantments.getEnchantments("power").ifPresent(menuEnchantment -> {
             itemMeta.addEnchant(menuEnchantment.enchantment(), 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -323,7 +321,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     private void applyCustomModelData(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, ItemMeta itemMeta) {
         try {
-            int customModelData = Integer.parseInt(papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer, true));
+            int customModelData = Integer.parseInt(this.papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer, true));
             if (customModelData != 0) {
                 itemMeta.setCustomModelData(customModelData);
             }
@@ -356,7 +354,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
         }
 
-        if (this.clearDefaultAttributes && attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+        if (this.clearDefaultAttributes && this.attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
             itemMeta.setAttributeModifiers(ArrayListMultimap.create());
         }
     }
@@ -388,15 +386,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             try {
                 String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
                 if (displayName != null)
-                    itemName = fontImage.replace(papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
+                    itemName = fontImage.replace(this.papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
-                Logger.info("Error with update display name for item " + path + " in file " + filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
+                Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
                 exception.printStackTrace();
             }
         }
 
         if (!this.lore.isEmpty()) {
-            List<String> lore = papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
+            List<String> lore = this.papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
             List<String> flattened = new ArrayList<>();
             for (String str : lore) {
                 String[] parts = str.split("\n");
@@ -502,7 +500,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the target player
      */
     public String getTargetPlayer() {
-        return targetPlayer;
+        return this.targetPlayer;
     }
 
     /**
@@ -516,7 +514,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the material
      */
     public String getMaterial() {
-        return material;
+        return this.material;
     }
 
     /**
@@ -531,7 +529,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the amount
      */
     public String getAmount() {
-        return amount;
+        return this.amount;
     }
 
     /**
@@ -547,7 +545,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      */
     @Nullable
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     /**
@@ -561,7 +559,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the data
      */
     public String getData() {
-        return data;
+        return this.data;
     }
 
     /**
@@ -575,13 +573,41 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the durability
      */
     public int getDurability() {
-        return durability;
+        int dura = 1;
+        try {
+            dura = Integer.parseInt(this.durability);
+        } catch (Exception ignored) {
+        }
+        return dura;
+    }
+
+    public String getDura() {
+        return this.durability;
+    }
+
+    @Override
+    public int parseDura(Player player) {
+        return this.parseDura(player, new Placeholders());
+    }
+
+    @Override
+    public int parseDura(OfflinePlayer offlinePlayer, Placeholders placeholders) {
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(this.papi(placeholders.parse(this.durability), offlinePlayer, true));
+        } catch (Exception ignored) {
+        }
+        return amount;
     }
 
     /**
      * @param durability the durability to set
      */
     public void setDurability(int durability) {
+        this.durability = Integer.toString(durability);
+    }
+
+    public void setDurability(String durability) {
         this.durability = durability;
     }
 
@@ -589,7 +615,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the potion
      */
     public Potion getPotion() {
-        return potion;
+        return this.potion;
     }
 
     /**
@@ -603,7 +629,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the lore
      */
     public List<String> getLore() {
-        return lore;
+        return this.lore;
     }
 
     /**
@@ -618,7 +644,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the flags
      */
     public List<ItemFlag> getFlags() {
-        return flags;
+        return this.flags;
     }
 
     /**
@@ -632,7 +658,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the displayName
      */
     public String getDisplayName() {
-        return displayName;
+        return this.displayName;
     }
 
     /**
@@ -647,7 +673,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the isGlowing
      */
     public boolean isGlowing() {
-        return isGlowing;
+        return this.isGlowing;
     }
 
     /**
@@ -661,7 +687,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the modelID
      */
     public String getModelID() {
-        return modelID;
+        return this.modelID;
     }
 
     /**
@@ -683,7 +709,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the enchantments
      */
     public Map<Enchantment, Integer> getEnchantments() {
-        return enchantments;
+        return this.enchantments;
     }
 
     /**
@@ -697,7 +723,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the attributes
      */
     public List<AttributeWrapper> getAttributes() {
-        return attributes;
+        return this.attributes;
     }
 
     /**
@@ -709,7 +735,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public AttributeMergeStrategy getAttributeMergeStrategy() {
-        return attributeMergeStrategy;
+        return this.attributeMergeStrategy;
     }
 
     @Override
@@ -721,7 +747,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the banner
      */
     public Banner getBanner() {
-        return banner;
+        return this.banner;
     }
 
     /**
@@ -735,7 +761,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the firework
      */
     public Firework getFirework() {
-        return firework;
+        return this.firework;
     }
 
     /**
@@ -749,7 +775,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the leather armor
      */
     public LeatherArmor getLeatherArmor() {
-        return leatherArmor;
+        return this.leatherArmor;
     }
 
     /**
@@ -761,7 +787,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public String getToolTipStyle() {
-        return tooltipStyle;
+        return this.tooltipStyle;
     }
 
     @Override
@@ -771,7 +797,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public NamespacedKey getItemModel() {
-        return itemModel;
+        return this.itemModel;
     }
 
     @Override
@@ -781,29 +807,24 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public @NonNull String getFilePath() {
-        return filePath;
+        return this.filePath;
     }
 
     @Override
     public String getPath() {
-        return path;
+        return this.path;
     }
 
     @Override
     public int parseAmount(Player player) {
-        int amount = 1;
-        try {
-            amount = Integer.parseInt(papi(this.amount, player, true));
-        } catch (Exception ignored) {
-        }
-        return amount;
+        return this.parseAmount(player, new Placeholders());
     }
 
     @Override
     public int parseAmount(Player player, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(papi(placeholders.parse(this.amount), player, true));
+            amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), player, true));
         } catch (Exception ignored) {
         }
         return amount;
@@ -813,7 +834,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(papi(placeholders.parse(this.amount), offlinePlayer, true));
+            amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), offlinePlayer, true));
         } catch (Exception ignored) {
         }
         return amount;
@@ -825,28 +846,28 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param string - Current string
      */
     private void updatePlaceholder(String string) {
-        if (string == null || needPlaceholderAPI) return;
-        needPlaceholderAPI = string.contains("%");
+        if (string == null || this.needPlaceholderAPI) return;
+        this.needPlaceholderAPI = string.contains("%");
     }
 
     public void setTypeMapAccessor(MapConfiguration configuration) {
 
-        setData(configuration.getString("data", "0"));
-        setDurability(configuration.getInt("durability", 0));
-        setAmount(configuration.getString("amount", "1"));
-        setMaterial(configuration.getString("material", null));
-        setTargetPlayer(configuration.getString("target", null));
-        setUrl(configuration.getString("url", null));
+        this.setData(configuration.getString("data", "0"));
+        this.setDurability(configuration.getString("durability", null));
+        this.setAmount(configuration.getString("amount", "1"));
+        this.setMaterial(configuration.getString("material", null));
+        this.setTargetPlayer(configuration.getString("target", null));
+        this.setUrl(configuration.getString("url", null));
 
-        Color potionColor = getColor(configuration, "color", null);
+        Color potionColor = this.getColor(configuration, "color", null);
 
         try {
             Material material = Material.valueOf(configuration.getString("material", "").toUpperCase());
             String materialName = material.toString();
             if (materialName.startsWith("LEATHER_")) {
-                Color armorColor = getColor(configuration, "color", Color.fromRGB(160, 101, 64));
+                Color armorColor = this.getColor(configuration, "color", Color.fromRGB(160, 101, 64));
                 String type = materialName.replace("LEATHER_", "");
-                setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
+                this.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
             }
         } catch (Exception ignored) {
         }
@@ -860,7 +881,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
             Potion potion = new Potion(type, level, splash, extended, arrow);
             potion.setColor(potionColor);
-            setPotion(potion);
+            this.setPotion(potion);
         }
 
         if (configuration.contains("banner")) {
@@ -873,7 +894,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 if (split.length != 2) continue;
                 patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
             }
-            setBanner(new Banner(dyeColor, patterns));
+            this.setBanner(new Banner(dyeColor, patterns));
 
         }
 
@@ -899,10 +920,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 lore = Arrays.asList(loreString.split("\n"));
             }
         }
-        setLore(lore);
-        setDisplayName(configuration.getString("name", null));
-        setGlowing(configuration.getBoolean("glow"));
-        setModelID(configuration.getString("modelID", configuration.getString("model-id", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0"))))));
+        this.setLore(lore);
+        this.setDisplayName(configuration.getString("name", null));
+        this.setGlowing(configuration.getBoolean("glow"));
+        this.setModelID(configuration.getString("modelID", configuration.getString("model-id", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0"))))));
 
         List<String> enchants = configuration.getStringList("enchants");
         Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -952,10 +973,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
 
-        setEnchantments(enchantments);
-        setFlags(flags);
-        setAttributes(attributeModifiers);
-        setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
+        this.setEnchantments(enchantments);
+        this.setFlags(flags);
+        this.setAttributes(attributeModifiers);
+        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
     }
 
     private Color getColor(MapConfiguration configuration, String key, Color def) {
@@ -987,7 +1008,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public Map<String, String> getTranslatedDisplayName() {
-        return translatedDisplayName;
+        return this.translatedDisplayName;
     }
 
     public void setTranslatedDisplayName(Map<String, String> translatedDisplayName) {
@@ -995,7 +1016,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public Map<String, List<String>> getTranslatedLore() {
-        return translatedLore;
+        return this.translatedLore;
     }
 
     public void setTranslatedLore(Map<String, List<String>> translatedLore) {
@@ -1003,7 +1024,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isNeedPlaceholderAPI() {
-        return needPlaceholderAPI;
+        return this.needPlaceholderAPI;
     }
 
     public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
@@ -1011,7 +1032,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public ItemStack getCacheItemStack() {
-        return cacheItemStack;
+        return this.cacheItemStack;
     }
 
     public void setCacheItemStack(ItemStack cacheItemStack) {
@@ -1019,7 +1040,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public int getMaxStackSize() {
-        return maxStackSize;
+        return this.maxStackSize;
     }
 
     public void setMaxStackSize(int maxStackSize) {
@@ -1027,7 +1048,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public int getMaxDamage() {
-        return maxDamage;
+        return this.maxDamage;
     }
 
     public void setMaxDamage(int maxDamage) {
@@ -1035,7 +1056,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public int getDamage() {
-        return damage;
+        return this.damage;
     }
 
     public void setDamage(int damage) {
@@ -1043,7 +1064,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public int getRepairCost() {
-        return repairCost;
+        return this.repairCost;
     }
 
     public void setRepairCost(int repairCost) {
@@ -1051,7 +1072,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isUnbreakableEnabled() {
-        return unbreakableEnabled;
+        return this.unbreakableEnabled;
     }
 
     public void setUnbreakableEnabled(Boolean unbreakableEnabled) {
@@ -1059,7 +1080,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isUnbreakableShowInTooltip() {
-        return unbreakableShowInTooltip;
+        return this.unbreakableShowInTooltip;
     }
 
     public void setUnbreakableShowInTooltip(Boolean unbreakableShowInTooltip) {
@@ -1067,7 +1088,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isFireResistant() {
-        return fireResistant;
+        return this.fireResistant;
     }
 
     public void setFireResistant(Boolean fireResistant) {
@@ -1075,7 +1096,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isHideTooltip() {
-        return hideTooltip;
+        return this.hideTooltip;
     }
 
     public void setHideTooltip(Boolean hideTooltip) {
@@ -1083,7 +1104,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isHideAdditionalTooltip() {
-        return hideAdditionalTooltip;
+        return this.hideAdditionalTooltip;
     }
 
     public void setHideAdditionalTooltip(Boolean hideAdditionalTooltip) {
@@ -1091,7 +1112,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isEnchantmentGlint() {
-        return enchantmentGlint;
+        return this.enchantmentGlint;
     }
 
     public void setEnchantmentGlint(Boolean enchantmentGlint) {
@@ -1099,7 +1120,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isEnchantmentShowInTooltip() {
-        return enchantmentShowInTooltip;
+        return this.enchantmentShowInTooltip;
     }
 
     public void setEnchantmentShowInTooltip(Boolean enchantmentShowInTooltip) {
@@ -1107,7 +1128,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isAttributeShowInTooltip() {
-        return attributeShowInTooltip;
+        return this.attributeShowInTooltip;
     }
 
     public void setAttributeShowInTooltip(Boolean attributeShowInTooltip) {
@@ -1115,7 +1136,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public MenuItemRarity getItemRarity() {
-        return itemRarity;
+        return this.itemRarity;
     }
 
     public void setItemRarity(MenuItemRarity itemRarity) {
@@ -1123,7 +1144,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public TrimConfiguration getTrimConfiguration() {
-        return trimConfiguration;
+        return this.trimConfiguration;
     }
 
     public void setTrimConfiguration(TrimConfiguration trimConfiguration) {
@@ -1131,7 +1152,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isCenterLore() {
-        return centerLore;
+        return this.centerLore;
     }
 
     public void setCenterLore(boolean centerLore) {
@@ -1139,7 +1160,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public boolean isCenterName() {
-        return centerName;
+        return this.centerName;
     }
 
     public void setCenterName(boolean centerName) {
@@ -1147,7 +1168,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public LoreType getLoreType() {
-        return loreType;
+        return this.loreType;
     }
 
     public void setLoreType(LoreType loreType) {
@@ -1156,7 +1177,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public String getEquippedModel() {
-        return equippedModel;
+        return this.equippedModel;
     }
 
     @Override
