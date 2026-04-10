@@ -706,16 +706,14 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         if (leatherArmor != null) {
             Color leatherArmorColor = leatherArmor.getColor();
-            if (leatherArmorColor != null) {
-                configuration.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
-            }
+            configuration.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
         }
 
         if (banner != null) {
             List<Pattern> patterns = banner.getPatterns();
 
             configuration.set(path + "banner", banner.getBaseColor().toString());
-            if (patterns != null && !patterns.isEmpty()) {
+            if (!patterns.isEmpty()) {
                 List<String> stringPatterns = new ArrayList<>();
                 for (Pattern p : patterns) {
                     stringPatterns.add(p.getColor() + ":" + p.getPattern());
