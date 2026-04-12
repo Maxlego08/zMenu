@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.common.factory.VariantItemComponentLoaderFactory;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
+import fr.maxlego08.menu.itemstack.components.spigot.SpigotAttackRangeItemComponentLoader;
 import fr.maxlego08.menu.itemstack.components.spigot.SpigotVariantComponent;
 import fr.maxlego08.menu.loader.components.paper.*;
 import fr.maxlego08.menu.loader.components.spigot.*;
@@ -63,7 +64,7 @@ public class ZComponentsManager implements ComponentsManager {
             this.registerComponent(new SpigotMapColorItemComponentLoader());
             this.registerComponent(new SpigotMapIdItemComponentLoader());
             this.registerComponent(new SpigotMaxDamageItemComponentLoader());
-            this.registerComponent(new SpigotMaxStackSizeItemComponentLoader());
+            this.registerComponent(new MaxStackSizeItemComponentLoader(plugin));
             this.registerComponent(new SpigotOminousBottleAmplifierItemComponentLoader());
             this.registerComponent(new SpigotPotionContentsItemComponentLoader());
             this.registerComponent(new SpigotRarityItemComponentLoader());
@@ -123,7 +124,7 @@ public class ZComponentsManager implements ComponentsManager {
                             this.registerComponent(new SpigotProfileItemComponentLoader());
 
                             if (currentVersion.is1_21_11OrNewer()){ // 1.21.11+
-                                this.registerComponent(new SpigotAttackRangeItemComponentLoader());
+                                this.registerComponent(plugin.isPaperOrFolia() ? new PaperAttackRangeItemComponentLoader() : new SpigotAttackRangeItemComponentLoader());
                                 this.registerComponent(new SpigotDamageTypeItemComponentLoader());
                                 this.registerComponent(new SpigotKineticWeaponItemComponentLoader());
                                 this.registerComponent(new SpigotMinimumAttackChargeItemComponentLoader());

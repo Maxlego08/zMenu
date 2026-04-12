@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.itemstack.components.MaxStackSizeComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.itemstack.components.paper.PaperMaxStackSizeComponent;
+import fr.maxlego08.menu.itemstack.components.spigot.SpigotMaxStackSizeComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -11,16 +13,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-public class SpigotMaxStackSizeItemComponentLoader extends ItemComponentLoader {
+public class MaxStackSizeItemComponentLoader extends ItemComponentLoader {
+    private final MenuPlugin plugin;
 
-    public SpigotMaxStackSizeItemComponentLoader(){
+    public MaxStackSizeItemComponentLoader(MenuPlugin plugin){
         super("max-stack-size");
+        this.plugin = plugin;
     }
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = normalizePath(path);
         int maxStackSize = configuration.getInt(path);
-        return maxStackSize > 0 ? new MaxStackSizeComponent(maxStackSize) : null;
+        if (maxStackSize > 0) {
+            return this.plugin.isPaperOrFolia() ? new PaperMaxStackSizeComponent(maxStackSize) : new SpigotMaxStackSizeComponent(maxStackSize);
+        }
+        return null;
     }
 }
