@@ -266,6 +266,10 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     @Override
     protected void onQuit(PlayerQuitEvent event, Player player) {
+        Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+        if (topInventory != null && topInventory.getHolder() instanceof VInventory vInventory) {
+            vInventory.onPreClose(null, this.plugin, player);
+        }
         this.cooldownClick.remove(player.getUniqueId());
         this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
     }
