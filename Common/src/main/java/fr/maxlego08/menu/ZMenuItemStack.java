@@ -144,7 +144,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.createItemStack");
-        ItemStack itemStack = this.applySpecialItemStack(player, offlinePlayer, placeholders, amount, context.getItemStack() != null ? context.getItemStack() : this.createItemStack(player, placeholders, offlinePlayer, amount));
+        boolean editContextItem = context.getItemStack() != null;
+        ItemStack itemStack = this.applySpecialItemStack(player, offlinePlayer, placeholders, amount, editContextItem ? context.getItemStack() : this.createItemStack(player, placeholders, offlinePlayer, amount));
         performanceDebug.end();
 
         performanceDebug.start("build.applyItemMeta");
@@ -171,6 +172,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         performanceDebug.end();
+
+        performanceDebug.start("build.setStackSize");
+        if (!editContextItem) {
+            itemStack.setAmount(Math.max(1 , amount));
+        }
+        performanceDebug.end();
+
 
         if (!this.needPlaceholderAPI && Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
@@ -278,7 +286,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.leatherArmor != null) {
             itemStack = this.leatherArmor.toItemStack(amount);
         }
-        itemStack.setAmount(Math.max(1 , amount));
 
         if (this.durability != null) {
             int dura = this.parseDura(offlinePlayer == null ? player : offlinePlayer, placeholders);
