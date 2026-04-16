@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.3
+
 ## New Features
 
 - **Pagination Management System**: Introduced `PaginationManager` with `PaginationButton`, `PaginationNextButton`, and `PaginationPreviousButton` classes, allowing a single button to handle pagination. Includes max page tracking and optimized page size handling.
