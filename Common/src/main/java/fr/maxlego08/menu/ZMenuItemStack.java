@@ -191,7 +191,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache;
+        var isItem = this.material != null && (this.material.equals("PLAYER_HEAD") || this.material.equals("SKULL_ITEM")) && this.url == null;
+        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache && !isItem;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {

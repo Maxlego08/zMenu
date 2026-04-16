@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PacketTitleListener implements PacketListener {
@@ -40,30 +41,35 @@ public class PacketTitleListener implements PacketListener {
     public void onPacketSend(PacketSendEvent event) {
         //TODO: Only store packets for players who have menus open from zMenu
         PacketTypeCommon packetType = event.getPacketType();
-        if (packetType == PacketType.Play.Server.OPEN_WINDOW){
-            WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(event);
-            Player player = event.getPlayer();
-            if (player == null) return;
-            UUID playerUniqueId = player.getUniqueId();
-            this.playerPacketInformation.computeIfAbsent(playerUniqueId, k -> new PlayerPacketInformation())
-                    .setWrapperPlayServerOpenWindow(wrapper);
-        } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
-            Player player = event.getPlayer();
-            if (player == null) return;
-            UUID playerUniqueId = player.getUniqueId();
-            this.playerPacketInformation.remove(playerUniqueId);
-        } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
-            WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
-            Player player = event.getPlayer();
-            if (player == null) return;
-            UUID playerUniqueId = player.getUniqueId();
-            this.playerPacketInformation.computeIfAbsent(playerUniqueId, k -> new PlayerPacketInformation())
-                    .setWrapperPlayServerWindowItems(wrapper);
+        switch (packetType) {
+            case PacketType.Play.Server.OPEN_WINDOW -> {
+                WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(event);
+                Player player = event.getPlayer();
+                if (player == null) return;
+                UUID playerUniqueId = player.getUniqueId();
+                this.playerPacketInformation.computeIfAbsent(playerUniqueId, k -> new PlayerPacketInformation())
+                        .setWrapperPlayServerOpenWindow(wrapper);
+            }
+            case PacketType.Play.Server.CLOSE_WINDOW -> {
+                Player player = event.getPlayer();
+                if (player == null) return;
+                UUID playerUniqueId = player.getUniqueId();
+                this.playerPacketInformation.remove(playerUniqueId);
+            }
+            case PacketType.Play.Server.WINDOW_ITEMS -> {
+                WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
+                Player player = event.getPlayer();
+                if (player == null) return;
+                UUID playerUniqueId = player.getUniqueId();
+                this.playerPacketInformation.computeIfAbsent(playerUniqueId, k -> new PlayerPacketInformation())
+                        .setWrapperPlayServerWindowItems(wrapper);
+            }
+            default -> {}
         }
     }
 
-    public PlayerPacketInformation getPlayerPacketInformation(UUID playerUUID) {
-        return this.playerPacketInformation.get(playerUUID);
+    public Optional<PlayerPacketInformation> getPlayerPacketInformation(UUID playerUUID) {
+        return Optional.ofNullable(this.playerPacketInformation.get(playerUUID));
     }
 
 

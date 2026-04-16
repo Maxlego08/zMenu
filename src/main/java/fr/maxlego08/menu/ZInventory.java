@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.pattern.Pattern;
@@ -273,6 +274,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
         ZMenuPlugin.getInstance().getScheduler().runAtEntityLater(player, task -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
+            boolean isInNewzMenuInventory = newHolder instanceof InventoryDefault;
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
                 clearPlayerInventoryButtons(player, inventoryDefault);
 
@@ -281,10 +283,18 @@ public class ZInventory extends ZUtils implements Inventory {
                     this.clearInvType.getOnInventoryClose().accept(inventoriesPlayer, player);
                 }
             }
+            var placeholders = new Placeholders();
+            if (isInNewzMenuInventory) {
+                for (Action action : this.closeActions) {
+                    if (!Configuration.skipCloseActionsOnInventorySwitch.contains(action.getType())) {
+                        action.preExecute(player, null, inventoryDefault, placeholders);
+                    }
+                }
+            } else {
+                this.closeActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+            }
         }, 1);
 
-        var placeholders = new Placeholders();
-        this.closeActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
     }
 
     @Override
