@@ -455,6 +455,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
 
         final Player targetPlayer = getTargetPlayer();
+        if (targetPlayer == null) {
+            return false;
+        }
 
         if (refreshLore) {
             List<String> lore = button.buildLore(targetPlayer);
