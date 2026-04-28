@@ -219,7 +219,7 @@ class AdvancementHandler {
     }
 
     /**
-     * Helper method to determine which advancement creation method to use based on server version
+     * Helper method to determine which advancement creation method to use based on server value
      *
      * @param icon          The Minecraft item ID to use as the toast icon
      * @param message       The message to display in the toast

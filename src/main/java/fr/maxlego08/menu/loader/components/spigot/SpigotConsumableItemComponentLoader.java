@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.itemstack.*;
@@ -23,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@ComponentLoader
+@SinceVersion("1.21.2")
 public class SpigotConsumableItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public SpigotConsumableItemComponentLoader() {

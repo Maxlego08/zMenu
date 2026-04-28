@@ -29,3 +29,4 @@ loadbefore:
 libraries:
   - org.mariadb.jdbc:mariadb-java-client:3.5.6
   - net.kyori:adventure-text-minimessage:4.26.1
+  - org.reflections:reflections:0.10.2

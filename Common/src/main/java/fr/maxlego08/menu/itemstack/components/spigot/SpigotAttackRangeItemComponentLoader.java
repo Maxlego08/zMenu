@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.itemstack.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
+import fr.maxlego08.menu.api.annotations.SpigotOnly;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.loader.components.AbstractAttackRangeItemComponentLoader;
@@ -10,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
+@ComponentLoader
+@SinceVersion("1.21.11")
+@SpigotOnly
 public class SpigotAttackRangeItemComponentLoader extends AbstractAttackRangeItemComponentLoader {
 
     @Override

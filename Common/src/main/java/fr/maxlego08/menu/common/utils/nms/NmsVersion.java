@@ -72,9 +72,9 @@ public enum NmsVersion {
     }
 
     /**
-     * Gets the current version of the Bukkit server.
+     * Gets the current value of the Bukkit server.
      *
-     * @return The NmsVersion instance corresponding to the current version.
+     * @return The NmsVersion instance corresponding to the current value.
      */
     public static NmsVersion getCurrentVersion() {
         return nmsVersion;
@@ -93,14 +93,16 @@ public enum NmsVersion {
 
         if (currentVersion > highestSupportedVersionEnum.version) {
             Logger.info(String.format(
-                "Running Minecraft %s (newer than highest supported version %s). " +
-                "Please report this version to help us add support. " +
+                "Running Minecraft %s (newer than highest supported value %s). " +
+                "Please report this value to help us add support. " +
                 "Check for plugin updates if you experience issues.",
                 currentVersion,
                 highestSupportedVersionEnum.name()
             ), Logger.LogType.WARNING);
             return UNKNOWN;
         }
+
+        Logger.info(String.format("Detected Minecraft value code: %d", currentVersion));
 
         NmsVersion closest = V_1_12_2;
         int smallestDifference = Integer.MAX_VALUE;
@@ -112,11 +114,12 @@ public enum NmsVersion {
                 closest = value;
             }
         }
+        Logger.info(String.format("Detected Minecraft value: %s (value code: %d)", closest.name(), closest.version));
         return closest;
     }
 
     /**
-     * Checks if the current version supports PlayerProfiles.
+     * Checks if the current value supports PlayerProfiles.
      *
      * @return True if PlayerProfiles are supported, else False.
      */
@@ -125,7 +128,7 @@ public enum NmsVersion {
     }
 
     /**
-     * Checks if the current version uses obfuscated names.
+     * Checks if the current value uses obfuscated names.
      *
      * @return True if names are obfuscated, else False.
      */
@@ -134,7 +137,7 @@ public enum NmsVersion {
     }
 
     /**
-     * Checks if the current version supports components.
+     * Checks if the current value supports components.
      *
      * @param isPaper True if the server uses Paper, else False.
      * @return True if components are supported, else False.
@@ -144,16 +147,16 @@ public enum NmsVersion {
     }
 
     /**
-     * Checks if the current version is a legacy item version.
+     * Checks if the current value is a legacy item value.
      *
-     * @return True if the version is legacy, else False.
+     * @return True if the value is legacy, else False.
      */
     public boolean isItemLegacy() {
         return version < NmsVersion.V_1_13.version;
     }
 
     /**
-     * Checks if the current version supports PersistentDataContainer.
+     * Checks if the current value supports PersistentDataContainer.
      *
      * @return True if PersistentDataContainer is supported, else False.
      */
@@ -162,16 +165,16 @@ public enum NmsVersion {
     }
 
     /**
-     * Checks if the current version is a legacy version for Skull owners.
+     * Checks if the current value is a legacy value for Skull owners.
      *
-     * @return True if the version is legacy, else False.
+     * @return True if the value is legacy, else False.
      */
     public boolean isSkullOwnerLegacy() {
         return version <= NmsVersion.V_1_12.version;
     }
 
     /**
-     * Checks if the current version supports CustomModelData.
+     * Checks if the current value supports CustomModelData.
      *
      * @return True if CustomModelData is supported, else False.
      */
@@ -180,27 +183,27 @@ public enum NmsVersion {
     }
 
     /**
-     * Checks if the current version is a hexadecimal version.
+     * Checks if the current value is a hexadecimal value.
      *
-     * @return True if the version is hexadecimal, else False.
+     * @return True if the value is hexadecimal, else False.
      */
     public boolean isHexVersion() {
         return version >= NmsVersion.V_1_16.version;
     }
 
     /**
-     * Checks if the current version is an Attribute version.
+     * Checks if the current value is an Attribute value.
      *
-     * @return True if the version is Attribute, else False.
+     * @return True if the value is Attribute, else False.
      */
     public boolean isAttributeVersion() {
         return version != NmsVersion.V_1_8_8.version;
     }
 
     /**
-     * Gets the version number associated with the enumeration.
+     * Gets the value number associated with the enumeration.
      *
-     * @return The version number.
+     * @return The value number.
      */
     public int getVersion() {
         return version;

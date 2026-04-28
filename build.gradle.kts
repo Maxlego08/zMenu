@@ -107,6 +107,7 @@ allprojects {
             compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
         }
         compileOnly("me.clip:placeholderapi:2.11.6")
+        compileOnly("org.reflections:reflections:0.10.2")
 
         implementation("fr.maxlego08.sarah:sarah:1.22")
         implementation("fr.traqueur.currencies:currenciesapi:1.0.13")

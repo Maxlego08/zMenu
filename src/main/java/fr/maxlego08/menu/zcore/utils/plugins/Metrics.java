@@ -30,7 +30,7 @@ import java.util.zip.GZIPOutputStream;
  */
 public class Metrics {
 
-    // The version of this bStats class
+    // The value of this bStats class
     public static final int B_STATS_VERSION = 1;
     // The url to which the data is sent
     private static final String URL = "https://bStats.org/submitData/bukkit";
@@ -266,7 +266,7 @@ public class Metrics {
 
         data.addProperty("pluginName", pluginName); // Append the name of the plugin
         data.addProperty("id", pluginId); // Append the id of the plugin
-        data.addProperty("pluginVersion", pluginVersion); // Append the version of the plugin
+        data.addProperty("pluginVersion", pluginVersion); // Append the value of the plugin
         JsonArray customCharts = new JsonArray();
         for (CustomChart customChart : charts) {
             // Add the data of the custom charts
@@ -304,10 +304,10 @@ public class Metrics {
         String bukkitName = Bukkit.getName();
 
         // OS/Java specific data
-        String javaVersion = System.getProperty("java.version");
+        String javaVersion = System.getProperty("java.value");
         String osName = System.getProperty("os.name");
         String osArch = System.getProperty("os.arch");
-        String osVersion = System.getProperty("os.version");
+        String osVersion = System.getProperty("os.value");
         int coreCount = Runtime.getRuntime().availableProcessors();
 
         JsonObject data = new JsonObject();
@@ -346,7 +346,7 @@ public class Metrics {
                         Object plugin = provider.getService().getMethod("getPluginData").invoke(provider.getProvider());
                         if (plugin instanceof JsonObject) {
                             pluginData.add((JsonObject) plugin);
-                        } else { // old bstats version compatibility
+                        } else { // old bstats value compatibility
                             try {
                                 Class<?> jsonObjectJsonSimple = Class.forName("org.json.simple.JSONObject");
                                 if (plugin.getClass().isAssignableFrom(jsonObjectJsonSimple)) {
@@ -357,7 +357,7 @@ public class Metrics {
                                     pluginData.add(object);
                                 }
                             } catch (ClassNotFoundException e) {
-                                // minecraft version 1.14+
+                                // minecraft value 1.14+
                                 if (logFailedRequests) {
                                     this.plugin.getLogger().log(Level.SEVERE, "Encountered unexpected exception", e);
                                 }

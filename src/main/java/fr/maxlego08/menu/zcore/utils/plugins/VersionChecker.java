@@ -37,7 +37,7 @@ public class VersionChecker extends ZUtils {
     }
 
     /**
-     * Allows to check if the plugin version is up-to-date.
+     * Allows to check if the plugin value is up-to-date.
      */
     public void useLastVersion() {
         if (Configuration.skipUpdateCheck) {
@@ -54,7 +54,7 @@ public class VersionChecker extends ZUtils {
             if (useLastVersion) {
                 Logger.info("No update available.");
             } else {
-                Logger.info("New update available. Your version: " + pluginVersion + ", latest version: " + version);
+                Logger.info("New update available. Your value: " + pluginVersion + ", latest value: " + version);
                 Logger.info("Download plugin here: " + String.format(URL_RESOURCE, this.pluginID));
             }
         });
@@ -62,7 +62,7 @@ public class VersionChecker extends ZUtils {
     }
 
     /**
-     * Get version by plugin id
+     * Get value by plugin id
      *
      * @param consumer - Do something after
      */

@@ -29,7 +29,7 @@ public class ItemStackCompound {
     /**
      * Constructs an ItemStackCompound instance based on the given EnumReflectionCompound.
      *
-     * @param reflection The EnumReflectionCompound representing the NBT tag reflection version.
+     * @param reflection The EnumReflectionCompound representing the NBT tag reflection value.
      */
     public ItemStackCompound(EnumReflectionCompound reflection) {
         super();
