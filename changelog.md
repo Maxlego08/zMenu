@@ -42,6 +42,30 @@
 
 # Unreleased
 
+# 1.1.1.3
+
+## New Features
+
+- **Pagination Management System**: Introduced `PaginationManager` with `PaginationButton`, `PaginationNextButton`, and `PaginationPreviousButton` classes, allowing a single button to handle pagination. Includes max page tracking and optimized page size handling.
+- **Pagination Placeholders**: Added pagination-related placeholders to `MenuPlaceholders` for enhanced inventory navigation.
+- **Reset Pagination Action**: New `ResetPaginationAction` and loader to reset pagination state for button paginations.
+- **Skip Close Actions on Inventory Switch**: Added `skip-close-actions-on-switch` configuration option to prevent close actions from firing when switching between inventories, fixing issues with back/inventory actions triggering on close.
+- **PacketManager Interface**: Introduced `PacketManager` API interface and refactored title name handling in packet events for cleaner architecture.
+- **ClickAction Enum**: Added `ClickAction` enum to streamline action handling in `InventoryLoader`.
+
+## Bug Fixes
+
+- Fixed `CustomModelDataComponent` data handling (removed Optional) and added Paper-specific implementation (`PaperCustomModelDataComponent`) for proper Paper compatibility.
+- Fixed head cache issue in `ZMenuItemStack`.
+- Fixed unnecessary `toLowerCase` conversion on dialog names in `CommandDialogOpen`.
+- Fixed item button click handling by removing redundant null check for clickable buttons.
+
+## Internal Changes
+
+- Added javadocs.
+- API fixes.
+- Removed unused class.
+
 # 1.1.1.2
 
 ## Bug Fixes
