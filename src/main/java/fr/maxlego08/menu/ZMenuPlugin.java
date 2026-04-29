@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.annotations.AutoListener;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
@@ -20,10 +21,12 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.utils.ReflectionsCache;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.common.VersionFilter;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
@@ -48,9 +51,7 @@ import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
-import fr.maxlego08.menu.listener.SwapKeyListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
@@ -72,9 +73,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
+import org.reflections.Reflections;
 
 import java.io.File;
 import java.util.*;
@@ -208,8 +211,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
         /* Add Listener */
-        this.addListener(new SwapKeyListener());
-        this.addListener(new AdapterListener(this));
+        this.registerAutoListeners();
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
         this.addListener(new ItemUpdaterListener(this.itemManager));
@@ -268,6 +270,35 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager());
 
         this.postEnable();
+    }
+
+    private void registerAutoListeners() {
+        Reflections reflection = ReflectionsCache.getInstance().getOrCreate(this, "fr.maxlego08.menu");
+
+        Set<Class<?>> candidates = reflection.getTypesAnnotatedWith(AutoListener.class);
+
+        int count = 0;
+        for (Class<?> clazz : candidates) {
+            if (!Listener.class.isAssignableFrom(clazz)) continue;
+            if (!VersionFilter.passes(clazz)) continue;
+            try {
+                Listener listener;
+                try {
+                    listener = (Listener) clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(this);
+                } catch (NoSuchMethodException e) {
+                    listener = (Listener) clazz.getDeclaredConstructor().newInstance();
+                }
+                this.addListener(listener);
+                count++;
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.info("Failed to instantiate auto listener: " + clazz.getName());
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        Logger.info("Registered " + count + " auto listener(s).");
     }
 
     /**

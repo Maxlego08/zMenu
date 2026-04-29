@@ -21,10 +21,6 @@ import java.util.*;
 public class ZComponentsManager implements ComponentsManager {
     private final Map<String, ItemComponentLoader> components = new HashMap<>();
 
-    private boolean isPaperAndMiniMessageEnabled(MenuPlugin plugin){
-        return plugin.isPaperOrFolia() && Configuration.enableMiniMessageFormat;
-    }
-
     @Override
     public void initializeDefaultComponents(MenuPlugin plugin) {
         MinecraftVersion minecraftVersion = MinecraftVersion.getCurrentVersion();
