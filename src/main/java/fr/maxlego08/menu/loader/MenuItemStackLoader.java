@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
@@ -15,7 +16,6 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
-import fr.maxlego08.menu.common.context.ZBuildContext;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -706,16 +706,14 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         if (leatherArmor != null) {
             Color leatherArmorColor = leatherArmor.getColor();
-            if (leatherArmorColor != null) {
-                configuration.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
-            }
+            configuration.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
         }
 
         if (banner != null) {
             List<Pattern> patterns = banner.getPatterns();
 
             configuration.set(path + "banner", banner.getBaseColor().toString());
-            if (patterns != null && !patterns.isEmpty()) {
+            if (!patterns.isEmpty()) {
                 List<String> stringPatterns = new ArrayList<>();
                 for (Pattern p : patterns) {
                     stringPatterns.add(p.getColor() + ":" + p.getPattern());

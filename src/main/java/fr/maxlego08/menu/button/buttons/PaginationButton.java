@@ -14,11 +14,13 @@ public abstract class PaginationButton extends Button {
     protected final MenuPlugin plugin;
     protected final PaginationManager manager;
     protected final String contextId;
+    protected final boolean onlyRefreshButton;
 
-    public PaginationButton(@NotNull MenuPlugin plugin, @NotNull String contextId) {
+    public PaginationButton(@NotNull MenuPlugin plugin, @NotNull String contextId, boolean onlyRefreshButton) {
         this.plugin = plugin;
         this.manager = plugin.getInventoryManager().getPaginationManager();
         this.contextId = contextId;
+        this.onlyRefreshButton = onlyRefreshButton;
     }
 
     @Nullable
@@ -31,8 +33,20 @@ public abstract class PaginationButton extends Button {
         return null;
     }
 
+    protected void onPageChange(@NotNull Player player, @NotNull InventoryEngine inventory, GenericPaginateButton paginateButton) {
+        if (this.onlyRefreshButton) {
+            org.bukkit.inventory.ItemStack air = new org.bukkit.inventory.ItemStack(org.bukkit.Material.AIR);
+            for (int i : paginateButton.getSlots()) {
+                inventory.addItem(i, air, paginateButton.isPlayerInventory());
+            }
+            paginateButton.onRender(player, inventory);
+        } else {
+            refreshInventory(player);
+        }
+    }
+
     protected void refreshInventory(@NotNull Player player) {
-        this.plugin.getInventoryManager().updateInventory(player, this.plugin);
+        this.plugin.getInventoryManager().updateInventory(player);
     }
 
     @Override

@@ -21,9 +21,9 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +31,23 @@ import java.util.Optional;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
+    public enum DownloadResult {
+        SUCCESS,
+        ERROR_HOST_NOT_ALLOWED,
+        ERROR_INVALID_FILE_TYPE,
+        ERROR_FILE_ALREADY_EXISTS,
+        ERROR_IO
+    }
+
+    private static class DisallowedHostException extends IOException {
+        public DisallowedHostException(String message) {
+            super(message);
+        }
+    }
+
     // private final String API_URL = "http://mib.test/api/v1/";
     private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
+
     private final ZMenuPlugin plugin;
     private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
@@ -361,19 +376,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         this.fetchInventories(player);
     }
 
-    private String getFileNameFromUrl(String url) {
-        URI uri = null;
+    private String getHostFromUrl(String urlString) {
         try {
-            uri = new URI(url);
-        } catch (URISyntaxException exception) {
-            exception.printStackTrace();
-            return null;
-        }
-        String path = uri.getPath();
-        String[] segments = path.split("/");
-        if (segments.length > 0) {
-            return segments[segments.length - 1];
-        } else {
+            return new URL(urlString).getHost();
+        } catch (MalformedURLException e) {
             return null;
         }
     }
@@ -381,57 +387,102 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     @Override
     public void downloadFromUrl(@NonNull CommandSender sender, @NonNull String baseUrl, boolean force) {
 
-        this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
-        this.plugin.getScheduler().runAsync(w -> {
-
-            try {
-                String finalUrl = this.followRedirection(baseUrl);
-
-                // ToDo, add a configuration for "allowed urls"
-
-                URL url = new URL(finalUrl);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                String fileName = this.getFileNameFromContentDisposition(httpURLConnection);
-
-                if (fileName == null) {
-                    this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_NAME);
-                    return;
+        message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
+        plugin.getScheduler().runAsync(w -> {
+            DownloadResult result = performDownload(baseUrl, force, sender);
+            switch (result) {
+                case SUCCESS -> {}
+                case ERROR_HOST_NOT_ALLOWED -> {
+                    String host = getHostFromUrl(baseUrl);
+                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_HOST,
+                            "%host%", host != null ? host : "<invalid>",
+                            "%allowed%", String.join(", ", Configuration.allowedDownloadableWebsite));
                 }
-
-                if (!this.isYmlFile(httpURLConnection) && !fileName.endsWith(".yml")) {
-                    this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
-                    return;
-                }
-
-                File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
-                if (!folder.exists()) folder.mkdirs();
-                File file = new File(folder, fileName);
-
-                if (file.exists() && !force) {
-                    this.message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
-                    return;
-                }
-
-                HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
-                request.setMethod("GET");
-
-                request.submitForFileDownload(this.plugin, file, isSuccess -> this.message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", fileName));
-            } catch (IOException exception) {
-                exception.printStackTrace();
-                this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+                case ERROR_IO -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+                case ERROR_INVALID_FILE_TYPE -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+                case ERROR_FILE_ALREADY_EXISTS -> message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
             }
         });
     }
 
+    private DownloadResult performDownload(String baseUrl, boolean force, CommandSender sender) {
+        try {
+            String finalUrl = followRedirection(baseUrl);
+
+            String fileName;
+            URL url = new URL(finalUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setInstanceFollowRedirects(false);
+            try {
+                if (!isYmlFile(httpURLConnection)) {
+                    return DownloadResult.ERROR_INVALID_FILE_TYPE;
+                }
+
+                fileName = getFileNameFromContentDisposition(httpURLConnection);
+            } finally {
+                httpURLConnection.disconnect();
+            }
+
+            File folder = new File(this.plugin.getDataFolder(), "inventories/downloads");
+            if (!folder.exists()) folder.mkdirs();
+            File file = new File(folder, fileName);
+
+            if (file.exists() && !force) {
+                return DownloadResult.ERROR_FILE_ALREADY_EXISTS;
+            }
+
+            final String finalFileName = fileName;
+            HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
+            request.setMethod("GET");
+            request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", finalFileName));
+
+            return DownloadResult.SUCCESS;
+        } catch (DisallowedHostException exception) {
+            exception.printStackTrace();
+            return DownloadResult.ERROR_HOST_NOT_ALLOWED;
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return DownloadResult.ERROR_IO;
+        }
+    }
+
+    private boolean isValidHost(String urlString) throws IOException {
+        String host = getHostFromUrl(urlString);
+        if (host == null || host.isBlank()) {
+            return false;
+        }
+        final String lowerCaseHost = host.toLowerCase();
+        return Configuration.allowedDownloadableWebsite.stream()
+                .map(String::toLowerCase)
+                .anyMatch(lowerCaseHost::equals);
+    }
+
     private String followRedirection(String urlString) throws IOException {
+        return resolveRedirectChain(urlString, 0);
+    }
+
+    private String resolveRedirectChain(String urlString, int hopCount) throws IOException {
+        if (hopCount > 10) {
+            throw new IOException("Too many redirects (>10 hops)");
+        }
+
+        if (!isValidHost(urlString)) {
+            throw new DisallowedHostException("Disallowed host in redirect chain");
+        }
+
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setInstanceFollowRedirects(true);
+        conn.setInstanceFollowRedirects(false);
         int status = conn.getResponseCode();
-        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-                || status == HttpURLConnection.HTTP_SEE_OTHER) {
-            return conn.getHeaderField("Location");
+
+        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
+            String location = conn.getHeaderField("Location");
+            if (location == null || location.isBlank()) {
+                throw new IOException("Redirect has no Location header");
+            }
+            return resolveRedirectChain(location, hopCount + 1);
         }
+
         return urlString;
     }
 
@@ -442,12 +493,24 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
     private String getFileNameFromContentDisposition(HttpURLConnection conn) {
         String contentDisposition = conn.getHeaderField("Content-Disposition");
+        String fileName = null;
+
         if (contentDisposition != null) {
             int index = contentDisposition.indexOf("filename=");
             if (index > 0) {
-                return contentDisposition.substring(index + 9).replaceAll("\"", "");
+                fileName = contentDisposition.substring(index + 9)
+                        .replaceAll("\"", "")
+                        .trim();
             }
         }
-        return this.generateRandomString(16);
+
+        if (fileName != null && !fileName.isBlank()) {
+            fileName = Paths.get(fileName).getFileName().toString();
+            if (fileName.matches("[a-zA-Z0-9_\\-]{1,64}\\.yml")) {
+                return fileName;
+            }
+        }
+
+        return generateRandomString(16) + ".yml";
     }
 }
