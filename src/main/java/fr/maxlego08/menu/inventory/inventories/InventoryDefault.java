@@ -197,12 +197,6 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return;
         }
         final Player targetPlayer = getTargetPlayer();
-        if (button.hasCustomRender()) {
-            perfDebug.start("onRender." + button.getName());
-            button.onRender(targetPlayer, this);
-            perfDebug.end();
-            return;
-        }
 
         perfDebug.start("getDisplayButton." + button.getName());
         button = button.getDisplayButton(this, this.player);
@@ -231,13 +225,25 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             } else {
 
                 // If the player has the permission, the button
-                this.displayButton(button, placeholders);
+                if (button.hasCustomRender()) {
+                    perfDebug.start("onRender." + button.getName());
+                    button.onRender(targetPlayer, this);
+                    perfDebug.end();
+                } else {
+                    this.displayButton(button, placeholders);
+                }
             }
 
         } else {
 
             // If there is no permission, then the button
-            this.displayButton(button, placeholders);
+            if (button.hasCustomRender()) {
+                perfDebug.start("onRender." + button.getName());
+                button.onRender(targetPlayer, this);
+                perfDebug.end();
+            } else {
+                this.displayButton(button, placeholders);
+            }
         }
     }
 
