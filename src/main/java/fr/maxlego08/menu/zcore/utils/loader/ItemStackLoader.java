@@ -4,8 +4,8 @@ import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.exceptions.ItemFlagException;
 import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.common.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import org.bukkit.Material;
@@ -171,7 +171,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
         configuration.set(path + "material", item.getType().name());
         if (item.getAmount() != 1) configuration.set(path + "amount", item.getAmount());
-        if (NmsVersion.getCurrentVersion().isItemLegacy()) {
+        if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
             if (item.getData().getData() != 0) configuration.set(path + "data", item.getData().getData());
             if (item.getDurability() != 0) configuration.set(path + "durability", item.getDurability());
         }
@@ -209,7 +209,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                 configuration.set(path + "enchants", enchantList);
             }
 
-            if (NmsVersion.getCurrentVersion().isCustomModelData() && meta.hasCustomModelData()) {
+            if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) && meta.hasCustomModelData()) {
                 configuration.set(path + "model-id", meta.getCustomModelData());
             }
         }

@@ -16,8 +16,8 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
+import fr.maxlego08.menu.common.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
@@ -107,15 +107,15 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         this.loadAttributes(menuItemStack, configuration, path);
 
-        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21"))) {
             this.loadNewItemStacks(menuItemStack, configuration, path, file);
         }
-        if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20"))) {
             this.loadTrims(menuItemStack, configuration, path, file);
         }
         this.loadItemModel(configuration, menuItemStack, path, file);
 
-        if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
             if (componentsSection != null) {
                 ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
@@ -173,7 +173,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     }
 
     private void loadItemModel(@NonNull YamlConfiguration configuration, ZMenuItemStack menuItemStack, @NonNull String path, File file) {
-        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.4"))) {
             String itemModel = configuration.getString(path + "item-model");
             if (itemModel != null) {
                 try {

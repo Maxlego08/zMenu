@@ -5,7 +5,11 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public final class MinecraftVersion implements Comparable<MinecraftVersion> {
+    private static final Map<String, MinecraftVersion> PARSE_CACHE = new ConcurrentHashMap<>();
 
     private static MinecraftVersion currentVersion;
 
@@ -31,17 +35,19 @@ public final class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (rawVersion == null || rawVersion.isBlank()) {
             return new MinecraftVersion(0, 0, 0);
         }
-        String clean = rawVersion.contains("-") ? rawVersion.substring(0, rawVersion.indexOf('-')) : rawVersion;
-        String[] parts = clean.split("\\.");
-        try {
-            int major = parts.length > 0 ? Integer.parseInt(parts[0]) : 0;
-            int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
-            int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
-            return new MinecraftVersion(major, minor, patch);
-        } catch (NumberFormatException e) {
-            Logger.info("Could not parse Minecraft value '" + rawVersion + "'. Version-gated classes will be skipped. (" + e.getMessage() + ")", Logger.LogType.WARNING);
-            return new MinecraftVersion(0, 0, 0);
-        }
+        return PARSE_CACHE.computeIfAbsent(rawVersion, raw -> {
+            String clean = raw.contains("-") ? raw.substring(0, raw.indexOf('-')) : raw;
+            String[] parts = clean.split("\\.");
+            try {
+                int major = parts.length > 0 ? Integer.parseInt(parts[0]) : 0;
+                int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+                int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+                return new MinecraftVersion(major, minor, patch);
+            } catch (NumberFormatException e) {
+                Logger.info("Could not parse Minecraft value '" + raw + "'. Version-gated classes will be skipped. (" + e.getMessage() + ")", Logger.LogType.WARNING);
+                return new MinecraftVersion(0, 0, 0);
+            }
+        });
     }
 
     /**
@@ -58,6 +64,13 @@ public final class MinecraftVersion implements Comparable<MinecraftVersion> {
         return compareTo(other) <= 0;
     }
 
+    public boolean isBefore(MinecraftVersion other) {
+        return compareTo(other) < 0;
+    }
+
+    public boolean isAfter(MinecraftVersion other) {
+        return compareTo(other) > 0;
+    }
 
     public int getMajor() {
         return this.major;

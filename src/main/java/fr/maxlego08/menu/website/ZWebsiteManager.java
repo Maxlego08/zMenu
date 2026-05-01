@@ -11,7 +11,6 @@ import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.website.buttons.*;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import org.bukkit.command.CommandSender;
@@ -212,7 +211,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         files.add("website/inventories.yml");
 
         files.forEach(filePath -> {
-            if (NmsVersion.nmsVersion.isNewMaterial()) {
+            if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
                 if (!new File(plugin.getDataFolder(), filePath).exists()) {
                     this.plugin.saveResource(filePath.replace("website/", "website/1_13/"), filePath, true);
                 }

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.common.utils.nms;
 
+import fr.maxlego08.menu.common.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils.EnumReflectionItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,14 +13,14 @@ public class ItemStackCompound {
 
     // Static block to initialize the itemStackCompound based on the NmsVersion
     static {
-        fr.maxlego08.menu.common.utils.nms.NmsVersion nmsVersion = fr.maxlego08.menu.common.utils.nms.NmsVersion.nmsVersion;
-        if (nmsVersion == fr.maxlego08.menu.common.utils.nms.NmsVersion.V_1_18_2) {
+        MinecraftVersion currentVersion = MinecraftVersion.getCurrentVersion();
+        if (currentVersion.equals(MinecraftVersion.parse("1.18.2"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_18_2);
-        } else if (nmsVersion.getVersion() >= 1200) {
+        } else if (currentVersion.isAtLeast(MinecraftVersion.parse("1.12"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_12);
-        } else if (nmsVersion.getVersion() >= 1190) {
+        } else if (currentVersion.isAtLeast(MinecraftVersion.parse("1.19"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_19);
-        } else if (nmsVersion.getVersion() >= 1170) {
+        } else if (currentVersion.isAtLeast(MinecraftVersion.parse("1.17"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_17);
         } else itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_8_8);
     }

@@ -19,9 +19,9 @@ import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.*;
@@ -353,15 +353,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private void applyVersionSpecificMeta(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
-        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21"))) {
             this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
         }
 
-        if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20"))) {
             this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
         }
 
-        if (this.clearDefaultAttributes && this.attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+        if (this.clearDefaultAttributes && this.attributes.isEmpty() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.4"))) {
             itemMeta.setAttributeModifiers(ArrayListMultimap.create());
         }
     }
