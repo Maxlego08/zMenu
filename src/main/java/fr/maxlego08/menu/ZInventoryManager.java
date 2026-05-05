@@ -134,7 +134,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.set("item", map);
-        return new MenuItemStackLoader(this).load(configuration, "item", file);
+        return new MenuItemStackLoader(this).load(configuration, "item.", file);
     }
 
     @Override
@@ -402,6 +402,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TeleportLoader(this.plugin));
         buttonManager.registerAction(new CurrencyWithdrawLoader());
         buttonManager.registerAction(new CurrencyDepositLoader());
+        buttonManager.registerAction(new TakeItemLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }

@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.website.WebsiteManager;
+import fr.maxlego08.menu.common.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.website.buttons.*;
 import fr.maxlego08.menu.website.request.HttpRequest;
