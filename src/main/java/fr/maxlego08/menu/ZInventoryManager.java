@@ -133,7 +133,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
         YamlConfiguration configuration = new YamlConfiguration();
-        configuration.set("item", map);
+        configuration.createSection("item", map);
         return new MenuItemStackLoader(this).load(configuration, "item.", file);
     }
 
