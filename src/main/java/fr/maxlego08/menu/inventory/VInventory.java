@@ -114,8 +114,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
             return null;
         }
 
+        ItemStack displayStack = itemStack.clone();
+
         if (Configuration.enableAntiDupe && enableAntiDupe) {
-            itemStack = this.plugin.getDupeManager().protectItem(itemStack);
+            displayStack = this.plugin.getDupeManager().protectItem(displayStack);
         }
 
         ItemButton button = new ItemButton(itemStack, slot, inPlayerInventory, this);
@@ -130,11 +132,11 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         if (inPlayerInventory) {
 
             this.playerInventoryItems.put(slot, button);
-            if (!needCancel) this.player.getInventory().setItem(slot, itemStack);
+            if (!needCancel) this.player.getInventory().setItem(slot, displayStack);
         } else {
 
             this.items.put(slot, button);
-            if (!needCancel) this.inventory.setItem(slot, itemStack);
+            if (!needCancel) this.inventory.setItem(slot, displayStack);
         }
         return button;
     }
