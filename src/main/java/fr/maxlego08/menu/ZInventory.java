@@ -235,15 +235,21 @@ public class ZInventory extends ZUtils implements Inventory {
                 if (this.clearInvType == ClearInvType.DEFAULT){
                     inventoriesPlayer.storeInventory(player);
                 } else {
-                    inventoriesPlayer.storeInventoryTemporary(player);
+                    if (inventoriesPlayer.hasSavedInventory(player.getUniqueId())) {
+                        inventoriesPlayer.getPlayerInventory(player.getUniqueId()).ifPresent(inventoryPlayer -> {
+                            for (int slot : inventoryPlayer.getItems().keySet()) {
+                                player.getInventory().setItem(slot, null);
+                                this.clearInvType.getRemoveItem().accept(player, slot, player.getInventory());
+                            }
+                        });
+                    } else {
+                        removePlayerInventoryButtons(player, inventoryHolder);
+                        inventoriesPlayer.storeInventory(player);
+                    }
                 }
             }
         } else if (this.clearInventory) {
-            if (this.clearInvType == ClearInvType.DEFAULT) {
-                inventoriesPlayer.storeInventory(player);
-            } else {
-                inventoriesPlayer.storeInventoryTemporary(player);
-            }
+            inventoriesPlayer.storeInventory(player);
         }
 
         var placeholders = new Placeholders();
@@ -264,6 +270,12 @@ public class ZInventory extends ZUtils implements Inventory {
         }
     }
 
+    private void removePlayerInventoryButtons(Player player, InventoryEngine inventoryDefault) {
+        for (int slot : inventoryDefault.getPlayerInventoryItems().keySet()) {
+            player.getInventory().setItem(slot, null);
+        }
+    }
+
     @Override
     public void postOpenInventory(Player player, InventoryEngine inventoryDefault) {
 
@@ -280,7 +292,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
                 if (this.clearInventory) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
-                    this.clearInvType.getOnInventoryClose().accept(inventoriesPlayer, player);
+                    inventoriesPlayer.giveInventory(player);
                 }
             }
             var placeholders = new Placeholders();
