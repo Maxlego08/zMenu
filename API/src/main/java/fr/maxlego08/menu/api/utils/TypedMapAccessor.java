@@ -25,6 +25,11 @@ public class TypedMapAccessor implements MapConfiguration {
         this.map = map;
     }
 
+
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
     /**
      * Retrieves a string value from the map based on the provided key.
      *

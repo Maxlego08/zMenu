@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuItemStack;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.loader.ActionLoader;
@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Map;
 
 public class TakeItemLoader extends ActionLoader {
     private final MenuPlugin menuPlugin;
@@ -22,8 +23,13 @@ public class TakeItemLoader extends ActionLoader {
 
     @Override
     public @Nullable Action load(@NotNull String path, @NotNull TypedMapAccessor accessor, @NotNull File file) {
-        ZMenuItemStack menuItemStack = new ZMenuItemStack(this.menuPlugin.getInventoryManager(), file.getPath(), path);
-        menuItemStack.setTypeMapAccessor(accessor);
+        MenuItemStack menuItemStack;
+        if (accessor.contains("item")) {
+            menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, (Map<String, Object>) accessor.getObject("item"));
+        } else {
+            menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, accessor.getMap());
+        }
+
         boolean useCache = accessor.getBoolean("use-cache", false);
         int amount = accessor.getInt("amount", 1);
         ItemVerification itemVerification = ItemVerification.valueOf(accessor.getString("verification", ItemVerification.SIMILAR.name()));

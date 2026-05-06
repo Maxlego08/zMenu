@@ -38,6 +38,10 @@ public class TakeItemAction extends Action {
         }
 
         ItemStack targetItem = this.menuItemStack.build(player, this.useCache, placeholders);
+        if (targetItem == null) {
+            return;
+        }
+        Logger.info("Target item :" + targetItem);
         int remaining = this.amount;
 
         PlayerInventory inventory = player.getInventory();
@@ -46,6 +50,7 @@ public class TakeItemAction extends Action {
 
             ItemStack current = inventory.getItem(slot);
             if (current == null) continue;
+            Logger.info("Current item :" + current);
 
             if (!matches(current, targetItem)) continue;
 
