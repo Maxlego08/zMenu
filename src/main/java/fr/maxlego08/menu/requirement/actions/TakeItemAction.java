@@ -41,7 +41,6 @@ public class TakeItemAction extends Action {
         if (targetItem == null) {
             return;
         }
-        Logger.info("Target item :" + targetItem);
         int remaining = this.amount;
 
         PlayerInventory inventory = player.getInventory();
@@ -61,10 +60,6 @@ public class TakeItemAction extends Action {
             if (current.getAmount() <= 0) {
                 inventory.setItem(slot, null);
             }
-        }
-
-        if (remaining > 0) {
-            Logger.info("WARNING: Could not remove full amount. Missing: " + remaining);
         }
     }
 
