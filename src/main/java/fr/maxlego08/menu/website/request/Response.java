@@ -48,7 +48,7 @@ public record Response(int httpCode, Map<String, Object> datas) {
      */
     @Override
     public @NotNull String toString() {
-        return "Response [httpCode=" + httpCode + ", datas=" + datas + "]";
+        return "Response [httpCode=" + this.httpCode + ", datas=" + this.datas + "]";
     }
 
 }

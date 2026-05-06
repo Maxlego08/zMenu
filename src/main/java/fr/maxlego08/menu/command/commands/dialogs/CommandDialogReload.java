@@ -20,7 +20,7 @@ public class CommandDialogReload extends VCommand {
         DialogManager dialogManager = plugin.getDialogManager();
         dialogManager.reloadDialogs();
 
-        message(plugin, this.sender, Message.RELOAD_DIALOGS,"%dialogs%", dialogManager.getDialogs().size());
+        this.message(plugin, this.sender, Message.RELOAD_DIALOGS,"%dialogs%", dialogManager.getDialogs().size());
         return CommandType.SUCCESS;
     }
 }

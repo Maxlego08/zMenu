@@ -42,7 +42,7 @@ public class ZDataManager implements DataManager {
 
     @Override
     public @NonNull Optional<PlayerData> getPlayer(@NonNull UUID uniqueId) {
-        return Optional.ofNullable(players.getOrDefault(uniqueId, null));
+        return Optional.ofNullable(this.players.getOrDefault(uniqueId, null));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ZDataManager implements DataManager {
         }
 
         ZPlayerData data = new ZPlayerData(this.plugin.getStorageManager(), uniqueId);
-        players.put(uniqueId, data);
+        this.players.put(uniqueId, data);
 
         return data;
     }
@@ -103,19 +103,19 @@ public class ZDataManager implements DataManager {
 
     @Override
     public void clearAll() {
-        players.clear();
+        this.players.clear();
         this.plugin.getStorageManager().clearData();
     }
 
     @Override
     public void clearPlayer(@NonNull UUID uniqueId) {
-        players.remove(uniqueId);
+        this.players.remove(uniqueId);
         this.plugin.getStorageManager().clearData(uniqueId);
     }
 
     @Override
     public void loadDefaultValues() {
-        File file = new File(plugin.getDataFolder(), "default_values.yml");
+        File file = new File(this.plugin.getDataFolder(), "default_values.yml");
         if (!file.exists()) {
             this.plugin.saveResource("default_values.yml", false);
         }
@@ -166,9 +166,9 @@ public class ZDataManager implements DataManager {
 
         });
 
-        localPlaceholder.register("player_value_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> data.getValue().toString()));
+        localPlaceholder.register("player_value_", (offlinePlayer, key) -> this.handlePlaceholder(offlinePlayer, key, data -> data.getValue().toString()));
 
-        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> {
+        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> this.handlePlaceholder(offlinePlayer, key, data -> {
             if (data.getExpiredAt() <= 0) {
                 return Message.PLACEHOLDER_NEVER.getMessage();
             }
@@ -177,7 +177,7 @@ public class ZDataManager implements DataManager {
             return TimerBuilder.getStringTime(seconds);
         }));
 
-        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> handlePlaceholder(offlinePlayer, key, data -> String.valueOf(data.getExpiredAt())));
+        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> this.handlePlaceholder(offlinePlayer, key, data -> String.valueOf(data.getExpiredAt())));
         localPlaceholder.register("player_is_expired_", (offlinePlayer, key) -> {
 
             Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
@@ -191,11 +191,11 @@ public class ZDataManager implements DataManager {
 
     private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, ReturnConsumer<Data, String> consumer) {
         Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-        if (optional.isEmpty()) return getDefaultKey(key);
+        if (optional.isEmpty()) return this.getDefaultKey(key);
 
         PlayerData playerData = optional.get();
         Optional<Data> optionalData = playerData.getData(key);
-        return optionalData.isPresent() ? consumer.accept(optionalData.get()) : getDefaultKey(key);
+        return optionalData.isPresent() ? consumer.accept(optionalData.get()) : this.getDefaultKey(key);
     }
 
     private String getDefaultKey(String key) {
@@ -204,7 +204,7 @@ public class ZDataManager implements DataManager {
 
     @Override
     public void convertOldDatas(@NonNull CommandSender sender) {
-        var manager = plugin.getStorageManager();
+        var manager = this.plugin.getStorageManager();
         try {
             var datas = PlayerDataLoader.loadPlayerData(this.plugin.getDataFolder() + "/players.json");
             datas.forEach((uuid, playerData) -> playerData.forEach(data -> manager.upsertData(uuid, data)));

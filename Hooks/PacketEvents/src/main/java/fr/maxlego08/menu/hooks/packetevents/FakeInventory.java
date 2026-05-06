@@ -19,11 +19,11 @@ public class FakeInventory {
     }
 
     public Map<Integer, ItemStack> getSlots() {
-        return slots;
+        return this.slots;
     }
 
     public Inventory getInventory() {
-        return inventory;
+        return this.inventory;
     }
 
     public void setInventory(Inventory inventory) {

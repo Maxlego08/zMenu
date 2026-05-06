@@ -104,7 +104,7 @@ allprojects {
 
     dependencies {
         if (project.name != "Paper") {
-            compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
+            compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
         }
         compileOnly("me.clip:placeholderapi:2.11.6")
 

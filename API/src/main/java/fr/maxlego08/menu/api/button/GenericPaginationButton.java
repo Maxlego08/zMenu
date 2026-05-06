@@ -38,14 +38,14 @@ public abstract class GenericPaginationButton <T> extends GenericPaginateButton 
 
     @Override
     public final void onRender(@NotNull Player player, @NotNull InventoryEngine inventory) {
-        List<T> elements = getElements(player);
-        Collection<Integer> slots = getSlots();
+        List<T> elements = this.getElements(player);
+        Collection<Integer> slots = this.getSlots();
         int pageSize = slots.size();
-        int currentPage = getCurrentPageOneIndexed(player);
+        int currentPage = this.getCurrentPageOneIndexed(player);
         
-        int maxPage = getMaxPage(player, pageSize);
-        
-        getPaginationManager().setMaxPage(player.getUniqueId(), getContextId(player), maxPage);
+        int maxPage = this.getMaxPage(player, pageSize);
+
+        this.getPaginationManager().setMaxPage(player.getUniqueId(), this.getContextId(player), maxPage);
 
         Pagination<T> pagination = new Pagination<>();
         List<T> paginatedElements = pagination.paginate(elements, pageSize, currentPage);
@@ -59,7 +59,7 @@ public abstract class GenericPaginationButton <T> extends GenericPaginateButton 
             placeholders.register("page", String.valueOf(currentPage));
             placeholders.register("max_page", String.valueOf(maxPage + 1));
 
-            renderElement(player, inventory, slot, element, placeholders);
+            this.renderElement(player, inventory, slot, element, placeholders);
             slotIndex++;
         }
     }

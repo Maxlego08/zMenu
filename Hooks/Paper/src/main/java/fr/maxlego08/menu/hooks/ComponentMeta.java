@@ -43,17 +43,17 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
     public ComponentMeta(MenuPlugin plugin) throws Exception {
         this.plugin = plugin;
 
-        getLoreMethod = ItemMeta.class.getDeclaredMethod("lore");
-        getLoreMethod.setAccessible(true);
+        this.getLoreMethod = ItemMeta.class.getDeclaredMethod("lore");
+        this.getLoreMethod.setAccessible(true);
 
-        setLoreMethod = ItemMeta.class.getDeclaredMethod("lore", List.class);
-        setLoreMethod.setAccessible(true);
-        nameMethod = ItemMeta.class.getDeclaredMethod("displayName", Component.class);
-        nameMethod.setAccessible(true);
-        inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
-        inventoryMethod.setAccessible(true);
-        inventoryTypeMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, InventoryType.class, Component.class);
-        inventoryTypeMethod.setAccessible(true);
+        this.setLoreMethod = ItemMeta.class.getDeclaredMethod("lore", List.class);
+        this.setLoreMethod.setAccessible(true);
+        this.nameMethod = ItemMeta.class.getDeclaredMethod("displayName", Component.class);
+        this.nameMethod.setAccessible(true);
+        this.inventoryMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, int.class, Component.class);
+        this.inventoryMethod.setAccessible(true);
+        this.inventoryTypeMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, InventoryType.class, Component.class);
+        this.inventoryTypeMethod.setAccessible(true);
     }
 
     private TextDecoration.State getState(String text) {
@@ -62,17 +62,17 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
 
     @Override
     public @NonNull Component getComponent(String text) {
-        return this.cache.get(text, ()->this.MINI_MESSAGE.deserialize(colorMiniMessage(text)));
+        return this.cache.get(text, ()->this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)));
     }
 
     private void updateDisplayName(ItemMeta itemMeta, String text) {
         Component component = this.cache.get(text, () -> {
             // Fixed text becomes italic automatically
             // From GitHub issue #62
-            return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
+            return this.RESET.append(this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)).decoration(TextDecoration.ITALIC, this.getState(text)));
         });
         try {
-            nameMethod.invoke(itemMeta, component);
+            this.nameMethod.invoke(itemMeta, component);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -80,22 +80,22 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
 
     @Override
     public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, Player player) {
-        updateDisplayName(itemMeta, text);
+        this.updateDisplayName(itemMeta, text);
     }
 
     @Override
     public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, OfflinePlayer offlinePlayer) {
-        updateDisplayName(itemMeta, text);
+        this.updateDisplayName(itemMeta, text);
     }
 
     @Override
     public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, Player player) {
-        updateLore(itemMeta, lore, LoreType.REPLACE);
+        this.updateLore(itemMeta, lore, LoreType.REPLACE);
     }
 
     @Override
     public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @Nullable OfflinePlayer offlinePlayer) {
-        updateLore(itemMeta, lore, LoreType.REPLACE);
+        this.updateLore(itemMeta, lore, LoreType.REPLACE);
     }
 
     @SuppressWarnings("unchecked")
@@ -106,14 +106,14 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
             Component component = this.cache.get(text, () -> {
                 // Fixed text becomes italic automatically
                 // From GitHub issue #62
-                return RESET.append(this.MINI_MESSAGE.deserialize(colorMiniMessage(text)).decoration(TextDecoration.ITALIC, getState(text)));
+                return this.RESET.append(this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)).decoration(TextDecoration.ITALIC, this.getState(text)));
             });
             components.add(component);
         }
 
         if (loreType != LoreType.REPLACE && itemMeta.hasLore()) {
             try {
-                List<Component> currentLore = (List<Component>) getLoreMethod.invoke(itemMeta);
+                List<Component> currentLore = (List<Component>) this.getLoreMethod.invoke(itemMeta);
 
                 if (currentLore != null) {
                     if (loreType == LoreType.APPEND) {
@@ -132,19 +132,19 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
         }
 
         try {
-            setLoreMethod.invoke(itemMeta, components);
+            this.setLoreMethod.invoke(itemMeta, components);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
 
     private Inventory createInventoryInternal(String inventoryName, InventoryHolder inventoryHolder, Object inventoryTypeOrSize) {
-        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(inventoryName)));
+        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(inventoryName)));
         try {
             if (inventoryTypeOrSize instanceof Integer integer) {
-                return (Inventory) inventoryMethod.invoke(null, inventoryHolder, integer, component);
+                return (Inventory) this.inventoryMethod.invoke(null, inventoryHolder, integer, component);
             } else if (inventoryTypeOrSize instanceof InventoryType inventoryType) {
-                return (Inventory) inventoryTypeMethod.invoke(null, inventoryHolder, inventoryType, component);
+                return (Inventory) this.inventoryTypeMethod.invoke(null, inventoryHolder, inventoryType, component);
             }
         } catch (IllegalAccessException | InvocationTargetException exception) {
             exception.printStackTrace();
@@ -158,43 +158,43 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
 
     @Override
     public @NonNull Inventory createInventory(@NonNull String inventoryName, int size, InventoryHolder inventoryHolder) {
-        return createInventoryInternal(inventoryName, inventoryHolder, size);
+        return this.createInventoryInternal(inventoryName, inventoryHolder, size);
     }
 
     @Override
     public @NonNull Inventory createInventory(@NonNull String inventoryName, @NonNull InventoryType inventoryType, InventoryHolder inventoryHolder) {
-        return createInventoryInternal(inventoryName, inventoryHolder, inventoryType);
+        return this.createInventoryInternal(inventoryName, inventoryHolder, inventoryType);
     }
 
     @Override
     public void sendMessage(@NonNull CommandSender sender, @NonNull String message) {
-        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
+        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(message)));
         sender.sendMessage(component);
     }
 
     @Override
     public void sendAction(@NonNull Player player, @NonNull String message) {
-        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(message)));
+        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(message)));
         player.sendActionBar(component);
     }
 
     @Override
     public void sendTitle(@NonNull Player player, String title, @NonNull String subtitle, long start, long duration, long end) {
         Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
-        Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
-        Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(subtitle)));
+        Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(title)));
+        Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(subtitle)));
         player.showTitle(Title.title(componentTitle, componentSubTitle, times));
     }
 
     @Override
     public void openBook(@NonNull Player player, @NonNull String title, @NonNull String author, @NonNull List<String> lines) {
 
-        Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(title)));
-        Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(author)));
+        Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(title)));
+        Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(author)));
         List<Component> linesComponent = new ArrayList<>(lines.size());
         for (String text : lines) {
-            String result = plugin.parse(player, text);
-            Component component = this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(colorMiniMessage(result)));
+            String result = this.plugin.parse(player, text);
+            Component component = this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(result)));
             linesComponent.add(component);
         }
 

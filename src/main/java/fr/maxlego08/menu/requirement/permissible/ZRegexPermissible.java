@@ -25,7 +25,7 @@ public class ZRegexPermissible extends RegexPermissible {
 
     @Override
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        return pattern.matcher(inventory.getPlugin().parse(player, placeholders.parse(this.placeholder))).find();
+        return this.pattern.matcher(inventory.getPlugin().parse(player, placeholders.parse(this.placeholder))).find();
     }
 
     @Override
@@ -37,11 +37,11 @@ public class ZRegexPermissible extends RegexPermissible {
 
     @Override
     public Pattern getPattern() {
-        return pattern;
+        return this.pattern;
     }
 
     @Override
     public String getPlaceholder() {
-        return placeholder;
+        return this.placeholder;
     }
 }

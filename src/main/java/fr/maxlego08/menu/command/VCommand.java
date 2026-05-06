@@ -53,7 +53,7 @@ public abstract class VCommand extends Arguments {
      * @return the permission
      */
     public String getPermission() {
-        return permission;
+        return this.permission;
     }
 
     /**
@@ -76,7 +76,7 @@ public abstract class VCommand extends Arguments {
      * @return the parent
      */
     public VCommand getParent() {
-        return parent;
+        return this.parent;
     }
 
     /**
@@ -91,14 +91,14 @@ public abstract class VCommand extends Arguments {
      * @return the subCommand
      */
     public List<String> getSubCommands() {
-        return subCommands;
+        return this.subCommands;
     }
 
     /**
      * @return the consoleCanUse
      */
     public boolean isConsoleCanUse() {
-        return consoleCanUse;
+        return this.consoleCanUse;
     }
 
     /**
@@ -113,7 +113,7 @@ public abstract class VCommand extends Arguments {
      * @return the ignoreParent
      */
     public boolean isIgnoreParent() {
-        return ignoreParent;
+        return this.ignoreParent;
     }
 
     public void setIgnoreParent(boolean ignoreParent) {
@@ -121,28 +121,28 @@ public abstract class VCommand extends Arguments {
     }
 
     public CommandSender getSender() {
-        return sender;
+        return this.sender;
     }
 
     /**
      * @return the argsMinLength
      */
     public int getArgsMinLength() {
-        return argsMinLength;
+        return this.argsMinLength;
     }
 
     /**
      * @return the argsMaxLength
      */
     public int getArgsMaxLength() {
-        return argsMaxLength;
+        return this.argsMaxLength;
     }
 
     /**
      * @return the player
      */
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     //
@@ -155,10 +155,10 @@ public abstract class VCommand extends Arguments {
      * @return the syntax
      */
     public String getSyntax() {
-        if (syntax == null) {
-            syntax = generateDefaultSyntax("");
+        if (this.syntax == null) {
+            this.syntax = this.generateDefaultSyntax("");
         }
-        return syntax;
+        return this.syntax;
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class VCommand extends Arguments {
     }
 
     public boolean isIgnoreArgs() {
-        return ignoreArgs;
+        return this.ignoreArgs;
     }
 
     public void setIgnoreArgs(boolean ignoreArgs) {
@@ -178,7 +178,7 @@ public abstract class VCommand extends Arguments {
     }
 
     public String getDescription() {
-        return description == null ? "no description" : description;
+        return this.description == null ? "no description" : this.description;
     }
 
     /**
@@ -204,7 +204,7 @@ public abstract class VCommand extends Arguments {
     }
 
     public CommandType getTabCompleter() {
-        return tabCompleter;
+        return this.tabCompleter;
     }
 
     /*
@@ -324,21 +324,21 @@ public abstract class VCommand extends Arguments {
      */
     private String generateDefaultSyntax(String syntax) {
 
-        String tmpString = subCommands.getFirst();
+        String tmpString = this.subCommands.getFirst();
 
         boolean update = syntax.isEmpty();
 
-        if (!requireArgs.isEmpty() && update) {
+        if (!this.requireArgs.isEmpty() && update) {
             StringBuilder syntaxBuilder = new StringBuilder(syntax);
-            for (String requireArg : requireArgs) {
+            for (String requireArg : this.requireArgs) {
                 requireArg = "<" + requireArg + ">";
                 syntaxBuilder.append(" ").append(requireArg);
             }
             syntax = syntaxBuilder.toString();
         }
-        if (!optionalArgs.isEmpty() && update) {
+        if (!this.optionalArgs.isEmpty() && update) {
             StringBuilder syntaxBuilder = new StringBuilder(syntax);
-            for (String optionalArg : optionalArgs) {
+            for (String optionalArg : this.optionalArgs) {
                 optionalArg = "[<" + optionalArg + ">]";
                 syntaxBuilder.append(" ").append(optionalArg);
             }
@@ -347,11 +347,11 @@ public abstract class VCommand extends Arguments {
 
         tmpString += syntax;
 
-        if (parent == null) {
+        if (this.parent == null) {
             return "/" + tmpString;
         }
 
-        return parent.generateDefaultSyntax(" " + tmpString);
+        return this.parent.generateDefaultSyntax(" " + tmpString);
     }
 
     /**
@@ -361,7 +361,7 @@ public abstract class VCommand extends Arguments {
      * @return
      */
     private int parentCount(int defaultParent) {
-        return parent == null ? defaultParent : parent.parentCount(defaultParent + 1);
+        return this.parent == null ? defaultParent : this.parent.parentCount(defaultParent + 1);
     }
 
     /**
@@ -382,7 +382,7 @@ public abstract class VCommand extends Arguments {
 
         // We generate the basic syntax if it is impossible to find it
         if (this.syntax == null) {
-            this.syntax = generateDefaultSyntax("");
+            this.syntax = this.generateDefaultSyntax("");
         }
 
         this.args = args;
@@ -390,7 +390,7 @@ public abstract class VCommand extends Arguments {
         String defaultString = super.argAsString(0);
 
         if (defaultString != null) {
-            for (VCommand subCommand : subVCommands) {
+            for (VCommand subCommand : this.subVCommands) {
                 if (subCommand.getSubCommands().contains(defaultString.toLowerCase()))
                     return CommandType.CONTINUE;
             }
@@ -407,7 +407,7 @@ public abstract class VCommand extends Arguments {
         }
 
         try {
-            return perform(plugin);
+            return this.perform(plugin);
         } catch (Exception e) {
             if (Configuration.enableDebug)
                 e.printStackTrace();
@@ -438,8 +438,8 @@ public abstract class VCommand extends Arguments {
      */
     @Override
     public String toString() {
-        return "VCommand [permission=" + permission + ", subCommands=" + subCommands + ", consoleCanUse="
-                + consoleCanUse + ", description=" + description + "]";
+        return "VCommand [permission=" + this.permission + ", subCommands=" + this.subCommands + ", consoleCanUse="
+                + this.consoleCanUse + ", description=" + this.description + "]";
     }
 
     /**
@@ -476,7 +476,7 @@ public abstract class VCommand extends Arguments {
      * @return
      */
     protected List<String> generateList(String startWith, String... strings) {
-        return generateList(Arrays.asList(strings), startWith);
+        return this.generateList(Arrays.asList(strings), startWith);
     }
 
     /**
@@ -487,7 +487,7 @@ public abstract class VCommand extends Arguments {
      * @return list of string
      */
     protected List<String> generateList(Tab tab, String startWith, String... strings) {
-        return generateList(Arrays.asList(strings), startWith, tab);
+        return this.generateList(Arrays.asList(strings), startWith, tab);
     }
 
     /**
@@ -498,7 +498,7 @@ public abstract class VCommand extends Arguments {
      * @return list of string
      */
     protected List<String> generateList(List<String> defaultList, String startWith) {
-        return generateList(defaultList, startWith, Tab.CONTAINS);
+        return this.generateList(defaultList, startWith, Tab.CONTAINS);
     }
 
     /**
@@ -534,10 +534,10 @@ public abstract class VCommand extends Arguments {
      * Send a list of commands with their syntax and description
      */
     protected void sendSyntax() {
-        message(this.plugin, this.sender, Message.DOCUMENTATION_INFORMATION);
+        this.message(this.plugin, this.sender, Message.DOCUMENTATION_INFORMATION);
         this.subVCommands.forEach(command -> {
             if (command.getPermission() == null || this.sender.hasPermission(command.getPermission())) {
-                message(this.plugin, this.sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%",
+                this.message(this.plugin, this.sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%",
                         command.getDescription());
             }
         });
@@ -563,6 +563,6 @@ public abstract class VCommand extends Arguments {
     }
 
     public String getDenyMessage() {
-        return denyMessage;
+        return this.denyMessage;
     }
 }

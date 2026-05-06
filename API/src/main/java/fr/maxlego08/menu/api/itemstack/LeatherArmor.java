@@ -22,7 +22,7 @@ public class LeatherArmor {
     @Contract(pure = true)
     @NotNull
     public ArmorType getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(@NotNull ArmorType type) {
@@ -32,7 +32,7 @@ public class LeatherArmor {
     @Contract(pure = true)
     @NotNull
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     public void setColor(@NotNull Color color) {
@@ -41,7 +41,7 @@ public class LeatherArmor {
 
     @NotNull
     public ItemStack toItemStack(int amount) {
-        Material material = switch (type) {
+        Material material = switch (this.type) {
             case HELMET -> Material.LEATHER_HELMET;
             case CHESTPLATE -> Material.LEATHER_CHESTPLATE;
             case LEGGINGS -> Material.LEATHER_LEGGINGS;
@@ -51,7 +51,7 @@ public class LeatherArmor {
         ItemStack stack = new ItemStack(material, amount);
         LeatherArmorMeta lam = (LeatherArmorMeta) stack.getItemMeta();
         if (lam != null) {
-            lam.setColor(color);
+            lam.setColor(this.color);
         }
         stack.setItemMeta(lam);
         return stack;

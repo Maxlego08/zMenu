@@ -23,10 +23,10 @@ public class SpigotBundleContentsItemComponentLoader extends AbstractMenuItemSta
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
 
         List<Map<?, ?>> mapList = configuration.getMapList(path);
-        List<MenuItemStack> contents = loadItemStackList(mapList, file);
+        List<MenuItemStack> contents = this.loadItemStackList(mapList, file);
         return contents.isEmpty() ? null : new BundleContentsComponent(contents);
     }
 }

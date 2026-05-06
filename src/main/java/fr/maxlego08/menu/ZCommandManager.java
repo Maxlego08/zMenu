@@ -124,12 +124,12 @@ public class ZCommandManager extends ZUtils implements CommandManager {
         }
 
 
-        executeCraftServerSyncCommands();
+        this.executeCraftServerSyncCommands();
     }
 
     public void executeCraftServerSyncCommands() {
         try {
-            Object craftServer = getCraftServerInstance();
+            Object craftServer = this.getCraftServerInstance();
             Method syncCommandsMethod = craftServer.getClass().getDeclaredMethod("syncCommands");
             syncCommandsMethod.setAccessible(true);
             syncCommandsMethod.invoke(craftServer);
@@ -196,7 +196,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public Optional<String> getPlayerArgument(Player player, String key) {
-        return getPlayerArgument(player.getUniqueId(), key);
+        return this.getPlayerArgument(player.getUniqueId(), key);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class SimpleCache<K, V> {
     }
 
     public V get(K key, Loader<V> loader) {
-        return cache.computeIfAbsent(key, k -> loader.load());
+        return this.cache.computeIfAbsent(key, k -> loader.load());
     }
 
     public interface Loader<V> {

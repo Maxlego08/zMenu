@@ -34,7 +34,7 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
 
         boolean mathExpression = configuration.getBoolean(path + "math", false);
 
-        return new ZActionPlayerData(storageManager, key, type, object, seconds, mathExpression);
+        return new ZActionPlayerData(this.storageManager, key, type, object, seconds, mathExpression);
     }
 
     @Override

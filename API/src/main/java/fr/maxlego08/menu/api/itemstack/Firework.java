@@ -25,17 +25,17 @@ public class Firework {
 
     @Contract(pure = true)
     public boolean isStar() {
-        return isStar;
+        return this.isStar;
     }
 
     public void setStar(boolean star) {
-        isStar = star;
+        this.isStar = star;
     }
 
     @Contract(pure = true)
     @NotNull
     public FireworkEffect getEffect() {
-        return effect;
+        return this.effect;
     }
 
     public void setEffect(@NotNull FireworkEffect effect) {
@@ -49,13 +49,13 @@ public class Firework {
         if (this.isStar) {
             FireworkEffectMeta fireworkEffectMeta = (FireworkEffectMeta) itemStack.getItemMeta();
             if (fireworkEffectMeta != null) {
-                fireworkEffectMeta.setEffect(effect);
+                fireworkEffectMeta.setEffect(this.effect);
             }
             itemStack.setItemMeta(fireworkEffectMeta);
         } else {
             FireworkMeta fireworkMeta = (FireworkMeta) itemStack.getItemMeta();
             if (fireworkMeta != null) {
-                fireworkMeta.addEffect(effect);
+                fireworkMeta.addEffect(this.effect);
             }
             itemStack.setItemMeta(fireworkMeta);
         }

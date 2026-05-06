@@ -15,6 +15,6 @@ public class BroadcastSoundLoader extends SoundLoader {
 
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        return new BroadcastSoundAction(loadSound(path, accessor, file));
+        return new BroadcastSoundAction(this.loadSound(path, accessor, file));
     }
 }

@@ -8,7 +8,7 @@ import org.bukkit.World;
 public abstract class LocationUtils extends PapiUtils {
 
     protected Location changeStringLocationToLocation(String string) {
-        return changeStringLocationToLocationEye(string);
+        return this.changeStringLocationToLocationEye(string);
     }
 
     protected Location changeStringLocationToLocationEye(String string) {

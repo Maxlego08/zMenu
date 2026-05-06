@@ -29,8 +29,8 @@ public class PlaceholderPermissibleLoader extends PermissibleLoader {
         String targetPlayer = accessor.getString("target", null);
         boolean mathExpression = accessor.getBoolean("math", false);
 
-        List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
-        List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
+        List<Action> denyActions = this.loadAction(this.buttonManager, accessor, "deny", path, file);
+        List<Action> successActions = this.loadAction(this.buttonManager, accessor, "success", path, file);
 
         return new ZPlaceholderPermissible(action, placeholder, value, targetPlayer, denyActions, successActions, mathExpression);
     }

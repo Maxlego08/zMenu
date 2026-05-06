@@ -23,7 +23,7 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public Map<String, Consumer<Boolean>> getConsumerMap() {
-        return consumerMap;
+        return this.consumerMap;
     }
 
     public void setConsumerMap(Map<String, Consumer<Boolean>> consumerMap) {
@@ -32,7 +32,7 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public Map<String, Consumer<Float>> getFloatConsumerMap() {
-        return floatConsumerMap;
+        return this.floatConsumerMap;
     }
 
     public void setFloatConsumerMap(Map<String, Consumer<Float>> floatConsumerMap) {
@@ -41,7 +41,7 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public Map<String, Consumer<Integer>> getIntegerConsumerMap() {
-        return integerConsumerMap;
+        return this.integerConsumerMap;
     }
 
     public void setIntegerConsumerMap(Map<String, Consumer<Integer>> integerConsumerMap) {
@@ -50,7 +50,7 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public String getBooleanConfirmText() {
-        return booleanConfirmText;
+        return this.booleanConfirmText;
     }
 
     public void setBooleanConfirmText(String booleanConfirmText) {
@@ -58,7 +58,7 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public String getNumberRangeConfirmText() {
-        return numberRangeConfirmText;
+        return this.numberRangeConfirmText;
     }
 
     public void setNumberRangeConfirmText(String numberRangeConfirmText) {
@@ -66,14 +66,14 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public Map<String, Consumer<String>> getStringConsumerMap() {
-        return stringConsumerMap;
+        return this.stringConsumerMap;
     }
     public void setStringConsumerMap(Map<String, Consumer<String>> stringConsumerMap) {
         this.stringConsumerMap.clear();
         this.stringConsumerMap.putAll(stringConsumerMap);
     }
     public String getStringConfirmText() {
-        return stringConfirmText;
+        return this.stringConfirmText;
     }
 
     public void setStringConfirmText(String stringConfirmText) {
@@ -81,6 +81,6 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
     }
 
     public Consumer<Boolean> getUpdateConsumer() {
-        return updateConsumer;
+        return this.updateConsumer;
     }
 }

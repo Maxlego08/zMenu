@@ -37,7 +37,7 @@ public class DataAdapter extends TypeAdapter<Data> {
             jsonWriter.nullValue();
             return;
         }
-        jsonWriter.value(getRaw(location));
+        jsonWriter.value(this.getRaw(location));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DataAdapter extends TypeAdapter<Data> {
             jsonReader.nextNull();
             return null;
         }
-        return fromRaw(jsonReader.nextString());
+        return this.fromRaw(jsonReader.nextString());
     }
 
     private String getRaw(Data data) {
@@ -56,7 +56,7 @@ public class DataAdapter extends TypeAdapter<Data> {
         serial.put(VALUE, data.getValue());
         serial.put(EXPIRED_AT, data.getExpiredAt());
 
-        return plugin.getGson().toJson(serial);
+        return this.plugin.getGson().toJson(serial);
     }
 
     private Data fromRaw(String raw) {

@@ -34,10 +34,10 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         if (componentSection == null) return null;
 
         double consumeSeconds = componentSection.getDouble("consume-seconds", 1.6f);
-        ConsumableComponent.Animation animation = parseAnimation(configuration.getString("animation", "EAT"));
-        Sound consumeSound = parseSound(configuration.getString("consume-sound", "ENTITY-GENERIC-EAT")).orElse(Sound.ENTITY_GENERIC_EAT);
+        ConsumableComponent.Animation animation = this.parseAnimation(configuration.getString("animation", "EAT"));
+        Sound consumeSound = this.parseSound(configuration.getString("consume-sound", "ENTITY-GENERIC-EAT")).orElse(Sound.ENTITY_GENERIC_EAT);
         boolean hasConsumeParticles = componentSection.getBoolean("has-consume-particles", true);
-        List<ConsumableEffect> effects = parseEffects(componentSection.getMapList("on-consume-effects"));
+        List<ConsumableEffect> effects = this.parseEffects(componentSection.getMapList("on-consume-effects"));
 
         return new fr.maxlego08.menu.api.itemstack.components.ConsumableComponent(
                 (float) consumeSeconds, animation, consumeSound, hasConsumeParticles, effects
@@ -57,22 +57,22 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         for (var rawEffect : onConsumeEffectsRaw) {
             @SuppressWarnings("unchecked")
             Map<String, Object> effectMap = (Map<String, Object>) rawEffect;
-            parseEffect(effectMap).ifPresent(effects::add);
+            this.parseEffect(effectMap).ifPresent(effects::add);
         }
         return effects;
     }
 
     private Optional<ConsumableEffect> parseEffect(Map<String, Object> effectMap) {
         try {
-            ConsumeEffectType type = parseConsumableType((String) effectMap.get("type"));
+            ConsumeEffectType type = this.parseConsumableType((String) effectMap.get("type"));
             if (type == null) return Optional.empty();
 
             return switch (type) {
-                case PLAY_SOUND -> parsePlaySound(effectMap);
-                case APPLY_EFFECTS -> parseApplyEffects(effectMap);
-                case TELEPORT_RANDOMLY -> parseTeleportRandomly(effectMap);
+                case PLAY_SOUND -> this.parsePlaySound(effectMap);
+                case APPLY_EFFECTS -> this.parseApplyEffects(effectMap);
+                case TELEPORT_RANDOMLY -> this.parseTeleportRandomly(effectMap);
                 case CLEAR_ALL_EFFECTS -> Optional.of(new ZConsumableClearEffects());
-                case REMOVE_EFFECTS -> parseRemoveEffects(effectMap);
+                case REMOVE_EFFECTS -> this.parseRemoveEffects(effectMap);
             };
         } catch (Exception ignored) {
             return Optional.empty();
@@ -84,7 +84,7 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         if (soundString == null) return Optional.empty();
 
         try {
-            NamespacedKey key = parseNamespacedKey(soundString);
+            NamespacedKey key = this.parseNamespacedKey(soundString);
             if (key == null) return Optional.empty();
             Sound sound = Registry.SOUNDS.getOrThrow(key);
             return Optional.of(new ZConsumablePlaySound(sound));
@@ -98,18 +98,18 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         List<Map<?, ?>> potionEffectsRaw = (List<Map<?, ?>>) effectMap.get("effects");
         if (potionEffectsRaw == null) return Optional.empty();
 
-        List<PotionEffect> potionEffects = parsePotionEffects(potionEffectsRaw);
-        float probability = parseFloat(effectMap, "probability", 1.0f);
+        List<PotionEffect> potionEffects = this.parsePotionEffects(potionEffectsRaw);
+        float probability = this.parseFloat(effectMap, "probability", 1.0f);
         return Optional.of(new ZConsumableApplyEffects(probability, potionEffects));
     }
 
     private Optional<ConsumableEffect> parseTeleportRandomly(Map<String, Object> effectMap) {
-        float diameter = parseFloat(effectMap, "diameter", 16.0f);
+        float diameter = this.parseFloat(effectMap, "diameter", 16.0f);
         return Optional.of(new ZConsumableTeleportRandomly(diameter));
     }
 
     private Optional<ConsumableEffect> parseRemoveEffects(Map<String, Object> effectMap) {
-        List<PotionEffectType> potionEffectTypes = parsePotionEffectTypes(effectMap.get("effects"));
+        List<PotionEffectType> potionEffectTypes = this.parsePotionEffectTypes(effectMap.get("effects"));
         return potionEffectTypes.isEmpty()
                 ? Optional.empty()
                 : Optional.of(new ZConsumableRemoveEffect(potionEffectTypes));

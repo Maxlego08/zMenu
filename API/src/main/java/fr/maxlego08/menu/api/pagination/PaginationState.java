@@ -16,7 +16,7 @@ public class PaginationState {
      * @return the current page (0-based index)
      */
     public int getCurrentPage() {
-        return currentPage;
+        return this.currentPage;
     }
 
     /**
@@ -46,7 +46,7 @@ public class PaginationState {
      * @return the maximum page
      */
     public int getMaxPage() {
-        return maxPage;
+        return this.maxPage;
     }
 
     /**
@@ -69,6 +69,6 @@ public class PaginationState {
 
     @Override
     public String toString() {
-        return String.format("PaginationState{currentPage=%d, maxPage=%d}", currentPage, maxPage);
+        return String.format("PaginationState{currentPage=%d, maxPage=%d}", this.currentPage, this.maxPage);
     }
 }

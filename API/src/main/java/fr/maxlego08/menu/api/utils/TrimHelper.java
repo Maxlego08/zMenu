@@ -17,43 +17,43 @@ public class TrimHelper {
 
     public TrimHelper() {
 
-        trimMaterials.put("quartz", TrimMaterial.QUARTZ);
-        trimMaterials.put("iron", TrimMaterial.IRON);
-        trimMaterials.put("netherite", TrimMaterial.NETHERITE);
-        trimMaterials.put("redstone", TrimMaterial.REDSTONE);
-        trimMaterials.put("copper", TrimMaterial.COPPER);
-        trimMaterials.put("gold", TrimMaterial.GOLD);
-        trimMaterials.put("emerald", TrimMaterial.EMERALD);
-        trimMaterials.put("diamond", TrimMaterial.DIAMOND);
-        trimMaterials.put("lapis", TrimMaterial.LAPIS);
-        trimMaterials.put("amethyst", TrimMaterial.AMETHYST);
-        trimMaterials.put("resin", TrimMaterial.RESIN);
+        this.trimMaterials.put("quartz", TrimMaterial.QUARTZ);
+        this.trimMaterials.put("iron", TrimMaterial.IRON);
+        this.trimMaterials.put("netherite", TrimMaterial.NETHERITE);
+        this.trimMaterials.put("redstone", TrimMaterial.REDSTONE);
+        this.trimMaterials.put("copper", TrimMaterial.COPPER);
+        this.trimMaterials.put("gold", TrimMaterial.GOLD);
+        this.trimMaterials.put("emerald", TrimMaterial.EMERALD);
+        this.trimMaterials.put("diamond", TrimMaterial.DIAMOND);
+        this.trimMaterials.put("lapis", TrimMaterial.LAPIS);
+        this.trimMaterials.put("amethyst", TrimMaterial.AMETHYST);
+        this.trimMaterials.put("resin", TrimMaterial.RESIN);
 
-        trimPatterns.put("sentry", TrimPattern.SENTRY);
-        trimPatterns.put("dune", TrimPattern.DUNE);
-        trimPatterns.put("coast", TrimPattern.COAST);
-        trimPatterns.put("wild", TrimPattern.WILD);
-        trimPatterns.put("ward", TrimPattern.WARD);
-        trimPatterns.put("eye", TrimPattern.EYE);
-        trimPatterns.put("vex", TrimPattern.VEX);
-        trimPatterns.put("tide", TrimPattern.TIDE);
-        trimPatterns.put("snout", TrimPattern.SNOUT);
-        trimPatterns.put("rib", TrimPattern.RIB);
-        trimPatterns.put("spire", TrimPattern.SPIRE);
-        trimPatterns.put("wayfinder", TrimPattern.WAYFINDER);
-        trimPatterns.put("shaper", TrimPattern.SHAPER);
-        trimPatterns.put("silence", TrimPattern.SILENCE);
-        trimPatterns.put("raiser", TrimPattern.RAISER);
-        trimPatterns.put("host", TrimPattern.HOST);
+        this.trimPatterns.put("sentry", TrimPattern.SENTRY);
+        this.trimPatterns.put("dune", TrimPattern.DUNE);
+        this.trimPatterns.put("coast", TrimPattern.COAST);
+        this.trimPatterns.put("wild", TrimPattern.WILD);
+        this.trimPatterns.put("ward", TrimPattern.WARD);
+        this.trimPatterns.put("eye", TrimPattern.EYE);
+        this.trimPatterns.put("vex", TrimPattern.VEX);
+        this.trimPatterns.put("tide", TrimPattern.TIDE);
+        this.trimPatterns.put("snout", TrimPattern.SNOUT);
+        this.trimPatterns.put("rib", TrimPattern.RIB);
+        this.trimPatterns.put("spire", TrimPattern.SPIRE);
+        this.trimPatterns.put("wayfinder", TrimPattern.WAYFINDER);
+        this.trimPatterns.put("shaper", TrimPattern.SHAPER);
+        this.trimPatterns.put("silence", TrimPattern.SILENCE);
+        this.trimPatterns.put("raiser", TrimPattern.RAISER);
+        this.trimPatterns.put("host", TrimPattern.HOST);
     }
 
     @NotNull
     public Map<String, TrimMaterial> getTrimMaterials() {
-        return trimMaterials;
+        return this.trimMaterials;
     }
 
     @NotNull
     public Map<String, TrimPattern> getTrimPatterns() {
-        return trimPatterns;
+        return this.trimPatterns;
     }
 }

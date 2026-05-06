@@ -23,7 +23,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
 
     public ZPermissionPermissible(String permission, List<Action> denyActions, List<Action> successActions) {
         super(denyActions, successActions);
-        String[] processedPermission = processPermission(permission);
+        String[] processedPermission = this.processPermission(permission);
         this.permission = processedPermission[0];
         this.isReverse = Boolean.parseBoolean(processedPermission[1]);
     }
@@ -35,7 +35,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
      */
     public ZPermissionPermissible(String permission) {
         super(new ArrayList<>(), new ArrayList<>());
-        String[] processedPermission = processPermission(permission);
+        String[] processedPermission = this.processPermission(permission);
         this.permission = processedPermission[0];
         this.isReverse = Boolean.parseBoolean(processedPermission[1]);
     }

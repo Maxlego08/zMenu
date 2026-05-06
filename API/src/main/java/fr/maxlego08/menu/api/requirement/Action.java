@@ -43,22 +43,21 @@ public abstract class Action {
 
     public void preExecute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         placeholders.register("player", player.getName());
-        if (chance < 100 && Math.random() > (chance / 100.0f)) {
-            for (Action denyChanceAction : denyChanceActions) {
+        if (this.chance < 100 && Math.random() > (this.chance / 100.0f)) {
+            for (Action denyChanceAction : this.denyChanceActions) {
                 denyChanceAction.preExecute(player, button, inventoryEngine, placeholders);
             }
             return;
         }
-        ;
-        if (delay == 0) execute(player, button, inventoryEngine, placeholders);
+        if (this.delay == 0) this.execute(player, button, inventoryEngine, placeholders);
         else {
-            inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> execute(player, button, inventoryEngine, placeholders), this.delay);
+            inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> this.execute(player, button, inventoryEngine, placeholders), this.delay);
         }
     }
 
     @Contract(pure= true)
     public int getDelay() {
-        return delay;
+        return this.delay;
     }
 
     public void setDelay(int delay) {
@@ -67,7 +66,7 @@ public abstract class Action {
 
     @Contract(pure= true)
     public float getChance() {
-        return chance;
+        return this.chance;
     }
 
     public void setChance(float chance) {
@@ -77,7 +76,6 @@ public abstract class Action {
             }
             chance = 100;
         }
-        ;
         this.chance = chance;
     }
 
@@ -89,7 +87,7 @@ public abstract class Action {
     @Contract(pure= true)
     @NotNull
     public List<Action> getDenyChanceActions() {
-        return denyChanceActions;
+        return this.denyChanceActions;
     }
 
     /**

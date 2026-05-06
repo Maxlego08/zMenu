@@ -23,7 +23,7 @@ public class ZItemsLoader extends MaterialLoader {
 
     @Override
     public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
-        RegisteredServiceProvider<ItemManager> itemManagerRegisteredServiceProvider = plugin.getServer().getServicesManager().getRegistration(ItemManager.class);
+        RegisteredServiceProvider<ItemManager> itemManagerRegisteredServiceProvider = this.plugin.getServer().getServicesManager().getRegistration(ItemManager.class);
         if (itemManagerRegisteredServiceProvider == null) return null;
         ItemManager itemManager = itemManagerRegisteredServiceProvider.getProvider();
         Optional<Item> optional = itemManager.getItem(materialString);

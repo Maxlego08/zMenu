@@ -21,6 +21,6 @@ public class PacketEventChangeTitleName extends ActionHelper {
 
     @Override
     protected void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
-        this.packetManager.editInventoryTitleName(player, papi(placeholders.parse(this.newInventoryName), player));
+        this.packetManager.editInventoryTitleName(player, this.papi(placeholders.parse(this.newInventoryName), player));
     }
 }

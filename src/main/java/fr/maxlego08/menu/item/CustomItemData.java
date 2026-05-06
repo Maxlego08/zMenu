@@ -20,7 +20,7 @@ public record CustomItemData(MenuItemStack menuItemStack, Set<String> mechanicId
      * @return true if the mechanic is implemented for this item
      */
     public boolean hasMechanic(String mechanicId) {
-        return mechanicIds.contains(mechanicId);
+        return this.mechanicIds.contains(mechanicId);
     }
 
     /**
@@ -29,7 +29,7 @@ public record CustomItemData(MenuItemStack menuItemStack, Set<String> mechanicId
      * @return true if at least one mechanic is implemented
      */
     public boolean hasMechanics() {
-        return !mechanicIds.isEmpty();
+        return !this.mechanicIds.isEmpty();
     }
 }
 

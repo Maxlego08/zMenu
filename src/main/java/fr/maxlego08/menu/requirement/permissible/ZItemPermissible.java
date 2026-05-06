@@ -38,7 +38,7 @@ public class ZItemPermissible extends ItemPermissible {
 
         PlayerInventory inventory = player.getInventory();
         int items = 0;
-        ItemStack itemStack = menuItemStack.build(player, false, placeholders);
+        ItemStack itemStack = this.menuItemStack.build(player, false, placeholders);
 
         for (int slot = 0; slot != 36; slot++) {
             ItemStack currentItemStack = inventory.getContents()[slot];

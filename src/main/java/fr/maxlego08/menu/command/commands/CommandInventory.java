@@ -7,12 +7,17 @@ import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.command.validators.OnlinePlayerArgumentValidator;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class CommandInventory extends VCommand {
@@ -29,7 +34,7 @@ public class CommandInventory extends VCommand {
 
         this.setPermission(command.permission());
         this.setDenyMessage(command.denyMessage());
-        this.setConsoleCanUse(false);
+        this.setConsoleCanUse(true);
 
         if (isSubCommands) {
             this.addSubCommand(command.command());
@@ -66,13 +71,16 @@ public class CommandInventory extends VCommand {
 
         String inventoryName = this.command.inventory();
         InventoryManager manager = plugin.getInventoryManager();
-        Optional<Inventory> optional = getInventoryByName(inventoryName);
+        Optional<Inventory> optional = this.getInventoryByName(inventoryName);
         CommandArgument lastArgument = null;
         Placeholders placeholders = new Placeholders();
+        Map<String, String> playerArguments = new HashMap<>();
+        Player targetPlayer = null;
+        if (this.sender instanceof Player) {
+            targetPlayer = this.player;
+        }
 
         if (this.command.hasArgument()) {
-
-            CommandManager commandManager = plugin.getCommandManager();
 
             List<CommandArgument> arguments = this.command.arguments();
             for (int index = 0; index < arguments.size(); index++) {
@@ -101,7 +109,7 @@ public class CommandInventory extends VCommand {
 
                 Optional<String> optionalInventory = argument.getInventory();
                 if (optionalInventory.isPresent()) {
-                    optional = getInventoryByName(optionalInventory.get());
+                    optional = this.getInventoryByName(optionalInventory.get());
                 }
 
                 if (value.isEmpty() && !argument.isRequired()) {
@@ -113,16 +121,33 @@ public class CommandInventory extends VCommand {
 
                     if (validatorOptional.isPresent()) {
                         CommandArgumentValidator validator = validatorOptional.get();
+                        if (targetPlayer == null && validator instanceof OnlinePlayerArgumentValidator){
+                            targetPlayer = plugin.getServer().getPlayerExact(value.toString());
+                        }
+
                         if (!validator.isValid(result)) {
-                            message(this.plugin, sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
+                            this.message(this.plugin, this.sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
                             return CommandType.DEFAULT;
                         }
                     }
 
                     placeholders.register(argument.getArgument(), result);
-                    commandManager.setPlayerArgument(this.player, argument.getArgument(), value.toString());
+                    playerArguments.put(argument.getArgument(), value.toString());
                 }
             }
+        }
+
+        if (targetPlayer == null){
+            this.message(this.plugin, this.sender, Message.COMMAND_NO_CONSOLE);
+            return CommandType.DEFAULT;
+        }
+        Player finalTargetPlayer = targetPlayer;
+
+        if (!playerArguments.isEmpty()){
+            CommandManager commandManager = plugin.getCommandManager();
+            playerArguments.forEach((argument, value) ->
+                    commandManager.setPlayerArgument(finalTargetPlayer, argument, value)
+            );
         }
 
         boolean performMainActions = lastArgument == null || lastArgument.isPerformMainActions();
@@ -131,12 +156,12 @@ public class CommandInventory extends VCommand {
         inventoryDefault.setPlugin(plugin);
 
         if (lastArgument != null) {
-            lastArgument.getActions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+            lastArgument.getActions().forEach(action -> action.preExecute(finalTargetPlayer, null, inventoryDefault, placeholders));
         }
 
         if (performMainActions) {
-            this.command.actions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
-            optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
+            this.command.actions().forEach(action -> action.preExecute(finalTargetPlayer, null, inventoryDefault, placeholders));
+            optional.ifPresent(inventory -> manager.openInventory(finalTargetPlayer, inventory));
         }
 
         return CommandType.SUCCESS;

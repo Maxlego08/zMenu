@@ -7,7 +7,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * Value object for encapsulating all data needed for an attribute modifier on an item: the attribute, operation, amount, and slot.
  * Provides deserialization and conversion to Bukkit AttributeModifier.
  */
-public record AttributeWrapper(Attribute attribute, AttributeModifier.Operation operation, double amount, EquipmentSlotGroup slot, @Nullable NamespacedKey namespacedKey) {
+public record AttributeWrapper(@NotNull Attribute attribute,@NotNull AttributeModifier.Operation operation, double amount,@NotNull EquipmentSlotGroup slot, @Nullable NamespacedKey namespacedKey) {
 
     AttributeWrapper(Attribute attribute, AttributeModifier.Operation operation, double amount, EquipmentSlotGroup slot) {
         this(attribute, operation, amount, slot, null);
@@ -35,6 +35,6 @@ public record AttributeWrapper(Attribute attribute, AttributeModifier.Operation 
     }
 
     public AttributeModifier toAttributeModifier(MenuPlugin plugin) {
-        return new AttributeModifier(Objects.requireNonNullElseGet(this.namespacedKey, () -> new NamespacedKey(plugin, UUID.randomUUID().toString())), amount, operation, slot);
+        return new AttributeModifier(Objects.requireNonNullElseGet(this.namespacedKey, () -> new NamespacedKey(plugin, UUID.randomUUID().toString())), this.amount, this.operation, this.slot);
     }
 }

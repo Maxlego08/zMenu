@@ -7,12 +7,7 @@ import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class ZPlayerData implements PlayerData {
 
@@ -39,7 +34,7 @@ public class ZPlayerData implements PlayerData {
     @Override
     public void addData(@NonNull Data data) {
         this.datas.put(data.getKey(), data);
-        this.storageManager.upsertData(uniqueId, data);
+        this.storageManager.upsertData(this.uniqueId, data);
     }
 
     @Override
@@ -50,7 +45,7 @@ public class ZPlayerData implements PlayerData {
     @Override
     public void removeData(@NonNull String key) {
         this.datas.remove(key);
-        this.storageManager.removeData(uniqueId, key);
+        this.storageManager.removeData(this.uniqueId, key);
     }
 
     @Override
@@ -68,7 +63,7 @@ public class ZPlayerData implements PlayerData {
     private void clearExpiredData() {
         this.datas.values().removeIf(key -> {
             if (key.isExpired()) {
-                this.storageManager.removeData(uniqueId, key.getKey());
+                this.storageManager.removeData(this.uniqueId, key.getKey());
                 return true;
             }
             return false;

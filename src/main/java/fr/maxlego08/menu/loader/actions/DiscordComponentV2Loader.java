@@ -31,7 +31,7 @@ public class DiscordComponentV2Loader extends ActionLoader {
         String avatarUrl = accessor.getString("avatar_url", null);
         String username = accessor.getString("username", null);
         List<?> json = accessor.getList("component");
-        if (checkWebhookExists(webhookUrl)) {
+        if (this.checkWebhookExists(webhookUrl)) {
             DiscordConfigurationComponent config = new DiscordConfigurationComponent(webhookUrl, avatarUrl, username, json);
             return new DiscordComponentAction(config);
         } else {

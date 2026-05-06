@@ -25,7 +25,7 @@ public class CustomModelDataComponent extends ItemComponent {
     }
 
     public @NotNull List<@NotNull Color> getColors() {
-        return colors;
+        return this.colors;
     }
 
     public @NotNull List<@NotNull Boolean> getFlags() {

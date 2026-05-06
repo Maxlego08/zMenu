@@ -22,7 +22,7 @@ public class SpigotRecipesItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         List<String> rawRecipes = configuration.getStringList(path);
         List<NamespacedKey> recipes = new ArrayList<>();
         for (String rawRecipe : rawRecipes){

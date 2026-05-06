@@ -55,14 +55,14 @@ public class PaperVariantItemComponentLoader extends SpigotVariantItemComponentL
 
         @Override
         public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
             NamespacedKey key = NamespacedKey.fromString(value);
             if (key == null) return null;
             try {
                 T registryValue = RegistryAccess.registryAccess().getRegistry(this.registryKey).getOrThrow(key);
-                return componentFactory.apply(registryValue);
+                return this.componentFactory.apply(registryValue);
             } catch (IllegalArgumentException e) {
                 return null;
             }
@@ -71,19 +71,19 @@ public class PaperVariantItemComponentLoader extends SpigotVariantItemComponentL
 
     public class Chicken extends PaperRegistryVariantLoader<org.bukkit.entity.Chicken.Variant> {
         public Chicken() {
-            super("chicken/variant", RegistryKey.CHICKEN_VARIANT, variantFactory::createChicken);
+            super("chicken/variant", RegistryKey.CHICKEN_VARIANT, PaperVariantItemComponentLoader.this.variantFactory::createChicken);
         }
     }
 
     public class Cow extends PaperRegistryVariantLoader<org.bukkit.entity.Cow.Variant> {
         public Cow() {
-            super("cow/variant", RegistryKey.COW_VARIANT, variantFactory::createCow);
+            super("cow/variant", RegistryKey.COW_VARIANT, PaperVariantItemComponentLoader.this.variantFactory::createCow);
         }
     }
 
     public class Pig extends PaperRegistryVariantLoader<org.bukkit.entity.Pig.Variant> {
         public Pig() {
-            super("pig/variant", RegistryKey.PIG_VARIANT, variantFactory::createPig);
+            super("pig/variant", RegistryKey.PIG_VARIANT, PaperVariantItemComponentLoader.this.variantFactory::createPig);
         }
     }
 }

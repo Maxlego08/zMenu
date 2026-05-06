@@ -27,7 +27,7 @@ public class ZCurrencyPermissible extends CurrencyPermissible {
 
     @Override
     public String getAmount() {
-        return amount;
+        return this.amount;
     }
 
     @Override

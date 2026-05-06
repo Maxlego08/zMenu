@@ -75,7 +75,7 @@ public interface PaginationManager {
      * @return true if a state exists
      */
     default boolean hasState(@NotNull UUID playerId, @NotNull String contextId) {
-        return getState(playerId, contextId) != null;
+        return this.getState(playerId, contextId) != null;
     }
 
     /**

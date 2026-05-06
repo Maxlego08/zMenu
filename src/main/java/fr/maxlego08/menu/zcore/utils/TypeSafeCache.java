@@ -17,28 +17,28 @@ public class TypeSafeCache {
     // Ajoute un objet à la cache
     public void add(Object object) {
         Class<?> type = object.getClass();
-        cache.computeIfAbsent(type, k -> new ArrayList<>()).add(object);
+        this.cache.computeIfAbsent(type, k -> new ArrayList<>()).add(object);
     }
 
     // Récupère tous les objets d'un type donné
     public @NotNull <T> List<T> get(Class<T> type) {
-        return (List<T>) cache.getOrDefault(type, new ArrayList<>());
+        return (List<T>) this.cache.getOrDefault(type, new ArrayList<>());
     }
 
     // Efface tous les objets d'un type donné
     public void clear(Class<?> type) {
-        cache.put(type, new ArrayList<>());
+        this.cache.put(type, new ArrayList<>());
     }
 
     // Efface tous les objets de la cache
     public void clearAll() {
-        cache.clear();
+        this.cache.clear();
     }
 
     // Supprime un objet spécifique de la cache
     public boolean remove(Object object) {
         Class<?> type = object.getClass();
-        List<Object> list = cache.get(type);
+        List<Object> list = this.cache.get(type);
         if (list != null) {
             return list.remove(object);
         }

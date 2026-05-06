@@ -27,10 +27,10 @@ public class SpigotLoreItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         Object o = configuration.get(path);
         if (o instanceof String str) {
-            return getItemComponent(List.of(str));
+            return this.getItemComponent(List.of(str));
         } else if (o instanceof List<?> list) {
             List<String> loreLines = new ArrayList<>();
             for (Object line : list) {
@@ -38,13 +38,13 @@ public class SpigotLoreItemComponentLoader extends ItemComponentLoader {
                     loreLines.add(s);
                 }
             }
-            return getItemComponent(loreLines);
+            return this.getItemComponent(loreLines);
         }
         return null;
     }
 
     private ItemComponent getItemComponent(@NotNull List<@NotNull String> lore){
-        if (metaUpdater instanceof PaperMetaUpdater paperMetaUpdater)
+        if (this.metaUpdater instanceof PaperMetaUpdater paperMetaUpdater)
             return new PaperLoreComponent(lore, paperMetaUpdater);
         return new LoreComponent(lore);
     }

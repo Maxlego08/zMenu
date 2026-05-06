@@ -15,7 +15,7 @@ public class OnlinePlayerArgumentValidator implements CommandArgumentValidator {
     @Override
     public boolean isValid(String value) {
         if (value.equalsIgnoreCase("%player%")) return true;
-        return plugin.getServer().getPlayerExact(value) != null;
+        return this.plugin.getServer().getPlayerExact(value) != null;
     }
 
     @Override

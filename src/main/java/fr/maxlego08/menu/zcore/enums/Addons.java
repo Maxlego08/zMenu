@@ -33,17 +33,17 @@ public enum Addons {
     }
 
     public String getPluginName() {
-        return pluginName;
+        return this.pluginName;
     }
 
     public String getAuthorName() {
-        return authorName;
+        return this.authorName;
     }
 
     public String getUrl() {
-        return url;
+        return this.url;
     }
     public String getPrice() {
-        return price;
+        return this.price;
     }
 }

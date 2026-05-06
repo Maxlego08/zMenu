@@ -39,8 +39,8 @@ public abstract class ConfigurationChecker extends ZUtils {
         List<Map<String, Object>> requirements = (List<Map<String, Object>>) configuration.getList(path + "requirements", configuration.getList(path + "requirement", new ArrayList<>()));
 
         this.buttonManager.getEmptyPermissible(requirements).forEach(name -> inventoryLoadRequirement.addRequirement(InventoryRequirementType.PERMISSIBLE, name));
-        checkAction(configuration, path + "success", inventoryLoadRequirement);
-        checkAction(configuration, path + "deny", inventoryLoadRequirement);
+        this.checkAction(configuration, path + "success", inventoryLoadRequirement);
+        this.checkAction(configuration, path + "deny", inventoryLoadRequirement);
     }
 
     /**

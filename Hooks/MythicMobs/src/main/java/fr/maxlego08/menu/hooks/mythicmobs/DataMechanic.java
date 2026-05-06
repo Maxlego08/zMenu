@@ -53,35 +53,35 @@ public class DataMechanic implements ITargetedEntitySkill {
         if (player instanceof Player) {
             switch (this.actionPlayerDataType){
                 case REMOVE -> {
-                    Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
+                    Optional<PlayerData> optional = this.dataManager.getPlayer(player.getUniqueId());
                     optional.ifPresent(data -> data.removeData(this.key.get(abstractEntity)));
                 }
                 case ADD -> {
-                    Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.key.get(abstractEntity));
+                    Optional<Data> optional = this.dataManager.getData(player.getUniqueId(), this.key.get(abstractEntity));
                     if (optional.isPresent()) {
                         Data data = optional.get();
                         String result = this.value.get(abstractEntity);
                         data.add(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
-                        storageManager.upsertData(player.getUniqueId(), data);
+                        this.storageManager.upsertData(player.getUniqueId(), data);
                     } else {
-                        dataManager.addData(player.getUniqueId(), this.toData(abstractEntity));
+                        this.dataManager.addData(player.getUniqueId(), this.toData(abstractEntity));
                     }
                 }
                 case SUBTRACT -> {
-                    Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.key.get(abstractEntity));
+                    Optional<Data> optional = this.dataManager.getData(player.getUniqueId(), this.key.get(abstractEntity));
                     if (optional.isPresent()) {
                         Data data = optional.get();
                         String result = this.value.get(abstractEntity);
                         data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
-                        storageManager.upsertData(player.getUniqueId(), data);
+                        this.storageManager.upsertData(player.getUniqueId(), data);
                     } else {
                         var data = this.toData(abstractEntity);
                         data.negate();
-                        dataManager.addData(player.getUniqueId(), data);
+                        this.dataManager.addData(player.getUniqueId(), data);
                     }
                 }
                 case SET -> {
-                    dataManager.addData(player.getUniqueId(), this.toData(abstractEntity));
+                    this.dataManager.addData(player.getUniqueId(), this.toData(abstractEntity));
                 }
             }
 

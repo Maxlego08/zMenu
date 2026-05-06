@@ -38,7 +38,7 @@ public class CommandMenuReloadCommand extends VCommand {
             Optional<Command> optional = commandManager.getCommand(commandName);
 
             if (optional.isEmpty()) {
-                message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_COMMAND, "%name%", commandName);
+                this.message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_COMMAND, "%name%", commandName);
                 return CommandType.DEFAULT;
             }
 
@@ -50,7 +50,7 @@ public class CommandMenuReloadCommand extends VCommand {
 
             Message message = commandManager.reload(command) ? Message.RELOAD_COMMAND_FILE
                     : Message.RELOAD_COMMAND_ERROR;
-            message(plugin, this.sender, message, "%name%", commandName);
+            this.message(plugin, this.sender, message, "%name%", commandName);
 
             return CommandType.SUCCESS;
         }
@@ -59,7 +59,7 @@ public class CommandMenuReloadCommand extends VCommand {
 
         commandManager.loadCommands();
 
-        message(plugin, this.sender, Message.RELOAD_COMMAND);
+        this.message(plugin, this.sender, Message.RELOAD_COMMAND);
 
         return CommandType.SUCCESS;
     }
