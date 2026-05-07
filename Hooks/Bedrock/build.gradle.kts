@@ -1,7 +1,8 @@
 group = "Hooks:Bedrock"
 
 repositories {
-    maven("https://repo.opencollab.dev/main/")
+    maven("https://repo.opencollab.dev/maven-releases")
+    maven("https://repo.opencollab.dev/maven-snapshots")
 }
 
 dependencies {
