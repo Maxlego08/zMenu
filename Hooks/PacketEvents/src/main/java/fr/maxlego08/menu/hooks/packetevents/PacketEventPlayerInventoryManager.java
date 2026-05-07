@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.packetevents;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetPlayerInventory;
 import fr.maxlego08.menu.api.InventoryListener;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
@@ -20,9 +21,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class PacketEventPlayerInventoryManager implements InventoryListener {
+    private final MenuPlugin plugin;
     private final Map<UUID, Map<Integer,WrapperPlayServerSetPlayerInventory>> pendingInventoryUpdates = new HashMap<>();
 
-    public PacketEventPlayerInventoryManager() {
+    public PacketEventPlayerInventoryManager(MenuPlugin plugin) {
+        this.plugin = plugin;
         ClearInvType packetEvent = ClearInvType.PACKET_EVENT;
         packetEvent.setOnButtonClear((player, slot)->this.addItemInstantly(player,slot,new ItemStack(Material.AIR)));
         packetEvent.setOnInventoryClose(((inventoriesPlayer, player) -> {
@@ -56,11 +59,15 @@ public class PacketEventPlayerInventoryManager implements InventoryListener {
     public void onInventoryPostOpen(Player player, BaseInventory baseInventory){
         UUID playerUniqueId = player.getUniqueId();
         if (this.pendingInventoryUpdates.containsKey(playerUniqueId)) {
-            Map<Integer,WrapperPlayServerSetPlayerInventory> wrappers = this.pendingInventoryUpdates.get(playerUniqueId);
-            for (WrapperPlayServerSetPlayerInventory wrapper : wrappers.values()) {
-                PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
-            }
-            this.pendingInventoryUpdates.remove(playerUniqueId);
+            this.plugin.getScheduler().runAtEntityLater(player, () -> {
+                Map<Integer,WrapperPlayServerSetPlayerInventory> wrappers = this.pendingInventoryUpdates.get(playerUniqueId);
+                if (wrappers != null) {
+                    for (WrapperPlayServerSetPlayerInventory wrapper : wrappers.values()) {
+                        PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
+                    }
+                    this.pendingInventoryUpdates.remove(playerUniqueId);
+                }
+            }, 1);
         }
     }
 

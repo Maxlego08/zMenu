@@ -268,7 +268,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
         if (isActive(Plugins.PACKETEVENTS))
-            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager());
+            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
 
         this.postEnable();
     }

@@ -235,7 +235,7 @@ public class ZInventory extends ZUtils implements Inventory {
                 if (this.clearInvType == ClearInvType.DEFAULT){
                     inventoriesPlayer.storeInventory(player);
                 } else {
-                    inventoriesPlayer.storeInventoryTemporary(player);
+                    inventoriesPlayer.storeInventoryTemporaryOrClear(player);
                 }
             }
         } else if (this.clearInventory) {

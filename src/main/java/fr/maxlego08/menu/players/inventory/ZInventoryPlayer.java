@@ -31,23 +31,38 @@ public class ZInventoryPlayer implements InventoryPlayer {
     }
 
     public void storeInventory(@NonNull Player player, boolean temporary) {
+        ClearInvType clearInvType = temporary ? ClearInvType.PACKET_EVENT : ClearInvType.DEFAULT;
+
         this.temporary = temporary;
         PlayerInventory playerInventory = player.getInventory();
         ItemStack[] content = playerInventory.getContents();
         for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
-            clear(slot, playerInventory, content,!temporary, player);
+            clear(slot, playerInventory, content, player, true, clearInvType);
         }
         if (!NMSUtils.isOneHand()) {
-            clear(40, playerInventory, content,!temporary, player);
+            clear(40, playerInventory, content, player, true, clearInvType);
         }
     }
 
-    private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content, boolean removeItem, Player player) {
+    @Override
+    public void clearInventory(@NonNull Player player) {
+        ClearInvType clearInvType = ClearInvType.PACKET_EVENT;
+        var removeItem = clearInvType.getRemoveItem();
+
+        PlayerInventory playerInventory = player.getInventory();
+        for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
+            removeItem.accept(player, slot, playerInventory);
+        }
+        if (!NMSUtils.isOneHand()) {
+            removeItem.accept(player, 40, playerInventory);
+        }
+    }
+
+    private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content, Player player, boolean save, ClearInvType clearInvType) {
         ItemStack itemStack = content[slot];
-        if (itemStack != null) {
+        if (itemStack != null && save) {
             items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
         }
-        ClearInvType clearInvType = removeItem ? ClearInvType.DEFAULT : ClearInvType.PACKET_EVENT;
         clearInvType.getRemoveItem().accept(player, slot, playerInventory);
     }
 

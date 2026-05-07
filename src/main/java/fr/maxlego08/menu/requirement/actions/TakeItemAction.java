@@ -6,7 +6,6 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -49,7 +48,6 @@ public class TakeItemAction extends Action {
 
             ItemStack current = inventory.getItem(slot);
             if (current == null) continue;
-            Logger.info("Current item :" + current);
 
             if (!matches(current, targetItem)) continue;
 
