@@ -44,11 +44,36 @@
 
 ## Bug Fixes
 
-- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`. Items are now physically cleared from the player inventory during storage, ensuring container content packets don't reveal hidden items. The close handler also uses physical restoration (`giveInventory`) instead of packet-based restoration.
+- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`.
 
 ## Changes
 
+- **Take Item Action**: New `take-item` action to remove a specified amount of an item from the player's inventory.
+```yaml
+- type: take-item
+  item:
+    material: DIAMOND
+  amount: 5
+```
+- **Custom Commands**: Add a new field `actions-requirements` for custom commands, allowing you to specify requirements that must be met for the command's actions to execute. This provides more control over argument conditions and enhances command functionality.
 - **Time Placeholders**: Changed `time_unix_timestamp`, `time_next_day_unix_timestamp`, and `time_today_start_unix_timestamp` placeholders to return values in seconds instead of milliseconds.
+- **Pagination Button**: Now supports `view-requirement`.
+
+**Bedrock Forms Support**: 
+
+TODO
+
+**Internal Changes**
+
+- New Minecraft version detection system `MinecraftVersion` over old `NMSVersion` enum, allowing more flexible version checks and better support for future Minecraft versions without needing to update the plugin.
+- New utils annotations 
+  - `@SinceVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.
+  - `@UntilVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.
+  - `@PaperOnly` | These annotations can be used to mark classes that should only be loaded if the server is a Paper version, check in the `VersionFilter` class for more details.
+  - `@SpigotOnly` | These annotations can be used to mark classes that should only be loaded if the server is a spigot version, check in the `VersionFilter` class for more details.
+  - `@ComponentLoader` | Allow to load dynamically all items component loader without having to register them one by one in the `ZComponentManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
+  - `@AutoListener`  | Allow to load dynamically all listeners who take a `MenuPlugin` in their constructor or no-arg constructor without having to register them one by one in the `ZListenerManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
+
 
 # 1.1.1.3
 
