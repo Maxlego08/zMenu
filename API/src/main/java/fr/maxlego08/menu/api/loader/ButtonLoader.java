@@ -98,5 +98,5 @@ public abstract class ButtonLoader {
      * @return The loaded button.
      */
     @Nullable
-    public abstract Button load(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull DefaultButtonValue defaultButtonValue);
+    public abstract Button load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue);
 }

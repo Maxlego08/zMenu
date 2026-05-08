@@ -20,22 +20,22 @@ import java.util.List;
 public class ClassicMeta extends ZUtils implements MetaUpdater {
     @Override
     public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, Player player) {
-        itemMeta.setDisplayName(color(text));
+        itemMeta.setDisplayName(this.color(text));
     }
 
     @Override
     public void updateDisplayName(@NonNull ItemMeta itemMeta, String text, OfflinePlayer offlineplayer) {
-        itemMeta.setDisplayName(color(text));
+        itemMeta.setDisplayName(this.color(text));
     }
 
     @Override
     public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, Player player) {
-        updateLore(itemMeta, lore, LoreType.PREPEND);
+        this.updateLore(itemMeta, lore, LoreType.PREPEND);
     }
 
     @Override
     public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @NonNull OfflinePlayer offlineplayer) {
-        updateLore(itemMeta, lore, LoreType.PREPEND);
+        this.updateLore(itemMeta, lore, LoreType.PREPEND);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
             newLore.addAll(itemMeta.getLore());
             newLore.addAll(lore);
         } else {
-            newLore.addAll(color(lore));
+            newLore.addAll(this.color(lore));
         }
 
         itemMeta.setLore(newLore);
@@ -58,22 +58,22 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public @NonNull Inventory createInventory(@NonNull String inventoryName, int size, InventoryHolder inventoryHolder) {
-        return Bukkit.createInventory(inventoryHolder, size, color(inventoryName));
+        return Bukkit.createInventory(inventoryHolder, size, this.color(inventoryName));
     }
 
     @Override
     public @NonNull Inventory createInventory(@NonNull String inventoryName, @NonNull InventoryType inventoryType, InventoryHolder inventoryHolder) {
-        return Bukkit.createInventory(inventoryHolder, inventoryType, color(inventoryName));
+        return Bukkit.createInventory(inventoryHolder, inventoryType, this.color(inventoryName));
     }
 
     @Override
     public void sendTitle(@NonNull Player player, String title, @NonNull String subtitle, long start, long duration, long end) {
-        player.sendTitle(color(papi(title, player, true)), color(papi(subtitle, player, true)), (int) start, (int) duration, (int) end);
+        player.sendTitle(this.color(this.papi(title, player, true)), this.color(this.papi(subtitle, player, true)), (int) start, (int) duration, (int) end);
     }
 
     @Override
     public void sendMessage(@NonNull CommandSender sender, @NonNull String message) {
-        sender.sendMessage(color(message));
+        sender.sendMessage(this.color(message));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public String getLegacyMessage(String message) {
-        return color(message);
+        return this.color(message);
     }
 
     @Override

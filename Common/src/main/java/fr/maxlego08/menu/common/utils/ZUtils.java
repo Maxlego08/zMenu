@@ -147,7 +147,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected void give(Player player, ItemStack item) {
-        if (hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
+        if (this.hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
         else player.getInventory().addItem(item);
     }
 
@@ -190,7 +190,7 @@ public abstract class ZUtils extends MessageUtils {
      * @return the formatted number as a String
      */
     protected String format(double decimal) {
-        return format(decimal, "#.##");
+        return this.format(decimal, "#.##");
     }
 
     /**
@@ -312,7 +312,7 @@ public abstract class ZUtils extends MessageUtils {
             @Override
             public void run() {
                 if (!plugin.isEnabled()) {
-                    cancel();
+                    this.cancel();
                     consumer.accept(this, false);
                     return;
                 }
@@ -411,7 +411,7 @@ public abstract class ZUtils extends MessageUtils {
     }
 
     protected String format(long l) {
-        return format(l, ' ');
+        return this.format(l, ' ');
     }
 
     protected String format(long l, char c) {
@@ -435,7 +435,7 @@ public abstract class ZUtils extends MessageUtils {
 
         if (url == null) return null;
 
-        ItemStack head = playerHead();
+        ItemStack head = this.playerHead();
         if (url.isEmpty()) return head;
 
         this.applyTextureUrl(head, url);
@@ -461,10 +461,10 @@ public abstract class ZUtils extends MessageUtils {
 
     protected void unRegisterBukkitCommand(Plugin plugin, PluginCommand command) {
         try {
-            Object result = getPrivateField(plugin.getServer().getPluginManager(), "commandMap");
+            Object result = this.getPrivateField(plugin.getServer().getPluginManager(), "commandMap");
             SimpleCommandMap commandMap = (SimpleCommandMap) result;
 
-            Object map = getPrivateField(commandMap, "knownCommands");
+            Object map = this.getPrivateField(commandMap, "knownCommands");
             @SuppressWarnings("unchecked") HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
             knownCommands.remove(command.getName());
             for (String alias : command.getAliases()) {

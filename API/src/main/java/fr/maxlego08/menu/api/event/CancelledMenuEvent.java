@@ -12,7 +12,7 @@ public class CancelledMenuEvent extends MenuEvent implements Cancellable {
      */
     @Contract(pure = true)
     public boolean isCancelled() {
-        return cancelled;
+        return this.cancelled;
     }
 
     /**

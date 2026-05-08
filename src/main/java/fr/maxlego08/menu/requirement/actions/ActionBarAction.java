@@ -20,8 +20,8 @@ public class ActionBarAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        String finalMessage = papi(placeholders.parse(this.message), player);
-        if (miniMessage) {
+        String finalMessage = this.papi(placeholders.parse(this.message), player);
+        if (this.miniMessage) {
             inventory.getPlugin().getMetaUpdater().sendAction(player, finalMessage);
         } else {
             ActionBar.sendActionBar(player, finalMessage);

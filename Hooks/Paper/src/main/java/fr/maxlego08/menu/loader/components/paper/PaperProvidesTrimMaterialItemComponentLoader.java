@@ -28,7 +28,7 @@ public class PaperProvidesTrimMaterialItemComponentLoader extends ItemComponentL
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
         NamespacedKey key = NamespacedKey.fromString(value);

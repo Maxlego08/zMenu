@@ -1,0 +1,78 @@
+# ╔════════════════════════════════════════════════════════════════╗
+# ║         ITEM-DRAG-REPAIR-STYLE INVENTORY CONFIGURATION         ║
+# ╚════════════════════════════════════════════════════════════════╝
+
+name: "&8ItemDrag"          # Title that appears on top of the GUI. Uses Minecraft color codes.
+size: 36                    # Number of slots (rows × 9). 36 = 4 rows.
+
+items:
+  itemDrag:                 # Internal ID for this button
+    type : "ITEM_DRAG"
+    slot: 22                # Slot index (0 = top-left). 13 is the center of the second row.
+    # ───────────────────────────────
+    # Default item section
+    # ───────────────────────────────
+    item:
+      material: ANVIL      # Icon seen in the menu by default.
+      name: "You can drag a item here"
+      lore:
+        - ""                # Blank line for spacing.
+        - "&7Drag item on me !"
+    # ───────────────────────────────
+    # Check section
+    # ───────────────────────────────
+    check-item:
+      # - full -> Allows to check the itemStack in full, will use the ItemStack#isSimilar method.
+      # - material -> Allows to check only the material
+      # - name -> Allows to check only the display name
+      # - lore -> Allows to check only the lore
+      # - modelid -> Allows to check only the Custom Model Id
+      # - itemModel -> Allows to check only the new Custom Model Id
+      type: MATERIAL            # Type of item check
+      item:                 # Item to check
+        material: STONE_PICKAXE     # Only drag an STONE is allowed
+    # ───────────────────────────────
+    # Error section
+    # ───────────────────────────────
+    error-item:
+      duration: 30          # Duration of item display
+      item:                 # Item to display
+        material: BARRIER
+        name: "&cError"
+
+  itemGive:
+    slot: 12
+    item:
+      material: STONE_PICKAXE
+      durability: 50
+      name: 'You can give a item'
+    actions:
+      - type: item_give
+        item:
+          material: STONE_PICKAXE
+          durability: 50
+
+  repair:
+    slot: 14
+    refreshOnDrag: true     # This refresh this button if a item is dragged.
+    view_requirement:
+      requirements:
+        - type: placeholder
+          placeholder: "%zmenu_item_inventory:22_is_player_item%"
+          value: true
+          action: BOOLEAN
+    item:
+      material: ANVIL
+      name: 'You can repair your item'
+      lore:
+        - 'Dura repair: %zmenu_item_inventory:22_max_dura%'
+    actions:
+      - type: item_edit
+        slot: "inventory:22"
+        item:
+          durability: 0
+    else:
+      item:
+        material: BARRIER
+        durability: 500
+        name: 'You need to drag a item'

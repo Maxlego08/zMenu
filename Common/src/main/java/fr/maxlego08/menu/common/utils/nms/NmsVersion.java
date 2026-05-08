@@ -121,7 +121,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean hasPlayerProfiles() {
-        return version >= NmsVersion.V_1_18_1.version;
+        return this.version >= NmsVersion.V_1_18_1.version;
     }
 
     /**
@@ -129,7 +129,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean hasObfuscatedNames() {
-        return version >= NmsVersion.V_1_17.version;
+        return this.version >= NmsVersion.V_1_17.version;
     }
 
     /**
@@ -137,7 +137,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isComponent(boolean isPaper) {
-        return isPaper && version >= NmsVersion.V_1_16_5.version;
+        return isPaper && this.version >= NmsVersion.V_1_16_5.version;
     }
 
     /**
@@ -145,7 +145,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isItemLegacy() {
-        return version < NmsVersion.V_1_13.version;
+        return this.version < NmsVersion.V_1_13.version;
     }
 
     /**
@@ -153,7 +153,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isPdcVersion() {
-        return version >= NmsVersion.V_1_14.version;
+        return this.version >= NmsVersion.V_1_14.version;
     }
 
     /**
@@ -161,7 +161,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isSkullOwnerLegacy() {
-        return version <= NmsVersion.V_1_12.version;
+        return this.version <= NmsVersion.V_1_12.version;
     }
 
     /**
@@ -169,7 +169,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isCustomModelData() {
-        return version >= NmsVersion.V_1_14.version;
+        return this.version >= NmsVersion.V_1_14.version;
     }
 
     /**
@@ -177,7 +177,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isHexVersion() {
-        return version >= NmsVersion.V_1_16.version;
+        return this.version >= NmsVersion.V_1_16.version;
     }
 
     /**
@@ -185,7 +185,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isAttributeVersion() {
-        return version != NmsVersion.V_1_8_8.version;
+        return this.version != NmsVersion.V_1_8_8.version;
     }
 
     /**
@@ -193,7 +193,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public int getVersion() {
-        return version;
+        return this.version;
     }
 
     /**
@@ -201,7 +201,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isAttributItemStack() {
-        return version >= NmsVersion.V_1_20_5.version;
+        return this.version >= NmsVersion.V_1_20_5.version;
     }
 
     /**
@@ -209,7 +209,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isOneHand() {
-        return version == NmsVersion.V_1_8_8.version;
+        return this.version == NmsVersion.V_1_8_8.version;
     }
 
     /**
@@ -217,7 +217,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isBarrel() {
-        return version >= V_1_14.version;
+        return this.version >= V_1_14.version;
     }
 
     /**
@@ -225,7 +225,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isShulker() {
-        return version >= V_1_9.version;
+        return this.version >= V_1_9.version;
     }
 
     /**
@@ -233,7 +233,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewMaterial() {
-        return version >= V_1_13.version;
+        return this.version >= V_1_13.version;
     }
 
     /**
@@ -241,7 +241,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewNBTVersion() {
-        return version >= V_1_18.version;
+        return this.version >= V_1_18.version;
     }
 
     /**
@@ -249,7 +249,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewHeadApi() {
-        return version >= V_1_20.version;
+        return this.version >= V_1_20.version;
     }
 
     /**
@@ -257,7 +257,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewNMSVersion() {
-        return version >= V_1_17.version;
+        return this.version >= V_1_17.version;
     }
 
     /**
@@ -265,7 +265,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_11OrNewer() {
-        return version >= V_1_11.version;
+        return this.version >= V_1_11.version;
     }
 
     /**
@@ -273,7 +273,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_12OrNewer() {
-        return version >= V_1_12.version;
+        return this.version >= V_1_12.version;
     }
 
     /**
@@ -281,7 +281,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewItemStackAPI() {
-        return version >= V_1_21.version;
+        return this.version >= V_1_21.version;
     }
 
     /**
@@ -289,7 +289,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewItemModelAPI() {
-        return version >= V_1_21_4.version;
+        return this.version >= V_1_21_4.version;
     }
 
     /**
@@ -297,7 +297,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isDialogsVersion() {
-        return version >= V_1_21_7.version;
+        return this.version >= V_1_21_7.version;
     }
 
     /**
@@ -305,7 +305,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_2OrNewer() {
-        return version >= V_1_21_2.version;
+        return this.version >= V_1_21_2.version;
     }
 
     /**
@@ -313,7 +313,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_5OrNewer() {
-        return version >= V_1_21_5.version;
+        return this.version >= V_1_21_5.version;
     }
 
     /**
@@ -321,7 +321,7 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_9OrNewer() {
-        return version >= V_1_21_9.version;
+        return this.version >= V_1_21_9.version;
     }
 
     /**
@@ -329,6 +329,6 @@ public enum NmsVersion {
      */
     @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_11OrNewer() {
-        return version >= V_1_21_11.version;
+        return this.version >= V_1_21_11.version;
     }
 }

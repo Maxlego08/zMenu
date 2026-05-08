@@ -28,13 +28,13 @@ public class SpigotKineticWeaponItemComponentLoader extends ItemComponentLoader 
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         int delayTicks = componentSection.getInt("delay-ticks", 0);
-        Optional<KineticWeaponComponent.Condition> damageConditions = getCondition(componentSection.getConfigurationSection("damage-conditions"));
-        Optional<KineticWeaponComponent.Condition> dismountConditions = getCondition(componentSection.getConfigurationSection("dismount-conditions"));
-        Optional<KineticWeaponComponent.Condition> knockbackConditions = getCondition(componentSection.getConfigurationSection("knockback-conditions"));
+        Optional<KineticWeaponComponent.Condition> damageConditions = this.getCondition(componentSection.getConfigurationSection("damage-conditions"));
+        Optional<KineticWeaponComponent.Condition> dismountConditions = this.getCondition(componentSection.getConfigurationSection("dismount-conditions"));
+        Optional<KineticWeaponComponent.Condition> knockbackConditions = this.getCondition(componentSection.getConfigurationSection("knockback-conditions"));
         float forwardMovement = (float) componentSection.getDouble("forward-movement", 0d);
         float damageMultiplier = (float) componentSection.getDouble("damage-multiplier", 1d);
-        Optional<Sound> sound = getSound(componentSection.getString("sound", ""));
-        Optional<Sound> hitSound = getSound(componentSection.getString("hit-sound", ""));
+        Optional<Sound> sound = this.getSound(componentSection.getString("sound", ""));
+        Optional<Sound> hitSound = this.getSound(componentSection.getString("hit-sound", ""));
         return new fr.maxlego08.menu.api.itemstack.components.KineticWeaponComponent(delayTicks,
                 damageConditions,
                 dismountConditions,

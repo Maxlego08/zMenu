@@ -26,7 +26,7 @@ public class PaperNoteBlockSoundItemComponentLoader extends ItemComponentLoader 
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String sound = configuration.getString(path);
         if (sound == null) return null;
         try{

@@ -37,18 +37,18 @@ public class CommandMenuPlayersGet extends VCommand {
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
         if (optional.isEmpty()) {
-            message(plugin, this.sender, Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
+            this.message(plugin, this.sender, Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
             return CommandType.SUCCESS;
         }
 
         PlayerData playerData = optional.get();
         if (!playerData.containsKey(key)) {
-            message(plugin, this.sender, Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
+            this.message(plugin, this.sender, Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
             return CommandType.SUCCESS;
         }
 
         Data data = playerData.getData(key).get();
-        message(plugin, this.sender, Message.PLAYERS_DATA_GET_SUCCESS, "%value%", data.getValue(), "%key%", data.getKey(),
+        this.message(plugin, this.sender, Message.PLAYERS_DATA_GET_SUCCESS, "%value%", data.getValue(), "%key%", data.getKey(),
                 "%expiredAt%", data.getExpiredAt());
 
         return CommandType.SUCCESS;

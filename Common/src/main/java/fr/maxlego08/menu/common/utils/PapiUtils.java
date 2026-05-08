@@ -21,7 +21,7 @@ public class PapiUtils extends TranslationHelper {
     }
 
     public Object papi(Object placeHolder, OfflinePlayer player, boolean useCache) {
-        return placeHolder instanceof String ? papi((String) placeHolder, player, useCache) : placeHolder;
+        return placeHolder instanceof String ? this.papi((String) placeHolder, player, useCache) : placeHolder;
     }
 
     public String papi(String placeHolder, OfflinePlayer player, boolean useCache) {
@@ -29,7 +29,7 @@ public class PapiUtils extends TranslationHelper {
         if (player == null) return placeHolder;
         if (!placeHolder.contains("%")) return placeHolder;
         String cacheKey = placeHolder + ";" + player.getUniqueId();
-        CacheEntry cachedResult = cache.get(cacheKey);
+        CacheEntry cachedResult = this.cache.get(cacheKey);
 
         if (Configuration.enableCachePlaceholderAPI && cachedResult != null && cachedResult.isValid() && useCache) {
             return cachedResult.value;
@@ -48,7 +48,7 @@ public class PapiUtils extends TranslationHelper {
         if (player == null) return placeHolders;
         List<String> parsed = new ArrayList<>(placeHolders.size());
         for (String placeHolder : placeHolders) {
-            parsed.add(papi(placeHolder, player, useCache));
+            parsed.add(this.papi(placeHolder, player, useCache));
         }
         return parsed;
     }
@@ -60,7 +60,7 @@ public class PapiUtils extends TranslationHelper {
 
         public boolean isValid() {
                 // Check if the cache entry is still valid (not older than 1000 milliseconds)
-                return System.currentTimeMillis() - timeStamp <Configuration.cachePlaceholderAPI;
+                return System.currentTimeMillis() - this.timeStamp <Configuration.cachePlaceholderAPI;
             }
         }
 }

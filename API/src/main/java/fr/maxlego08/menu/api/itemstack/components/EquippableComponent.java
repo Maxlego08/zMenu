@@ -47,51 +47,51 @@ public class EquippableComponent extends ItemComponent {
     }
 
     public Optional<EquipmentSlot> getSlot() {
-        return slot;
+        return this.slot;
     }
 
     public Optional<Sound> getEquipSound() {
-        return equipSound;
+        return this.equipSound;
     }
 
     public Optional<NamespacedKey> getAssetId() {
-        return assetId;
+        return this.assetId;
     }
 
     public Boolean getDispensable() {
-        return dispensable;
+        return this.dispensable;
     }
 
     public Boolean getSwappable() {
-        return swappable;
+        return this.swappable;
     }
 
     public Boolean getDamageOnHurt() {
-        return damageOnHurt;
+        return this.damageOnHurt;
     }
 
     public Boolean getEquipOnInteract() {
-        return equipOnInteract;
+        return this.equipOnInteract;
     }
 
     public Optional<NamespacedKey> getCameraOverlay() {
-        return cameraOverlay;
+        return this.cameraOverlay;
     }
 
     public Boolean getCanBeSheared() {
-        return canBeSheared;
+        return this.canBeSheared;
     }
 
     public Optional<Sound> getShearingSound() {
-        return shearingSound;
+        return this.shearingSound;
     }
 
     public Optional<Collection<EntityType>> getAllowedEntities() {
-        return allowedEntities;
+        return this.allowedEntities;
     }
 
     public Optional<Tag<EntityType>> getAllowedEntityTags() {
-        return allowedEntityTags;
+        return this.allowedEntityTags;
     }
 
     @Override

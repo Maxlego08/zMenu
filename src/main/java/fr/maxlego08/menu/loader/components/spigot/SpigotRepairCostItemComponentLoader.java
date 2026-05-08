@@ -23,7 +23,7 @@ public class SpigotRepairCostItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         int cost = configuration.getInt(path);
         return cost <= 0 ? null : new RepairCostComponent(cost);
     }

@@ -19,7 +19,7 @@ public class DamageResistantComponent extends ItemComponent {
     }
 
     public @NotNull Tag<DamageType> getDamageType() {
-        return damageType;
+        return this.damageType;
     }
 
     @Override

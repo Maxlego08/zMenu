@@ -36,12 +36,12 @@ public class PerformanceDebug {
     }
 
     public void start(String operationName) {
-        if (!enabled) return;
+        if (!this.enabled) return;
         this.stack.push(new ActiveOperation(operationName, System.nanoTime()));
     }
 
     public void end() {
-        if (!enabled) return;
+        if (!this.enabled) return;
         if (this.stack.isEmpty()) return;
         ActiveOperation active = this.stack.pop();
         long duration = System.nanoTime() - active.startNanos;
@@ -49,20 +49,20 @@ public class PerformanceDebug {
     }
 
     public void measure(String operationName, Runnable action) {
-        if (!enabled) {
+        if (!this.enabled) {
             action.run();
             return;
         }
-        start(operationName);
+        this.start(operationName);
         try {
             action.run();
         } finally {
-            end();
+            this.end();
         }
     }
 
     public void printSummary() {
-        if (!enabled || records.isEmpty()) return;
+        if (!this.enabled || this.records.isEmpty()) return;
 
         long thresholdNanos = Configuration.performanceThresholdMs * 1_000_000L;
         PerformanceFilterMode filterMode = Configuration.performanceFilterMode;
@@ -74,17 +74,17 @@ public class PerformanceDebug {
             filterPatterns.add(Pattern.compile(regex));
         }
 
-        Logger.info("[PerformanceDebug] === " + context + " ===");
+        Logger.info("[PerformanceDebug] === " + this.context + " ===");
 
         long totalNanos = 0;
         int displayed = 0;
 
-        for (OperationRecord record : records) {
+        for (OperationRecord record : this.records) {
             totalNanos += record.durationNanos;
 
             if (record.durationNanos < thresholdNanos) continue;
 
-            if (!matchesFilter(record.name, filterMode, filterPatterns)) continue;
+            if (!this.matchesFilter(record.name, filterMode, filterPatterns)) continue;
 
             double ms = record.durationNanos / 1_000_000.0;
             Logger.info(String.format("[PerformanceDebug]   %-40s %8.2f ms", record.name, ms));
@@ -96,7 +96,7 @@ public class PerformanceDebug {
         }
 
         double totalMs = totalNanos / 1_000_000.0;
-        Logger.info(String.format("[PerformanceDebug] --- Total: %.2f ms (%d operations recorded) ---", totalMs, records.size()));
+        Logger.info(String.format("[PerformanceDebug] --- Total: %.2f ms (%d operations recorded) ---", totalMs, this.records.size()));
     }
 
     private boolean matchesFilter(String operationName, PerformanceFilterMode mode, List<Pattern> patterns) {

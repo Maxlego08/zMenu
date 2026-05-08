@@ -80,18 +80,18 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
             if (type == null) continue;
             List<DamageType> damageTypes = new ArrayList<>();
             if (type instanceof String typeString) {
-                addDamageType(damageTypes, typeString);
+                this.addDamageType(damageTypes, typeString);
             } else if (type instanceof List<?> typeList) {
                 for (Object obj : typeList) {
                     if (obj instanceof String typeString) {
-                        addDamageType(damageTypes, typeString);
+                        this.addDamageType(damageTypes, typeString);
                     }
                 }
             }
             if (damageTypes.isEmpty()) continue;
-            float base = parseFloatField(map, "base", 0f, "Invalid base value for BlocksAttacksComponent damage reduction, using default 0f.");
-            float factor = parseFloatField(map, "factor", 0f, "Invalid factor value for BlocksAttacksComponent damage reduction, using default 0f.");
-            float horizontalBlockingAngle = parseFloatField(map, "horizontal-blocking-angle", 90f, "Invalid horizontal-blocking-angle value for BlocksAttacksComponent damage reduction, using default 90f.");
+            float base = this.parseFloatField(map, "base", 0f, "Invalid base value for BlocksAttacksComponent damage reduction, using default 0f.");
+            float factor = this.parseFloatField(map, "factor", 0f, "Invalid factor value for BlocksAttacksComponent damage reduction, using default 0f.");
+            float horizontalBlockingAngle = this.parseFloatField(map, "horizontal-blocking-angle", 90f, "Invalid horizontal-blocking-angle value for BlocksAttacksComponent damage reduction, using default 90f.");
             damageReductionRecords.add(new ZDamageReductionRecord(
                     damageTypes,
                     base,
@@ -112,9 +112,9 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
         double itemDamageBase = componentSection.getDouble("item-damage.base", 0f);
         double itemDamageFactor = componentSection.getDouble("item-damage.factor", 1.5f);
         List<ZDamageReductionRecord> damageReductionRecords = new ArrayList<>();
-        loadDamageReductionRecords(componentSection, damageReductionRecords);
-        Sound blockSound = getSoundFromSection(componentSection, "block-sound");
-        Sound disabledSound = getSoundFromSection(componentSection, "disabled-sound");
+        this.loadDamageReductionRecords(componentSection, damageReductionRecords);
+        Sound blockSound = this.getSoundFromSection(componentSection, "block-sound");
+        Sound disabledSound = this.getSoundFromSection(componentSection, "disabled-sound");
         return new BlocksAttacksComponent(
                 (float) blockDelaySeconds,
                 (float) disableCooldownScale,

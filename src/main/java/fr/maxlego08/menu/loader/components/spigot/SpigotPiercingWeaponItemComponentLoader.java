@@ -28,8 +28,8 @@ public class SpigotPiercingWeaponItemComponentLoader extends ItemComponentLoader
         if (componentSection == null) return null;
         boolean dealsKnockback = componentSection.getBoolean("deals-knockback", true);
         boolean dismounts = componentSection.getBoolean("dismounts", false);
-        Optional<Sound> sound = getSound(componentSection.getString("sound"));
-        Optional<Sound> hitSound = getSound(componentSection.getString("hit-sound"));
+        Optional<Sound> sound = this.getSound(componentSection.getString("sound"));
+        Optional<Sound> hitSound = this.getSound(componentSection.getString("hit-sound"));
         return new PiercingWeaponComponent(dealsKnockback, dismounts, sound, hitSound);
     }
 }

@@ -25,7 +25,7 @@ public class SpigotBaseColorItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         try {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             String string = configuration.getString(path);
             if (string == null) return null;
             DyeColor baseColor = DyeColor.valueOf(string.toUpperCase());

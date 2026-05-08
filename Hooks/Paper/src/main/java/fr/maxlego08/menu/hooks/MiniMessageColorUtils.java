@@ -39,14 +39,14 @@ public class MiniMessageColorUtils {
         String newMessage = message;
 
         // §x§r§g§b§2§f§3 → <#rgb2f3>
-        newMessage = convertLegacyHex(newMessage);
+        newMessage = this.convertLegacyHex(newMessage);
         // &#a1b2c3 → <#a1b2c3>
-        newMessage = convertShorLegacyHex(newMessage);
+        newMessage = this.convertShorLegacyHex(newMessage);
         // #a1b2c3 → <#a1b2c3>
         newMessage = newMessage.replaceAll("(?<![<&])(?<!:)(?<!</)#([A-Fa-f0-9]{6})", "<#$1>");
 
         // &a → <green>, §c → <red>, etc.
-        newMessage = replaceLegacyColors(newMessage);
+        newMessage = this.replaceLegacyColors(newMessage);
 
         return newMessage;
     }

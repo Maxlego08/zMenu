@@ -20,7 +20,7 @@ public class ZMainMenuButton extends ZHomeButton {
     @Override
     public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventory, int slot, @NonNull Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
-        inventoryManager.openInventory(player,Configuration.mainMenu);
+        this.inventoryManager.openInventory(player,Configuration.mainMenu);
     }
 
     @Override

@@ -655,7 +655,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         } catch (Exception ignored) {
             configuration.set(path + "data", item.getData());
         }
-        if (item.getDura() != null) configuration.set(path + "durability", item.getDura());
+        if (item.getDura() != null) configuration.set(path + "durability", item.getDurability());
         if (item.getAmount() != null) {
             try {
                 int value = Integer.parseInt(item.getAmount());

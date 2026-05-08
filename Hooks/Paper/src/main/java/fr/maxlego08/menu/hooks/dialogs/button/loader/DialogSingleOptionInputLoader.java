@@ -1,0 +1,51 @@
+package fr.maxlego08.menu.hooks.dialogs.button.loader;
+
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
+import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogSingleOptionInput;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DialogSingleOptionInputLoader extends ButtonLoader {
+
+    public DialogSingleOptionInputLoader(Plugin plugin) {
+        super(plugin, "dialog_single_option");
+    }
+
+    @Override
+    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+
+        String label = configuration.getString(path + ".label", "");
+        boolean labelVisible = configuration.getBoolean(path + ".label-visible", true);
+        List<SingleOption> singleOptionList = new ArrayList<>();
+
+        if (configuration.isConfigurationSection(path + ".options")) {
+            boolean initialAlreadySet = false;
+            for (String optionKey : configuration.getConfigurationSection(path + ".options").getKeys(false)) {
+                String optionPath = path + ".options." + optionKey;
+
+                String id = configuration.getString(optionPath + ".id", optionKey);
+                String display = configuration.getString(optionPath + ".display", "");
+                boolean initialValue = configuration.getBoolean(optionPath + ".initial", false);
+
+                if (initialAlreadySet) {
+                    initialValue = false;
+                } else if (initialValue) {
+                    initialAlreadySet = true;
+                }
+
+                SingleOption singleOption = new SingleOption(id, display, initialValue);
+                singleOptionList.add(singleOption);
+            }
+        }
+        return new ZDialogSingleOptionInput(label, labelVisible,  singleOptionList);
+    }
+}

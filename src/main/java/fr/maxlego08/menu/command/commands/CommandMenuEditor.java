@@ -18,7 +18,7 @@ public class CommandMenuEditor extends VCommand {
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
 
-        message(plugin, this.sender, "§fhttps://minecraft-inventory-builder.com/builder/");
+        this.message(plugin, this.sender, "§fhttps://minecraft-inventory-builder.com/builder/");
 
         return CommandType.SUCCESS;
     }

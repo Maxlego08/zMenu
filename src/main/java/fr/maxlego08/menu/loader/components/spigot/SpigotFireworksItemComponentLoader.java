@@ -34,7 +34,7 @@ public class SpigotFireworksItemComponentLoader extends AbstractFireworkItemComp
         for (var rawMap : mapList) {
             @SuppressWarnings("unchecked")
             Map<String, Object> effectMap = (Map<String, Object>) rawMap;
-            loadFireworkEffect(effectMap).ifPresent(effects::add);
+            this.loadFireworkEffect(effectMap).ifPresent(effects::add);
         }
         return effects.isEmpty() && flightDuration == 1 ? null : new FireworksComponent(flightDuration, effects);
     }

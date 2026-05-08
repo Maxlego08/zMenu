@@ -36,19 +36,19 @@ public class ZOpenLink extends ZUtils implements OpenLink {
     }
 
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     public String getLink() {
-        return link;
+        return this.link;
     }
 
     public String getReplace() {
-        return replace;
+        return this.replace;
     }
 
     public List<String> getHover() {
-        return hover;
+        return this.hover;
     }
 
     @Override
@@ -68,15 +68,15 @@ public class ZOpenLink extends ZUtils implements OpenLink {
 
                     String[] splitMessages = finalMessage.split(this.replace);
 
-                    TextComponent component = buildTextComponent(splitMessages[0]);
+                    TextComponent component = this.buildTextComponent(splitMessages[0]);
 
-                    TextComponent clickComponent = buildTextComponent(color(this.message));
-                    setClickAction(clickComponent, Action.OPEN_URL, this.link);
-                    setHoverMessage(clickComponent, color(this.hover));
+                    TextComponent clickComponent = this.buildTextComponent(this.color(this.message));
+                    this.setClickAction(clickComponent, Action.OPEN_URL, this.link);
+                    this.setHoverMessage(clickComponent, this.color(this.hover));
 
                     component.addExtra(clickComponent);
                     if (splitMessages.length == 2) {
-                        component.addExtra(buildTextComponent(splitMessages[1]));
+                        component.addExtra(this.buildTextComponent(splitMessages[1]));
                     }
 
                     player.spigot().sendMessage(component);

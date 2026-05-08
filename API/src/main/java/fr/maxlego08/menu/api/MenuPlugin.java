@@ -185,6 +185,8 @@ public interface MenuPlugin extends Plugin {
      */
     CommandManager getCommandManager();
 
+    BedrockManager getBedrockManager();
+
     /**
      * Returns the storage manager.
      * This method returns the storage manager, which is used for storing and retrieving data.

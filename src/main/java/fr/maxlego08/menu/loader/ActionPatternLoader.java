@@ -25,7 +25,7 @@ public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern>
         if (name == null) {
             throw new InventoryException("ActionPattern name is missing in configuration at path: " + path);
         }
-        return new ZActionsPattern(name,plugin.getButtonManager().loadActions(configuration,"actions", file),plugin.getButtonManager().loadActions(configuration,"deny-actions", file));
+        return new ZActionsPattern(name, this.plugin.getButtonManager().loadActions(configuration,"actions", file), this.plugin.getButtonManager().loadActions(configuration,"deny-actions", file));
     }
 
     @Override

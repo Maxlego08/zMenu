@@ -31,21 +31,21 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        Optional<EquipmentSlot> slot = loadEquipmentSlot(componentSection.getString("slot", ""));
-        Optional<Sound> equipSound = loadSound(componentSection.getString("equip-sound", ""));
-        Optional<NamespacedKey> assetId = loadNamespacedKey(componentSection.getString("asset-id", ""));
+        Optional<EquipmentSlot> slot = this.loadEquipmentSlot(componentSection.getString("slot", ""));
+        Optional<Sound> equipSound = this.loadSound(componentSection.getString("equip-sound", ""));
+        Optional<NamespacedKey> assetId = this.loadNamespacedKey(componentSection.getString("asset-id", ""));
 
         boolean dispensable = componentSection.getBoolean("dispensable", true);
         boolean swappable = componentSection.getBoolean("swappable", true);
         boolean damageOnHurt = componentSection.getBoolean("damage-on-hurt", true);
         boolean equipOnInteract = componentSection.getBoolean("equip-on-interact", false);
 
-        Optional<NamespacedKey> cameraOverlay = loadNamespacedKey(componentSection.getString("camera-overlay", ""));
+        Optional<NamespacedKey> cameraOverlay = this.loadNamespacedKey(componentSection.getString("camera-overlay", ""));
         boolean canBeSheared = componentSection.getBoolean("can-be-sheared", false);
-        Optional<Sound> shearingSound = loadSound(componentSection.getString("shearing-sound", ""));
+        Optional<Sound> shearingSound = this.loadSound(componentSection.getString("shearing-sound", ""));
 
-        Optional<Collection<EntityType>> allowedEntities = loadAllowedEntities(componentSection.get("allowed-entities"));
-        Optional<Tag<EntityType>> allowedEntityTags = loadAllowedEntityTags(componentSection.get("allowed-entities"));
+        Optional<Collection<EntityType>> allowedEntities = this.loadAllowedEntities(componentSection.get("allowed-entities"));
+        Optional<Tag<EntityType>> allowedEntityTags = this.loadAllowedEntityTags(componentSection.get("allowed-entities"));
 
         return new EquippableComponent(
                 slot,
@@ -97,11 +97,11 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
         if (allowedEntitiesObj instanceof Collection<?> collection) {
             for (Object obj : collection) {
                 if (obj instanceof String entityString) {
-                    loadEntityType(entityString).ifPresent(entityTypes::add);
+                    this.loadEntityType(entityString).ifPresent(entityTypes::add);
                 }
             }
         } else if (allowedEntitiesObj instanceof String entityString) {
-            loadEntityType(entityString).ifPresent(entityTypes::add);
+            this.loadEntityType(entityString).ifPresent(entityTypes::add);
         }
 
         return entityTypes.isEmpty() ? Optional.empty() : Optional.of(entityTypes);
@@ -111,12 +111,12 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
         if (allowedEntitiesObj instanceof Collection<?> collection) {
             for (Object obj : collection) {
                 if (obj instanceof String entityString) {
-                    Optional<Tag<EntityType>> tag = loadEntityTag(entityString);
+                    Optional<Tag<EntityType>> tag = this.loadEntityTag(entityString);
                     if (tag.isPresent()) return tag;
                 }
             }
         } else if (allowedEntitiesObj instanceof String entityString) {
-            return loadEntityTag(entityString);
+            return this.loadEntityTag(entityString);
         }
 
         return Optional.empty();

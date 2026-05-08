@@ -23,7 +23,7 @@ public class SpigotOminousBottleAmplifierItemComponentLoader extends ItemCompone
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         int amplifier = configuration.getInt(path, 1);
         return amplifier < 1 ? null : new OminousBottleAmplifierComponent(amplifier);
     }

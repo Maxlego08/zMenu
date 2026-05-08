@@ -41,9 +41,9 @@ public class LuckpermAction extends Action {
         User user = luckPerms.getUserManager().getUser(playerUUID);
 
         if (user == null) {
-            luckPerms.getUserManager().loadUser(playerUUID).thenAcceptAsync(loadedUser -> assignPermission(loadedUser, permission, value));
+            luckPerms.getUserManager().loadUser(playerUUID).thenAcceptAsync(loadedUser -> this.assignPermission(loadedUser, permission, value));
         } else {
-            assignPermission(user, permission, value);
+            this.assignPermission(user, permission, value);
         }
     }
 

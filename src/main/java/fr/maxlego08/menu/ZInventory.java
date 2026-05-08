@@ -13,10 +13,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.ClearInvType;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
@@ -35,6 +32,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private final int size;
     private final List<Button> buttons;
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
+    private InventoryReplacement inventoryReplacement;
     private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
@@ -98,13 +96,13 @@ public class ZInventory extends ZUtils implements Inventory {
             }
         }
 
-        String locale = findPlayerLocale(player);
+        String locale = this.findPlayerLocale(player);
         return locale == null ? this.name : this.translatedNames.getOrDefault(locale, this.name);
     }
 
     @Override
     public InventoryType getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(InventoryType type) {
@@ -113,7 +111,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public boolean shouldCancelItemPickup() {
-        return ItemPickupDisabled;
+        return this.ItemPickupDisabled;
     }
 
     public void setCancelItemPickup(boolean ItemPickupDisabled) {
@@ -227,7 +225,7 @@ public class ZInventory extends ZUtils implements Inventory {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
 
         if (holder instanceof InventoryDefault inventoryHolder) {
-            clearPlayerInventoryButtons(player, inventoryHolder);
+            this.clearPlayerInventoryButtons(player, inventoryHolder);
 
             if (inventoryHolder.getMenuInventory().cleanInventory() && !this.clearInventory) {
                 inventoriesPlayer.giveInventory(player);
@@ -276,7 +274,7 @@ public class ZInventory extends ZUtils implements Inventory {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             boolean isInNewzMenuInventory = newHolder instanceof InventoryDefault;
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
-                clearPlayerInventoryButtons(player, inventoryDefault);
+                this.clearPlayerInventoryButtons(player, inventoryDefault);
 
                 if (this.clearInventory) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
@@ -319,14 +317,14 @@ public class ZInventory extends ZUtils implements Inventory {
      * @return the size
      */
     public int getSize() {
-        return size;
+        return this.size;
     }
 
     /**
      * @return the file
      */
     public File getFile() {
-        return file;
+        return this.file;
     }
 
     public void setFile(File file) {
@@ -335,7 +333,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public boolean cleanInventory() {
-        return clearInventory;
+        return this.clearInventory;
     }
 
     @Override
@@ -358,7 +356,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public Map<String, String> getTranslatedNames() {
-        return translatedNames;
+        return this.translatedNames;
     }
 
     public void setTranslatedNames(Map<String, String> translatedNames) {
@@ -376,7 +374,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public List<Pattern> getPatterns() {
-        return patterns;
+        return this.patterns;
     }
 
     public void setPatterns(List<Pattern> patterns) {
@@ -385,7 +383,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public String getTargetPlayerNamePlaceholder() {
-        return targetPlayerNamePlaceholder;
+        return this.targetPlayerNamePlaceholder;
     }
 
     @Override
@@ -404,7 +402,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public List<Action> getOpenActions() {
-        return openActions;
+        return this.openActions;
     }
 
     public void setOpenActions(List<Action> openActions) {
@@ -413,7 +411,7 @@ public class ZInventory extends ZUtils implements Inventory {
 
     @Override
     public List<Action> getCloseActions() {
-        return closeActions;
+        return this.closeActions;
     }
 
     public void setCloseActions(List<Action> closeActions) {
@@ -428,6 +426,16 @@ public class ZInventory extends ZUtils implements Inventory {
     @Override
     public boolean isClickLimiterEnabled() {
         return this.isClickLimiterEnabled;
+    }
+
+    @Override
+    public @Nullable InventoryReplacement getInventoryReplacement() {
+        return this.inventoryReplacement;
+    }
+
+    @Override
+    public void setInventoryReplacement(InventoryReplacement inventoryReplacement) {
+        this.inventoryReplacement = inventoryReplacement;
     }
 
     public void setClickLimiterEnabled(boolean enabled) {

@@ -18,6 +18,8 @@ public enum Permission {
     ZMENU_DESCRIPTION,
     ZMENU_OPEN_DIALOG,
     ZMENU_RELOAD_DIALOG,
+    ZMENU_OPEN_BEDROCK,
+    ZMENU_RELOAD_BEDROCK,
     ZMENU_DUMPLOG,
     ZMENU_CONTRIBUTORS,
     ZMENU_GIVE_ITEM,
@@ -35,7 +37,7 @@ public enum Permission {
 	}
 
 	public String getPermission() {
-		return permission;
+		return this.permission;
 	}
 
 }

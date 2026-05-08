@@ -24,11 +24,11 @@ public class SpigotDyedColorItemComponentLoader extends AbstractColorItemCompone
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
 
         Object obj = configuration.get(path);
         if (obj == null) return null;
-        Color color = parseColor(obj);
+        Color color = this.parseColor(obj);
         if (color == null) return null;
         return new DyeColorComponent(color);
     }

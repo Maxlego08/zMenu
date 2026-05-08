@@ -32,11 +32,11 @@ public class CommandMenuSave extends VCommand {
 
         ItemStack itemStack = this.player.getItemInHand();
         if (itemStack == null || itemStack.getType() == Material.AIR) {
-            message(plugin, this.sender, Message.SAVE_ERROR_EMPTY);
+            this.message(plugin, this.sender, Message.SAVE_ERROR_EMPTY);
             return CommandType.DEFAULT;
         }
 
-        inventoryManager.saveItem(sender, itemStack, name, type);
+        inventoryManager.saveItem(this.sender, itemStack, name, type);
 
         return CommandType.SUCCESS;
     }

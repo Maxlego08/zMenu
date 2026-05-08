@@ -24,24 +24,24 @@ public record Logger(String prefix) {
     }
 
     public void log(String message, LogType type) {
-        Bukkit.getConsoleSender().sendMessage("§8[§e" + prefix + "§8] " + type.getColor() + getColoredMessage(message));
+        Bukkit.getConsoleSender().sendMessage("§8[§e" + this.prefix + "§8] " + type.getColor() + this.getColoredMessage(message));
     }
 
     public void log(String message) {
-        Bukkit.getConsoleSender().sendMessage("§8[§e" + prefix + "§8] §e" + getColoredMessage(message));
+        Bukkit.getConsoleSender().sendMessage("§8[§e" + this.prefix + "§8] §e" + this.getColoredMessage(message));
     }
 
     public void log(String message, Object... args) {
-        log(String.format(message, args));
+        this.log(String.format(message, args));
     }
 
     public void log(String message, LogType type, Object... args) {
-        log(String.format(message, args), type);
+        this.log(String.format(message, args), type);
     }
 
     public void log(String[] messages, LogType type) {
         for (String message : messages) {
-            log(message, type);
+            this.log(message, type);
         }
     }
 
@@ -62,7 +62,7 @@ public record Logger(String prefix) {
         }
 
         public String getColor() {
-            return color;
+            return this.color;
         }
     }
 }

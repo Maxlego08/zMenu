@@ -50,7 +50,7 @@ public class DiscordWebhookComponent {
     }
 
     public void execute() throws IOException {
-        if (json == null) {
+        if (this.json == null) {
             throw new IllegalArgumentException("Json cannot be null");
         }
 

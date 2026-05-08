@@ -24,7 +24,7 @@ public class SpigotItemModelItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String modelIdStr = configuration.getString(path);
         if (modelIdStr == null) return null;
         NamespacedKey modelId = NamespacedKey.fromString(modelIdStr);

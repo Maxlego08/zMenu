@@ -42,7 +42,7 @@ public class SpigotCustomDataItemComponentLoader extends ItemComponentLoader {
                 continue;
             }
 
-            Optional<ZPersistentDataType<?, ?>> pdcEntry = createPdcEntry(namespacedKey, value);
+            Optional<ZPersistentDataType<?, ?>> pdcEntry = this.createPdcEntry(namespacedKey, value);
             pdcEntry.ifPresent(pdcEntries::add);
         }
 

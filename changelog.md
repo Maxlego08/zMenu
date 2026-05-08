@@ -42,6 +42,14 @@
 
 # Unreleased
 
+## Bug Fixes
+
+- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`. Items are now physically cleared from the player inventory during storage, ensuring container content packets don't reveal hidden items. The close handler also uses physical restoration (`giveInventory`) instead of packet-based restoration.
+
+## Changes
+
+- **Time Placeholders**: Changed `time_unix_timestamp`, `time_next_day_unix_timestamp`, and `time_today_start_unix_timestamp` placeholders to return values in seconds instead of milliseconds.
+
 # 1.1.1.3
 
 ## New Features

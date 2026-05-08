@@ -21,7 +21,7 @@ public class PacketTitleListener implements PacketListener {
         private WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow;
 
         public WrapperPlayServerWindowItems getWrapperPlayServerWindowItems() {
-            return wrapperPlayServerWindowItems;
+            return this.wrapperPlayServerWindowItems;
         }
 
         public void setWrapperPlayServerWindowItems(WrapperPlayServerWindowItems wrapperPlayServerWindowItems) {
@@ -29,7 +29,7 @@ public class PacketTitleListener implements PacketListener {
         }
 
         public WrapperPlayServerOpenWindow getWrapperPlayServerOpenWindow() {
-            return wrapperPlayServerOpenWindow;
+            return this.wrapperPlayServerOpenWindow;
         }
 
         public void setWrapperPlayServerOpenWindow(WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow) {

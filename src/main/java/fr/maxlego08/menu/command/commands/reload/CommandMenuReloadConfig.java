@@ -29,7 +29,7 @@ public class CommandMenuReloadConfig extends VCommand {
         patternManager.loadActionsPatterns();
         patternManager.loadPatterns();
 
-        message(plugin, this.sender, Message.RELOAD_FILES);
+        this.message(plugin, this.sender, Message.RELOAD_FILES);
 
         return CommandType.SUCCESS;
     }

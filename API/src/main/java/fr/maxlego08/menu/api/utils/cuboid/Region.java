@@ -5,11 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -31,11 +27,11 @@ public class Region {
     }
 
     public void addCube(Cuboid cube) {
-        cuboids.add(cube);
+        this.cuboids.add(cube);
     }
 
     public boolean contains(Block block) {
-        for (Cuboid cuboid : cuboids) {
+        for (Cuboid cuboid : this.cuboids) {
             if (cuboid.contains(block)) {
                 return true;
             }
@@ -44,7 +40,7 @@ public class Region {
     }
 
     public List<Cuboid> getCuboids() {
-        return cuboids;
+        return this.cuboids;
     }
 
     public Collection<Player> getPlayers() {
@@ -64,7 +60,7 @@ public class Region {
     }
 
     public boolean contains(Location location) {
-        for (Cuboid cuboid : cuboids) {
+        for (Cuboid cuboid : this.cuboids) {
             if (cuboid.contains(location)) {
                 return true;
             }

@@ -27,7 +27,7 @@ public class SpigotJukeboxPlayableItemComponentLoader extends ItemComponentLoade
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String soundStr = configuration.getString(path);
         if (soundStr == null || soundStr.isEmpty()) return null;
         NamespacedKey key = NamespacedKey.fromString(soundStr);

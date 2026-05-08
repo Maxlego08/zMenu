@@ -1,0 +1,55 @@
+# Enhanced Bedrock Configuration Example
+
+type: custom # Available: modal, simple, custom
+name: "Custom Form"
+
+buttons:
+  # Label text example
+  label:
+    type: bedrock_label
+    text: "I love bedrock inventory."
+  # Text input example
+  text:
+    type: bedrock_text
+    text: "Share your thoughts about our server:"
+    initial-value: "This server is amazing because..."
+  toggle:
+    # Toggle choice example
+    type: bedrock_toggle
+    text: "Would you like to receive server updates?"
+    initial-value: true
+  # Dropdown selection
+  dropdown:
+    type: bedrock_dropdown
+    text: "Choose your mode"
+    options:
+      option1:
+        id: "survival"
+        display: "Survival Mode"
+        initial: true
+      option2:
+        id: "creative"
+        display: "Creative Mode"
+        initial: false
+      option3:
+        id: "adventure"
+        display: "Adventure Mode"
+        initial: false
+      option4:
+        id: "pvp"
+        display: "PvP Arena"
+        initial: false
+  # Slider selection
+  slider:
+    type: bedrock_slider
+    text: "How many hours do you play per day?"
+    start: 1
+    end: 12
+    step: 1
+    initial-value: 3
+actions:
+  1:
+    success:
+      - type: message
+        messages:
+          - "Thank you for your feedback! text : %text%,toggle : %toggle%, dropdown : %dropdown%, slider : %slider%"

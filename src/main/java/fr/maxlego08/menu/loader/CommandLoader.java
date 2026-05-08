@@ -45,11 +45,11 @@ public class CommandLoader implements Loader<Command> {
         List<String> aliases = configuration.getStringList(path + "aliases");
         boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", false);
 
-        List<Action> commandActions = menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
+        List<Action> commandActions = this.menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
         List<Requirement> requirements = this.menuPlugin.getButtonManager().loadRequirements(configuration, path + "actions-requirements", file);
         List<CommandArgument> arguments = new ArrayList<>();
         List<?> listValues = configuration.getList(path + "arguments", new ArrayList<>());
-        if (isListOfMap(listValues)) {
+        if (this.isListOfMap(listValues)) {
             List<Map<?, ?>> mapList = configuration.getMapList(path + "arguments");
             List<CommandArgument> mappedArguments = new ArrayList<>(mapList.size());
             for (Map<?, ?> map : mapList) {
@@ -60,7 +60,7 @@ public class CommandLoader implements Loader<Command> {
                 String argumentType = map.containsKey("type") ? (String) map.get("type") : "STRING";
 
                 List<Map<String, Object>> elements = map.containsKey("actions") ? (List<Map<String, Object>>) map.get("actions") : new ArrayList<>();
-                List<Action> actions = menuPlugin.getButtonManager().loadActions(elements, path, file);
+                List<Action> actions = this.menuPlugin.getButtonManager().loadActions(elements, path, file);
                 List<String> autoCompletions = map.containsKey("auto-completion") ? (List<String>) map.get("auto-completion") : new ArrayList<>();
                 String defaultValue = map.containsKey("defaultValue") ? (String) map.get("defaultValue") : map.containsKey("default-value") ? (String) map.get("default-value") : null;
 
@@ -93,7 +93,7 @@ public class CommandLoader implements Loader<Command> {
         ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "sub-commands");
         if (configurationSection != null) {
             for (String key : configurationSection.getKeys(false)) {
-                Command subCommand = load(configuration, path + "sub-commands." + key + ".", args);
+                Command subCommand = this.load(configuration, path + "sub-commands." + key + ".", args);
                 if (subCommand != null && subCommand.command() != null) {
                     subCommands.add(subCommand);
                 }

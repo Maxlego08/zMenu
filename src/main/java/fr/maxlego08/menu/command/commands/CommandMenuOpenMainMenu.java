@@ -35,7 +35,7 @@ public class CommandMenuOpenMainMenu extends VCommand {
         Player player = this.argAsPlayer(1, this.player);
         boolean displayMessage = this.argAsBoolean(2, Configuration.enableOpenMessage);
         if (player == null) {
-            message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
+            this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
                     : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
@@ -45,15 +45,15 @@ public class CommandMenuOpenMainMenu extends VCommand {
         Optional<Inventory> optional = inventoryManager.getInventory(mainMenu);
 
         if (optional.isEmpty()) {
-            message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);
+            this.message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);
             return CommandType.DEFAULT;
         }
 
         if (displayMessage) {
             if (this.sender == player) {
-                message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", mainMenu);
+                this.message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", mainMenu);
             } else {
-                message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", mainMenu, "%player%",
+                this.message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", mainMenu, "%player%",
                         player.getName());
             }
         }

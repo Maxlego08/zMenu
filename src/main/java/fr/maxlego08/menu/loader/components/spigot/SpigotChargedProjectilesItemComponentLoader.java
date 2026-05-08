@@ -27,9 +27,9 @@ public class SpigotChargedProjectilesItemComponentLoader extends AbstractMenuIte
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         List<Map<?, ?>> mapList = configuration.getMapList(path);
-        List<MenuItemStack> projectiles = loadItemStackList(mapList, file);
+        List<MenuItemStack> projectiles = this.loadItemStackList(mapList, file);
         return projectiles.isEmpty() ? null : new ChargedProjectilesComponent(projectiles);
     }
 }

@@ -359,7 +359,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
      */
     @NotNull
     public Cuboid shift(@NotNull CuboidDirection dir, int amount) {
-        return expand(dir, amount).expand(dir.opposite(), -amount);
+        return this.expand(dir, amount).expand(dir.opposite(), -amount);
     }
 
     /**
@@ -373,10 +373,9 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
     @NotNull
     public Cuboid outset(@NotNull CuboidDirection dir, int amount) {
         return switch (dir) {
-            case Horizontal ->
-                    expand(CuboidDirection.North, amount).expand(CuboidDirection.South, amount).expand(CuboidDirection.East, amount).expand(CuboidDirection.West, amount);
-            case Vertical -> expand(CuboidDirection.Down, amount).expand(CuboidDirection.Up, amount);
-            case Both -> outset(CuboidDirection.Horizontal, amount).outset(CuboidDirection.Vertical, amount);
+            case Horizontal -> this.expand(CuboidDirection.North, amount).expand(CuboidDirection.South, amount).expand(CuboidDirection.East, amount).expand(CuboidDirection.West, amount);
+            case Vertical -> this.expand(CuboidDirection.Down, amount).expand(CuboidDirection.Up, amount);
+            case Both -> this.outset(CuboidDirection.Horizontal, amount).outset(CuboidDirection.Vertical, amount);
             default -> throw new IllegalArgumentException("Invalid direction " + dir);
         };
     }
@@ -481,7 +480,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
      */
     @NotNull
     public Cuboid contract(@NotNull CuboidDirection dir) {
-        Cuboid face = getFace(dir.opposite());
+        Cuboid face = this.getFace(dir.opposite());
         return switch (dir) {
             case Down -> {
                 while (face.containsOnly(0) && face.getLowerY() > this.getLowerY()) {
@@ -605,7 +604,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
      */
     @NotNull
     public Block getRelativeBlock(World w, int x, int y, int z) {
-        return w.getBlockAt(this.x1 + x, y1 + y, this.z1 + z);
+        return w.getBlockAt(this.x1 + x, this.y1 + y, this.z1 + z);
     }
 
     /**
@@ -665,7 +664,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
     @NotNull
     public Collection<LivingEntity> getEntities() {
         List<LivingEntity> entities = new ArrayList<>();
-        for (LivingEntity entity : getWorld().getLivingEntities()) {
+        for (LivingEntity entity : this.getWorld().getLivingEntities()) {
             if (this.contains(entity.getLocation())) {
                 entities.add(entity);
             }
@@ -720,7 +719,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
         public Block next() {
             Block b = this.w.getBlockAt(this.baseX + this.x, this.baseY + this.y, this.baseZ + this.z);
-            if (++x >= this.sizeX) {
+            if (++this.x >= this.sizeX) {
                 this.x = 0;
                 if (++this.y >= this.sizeY) {
                     this.y = 0;
@@ -735,30 +734,30 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
     }
 
     public String getWorldName() {
-        return worldName;
+        return this.worldName;
     }
 
     public int getX1() {
-        return x1;
+        return this.x1;
     }
 
     public int getY1() {
-        return y1;
+        return this.y1;
     }
 
     public int getZ1() {
-        return z1;
+        return this.z1;
     }
 
     public int getX2() {
-        return x2;
+        return this.x2;
     }
 
     public int getY2() {
-        return y2;
+        return this.y2;
     }
 
     public int getZ2() {
-        return z2;
+        return this.z2;
     }
 }

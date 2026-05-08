@@ -26,13 +26,13 @@ class AdvancementHandler {
 
         if (players.isEmpty()) return;
 
-        NamespacedKey advancementKey = createAdvancement(icon, message, style, modelData, modelDataType, glowing);
+        NamespacedKey advancementKey = this.createAdvancement(icon, message, style, modelData, modelDataType, glowing);
 
         var scheduler = this.plugin.getScheduler();
         for (Player p : players) {
             scheduler.runLater(() -> {
-                grantAdvancement(p, advancementKey);
-                scheduler.runLater(() -> revokeAdvancement(p, advancementKey), 10);
+                this.grantAdvancement(p, advancementKey);
+                scheduler.runLater(() -> this.revokeAdvancement(p, advancementKey), 10);
             }, 1);
         }
 
@@ -44,7 +44,7 @@ class AdvancementHandler {
      * Creates a single advancement and shows it to all players
      */
     void showToastToAll(String icon, String message, ToastType style, Object modelData, String modelDataType, boolean glowing) {
-       showToast(Bukkit.getOnlinePlayers(), icon, message, style, modelData, modelDataType, glowing);
+        this.showToast(Bukkit.getOnlinePlayers(), icon, message, style, modelData, modelDataType, glowing);
     }
 
     /**
@@ -230,7 +230,7 @@ class AdvancementHandler {
      */
     @NotNull
     private NamespacedKey createAdvancement(String icon, String message, ToastType style, Object modelData, String modelDataType, boolean glowing) {
-        String serverVersion = plugin.getServer().getVersion();
+        String serverVersion = this.plugin.getServer().getVersion();
 
         List<Map<String, Object>> msgList = ColorParser.process(message);
         String json = ColorParser.formatToJsonString(msgList);
@@ -238,7 +238,7 @@ class AdvancementHandler {
         icon = icon.toLowerCase().replace("İ", "I").replace("ı", "i");
 
         UUID randomUUID = UUID.randomUUID();
-        NamespacedKey advancementKey = new NamespacedKey(plugin, "anelib_" + randomUUID);
+        NamespacedKey advancementKey = new NamespacedKey(this.plugin, "anelib_" + randomUUID);
 
         VersionType versionType = ServerVersion.getVersionType(serverVersion);
 
@@ -248,14 +248,14 @@ class AdvancementHandler {
                 if (modelData == null) {
                     modelData = 0;
                 }
-                yield legacyType(icon, json, style, modelData, glowing, advancementKey);
+                yield this.legacyType(icon, json, style, modelData, glowing, advancementKey);
             }
             case MIDDLE -> {
                 // 1.20.5 - 1.21.3: Components format with integer CustomModelData
                 if (modelData == null) {
                     modelData = 0;
                 }
-                yield middleType(icon, json, style, modelData, glowing, advancementKey);
+                yield this.middleType(icon, json, style, modelData, glowing, advancementKey);
             }
             default -> {
                 // 1.21.4+: Components format with floats/strings arrays
@@ -263,7 +263,7 @@ class AdvancementHandler {
                     modelData = "anemys";
                     modelDataType = "string";
                 }
-                yield modernType(icon, json, style, modelData, modelDataType, glowing, advancementKey);
+                yield this.modernType(icon, json, style, modelData, modelDataType, glowing, advancementKey);
             }
         };
     }

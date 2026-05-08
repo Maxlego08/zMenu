@@ -37,6 +37,8 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
+import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
 import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
@@ -55,6 +57,7 @@ import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
 import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
+import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
@@ -114,8 +117,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
     private final ToastHelper toastHelper = new ToastManager(this);
     private final AttributApplier attributApplier = new ApplySpigotAttribute();
-    private final File configFile = new File(getDataFolder(), "config.yml");
+    private final File configFile = new File(this.getDataFolder(), "config.yml");
     private DialogManager dialogManager;
+    private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
     private PlatformScheduler scheduler;
     private DupeManager dupeManager;
@@ -143,7 +147,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         instance = this;
 
         this.saveDefaultConfig();
-        Configuration.getInstance().load(getConfig());
+        Configuration.getInstance().load(this.getConfig());
 
         if (this.packetManager != null) {
             this.packetManager.onEnable();
@@ -165,7 +169,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.componentsManager.initializeDefaultComponents(this);
 
-        List<String> files = getInventoriesFiles();
+        List<String> files = this.getInventoriesFiles();
         File folder = new File(this.getDataFolder(), "inventories");
 
         if (!folder.exists()) folder.mkdirs();
@@ -173,7 +177,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Configuration.generateDefaultFile) {
             files.forEach(filePath -> {
                 if (!new File(this.getDataFolder(), filePath).exists()) {
-                    saveResource(filePath, false);
+                    this.saveResource(filePath, false);
                 }
             });
         }
@@ -208,6 +212,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             }
         }
 
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
+            Logger.info("Geyser or Floodgate detected, loading Bedrock Inventory support");
+            this.bedrockManager = new ZBedrockManager(this);
+            this.addListener(new BedrockReplacementListener(this.bedrockManager));
+            servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
+        }
+
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
@@ -237,6 +248,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.websiteManager.registerPlaceholders();
         new MenuPlaceholders().register(this);
+        new ItemPlaceholders().register(this);
 
         ((ZDataManager) this.dataManager).registerPlaceholder(localPlaceholder);
 
@@ -255,7 +267,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.addListener(new DupeListener(this.dupeManager));
         }
 
-        if (!isActive(Plugins.ZMENUPLUS)) {
+        if (!this.isActive(Plugins.ZMENUPLUS)) {
             Logger.info("");
             Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
             Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
@@ -267,7 +279,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.dataManager.loadDefaultValues();
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
-        if (isActive(Plugins.PACKETEVENTS))
+        if (this.isActive(Plugins.PACKETEVENTS))
             this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
 
         this.postEnable();
@@ -405,7 +417,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
     }
 
-
     private List<String> getInventoriesFiles() {
         List<String> files = new ArrayList<>();
         files.add("inventories/basic_inventory.yml");
@@ -416,6 +427,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         files.add("inventories/examples/cookies.yml");
         files.add("inventories/examples/playtimes.yml");
         files.add("inventories/examples/switch.yml");
+        files.add("inventories/examples/item_drag.yml");
 
         files.add("commands/commands.yml");
         files.add("commands/punish/punish.yml");
@@ -426,11 +438,17 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
+        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
             files.add("dialogs/server_link-dialog.yml");
+        }
+
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
+            files.add("bedrock/custom-form.yml");
+            files.add("bedrock/modal-form.yml");
+            files.add("bedrock/simple-form.yml");
         }
 
         files.add("items/default-items.yml");
@@ -450,7 +468,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.vinventoryManager != null) this.vinventoryManager.close();
         this.inventoriesPlayer.restoreAllInventories();
 
-        Configuration.getInstance().save(getConfig(), this.configFile);
+        Configuration.getInstance().save(this.getConfig(), this.configFile);
 
         YamlFileCache.clearCache();
 
@@ -460,7 +478,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.itemManager.unloadListeners();
 
-        getServer().getServicesManager().unregisterAll(this);
+        this.getServer().getServicesManager().unregisterAll(this);
 
         this.postDisable();
     }
@@ -498,13 +516,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the commandManager
      */
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     /**
      * Returns the class that will manager the dialogs
      *
-     * @return the zDialogManager
+     * @return the DialogManager
      */
     @Override
     public DialogManager getDialogManager() {
@@ -530,6 +548,14 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     public ComponentsManager getComponentsManager() {
         return this.componentsManager;
     }
+
+    /**
+     * Returns the class that will manager the bedrock inventory
+     *
+     * @return the BedrockManager
+     */
+    @Override
+    public BedrockManager getBedrockManager() {return this.bedrockManager;}
 
     @Override
     public String[] getClickRequirementKeys() {
@@ -574,7 +600,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public Optional<PacketManager> getPacketManager() {
         return Optional.ofNullable(this.packetManager);
-
     }
 
     /**
@@ -583,7 +608,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the websitemanager
      */
     public ZWebsiteManager getWebsiteManager() {
-        return websiteManager;
+        return this.websiteManager;
     }
 
     /**
@@ -592,37 +617,37 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the commandMenu
      */
     public CommandMenu getCommandMenu() {
-        return commandMenu;
+        return this.commandMenu;
     }
 
     @Override
     public DataManager getDataManager() {
-        return dataManager;
+        return this.dataManager;
     }
 
     @Override
     public PlatformScheduler getScheduler() {
-        return scheduler;
+        return this.scheduler;
     }
 
     @Override
     public InventoriesPlayer getInventoriesPlayer() {
-        return inventoriesPlayer;
+        return this.inventoriesPlayer;
     }
 
     @Override
     public PatternManager getPatternManager() {
-        return patternManager;
+        return this.patternManager;
     }
 
     @Override
     public DupeManager getDupeManager() {
-        return dupeManager;
+        return this.dupeManager;
     }
 
     @Override
     public Enchantments getEnchantments() {
-        return enchantments;
+        return this.enchantments;
     }
 
     @Override
@@ -654,9 +679,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public <T> T getProvider(Class<T> classPath) {
-        RegisteredServiceProvider<T> provider = getServer().getServicesManager().getRegistration(classPath);
+        RegisteredServiceProvider<T> provider = this.getServer().getServicesManager().getRegistration(classPath);
         if (provider == null) {
-            getLogger().info("Unable to retrieve the provider " + classPath);
+            this.getLogger().info("Unable to retrieve the provider " + classPath);
             return null;
         }
         return provider.getProvider();
@@ -685,15 +710,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private void loadMeta() {
         if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
-            getLogger().info("Use ClassicMeta");
+            this.getLogger().info("Use ClassicMeta");
         } else {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
                 this.metaUpdater = new ComponentMeta(this);
-                getLogger().info("Use ComponentMeta");
+                this.getLogger().info("Use ComponentMeta");
             } catch (Exception ignored) {
                 this.metaUpdater = new ClassicMeta();
-                getLogger().info("Use ClassicMeta");
+                this.getLogger().info("Use ClassicMeta");
             }
         }
     }

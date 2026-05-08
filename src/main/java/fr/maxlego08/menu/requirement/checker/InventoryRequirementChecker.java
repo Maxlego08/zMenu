@@ -60,7 +60,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      */
     private void checkPatterns(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement) {
         for (String patternName : configuration.getStringList("patterns")) {
-            Optional<Pattern> optional = patternManager.getPattern(patternName);
+            Optional<Pattern> optional = this.patternManager.getPattern(patternName);
             if (optional.isEmpty()) {
                 inventoryLoadRequirement.addRequirement(InventoryRequirementType.PATTERN, patternName);
             }
@@ -101,7 +101,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
     private void checkButtons(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement) {
         ConfigurationSection section = configuration.getConfigurationSection("items.");
         if (section != null) {
-            section.getKeys(false).forEach(buttonPath -> checkButton(configuration, inventoryLoadRequirement, "items." + buttonPath + "."));
+            section.getKeys(false).forEach(buttonPath -> this.checkButton(configuration, inventoryLoadRequirement, "items." + buttonPath + "."));
         }
     }
 
@@ -142,7 +142,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
 
                     mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
 
-                    loadLocalPlaceholders(patternFile, mapPlaceholders);
+                    this.loadLocalPlaceholders(patternFile, mapPlaceholders);
 
                     patternFile = YamlParser.parseConfiguration(patternFile, mapPlaceholders);
                     this.checkButton(patternFile, inventoryLoadRequirement, "button.");
@@ -152,7 +152,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
         }
 
         // Check button
-        Optional<ButtonLoader> optional = buttonManager.getLoader(buttonType);
+        Optional<ButtonLoader> optional = this.buttonManager.getLoader(buttonType);
         if (optional.isEmpty()) {
             inventoryLoadRequirement.addRequirement(InventoryRequirementType.BUTTON, buttonType);
         }
@@ -190,7 +190,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
         if (section == null) return;
 
         for (String key : section.getKeys(false)) {
-            checkRequirement(configuration, path + sectionString + key + ".", inventoryLoadRequirement);
+            this.checkRequirement(configuration, path + sectionString + key + ".", inventoryLoadRequirement);
         }
     }
 
@@ -206,6 +206,6 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
         String requirementPath = configuration.isConfigurationSection(path + "view_requirement.") ? "view_requirement." : configuration.isConfigurationSection(path + "view-requirement.") ? "view-requirement." : null;
         if (requirementPath == null) return;
 
-        checkRequirement(configuration, path + requirementPath, inventoryLoadRequirement);
+        this.checkRequirement(configuration, path + requirementPath, inventoryLoadRequirement);
     }
 }

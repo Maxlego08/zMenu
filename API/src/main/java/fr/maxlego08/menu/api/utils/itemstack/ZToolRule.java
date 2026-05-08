@@ -12,14 +12,14 @@ public class ZToolRule<T> {
     }
 
     public T getData() {
-        return data;
+        return this.data;
     }
 
     public float getSpeed() {
-        return speed;
+        return this.speed;
     }
 
     public boolean isCorrectForDrop() {
-        return correctForDrop;
+        return this.correctForDrop;
     }
 }

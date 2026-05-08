@@ -26,7 +26,7 @@ public class SpigotFireworkExplosionItemComponentLoader extends AbstractFirework
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        Optional<FireworkEffect> fireworkEffect = loadFireworkEffect(componentSection.getValues(true));
+        Optional<FireworkEffect> fireworkEffect = this.loadFireworkEffect(componentSection.getValues(true));
         return fireworkEffect.map(FireworkExplosionComponent::new).orElse(null);
     }
 }

@@ -50,33 +50,33 @@ public class CommandMenuOpen extends VCommand {
         Player player = this.argAsPlayer(1, this.player);
         boolean displayMessage = this.argAsBoolean(2, Configuration.enableOpenMessage);
         if (player == null) {
-            message(plugin, this.sender, sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
+            this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
 
-        Optional<Inventory> optional = findInventory(inventoryName, inventoryManager);
+        Optional<Inventory> optional = this.findInventory(inventoryName, inventoryManager);
 
         if (optional.isEmpty()) {
-            message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+            this.message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
             return CommandType.DEFAULT;
         }
 
         if (displayMessage) {
             if (this.sender == player) {
-                message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
+                this.message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
             } else {
-                message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
+                this.message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
             }
         }
 
         int page = 1;
 
-        if (args.length >= 5) {
+        if (this.args.length >= 5) {
             CommandManager commandManager = plugin.getCommandManager();
 
-            for (int i = 4; i < args.length; i++) {
+            for (int i = 4; i < this.args.length; i++) {
                 String name = String.valueOf(i - 4);
-                StringBuilder value = new StringBuilder(args[i]);
+                StringBuilder value = new StringBuilder(this.args[i]);
                 if (value.toString().contains(":")) {
                     String[] values = value.toString().split(":", 2);
                     name = values[0];
@@ -84,12 +84,12 @@ public class CommandMenuOpen extends VCommand {
                     if (value.toString().startsWith("\"")) {
                         value = new StringBuilder(value.substring(value.indexOf("\"") + 1));
                         i++;
-                        while (i < args.length && !args[i].endsWith("\"")) {
-                            value.append(" ").append(args[i]);
+                        while (i < this.args.length && !this.args[i].endsWith("\"")) {
+                            value.append(" ").append(this.args[i]);
                             i++;
                         }
-                        if (i < args.length) {
-                            value.append(" ").append(args[i], 0, args[i].lastIndexOf("\""));
+                        if (i < this.args.length) {
+                            value.append(" ").append(this.args[i], 0, this.args[i].lastIndexOf("\""));
                         }
                     }
                 }

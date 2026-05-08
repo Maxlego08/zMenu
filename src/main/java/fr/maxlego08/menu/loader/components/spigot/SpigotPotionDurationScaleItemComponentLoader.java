@@ -23,7 +23,7 @@ public class SpigotPotionDurationScaleItemComponentLoader extends ItemComponentL
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         float durationScale = (float) configuration.getDouble(path, 1.0);
         return new PotionDurationScaleComponent(durationScale);
     }

@@ -29,13 +29,13 @@ public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemC
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        List<Float> floats = getFloats(componentSection);
+        List<Float> floats = this.getFloats(componentSection);
 
-        List<Boolean> booleans = getBooleans(componentSection);
+        List<Boolean> booleans = this.getBooleans(componentSection);
 
-        List<String> strings = getStrings(componentSection);
+        List<String> strings = this.getStrings(componentSection);
 
-        List<Color> colorList = getColors(componentSection);
+        List<Color> colorList = this.getColors(componentSection);
 
         if (colorList.isEmpty() && booleans.isEmpty() && floats.isEmpty() && strings.isEmpty()) {
             return null;
@@ -66,7 +66,7 @@ public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemC
         List<?> colorsList = section.getList("colors");
         if (colorsList != null) {
             for (Object obj : colorsList) {
-                Color color = parseColor(obj);
+                Color color = this.parseColor(obj);
                 if (color != null) {
                     colors.add(color);
                 }

@@ -101,16 +101,16 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
             YamlConfiguration patternYamlConfiguration = yamlFileEntry.get().getYamlConfiguration();
 
-            loadDefaultPatternValues(patternYamlConfiguration, mapPlaceholders);
+            this.loadDefaultPatternValues(patternYamlConfiguration, mapPlaceholders);
 
             mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
 
-            loadLocalPlaceholders(patternYamlConfiguration, mapPlaceholders);
+            this.loadLocalPlaceholders(patternYamlConfiguration, mapPlaceholders);
 
             patternYamlConfiguration = YamlParser.parseConfiguration(patternYamlConfiguration, mapPlaceholders);
             Button patternButton = this.load(patternYamlConfiguration, "button.", buttonName, actionPatterns);
             // Load view requirements for the pattern button (from main config)
-            loadViewRequirements(patternButton, configuration, path, file);
+            this.loadViewRequirements(patternButton, configuration, path, this.file);
 
             // Load else button from main config if present
             if (configuration.contains(path + "else")) {
@@ -156,12 +156,12 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 slot = Integer.parseInt(strings[1]);
             } else {
 
-                slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
-                page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
+                slot = this.parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+                page = this.parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
             }
         } catch (Exception ignored) {
-            slot = parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
-            page = parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
+            slot = this.parseInt(configuration.getString(path + "slot", null), defaultButtonValue.getSlot());
+            page = this.parseInt(configuration.getString(path + "page", null), defaultButtonValue.getPage());
         }
 
         page = Math.max(page, 1);
@@ -202,7 +202,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));
 
-        ZMenuItemStack itemStack = (ZMenuItemStack) itemStackLoader.load(configuration, path + "item.", file);
+        ZMenuItemStack itemStack = (ZMenuItemStack) itemStackLoader.load(configuration, path + "item.", this.file);
         button.setItemStack(itemStack);
 
         button.setButtonName(buttonName);
@@ -223,6 +223,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
         button.setMasterButtonUpdated(configuration.getBoolean(path + "updateMasterButton", configuration.getBoolean(path + "update-master-button", defaultButtonValue.isUpdateMasterButton())));
         button.setRefreshOnClick(configuration.getBoolean(path + "refreshOnClick", configuration.getBoolean(path + "refresh-on-click", defaultButtonValue.isRefreshOnClick())));
+        button.setRefreshOnDrag(configuration.getBoolean(path + "refreshOnDrag", configuration.getBoolean(path + "refresh-on-drag", defaultButtonValue.isRefreshOnDrag())));
         button.setUseCache(configuration.getBoolean(path + "useCache", configuration.getBoolean(path + "use-cache", defaultButtonValue.isUseCache())));
         button.setOpenAsync(configuration.getBoolean(path + "openAsync", configuration.getBoolean(path + "open-async", false)));
 
@@ -318,9 +319,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<Map<String, Object>> placeholderMaps = (List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>());
         List<PlaceholderPermissible> placeholders = new ArrayList<>();
         for (Map<String, Object> map : placeholderMaps) {
-            PlaceholderPermissible permissible = (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), file);
+            PlaceholderPermissible permissible = (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), this.file);
             if (permissible == null || !permissible.isValid()) {
-                Logger.info("A placeholder is invalid in the placeholder list of the button " + path + " in file " + file.getAbsolutePath(), Logger.LogType.ERROR);
+                Logger.info("A placeholder is invalid in the placeholder list of the button " + path + " in file " + this.file.getAbsolutePath(), Logger.LogType.ERROR);
                 continue;
             }
             placeholders.add(permissible);
@@ -383,14 +384,14 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setConsolePermission(consolePermission);
 
         // Load view requirements
-        loadViewRequirements(button, configuration, path, file);
+        this.loadViewRequirements(button, configuration, path, this.file);
         // Load clicks requirements
-        loadClickRequirements(button, configuration, path, file, actionPatterns);
+        this.loadClickRequirements(button, configuration, path, this.file, actionPatterns);
         // Load refresh requirements
-        loadRefreshRequirements(button, configuration, path, file);
+        this.loadRefreshRequirements(button, configuration, path, this.file);
         // Load actions
         boolean stopOnEmpty = configuration.getBoolean(path + "stop-on-empty", true);
-        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", file, actionPatterns, true, stopOnEmpty);
+        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", this.file, actionPatterns, true, stopOnEmpty);
 
         button.setActions(actions);
 
@@ -399,13 +400,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         List<ButtonOption> buttonOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends ButtonOption>>> entry : inventoryManager.getOptions().entrySet()) {
             for (Class<? extends ButtonOption> optionClass : entry.getValue()) {
-                ButtonOption instance = createInstance(entry.getKey(), optionClass);
+                ButtonOption instance = this.createInstance(entry.getKey(), optionClass);
                 if (instance != null) {
                     buttonOptions.add(instance);
                 }
             }
         }
-        buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, file));
+        buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, this.file));
         button.setOptions(buttonOptions);
 
         ButtonLoadEvent buttonLoadEvent = new ButtonLoadEvent(configuration, path, buttonManager, loader, button);

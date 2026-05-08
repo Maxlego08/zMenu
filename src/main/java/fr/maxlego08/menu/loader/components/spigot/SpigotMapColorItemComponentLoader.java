@@ -24,10 +24,10 @@ public class SpigotMapColorItemComponentLoader extends AbstractColorItemComponen
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         Object o = configuration.get(path);
         if (o == null) return null;
-        Color color = parseColor(o);
+        Color color = this.parseColor(o);
         return color == null ? null : new MapColorComponent(color);
     }
 }

@@ -20,6 +20,6 @@ public class MainMenuLoader extends ButtonLoader {
 
     @Override
     public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
-        return new ZMainMenuButton(manager);
+        return new ZMainMenuButton(this.manager);
     }
 }

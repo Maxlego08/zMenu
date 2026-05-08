@@ -29,7 +29,7 @@ public class SpigotInstrumentItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             String instrumentName = configuration.getString(path, "");
             if (!instrumentName.isBlank()) {
                 NamespacedKey key = NamespacedKey.fromString(instrumentName);

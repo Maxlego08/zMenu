@@ -28,8 +28,8 @@ public class CuboidPermissibleLoader extends PermissibleLoader {
     @Override
     public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
 
-        List<Action> denyActions = loadAction(this.buttonManager, accessor, "deny", path, file);
-        List<Action> successActions = loadAction(this.buttonManager, accessor, "success", path, file);
+        List<Action> denyActions = this.loadAction(this.buttonManager, accessor, "deny", path, file);
+        List<Action> successActions = this.loadAction(this.buttonManager, accessor, "success", path, file);
 
         var cuboids = accessor.getStringList("cuboids", new ArrayList<>());
         if (cuboids.isEmpty()) {

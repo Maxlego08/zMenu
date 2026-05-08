@@ -13,7 +13,7 @@ public class ItemUpdaterListener extends ListenerAdapter{
 
     @Override
     protected void onConnect(PlayerJoinEvent event, Player player) {
-        itemManager.executeCheckInventoryItems(player);
+        this.itemManager.executeCheckInventoryItems(player);
     }
 
 }

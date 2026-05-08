@@ -29,12 +29,12 @@ public class OpenWithItem {
 
     @NotNull
     public MenuItemStack getItemStack() {
-        return menuItemStack;
+        return this.menuItemStack;
     }
 
     @NotNull
     public List<Action> getActions() {
-        return actions;
+        return this.actions;
     }
 
     public boolean shouldTrigger(@NotNull PlayerInteractEvent event) {

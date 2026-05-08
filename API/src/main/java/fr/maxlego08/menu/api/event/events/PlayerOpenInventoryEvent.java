@@ -25,18 +25,18 @@ public class PlayerOpenInventoryEvent extends CancelledMenuEvent {
     @Contract(pure = true)
     @NotNull
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     @Contract(pure = true)
     @NotNull
     public Inventory getInventory() {
-        return inventory;
+        return this.inventory;
     }
 
     @Contract(pure = true)
     public int getPage() {
-        return page;
+        return this.page;
     }
 
     public void setPage(int page) {
@@ -46,7 +46,7 @@ public class PlayerOpenInventoryEvent extends CancelledMenuEvent {
     @Contract(pure = true)
     @NotNull
     public List<Inventory> getOldInventories() {
-        return oldInventories;
+        return this.oldInventories;
     }
 
     public void setOldInventories(@NotNull List<Inventory> oldInventories) {

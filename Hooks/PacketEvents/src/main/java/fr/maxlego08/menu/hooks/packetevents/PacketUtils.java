@@ -115,11 +115,11 @@ public class PacketUtils implements InventoryListener, PacketManager {
     }
 
     public PacketAnimationListener getPacketAnimationListener() {
-        return packetAnimationListener;
+        return this.packetAnimationListener;
     }
 
     public PacketTitleListener getPacketTitleListener() {
-        return packetTitleListener;
+        return this.packetTitleListener;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class MessageToAction extends MessageAction {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        String parsedPlayer = papi(placeholders.parse(this.targetPlayer), player);
+        String parsedPlayer = this.papi(placeholders.parse(this.targetPlayer), player);
         Player target = Bukkit.getPlayerExact(parsedPlayer);
         super.execute(target == null ? player : target, button, inventory, placeholders);
     }

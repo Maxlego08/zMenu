@@ -18,7 +18,7 @@ public class ItemNameComponent extends ItemComponent {
     }
 
     public @Nullable String getItemName() {
-        return itemName;
+        return this.itemName;
     }
 
     @Override

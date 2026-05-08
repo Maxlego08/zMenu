@@ -23,7 +23,7 @@ public class CommandMenuPlayersRemoveAll extends VCommand {
         DataManager dataManager = plugin.getDataManager();
         String key = this.argAsString(0);
         dataManager.clearKey(key);
-        message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ALL_SUCCESS, "%key%", key);
+        this.message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ALL_SUCCESS, "%key%", key);
 
         return CommandType.SUCCESS;
     }

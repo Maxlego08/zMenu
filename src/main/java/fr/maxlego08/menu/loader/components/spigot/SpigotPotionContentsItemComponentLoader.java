@@ -49,7 +49,7 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
             color = this.parseColor(customColor);
         }
 
-        List<PotionEffect> customEffects = parsePotionEffects(componentSection.getMapList("custom-effects"));
+        List<PotionEffect> customEffects = this.parsePotionEffects(componentSection.getMapList("custom-effects"));
 
         String customName = componentSection.getString("custom-name", null);
         return new PotionContentsComponent(basePotionType, customName, color, customEffects);

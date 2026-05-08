@@ -34,7 +34,7 @@ public class CommandMenuPlayersKeys extends VCommand {
 
         Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
         if (optional.isEmpty()) {
-            message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", player.getName());
+            this.message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", player.getName());
             return CommandType.SUCCESS;
         }
 
@@ -42,7 +42,7 @@ public class CommandMenuPlayersKeys extends VCommand {
         Collection<Data> collection = playerData.getDatas();
 
         if (collection.isEmpty()) {
-            message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY);
+            this.message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY);
             return CommandType.SUCCESS;
         }
 
@@ -50,8 +50,8 @@ public class CommandMenuPlayersKeys extends VCommand {
         for (Data data : collection) {
             keyList.add(data.getKey());
         }
-        String keys = toList(keyList, "§8", "§7");
-        message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
+        String keys = this.toList(keyList, "§8", "§7");
+        this.message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
 
         return CommandType.SUCCESS;
     }

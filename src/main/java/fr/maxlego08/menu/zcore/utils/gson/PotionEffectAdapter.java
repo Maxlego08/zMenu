@@ -37,7 +37,7 @@ public class PotionEffectAdapter extends TypeAdapter<PotionEffect> {
             jsonWriter.nullValue();
             return;
         }
-        jsonWriter.value(getRaw(potionEffect));
+        jsonWriter.value(this.getRaw(potionEffect));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class PotionEffectAdapter extends TypeAdapter<PotionEffect> {
             jsonReader.nextNull();
             return null;
         }
-        return fromRaw(jsonReader.nextString());
+        return this.fromRaw(jsonReader.nextString());
     }
 
     private String getRaw(PotionEffect potion) {

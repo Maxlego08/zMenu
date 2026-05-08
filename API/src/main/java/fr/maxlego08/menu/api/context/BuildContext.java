@@ -31,5 +31,10 @@ public interface BuildContext {
      */
     @NotNull Placeholders getPlaceholders();
 
+    /**
+     * Used as base for the build
+     *
+     * @return the ItemStack associated with this build context, or {@code null} if none is applicable.
+     */
     ItemStack getItemStack();
 }

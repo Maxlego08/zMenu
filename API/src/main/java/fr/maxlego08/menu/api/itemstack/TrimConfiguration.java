@@ -20,19 +20,19 @@ public class TrimConfiguration {
     // Getters
     @Contract(pure = true)
     public boolean isEnable() {
-        return enable;
+        return this.enable;
     }
 
     @Contract(pure = true)
     @NotNull
     public TrimMaterial getMaterial() {
-        return material;
+        return this.material;
     }
 
     @Contract(pure = true)
     @NotNull
     public TrimPattern getPattern() {
-        return pattern;
+        return this.pattern;
     }
 
     // Setters
@@ -52,9 +52,9 @@ public class TrimConfiguration {
     @Override
     public String toString() {
         return "TrimConfiguration{" +
-                "enable=" + enable +
-                ", material=" + material +
-                ", pattern=" + pattern +
+                "enable=" + this.enable +
+                ", material=" + this.material +
+                ", pattern=" + this.pattern +
                 '}';
     }
 }

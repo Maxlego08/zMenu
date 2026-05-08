@@ -43,42 +43,42 @@ public class ZPatternManager implements PatternManager {
 
     @Override
     public @NonNull Collection<Pattern> getPatterns() {
-        return patterns.values();
+        return this.patterns.values();
     }
 
     @Override
     public @NonNull Collection<ActionPattern> getActionPatterns() {
-        return actionPatterns.values();
+        return this.actionPatterns.values();
     }
 
     @Override
     public @NonNull Optional<Pattern> getPattern(String name) {
-        return Optional.ofNullable(patterns.getOrDefault(name, null));
+        return Optional.ofNullable(this.patterns.getOrDefault(name, null));
     }
 
     @Override
     public @NonNull Optional<ActionPattern> getActionPattern(String name) {
-        return Optional.ofNullable(actionPatterns.get(name));
+        return Optional.ofNullable(this.actionPatterns.get(name));
     }
 
     @Override
     public void registerPattern(@NonNull Pattern pattern) {
-        patterns.put(pattern.name(), pattern);
+        this.patterns.put(pattern.name(), pattern);
     }
 
     @Override
     public void registerActionPattern(@NotNull ActionPattern pattern) {
-        actionPatterns.put(pattern.name(), pattern);
+        this.actionPatterns.put(pattern.name(), pattern);
     }
 
     @Override
     public void unregisterPattern(@NonNull Pattern pattern) {
-        patterns.remove(pattern.name());
+        this.patterns.remove(pattern.name());
     }
 
     @Override
     public void unregisterActionPattern(@NonNull ActionPattern pattern) {
-        actionPatterns.remove(pattern.name());
+        this.actionPatterns.remove(pattern.name());
     }
 
     @Override
@@ -121,12 +121,12 @@ public class ZPatternManager implements PatternManager {
 
     @Override
     public void loadPatterns() {
-        loadFromFolder("patterns", this::loadPattern);
+        this.loadFromFolder("patterns", this::loadPattern);
     }
 
     @Override
     public void loadActionsPatterns() {
-        loadFromFolder("actions_patterns", this::loadActionPattern);
+        this.loadFromFolder("actions_patterns", this::loadActionPattern);
     }
 
     private void loadFromFolder(String folderName, ThrowingFileLoader loader) {

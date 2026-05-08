@@ -68,12 +68,12 @@ public class BarApi {
     }
 
     public BarApi all() {
-        addAll = true;
+        this.addAll = true;
         return this;
     }
 
     public BarApi personnal() {
-        personnal = true;
+        this.personnal = true;
         return this;
     }
 
@@ -81,41 +81,41 @@ public class BarApi {
      * @return the message
      */
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     /**
      * @return the color
      */
     public BarColor getColor() {
-        return color;
+        return this.color;
     }
 
     /**
      * @return the style
      */
     public BarStyle getStyle() {
-        return style;
+        return this.style;
     }
 
     /**
      * @return the flags
      */
     public BarFlag[] getFlags() {
-        return flags;
+        return this.flags;
     }
 
     public void start() {
 
-        if (player != null)
-            startPersonnal(player);
-        else if (personnal)
-            startPersonnal();
+        if (this.player != null)
+            this.startPersonnal(this.player);
+        else if (this.personnal)
+            this.startPersonnal();
         else {
-            BossBar bar = Bukkit.createBossBar(message, color, style, flags);
-            if (addAll)
+            BossBar bar = Bukkit.createBossBar(this.message, this.color, this.style, this.flags);
+            if (this.addAll)
                 Bukkit.getOnlinePlayers().forEach(bar::addPlayer);
-            barTask(bar, null);
+            this.barTask(bar, null);
         }
     }
 
@@ -125,9 +125,9 @@ public class BarApi {
 
     private void startPersonnal(Player player) {
 
-        BossBar bar = Bukkit.createBossBar(consumer != null ? consumer.accept(player) : message, color, style, flags);
+        BossBar bar = Bukkit.createBossBar(this.consumer != null ? this.consumer.accept(player) : this.message, this.color, this.style, this.flags);
         bar.addPlayer(player);
-        barTask(bar, () -> bar.setTitle(consumer != null ? consumer.accept(player) : message));
+        this.barTask(bar, () -> bar.setTitle(this.consumer != null ? this.consumer.accept(player) : this.message));
 
     }
 
@@ -139,13 +139,13 @@ public class BarApi {
             @Override
             public void run() {
 
-                if (!plugin.isEnabled()) {
-                    cancel();
+                if (!BarApi.this.plugin.isEnabled()) {
+                    this.cancel();
                     return;
                 }
 
-                if (barC <= 0.0) {
-                    cancel();
+                if (this.barC <= 0.0) {
+                    this.cancel();
                     bar.removeAll();
                     return;
                 }
@@ -153,11 +153,11 @@ public class BarApi {
                 if (runnable != null)
                     runnable.run();
 
-                bar.setProgress(barC);
-                barC -= 0.001;
+                bar.setProgress(this.barC);
+                this.barC -= 0.001;
 
             }
-        }, 0, delay);
+        }, 0, this.delay);
     }
 
     public BarApi user(Player player) {

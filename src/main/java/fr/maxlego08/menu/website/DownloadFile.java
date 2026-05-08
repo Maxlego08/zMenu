@@ -20,7 +20,7 @@ public class DownloadFile extends ZUtils {
 
     public void download(Plugin plugin, CommandSender sender, String link) {
 
-        String fileName = generateRandomString(5);
+        String fileName = this.generateRandomString(5);
         File folder = this.getFolder(plugin);
         File output = new File(folder, fileName + ".zip");
 
@@ -78,7 +78,7 @@ public class DownloadFile extends ZUtils {
             while (zipEntry != null) {
 
                 boolean isDirectory = zipEntry.getName().endsWith(File.separator) || zipEntry.getName().endsWith("/");
-                Path newPath = zipSlipProtect(zipEntry, target);
+                Path newPath = this.zipSlipProtect(zipEntry, target);
 
                 if (isDirectory) {
                     Files.createDirectories(newPath);

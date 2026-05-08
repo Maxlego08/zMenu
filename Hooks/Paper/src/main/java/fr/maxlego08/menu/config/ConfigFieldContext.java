@@ -42,39 +42,39 @@ public class ConfigFieldContext {
     }
 
     public List<InputButton> getInputButtons() {
-        return Collections.unmodifiableList(inputButtons);
+        return Collections.unmodifiableList(this.inputButtons);
     }
 
     public Map<String, Consumer<Boolean>> getBooleanConsumers() {
-        return Collections.unmodifiableMap(booleanConsumers);
+        return Collections.unmodifiableMap(this.booleanConsumers);
     }
 
     public Map<String, Consumer<Float>> getFloatConsumers() {
-        return Collections.unmodifiableMap(floatConsumers);
+        return Collections.unmodifiableMap(this.floatConsumers);
     }
 
     public Map<String, Consumer<Integer>> getIntegerConsumers() {
-        return Collections.unmodifiableMap(integerConsumers);
+        return Collections.unmodifiableMap(this.integerConsumers);
     }
 
     public Map<String, Consumer<String>> getStringConsumers() {
-        return Collections.unmodifiableMap(stringConsumers);
+        return Collections.unmodifiableMap(this.stringConsumers);
     }
 
     public Map<String, Consumer<Long>> getLongConsumers() {
-        return Collections.unmodifiableMap(longConsumers);
+        return Collections.unmodifiableMap(this.longConsumers);
     }
 
     public boolean isEmpty() {
-        return inputButtons.isEmpty();
+        return this.inputButtons.isEmpty();
     }
 
     public int size() {
-        return inputButtons.size();
+        return this.inputButtons.size();
     }
 
     public Consumer<Boolean> getUpdateConsumer() {
-        return updateConsumer;
+        return this.updateConsumer;
     }
 
     public void setUpdateConsumer(Consumer<Boolean> updateConsumer) {

@@ -36,14 +36,14 @@ public class ElapsedTime extends ZUtils {
      * @return the start
      */
     public long getStart() {
-        return start;
+        return this.start;
     }
 
     /**
      * @return the end
      */
     public long getEnd() {
-        return end;
+        return this.end;
     }
 
     public long getElapsedTime() {
@@ -51,13 +51,13 @@ public class ElapsedTime extends ZUtils {
     }
 
     public void endDisplay() {
-        endDisplay(false);
+        this.endDisplay(false);
     }
 
     public void endDisplay(boolean b) {
         this.end();
         if (Configuration.enableDebugTime || b) {
-            Logger.info("[ElapsedTime] " + name + " -> " + super.format(this.getElapsedTime(), ' '));
+            Logger.info("[ElapsedTime] " + this.name + " -> " + super.format(this.getElapsedTime(), ' '));
         }
     }
 

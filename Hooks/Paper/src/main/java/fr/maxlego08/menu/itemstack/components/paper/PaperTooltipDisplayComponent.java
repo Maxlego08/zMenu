@@ -18,6 +18,6 @@ public class PaperTooltipDisplayComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, this.tooltipDisplay);
     }
 }

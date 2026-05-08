@@ -27,7 +27,7 @@ public class MaxStackSizeItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         int maxStackSize = configuration.getInt(path);
         if (maxStackSize > 0) {
             return this.plugin.isPaperOrFolia() ? new PaperMaxStackSizeComponent(maxStackSize) : new SpigotMaxStackSizeComponent(maxStackSize);

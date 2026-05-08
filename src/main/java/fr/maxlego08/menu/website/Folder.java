@@ -30,13 +30,13 @@ public record Folder(int id, String name, int userId, Integer parentId, String c
     @Override
     public @NotNull String toString() {
         return "Folder{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", userId=" + userId +
-                ", parentId=" + parentId +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", inventories=" + inventories +
+                "id=" + this.id +
+                ", name='" + this.name + '\'' +
+                ", userId=" + this.userId +
+                ", parentId=" + this.parentId +
+                ", createdAt='" + this.createdAt + '\'' +
+                ", updatedAt='" + this.updatedAt + '\'' +
+                ", inventories=" + this.inventories +
                 '}';
     }
 }

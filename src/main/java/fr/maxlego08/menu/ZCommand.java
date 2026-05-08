@@ -29,7 +29,7 @@ public record ZCommand(Plugin plugin, String command, List<String> aliases, bool
 
     @Override
     public @NotNull String toString() {
-        return "ZCommand{" + "plugin=" + plugin + ", command='" + command + '\'' + ", aliases=" + aliases + ", permission='" + permission + '\'' + ", inventory='" + inventory + '\'' + ", arguments=" + arguments + ", actions=" + actions + ", subCommands=" + subCommands + ", actions-requirements=" + actions_requirements + ", path='" + path + '\'' + ", file=" + file + '}';
+        return "ZCommand{" + "plugin=" + this.plugin + ", command='" + this.command + '\'' + ", aliases=" + this.aliases + ", permission='" + this.permission + '\'' + ", inventory='" + this.inventory + '\'' + ", arguments=" + this.arguments + ", actions=" + this.actions + ", subCommands=" + this.subCommands + ", actions-requirements=" + this.actions_requirements + ", path='" + this.path + '\'' + ", file=" + this.file + '}';
     }
 
     @Override

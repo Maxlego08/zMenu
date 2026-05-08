@@ -29,6 +29,8 @@ public enum Plugins {
 	ZMENUPLUS("zMenuPlus"),
     BREWERYX("BreweryX"),
     PACKETEVENTS("packetevents"),
+    GEYSER("Geyser-Spigot"),
+    FLOODGATE("floodgate"),
     MMOITEMS("MMOItems");
 	private final String name;
 
@@ -40,6 +42,6 @@ public enum Plugins {
 	 * @return the name
 	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 }

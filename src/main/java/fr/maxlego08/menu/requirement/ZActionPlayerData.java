@@ -57,19 +57,19 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     @Override
     public @NonNull Data toData(OfflinePlayer player) {
-        return toData(player, new Placeholders());
+        return this.toData(player, new Placeholders());
     }
 
     @Override
     public @NonNull Data toData(OfflinePlayer player, @NonNull Placeholders placeholders) {
         long seconds;
         try {
-            seconds = Long.parseLong(papi(this.seconds,player,false));
+            seconds = Long.parseLong(this.papi(this.seconds,player,false));
         } catch (Exception e) {
             seconds = 0;
         }
         long expiredAt = seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
-        String result = placeholders.parse(papi(this.value.toString(), player, false));
+        String result = placeholders.parse(this.papi(this.value.toString(), player, false));
         String dataValue = this.enableMathExpression ? String.valueOf((int) new ExpressionBuilder(result).build().evaluate()) : result;
         return new ZData(this.papi(this.key, player, false), dataValue, expiredAt);
     }
@@ -79,12 +79,12 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
      */
     @Override
     public String toString() {
-        return "ZActionPlayerData [key=" + key + ", type=" + type + ", value=" + value + ", seconds=" + seconds + "]";
+        return "ZActionPlayerData [key=" + this.key + ", type=" + this.type + ", value=" + this.value + ", seconds=" + this.seconds + "]";
     }
 
     @Override
     public void execute(@NonNull Player player, @NonNull DataManager dataManager) {
-        execute(player, dataManager, new Placeholders());
+        this.execute(player, dataManager, new Placeholders());
     }
 
     @Override
@@ -98,9 +98,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                String result = placeholders.parse(papi(this.value.toString(), player, false));
+                String result = placeholders.parse(this.papi(this.value.toString(), player, false));
                 data.add(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
-                storageManager.upsertData(player.getUniqueId(), data);
+                this.storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 dataManager.addData(player.getUniqueId(), this.toData(player,placeholders));
             }
@@ -109,9 +109,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             Optional<Data> optional = dataManager.getData(player.getUniqueId(), this.papi(this.key, player, false));
             if (optional.isPresent()) {
                 Data data = optional.get();
-                String result = placeholders.parse(papi(this.value.toString(), player, false));
+                String result = placeholders.parse(this.papi(this.value.toString(), player, false));
                 data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
-                storageManager.upsertData(player.getUniqueId(), data);
+                this.storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 var data = this.toData(player,placeholders);
                 data.negate();

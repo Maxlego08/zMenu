@@ -27,7 +27,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
 
     @Override
     public void storeInventory(@NonNull Player player) {
-        storeInventory(player, false);
+        this.storeInventory(player, false);
     }
 
     public void storeInventory(@NonNull Player player, boolean temporary) {
@@ -37,10 +37,10 @@ public class ZInventoryPlayer implements InventoryPlayer {
         PlayerInventory playerInventory = player.getInventory();
         ItemStack[] content = playerInventory.getContents();
         for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
-            clear(slot, playerInventory, content, player, true, clearInvType);
+            this.clear(slot, playerInventory, content, player, true, clearInvType);
         }
         if (!NMSUtils.isOneHand()) {
-            clear(40, playerInventory, content, player, true, clearInvType);
+            this.clear(40, playerInventory, content, player, true, clearInvType);
         }
     }
 
@@ -61,7 +61,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content, Player player, boolean save, ClearInvType clearInvType) {
         ItemStack itemStack = content[slot];
         if (itemStack != null && save) {
-            items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
+            this.items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
         }
         clearInvType.getRemoveItem().accept(player, slot, playerInventory);
     }
@@ -69,15 +69,15 @@ public class ZInventoryPlayer implements InventoryPlayer {
     @Override
     public void giveInventory(@NonNull Player player) {
         PlayerInventory playerInventory = player.getInventory();
-        items.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(encodedItemStack)));
+        this.items.forEach((slot, encodedItemStack) -> playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(encodedItemStack)));
     }
 
     @Override
     public void forceGiveInventory(@NonNull Player player) {
         PlayerInventory playerInventory = player.getInventory();
-        for (int slot = 0; slot <= MAX_INVENTORY_SIZE; slot++) {
-            if (items.containsKey(slot)) {
-                playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(items.get(slot)));
+        for (int slot = 0; slot <= this.MAX_INVENTORY_SIZE; slot++) {
+            if (this.items.containsKey(slot)) {
+                playerInventory.setItem(slot, ItemStackUtils.deserializeItemStack(this.items.get(slot)));
             } else {
                 ItemStack itemStack = playerInventory.getItem(slot);
                 if (itemStack != null && this.plugin.getDupeManager().isDupeItem(itemStack)) {
@@ -93,7 +93,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
         for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
             encodedItems.put(entry.getKey(), ItemStackUtils.serializeItemStack(entry.getValue()));
         }
-        setItemsFromEncode(encodedItems);
+        this.setItemsFromEncode(encodedItems);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
     @Override
     public void setItems(@NonNull List<ItemStack> items) {
         this.items.clear();
-        for (int slot = 0; slot != Math.min(items.size(), MAX_INVENTORY_SIZE); slot++) {
+        for (int slot = 0; slot != Math.min(items.size(), this.MAX_INVENTORY_SIZE); slot++) {
             ItemStack itemStack = items.get(slot);
             if (itemStack != null) {
                 this.items.put(slot, ItemStackUtils.serializeItemStack(itemStack));
