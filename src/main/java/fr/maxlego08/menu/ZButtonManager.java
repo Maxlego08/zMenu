@@ -185,6 +185,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 if (action != null) {
                     action.setDelay(accessor.getInt("delay", 0));
                     action.setChance(accessor.getFloat("chance", 100));
+                    action.setDebug(accessor.getBoolean("debug", false));
                     action.setType(type);
                     List<Map<String, Object>> denyChanceAction = accessor.getMapList("deny-chance-actions");
                     if (!denyChanceAction.isEmpty()) {

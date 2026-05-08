@@ -25,6 +25,7 @@ public abstract class Action {
      */
     private int delay;
     private float chance;
+    protected boolean debug = false;
 
     /**
      * The type of the action.
@@ -63,6 +64,14 @@ public abstract class Action {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public boolean isDebug() {
+        return this.debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     @Contract(pure= true)
