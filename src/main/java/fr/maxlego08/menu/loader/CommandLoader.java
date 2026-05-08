@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -45,6 +46,7 @@ public class CommandLoader implements Loader<Command> {
         boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", false);
 
         List<Action> commandActions = menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
+        List<Requirement> requirements = this.menuPlugin.getButtonManager().loadRequirements(configuration, path + "actions-requirements", file);
         List<CommandArgument> arguments = new ArrayList<>();
         List<?> listValues = configuration.getList(path + "arguments", new ArrayList<>());
         if (isListOfMap(listValues)) {
@@ -98,7 +100,7 @@ public class CommandLoader implements Loader<Command> {
             }
         }
 
-        return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, denyMessage, path, file);
+        return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, requirements, denyMessage, path, file);
     }
 
     @Override

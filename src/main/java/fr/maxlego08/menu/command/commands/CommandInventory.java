@@ -135,6 +135,7 @@ public class CommandInventory extends VCommand {
         }
 
         if (performMainActions) {
+            this.command.actions_requirements().forEach(requirement -> requirement.execute(player, null, inventoryDefault, placeholders));
             this.command.actions().forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
             optional.ifPresent(inventory -> manager.openInventory(this.player, inventory));
         }
