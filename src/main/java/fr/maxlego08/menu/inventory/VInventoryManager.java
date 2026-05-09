@@ -191,7 +191,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         if (holder instanceof VInventory vInventory) {
             if (vInventory instanceof InventoryDefault inventoryDefault) {
                 fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
-                if (menu != null && menu.shouldCancelItemPickup()) {
+                if (menu != null && (menu.shouldCancelItemPickup() || menu.cleanInventory())) {
                     event.setCancelled(true);
                 }
             }
