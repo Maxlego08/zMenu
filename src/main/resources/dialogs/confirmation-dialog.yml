@@ -15,7 +15,7 @@ after-action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
 body:
   # Plain message section
   plain_message:
-    type: dialog_plain_message
+    type: dialog_dialog_plain_message
     messages:
       - "&6&lWelcome to our amazing server!"
       - ""
@@ -67,7 +67,7 @@ body:
 
   # Another message section
   server_rules:
-    type: dialog_plain_message
+    type: dialog_dialog_plain_message
     messages:
       - "&a&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       - "&6Server Rules"
