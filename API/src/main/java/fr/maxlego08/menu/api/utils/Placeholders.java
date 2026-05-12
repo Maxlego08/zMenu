@@ -9,13 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Placeholders {
-
-    private final Map<String, String> placeholders;
-
-    public Placeholders(Map<String, String> placeholders) {
-        this.placeholders = placeholders;
-    }
+public record Placeholders(Map<String, String> placeholders) {
 
     public Placeholders() {
         this(new HashMap<>());
@@ -27,7 +21,7 @@ public class Placeholders {
      * @param key   the key of the placeholder.
      * @param value the value of the placeholder.
      */
-    public void register(@Nullable String key,@Nullable String value) {
+    public void register(@Nullable String key, @Nullable String value) {
         this.placeholders.put(key, value);
     }
 
@@ -36,8 +30,9 @@ public class Placeholders {
      *
      * @return the map of placeholders.
      */
+    @Override
     @NotNull
-    public Map<String, String> getPlaceholders() {
+    public Map<String, String> placeholders() {
         return this.placeholders;
     }
 
@@ -87,7 +82,7 @@ public class Placeholders {
      * @return the parsed string
      */
     @NotNull
-    public String parse(@NotNull String string,@NotNull String key,@NotNull String value) {
+    public String parse(@NotNull String string, @NotNull String key, @NotNull String value) {
         try {
             if (!string.contains("%")) return string;
 
@@ -131,6 +126,6 @@ public class Placeholders {
     }
 
     public void merge(@NotNull Placeholders placeholders) {
-        this.placeholders.putAll(placeholders.getPlaceholders());
+        this.placeholders.putAll(placeholders.placeholders());
     }
 }

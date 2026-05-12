@@ -97,7 +97,7 @@ public interface BedrockInventory extends Inventory {
     }
 
     @Override
-    default void postOpenInventory(Player player, InventoryEngine InventoryEngine) {};
+    default void postOpenInventory(Player player, InventoryEngine InventoryEngine) {}
 
     @Override
     default void closeInventory(Player player, InventoryEngine InventoryEngine) {}

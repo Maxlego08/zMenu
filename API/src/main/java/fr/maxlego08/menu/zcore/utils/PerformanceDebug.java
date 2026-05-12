@@ -112,7 +112,7 @@ public class PerformanceDebug {
             }
         }
 
-        return mode == PerformanceFilterMode.WHITELIST ? matches : !matches;
+        return (mode == PerformanceFilterMode.WHITELIST) == matches;
     }
 
     private record ActiveOperation(String name, long startNanos) {

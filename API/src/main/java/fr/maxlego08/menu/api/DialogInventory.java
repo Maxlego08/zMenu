@@ -12,10 +12,9 @@ import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.bukkit.event.inventory.InventoryType;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -201,7 +200,7 @@ public interface DialogInventory extends Inventory{
     }
 
     @Override
-    default void postOpenInventory(Player player, InventoryEngine InventoryEngine) {};
+    default void postOpenInventory(Player player, InventoryEngine InventoryEngine) {}
 
     @Override
     default void closeInventory(Player player, InventoryEngine InventoryEngine) {}

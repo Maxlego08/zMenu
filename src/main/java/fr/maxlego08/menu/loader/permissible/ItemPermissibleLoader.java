@@ -32,7 +32,7 @@ public class ItemPermissibleLoader extends PermissibleLoader {
         if (accessor.contains("item")) {
             menuItemStack = this.plugin.getInventoryManager().loadItemStack(file, path, (Map<String, Object>) accessor.getObject("item"));
         } else {
-            menuItemStack = this.plugin.getInventoryManager().loadItemStack(file, path, accessor.getMap());
+            menuItemStack = this.plugin.getInventoryManager().loadItemStack(file, path, accessor.map());
         }
 
         int amount = accessor.getInt("amount");

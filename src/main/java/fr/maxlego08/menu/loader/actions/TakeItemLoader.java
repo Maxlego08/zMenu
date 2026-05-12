@@ -27,7 +27,7 @@ public class TakeItemLoader extends ActionLoader {
         if (accessor.contains("item")) {
             menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, (Map<String, Object>) accessor.getObject("item"));
         } else {
-            menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, accessor.getMap());
+            menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, accessor.map());
         }
 
         boolean useCache = accessor.getBoolean("use-cache", false);

@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -51,7 +52,7 @@ public class CommandDumplog extends VCommand {
 
     public String uploadLog(Path logPath) throws IOException {
         String logContent = Files.readString(logPath);
-        String data = "content=" + URLEncoder.encode(logContent, "UTF-8");
+        String data = "content=" + URLEncoder.encode(logContent, StandardCharsets.UTF_8);
 
         URL url = new URL("https://api.mclo.gs/1/log");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
