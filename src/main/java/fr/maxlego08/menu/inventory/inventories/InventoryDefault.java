@@ -199,7 +199,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         final Player targetPlayer = this.getTargetPlayer();
 
         this.perfDebug.start("getDisplayButton." + button.getName());
-        button = button.getDisplayButton(this, this.player);
+        button = button.getDisplayButton(this, targetPlayer);
         this.perfDebug.end();
         if (button == null) {
             return;
@@ -349,7 +349,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             }
 
             if (button.isDraggable()) {
-                //If one button is draggrable enable click
+                //If one button is draggable enable click
                 super.setDisablePlayerInventoryClick(false);
             }
 
