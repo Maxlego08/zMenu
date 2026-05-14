@@ -66,6 +66,8 @@ import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ZPlugin;
+import fr.maxlego08.menu.zcore.logger.BukkitLogger;
+import fr.maxlego08.menu.zcore.logger.ComponentLogger;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.meta.ClassicMeta;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
@@ -126,6 +128,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private PacketManager packetManager;
+
+    public ZMenuPlugin() {
+        new BukkitLogger(this.getDescription().getFullName());
+    }
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -715,10 +721,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
                 this.metaUpdater = new ComponentMeta(this);
-                this.getLogger().info("Use ComponentMeta");
+                new ComponentLogger(this.getDescription().getFullName(), (ComponentMeta) this.metaUpdater);
+                Logger.info("Use ComponentMeta");
             } catch (Exception ignored) {
                 this.metaUpdater = new ClassicMeta();
-                this.getLogger().info("Use ClassicMeta");
+                Logger.info("Use ClassicMeta");
             }
         }
     }

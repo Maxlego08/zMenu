@@ -1,12 +1,14 @@
 package fr.maxlego08.menu.zcore.logger;
 
-import org.bukkit.Bukkit;
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 
-public record Logger(String prefix) {
-
+public abstract class Logger {
+    protected final String prefix;
     private static Logger logger;
 
-    public Logger(String prefix) {
+    protected Logger(@NotNull String prefix) {
+        Preconditions.checkNotNull(prefix, "Prefix cannot be null");
         this.prefix = prefix;
         logger = this;
     }
@@ -23,23 +25,25 @@ public record Logger(String prefix) {
         getLogger().log(message, LogType.INFO);
     }
 
-    public void log(String message, LogType type) {
-        Bukkit.getConsoleSender().sendMessage("§8[§e" + this.prefix + "§8] " + type.getColor() + this.getColoredMessage(message));
+    public static void info(String message, Object... args) {
+        getLogger().log(message, args);
+    }
+
+    public static void info(String message, LogType type, Object... args) {
+        getLogger().log(message, type, args);
     }
 
     public void log(String message) {
-        Bukkit.getConsoleSender().sendMessage("§8[§e" + this.prefix + "§8] §e" + this.getColoredMessage(message));
+        this.log(message, LogType.INFO);
     }
 
     public void log(String message, Object... args) {
-        this.log(String.format(message, args));
+        this.log(message, LogType.INFO, args);
     }
 
-    public void log(String message, LogType type, Object... args) {
-        this.log(String.format(message, args), type);
-    }
+    public abstract void log(@NotNull String message,@NotNull LogType type, @NotNull Object... args);
 
-    public void log(String[] messages, LogType type) {
+    public void log(@NotNull String[] messages,@NotNull LogType type) {
         for (String message : messages) {
             this.log(message, type);
         }
