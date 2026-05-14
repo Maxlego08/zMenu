@@ -46,7 +46,7 @@ public class ZInventory extends ZUtils implements Inventory {
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
-    private String targetPlayerNamePlaceholder;
+    private String targetPlayerNamePlaceholder = null;
     private TitleAnimation titleAnimation;
     private List<Action> openActions = new ArrayList<>();
     private List<Action> closeActions = new ArrayList<>();
