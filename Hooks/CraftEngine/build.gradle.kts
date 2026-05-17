@@ -6,6 +6,6 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("net.momirealms:craft-engine-core:0.0.52")
-    compileOnly("net.momirealms:craft-engine-bukkit:0.0.52")
+    compileOnly("net.momirealms:craft-engine-core:26.5")
+    compileOnly("net.momirealms:craft-engine-bukkit:26.5")
 }
