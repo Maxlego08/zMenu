@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,8 +19,14 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class InventoryRequirementChecker extends ConfigurationChecker {
+
+    private static final Set<String> REQUIREMENT_LEVEL_KEYS = Set.of(
+            "requirements", "requirement", "type", "clicks", "deny", "success",
+            "permission", "placeholder", "minimum-requirement", "minimumrequirement"
+    );
 
     public InventoryRequirementChecker(ZMenuPlugin plugin) {
         super(plugin);
@@ -82,6 +89,28 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
         String openRequirementKey = configuration.contains("open_requirement") ? "open_requirement" : configuration.contains("open-requirement") ? "open-requirement" : null;
         if (openRequirementKey != null) {
             if (configuration.contains(openRequirementKey) && configuration.isConfigurationSection(openRequirementKey + ".")) {
+
+                ConfigurationSection openReqSection = configuration.getConfigurationSection(openRequirementKey + ".");
+                if (openReqSection != null) {
+                    Set<String> keys = openReqSection.getKeys(false);
+                    boolean hasRequirementsList = configuration.isList(openRequirementKey + ".requirements")
+                            || configuration.isList(openRequirementKey + ".requirement");
+                    boolean hasDirectPermissibleKeys = keys.contains("type") || keys.contains("permission")
+                            || keys.contains("placeholder");
+
+                    if (!hasRequirementsList && hasDirectPermissibleKeys) {
+                        Logger.info("Invalid open-requirement configuration in file " + inventoryLoadRequirement.getFile().getAbsolutePath(), Logger.LogType.WARNING);
+                        Logger.info("open-requirement should contain 'requirements' as a list.", Logger.LogType.WARNING);
+                        Logger.info("Example:", Logger.LogType.WARNING);
+                        Logger.info("  open-requirement:", Logger.LogType.WARNING);
+                        Logger.info("    requirements:", Logger.LogType.WARNING);
+                        Logger.info("      - type: permission", Logger.LogType.WARNING);
+                        Logger.info("        permission: 'example.permission'", Logger.LogType.WARNING);
+                        Logger.info("Documentation: https://docs.groupez.dev/zmenu/configurations/inventories/inventory#open-requirement", Logger.LogType.WARNING);
+                        return;
+                    }
+                }
+
                 this.checkRequirement(configuration, openRequirementKey + ".", inventoryLoadRequirement);
             }
         }
@@ -189,6 +218,28 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
         }
         if (section == null) return;
 
+        boolean hasMalformedStructure = false;
+        for (String key : section.getKeys(false)) {
+            if (REQUIREMENT_LEVEL_KEYS.contains(key.toLowerCase())) {
+                hasMalformedStructure = true;
+                break;
+            }
+        }
+
+        if (hasMalformedStructure) {
+            Logger.info("Invalid click-requirement configuration in file " + inventoryLoadRequirement.getFile().getAbsolutePath() + " at path '" + path + "'", Logger.LogType.WARNING);
+            Logger.info("click-requirement expects named groups as children, each containing 'clicks', 'requirements', 'deny', and 'success'.", Logger.LogType.WARNING);
+            Logger.info("Example:", Logger.LogType.WARNING);
+            Logger.info("  click-requirement:", Logger.LogType.WARNING);
+            Logger.info("    my_group:", Logger.LogType.WARNING);
+            Logger.info("      clicks: [ALL]", Logger.LogType.WARNING);
+            Logger.info("      requirements:", Logger.LogType.WARNING);
+            Logger.info("        - type: permission", Logger.LogType.WARNING);
+            Logger.info("          permission: 'example.permission'", Logger.LogType.WARNING);
+            Logger.info("Documentation: https://docs.groupez.dev/zmenu/configurations/requirements#click-requirement-buttons", Logger.LogType.WARNING);
+            return;
+        }
+
         for (String key : section.getKeys(false)) {
             this.checkRequirement(configuration, path + sectionString + key + ".", inventoryLoadRequirement);
         }
@@ -205,6 +256,27 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
 
         String requirementPath = configuration.isConfigurationSection(path + "view_requirement.") ? "view_requirement." : configuration.isConfigurationSection(path + "view-requirement.") ? "view-requirement." : null;
         if (requirementPath == null) return;
+
+        ConfigurationSection viewReqSection = configuration.getConfigurationSection(path + requirementPath);
+        if (viewReqSection != null) {
+            Set<String> keys = viewReqSection.getKeys(false);
+            boolean hasRequirementsList = configuration.isList(path + requirementPath + "requirements")
+                    || configuration.isList(path + requirementPath + "requirement");
+            boolean hasDirectPermissibleKeys = keys.contains("type") || keys.contains("permission")
+                    || keys.contains("placeholder");
+
+            if (!hasRequirementsList && hasDirectPermissibleKeys) {
+                Logger.info("Invalid view-requirement configuration at path '" + path + "' in file " + inventoryLoadRequirement.getFile().getAbsolutePath(), Logger.LogType.WARNING);
+                Logger.info("view-requirement should contain 'requirements' as a list.", Logger.LogType.WARNING);
+                Logger.info("Example:", Logger.LogType.WARNING);
+                Logger.info("  view-requirement:", Logger.LogType.WARNING);
+                Logger.info("    requirements:", Logger.LogType.WARNING);
+                Logger.info("      - type: permission", Logger.LogType.WARNING);
+                Logger.info("        permission: 'example.permission'", Logger.LogType.WARNING);
+                Logger.info("Documentation: https://docs.groupez.dev/zmenu/configurations/requirements#view-requirement--open-requirement-inventories", Logger.LogType.WARNING);
+                return;
+            }
+        }
 
         this.checkRequirement(configuration, path + requirementPath, inventoryLoadRequirement);
     }

@@ -46,6 +46,10 @@
 
 - **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`. Items are now physically cleared from the player inventory during storage, ensuring container content packets don't reveal hidden items. The close handler also uses physical restoration (`giveInventory`) instead of packet-based restoration.
 
+## Improvements
+
+- **Requirement Configuration Validation**: Added validation for `click-requirement`, `view-requirement`, and `open-requirement` configurations. Detects common misconfiguration where users place requirement keys directly under the requirement section instead of using named groups (for click-requirement) or a `requirements` list (for view/open-requirement). Displays a clear warning message with an example of the correct structure and a link to the documentation.
+
 ## Changes
 
 - **Time Placeholders**: Changed `time_unix_timestamp`, `time_next_day_unix_timestamp`, and `time_today_start_unix_timestamp` placeholders to return values in seconds instead of milliseconds.
