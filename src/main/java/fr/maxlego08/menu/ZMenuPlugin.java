@@ -330,93 +330,93 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.isActive(Plugins.HEADDATABASE)) {
             this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-            this.getLogger().info("Registered HeadDatabase material loader");
+            Logger.info("Registered HeadDatabase material loader");
         }
 
         if (this.isActive(Plugins.ZHEAD)) {
             this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
-            this.getLogger().info("Registered ZHead material loader");
+            Logger.info("Registered ZHead material loader");
         }
 
         if (this.isActive(Plugins.ORAXEN)) {
             this.inventoryManager.registerMaterialLoader(new OraxenLoader());
             this.fontImage = new OraxenFont();
-            this.getLogger().info("Registered Oraxen material loader and font");
+            Logger.info("Registered Oraxen material loader and font");
         }
 
         if (this.isActive(Plugins.CRAFTENGINE)) {
             this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
-            this.getLogger().info("Registered CraftEngine material loader");
+            Logger.info("Registered CraftEngine material loader");
         }
 
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
-            this.getLogger().info("Registered Nexo material loader");
+            Logger.info("Registered Nexo material loader");
         }
 
         if (this.isActive(Plugins.MAGICCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
-            this.getLogger().info("Registered MagicCosmetics material loader");
+            Logger.info("Registered MagicCosmetics material loader");
         }
 
         if (this.isActive(Plugins.HMCCOSMETICS)) {
             this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
-            this.getLogger().info("Registered HMC Cosmetics material loader");
+            Logger.info("Registered HMC Cosmetics material loader");
         }
 
         if (this.isActive(Plugins.ITEMSADDER)) {
             this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
-            this.getLogger().info("Registered ItemsAdder material loader and font");
+            Logger.info("Registered ItemsAdder material loader and font");
         }
 
         if (this.isActive(Plugins.SLIMEFUN)) {
             this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
-            this.getLogger().info("Registered SlimeFun material loader");
+            Logger.info("Registered SlimeFun material loader");
         }
 
         if (this.isActive(Plugins.NOVA)) {
             this.inventoryManager.registerMaterialLoader(new NovaLoader());
-            this.getLogger().info("Registered Nova material loader");
+            Logger.info("Registered Nova material loader");
         }
 
         if (this.isActive(Plugins.ECO)) {
             this.inventoryManager.registerMaterialLoader(new EcoLoader());
-            this.getLogger().info("Registered Eco material loader");
+            Logger.info("Registered Eco material loader");
         }
 
         if (this.isActive(Plugins.ZITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
-            this.getLogger().info("Registered zItems material loader");
+            Logger.info("Registered zItems material loader");
         }
 
         if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
-            this.getLogger().info("Registered ExecutableItems material loader");
+            Logger.info("Registered ExecutableItems material loader");
         }
 
         if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
             this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
-            this.getLogger().info("Registered ExecutableBlocks material loader");
+            Logger.info("Registered ExecutableBlocks material loader");
         }
 
         if (this.isActive(Plugins.NEXTGENS)) {
             this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
-            this.getLogger().info("Registered NextGens material loader");
+            Logger.info("Registered NextGens material loader");
         }
 
         if (this.isActive(Plugins.MYTHICMOBS)) {
             this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
             this.addListener(new MythicManager(this));
-            this.getLogger().info("Registered MythicMobs material loader and listener");
+            Logger.info("Registered MythicMobs material loader and listener");
         }
         if (this.isActive(Plugins.BREWERYX)) {
             this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
-            this.getLogger().info("Registered BreweryX material loader");
+            Logger.info("Registered BreweryX material loader");
         }
         if (this.isActive(Plugins.MMOITEMS)) {
             this.inventoryManager.registerMaterialLoader(new MMOItemsLoader());
-            this.getLogger().info("Registered MMOItems material loader");
+            Logger.info("Registered MMOItems material loader");
         }
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
@@ -687,7 +687,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     public <T> T getProvider(Class<T> classPath) {
         RegisteredServiceProvider<T> provider = this.getServer().getServicesManager().getRegistration(classPath);
         if (provider == null) {
-            this.getLogger().info("Unable to retrieve the provider " + classPath);
+            Logger.info("Unable to retrieve the provider " + classPath);
             return null;
         }
         return provider.getProvider();
@@ -716,7 +716,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private void loadMeta() {
         if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
-            this.getLogger().info("Use ClassicMeta");
+            Logger.info("Use ClassicMeta");
         } else {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");

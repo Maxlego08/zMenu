@@ -54,19 +54,26 @@ public abstract class Logger {
     }
 
     public enum LogType {
-        ERROR("§c"),
-        INFO("§7"),
-        WARNING("§6"),
-        SUCCESS("§2");
+        ERROR("§c", "<red>"),
+        INFO("§7", "<gray>"),
+        WARNING("§6", "<yellow>"),
+        SUCCESS("§2", "<green>");
+        private static boolean isAdventure = false;
 
         private final String color;
+        private final String adventureColorCode;
 
-        LogType(String color) {
-            this.color = color;
+        LogType(@NotNull String legacyColorCode, @NotNull String adventureColorCode) {
+            this.color = legacyColorCode;
+            this.adventureColorCode = adventureColorCode;
         }
 
         public String getColor() {
-            return this.color;
+            return isAdventure ? this.adventureColorCode : this.color;
+        }
+
+        public static void setIsAdventure(boolean isAdventure) {
+            LogType.isAdventure = isAdventure;
         }
     }
 }

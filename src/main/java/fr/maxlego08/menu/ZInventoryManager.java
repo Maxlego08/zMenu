@@ -194,7 +194,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 Logger.info("Cannot load inventory " + file.getPath() + ", inventory is waiting.", LogType.WARNING);
 
                 InventoryLoadRequirement inventoryLoadRequirement = optional.get();
-                plugin.getLogger().info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError());
+                Logger.info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError(), LogType.WARNING);
             }
 
             this.inventoryLoadRequirements.add(optional.get());

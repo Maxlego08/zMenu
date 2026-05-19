@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -70,7 +71,7 @@ public class CommandLoader implements Loader<Command> {
         } else {
             List<String> strings = configuration.getStringList(path + "arguments");
             if (!strings.isEmpty()) {
-                this.plugin.getLogger().warning("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.groupez.dev/zmenu/configurations/custom-commands) Your command will still work properly but it is advisable to update it.");
+                Logger.info("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.groupez.dev/zmenu/configurations/custom-commands) Your command will still work properly but it is advisable to update it.", Logger.LogType.WARNING);
                 List<CommandArgument> mappedArguments = new ArrayList<>(strings.size());
                 for (String arg : strings) {
                     String inventoryName = null;

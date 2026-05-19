@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -208,7 +209,7 @@ public class ZDataManager implements DataManager {
         try {
             var datas = PlayerDataLoader.loadPlayerData(this.plugin.getDataFolder() + "/players.json");
             datas.forEach((uuid, playerData) -> playerData.forEach(data -> manager.upsertData(uuid, data)));
-            this.plugin.getLogger().info("Loaded " + datas.size() + " players.");
+            Logger.info("Loaded " + datas.size() + " players.", Logger.LogType.SUCCESS);
         } catch (IOException exception) {
             exception.printStackTrace();
         }

@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -110,7 +111,8 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         this.createDefaultInventory();
 
         if (itemStack == null) {
-            this.plugin.getLogger().severe("Attention, a null ItemStack was found in slot " + slot + " ! > " + this);
+            if (Configuration.enableDebug)
+                Logger.info("Attention, a null ItemStack was found in slot " + slot + " ! > " + this, Logger.LogType.ERROR);
             return null;
         }
 

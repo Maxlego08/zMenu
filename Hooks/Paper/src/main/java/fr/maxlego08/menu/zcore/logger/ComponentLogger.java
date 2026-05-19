@@ -11,10 +11,11 @@ public class ComponentLogger extends Logger {
         super(prefix);
 
         this.componentMeta = componentMeta;
+        LogType.setIsAdventure(true);
     }
 
     @Override
     public void log(@NotNull String message, @NotNull LogType type, Object... args) {
-        Bukkit.getConsoleSender().sendMessage(this.componentMeta.getComponent("§8[§e" + this.prefix + "§8] §e" + type.getColor() + this.getColoredMessage(String.format(message, args))));
+        Bukkit.getConsoleSender().sendMessage(this.componentMeta.getComponent("<dark_gray>[<yellow>" + this.prefix + "</yellow>] </dark_gray><yellow>" + type.getColor() + this.getColoredMessage(String.format(message, args))));
     }
 }

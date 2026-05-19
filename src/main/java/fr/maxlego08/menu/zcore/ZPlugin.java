@@ -36,7 +36,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 public abstract class ZPlugin extends JavaPlugin {
     private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
@@ -216,7 +215,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
                 try {
                     if (outFile.exists() && !replace) {
-                        this.getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+                        Logger.info("Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.", LogType.WARNING);
                     } else {
                         OutputStream out = Files.newOutputStream(outFile.toPath());
                         byte[] buf = new byte[1024];
@@ -230,7 +229,8 @@ public abstract class ZPlugin extends JavaPlugin {
                         in.close();
                     }
                 } catch (IOException var10) {
-                    this.getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, var10);
+                    Logger.info("Could not save " + outFile.getName() + " to " + outFile, LogType.ERROR);
+                    var10.printStackTrace();
                 }
 
             }

@@ -132,7 +132,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         inventory.setOpenRequirement(requirement);
 
         if (Configuration.enableDebug) {
-            this.plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");
+            Logger.info("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!", Logger.LogType.WARNING);
         }
 
         return inventory;
