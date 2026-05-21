@@ -19,21 +19,21 @@ public class InventoryArgument extends ZUtils {
 
     @Deprecated
     public void process(Player player) {
-        process(player, new Placeholders());
+        this.process(player, new Placeholders());
     }
 
     public void process(Player player, Placeholders placeholders){
         if (!this.arguments.isEmpty()) {
             for (int i = 0; i < this.arguments.size(); i++) {
                 String name = String.valueOf(i - 4);
-                String argument = papi(placeholders.parse(this.arguments.get(i)), player, true);
+                String argument = this.papi(placeholders.parse(this.arguments.get(i)), player, true);
 
                 if (argument.contains(":")) {
                     String[] values = argument.split(":", 2);
                     //name = values[0];
-                    name = papi(values[0], player, true);
+                    name = this.papi(values[0], player, true);
                     //argument = values[1];
-                    argument = papi(values[1], player, true);
+                    argument = this.papi(values[1], player, true);
                 }
 
                 this.commandManager.setPlayerArgument(player, name, argument);
@@ -42,6 +42,6 @@ public class InventoryArgument extends ZUtils {
     }
 
     public List<String> getArguments() {
-        return arguments;
+        return this.arguments;
     }
 }

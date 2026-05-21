@@ -29,16 +29,16 @@ public class CommandMenuPlayersConvert extends VCommand {
         UUID playerId = this.player.getUniqueId();
         long currentTime = System.currentTimeMillis();
 
-        if (this.confirmationMap.containsKey(playerId) && (currentTime - confirmationMap.get(playerId)) <= 30000) {
+        if (this.confirmationMap.containsKey(playerId) && (currentTime - this.confirmationMap.get(playerId)) <= 30000) {
 
             this.confirmationMap.remove(playerId);
-            plugin.getDataManager().convertOldDatas(sender);
-            message(plugin, this.sender, Message.PLAYERS_DATA_CONVERT_SUCCESS);
+            plugin.getDataManager().convertOldDatas(this.sender);
+            this.message(plugin, this.sender, Message.PLAYERS_DATA_CONVERT_SUCCESS);
 
         } else {
 
             this.confirmationMap.put(playerId, currentTime);
-            message(plugin, this.sender, Message.PLAYERS_DATA_CONVERT_CONFIRM);
+            this.message(plugin, this.sender, Message.PLAYERS_DATA_CONVERT_CONFIRM);
 
             plugin.getScheduler().runLater(() -> this.confirmationMap.remove(playerId), 30, TimeUnit.SECONDS);
         }

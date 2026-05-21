@@ -18,6 +18,6 @@ public class PaperPotDecorationsComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        itemStack.setData(DataComponentTypes.POT_DECORATIONS, decorations);
+        itemStack.setData(DataComponentTypes.POT_DECORATIONS, this.decorations);
     }
 }

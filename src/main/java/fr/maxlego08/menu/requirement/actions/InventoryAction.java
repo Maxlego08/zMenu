@@ -31,7 +31,7 @@ public class InventoryAction extends ActionHelper {
         if (page.contains("%")) {
             this.stringPage = page;
         } else {
-            this.intPage = getInt(page);
+            this.intPage = this.getInt(page);
         }
         this.inventoryArgument = new InventoryArgument(commandManager, arguments);
     }
@@ -48,7 +48,7 @@ public class InventoryAction extends ActionHelper {
             Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
             if (optional.isPresent()) {
 
-                int page = this.stringPage == null ? this.intPage : getInt(this.papi(placeholders.parse(this.stringPage), player));
+                int page = this.stringPage == null ? this.intPage : this.getInt(this.papi(placeholders.parse(this.stringPage), player));
                 oldInventories.add(fromInventory);
 
                 this.inventoryArgument.process(player,placeholders);

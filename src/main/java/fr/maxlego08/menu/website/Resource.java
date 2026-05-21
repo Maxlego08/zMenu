@@ -32,43 +32,43 @@ public class Resource extends ZUtils {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     public String getCategory() {
-        return category;
+        return this.category;
     }
 
     public double getPrice() {
-        return price;
+        return this.price;
     }
 
     public String getCurrency() {
-        return currency;
+        return this.currency;
     }
 
     public String getTag() {
-        return tag;
+        return this.tag;
     }
 
     public int getDownload() {
-        return download;
+        return this.download;
     }
 
     public String getLink() {
-        return link;
+        return this.link;
     }
 
     public boolean isFree() {
@@ -79,7 +79,7 @@ public class Resource extends ZUtils {
         Placeholders placeholders = new Placeholders();
         placeholders.register("resource_name", this.name);
         placeholders.register("resource_tag", this.tag);
-        placeholders.register("resource_price", isFree() ? "FREE" : format(this.price) + this.currency);
+        placeholders.register("resource_price", this.isFree() ? "FREE" : this.format(this.price) + this.currency);
         placeholders.register("resource_author", this.user.getName());
         placeholders.register("resource_version", this.version);
         placeholders.register("resource_category", this.category);
@@ -97,7 +97,7 @@ public class Resource extends ZUtils {
         }
 
         public int getId() {
-            return id;
+            return this.id;
         }
 
         public void setId(int id) {
@@ -105,7 +105,7 @@ public class Resource extends ZUtils {
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public void setName(String name) {

@@ -38,10 +38,10 @@ public class ItemJoinMechanicListener extends MechanicListener {
     private Optional<ItemJoinMechanic> getProtectedMechanic(ItemStack item) {
         if (item == null) return Optional.empty();
 
-        Optional<String> itemId = itemManager.getItemId(item);
+        Optional<String> itemId = this.itemManager.getItemId(item);
         if (itemId.isEmpty()) return Optional.empty();
 
-        ItemJoinMechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId.get());
+        ItemJoinMechanic mechanic = this.itemJoinMechanicFactory.getMechanic(itemId.get());
         if (mechanic != null && mechanic.preventsInventoryChanges() && mechanic.getFixedSlot().isPresent()) {
             return Optional.of(mechanic);
         }
@@ -55,14 +55,14 @@ public class ItemJoinMechanicListener extends MechanicListener {
      * @return true if the item is protected, false otherwise
      */
     private boolean isProtectedItem(ItemStack item) {
-        return getProtectedMechanic(item).isPresent();
+        return this.getProtectedMechanic(item).isPresent();
     }
 
     @EventHandler
     public void onConnect(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            for (Map.Entry<String, ItemJoinMechanic> entry : itemJoinMechanicFactory.getAllMechanics()) {
+            for (Map.Entry<String, ItemJoinMechanic> entry : this.itemJoinMechanicFactory.getAllMechanics()) {
                 ItemJoinMechanic mechanic = entry.getValue();
                 if (mechanic.shouldGrantOnFirstJoin()) {
                     this.itemManager.giveItem(player, entry.getKey());
@@ -73,7 +73,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
 
     @EventHandler
     public void onPlayerDrop(PlayerDropItemEvent event) {
-        if (isProtectedItem(event.getItemDrop().getItemStack())) {
+        if (this.isProtectedItem(event.getItemDrop().getItemStack())) {
             event.setCancelled(true);
         }
     }
@@ -84,7 +84,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
             return;
         }
 
-        Optional<ItemJoinMechanic> mechanic = getProtectedMechanic(event.getCurrentItem());
+        Optional<ItemJoinMechanic> mechanic = this.getProtectedMechanic(event.getCurrentItem());
         if (mechanic.isPresent() && mechanic.get().getFixedSlot().isPresent() && event.getSlot() == mechanic.get().getFixedSlot().getAsInt()) {
             event.setCancelled(true);
         }
@@ -97,7 +97,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
         }
 
         for (ItemStack draggedItem : event.getNewItems().values()) {
-            Optional<ItemJoinMechanic> mechanic = getProtectedMechanic(draggedItem);
+            Optional<ItemJoinMechanic> mechanic = this.getProtectedMechanic(draggedItem);
             if (mechanic.isPresent() && mechanic.get().getFixedSlot().isPresent() && event.getRawSlots().contains(mechanic.get().getFixedSlot().getAsInt())) {
                 event.setCancelled(true);
                 return;
@@ -107,7 +107,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
 
     @EventHandler
     public void onSwapHand(PlayerSwapHandItemsEvent event) {
-        if (isProtectedItem(event.getOffHandItem())) {
+        if (this.isProtectedItem(event.getOffHandItem())) {
             event.setCancelled(true);
         }
     }
@@ -120,7 +120,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
         ItemStack itemInHand = event.getPlayer().getInventory().getItemInMainHand();
 
         if (frameItem.getType() == Material.AIR && itemInHand.getType() != Material.AIR) {
-            if (isProtectedItem(itemInHand)) {
+            if (this.isProtectedItem(itemInHand)) {
                 event.setCancelled(true);
             }
         }
@@ -128,7 +128,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
 
     @Override
     public boolean onItemGive(@NonNull Player player, @NonNull ItemStack item, @NonNull String itemId) {
-        ItemJoinMechanic mechanic = itemJoinMechanicFactory.getMechanic(itemId);
+        ItemJoinMechanic mechanic = this.itemJoinMechanicFactory.getMechanic(itemId);
         if (mechanic != null && mechanic.preventsInventoryChanges() && mechanic.getFixedSlot().isPresent()) {
             int slot = mechanic.getFixedSlot().getAsInt();
             player.getInventory().setItem(slot, item);

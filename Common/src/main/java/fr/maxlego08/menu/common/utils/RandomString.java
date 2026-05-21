@@ -48,9 +48,9 @@ public class RandomString {
      * Generate a random string.
      */
     public String nextString() {
-        for (int idx = 0; idx < buf.length; ++idx)
-            buf[idx] = symbols[random.nextInt(symbols.length)];
-        return new String(buf);
+        for (int idx = 0; idx < this.buf.length; ++idx)
+            this.buf[idx] = this.symbols[this.random.nextInt(this.symbols.length)];
+        return new String(this.buf);
     }
 
 }

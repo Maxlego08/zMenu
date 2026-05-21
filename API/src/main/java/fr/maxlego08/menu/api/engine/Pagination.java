@@ -66,7 +66,7 @@ public class Pagination<T> {
      */
     @NotNull
     public List<T> paginateReverse(@Nullable Map<?, T> map, int size, int page) {
-        return (map == null || map.isEmpty()) ? Collections.emptyList() : paginateReverse(new ArrayList<>(map.values()), size, page);
+        return (map == null || map.isEmpty()) ? Collections.emptyList() : this.paginateReverse(new ArrayList<>(map.values()), size, page);
     }
 
     /**
@@ -79,6 +79,6 @@ public class Pagination<T> {
      */
     @NotNull
     public List<T> paginate(@Nullable Map<?, T> map, int size, int page) {
-        return (map == null || map.isEmpty()) ? Collections.emptyList() : paginate(new ArrayList<>(map.values()), size, page);
+        return (map == null || map.isEmpty()) ? Collections.emptyList() : this.paginate(new ArrayList<>(map.values()), size, page);
     }
 }

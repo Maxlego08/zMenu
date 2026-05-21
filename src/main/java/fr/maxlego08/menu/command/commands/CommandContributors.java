@@ -29,7 +29,7 @@ public class CommandContributors extends VCommand {
         for (String contributor : contributors) {
             message.append("  §3- ").append(contributor).append("\n");
         }
-        message(plugin, this.sender, message.toString());
+        this.message(plugin, this.sender, message.toString());
         return CommandType.SUCCESS;
     }
 }

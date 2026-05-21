@@ -21,11 +21,11 @@ public class CommandDialogOpenConfig extends VCommand {
         String pluginName = this.argAsString(0);
         Player targetPlayer = this.argAsPlayer(1,this.player);
         if (targetPlayer == null){
-            message(plugin, this.sender, sender instanceof ConsoleCommandSender ? "§cYou must be a player to open a config gui." : "§cUnable to find the player.");
+            this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? "§cYou must be a player to open a config gui." : "§cUnable to find the player.");
             return CommandType.DEFAULT;
         }
         if (!configManager.getRegisteredConfigs().contains(pluginName)){
-            message(plugin, this.sender, "§cThe config '"+pluginName+"' does not exist.");
+            this.message(plugin, this.sender, "§cThe config '"+pluginName+"' does not exist.");
             return CommandType.DEFAULT;
         }
         configManager.openConfig(pluginName, targetPlayer);

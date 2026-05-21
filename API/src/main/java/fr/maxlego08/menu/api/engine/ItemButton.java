@@ -28,7 +28,7 @@ public class ItemButton {
 
     @Contract(pure = true)
     public int getSlot() {
-        return slot;
+        return this.slot;
     }
 
     @Contract("_-> this")
@@ -103,7 +103,7 @@ public class ItemButton {
             this.onClick.accept(event);
         }
 
-        Consumer<InventoryClickEvent> consumer = onClickType.get(event.getClick());
+        Consumer<InventoryClickEvent> consumer = this.onClickType.get(event.getClick());
         if (consumer != null) {
             consumer.accept(event);
         }

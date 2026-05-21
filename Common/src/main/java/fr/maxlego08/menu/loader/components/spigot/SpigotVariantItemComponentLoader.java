@@ -164,12 +164,12 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         @Override
         public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
             try {
-                T variant = Enum.valueOf(enumClass, value.toUpperCase());
-                return componentFactory.apply(variant);
+                T variant = Enum.valueOf(this.enumClass, value.toUpperCase());
+                return this.componentFactory.apply(variant);
             } catch (IllegalArgumentException e) {
                 return null;
             }
@@ -188,13 +188,13 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         @Override
         public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
             NamespacedKey key = NamespacedKey.fromString(value.toLowerCase());
             if (key == null) return null;
             try {
-                return componentFactory.apply(registry.getOrThrow(key));
+                return this.componentFactory.apply(this.registry.getOrThrow(key));
             } catch (IllegalArgumentException e) {
                 return null;
             }
@@ -211,12 +211,12 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         @Override
         public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             String value = configuration.getString(path);
             if (value == null) return null;
             try {
                 DyeColor dyeColor = DyeColor.valueOf(value.toUpperCase());
-                return componentFactory.apply(dyeColor);
+                return this.componentFactory.apply(dyeColor);
             } catch (IllegalArgumentException e) {
                 return null;
             }
@@ -233,10 +233,10 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         @Override
         public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-            path = normalizePath(path);
+            path = this.normalizePath(path);
             Object rawColor = configuration.get(path);
             if (rawColor == null) return null;
-            Color color = parseColor(rawColor);
+            Color color = this.parseColor(rawColor);
             DyeColor dyeColor;
             if (color == null) {
                 try {
@@ -248,14 +248,14 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
                 dyeColor = DyeColor.getByColor(color);
             }
             if (dyeColor == null) return null;
-            return componentFactory.apply(dyeColor);
+            return this.componentFactory.apply(dyeColor);
         }
     }
 
     // Specific loaders
     public class Axolotl extends EnumVariantLoader<org.bukkit.entity.Axolotl.Variant> {
         public Axolotl() {
-            super("axolotl/variant", org.bukkit.entity.Axolotl.Variant.class, variantFactory::createAxolotl);
+            super("axolotl/variant", org.bukkit.entity.Axolotl.Variant.class, SpigotVariantItemComponentLoader.this.variantFactory::createAxolotl);
         }
     }
 
@@ -268,98 +268,98 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         public class Collar extends CollarColorLoader {
             public Collar() {
-                super("cat/collar", variantFactory::createCatCollar);
+                super("cat/collar", Cat.this.variantFactory::createCatCollar);
             }
         }
 
         public class Variant extends RegistryVariantLoader<org.bukkit.entity.Cat.Type> {
             public Variant() {
-                super("cat/variant", Registry.CAT_VARIANT, variantFactory::createCatVariant);
+                super("cat/variant", Registry.CAT_VARIANT, Cat.this.variantFactory::createCatVariant);
             }
         }
     }
 
     public class Chicken extends RegistryVariantLoader<org.bukkit.entity.Chicken.Variant> {
         public Chicken() {
-            super("chicken/variant", Registry.CHICKEN_VARIANT, variantFactory::createChicken);
+            super("chicken/variant", Registry.CHICKEN_VARIANT, SpigotVariantItemComponentLoader.this.variantFactory::createChicken);
         }
     }
 
     public class Cow extends RegistryVariantLoader<org.bukkit.entity.Cow.Variant> {
         public Cow() {
-            super("cow/variant", Registry.COW_VARIANT, variantFactory::createCow);
+            super("cow/variant", Registry.COW_VARIANT, SpigotVariantItemComponentLoader.this.variantFactory::createCow);
         }
     }
 
     public class Fox extends EnumVariantLoader<org.bukkit.entity.Fox.Type> {
         public Fox() {
-            super("fox/variant", org.bukkit.entity.Fox.Type.class, variantFactory::createFox);
+            super("fox/variant", org.bukkit.entity.Fox.Type.class, SpigotVariantItemComponentLoader.this.variantFactory::createFox);
         }
     }
 
     public class Frog extends RegistryVariantLoader<org.bukkit.entity.Frog.Variant> {
         public Frog() {
-            super("frog/variant", Registry.FROG_VARIANT, variantFactory::createFrog);
+            super("frog/variant", Registry.FROG_VARIANT, SpigotVariantItemComponentLoader.this.variantFactory::createFrog);
         }
     }
 
     public class Horse extends EnumVariantLoader<org.bukkit.entity.Horse.Color> {
         public Horse() {
-            super("horse/variant", org.bukkit.entity.Horse.Color.class, variantFactory::createHorse);
+            super("horse/variant", org.bukkit.entity.Horse.Color.class, SpigotVariantItemComponentLoader.this.variantFactory::createHorse);
         }
     }
 
     public class Llama extends EnumVariantLoader<org.bukkit.entity.Llama.Color> {
         public Llama() {
-            super("llama/variant", org.bukkit.entity.Llama.Color.class, variantFactory::createLlama);
+            super("llama/variant", org.bukkit.entity.Llama.Color.class, SpigotVariantItemComponentLoader.this.variantFactory::createLlama);
         }
     }
 
     public class MushroomCow extends EnumVariantLoader<org.bukkit.entity.MushroomCow.Variant> {
         public MushroomCow() {
-            super("mooshroom/variant", org.bukkit.entity.MushroomCow.Variant.class, variantFactory::createMushroomCow);
+            super("mooshroom/variant", org.bukkit.entity.MushroomCow.Variant.class, SpigotVariantItemComponentLoader.this.variantFactory::createMushroomCow);
         }
     }
 
     public class Painting extends RegistryVariantLoader<Art> {
         public Painting() {
-            super("painting/variant", Registry.ART, variantFactory::createPainting);
+            super("painting/variant", Registry.ART, SpigotVariantItemComponentLoader.this.variantFactory::createPainting);
         }
     }
 
     public class Parrot extends EnumVariantLoader<org.bukkit.entity.Parrot.Variant> {
         public Parrot() {
-            super("parrot/variant", org.bukkit.entity.Parrot.Variant.class, variantFactory::createParrot);
+            super("parrot/variant", org.bukkit.entity.Parrot.Variant.class, SpigotVariantItemComponentLoader.this.variantFactory::createParrot);
         }
     }
 
     public class Pig extends RegistryVariantLoader<org.bukkit.entity.Pig.Variant> {
         public Pig() {
-            super("pig/variant", Registry.PIG_VARIANT, variantFactory::createPig);
+            super("pig/variant", Registry.PIG_VARIANT, SpigotVariantItemComponentLoader.this.variantFactory::createPig);
         }
     }
 
     public class Rabbit extends EnumVariantLoader<org.bukkit.entity.Rabbit.Type> {
         public Rabbit() {
-            super("rabbit/variant", org.bukkit.entity.Rabbit.Type.class, variantFactory::createRabbit);
+            super("rabbit/variant", org.bukkit.entity.Rabbit.Type.class, SpigotVariantItemComponentLoader.this.variantFactory::createRabbit);
         }
     }
 
     public class Salmon extends EnumVariantLoader<org.bukkit.entity.Salmon.Variant> {
         public Salmon() {
-            super("salmon/size", org.bukkit.entity.Salmon.Variant.class, variantFactory::createSalmon);
+            super("salmon/size", org.bukkit.entity.Salmon.Variant.class, SpigotVariantItemComponentLoader.this.variantFactory::createSalmon);
         }
     }
 
     public class Sheep extends DyeColorVariantLoader {
         public Sheep() {
-            super("sheep/color", variantFactory::createSheep);
+            super("sheep/color", SpigotVariantItemComponentLoader.this.variantFactory::createSheep);
         }
     }
 
     public class ShulkerBox extends DyeColorVariantLoader {
         public ShulkerBox() {
-            super("shulker/color", variantFactory::createShulkerBox);
+            super("shulker/color", SpigotVariantItemComponentLoader.this.variantFactory::createShulkerBox);
         }
     }
 
@@ -372,20 +372,20 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         public class BaseColor extends DyeColorVariantLoader {
             public BaseColor() {
-                super("tropical_fish/base_color", variantFactory::createTropicalFishBaseColor);
+                super("tropical_fish/base_color", TropicalFish.this.variantFactory::createTropicalFishBaseColor);
             }
         }
 
         public class PatternColor extends DyeColorVariantLoader {
             public PatternColor() {
-                super("tropical_fish/pattern_color", variantFactory::createTropicalFishPatternColor);
+                super("tropical_fish/pattern_color", TropicalFish.this.variantFactory::createTropicalFishPatternColor);
             }
         }
     }
 
     public class Villager extends RegistryVariantLoader<org.bukkit.entity.Villager.Type> {
         public Villager() {
-            super("villager/variant", Registry.VILLAGER_TYPE, variantFactory::createVillager);
+            super("villager/variant", Registry.VILLAGER_TYPE, SpigotVariantItemComponentLoader.this.variantFactory::createVillager);
         }
     }
 
@@ -398,13 +398,13 @@ public class SpigotVariantItemComponentLoader implements VariantItemComponentLoa
 
         public class Collar extends CollarColorLoader {
             public Collar() {
-                super("wolf/collar", variantFactory::createWolfCollar);
+                super("wolf/collar", Wolf.this.variantFactory::createWolfCollar);
             }
         }
 
         public class Variant extends RegistryVariantLoader<org.bukkit.entity.Wolf.Variant> {
             public Variant() {
-                super("wolf/variant", Registry.WOLF_VARIANT, variantFactory::createWolfVariant);
+                super("wolf/variant", Registry.WOLF_VARIANT, Wolf.this.variantFactory::createWolfVariant);
             }
         }
     }

@@ -34,7 +34,7 @@ public class PDCDupeManager implements DupeManager {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta == null) return itemStack;
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
-            persistentDataContainer.set(namespacedKey, PersistentDataType.INTEGER, 1);
+            persistentDataContainer.set(this.namespacedKey, PersistentDataType.INTEGER, 1);
             itemStack.setItemMeta(itemMeta);
             return itemStack;
         } catch (Exception exception) {

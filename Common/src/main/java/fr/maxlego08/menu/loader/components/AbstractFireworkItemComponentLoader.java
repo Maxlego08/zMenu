@@ -27,14 +27,14 @@ public abstract class AbstractFireworkItemComponentLoader extends AbstractColorI
         }
         Object colorsObj = data.get("colors");
         if (colorsObj != null) {
-            Color color = parseColor(colorsObj);
+            Color color = this.parseColor(colorsObj);
             if (color != null) {
                 builder.withColor(color);
             }
         }
         Object fadeColorsObj = data.get("fade_colors");
         if (fadeColorsObj != null) {
-            Color fadeColor = parseColor(fadeColorsObj);
+            Color fadeColor = this.parseColor(fadeColorsObj);
             if (fadeColor != null) {
                 builder.withFade(fadeColor);
             }

@@ -49,7 +49,7 @@ public class ZItemManager implements ItemManager {
     }
 
     private void loadMechanics(){
-        registerMechanicFactory(new ItemJoinMechanicFactory(this.menuPlugin));
+        this.registerMechanicFactory(new ItemJoinMechanicFactory(this.menuPlugin));
     }
 
     @Override
@@ -70,10 +70,10 @@ public class ZItemManager implements ItemManager {
         }
         try (Stream<Path> stream = Files.walk(Paths.get(itemsFolder.getPath()))) {
             stream.skip(1).map(Path::toFile).filter(File::isFile).filter(e -> e.getName().endsWith(".yml")).forEach(this::loadCustomItem);
-            ZMenuItemsLoad event = new ZMenuItemsLoad(new HashSet<>(customItems.keySet()), !isFirstLoad);
+            ZMenuItemsLoad event = new ZMenuItemsLoad(new HashSet<>(this.customItems.keySet()), !this.isFirstLoad);
             this.menuPlugin.getServer().getPluginManager().callEvent(event);
-            if (isFirstLoad) {
-                isFirstLoad = false;
+            if (this.isFirstLoad) {
+                this.isFirstLoad = false;
             }
         } catch (IOException exception) {
             if (Configuration.enableDebug){
@@ -125,7 +125,7 @@ public class ZItemManager implements ItemManager {
     @Override
     public void reloadCustomItems() {
         this.customItems.clear();
-        for (MechanicFactory<?> factory : mechanicFactories.values()) {
+        for (MechanicFactory<?> factory : this.mechanicFactories.values()) {
             factory.clearMechanics();
         }
         this.loadCustomItems();
@@ -142,7 +142,7 @@ public class ZItemManager implements ItemManager {
             return false;
         }
         String itemId = itemStack.getItemMeta().getPersistentDataContainer().get(this.itemIdKey, PersistentDataType.STRING);
-        return isCustomItem(itemId);
+        return this.isCustomItem(itemId);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ZItemManager implements ItemManager {
             return Optional.empty();
         }
         String itemId = itemStack.getItemMeta().getPersistentDataContainer().get(this.itemIdKey, PersistentDataType.STRING);
-        if (itemId == null || !isCustomItem(itemId)) {
+        if (itemId == null || !this.isCustomItem(itemId)) {
             return Optional.empty();
         }
         return Optional.of(itemId);
@@ -190,7 +190,7 @@ public class ZItemManager implements ItemManager {
 
     @Override
     public void giveItem(Player player, String itemId) {
-        if (!isCustomItem(itemId)) {
+        if (!this.isCustomItem(itemId)) {
             Logger.info("Item " + itemId + " is not a custom item.", Logger.LogType.WARNING);
             return;
         }
@@ -239,7 +239,7 @@ public class ZItemManager implements ItemManager {
             String itemId = meta.getPersistentDataContainer().get(this.itemIdKey, PersistentDataType.STRING);
             if (itemId == null) continue;
 
-            if (!isCustomItem(itemId)) {
+            if (!this.isCustomItem(itemId)) {
                 meta.getPersistentDataContainer().remove(this.itemIdKey);
                 meta.getPersistentDataContainer().remove(this.ownerKey);
                 itemStack.setItemMeta(meta);
@@ -247,7 +247,7 @@ public class ZItemManager implements ItemManager {
                 continue;
             }
 
-            CustomItemData itemData = customItems.get(itemId);
+            CustomItemData itemData = this.customItems.get(itemId);
             if (itemData == null || itemData.skipItemUpdate()) continue;
 
             MenuItemStack menuItemStack = itemData.menuItemStack();

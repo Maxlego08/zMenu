@@ -15,7 +15,7 @@ public record DiscordConfigurationComponent(String webhookUrl, String avatarUrl,
         }
 
         if (this.json != null) {
-            Object parsed = parseRecursively(this.json, consumer);
+            Object parsed = this.parseRecursively(this.json, consumer);
             if (parsed instanceof List<?>) {
                 discordWebhook.setJson((List<?>) parsed);
             } else {
@@ -25,19 +25,19 @@ public record DiscordConfigurationComponent(String webhookUrl, String avatarUrl,
     }
 
     public String getWebhookUrl() {
-        return webhookUrl;
+        return this.webhookUrl;
     }
 
     public String getAvatarUrl() {
-        return avatarUrl;
+        return this.avatarUrl;
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public List<?> getJson() {
-        return json;
+        return this.json;
     }
     private Object parseRecursively(Object obj, ReturnConsumer<String, String> consumer) {
         if (obj instanceof String) {
@@ -46,14 +46,14 @@ public record DiscordConfigurationComponent(String webhookUrl, String avatarUrl,
         if (obj instanceof List<?> list) {
             List<Object> newList = new java.util.ArrayList<>();
             for (Object item : list) {
-                newList.add(parseRecursively(item, consumer));
+                newList.add(this.parseRecursively(item, consumer));
             }
             return newList;
         }
         if (obj instanceof java.util.Map<?, ?>) {
             java.util.Map<Object, Object> map = new java.util.HashMap<>();
             for (var entry : ((java.util.Map<?, ?>) obj).entrySet()) {
-                map.put(entry.getKey(), parseRecursively(entry.getValue(), consumer));
+                map.put(entry.getKey(), this.parseRecursively(entry.getValue(), consumer));
             }
             return map;
         }

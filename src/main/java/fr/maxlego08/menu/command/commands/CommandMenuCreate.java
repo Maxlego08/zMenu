@@ -29,15 +29,15 @@ public class CommandMenuCreate extends VCommand {
         int inventorySize = this.argAsInteger(1);
 
         if (inventorySize % 9 != 0 || inventorySize < 9 || inventorySize > 54) {
-            message(plugin, sender, Message.INVENTORY_CREATE_ERROR_SIZE);
+            this.message(plugin, this.sender, Message.INVENTORY_CREATE_ERROR_SIZE);
             return CommandType.DEFAULT;
         }
 
         StringBuilder inventoryName = new StringBuilder();
 
-        for (int i = 3; i < args.length; i++) {
-            inventoryName.append(args[i]);
-            if (i != args.length - 1) inventoryName.append(" ");
+        for (int i = 3; i < this.args.length; i++) {
+            inventoryName.append(this.args[i]);
+            if (i != this.args.length - 1) inventoryName.append(" ");
         }
 
         this.plugin.getInventoryManager().createNewInventory(this.sender, fileName, inventorySize, inventoryName.toString());

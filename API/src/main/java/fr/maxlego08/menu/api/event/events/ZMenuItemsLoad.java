@@ -35,7 +35,7 @@ public class ZMenuItemsLoad extends Event {
      */
     @NotNull
     public Set<String> getLoadedItemIds() {
-        return loadedItemIds;
+        return this.loadedItemIds;
     }
 
     /**
@@ -45,7 +45,7 @@ public class ZMenuItemsLoad extends Event {
      */
     @Contract(pure = true)
     public boolean isReload() {
-        return isReload;
+        return this.isReload;
     }
 
     @Override

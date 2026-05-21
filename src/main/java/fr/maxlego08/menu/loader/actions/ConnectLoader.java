@@ -21,6 +21,6 @@ public class ConnectLoader extends ActionLoader {
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         String server = accessor.getString("server", "hub");
-        return new ConnectAction(server, plugin);
+        return new ConnectAction(server, this.plugin);
     }
 }

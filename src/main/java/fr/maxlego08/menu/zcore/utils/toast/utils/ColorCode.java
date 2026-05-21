@@ -36,10 +36,10 @@ public enum ColorCode {
     }
 
     public char getCode() {
-        return code;
+        return this.code;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

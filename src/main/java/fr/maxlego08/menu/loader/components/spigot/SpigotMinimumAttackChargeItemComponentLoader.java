@@ -19,7 +19,7 @@ public class SpigotMinimumAttackChargeItemComponentLoader extends ItemComponentL
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         float charge = (float) configuration.getDouble(path, -1);
         return charge < 0 ? null : new MinimumAttackChargeComponent(charge);
     }

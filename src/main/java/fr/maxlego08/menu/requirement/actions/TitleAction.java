@@ -25,7 +25,7 @@ public class TitleAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        inventory.getPlugin().getMetaUpdater().sendTitle(player, this.papi(placeholders.parse(title), player), this.papi(placeholders.parse(subtitle), player), start, duration, end);
+        inventory.getPlugin().getMetaUpdater().sendTitle(player, this.papi(placeholders.parse(this.title), player), this.papi(placeholders.parse(this.subtitle), player), this.start, this.duration, this.end);
     }
 
 }

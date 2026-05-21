@@ -20,20 +20,20 @@ public class ZSwitchButton extends SwitchButton {
 
     @Override
     public String getPlaceholder() {
-        return placeholder;
+        return this.placeholder;
     }
 
     @Override
     public List<SwitchCaseButton> getButtons() {
-        return buttons;
+        return this.buttons;
     }
 
     @Override
     public Button getDisplayButton(InventoryEngine inventoryEngine, Player player) {
 
-        if (buttons.isEmpty()) return super.getDisplayButton(inventoryEngine, player);
+        if (this.buttons.isEmpty()) return super.getDisplayButton(inventoryEngine, player);
 
-        if (buttons.size() == 1) return buttons.getFirst().button();
+        if (this.buttons.size() == 1) return this.buttons.getFirst().button();
 
         String result = inventoryEngine.getPlugin().parse(player, this.placeholder);
 

@@ -19,14 +19,14 @@ public class ItemJoinMechanic extends Mechanic<ItemJoinMechanicFactory> {
     }
 
     public boolean shouldGrantOnFirstJoin() {
-        return grantOnFirstJoin;
+        return this.grantOnFirstJoin;
     }
 
     public boolean preventsInventoryChanges() {
-        return preventInventoryChanges;
+        return this.preventInventoryChanges;
     }
 
     public OptionalInt getFixedSlot() {
-        return fixedSlot;
+        return this.fixedSlot;
     }
 }

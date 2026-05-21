@@ -8,7 +8,7 @@ public enum Folder {
 	
 
 	public String toFolder(){
-		return name().toLowerCase();
+		return this.name().toLowerCase();
 	}
 	
 }

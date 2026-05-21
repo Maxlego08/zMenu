@@ -118,13 +118,13 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         List<Permissible> permissibles = new ArrayList<>();
 
         if (configuration.contains("open_commands")) {
-            actions = loadActions(plugin.getInventoryManager(), plugin.getCommandManager(), plugin, configuration.getStringList("open_commands"));
+            actions = this.loadActions(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configuration.getStringList("open_commands"));
         }
 
         if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement")) {
             ConfigurationSection configurationSection = configuration.getConfigurationSection("open_requirement.requirements");
             if (configurationSection != null) {
-                permissibles = loadPermissibles(plugin.getInventoryManager(), plugin.getCommandManager(), plugin, configurationSection);
+                permissibles = this.loadPermissibles(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configurationSection);
             }
         }
 
@@ -132,7 +132,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         inventory.setOpenRequirement(requirement);
 
         if (Configuration.enableDebug) {
-            plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");
+            this.plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");
         }
 
         return inventory;

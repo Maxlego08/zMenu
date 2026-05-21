@@ -26,18 +26,18 @@ public class CommandMenuGiveItem extends VCommand {
         String itemId = this.argAsString(0);
         Player target = this.argAsPlayer(1, this.player);
         if (target == null) {
-            message(plugin, sender, Message.COMMAND_PLAYER_NOT_FOUND, "%player%", this.argAsString(1));
+            this.message(plugin, this.sender, Message.COMMAND_PLAYER_NOT_FOUND, "%player%", this.argAsString(1));
             return CommandType.DEFAULT;
         }
         if (!this.itemManager.isCustomItem(itemId)) {
-            message(plugin, sender, Message.GIVE_ITEM_NOT_FOUND, "%itemId%", itemId);
+            this.message(plugin, this.sender, Message.GIVE_ITEM_NOT_FOUND, "%itemId%", itemId);
             return CommandType.DEFAULT;
         }
         this.itemManager.giveItem(target, itemId);
         if (target.equals(this.player)) {
-            message(plugin, sender, Message.GIVE_ITEM_SUCCESS_SELF, "%itemId%", itemId);
+            this.message(plugin, this.sender, Message.GIVE_ITEM_SUCCESS_SELF, "%itemId%", itemId);
         } else {
-            message(plugin, sender, Message.GIVE_ITEM_SUCCESS_OTHER, "%itemId%", itemId, "%player%", target.getName());
+            this.message(plugin, this.sender, Message.GIVE_ITEM_SUCCESS_OTHER, "%itemId%", itemId, "%player%", target.getName());
         }
         return CommandType.SUCCESS;
     }

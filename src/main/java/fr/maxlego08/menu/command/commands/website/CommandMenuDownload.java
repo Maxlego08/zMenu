@@ -28,8 +28,8 @@ public class CommandMenuDownload extends VCommand {
 
         if (Configuration.enableDownloadCommand) {
 
-            plugin.getLogger().warning(sender.getName() + " try to download the link '" + link + "' (force: " + force + ") while the command is disable !");
-            message(plugin, sender, "&cThe command is disable for safety reason, you need to enable it in config.json.");
+            plugin.getLogger().warning(this.sender.getName() + " try to download the link '" + link + "' (force: " + force + ") while the command is disable !");
+            this.message(plugin, this.sender, "&cThe command is disable for safety reason, you need to enable it in config.json.");
 
             return CommandType.DEFAULT;
         }

@@ -44,9 +44,9 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
             Object blocks = ruleMap.get("blocks");
 
             if (blocks instanceof String blockString) {
-                processBlockString(blockString, miningSpeed, correctForDrops, materialRules, tagRules);
+                this.processBlockString(blockString, miningSpeed, correctForDrops, materialRules, tagRules);
             } else if (blocks instanceof List<?> blockList) {
-                processBlockList(blockList, miningSpeed, correctForDrops, materialsRules, tagRules);
+                this.processBlockList(blockList, miningSpeed, correctForDrops, materialsRules, tagRules);
             }
         }
 
@@ -57,10 +57,10 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
     private void processBlockString(String blockString, float miningSpeed, boolean correctForDrops,
                                     List<ZToolRule<Material>> materialRules,
                                     List<ZToolRule<Tag<Material>>> tagRules) {
-        parseNamespacedKey(blockString).ifPresent(key -> {
-            getTag(key).ifPresentOrElse(
+        this.parseNamespacedKey(blockString).ifPresent(key -> {
+            this.getTag(key).ifPresentOrElse(
                     tag -> tagRules.add(new ZToolRule<>(tag, miningSpeed, correctForDrops)),
-                    () -> getMaterial(key).ifPresent(
+                    () -> this.getMaterial(key).ifPresent(
                             material -> materialRules.add(new ZToolRule<>(material, miningSpeed, correctForDrops))
                     )
             );
@@ -75,8 +75,8 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
         for (Object blockObj : blockList) {
             if (!(blockObj instanceof String blockName)) continue;
 
-            parseNamespacedKey(blockName).ifPresent(key -> {
-                Optional<Tag<Material>> tagOpt = getTag(key);
+            this.parseNamespacedKey(blockName).ifPresent(key -> {
+                Optional<Tag<Material>> tagOpt = this.getTag(key);
 
                 if (tagOpt.isPresent()) {
                     if (!materials.isEmpty()) {
@@ -85,7 +85,7 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
                     }
                     tagRules.add(new ZToolRule<>(tagOpt.get(), miningSpeed, correctForDrops));
                 } else {
-                    getMaterial(key).ifPresent(materials::add);
+                    this.getMaterial(key).ifPresent(materials::add);
                 }
             });
         }

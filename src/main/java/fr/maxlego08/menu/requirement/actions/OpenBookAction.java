@@ -23,6 +23,6 @@ public class OpenBookAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        inventory.getPlugin().getMetaUpdater().openBook(player, papi(title, player), papi(author, player), papi(lines, player));
+        inventory.getPlugin().getMetaUpdater().openBook(player, this.papi(this.title, player), this.papi(this.author, player), this.papi(this.lines, player));
     }
 }

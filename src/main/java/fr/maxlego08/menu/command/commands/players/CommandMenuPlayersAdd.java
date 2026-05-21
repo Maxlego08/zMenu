@@ -47,7 +47,7 @@ public class CommandMenuPlayersAdd extends VCommand {
             plugin.getStorageManager().upsertData(offlinePlayer.getUniqueId(), data);
         }
 
-        message(plugin, this.sender, Message.PLAYERS_DATA_ADD, "%player%", offlinePlayer.getName(), "%key%", key);
+        this.message(plugin, this.sender, Message.PLAYERS_DATA_ADD, "%player%", offlinePlayer.getName(), "%key%", key);
 
         return CommandType.SUCCESS;
     }

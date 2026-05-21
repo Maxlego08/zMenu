@@ -20,6 +20,7 @@ import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.ClickAction;
+import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.common.utils.ZUtils;
@@ -140,6 +141,13 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
         inventory.setClickLimiterEnabled(configuration.getBoolean(path + "click-limiter-enabled", true));
         inventory.setFile(file);
+        if (configuration.isConfigurationSection("inventory-replacement")){
+            String replacementName = configuration.getString("inventory-replacement.name", "");
+            String replacementPlugin = configuration.getString("inventory-replacement.plugin", "zMenu");
+            List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
+            InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
+            inventory.setInventoryReplacement(inventoryReplacement);
+        }
 
         this.loadFillItem(configuration, inventory, menuItemStackLoader, file);
         this.loadPatterns(configuration, inventory);
@@ -155,7 +163,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
             for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
-                InventoryOption instance = createInstance(entry.getKey(), optionClass);
+                InventoryOption instance = this.createInstance(entry.getKey(), optionClass);
                 if (instance != null) {
                     inventoryOptions.add(instance);
                 }
@@ -246,20 +254,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
                 List<String> actionStrings = configuration.getStringList(loadString + ".actions");
-                Set<Action> actions = new HashSet<>();
+                List<Action> actions = new ArrayList<>(actionStrings.size());
                 for (String string : actionStrings) {
                     try {
-                        actions.addAll(ClickAction.valueOf(string.toUpperCase()).asActions());
+                        actions.add(Action.valueOf(string.toUpperCase()));
                     } catch (Exception ignored) {
-                        if (Configuration.enableDebug)
-                            Logger.info("Invalid click action " + string + " in " + file.getAbsolutePath() + " for openWithItem, skipping it.", Logger.LogType.WARNING);
                     }
                 }
 
                 String type = configuration.getString(loadString + ".type", "full");
                 ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
 
-                inventory.setOpenWithItem(new OpenWithItem(loadedItem, new ArrayList<>(actions), itemStackSimilar));
+                inventory.setOpenWithItem(new OpenWithItem(loadedItem, actions, itemStackSimilar));
             }
         } catch (Exception ignored) {
         }

@@ -44,35 +44,35 @@ public class BlocksAttacksComponent extends ItemComponent {
     }
 
     public float getBlockDelaySeconds() {
-        return blockDelaySeconds;
+        return this.blockDelaySeconds;
     }
 
     public float getDisableCooldownScale() {
-        return disableCooldownScale;
+        return this.disableCooldownScale;
     }
 
     public List<ZDamageReductionRecord> getDamageReductions() {
-        return damageReductions;
+        return this.damageReductions;
     }
 
     public float getItemDamageThreshold() {
-        return itemDamageThreshold;
+        return this.itemDamageThreshold;
     }
 
     public float getItemDamageBase() {
-        return itemDamageBase;
+        return this.itemDamageBase;
     }
 
     public float getItemDamageFactor() {
-        return itemDamageFactor;
+        return this.itemDamageFactor;
     }
 
     public Sound getBlockSound() {
-        return blockSound;
+        return this.blockSound;
     }
 
     public Sound getDisabledSound() {
-        return disabledSound;
+        return this.disabledSound;
     }
 
     @Override

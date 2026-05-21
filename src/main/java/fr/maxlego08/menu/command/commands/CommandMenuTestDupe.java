@@ -29,9 +29,9 @@ public class CommandMenuTestDupe extends VCommand {
         itemStack = plugin.getDupeManager().protectItem(itemStack);
 
         if (arg.equalsIgnoreCase("inventory")) {
-            player.getInventory().addItem(itemStack.clone());
+            this.player.getInventory().addItem(itemStack.clone());
         } else if (arg.equalsIgnoreCase("item")) {
-            player.getWorld().dropItem(player.getLocation(), itemStack.clone());
+            this.player.getWorld().dropItem(this.player.getLocation(), itemStack.clone());
         } else return CommandType.SYNTAX_ERROR;
 
         return CommandType.SUCCESS;

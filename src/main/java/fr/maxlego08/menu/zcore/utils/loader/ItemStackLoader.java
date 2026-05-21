@@ -39,7 +39,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         Material material = null;
 
         int value = configuration.getInt(path + "material", 0);
-        if (value != 0) material = getMaterial(value);
+        if (value != 0) material = this.getMaterial(value);
 
         if (material == null) {
             String str = configuration.getString(path + "material", null);
@@ -57,7 +57,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
         if (configuration.contains(path + "url")) {
 
-            item = createSkull(configuration.getString(path + "url"));
+            item = this.createSkull(configuration.getString(path + "url"));
 
         } else if (configuration.contains(path + "potion")) {
 
@@ -81,12 +81,12 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         List<String> tmpLore = configuration.getStringList(path + "lore");
         if (!tmpLore.isEmpty()) {
             List<String> lore = meta.getLore() == null ? new ArrayList<>() : meta.getLore();
-            lore.addAll(color(tmpLore));
+            lore.addAll(this.color(tmpLore));
             meta.setLore(lore);
         }
 
         String displayName = configuration.getString(path + "name", null);
-        if (displayName != null) meta.setDisplayName(color(displayName));
+        if (displayName != null) meta.setDisplayName(this.color(displayName));
 
         List<String> enchants = configuration.getStringList(path + "enchants");
 
@@ -140,7 +140,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
                 try {
 
-                    ItemFlag flag = getFlag(flagString);
+                    ItemFlag flag = this.getFlag(flagString);
 
                     if (flag == null)
                         throw new ItemFlagException("an error occurred while loading the flag " + flagString);
@@ -181,11 +181,11 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         if (meta != null) {
 
             if (meta.hasDisplayName()) {
-                configuration.set(path + "name", colorReverse(meta.getDisplayName()));
+                configuration.set(path + "name", this.colorReverse(meta.getDisplayName()));
             }
 
             if (meta.hasLore()) {
-                configuration.set(path + "lore", colorReverse(Objects.requireNonNull(meta.getLore())));
+                configuration.set(path + "lore", this.colorReverse(Objects.requireNonNull(meta.getLore())));
             }
 
             if (!meta.getItemFlags().isEmpty()) {

@@ -76,7 +76,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         Optional<VInventory> optional = this.getInventory(id);
 
         if (optional.isEmpty()) {
-            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -89,7 +89,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         VInventory clonedInventory = inventory.clone();
 
         if (clonedInventory == null) {
-            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -113,10 +113,10 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
                 clonedInventory.postOpen(this.plugin, player, page, objects);
             } else if (result == InventoryResult.ERROR) {
 
-                message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+                this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             }
         } catch (InventoryOpenException exception) {
-            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             exception.printStackTrace();
         }
     }
@@ -139,12 +139,12 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
                 event.setCancelled(inventory.isDisablePlayerInventoryClick());
 
                 inventory.onInventoryClick(event, this.plugin, player);
-                handleClick(true, player, inventory, event);
+                this.handleClick(true, player, inventory, event);
 
             } else {
 
                 inventory.onInventoryClick(event, this.plugin, player);
-                handleClick(false, player, inventory, event);
+                this.handleClick(false, player, inventory, event);
             }
         }
     }
@@ -152,7 +152,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
         if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
-            message(this.plugin, player, Message.CLICK_COOLDOWN);
+            this.message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
 
@@ -180,8 +180,9 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     @Override
     protected void onInventoryDrag(InventoryDragEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
-        if (holder instanceof VInventory vInventory) {
-            vInventory.onDrag(event, this.plugin, player);
+        if (holder instanceof VInventory inventory) {
+            event.setCancelled(true);
+            inventory.onDrag(event, this.plugin, player);
         }
     }
 
@@ -191,7 +192,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         if (holder instanceof VInventory vInventory) {
             if (vInventory instanceof InventoryDefault inventoryDefault) {
                 fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
-                if (menu != null && menu.shouldCancelItemPickup()) {
+                if (menu != null && (menu.shouldCancelItemPickup() || menu.cleanInventory())) {
                     event.setCancelled(true);
                 }
             }
@@ -206,7 +207,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
                 fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
                 if (menu != null && menu.cleanInventory()) {
                     event.getDrops().clear();
-                    InventoriesPlayer inventoriesPlayer = plugin.getInventoriesPlayer();
+                    InventoriesPlayer inventoriesPlayer = this.plugin.getInventoriesPlayer();
                     List<ItemStack> savedItems = inventoriesPlayer.getInventory(player.getUniqueId());
                     inventoriesPlayer.clearInventorie(player.getUniqueId());
                     if (event.getKeepInventory()) {
@@ -238,10 +239,10 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     public void close(Predicate<VInventory> predicate) {
         if (!this.plugin.isEnabled()) {
-            Bukkit.getOnlinePlayers().forEach(player -> needClose(player, predicate));
+            Bukkit.getOnlinePlayers().forEach(player -> this.needClose(player, predicate));
             return;
         }
-        Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> needClose(player, predicate)));
+        Bukkit.getOnlinePlayers().forEach(player -> this.plugin.getScheduler().runAtEntity(player, task -> this.needClose(player, predicate)));
     }
 
     private void needClose(Player player, Predicate<VInventory> predicate) {
@@ -260,7 +261,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            this.plugin.getScheduler().runAtEntityLater(player, w -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
+            this.plugin.getScheduler().runAtEntityLater(player, w -> this.message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
         }
     }
 

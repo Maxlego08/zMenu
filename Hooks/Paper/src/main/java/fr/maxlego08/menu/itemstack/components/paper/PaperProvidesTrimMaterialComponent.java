@@ -18,6 +18,6 @@ public class PaperProvidesTrimMaterialComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        itemStack.setData(DataComponentTypes.PROVIDES_TRIM_MATERIAL, trimMaterial);
+        itemStack.setData(DataComponentTypes.PROVIDES_TRIM_MATERIAL, this.trimMaterial);
     }
 }

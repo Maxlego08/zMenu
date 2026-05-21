@@ -54,19 +54,19 @@ public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemC
                 case APPLY_EFFECTS -> {
                     List<Map<?, ?>> potionEffectsRaw = (List<Map<?, ?>>) effectMap.get("effects");
                     if (potionEffectsRaw == null) continue;
-                    List<PotionEffect> potionEffects = parsePotionEffects(potionEffectsRaw);
-                    float probability = parseFloat(effectMap, "probability", 1.0f);
+                    List<PotionEffect> potionEffects = this.parsePotionEffects(potionEffectsRaw);
+                    float probability = this.parseFloat(effectMap, "probability", 1.0f);
                     effects.add(ConsumeEffect.applyStatusEffects(potionEffects, probability));
                 }
                 case TELEPORT_RANDOMLY -> {
-                    float diameter = parseFloat(effectMap, "diameter", 16.0f);
+                    float diameter = this.parseFloat(effectMap, "diameter", 16.0f);
                     effects.add(ConsumeEffect.teleportRandomlyEffect(diameter));
                 }
                 case CLEAR_ALL_EFFECTS -> {
                     effects.add(ConsumeEffect.clearAllStatusEffects());
                 }
                 case REMOVE_EFFECTS -> {
-                    List<PotionEffectType> potionEffectTypes = parsePotionEffectTypes(effectMap.get("effects"));
+                    List<PotionEffectType> potionEffectTypes = this.parsePotionEffectTypes(effectMap.get("effects"));
 
                     List<TypedKey<PotionEffectType>> keys = new ArrayList<>();
                     for (PotionEffectType pet : potionEffectTypes) {

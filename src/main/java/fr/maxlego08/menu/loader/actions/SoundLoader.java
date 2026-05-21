@@ -23,7 +23,7 @@ public class SoundLoader extends ActionLoader {
 
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        return new SoundAction(loadSound(path, accessor, file));
+        return new SoundAction(this.loadSound(path, accessor, file));
     }
 
     protected SoundOption loadSound(String path, TypedMapAccessor accessor, File file) {

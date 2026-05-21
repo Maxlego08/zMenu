@@ -22,8 +22,8 @@ public class DiscordAction extends ActionHelper {
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
 
         var scheduler = inventory.getPlugin().getScheduler();
-        DiscordWebhook discordWebhook = new DiscordWebhook(configuration.webhookUrl());
-        configuration.apply(text -> text == null ? null : player == null ? text : papi(placeholders.parse(text), player), discordWebhook);
+        DiscordWebhook discordWebhook = new DiscordWebhook(this.configuration.webhookUrl());
+        this.configuration.apply(text -> text == null ? null : player == null ? text : this.papi(placeholders.parse(text), player), discordWebhook);
 
         scheduler.runAsync(w -> {
             try {

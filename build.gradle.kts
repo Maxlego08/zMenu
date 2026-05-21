@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.1.3"
+version = "1.1.1.4"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -104,7 +104,7 @@ allprojects {
 
     dependencies {
         if (project.name != "Paper") {
-            compileOnly("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
+            compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
         }
         compileOnly("me.clip:placeholderapi:2.11.6")
 

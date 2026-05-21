@@ -70,18 +70,18 @@ public class MessageLoader {
             exception.printStackTrace();
         }
 
-        loadMessages(configuration);
+        this.loadMessages(configuration);
     }
 
     public void load() {
 
-        File file = new File(plugin.getDataFolder(), "messages.yml");
+        File file = new File(this.plugin.getDataFolder(), "messages.yml");
         if (!file.exists()) {
             this.save();
             return;
         }
 
-        loadMessages(YamlConfiguration.loadConfiguration(file));
+        this.loadMessages(YamlConfiguration.loadConfiguration(file));
     }
 
     private void loadMessages(YamlConfiguration configuration) {
@@ -89,7 +89,7 @@ public class MessageLoader {
         this.loadedMessages.clear();
 
         for (String key : configuration.getKeys(false)) {
-            loadMessage(configuration, key);
+            this.loadMessage(configuration, key);
         }
 
         boolean canSave = false;

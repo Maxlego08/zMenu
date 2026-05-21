@@ -19,6 +19,6 @@ public class PlayerChatAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> player.chat(command.replace("%player%", player.getName())));
+        this.papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> player.chat(command.replace("%player%", player.getName())));
     }
 }

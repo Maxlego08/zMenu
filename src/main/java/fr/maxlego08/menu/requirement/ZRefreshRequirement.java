@@ -42,27 +42,27 @@ public class ZRefreshRequirement implements RefreshRequirement {
 
     @Override
     public boolean isTask() {
-        return isTask;
+        return this.isTask;
     }
 
     @Override
     public boolean isRefreshLore() {
-        return isRefreshLore;
+        return this.isRefreshLore;
     }
 
     @Override
     public boolean isRefreshName() {
-        return isRefreshName;
+        return this.isRefreshName;
     }
 
     @Override
     public boolean isRefreshButton() {
-        return isRefreshButton;
+        return this.isRefreshButton;
     }
 
     @Override
     public int getUpdateInterval() {
-        return updateInterval;
+        return this.updateInterval;
     }
 
     @Override

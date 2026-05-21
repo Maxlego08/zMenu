@@ -29,23 +29,23 @@ public class ConsumableComponent extends ItemComponent {
     }
 
     public float getConsumeSeconds() {
-        return consumeSeconds;
+        return this.consumeSeconds;
     }
 
     public org.bukkit.inventory.meta.components.consumable.ConsumableComponent.Animation getAnimation() {
-        return animation;
+        return this.animation;
     }
 
     public Sound getConsumeSound() {
-        return consumeSound;
+        return this.consumeSound;
     }
 
     public boolean isHasConsumeParticles() {
-        return hasConsumeParticles;
+        return this.hasConsumeParticles;
     }
 
     public List<ConsumableEffect> getEffects() {
-        return effects;
+        return this.effects;
     }
 
     @Override

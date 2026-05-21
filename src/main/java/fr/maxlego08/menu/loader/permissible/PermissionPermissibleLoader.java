@@ -22,8 +22,8 @@ public class PermissionPermissibleLoader extends PermissibleLoader {
 
     @Override
     public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        List<Action> denyActions = loadAction(buttonManager, accessor, "deny", path, file);
-        List<Action> successActions = loadAction(buttonManager, accessor, "success", path, file);
+        List<Action> denyActions = this.loadAction(this.buttonManager, accessor, "deny", path, file);
+        List<Action> successActions = this.loadAction(this.buttonManager, accessor, "success", path, file);
         return new ZPermissionPermissible(accessor.getString("permission"), denyActions, successActions);
     }
 }

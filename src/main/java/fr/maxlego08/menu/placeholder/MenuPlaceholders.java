@@ -83,7 +83,7 @@ public class MenuPlaceholders extends ZUtils {
         });
 
         placeholder.register("math_", (player, args) -> String.valueOf(new ExpressionBuilder(plugin.parse(player, args.replace("{", "%").replace("}", "%"))).build().evaluate()));
-        placeholder.register("formatted_math_", (player, args) -> format(new ExpressionBuilder(plugin.parse(player, args.replace("{", "%").replace("}", "%"))).build().evaluate()));
+        placeholder.register("formatted_math_", (player, args) -> this.format(new ExpressionBuilder(plugin.parse(player, args.replace("{", "%").replace("}", "%"))).build().evaluate()));
 
         // Statistics
         placeholder.register("statistic_hours_played", (player, s) -> String.valueOf((player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20) / 60));
@@ -95,8 +95,8 @@ public class MenuPlaceholders extends ZUtils {
             return object == null ? Message.GLOBAL_PLACEHOLDER_NOT_FOUND.getMessage() : String.valueOf(object);
         });
 
-        placeholder.register("time_unix_timestamp", (player, args) -> String.valueOf(System.currentTimeMillis()));
-        placeholder.register("time_next_day_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().plusDays(1L).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-        placeholder.register("time_today_start_unix_timestamp",(player,args)-> String.valueOf(LocalDateTime.now().toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+        placeholder.register("time_unix_timestamp", (player, args) -> String.valueOf(System.currentTimeMillis() / 1000));
+        placeholder.register("time_next_day_unix_timestamp", (player, args) -> String.valueOf(LocalDateTime.now().toLocalDate().plusDays(1L).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond()));
+        placeholder.register("time_today_start_unix_timestamp", (player, args) -> String.valueOf(LocalDateTime.now().toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond()));
     }
 }

@@ -22,9 +22,9 @@ public class SpigotSuspiciousStewEffectsItemComponentLoader extends AbstractEffe
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         List<Map<?, ?>> effects = configuration.getMapList(path);
-        List<PotionEffect> potionEffects = parsePotionEffects(effects);
+        List<PotionEffect> potionEffects = this.parsePotionEffects(effects);
         return potionEffects.isEmpty() ? null : new SuspiciousStewEffectsComponent(potionEffects);
     }
 }

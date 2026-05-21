@@ -42,6 +42,47 @@
 
 # Unreleased
 
+# 1.1.1.4
+
+## New Features
+
+- **Bedrock Inventory Support**: Added full Bedrock inventory support via Geyser/Floodgate integration. Includes Bedrock-specific actions, buttons, input builders (with placeholders support and legacy color code conversion), drag button, inventory replacement, dialog support, and Bedrock player validation.
+- **Inventory Replacement**: Implemented inventory replacement functionality, allowing inventories to be dynamically replaced across various classes.
+- **ItemStack Build Context**: Added `ItemStack` support to build context and updated durability handling in menu item stack.
+- **PaperProfileComponent**: Added new `PaperProfileComponent` for Paper-specific profile handling.
+
+## Bug Fixes
+
+- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`. Items are now physically cleared from the player inventory during storage, ensuring container content packets don't reveal hidden items. The close handler also uses physical restoration (`giveInventory`) instead of packet-based restoration.
+- **Item Pickup with Clear Inventory**: Fixed items being picked up by the player when `clear-inventory` is enabled.
+- **Lore Metadata Duplication**: Fixed "lore" metadata duplication when loading items.
+- **Color Handling**: Fixed and simplified color handling for leather armor and banner patterns in `MenuItemStackLoader`.
+- **NPE Fix**: Fixed null pointer exception.
+- **Import Fix**: Fixed import for `ZBuildContext` in `ItemEditAction`.
+- **API Errors**: Fixed errors and updated API version.
+
+## Improvements
+
+- **Requirement Configuration Validation**: Added validation for `click-requirement`, `view-requirement`, and `open-requirement` configurations. Detects common misconfiguration where users place requirement keys directly under the requirement section instead of using named groups (for click-requirement) or a `requirements` list (for view/open-requirement). Displays a clear warning message with an example of the correct structure and a link to the documentation.
+- **Inventory Lookup Optimization**: Optimized inventory lookup with a map cache for better performance.
+- **CraftEngine Compatibility**: Updated compatibility with the latest version of CraftEngine.
+- **Color Parsing**: Added color parsing support.
+
+## Changes
+
+- **Time Placeholders**: Changed `time_unix_timestamp`, `time_next_day_unix_timestamp`, and `time_today_start_unix_timestamp` placeholders to return values in seconds instead of milliseconds.
+
+## Internal Changes
+
+- Standardized method parameter annotations to use `@NonNull` across action and button classes.
+- Standardized `this` keyword usage in method return statements for clarity.
+- Streamlined item stack creation by consolidating special item stack application.
+- Enhanced click handling in `Button` class and simplified click requirement configuration.
+- Updated Nexo dependency version.
+- Updated Gradle repositories URL for Floodgate.
+- Removed unused library files (`FirstCore.jar`, `zEssentials.jar`, `zMenu-1.1.0.0.jar`).
+- Removed debug messages.
+
 # 1.1.1.3
 
 ## New Features

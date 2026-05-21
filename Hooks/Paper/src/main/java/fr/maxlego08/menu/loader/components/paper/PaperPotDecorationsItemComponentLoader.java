@@ -25,14 +25,14 @@ public class PaperPotDecorationsItemComponentLoader extends ItemComponentLoader 
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         List<String> decorations = configuration.getStringList(path);
 
         if (decorations.size() < SIDES) return null;
 
         ItemType[] types = new ItemType[SIDES];
         for (int i = 0; i < SIDES; i++) {
-            types[i] = getItemTypeFromString(decorations.get(i));
+            types[i] = this.getItemTypeFromString(decorations.get(i));
             if (types[i] == null) return null;
         }
 

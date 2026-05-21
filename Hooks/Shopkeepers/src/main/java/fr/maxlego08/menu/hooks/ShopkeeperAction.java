@@ -24,12 +24,12 @@ public class ShopkeeperAction extends Action {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(plugin.parse(player, placeholders.parse(this.shopName))).findFirst();
+        Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(this.plugin.parse(player, placeholders.parse(this.shopName))).findFirst();
         if (optional.isPresent()) {
             optional.get().openTradingWindow(player);
         } else {
-            plugin.getLogger().severe("ShopKeeper " + shopName + " was not found !");
-            player.sendMessage("§cShopKeeper " + shopName + " was not found !");
+            this.plugin.getLogger().severe("ShopKeeper " + this.shopName + " was not found !");
+            player.sendMessage("§cShopKeeper " + this.shopName + " was not found !");
         }
     }
 }

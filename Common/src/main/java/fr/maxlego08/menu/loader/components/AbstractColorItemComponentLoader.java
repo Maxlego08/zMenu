@@ -19,10 +19,10 @@ public abstract class AbstractColorItemComponentLoader extends ItemComponentLoad
     protected Color parseColor(@NotNull Object obj) {
         switch (obj) {
             case Float[] floatsArray when (floatsArray.length == 3 || floatsArray.length == 4) -> {
-                return getColor(floatsArray[0] * 255, floatsArray[1] * 255, floatsArray[2] * 255, floatsArray.length == 3, floatsArray[3] * 255);
+                return this.getColor(floatsArray[0] * 255, floatsArray[1] * 255, floatsArray[2] * 255, floatsArray.length == 3, floatsArray[3] * 255);
             }
             case Double[] doublesArray when (doublesArray.length == 3 || doublesArray.length == 4) -> {
-                return getColor(doublesArray[0] * 255, doublesArray[1] * 255, doublesArray[2] * 255, doublesArray.length == 3, doublesArray[3] * 255);
+                return this.getColor(doublesArray[0] * 255, doublesArray[1] * 255, doublesArray[2] * 255, doublesArray.length == 3, doublesArray[3] * 255);
             }
             case List<?> list when (list.size() == 3 || list.size() == 4) -> {
                 try {

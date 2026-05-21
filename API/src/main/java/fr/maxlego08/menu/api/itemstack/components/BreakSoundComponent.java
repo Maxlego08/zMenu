@@ -18,7 +18,7 @@ public class BreakSoundComponent extends ItemComponent {
     }
 
     public @NotNull Sound getBreakSound() {
-        return breakSound;
+        return this.breakSound;
     }
 
     @Override

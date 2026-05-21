@@ -55,8 +55,8 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
                     "Impossible to find the list of buttons for the " + file.getAbsolutePath() + " pattern !");
         }
 
-        Map<Character, List<Integer>> matrix = generateMatrix(configuration.getStringList("matrix"));
-        if (!matrix.isEmpty()) size = getInventorySizeByMatrix(configuration.getStringList("matrix"));
+        Map<Character, List<Integer>> matrix = this.generateMatrix(configuration.getStringList("matrix"));
+        if (!matrix.isEmpty()) size = this.getInventorySizeByMatrix(configuration.getStringList("matrix"));
 
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
         List<Button> buttons = new ArrayList<>();
