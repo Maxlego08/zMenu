@@ -3,7 +3,7 @@
 [![Modrinth](https://img.shields.io/modrinth/dt/zmenu?logo=modrinth&label=Modrinth&color=00AF5C)](https://modrinth.com/plugin/zmenu)
 [![Discord](https://img.shields.io/discord/music?logo=discord&label=Discord&color=5865F2)](https://discord.gg/daTBzuk)
 [![Java](https://img.shields.io/badge/Java-21+-orange?logo=openjdk)](https://www.oracle.com/java/)
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.19--1.21+-green)](https://www.minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.19--26.1+-green)](https://www.minecraft.net/)
 
 zMenu is a powerful Minecraft plugin for creating custom inventory GUIs through YAML configuration files. No coding required for server admins, while developers get a complete API for integration.
 
@@ -21,6 +21,7 @@ zMenu is a powerful Minecraft plugin for creating custom inventory GUIs through 
 - **PlaceholderAPI** - Full placeholder support with local overrides
 - **Multi-platform** - Spigot, Paper, and Folia support
 - **22+ Plugin Hooks** - ItemsAdder, Oraxen, LuckPerms, Vault, MythicMobs, and more
+- **Bedrock** - Bedrock support
 
 ## Links
 
@@ -75,7 +76,7 @@ items:
 <dependency>
     <groupId>fr.maxlego08.menu</groupId>
     <artifactId>zmenu-api</artifactId>
-    <version>1.1.1.2</version>
+    <version>1.1.1.4</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -87,7 +88,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("fr.maxlego08.menu:zmenu-api:1.1.1.2")
+    compileOnly("fr.maxlego08.menu:zmenu-api:1.1.1.4")
 }
 ```
 
