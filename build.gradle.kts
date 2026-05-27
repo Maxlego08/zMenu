@@ -31,6 +31,7 @@ allprojects {
         maven(url = "https://repo.tcoded.com/releases")
         maven(url = "https://repo.codemc.io/repository/maven-releases/")
         maven(url = "https://repo.codemc.io/repository/maven-snapshots/")
+        maven(url = "https://repo.papermc.io/repository/maven-public/")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://hub.spigotmc.org/nexus/content/groups/public/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -46,7 +47,7 @@ allprojects {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(25))
         }
         withSourcesJar()
         if (project.name == "API") {
@@ -103,7 +104,7 @@ allprojects {
     }
 
     dependencies {
-        if (project.name != "Paper") {
+        if (project.name != "Paper" && project.name != "Common") {
             compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
         }
         compileOnly("me.clip:placeholderapi:2.11.6")
@@ -130,6 +131,10 @@ dependencies {
     api(projects.api)
     api(projects.common)
     api(projects.hooks)
+    implementation(projects.nms.base)
+    implementation(projects.nms.v121R1)
+    implementation(projects.nms.v120R4)
+    implementation(projects.nms.v120R3)
     implementation("de.tr7zw:item-nbt-api:2.15.0")
 }
 

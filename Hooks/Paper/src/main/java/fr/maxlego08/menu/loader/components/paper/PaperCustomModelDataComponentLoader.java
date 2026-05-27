@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.itemstack.components.paper.PaperCustomModelDataComponent;
-import fr.maxlego08.menu.loader.components.spigot.SpigotCustomModelDataItemComponentLoader;
+import fr.maxlego08.menu.loader.components.SpigotCustomModelDataItemComponentLoader;
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;

@@ -3,10 +3,12 @@ package fr.maxlego08.menu.inventory;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.EnumInventory;
@@ -26,13 +28,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
 
 public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
-    private final Map<Integer, VInventory> inventories = new HashMap<>();
+    private final Map<Integer, Map<InventoryType, VInventory>> inventories = new HashMap<>();
     private final ZMenuPlugin plugin;
     private final Map<UUID, Long> cooldownClick = new HashMap<>();
 
@@ -43,11 +46,15 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     }
 
     public void registerInventory(EnumInventory enumInventory, VInventory inventory) {
-        if (!this.inventories.containsKey(enumInventory.getId())) {
-            this.inventories.put(enumInventory.getId(), inventory);
-        } else {
+        this.registerInventory(enumInventory.getId(), InventoryType.CHEST, inventory);
+    }
+
+    public void registerInventory(int id, InventoryType type, VInventory inventory) {
+        Map<InventoryType, VInventory> typeMap = this.inventories.computeIfAbsent(id, k -> new EnumMap<>(InventoryType.class));
+        if (typeMap.containsKey(type)) {
             throw new InventoryAlreadyExistException("Inventory with id " + inventory.getId() + " already exist !");
         }
+        typeMap.put(type, inventory);
     }
 
     /**
@@ -73,7 +80,9 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
      */
     @Override
     public void createInventory(int id, Player player, int page, Object... objects) {
-        Optional<VInventory> optional = this.getInventory(id);
+        ContainerInventory containerInventory = (ContainerInventory) objects[0];
+
+        Optional<VInventory> optional = this.getInventoryOrDefault(id, containerInventory.getType());
 
         if (optional.isEmpty()) {
             this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
@@ -105,6 +114,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
                 Inventory spigotInventory = clonedInventory.getSpigotInventory();
                 player.openInventory(spigotInventory);
+
+                clonedInventory.onPostOpen(player, this.plugin, page, objects);
 
                 this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPostOpen(player, clonedInventory));
 
@@ -189,12 +200,9 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     @Override
     public void onPickUp(EntityPickupItemEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
-        if (holder instanceof VInventory vInventory) {
-            if (vInventory instanceof InventoryDefault inventoryDefault) {
-                fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
-                if (menu != null && menu.shouldCancelItemPickup()) {
-                    event.setCancelled(true);
-                }
+        if (holder instanceof InventoryEngine inventoryEngine) {
+            if (inventoryEngine.getMenuInventory() instanceof ContainerInventory containerInventory && containerInventory.shouldCancelItemPickup()) {
+                event.setCancelled(true);
             }
         }
     }
@@ -204,8 +212,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof VInventory vInventory) {
             if (vInventory instanceof InventoryDefault inventoryDefault) {
-                fr.maxlego08.menu.api.Inventory menu = inventoryDefault.getMenuInventory();
-                if (menu != null && menu.cleanInventory()) {
+                if (inventoryDefault.getMenuInventory() instanceof ContainerInventory containerInventory && containerInventory.clearInventory()) {
                     event.getDrops().clear();
                     InventoriesPlayer inventoriesPlayer = this.plugin.getInventoriesPlayer();
                     List<ItemStack> savedItems = inventoriesPlayer.getInventory(player.getUniqueId());
@@ -230,7 +237,20 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
      * @return Optional - Allows returning the inventory in an optional
      */
     private Optional<VInventory> getInventory(int id) {
-        return Optional.ofNullable(this.inventories.getOrDefault(id, null));
+        Map<InventoryType, VInventory> typeMap = this.inventories.get(id);
+        return typeMap == null ? Optional.empty() : Optional.ofNullable(typeMap.get(InventoryType.CHEST));
+    }
+
+    private Optional<VInventory> getInventoryOrDefault(int id, @NotNull InventoryType type) {
+        Map<InventoryType, VInventory> typeMap = this.inventories.get(id);
+        if (typeMap == null) {
+            return Optional.empty();
+        }
+        VInventory inventory = typeMap.get(type);
+        if (inventory == null) {
+            inventory = typeMap.get(InventoryType.CHEST);
+        }
+        return Optional.ofNullable(inventory);
     }
 
     public void close() {

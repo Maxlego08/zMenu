@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
@@ -8,6 +7,7 @@ import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
+import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -19,6 +19,7 @@ import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class ZDialogInventory implements DialogInventory {
     private String targetPlayerNamePlaceholder;
     private Requirement openRequirement;
 
-    public ZDialogInventory(MenuPlugin plugin, String name, String fileName, String externalTitle) {
+    public ZDialogInventory(@NotNull MenuPlugin plugin,@NotNull String name,@NotNull String fileName,@NotNull String externalTitle) {
         this.menuPlugin = plugin;
         this.name = name;
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
@@ -84,7 +85,7 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+    public String getName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
         if (!this.conditionalNames.isEmpty()) {
             Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
 
@@ -135,7 +136,7 @@ public class ZDialogInventory implements DialogInventory {
         this.canCloseWithEscape = canCloseWithEscape;
     }
     @Override
-    public String getExternalTitle() {
+    public @NonNull String getExternalTitle() {
         return this.externalTitle;
     }
     @Override

@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.hooks.bedrock.listener;
 
-import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
+import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

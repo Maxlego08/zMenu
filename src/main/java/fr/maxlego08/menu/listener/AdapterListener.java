@@ -12,6 +12,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -77,6 +78,15 @@ public class AdapterListener extends ZUtils implements Listener {
         Player player = event.getEntity();
         for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
             adapter.onDeath(event, player);
+        }
+    }
+
+    @EventHandler
+    public void onPrepareAnvil(PrepareAnvilEvent event) {
+        if (event.getView().getPlayer() instanceof Player player) {
+            for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+                adapter.onPrepareAnvil(event, player);
+            }
         }
     }
 }

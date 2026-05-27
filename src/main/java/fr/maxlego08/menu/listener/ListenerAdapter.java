@@ -7,6 +7,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -31,5 +32,9 @@ public abstract class ListenerAdapter extends ZUtils {
     }
 
     protected void onDeath(PlayerDeathEvent event, Player player) {
+    }
+
+    protected void onPrepareAnvil(PrepareAnvilEvent event, Player player) {
+
     }
 }

@@ -28,6 +28,7 @@ import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.common.MinecraftVersion;
 import fr.maxlego08.menu.common.VersionFilter;
+import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.config.ConfigManager;
@@ -52,6 +53,7 @@ import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
+import fr.maxlego08.menu.inventory.inventories.AnvilInventoryDefault;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.loader.materials.ArmorLoader;
@@ -79,6 +81,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -149,6 +152,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public void onEnable() {
+
+        NMSMenuPacketListener.init(this);
 
         instance = this;
 
@@ -226,6 +231,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
+        this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
         /* Add Listener */

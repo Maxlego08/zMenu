@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.command.commands.bedrock;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.BedrockManager;
+import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
