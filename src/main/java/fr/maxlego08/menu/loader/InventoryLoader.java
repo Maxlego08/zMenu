@@ -78,7 +78,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         if (inventoryType == InventoryType.CHEST) {
             size = configuration.getInt("size", 54);
             if (size % 9 != 0) {
-                throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
+                int closestMultiple = (size / 9) * 9;
+                int nextMultiple = closestMultiple + 9;
+                int closest = (size - closestMultiple < nextMultiple - size) ? closestMultiple : nextMultiple;
+                throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath() + " because it's not a multiple of 9. The closest valid size would be " + closest);
             }
         }
 
