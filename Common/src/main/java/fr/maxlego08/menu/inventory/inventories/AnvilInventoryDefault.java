@@ -1,12 +1,14 @@
 package fr.maxlego08.menu.inventory.inventories;
 
-import fr.maxlego08.menu.api.utils.TextChange;
-import fr.maxlego08.menu.api.utils.TextChangeType;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.engine.AnvilInventoryEngine;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.inventory.AnvilInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.TextChange;
+import fr.maxlego08.menu.api.utils.TextChangeType;
 import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.common.network.PacketQueue;
 import net.minecraft.network.protocol.Packet;
@@ -18,8 +20,11 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.jetbrains.annotations.NotNull;
 
-public class AnvilInventoryDefault extends InventoryDefault {
+import java.util.List;
+
+public class AnvilInventoryDefault extends InventoryDefault implements AnvilInventoryEngine {
     private PacketQueue<Packet<? super ServerGamePacketListener>> incomingPackets;
     private String currentText = "";
     private int containerId;
@@ -40,6 +45,11 @@ public class AnvilInventoryDefault extends InventoryDefault {
         this.containerId = ((CraftPlayer) player).getHandle().containerMenu.containerId;
 
         super.onPostOpen(player, plugin, page, objects);
+    }
+
+    @Override
+    public @NotNull String getCurrentText() {
+        return this.currentText;
     }
 
     @Override
@@ -86,6 +96,12 @@ public class AnvilInventoryDefault extends InventoryDefault {
                     for (Requirement requirement : anvilInventory.getRenameRequirements()) {
                         requirement.execute(player, null, this, placeholders);
                     }
+
+                    List<Button> buttons = getButtons();
+                    for (Button button : buttons) {
+                        button.onAnvilTextChange(player, this, textChange, placeholders);
+                    }
+
                 })
                 .build()
                 .schedule(plugin, player);

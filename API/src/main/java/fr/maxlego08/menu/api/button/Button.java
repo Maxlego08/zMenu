@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.button;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.engine.AnvilInventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.Pagination;
 import fr.maxlego08.menu.api.players.DataManager;
@@ -13,6 +14,7 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -211,6 +213,8 @@ public abstract class Button extends PlaceholderButton {
      */
     public void onRightClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot) {
     }
+
+    public void onAnvilTextChange(@NotNull Player player, AnvilInventoryEngine inventoryEngine, TextChange textChange, Placeholders placeholders) {}
 
     /**
      * Called when the middle mouse button is clicked
