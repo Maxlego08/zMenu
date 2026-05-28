@@ -1,14 +1,11 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
+    alias(libs.plugins.paperweight)
 }
-
-group = "fr.maxlego08.menu"
-version = "1.1.0.7"
 
 dependencies {
     api(projects.api)
     api(projects.nms.base)
-    paperweight.paperDevBundle("26.1.2.build.+")
+    paperweight.paperDevBundle(libs.versions.paperDevBundle.get())
 }
 
 paperweight {

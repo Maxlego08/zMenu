@@ -6,5 +6,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("com.nexomc:nexo:1.21.0")
+    compileOnly(libs.nexo)
 }

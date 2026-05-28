@@ -6,5 +6,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("com.dre.brewery:BreweryX:3.6.0")
+    compileOnly(libs.breweryx)
 }
