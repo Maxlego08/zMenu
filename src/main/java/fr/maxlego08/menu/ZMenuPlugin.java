@@ -126,7 +126,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
-    private PlatformScheduler scheduler;
+    private final PlatformScheduler scheduler = this.foliaLib.getScheduler();
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
@@ -163,9 +163,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (this.packetManager != null) {
             this.packetManager.onEnable();
         }
-
-        this.scheduler = this.foliaLib.getScheduler();
-
 
         this.dupeManager = MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();

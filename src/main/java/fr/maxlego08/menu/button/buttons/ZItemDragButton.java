@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button.buttons;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.ItemDragButton;
 import fr.maxlego08.menu.api.dupe.DupeManager;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class ZItemDragButton extends ItemDragButton {
 
     private final DupeManager dupeManager;
+    private final PlatformScheduler scheduler;
     //Check item section
     private boolean enableCheckItem = false;
     private MenuItemStack checkItems;
@@ -35,11 +37,11 @@ public class ZItemDragButton extends ItemDragButton {
     private boolean useErrorItemCache = true;
     private final Map<UUID, Map<Integer, Boolean>> activeTasks = new HashMap<>();
     private int ticks;
-    private PlatformScheduler scheduler;
 
-    public ZItemDragButton(DupeManager dupeManager) {
+    public ZItemDragButton(@NotNull MenuPlugin plugin) {
         super();
-        this.dupeManager = dupeManager;
+        this.dupeManager = plugin.getDupeManager();
+        this.scheduler = plugin.getInventoryManager().getScheduler();
     }
 
     public void setCheckItem(MenuItemStack menuItemStack, ItemStackSimilar itemStackSimilar) {
@@ -48,10 +50,9 @@ public class ZItemDragButton extends ItemDragButton {
         this.itemStackSimilar = itemStackSimilar;
     }
 
-    public void setErrorItem(MenuItemStack menuItemStack, PlatformScheduler scheduler, int ticks, boolean useCache) {
+    public void setErrorItem(MenuItemStack menuItemStack, int ticks, boolean useCache) {
         this.enableErrorItem = true;
         this.errorItems = menuItemStack;
-        this.scheduler = scheduler;
         this.ticks = ticks;
         this.useErrorItemCache = useCache;
     }
@@ -85,7 +86,8 @@ public class ZItemDragButton extends ItemDragButton {
                     })
                     .mapToInt(Integer::intValue)
                     .toArray();
-            inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
+            if (this.getItemStack() != null)
+                inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
         }
     }
 

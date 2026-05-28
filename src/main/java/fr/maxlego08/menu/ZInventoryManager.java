@@ -406,6 +406,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new TakeItemLoader(this.plugin));
         buttonManager.registerAction(new ItemEditLoader(this.plugin));
         buttonManager.registerAction(new ItemGiveLoader(this.plugin));
+        buttonManager.registerAction(new SetItemActionLoader(this.plugin));
+        buttonManager.registerAction(new RefreshSlotActionLoader());
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }
