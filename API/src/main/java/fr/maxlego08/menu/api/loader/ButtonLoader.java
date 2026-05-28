@@ -40,6 +40,10 @@ public abstract class ButtonLoader {
         this.aliases.addAll(List.of(aliases));
     }
 
+    public ButtonLoader(@NotNull Plugin plugin,@NotNull String name) {
+        this(plugin, name, new String[0]);
+    }
+
     /**
      * Loads a list of strings and transforms it into integers, supporting various slot formats.
      * More information <a href="https://zmenu.groupez.dev/configurations/buttons#none_slot">here</a>.
