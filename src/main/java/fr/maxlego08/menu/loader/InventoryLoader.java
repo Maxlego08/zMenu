@@ -108,27 +108,33 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             }
         }
 
+        Plugin pluginOwner;
+        if (objects.length >= 3 && objects[2] instanceof Plugin) {
+            pluginOwner = (Plugin) objects[2];
+        } else {
+            pluginOwner = this.plugin;
+        }
+
         String fileName = this.getFileNameWithoutExtension(file);
 
         ContainerInventorySetter inventory;
         if (!((objects[1]) instanceof Class<?> rawClass)) {
-            inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, plugin, name, fileName, size, buttons, configuration, path, file);
+            inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
         } else {
             if (rawClass == ZInventory.class) {
-                inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, plugin, name, fileName, size, buttons, configuration, path, file);
+                inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
             } else if (ZInventory.class.isAssignableFrom(rawClass)) {
                 try {
                     Class<? extends ZInventory> classz = (Class<? extends ZInventory>) rawClass;
                     Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class, String.class, int.class, List.class);
                     constructor.setAccessible(true);
-                    Plugin plugin = (Plugin) objects[2];
-                    inventory = constructor.newInstance(plugin, name, fileName, size, buttons);
+                    inventory = constructor.newInstance(pluginOwner, name, fileName, size, buttons);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, plugin, name, fileName, size, buttons, configuration, path, file);
+                    inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
                 }
             } else {
-                inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, plugin, name, fileName, size, buttons, configuration, path, file);
+                inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
             }
         }
 
