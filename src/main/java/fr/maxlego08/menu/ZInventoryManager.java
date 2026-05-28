@@ -88,6 +88,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final Map<UUID, Integer> playerPages = new HashMap<>();
     private final Map<UUID, Integer> playerMaxPages = new HashMap<>();
+    private final Map<String, Inventory> inventoryByName = new HashMap<>();
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
@@ -211,6 +212,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
+        this.inventoryByName.put(inventory.getFileName().toLowerCase(), inventory);
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
@@ -241,12 +243,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (name == null) {
             return Optional.empty();
         }
-        for (Inventory inventory : this.getInventories()) {
-            if (inventory.getFileName().equalsIgnoreCase(name)) {
-                return Optional.of(inventory);
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(this.inventoryByName.get(name.toLowerCase()));
     }
 
     @Override
@@ -288,6 +285,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
+        this.inventoryByName.remove(inventory.getFileName().toLowerCase());
     }
 
     @Override
@@ -302,7 +300,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void deleteInventories(Plugin plugin) {
-        this.inventories.remove(plugin.getName());
+        List<Inventory> removed = this.inventories.remove(plugin.getName());
+        if (removed != null) {
+            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase()));
+        }
     }
 
     @Override
@@ -494,6 +495,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         this.playerMaxPages.clear();
         this.playerPages.clear();
+        this.inventoryByName.clear();
 
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {

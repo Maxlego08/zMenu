@@ -201,7 +201,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     public void onPickUp(EntityPickupItemEvent event, Player player) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof InventoryEngine inventoryEngine) {
-            if (inventoryEngine.getMenuInventory() instanceof ContainerInventory containerInventory && containerInventory.shouldCancelItemPickup()) {
+            if (inventoryEngine.getMenuInventory() instanceof ContainerInventory containerInventory && (containerInventory.shouldCancelItemPickup() || containerInventory.cleanInventory())) {
                 event.setCancelled(true);
             }
         }
