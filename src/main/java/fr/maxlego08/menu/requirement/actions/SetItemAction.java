@@ -11,18 +11,19 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 public class SetItemAction extends ActionHelper {
-    private final int slot;
+    private final List<Integer> slots;
     private final boolean inPlayerInventory;
 
     private final MenuItemStack menuItemStack;
 
     private final boolean dupeProtection;
 
-    public SetItemAction(int slot, boolean inPlayerInventory, MenuItemStack menuItemStack, boolean dupeProtection) {
-        this.slot = slot;
+    public SetItemAction(@NotNull List<Integer> slots, boolean inPlayerInventory, MenuItemStack menuItemStack, boolean dupeProtection) {
+        this.slots = slots;
         this.inPlayerInventory = inPlayerInventory;
         this.menuItemStack = menuItemStack;
         this.dupeProtection = dupeProtection;
@@ -38,19 +39,21 @@ public class SetItemAction extends ActionHelper {
             itemStack = inventoryEngine.getPlugin().getDupeManager().protectItem(itemStack);
         }
 
-        if (inPlayerInventory) {
-            Map<Integer, ItemButton> playerInventoryItems = inventoryEngine.getPlayerInventoryItems();
-            if (playerInventoryItems.containsKey(slot)) {
-                playerInventoryItems.get(slot).updateDisplayItem(itemStack);
+        for (int slot : slots) {
+            if (inPlayerInventory) {
+                Map<Integer, ItemButton> playerInventoryItems = inventoryEngine.getPlayerInventoryItems();
+                if (playerInventoryItems.containsKey(slot)) {
+                    playerInventoryItems.get(slot).updateDisplayItem(itemStack);
+                } else {
+                    inventoryEngine.addItem(true, slot, itemStack, dupeProtection);
+                }
             } else {
-                inventoryEngine.addItem(true, slot, itemStack, dupeProtection);
-            }
-        } else {
-            Map<Integer, ItemButton> items = inventoryEngine.getItems();
-            if (items.containsKey(slot)) {
-                items.get(slot).updateDisplayItem(itemStack);
-            } else {
-                inventoryEngine.addItem(false, slot, itemStack, dupeProtection);
+                Map<Integer, ItemButton> items = inventoryEngine.getItems();
+                if (items.containsKey(slot)) {
+                    items.get(slot).updateDisplayItem(itemStack);
+                } else {
+                    inventoryEngine.addItem(false, slot, itemStack, dupeProtection);
+                }
             }
         }
     }

@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 public class SetItemActionLoader extends ActionLoader {
     private final MenuPlugin menuPlugin;
@@ -21,7 +23,14 @@ public class SetItemActionLoader extends ActionLoader {
 
     @Override
     public @Nullable Action load(@NotNull String path, @NotNull TypedMapAccessor accessor, @NotNull File file) {
-        int slot = accessor.getInt("slot");
+        List<Integer> slots = accessor.getIntList("slots");
+        if (slots.isEmpty()) {
+            int slot = accessor.getInt("slot", -1);
+            if (slot == -1) {
+                return null;
+            }
+            slots = Collections.singletonList(slot);
+        }
         boolean inPlayerInventory = accessor.getBoolean("in-player-inventory", false);
         MenuItemStack menuItemStack;
         if (accessor.contains("item")) {
@@ -30,7 +39,7 @@ public class SetItemActionLoader extends ActionLoader {
             menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, accessor.map());
         }
         boolean dupeProtection = accessor.getBoolean("dupe-protection", true);
-        return new SetItemAction(slot, inPlayerInventory, menuItemStack, dupeProtection);
+        return new SetItemAction(slots, inPlayerInventory, menuItemStack, dupeProtection);
 
     }
 }
