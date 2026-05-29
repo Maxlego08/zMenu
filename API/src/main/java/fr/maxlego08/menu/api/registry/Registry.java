@@ -1,13 +1,17 @@
 package fr.maxlego08.menu.api.registry;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-public class Registry<T, R> {
-    private final Map<T, R> registry = new HashMap<>();
+public abstract class Registry<T, R> {
+    protected final Map<T, R> registry = new HashMap<>();
 
-    public void register(T key, R value) {
+    public void register(@Nullable T key, @NotNull R value) {
         registry.put(key, value);
     }
 
@@ -21,5 +25,9 @@ public class Registry<T, R> {
 
     public Optional<R> get(T key) {
         return Optional.ofNullable(registry.get(key));
+    }
+
+    public Set<T> getAllKeys() {
+        return registry.keySet();
     }
 }

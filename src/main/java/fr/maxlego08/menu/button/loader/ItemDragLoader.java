@@ -7,8 +7,11 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.button.buttons.ZItemDragButton;
 import fr.maxlego08.menu.itemstack.FullSimilar;
+import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -41,6 +44,11 @@ public class ItemDragLoader extends ButtonLoader {
             boolean useCache = configuration.getBoolean(path + error_element + ".use_cache", true);
             MenuItemStack menuItemStack = this.inventoryManager.loadItemStack(configuration, path + error_element + ".item.", defaultButtonValue.getFile());
             button.setErrorItem(menuItemStack, ticks, useCache);
+        }
+        ConfigurationSection ruleSection = configuration.getConfigurationSection(path + "rule");
+        if (ruleSection != null) {
+            Rule rule = ZRuleLoaderRegistry.getInstance().loadRule(ruleSection.getValues(true));
+            button.setRule(rule);
         }
 
         return button;

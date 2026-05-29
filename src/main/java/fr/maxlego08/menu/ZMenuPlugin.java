@@ -63,6 +63,7 @@ import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
+import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.Token;
@@ -175,6 +176,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.loadMeta();
 
+        ZRuleLoaderRegistry.getInstance().registerDefaultLoaders(this);
         this.componentsManager.initializeDefaultComponents(this);
 
         List<String> files = this.getInventoriesFiles();

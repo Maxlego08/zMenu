@@ -8,7 +8,9 @@ import fr.maxlego08.menu.api.button.buttons.ItemDragButton;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.rules.ZRuleContext;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -28,8 +30,11 @@ public class ZItemDragButton extends ItemDragButton {
     private final PlatformScheduler scheduler;
     //Check item section
     private boolean enableCheckItem = false;
+
     private MenuItemStack checkItems;
     private ItemStackSimilar itemStackSimilar;
+
+    private Rule rule;
 
     //Error item section
     private boolean enableErrorItem = false;
@@ -55,6 +60,11 @@ public class ZItemDragButton extends ItemDragButton {
         this.errorItems = menuItemStack;
         this.ticks = ticks;
         this.useErrorItemCache = useCache;
+    }
+
+    public void setRule(Rule rule) {
+        this.enableCheckItem = true;
+        this.rule = rule;
     }
 
     @Override
@@ -141,8 +151,7 @@ public class ZItemDragButton extends ItemDragButton {
             return;
         }
 
-        ItemStack itemStackCheck = this.checkItems.build(player);
-        boolean isSuccess = this.itemStackSimilar.isSimilar(itemStackCheck, cursorItem);
+        boolean isSuccess = (rule == null || rule.matches(new ZRuleContext(cursorItem))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(cursorItem, this.checkItems.build(player)));
 
         if (isSuccess){
             if (this.dupeManager.isDupeItem(currentItem)){
