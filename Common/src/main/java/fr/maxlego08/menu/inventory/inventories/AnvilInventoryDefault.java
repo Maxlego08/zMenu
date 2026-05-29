@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.api.utils.TextChangeType;
 import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.common.network.PacketQueue;
+import fr.maxlego08.menu.inventory.VInventory;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
@@ -27,7 +28,7 @@ import java.util.List;
 public class AnvilInventoryDefault extends InventoryDefault implements AnvilInventoryEngine {
     private PacketQueue<Packet<? super ServerGamePacketListener>> incomingPackets;
     private String currentText = "";
-    private int containerId;
+    private volatile int containerId;
 
 
     private boolean firstPacketReceived = false;
@@ -113,8 +114,19 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
 
     @Override
     protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
-        super.onClose(event, plugin, player);
         NMSMenuPacketListener.get().stopRedirecting(player, ServerboundRenameItemPacket.class);
         incomingPackets.cancel();
+        super.onClose(event, plugin, player);
+    }
+
+    @Override
+    protected void onInventorySwitch(InventoryCloseEvent event, Player player, VInventory newInventoryEngine) {
+        // Don't
+        if (!(newInventoryEngine instanceof AnvilInventoryEngine)) {
+            this.onClose(event, this.plugin, player);
+        } else {
+            incomingPackets.cancel();
+            super.onClose(event, this.plugin, player);
+        }
     }
 }

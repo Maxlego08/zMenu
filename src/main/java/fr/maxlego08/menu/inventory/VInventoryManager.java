@@ -182,9 +182,17 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
         if (player.isDead()) return;
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
-        if (holder instanceof VInventory inventory) {
-            this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryClose(player, inventory));
-            inventory.onPreClose(event, this.plugin, player);
+        if (holder instanceof InventoryDefault oldInventoryEngine) {
+            this.plugin.getScheduler().runAtEntityLater(player, () -> {
+                InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
+                if (newHolder instanceof InventoryDefault newInventoryEngine) {
+                    this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventorySwitch(player, oldInventoryEngine, newInventoryEngine));
+                    oldInventoryEngine.onInventorySwitch(event, player, newInventoryEngine);
+                } else {
+                    this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryClose(player, oldInventoryEngine));
+                    oldInventoryEngine.onPreClose(event, this.plugin, player);
+                }
+            }, 1);
         }
     }
 

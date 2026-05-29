@@ -232,6 +232,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
     }
 
+    protected void onInventorySwitch(InventoryCloseEvent event, Player player, VInventory newInventoryEngine) {
+        this.onPreClose(event, this.plugin, player);
+    }
+
     protected void onDrag(InventoryDragEvent event, MenuPlugin plugin, Player player) {
     }
 
