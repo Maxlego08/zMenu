@@ -10,9 +10,12 @@ import fr.maxlego08.menu.api.exceptions.InventoryAlreadyExistException;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
+import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
 import org.bukkit.Bukkit;
@@ -220,21 +223,42 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         if (holder instanceof VInventory vInventory) {
             if (vInventory instanceof InventoryDefault inventoryDefault) {
-                if (inventoryDefault.getMenuInventory() instanceof ContainerInventory containerInventory && containerInventory.clearInventory()) {
-                    event.getDrops().clear();
+                if (inventoryDefault.getMenuInventory() instanceof ContainerInventory containerInventory && containerInventory.clearInventory() && containerInventory.getClearInvType() == ClearInvType.DEFAULT) {
                     InventoriesPlayer inventoriesPlayer = this.plugin.getInventoriesPlayer();
-                    List<ItemStack> savedItems = inventoriesPlayer.getInventory(player.getUniqueId());
+                    Optional<InventoryPlayer> playerInventory = inventoriesPlayer.getPlayerInventory(player.getUniqueId());
                     inventoriesPlayer.clearInventorie(player.getUniqueId());
+                    List<ItemStack> drops = event.getDrops();
+                    drops.clear();
+                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+
+                    Map<Integer, String> items;
+                    if (playerInventory.isPresent()) {
+                        InventoryPlayer inventoryPlayer = playerInventory.get();
+                        items = inventoryPlayer.getItems();
+                    } else {
+                        items = Collections.emptyMap();
+                    }
                     if (event.getKeepInventory()) {
                         player.getInventory().clear();
-                        for (ItemStack itemStack : savedItems) {
+                        for (var entry : items.entrySet()) {
+                            int slot = entry.getKey();
+                            String serializedItem = entry.getValue();
+                            ItemStack itemStack = ItemStackUtils.deserializeItemStack(serializedItem);
                             if (itemStack != null) {
-                                player.getInventory().addItem(itemStack);
+                                player.getInventory().setItem(slot, itemStack);
                             }
                         }
-                        return;
+                        player.getInventory().setArmorContents(armorContents);
+                    } else {
+                        for (var entry : items.entrySet()) {
+                            String serializedItem = entry.getValue();
+                            ItemStack itemStack = ItemStackUtils.deserializeItemStack(serializedItem);
+                            if (itemStack != null) {
+                                drops.add(itemStack);
+                            }
+                        }
+                        drops.addAll(Arrays.asList(armorContents));
                     }
-                    event.getDrops().addAll(savedItems);
                 }
             }
         }
