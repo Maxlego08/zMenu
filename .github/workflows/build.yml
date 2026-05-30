@@ -14,95 +14,15 @@ concurrency:
 jobs:
   build:
     name: Build and Publish zMenu
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    env:
-      PROJECT_NAME: "zMenu"
-      JAVA_VERSION: "25"
-      DISCORD_AVATAR_URL: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
-      DEFAULT_BRANCH: "main"
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-
-      - name: Set IS_DEFAULT_BRANCH env var
-        run: |
-          if [ "${GITHUB_REF##*/}" = "${{ env.DEFAULT_BRANCH }}" ]; then
-            echo "IS_DEFAULT_BRANCH=true" >> $GITHUB_ENV
-          else
-            echo "IS_DEFAULT_BRANCH=false" >> $GITHUB_ENV
-          fi
-
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: temurin
-          server-id: github
-          settings-path: ${{ github.workspace }}
-          cache: gradle
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
-
-      - name: Make the short sha
-        id: short_sha
-        run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
-
-      - name: Print paperclip log on failure
-        if: failure()
-        run: |
-          find /home/runner/.gradle/caches/paperweight-userdev -name "output.log" 2>/dev/null | while read f; do
-            echo "=== $f ==="
-            cat "$f"
-          done
-
-      - name: Build with Gradle
-        run: |
-          chmod +x ./gradlew
-          if [ "$IS_DEFAULT_BRANCH" = "true" ]; then
-            ./gradlew build --stacktrace --debug --no-daemon
-          else
-            ./gradlew build --stacktrace --debug --no-daemon --scan -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
-          fi
-
-      - name: Publish on maven
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          if [ "$IS_DEFAULT_BRANCH" = "true" ]; then
-            ./gradlew API:publish -Drepository.name=releases --no-daemon
-          else
-            ./gradlew API:publish --no-daemon -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
-          fi
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-
-      - name: Find zMenu JAR
-        id: find_jar
-        run: |
-          echo "Finding zMenu JAR..."
-          jar_path=$(find . -path ./build -prune -o -name '*.jar' -print | grep -v 'gradle' | head -n 1)
-          echo "Found JAR at: $jar_path"
-          echo "JAR_PATH=$jar_path" >> $GITHUB_OUTPUT
-
-      - name: Upload JAR as artifact
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: zMenu-DEV-${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}-PR-${{ github.event.number }}-${{ github.run_id }}
-          path: target/
-
-      - name: Discord Webhook Action
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: tsickert/discord-webhook@b217a69502f52803de774ded2b1ab7c282e99645
-        with:
-          webhook-url: ${{ secrets.WEBHOOK_URL }}
-          content: ${{ env.IS_DEFAULT_BRANCH == 'true' && 'New release build of zMenu is available!' || 'New development build of zMenu is available!' }}
-          avatar-url: ${{ env.DISCORD_AVATAR_URL }}
-          username: zMenu
-          filename: ${{ steps.find_jar.outputs.JAR_PATH }}
+    uses: GroupeZ-dev/actions/.github/workflows/build.yml@main
+    with:
+      project-name: "zMenu"
+      java-version: '25'
+      publish: true
+      project-to-publish: "API:publish"
+      build-command: './gradlew build --stacktrace --info'
+      discord-avatar-url: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
