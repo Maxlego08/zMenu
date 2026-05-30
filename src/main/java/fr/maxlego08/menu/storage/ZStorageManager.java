@@ -61,7 +61,7 @@ public class ZStorageManager implements StorageManager {
         boolean enableDebug = globalDatabaseConfiguration.isDebug();
 
         String storageType = this.plugin.getConfig().getString("storage-type", "SQLITE");
-        if (storageType.equalsIgnoreCase("NONE")) {
+        if (storageType == null || storageType.equalsIgnoreCase("NONE")) {
             this.plugin.getLogger().info("You are not using a database.");
             this.isEnable = false;
             return;
