@@ -65,9 +65,9 @@ jobs:
         run: |
           chmod +x ./gradlew
           if [ "$IS_DEFAULT_BRANCH" = "true" ]; then
-            ./gradlew build --stacktrace --info --no-daemon
+            ./gradlew build --stacktrace --debug --no-daemon
           else
-            ./gradlew build --stacktrace --info --no-daemon -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
+            ./gradlew build --stacktrace --debug --no-daemon --scan -Darchive.classifier=DEV -Dgithub.sha=${{ steps.short_sha.outputs.GITHUB_SHA_SHORT }}
           fi
 
       - name: Publish on maven
