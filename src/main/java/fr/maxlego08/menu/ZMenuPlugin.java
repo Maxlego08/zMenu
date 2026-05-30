@@ -159,6 +159,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
 
         this.storageManager.loadDatabase();
+        if (!this.isEnabled()) return;
         this.addListener(this.storageManager);
 
         this.loadMeta();

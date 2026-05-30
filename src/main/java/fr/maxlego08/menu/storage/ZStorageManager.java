@@ -28,6 +28,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -60,18 +61,27 @@ public class ZStorageManager implements StorageManager {
         boolean enableDebug = globalDatabaseConfiguration.isDebug();
 
         String storageType = this.plugin.getConfig().getString("storage-type", "SQLITE");
-        if (storageType.equalsIgnoreCase("NONE")) {
+        if (storageType == null || storageType.equalsIgnoreCase("NONE")) {
             this.plugin.getLogger().info("You are not using a database.");
             this.isEnable = false;
             return;
         }
 
         Logger logger = JULogger.from(this.plugin.getLogger());
+        DatabaseType databaseType = this.getDatabaseType(storageType);
+        if (databaseType == null) {
+            this.plugin.getLogger().severe("Invalid storage-type: '" + storageType + "'. Valid values: SQLITE, MYSQL, MARIADB, POSTGRESQL, NONE");
+            this.isEnable = false;
+            Bukkit.getPluginManager().disablePlugin(this.plugin);
+            return;
+        }
+
         DatabaseConnection databaseConnection;
-        if (storageType.equalsIgnoreCase("SQLITE")) {
-            databaseConnection = new SqliteConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, DatabaseType.SQLITE), this.plugin.getDataFolder(), logger);
+        DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, databaseType);
+        if (databaseType == DatabaseType.SQLITE) {
+            databaseConnection = new SqliteConnection(databaseConfiguration, this.plugin.getDataFolder(), logger);
         } else {
-            databaseConnection = new HikariDatabaseConnection(new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, storageType.equalsIgnoreCase("MYSQL") ? DatabaseType.MYSQL : DatabaseType.MARIADB), logger);
+            databaseConnection = new HikariDatabaseConnection(databaseConfiguration, logger);
         }
 
         this.requestHelper = new RequestHelper(databaseConnection, logger);
@@ -88,6 +98,16 @@ public class ZStorageManager implements StorageManager {
         MigrationManager.execute(databaseConnection, logger);
 
         this.startBatchTask(this.plugin.getConfig().getInt("batch-task", 10));
+    }
+
+    private DatabaseType getDatabaseType(String storageType) {
+        return switch (storageType.toUpperCase(Locale.ROOT)) {
+            case "SQLITE" -> DatabaseType.SQLITE;
+            case "MYSQL" -> DatabaseType.MYSQL;
+            case "MARIADB" -> DatabaseType.MARIADB;
+            case "POSTGRESQL" -> DatabaseType.POSTGRESQL;
+            default -> null;
+        };
     }
 
     private void startBatchTask(int seconds) {
