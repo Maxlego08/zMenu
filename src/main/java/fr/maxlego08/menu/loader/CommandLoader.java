@@ -7,7 +7,9 @@ import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -45,6 +47,7 @@ public class CommandLoader implements Loader<Command> {
         boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", false);
 
         List<Action> commandActions = this.menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
+        List<Requirement> requirements = this.menuPlugin.getButtonManager().loadRequirements(configuration, path + "actions-requirements", file);
         List<CommandArgument> arguments = new ArrayList<>();
         List<?> listValues = configuration.getList(path + "arguments", new ArrayList<>());
         if (this.isListOfMap(listValues)) {
@@ -68,7 +71,7 @@ public class CommandLoader implements Loader<Command> {
         } else {
             List<String> strings = configuration.getStringList(path + "arguments");
             if (!strings.isEmpty()) {
-                this.plugin.getLogger().warning("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.groupez.dev/zmenu/configurations/custom-commands) Your command will still work properly but it is advisable to update it.");
+                Logger.info("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.groupez.dev/zmenu/configurations/custom-commands) Your command will still work properly but it is advisable to update it.", Logger.LogType.WARNING);
                 List<CommandArgument> mappedArguments = new ArrayList<>(strings.size());
                 for (String arg : strings) {
                     String inventoryName = null;
@@ -98,7 +101,7 @@ public class CommandLoader implements Loader<Command> {
             }
         }
 
-        return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, denyMessage, path, file);
+        return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, requirements, denyMessage, path, file);
     }
 
     @Override

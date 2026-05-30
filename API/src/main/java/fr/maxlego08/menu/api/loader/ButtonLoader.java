@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -31,9 +32,16 @@ public abstract class ButtonLoader {
     protected final Plugin plugin;
     protected final String name;
 
-    public ButtonLoader(@NotNull Plugin plugin,@NotNull String name) {
+    protected final List<String> aliases = new ArrayList<>();
+
+    public ButtonLoader(@NotNull Plugin plugin,@NotNull String name, String... aliases) {
         this.plugin = plugin;
         this.name = name;
+        this.aliases.addAll(List.of(aliases));
+    }
+
+    public ButtonLoader(@NotNull Plugin plugin,@NotNull String name) {
+        this(plugin, name, new String[0]);
     }
 
     /**
@@ -76,6 +84,17 @@ public abstract class ButtonLoader {
     @NotNull
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * Gets the list of aliases for the button.
+     *
+     * @return An unmodifiable list of aliases.
+     */
+    @Contract(pure = true)
+    @NotNull
+    public List<String> getAliases() {
+        return Collections.unmodifiableList(this.aliases);
     }
 
     /**

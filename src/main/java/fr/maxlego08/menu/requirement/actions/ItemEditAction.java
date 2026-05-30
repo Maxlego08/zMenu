@@ -24,7 +24,6 @@ public class ItemEditAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         ItemStack item = ItemPlaceholders.getItem(player, this.slot);
-        if (item == null) return;
 
         this.menuItemStack.build(new ZBuildContext.Builder().player(player).useCache(false).baseItemStack(item).build());
     }

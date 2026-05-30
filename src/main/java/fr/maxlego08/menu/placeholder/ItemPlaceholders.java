@@ -123,7 +123,7 @@ public class ItemPlaceholders extends ZUtils {
                 }
                 return "";
             case "unbreakable":
-                return (meta != null && meta.isUnbreakable()) ? "true" : "false";
+                return Boolean.toString(meta != null && meta.isUnbreakable());
 
             // 🧴 Potion
             case "potion_type":

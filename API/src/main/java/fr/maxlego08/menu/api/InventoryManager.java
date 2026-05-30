@@ -598,6 +598,8 @@ public interface InventoryManager extends Listener {
      */
     MenuItemStack loadItemStack(File file, String path, Map<String, Object> map);
 
+    MenuItemStack loadItemStack(File file, Map<String, Object> map);
+
     /**
      * Provides access to the pagination manager for handling paginated content in inventories.
      *

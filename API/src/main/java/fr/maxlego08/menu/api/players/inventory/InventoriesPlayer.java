@@ -28,6 +28,8 @@ public interface InventoriesPlayer extends Listener {
      */
     void storeInventoryTemporary(@NonNull Player player);
 
+    void storeInventoryTemporaryOrClear(@NotNull Player player);
+
     /**
      * Allows giving the inventory back to the player
      *

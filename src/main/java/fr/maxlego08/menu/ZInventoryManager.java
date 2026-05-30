@@ -34,6 +34,7 @@ import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.*;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
@@ -133,9 +134,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
+        return this.loadItemStack(file, map);
+    }
+
+    @Override
+    public MenuItemStack loadItemStack(File file, Map<String, Object> map) {
         YamlConfiguration configuration = new YamlConfiguration();
-        configuration.set("item", map);
-        return new MenuItemStackLoader(this).load(configuration, "item", file);
+        configuration.createSection("item", map);
+        return new MenuItemStackLoader(this).load(configuration, "item.", file);
     }
 
     @Override
@@ -195,7 +201,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 Logger.info("Cannot load inventory " + file.getPath() + ", inventory is waiting.", LogType.WARNING);
 
                 InventoryLoadRequirement inventoryLoadRequirement = optional.get();
-                plugin.getLogger().info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError());
+                Logger.info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError(), LogType.WARNING);
             }
 
             this.inventoryLoadRequirements.add(optional.get());
@@ -367,6 +373,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerPermissible(new PlayerNamePermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
         buttonManager.registerPermissible(new CuboidPermissibleLoader(buttonManager));
+        buttonManager.registerPermissible(new CheckInventoryLoader(this.plugin));
         if (this.plugin.isEnable(Plugins.JOBS)) {
             buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
         }
@@ -397,13 +404,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         buttonManager.registerAction(new ActionBarLoader());
         buttonManager.registerAction(new RefreshLoader());
         buttonManager.registerAction(new RefreshInventoryLoader());
+        buttonManager.registerAction(new ResetPaginationLoader(this.paginationManager));
         buttonManager.registerAction(new DiscordLoader());
         buttonManager.registerAction(new DiscordComponentV2Loader());
         buttonManager.registerAction(new TeleportLoader(this.plugin));
         buttonManager.registerAction(new CurrencyWithdrawLoader());
         buttonManager.registerAction(new CurrencyDepositLoader());
+        buttonManager.registerAction(new TakeItemLoader(this.plugin));
         buttonManager.registerAction(new ItemEditLoader(this.plugin));
         buttonManager.registerAction(new ItemGiveLoader(this.plugin));
+        buttonManager.registerAction(new SetItemActionLoader(this.plugin));
+        buttonManager.registerAction(new RefreshSlotActionLoader());
         if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
             buttonManager.registerAction(new LuckPermissionSetLoader());
         }

@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.JobPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -28,7 +29,7 @@ public class ZJobPermissible extends JobPermissible {
         MenuPlugin plugin = inventory.getPlugin();
         Job job = Jobs.getJob(plugin.parse(player, placeholders.parse(this.jobName)));
         if (job == null) {
-            plugin.getLogger().severe("Job " + this.jobName + " was not found !");
+            Logger.info("Job " + this.jobName + " was not found !", Logger.LogType.ERROR);
             return true;
         }
         return Jobs.getPlayerManager().getJobsPlayer(player.getUniqueId()).isInJob(job);

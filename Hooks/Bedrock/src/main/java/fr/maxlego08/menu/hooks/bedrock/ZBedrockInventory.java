@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.hooks.bedrock;
 
-import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
@@ -8,6 +7,7 @@ import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
+import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -15,6 +15,7 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class ZBedrockInventory implements BedrockInventory {
     }
 
     @Override
-    public String getName(Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+    public String getName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
         if (!this.conditionalNames.isEmpty()) {
             Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
 

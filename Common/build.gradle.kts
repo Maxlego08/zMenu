@@ -1,6 +1,15 @@
-group = "fr.maxlego08.menu"
-version = "1.1.0.7"
+plugins {
+    alias(libs.plugins.paperweight)
+}
 
 dependencies {
     api(projects.api)
+    api(projects.nms.base)
+    paperweight.paperDevBundle(libs.versions.paperDevBundle.get())
+}
+
+paperweight {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }

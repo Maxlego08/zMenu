@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.command.commands.dialogs;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.DialogInventory;
 import fr.maxlego08.menu.api.DialogManager;
+import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;

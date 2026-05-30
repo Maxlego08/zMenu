@@ -593,7 +593,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
     /**
      * Get a block relative to the lower NE point of the Cuboid in the given
-     * World. This version of getRelativeBlock() should be used if being called
+     * World. This value of getRelativeBlock() should be used if being called
      * many times, to avoid excessive calls to getWorld().
      *
      * @param w - The world

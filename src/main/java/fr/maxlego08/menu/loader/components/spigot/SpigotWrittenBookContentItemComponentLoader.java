@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.WrittenBookContentComponent;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@ComponentLoader
+@SinceVersion("1.20.5")
 public class SpigotWrittenBookContentItemComponentLoader extends ItemComponentLoader {
 
     public SpigotWrittenBookContentItemComponentLoader(){

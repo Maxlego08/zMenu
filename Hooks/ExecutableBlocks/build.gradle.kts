@@ -16,5 +16,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("maven.modrinth:SCore:5.25.6.9")
+    compileOnly(libs.score)
 }

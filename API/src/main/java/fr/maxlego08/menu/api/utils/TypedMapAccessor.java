@@ -12,9 +12,7 @@ import java.util.Map;
  * This class provides typed access to a {@code Map<String, Object>}, allowing retrieval
  * of values of different types with or without default values if the key is not present in the map.
  */
-public class TypedMapAccessor implements MapConfiguration {
-
-    private final Map<String, Object> map;
+public record TypedMapAccessor(Map<String, Object> map) implements MapConfiguration {
 
     /**
      * Constructs a TypedMapAccessor with the specified map.
@@ -329,10 +327,10 @@ public class TypedMapAccessor implements MapConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Map<String,Object>> getMapList(String key) {
+    public List<Map<String, Object>> getMapList(String key) {
         try {
             return (List<Map<String, Object>>) this.map.getOrDefault(key, new ArrayList<Map<String, Object>>());
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             return new ArrayList<>();
         }
     }

@@ -2,8 +2,6 @@ package fr.maxlego08.menu.hooks.dialogs.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.dialogs.BodyButton;
-import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogPlainMessageBody;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +13,7 @@ import java.util.List;
 public class DialogPlainMessageBodyLoader extends ButtonLoader {
 
     public DialogPlainMessageBodyLoader(Plugin plugin) {
-        super(plugin, "dialog_plain_message");
+        super(plugin, "dialog_plain_message", "plain_message");
     }
 
     @Override

@@ -43,7 +43,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public void validCommands() {
-        this.plugin.getLog().log("Loading " + this.getUniqueCommand() + " commands", LogType.SUCCESS);
+        Logger.info("Loading %d commands", LogType.SUCCESS, this.getUniqueCommand());
         this.commandChecking();
     }
 

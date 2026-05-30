@@ -1,7 +1,7 @@
 plugins {
     `java-library`
-    id("com.gradleup.shadow") version "9.0.0"
-    id("re.alwyn974.groupez.repository") version "1.0.0"
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.groupez.repository)
 }
 
 group = "fr.maxlego08.menu"
@@ -11,6 +11,8 @@ extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
 extra.set("classifier", System.getProperty("archive.classifier"))
 extra.set("sha", System.getProperty("github.sha"))
+
+val rootLibs = libs
 
 allprojects {
     apply(plugin = "java-library")
@@ -31,6 +33,7 @@ allprojects {
         maven(url = "https://repo.tcoded.com/releases")
         maven(url = "https://repo.codemc.io/repository/maven-releases/")
         maven(url = "https://repo.codemc.io/repository/maven-snapshots/")
+        maven(url = "https://repo.papermc.io/repository/maven-public/")
         maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven(url = "https://hub.spigotmc.org/nexus/content/groups/public/")
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -46,7 +49,7 @@ allprojects {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(25))
         }
         withSourcesJar()
         if (project.name == "API") {
@@ -103,21 +106,22 @@ allprojects {
     }
 
     dependencies {
-        if (project.name != "Paper") {
-            compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
+        if (project.name != "Paper" && project.name != "Common") {
+            compileOnly(rootLibs.spigot.api)
         }
-        compileOnly("me.clip:placeholderapi:2.11.6")
+        compileOnly(rootLibs.placeholderapi)
+        compileOnly(rootLibs.reflections)
 
-        implementation("fr.maxlego08.sarah:sarah:1.22")
-        implementation("fr.traqueur.currencies:currenciesapi:1.0.13")
-        implementation("com.tcoded:FoliaLib:0.5.1")
+        implementation(rootLibs.sarah)
+        implementation(rootLibs.currenciesapi)
+        implementation(rootLibs.folialib)
 
-        implementation("com.github.cryptomorin:XSeries:13.3.0")
-        implementation("net.objecthunter:exp4j:0.4.8")
+        implementation(rootLibs.xseries)
+        implementation(rootLibs.exp4j)
 
-        testImplementation(platform("org.junit:junit-bom:5.10.0"))
-        testImplementation("org.junit.jupiter:junit-jupiter")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        testImplementation(platform(rootLibs.junit.bom))
+        testImplementation(rootLibs.junit.jupiter)
+        testRuntimeOnly(rootLibs.junit.platform.launcher)
     }
 }
 
@@ -129,7 +133,11 @@ dependencies {
     api(projects.api)
     api(projects.common)
     api(projects.hooks)
-    implementation("de.tr7zw:item-nbt-api:2.15.0")
+    implementation(projects.nms.base)
+    implementation(projects.nms.v121R1)
+    implementation(projects.nms.v120R4)
+    implementation(projects.nms.v120R3)
+    implementation(libs.item.nbt.api)
 }
 
 tasks {

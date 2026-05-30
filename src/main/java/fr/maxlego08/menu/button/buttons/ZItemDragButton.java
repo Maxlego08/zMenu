@@ -2,12 +2,15 @@ package fr.maxlego08.menu.button.buttons;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.ItemDragButton;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.rules.ZRuleContext;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,10 +27,14 @@ import java.util.UUID;
 public class ZItemDragButton extends ItemDragButton {
 
     private final DupeManager dupeManager;
+    private final PlatformScheduler scheduler;
     //Check item section
     private boolean enableCheckItem = false;
+
     private MenuItemStack checkItems;
     private ItemStackSimilar itemStackSimilar;
+
+    private Rule rule;
 
     //Error item section
     private boolean enableErrorItem = false;
@@ -35,11 +42,11 @@ public class ZItemDragButton extends ItemDragButton {
     private boolean useErrorItemCache = true;
     private final Map<UUID, Map<Integer, Boolean>> activeTasks = new HashMap<>();
     private int ticks;
-    private PlatformScheduler scheduler;
 
-    public ZItemDragButton(DupeManager dupeManager) {
+    public ZItemDragButton(@NotNull MenuPlugin plugin) {
         super();
-        this.dupeManager = dupeManager;
+        this.dupeManager = plugin.getDupeManager();
+        this.scheduler = plugin.getInventoryManager().getScheduler();
     }
 
     public void setCheckItem(MenuItemStack menuItemStack, ItemStackSimilar itemStackSimilar) {
@@ -48,12 +55,16 @@ public class ZItemDragButton extends ItemDragButton {
         this.itemStackSimilar = itemStackSimilar;
     }
 
-    public void setErrorItem(MenuItemStack menuItemStack, PlatformScheduler scheduler, int ticks, boolean useCache) {
+    public void setErrorItem(MenuItemStack menuItemStack, int ticks, boolean useCache) {
         this.enableErrorItem = true;
         this.errorItems = menuItemStack;
-        this.scheduler = scheduler;
         this.ticks = ticks;
         this.useErrorItemCache = useCache;
+    }
+
+    public void setRule(Rule rule) {
+        this.enableCheckItem = true;
+        this.rule = rule;
     }
 
     @Override
@@ -85,7 +96,8 @@ public class ZItemDragButton extends ItemDragButton {
                     })
                     .mapToInt(Integer::intValue)
                     .toArray();
-            inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
+            if (this.getItemStack() != null)
+                inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
         }
     }
 
@@ -139,8 +151,7 @@ public class ZItemDragButton extends ItemDragButton {
             return;
         }
 
-        ItemStack itemStackCheck = this.checkItems.build(player);
-        boolean isSuccess = this.itemStackSimilar.isSimilar(itemStackCheck, cursorItem);
+        boolean isSuccess = (rule == null || rule.matches(new ZRuleContext(cursorItem))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(cursorItem, this.checkItems.build(player)));
 
         if (isSuccess){
             if (this.dupeManager.isDupeItem(currentItem)){

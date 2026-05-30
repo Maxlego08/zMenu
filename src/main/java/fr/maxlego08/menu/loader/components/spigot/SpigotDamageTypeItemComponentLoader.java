@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.DamageTypeComponent;
@@ -13,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
+@ComponentLoader
+@SinceVersion("1.21.11")
 public class SpigotDamageTypeItemComponentLoader extends ItemComponentLoader {
 
     public SpigotDamageTypeItemComponentLoader(){

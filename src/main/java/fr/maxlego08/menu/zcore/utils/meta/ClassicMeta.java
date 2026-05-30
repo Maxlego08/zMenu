@@ -78,7 +78,7 @@ public class ClassicMeta extends ZUtils implements MetaUpdater {
 
     @Override
     public void openBook(@NonNull Player player, @NonNull String title, @NonNull String author, @NonNull List<String> lines) {
-        player.sendMessage("§cYou cant open a book with your minecraft version !");
+        player.sendMessage("§cYou cant open a book with your minecraft value !");
     }
 
     @Override

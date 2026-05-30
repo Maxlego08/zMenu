@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.listener;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoListener;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,15 +12,17 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+@AutoListener
 public class AdapterListener extends ZUtils implements Listener {
 
     private final ZMenuPlugin plugin;
 
-    public AdapterListener(ZMenuPlugin template) {
-        this.plugin = template;
+    public AdapterListener(MenuPlugin plugin) {
+        this.plugin = (ZMenuPlugin) plugin;
     }
 
     @EventHandler
@@ -74,6 +78,15 @@ public class AdapterListener extends ZUtils implements Listener {
         Player player = event.getEntity();
         for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
             adapter.onDeath(event, player);
+        }
+    }
+
+    @EventHandler
+    public void onPrepareAnvil(PrepareAnvilEvent event) {
+        if (event.getView().getPlayer() instanceof Player player) {
+            for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
+                adapter.onPrepareAnvil(event, player);
+            }
         }
     }
 }

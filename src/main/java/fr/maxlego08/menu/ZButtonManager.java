@@ -46,8 +46,32 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         ButtonLoader existingLoader = null;
         for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
             for (ButtonLoader loader : buttonLoaders) {
+                // Check if name matches
                 if (loader.getName().equalsIgnoreCase(button.getName())) {
                     existingLoader = loader;
+                    break;
+                }
+                // Check if any alias matches
+                for (String alias : loader.getAliases()) {
+                    if (alias.equalsIgnoreCase(button.getName())) {
+                        existingLoader = loader;
+                        break;
+                    }
+                }
+                // Check if any of the new button's aliases conflict with existing loader names/aliases
+                for (String newAlias : button.getAliases()) {
+                    if (loader.getName().equalsIgnoreCase(newAlias)) {
+                        existingLoader = loader;
+                        break;
+                    }
+                    for (String existingAlias : loader.getAliases()) {
+                        if (existingAlias.equalsIgnoreCase(newAlias)) {
+                            existingLoader = loader;
+                            break;
+                        }
+                    }
+                }
+                if (existingLoader != null) {
                     break;
                 }
             }
@@ -56,8 +80,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
             }
         }
         if (existingLoader != null) {
-            var loader = existingLoader;
-            throw new ButtonAlreadyRegisterException("Button " + button.getName() + " was already register in the " + loader.getPlugin().getName());
+            throw new ButtonAlreadyRegisterException("Button " + button.getName() + " was already register in the " + existingLoader.getPlugin().getName());
         }
 
         Plugin plugin = button.getPlugin();
@@ -100,6 +123,11 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         for (ButtonLoader loader : this.getLoaders()) {
             if (loader.getName().equalsIgnoreCase(name)) {
                 return Optional.of(loader);
+            }
+            for (String alias : loader.getAliases()) {
+                if (alias.equalsIgnoreCase(name)) {
+                    return Optional.of(loader);
+                }
             }
         }
         return Optional.empty();
@@ -185,6 +213,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                 if (action != null) {
                     action.setDelay(accessor.getInt("delay", 0));
                     action.setChance(accessor.getFloat("chance", 100));
+                    action.setDebug(accessor.getBoolean("debug", false));
                     action.setType(type);
                     List<Map<String, Object>> denyChanceAction = accessor.getMapList("deny-chance-actions");
                     if (!denyChanceAction.isEmpty()) {
