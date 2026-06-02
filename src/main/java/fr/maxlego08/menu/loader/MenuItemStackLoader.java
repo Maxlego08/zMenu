@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
+import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.itemstack.*;
@@ -72,6 +73,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getString(path + "durability", null));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
+        try {
+            menuItemStack.setAmountType(AmountType.valueOf(configuration.getString(path + "amount-type", "SET").toUpperCase(Locale.ROOT)));
+        } catch (Exception ignored) {
+        }
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
 
         var url = configuration.getString(path + "url", null);

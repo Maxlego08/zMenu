@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -49,6 +50,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String material;
     private String targetPlayer;
     private String amount;
+    private AmountType amountType = AmountType.SET;
     private String url;
     private String data;
     private String tooltipStyle;
@@ -174,8 +176,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.setStackSize");
-        if (!editContextItem) {
-            itemStack.setAmount(Math.max(1 , amount));
+        if (this.amountType == AmountType.ADD) {
+            itemStack.setAmount(Math.max(1, itemStack.getAmount() + amount));
+        } else if (this.amountType == AmountType.REMOVE) {
+            itemStack.setAmount(Math.max(1, itemStack.getAmount() - amount));
+        } else if (!editContextItem) {
+            itemStack.setAmount(Math.max(1, amount));
         }
         performanceDebug.end();
 
@@ -877,6 +883,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return amount;
     }
 
+    @Override
+    public AmountType getAmountType() {
+        return amountType;
+    }
+
+    @Override
+    public void setAmountType(AmountType amountType) {
+        this.amountType = amountType;
+    }
+
     /**
      * Let's know if the ItemStack needs a placeholder, if not then the ItemStack will be cached
      *
@@ -892,6 +908,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.setData(configuration.getString("data", "0"));
         this.setDurability(configuration.getString("durability", null));
         this.setAmount(configuration.getString("amount", "1"));
+        this.setAmountType(AmountType.valueOf(configuration.getString("amount-type", "SET").toUpperCase()));
         this.setMaterial(configuration.getString("material", null));
         this.setTargetPlayer(configuration.getString("target", null));
         this.setUrl(configuration.getString("url", null));
