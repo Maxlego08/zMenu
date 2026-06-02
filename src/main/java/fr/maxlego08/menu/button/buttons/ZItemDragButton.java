@@ -144,7 +144,7 @@ public class ZItemDragButton extends ItemDragButton {
                     event.setCancelled(false);
                     return;
                 }
-                boolean isSuccess = (rule == null || rule.matches(new ZRuleContext(cursorItem))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(cursorItem, this.checkItems.build(player)));
+                boolean isSuccess = this.isSuccess(player, cursorItem);
                 if (isSuccess) {
                     event.setCancelled(false);
                 }
@@ -160,7 +160,7 @@ public class ZItemDragButton extends ItemDragButton {
             return;
         }
 
-        boolean isSuccess = (rule == null || rule.matches(new ZRuleContext(cursorItem))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(cursorItem, this.checkItems.build(player)));
+        boolean isSuccess = this.isSuccess(player, cursorItem);
 
         if (isSuccess){
             if (this.dupeManager.isDupeItem(clickedItem)){
@@ -176,6 +176,10 @@ public class ZItemDragButton extends ItemDragButton {
         if (!isSuccess & this.enableErrorItem) {
             this.errorItems(inventoryEngine, player, slot, placeholders);
         }
+    }
+
+    private boolean isSuccess(@NotNull Player player, @NotNull ItemStack itemStack){
+        return (rule == null || rule.matches(new ZRuleContext(itemStack))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(itemStack, this.checkItems.build(player)));
     }
 
     protected void refreshInventory(@NotNull InventoryEngine inventoryEngine,@NotNull Player player,@NotNull Placeholders placeholders){
