@@ -7,9 +7,3 @@ dependencies {
     api(projects.nms.base)
     paperweight.paperDevBundle(libs.versions.paperDevBundle.get())
 }
-
-paperweight {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
