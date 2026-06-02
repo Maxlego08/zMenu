@@ -126,19 +126,28 @@ public class ZItemDragButton extends ItemDragButton {
     @Override
     public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventoryEngine, int slot, @NonNull Placeholders placeholders) {
 
-        ItemStack currentItem = event.getCurrentItem();
+        ItemStack clickedItem = event.getCurrentItem();
         ItemStack cursorItem = event.getCursor();
 
-        if (currentItem == null || currentItem.getType() == Material.AIR) {
+        if (clickedItem == null || clickedItem.getType() == Material.AIR) {
             return;
         }
 
-        if (!this.dupeManager.isDupeItem(currentItem)){
-            event.setCancelled(false);
+        if (!this.dupeManager.isDupeItem(clickedItem)){
 
             if (this.isAirItem(cursorItem)) {
+                event.setCancelled(false);
                 this.refreshInventory(inventoryEngine, player, placeholders);
                 return;
+            } else {
+                if (!this.enableCheckItem) {
+                    event.setCancelled(false);
+                    return;
+                }
+                boolean isSuccess = (rule == null || rule.matches(new ZRuleContext(cursorItem))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(cursorItem, this.checkItems.build(player)));
+                if (isSuccess) {
+                    event.setCancelled(false);
+                }
             }
             return;
         }
@@ -154,7 +163,7 @@ public class ZItemDragButton extends ItemDragButton {
         boolean isSuccess = (rule == null || rule.matches(new ZRuleContext(cursorItem))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(cursorItem, this.checkItems.build(player)));
 
         if (isSuccess){
-            if (this.dupeManager.isDupeItem(currentItem)){
+            if (this.dupeManager.isDupeItem(clickedItem)){
                 event.setCurrentItem(new ItemStack(Material.AIR));
             }
             event.setCancelled(false);
@@ -194,16 +203,14 @@ public class ZItemDragButton extends ItemDragButton {
         // Marquer la tâche comme active
         playerTasks.put(slot, true);
 
-        Inventory inventory = inventoryEngine.getSpigotInventory();
-        ItemStack itemStack = inventory.getItem(slot);
-        inventory.setItem(slot, this.errorItems.build(player, this.useErrorItemCache, placeholders));
+        inventoryEngine.addItem(slot, this.errorItems.build(player, this.useErrorItemCache, placeholders));
 
         this.scheduler.runAtEntityLater(player, w -> {
 
             try {
                 Inventory topInventory = player.getOpenInventory().getTopInventory();
-                if (topInventory.getHolder() instanceof InventoryEngine invEng && topInventory.getHolder().equals(inventoryEngine)) {
-                    invEng.addItem(slot, itemStack);
+                if (topInventory.getHolder() instanceof InventoryEngine && topInventory.getHolder().equals(inventoryEngine)) {
+                    inventoryEngine.displayFinalButton(this, placeholders, slot);
                 }
             } finally {
                 // Libérer le slot après l'exécution
