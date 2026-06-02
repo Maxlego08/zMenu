@@ -330,6 +330,12 @@ public interface MenuItemStackContext {
     NamespacedKey getItemModel();
 
     /**
+     * Retrieves the item model identifier as a string, if applicable.
+     * @return the item model identifier as a string, or {@code null} if not set or not applicable.
+     */
+    String getItemModelString();
+
+    /**
      * Retrieves the equipped model identifier used for wearable items.
      *
      * @return the equipped model identifier.

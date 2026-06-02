@@ -61,7 +61,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
-    private NamespacedKey itemModel;
+    private String itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -484,7 +484,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         if (this.itemModel != null) {
-            itemMeta.setItemModel(this.itemModel);
+            NamespacedKey itemModelKey = this.parseItemModel(player, placeholders);
+            if (itemModelKey != null) {
+                itemMeta.setItemModel(itemModelKey);
+            }
         }
 
         if (this.equippedModel != null) {
@@ -804,11 +807,38 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public NamespacedKey getItemModel() {
+        return this.parseItemModel(null, new Placeholders());
+    }
+
+    @Override
+    public String getItemModelString() {
         return this.itemModel;
+    }
+
+    private NamespacedKey parseItemModel(@Nullable Player player, @NotNull Placeholders placeholders) {
+        String itemModel = this.papi(placeholders.parse(this.itemModel), player, true);
+        if (itemModel == null) {
+            return null;
+        }
+        try {
+            String[] split = itemModel.split(":", 2);
+            if (split.length == 2) {
+                return new NamespacedKey(split[0], split[1]);
+            } else {
+                return NamespacedKey.minecraft(itemModel);
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public void setItemModel(NamespacedKey itemModel) {
+        this.itemModel = itemModel.toString();
+    }
+
+    @Override
+    public void setItemModel(String itemModel) {
         this.itemModel = itemModel;
     }
 

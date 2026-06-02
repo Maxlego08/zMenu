@@ -6,7 +6,6 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.ItemModelComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,6 @@ public class SpigotItemModelItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         String modelIdStr = configuration.getString(path);
         if (modelIdStr == null) return null;
-        NamespacedKey modelId = NamespacedKey.fromString(modelIdStr);
-        return modelId == null ? null : new ItemModelComponent(modelId);
+        return new ItemModelComponent(modelIdStr);
     }
 }

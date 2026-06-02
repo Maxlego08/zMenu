@@ -176,17 +176,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.4"))) {
             String itemModel = configuration.getString(path + "item-model");
             if (itemModel != null) {
-                try {
-                    NamespacedKey namespacedKey = NamespacedKey.fromString(itemModel.toLowerCase());
-                    if (namespacedKey != null) {
-                        menuItemStack.setItemModel(namespacedKey);
-                    }
-                } catch (Exception e) {
-                    if (Configuration.enableDebug) {
-                        Logger.info("An error occurred while loading the item model " + itemModel + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
-                        e.printStackTrace();
-                    }
-                }
+                menuItemStack.setItemModel(itemModel);
             }
         }
     }

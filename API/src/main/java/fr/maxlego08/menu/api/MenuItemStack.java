@@ -402,6 +402,12 @@ public interface MenuItemStack extends MenuItemStackContext {
     void setItemModel(NamespacedKey itemModel);
 
     /**
+     * Sets the item model identifier using a string value.
+     * @param itemModel the item model identifier to set, as a string.
+     */
+    void setItemModel(String itemModel);
+
+    /**
      * Sets the equipped model identifier used for wearable items.
      *
      * @param equippedModel the equipped model identifier to set.
