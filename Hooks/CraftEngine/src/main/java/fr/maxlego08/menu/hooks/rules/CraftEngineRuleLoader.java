@@ -17,6 +17,12 @@ public class CraftEngineRuleLoader extends AbstractPluginRuleLoader {
     }
 
     @Override
+    @NotNull
+    public List<@NotNull String> getAliases() {
+        return List.of("craft-engine", "craft_engine", "ce");
+    }
+
+    @Override
     public @NotNull String getType() {
         return "craftengine";
     }

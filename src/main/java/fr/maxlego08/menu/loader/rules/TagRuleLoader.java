@@ -25,6 +25,11 @@ public class TagRuleLoader implements RuleLoader {
     }
 
     @Override
+    public List<String> getAliases() {
+        return List.of("material-tag", "material_tag", "tags");
+    }
+
+    @Override
     public @Nullable Rule load(@NotNull Map<String, Object> configuration) {
         List<String> tags = RuleConfigHelper.getStringList(configuration, "tags");
 

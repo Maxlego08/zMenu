@@ -43,6 +43,7 @@ craft-engine = "26.5"
 eco = "6.53.0"
 floodgate = "2.2.4-SNAPSHOT"
 breweryx = "3.6.0"
+denizen = "1.3.1-SNAPSHOT"
 
 # Testing
 junit-bom = "5.10.0"
@@ -87,6 +88,7 @@ craft-engine-bukkit = { group = "net.momirealms", name = "craft-engine-bukkit", 
 eco = { group = "com.willfp", name = "eco", version.ref = "eco" }
 floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
 breweryx = { group = "com.dre.brewery", name = "BreweryX", version.ref = "breweryx" }
+denizen = { group= "com.denizenscript", name = "denizen", version.ref = "denizen" }
 
 # Testing
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit-bom" }
