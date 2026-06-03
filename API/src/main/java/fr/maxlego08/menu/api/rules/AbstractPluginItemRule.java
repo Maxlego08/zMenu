@@ -36,7 +36,7 @@ public abstract class AbstractPluginItemRule implements Rule {
     protected abstract String resolveId(@NotNull ItemStack itemStack);
 
     @Override
-    public boolean matches(@NotNull RuleContext context) {
+    public boolean matches(@NotNull ItemRuleContext context) {
         ItemStack itemStack = context.getItemStack();
         if (itemStack == null) return false;
 

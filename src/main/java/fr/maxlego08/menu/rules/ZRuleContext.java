@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.rules;
 
-import fr.maxlego08.menu.api.rules.RuleContext;
+import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.utils.ItemStackPlatformHelper;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ZRuleContext implements RuleContext {
+public class ZRuleContext implements ItemRuleContext {
     private final ItemStack itemStack;
 
     private final Material material;

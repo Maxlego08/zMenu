@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.rules;
 
+import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
-import fr.maxlego08.menu.api.rules.RuleContext;
 import org.jetbrains.annotations.NotNull;
 
 public class ModelDataRangeRule implements Rule {
@@ -14,7 +14,7 @@ public class ModelDataRangeRule implements Rule {
     }
 
     @Override
-    public boolean matches(@NotNull RuleContext context) {
+    public boolean matches(@NotNull ItemRuleContext context) {
         if (!context.hasCustomModelData()) return false;
         int modelData = context.getCustomModelData();
         return modelData >= this.min && modelData <= this.max;

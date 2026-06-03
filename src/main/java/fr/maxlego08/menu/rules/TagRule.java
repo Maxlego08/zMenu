@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.rules;
 
+import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
-import fr.maxlego08.menu.api.rules.RuleContext;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public class TagRule implements Rule {
     }
 
     @Override
-    public boolean matches(@NotNull RuleContext context) {
+    public boolean matches(@NotNull ItemRuleContext context) {
         Material material = context.getMaterial();
         for (Tag<Material> tag : this.tags) {
             if (tag.isTagged(material)) {

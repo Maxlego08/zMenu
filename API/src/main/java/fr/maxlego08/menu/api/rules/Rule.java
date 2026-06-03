@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Rule {
 
-    boolean matches(@NotNull RuleContext context);
+    boolean matches(@NotNull ItemRuleContext context);
 
     default boolean isValid() {
         return true;

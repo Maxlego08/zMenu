@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.rules;
 
+import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
-import fr.maxlego08.menu.api.rules.RuleContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public abstract class NameRule implements Rule {
     }
 
     @Override
-    public boolean matches(@NotNull RuleContext context) {
+    public boolean matches(@NotNull ItemRuleContext context) {
         String displayName = context.getDisplayName();
         if (displayName == null) return false;
         for (String name : this.names) {

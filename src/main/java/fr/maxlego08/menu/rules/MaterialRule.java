@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.rules;
 
+import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
-import fr.maxlego08.menu.api.rules.RuleContext;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +15,7 @@ public class MaterialRule implements Rule {
     }
 
     @Override
-    public boolean matches(@NotNull RuleContext context) {
+    public boolean matches(@NotNull ItemRuleContext context) {
         return this.materials.contains(context.getMaterial());
     }
 
