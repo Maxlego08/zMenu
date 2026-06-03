@@ -68,6 +68,8 @@ import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
+import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
+import fr.maxlego08.menu.zcore.LegacyItemStackPlatformHelper;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.logger.BukkitLogger;
 import fr.maxlego08.menu.zcore.logger.ComponentLogger;
@@ -733,6 +735,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
                 this.metaUpdater = new ClassicMeta();
                 Logger.info("Use ClassicMeta");
             }
+        }
+        if (this.metaUpdater instanceof ComponentMeta componentMeta) {
+            new ComponentItemStackPlatformHelper(componentMeta);
+        } else {
+            new LegacyItemStackPlatformHelper((ClassicMeta) this.metaUpdater);
         }
     }
 

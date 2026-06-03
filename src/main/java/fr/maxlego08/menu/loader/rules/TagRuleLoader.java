@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.loader.rules;
 
 import fr.maxlego08.menu.api.annotations.AutoRuleLoader;
+import fr.maxlego08.menu.api.registry.TagRegistry;
 import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.api.rules.RuleConfigHelper;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
-import fr.maxlego08.menu.api.utils.TagRegistry;
 import fr.maxlego08.menu.rules.TagRule;
 import org.bukkit.Material;
 import org.bukkit.Tag;

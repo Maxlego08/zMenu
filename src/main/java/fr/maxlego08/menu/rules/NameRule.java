@@ -11,7 +11,7 @@ public abstract class NameRule implements Rule {
     protected final List<String> names;
     private final BiPredicate<String, String> comparator;
 
-    protected NameRule(List<String> names, BiPredicate<String, String> comparator) {
+    protected NameRule(@NotNull List<@NotNull String> names,@NotNull BiPredicate<@NotNull String,@NotNull String> comparator) {
         this.names = names;
         this.comparator = comparator;
     }
@@ -24,5 +24,10 @@ public abstract class NameRule implements Rule {
             if (this.comparator.test(displayName, name)) return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isValid() {
+        return !this.names.isEmpty();
     }
 }

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.utils;
+package fr.maxlego08.menu.api.registry;
 
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -6,14 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
-public final class TagRegistry {
-    private static final Map<String, Tag<Material>> MATERIAL_TAGS = new HashMap<>();
+public final class TagRegistry extends Registry<String, Tag<Material>> {
+    private static final TagRegistry INSTANCE = new TagRegistry();
 
     private TagRegistry() {
-        // Utility class
+        // Private constructor to prevent instantiation
     }
 
     static {
@@ -23,7 +21,7 @@ public final class TagRegistry {
                     Class<?> genericType = (Class<?>) ((java.lang.reflect.ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
                     if (Material.class.isAssignableFrom(genericType)) {
                         //noinspection unchecked
-                        register(field.getName(), (Tag<Material>) field.get(null));
+                        registerTag(field.getName(), (Tag<Material>) field.get(null));
                     }
                 } catch (Exception _) {
                 }
@@ -31,12 +29,12 @@ public final class TagRegistry {
         }
     }
 
-    public static void register(@NotNull String key,@NotNull Tag<Material> tag) {
-        MATERIAL_TAGS.put(key, tag);
+    public static void registerTag(@NotNull String key,@NotNull Tag<Material> tag) {
+        INSTANCE.register(key, tag);
     }
 
     @Nullable
     public static Tag<Material> getMaterialTag(@NotNull String key) {
-        return MATERIAL_TAGS.get(key);
+        return INSTANCE.get(key).orElse(null);
     }
 }

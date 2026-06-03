@@ -23,4 +23,9 @@ public class MaterialContainsRule implements Rule {
         }
         return false;
     }
+
+    @Override
+    public boolean isValid() {
+        return !this.patterns.isEmpty();
+    }
 }

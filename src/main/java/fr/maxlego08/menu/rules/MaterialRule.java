@@ -18,4 +18,9 @@ public class MaterialRule implements Rule {
     public boolean matches(@NotNull RuleContext context) {
         return this.materials.contains(context.getMaterial());
     }
+
+    @Override
+    public boolean isValid() {
+        return !this.materials.isEmpty();
+    }
 }

@@ -20,4 +20,9 @@ public class OrRule implements Rule {
         }
         return false;
     }
+
+    @Override
+    public boolean isValid() {
+        return !this.children.isEmpty();
+    }
 }

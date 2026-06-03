@@ -23,4 +23,9 @@ public class MaterialSuffixRule implements Rule {
         }
         return false;
     }
+
+    @Override
+    public boolean isValid() {
+        return !this.suffixes.isEmpty();
+    }
 }

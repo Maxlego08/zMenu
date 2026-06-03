@@ -20,4 +20,10 @@ public class AndRule implements Rule {
         }
         return true;
     }
+
+    @Override
+    public boolean isValid() {
+        if (this.children.isEmpty()) return false;
+        return this.children.stream().allMatch(Rule::isValid);
+    }
 }

@@ -6,4 +6,7 @@ public interface Rule {
 
     boolean matches(@NotNull RuleContext context);
 
+    default boolean isValid() {
+        return true;
+    }
 }

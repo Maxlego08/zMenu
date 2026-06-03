@@ -23,4 +23,9 @@ public class MaterialPrefixRule implements Rule {
         }
         return false;
     }
+
+    @Override
+    public boolean isValid() {
+        return !this.prefixes.isEmpty();
+    }
 }
