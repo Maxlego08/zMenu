@@ -322,7 +322,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             }
         }
 
-        Logger.info("Registered " + count + " auto listener(s).");
+        if (Configuration.enableInformationMessage)
+            Logger.info("Registered " + count + " auto listener(s).");
     }
 
     /**
