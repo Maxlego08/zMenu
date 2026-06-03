@@ -9,4 +9,5 @@ repositories {
 dependencies {
     compileOnly(projects.common)
     compileOnly(libs.mmoitems)
+    compileOnly(libs.mythicLib)
 }
