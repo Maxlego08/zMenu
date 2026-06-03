@@ -150,6 +150,16 @@ public final class RuleConfigHelper {
         return result;
     }
 
+    /**
+     * Gets an enum value from the configuration map.
+     *
+     * @param map          the configuration map
+     * @param key          the key to look up
+     * @param enumClass    the enum class to parse
+     * @param defaultValue the default value if not present or invalid
+     * @param <E>          the enum type
+     * @return the enum value or default
+     */
     @NotNull
     public static <E extends Enum<E>> E getEnum(Map<String, Object> map, String key, Class<E> enumClass, E defaultValue) {
         String value = getString(map, key);
