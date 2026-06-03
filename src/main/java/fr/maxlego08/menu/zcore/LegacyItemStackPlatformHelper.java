@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class LegacyItemStackPlatformHelper extends ItemStackPlatformHelper {
@@ -44,12 +45,12 @@ public class LegacyItemStackPlatformHelper extends ItemStackPlatformHelper {
     public @NotNull List<@NotNull String> getLore(@NotNull ItemStack itemStack) {
         Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
         if (!itemStack.hasItemMeta() || !itemStack.getItemMeta().hasLore()) {
-            return List.of();
+            return Collections.emptyList();
         }
 
         List<String> lore = itemStack.getItemMeta().getLore();
         if (lore == null || lore.isEmpty()) {
-            return List.of();
+            return Collections.emptyList();
         }
         return lore.stream().map(ChatColor::stripColor).toList();
     }
