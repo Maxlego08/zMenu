@@ -840,7 +840,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setItemModel(NamespacedKey itemModel) {
-        this.itemModel = itemModel.toString();
+        this.itemModel = itemModel != null ? itemModel.toString() : null;
     }
 
     @Override
