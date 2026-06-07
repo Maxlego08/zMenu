@@ -4,6 +4,7 @@ import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoListener;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
@@ -13,6 +14,7 @@ import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
+import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.placeholder.Placeholder;
@@ -37,18 +39,14 @@ import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
-import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
+import fr.maxlego08.menu.hooks.OraxenFont;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
-import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
-import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
-import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
-import fr.maxlego08.menu.hooks.mmoitems.MMOItemsLoader;
 import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
-import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
@@ -56,8 +54,6 @@ import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.AnvilInventoryDefault;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
-import fr.maxlego08.menu.loader.materials.ArmorLoader;
-import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
@@ -242,8 +238,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addSimpleListener(this.inventoryManager);
 
-        this.inventoryManager.registerMaterialLoader(new Base64Loader());
-        this.inventoryManager.registerMaterialLoader(new ArmorLoader());
+        this.registerMaterialLoaders();
         this.registerHooks();
 
         this.inventoryManager.load();
@@ -335,103 +330,53 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
-
-        if (this.isActive(Plugins.HEADDATABASE)) {
-            this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-            Logger.info("Registered HeadDatabase material loader");
-        }
-
-        if (this.isActive(Plugins.ZHEAD)) {
-            this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
-            Logger.info("Registered ZHead material loader");
-        }
-
         if (this.isActive(Plugins.ORAXEN)) {
-            this.inventoryManager.registerMaterialLoader(new OraxenLoader());
             this.fontImage = new OraxenFont();
-            Logger.info("Registered Oraxen material loader and font");
-        }
-
-        if (this.isActive(Plugins.CRAFTENGINE)) {
-            this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
-            Logger.info("Registered CraftEngine material loader");
         }
 
         if (this.isActive(Plugins.NEXO)) {
-            this.inventoryManager.registerMaterialLoader(new NexoLoader());
             if (this.metaUpdater instanceof ComponentMeta componentMeta) {
                 NexoTagResolverLoader.register(componentMeta);
             }
-            Logger.info("Registered Nexo material loader");
-        }
-
-        if (this.isActive(Plugins.MAGICCOSMETICS)) {
-            this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
-            Logger.info("Registered MagicCosmetics material loader");
-        }
-
-        if (this.isActive(Plugins.HMCCOSMETICS)) {
-            this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
-            Logger.info("Registered HMC Cosmetics material loader");
         }
 
         if (this.isActive(Plugins.ITEMSADDER)) {
-            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
             this.fontImage = new ItemsAdderFont();
-            Logger.info("Registered ItemsAdder material loader and font");
-        }
-
-        if (this.isActive(Plugins.SLIMEFUN)) {
-            this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
-            Logger.info("Registered SlimeFun material loader");
-        }
-
-        if (this.isActive(Plugins.NOVA)) {
-            this.inventoryManager.registerMaterialLoader(new NovaLoader());
-            Logger.info("Registered Nova material loader");
-        }
-
-        if (this.isActive(Plugins.ECO)) {
-            this.inventoryManager.registerMaterialLoader(new EcoLoader());
-            Logger.info("Registered Eco material loader");
-        }
-
-        if (this.isActive(Plugins.ZITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
-            Logger.info("Registered zItems material loader");
-        }
-
-        if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
-            Logger.info("Registered ExecutableItems material loader");
-        }
-
-        if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
-            this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
-            Logger.info("Registered ExecutableBlocks material loader");
-        }
-
-        if (this.isActive(Plugins.NEXTGENS)) {
-            this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
-            Logger.info("Registered NextGens material loader");
         }
 
         if (this.isActive(Plugins.MYTHICMOBS)) {
-            this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
             this.addListener(new MythicManager(this));
-            Logger.info("Registered MythicMobs material loader and listener");
-        }
-        if (this.isActive(Plugins.BREWERYX)) {
-            this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
-            Logger.info("Registered BreweryX material loader");
-        }
-        if (this.isActive(Plugins.MMOITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new MMOItemsLoader());
-            Logger.info("Registered MMOItems material loader");
         }
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
+    }
+
+    private void registerMaterialLoaders() {
+        int count = 0;
+        Reflections reflection = ReflectionsCache.getInstance().getOrCreate(this, "fr.maxlego08.menu");
+        Set<Class<?>> candidates = reflection.getTypesAnnotatedWith(AutoMaterialLoader.class);
+        for (Class<?> clazz : candidates) {
+            if (!MaterialLoader.class.isAssignableFrom(clazz)) continue;
+            if (!VersionFilter.passes(clazz)) continue;
+            try {
+                MaterialLoader materialLoader;
+                try {
+                    materialLoader = (MaterialLoader) clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(this);
+                } catch (Exception e) {
+                    materialLoader = (MaterialLoader) clazz.getDeclaredConstructor().newInstance();
+                }
+                this.inventoryManager.registerMaterialLoader(materialLoader);
+                count++;
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.info("Failed to instantiate auto material loader: " + clazz.getName());
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (Configuration.enableInformationMessage)
+            Logger.info("Registered " + count + " auto material loader(s).");
     }
 
     private List<String> getInventoriesFiles() {

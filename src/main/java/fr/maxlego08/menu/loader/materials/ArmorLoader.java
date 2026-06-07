@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.materials;
 
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -7,6 +8,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 
+@AutoMaterialLoader
 public class ArmorLoader extends MaterialLoader {
 
     public ArmorLoader() {

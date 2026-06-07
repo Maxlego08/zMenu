@@ -1,22 +1,22 @@
 package fr.maxlego08.menu.hooks.itemsadder;
 
 import dev.lone.itemsadder.api.CustomStack;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
+@AutoMaterialLoader
+@RequiresPlugin("ItemsAdder")
 public class ItemsAdderLoader extends MaterialLoader {
 
-    private final Plugin plugin;
-
-    public ItemsAdderLoader(Plugin plugin) {
+    public ItemsAdderLoader() {
         super("itemsadder");
-        this.plugin = plugin;
     }
 
     @Override
