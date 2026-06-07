@@ -3,7 +3,8 @@ plugins {
 }
 
 dependencies{
-    implementation(libs.adventure.api)
+    compileOnly(libs.adventure.api)
+    compileOnly(libs.adventure.text.minimessage)
 }
 
 rootProject.extra.properties["sha"]?.let { sha ->

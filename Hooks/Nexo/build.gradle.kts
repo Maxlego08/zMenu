@@ -7,4 +7,5 @@ repositories {
 dependencies {
     compileOnly(projects.common)
     compileOnly(libs.nexo)
+    compileOnly(libs.adventure.text.minimessage)
 }

@@ -359,6 +359,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.isActive(Plugins.NEXO)) {
             this.inventoryManager.registerMaterialLoader(new NexoLoader());
+            if (this.metaUpdater instanceof ComponentMeta componentMeta) {
+                NexoTagResolverLoader.register(componentMeta);
+            }
             Logger.info("Registered Nexo material loader");
         }
 

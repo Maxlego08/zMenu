@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.hooks;
 
+import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -20,6 +22,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
@@ -30,9 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpdater {
+    private final List<TagResolver> tagResolvers = new ArrayList<>();
+
     private final MenuPlugin plugin;
     private final Component RESET = Component.empty().decoration(TextDecoration.ITALIC, false);
-    private final MiniMessage MINI_MESSAGE = MiniMessage.builder().tags(TagResolver.builder().resolver(StandardTags.defaults()).build()).build();
+    private MiniMessage MINI_MESSAGE;
     private final SimpleCache<String, Component> cache = new SimpleCache<>();
     private final Method getLoreMethod;
     private final Method setLoreMethod;
@@ -54,6 +59,29 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
         this.inventoryMethod.setAccessible(true);
         this.inventoryTypeMethod = Bukkit.class.getMethod("createInventory", InventoryHolder.class, InventoryType.class, Component.class);
         this.inventoryTypeMethod.setAccessible(true);
+
+        this.withStandardTags();
+        this.buildMiniMessage();
+    }
+
+    @Override
+    public void withTagResolver(@NotNull TagResolver tagResolver) {
+        Preconditions.checkNotNull(tagResolver, "TagResolver cannot be null");
+        this.tagResolvers.addFirst(tagResolver);
+    }
+
+    private void withStandardTags() {
+        this.withTagResolver(TagResolver.builder().resolver(StandardTags.defaults()).build());
+    }
+
+    @Override
+    public void buildMiniMessage() {
+        MiniMessage.Builder builder = MiniMessage.builder();
+        Logger.info("Building MiniMessage with " + this.tagResolvers.size() + " tag resolvers.");
+        for (TagResolver tagResolver : this.tagResolvers) {
+            builder.tags(tagResolver);
+        }
+        this.MINI_MESSAGE = builder.build();
     }
 
     private TextDecoration.State getState(String text) {
