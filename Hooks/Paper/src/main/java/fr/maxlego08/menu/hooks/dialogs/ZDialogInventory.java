@@ -188,12 +188,12 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public void setActionButtonServerLink(ActionButtonRecord actionButtonRecord) {
+    public void setExitActionButton(ActionButtonRecord actionButtonRecord) {
         this.actionButtonRecordServerLink = actionButtonRecord;
     }
 
     @Override
-    public ActionButtonRecord getActionButtonServerLink(@NotNull Player player) {
+    public ActionButtonRecord getExitActionButton(@NotNull Player player) {
         if (this.actionButtonRecordServerLink != null) {
             return this.actionButtonRecordServerLink.parse(player);
         }
@@ -201,7 +201,7 @@ public class ZDialogInventory implements DialogInventory {
     }
 
     @Override
-    public ActionButtonRecord getActionButtonServerLink() {
+    public ActionButtonRecord getExitActionButton() {
         return this.actionButtonRecordServerLink;
     }
 

@@ -271,11 +271,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                     );
 
             case MULTI_ACTION ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(this.createActionButtons(zDialog,inputs,zDialog.getActionButtons(player))).build()).base(dialogBase.body(bodies).inputs(inputs).build())
-                    );
+                    Dialog.create(builder ->
+                                    builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(this.createActionButtons(zDialog,inputs,zDialog.getActionButtons(player))).columns(zDialog.getNumberOfColumns()).exitAction(this.createActionButton(zDialog.getExitActionButton(player),inputs)).build()).base(dialogBase.body(bodies).inputs(inputs).build()));
 
             case SERVER_LINKS ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(this.createActionButton(zDialog.getActionButtonServerLink(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
+                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(this.createActionButton(zDialog.getExitActionButton(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
                     );
         };
     }
@@ -289,7 +289,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         }
         return actionButtons;
     }
+
     private ActionButton createActionButton(ActionButtonRecord actionButtonRecord, List<DialogInput> inputs) {
+        if (actionButtonRecord == null) {
+            return null;
+        }
         return ActionButton.create(this.paperComponent.getComponent(actionButtonRecord.label()), this.paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), this.createAction(inputs,actionButtonRecord.actions()));
     }
 

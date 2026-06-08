@@ -213,6 +213,19 @@ public class DialogLoader implements Loader<DialogInventory> {
                     dialogInventory.addActionButton(record);
                 }
                 dialogInventory.setNumberOfColumns(numberOfColumns);
+                if (configuration.isConfigurationSection("exit-button")){
+                    ConfigurationSection exitSection = configuration.getConfigurationSection("exit-button");
+                    if (exitSection == null) {
+                        return;
+                    }
+                    String exitText = exitSection.getString("text", "Exit");
+                    String exitTooltip = exitSection.getString("tooltip", "Exit the dialog");
+                    int exitWidth = exitSection.getInt("width", 100);
+                    List<Requirement> exitRequirements = this.loadRequirements(configuration, "exit-button.actions", file);
+                    ActionButtonRecord exitRecord = new ActionButtonRecord(exitText, exitTooltip, exitWidth, exitRequirements);
+                    dialogInventory.setExitActionButton(exitRecord);
+                }
+
             }
             case SERVER_LINKS -> {
                 String text = configuration.getString("server-links.text", "");
@@ -221,7 +234,7 @@ public class DialogLoader implements Loader<DialogInventory> {
                 List<Requirement> requirement = this.loadRequirements(configuration, "server-links.actions", file);
                 int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
                 ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
-                dialogInventory.setActionButtonServerLink(record);
+                dialogInventory.setExitActionButton(record);
                 dialogInventory.setNumberOfColumns(numberOfColumns);
             }
         }

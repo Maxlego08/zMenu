@@ -136,11 +136,12 @@ public interface DialogInventory extends Inventory {
 
     ZDialogInventoryBuild getBuild(Player player);
 
-    void setActionButtonServerLink(ActionButtonRecord actionButtonRecord);
+    void setExitActionButton(ActionButtonRecord actionButtonRecord);
 
-    ActionButtonRecord getActionButtonServerLink(@NotNull Player player);
 
-    ActionButtonRecord getActionButtonServerLink();
+    ActionButtonRecord getExitActionButton(@NotNull Player player);
+
+    ActionButtonRecord getExitActionButton();
 
     //TODO getOpenWithItem not implemented but need
     @Override
