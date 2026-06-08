@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.function.Function;
 
 public abstract class DyeColorVariantLoader extends ItemComponentLoader {
@@ -26,7 +27,7 @@ public abstract class DyeColorVariantLoader extends ItemComponentLoader {
         String value = configuration.getString(path);
         if (value == null) return null;
         try {
-            DyeColor dyeColor = DyeColor.valueOf(value.toUpperCase());
+            DyeColor dyeColor = DyeColor.valueOf(value.toUpperCase(Locale.ROOT));
             return componentFactory.apply(dyeColor);
         } catch (IllegalArgumentException e) {
             return null;

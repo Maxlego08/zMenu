@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.utils.toast;
 
+import java.util.Locale;
+
 /**
  * Represents types of Toast notifications, typically used to indicate progress,
  * success, or objectives completed in the UI.
@@ -22,6 +24,6 @@ public enum ToastType {
 
     @Override
     public String toString() {
-        return super.toString().toLowerCase();
+        return super.toString().toLowerCase(Locale.ROOT);
     }
 }

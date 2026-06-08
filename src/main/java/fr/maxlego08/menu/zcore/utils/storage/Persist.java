@@ -9,6 +9,7 @@ import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 public class Persist extends ZUtils {
 
@@ -23,7 +24,7 @@ public class Persist extends ZUtils {
     // ------------------------------------------------------------ //
 
     public static String getName(Class<?> clazz) {
-        return clazz.getSimpleName().toLowerCase();
+        return clazz.getSimpleName().toLowerCase(Locale.ROOT);
     }
 
     public static String getName(Object o) {

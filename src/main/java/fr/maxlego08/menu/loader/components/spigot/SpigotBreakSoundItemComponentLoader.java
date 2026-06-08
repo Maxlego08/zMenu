@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.21.5")
@@ -30,7 +31,7 @@ public class SpigotBreakSoundItemComponentLoader extends ItemComponentLoader {
         String sound = configuration.getString(path);
         if (sound != null) {
             try {
-                NamespacedKey key = NamespacedKey.fromString(sound.toLowerCase());
+                NamespacedKey key = NamespacedKey.fromString(sound.toLowerCase(Locale.ROOT));
                 if (key != null) {
                     return new BreakSoundComponent(Registry.SOUNDS.getOrThrow(key));
                 }

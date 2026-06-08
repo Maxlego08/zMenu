@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.function.Function;
 
 public abstract class RegistryVariantLoader<T extends Keyed> extends ItemComponentLoader {
@@ -29,7 +30,7 @@ public abstract class RegistryVariantLoader<T extends Keyed> extends ItemCompone
         path = normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
-        NamespacedKey key = NamespacedKey.fromString(value.toLowerCase());
+        NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
         if (key == null) return null;
         try {
             return componentFactory.apply(registry.getOrThrow(key));

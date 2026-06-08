@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
@@ -29,7 +30,7 @@ public class SpigotRarityItemComponentLoader extends ItemComponentLoader {
         if (value == null) return null;
         ItemRarity rarity = ItemRarity.COMMON;
         try {
-            rarity = ItemRarity.valueOf(value.toUpperCase());
+            rarity = ItemRarity.valueOf(value.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ignored) {
         }
         return new RarityComponent(rarity);

@@ -213,8 +213,8 @@ public abstract class ZUtils extends MessageUtils {
      * @return the formatted name
      */
     protected String name(String string) {
-        String name = string.replace("_", " ").toLowerCase();
-        return name.substring(0, 1).toUpperCase() + name.substring(1);
+        String name = string.replace("_", " ").toLowerCase(Locale.ROOT);
+        return name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
     }
 
     /**
@@ -224,8 +224,8 @@ public abstract class ZUtils extends MessageUtils {
      * @return the formatted name
      */
     protected String name(Material string) {
-        String name = string.name().replace("_", " ").toLowerCase();
-        return name.substring(0, 1).toUpperCase() + name.substring(1);
+        String name = string.name().replace("_", " ").toLowerCase(Locale.ROOT);
+        return name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
     }
 
     /**

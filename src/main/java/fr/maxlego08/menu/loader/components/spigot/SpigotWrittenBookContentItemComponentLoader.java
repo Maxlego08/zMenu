@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @AutoComponentLoader
@@ -34,7 +35,7 @@ public class SpigotWrittenBookContentItemComponentLoader extends ItemComponentLo
         String generationString = componentSection.getString("generation");
         if (generationString != null) {
             try {
-                generation = BookMeta.Generation.valueOf(generationString.toUpperCase());
+                generation = BookMeta.Generation.valueOf(generationString.toUpperCase(Locale.ROOT));
             } catch (IllegalArgumentException ignored) {
             }
         }

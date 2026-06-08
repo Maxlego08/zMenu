@@ -9,10 +9,10 @@ import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.requirement.actions.*;
 import fr.maxlego08.menu.requirement.permissible.*;
 import fr.maxlego08.menu.sound.ZSoundOption;
-import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.traqueur.currencies.Currencies;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
@@ -131,7 +131,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, section.getStringList("deny_commands"));
 
         String permission = section.getString("permission");
-        switch (type.toLowerCase()) {
+        switch (type.toLowerCase(Locale.ROOT)) {
             case "has permission":
             case "has perm":
             case "haspermission":

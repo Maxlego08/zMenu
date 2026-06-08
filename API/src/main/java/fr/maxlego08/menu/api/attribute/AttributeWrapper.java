@@ -28,7 +28,7 @@ public record AttributeWrapper(@NotNull Attribute attribute,@NotNull AttributeMo
         var attribute = Registry.ATTRIBUTE.get(Objects.requireNonNull(NamespacedKey.fromString(((String) attributeMap.get("attribute")).toLowerCase(Locale.ROOT))));
         return new AttributeWrapper(
                 attribute,
-                AttributeModifier.Operation.valueOf(((String) attributeMap.get("operation")).toUpperCase()),
+                AttributeModifier.Operation.valueOf(((String) attributeMap.get("operation")).toUpperCase(Locale.ROOT)),
                 ((Number) attributeMap.get("amount")).doubleValue(),
                 EquipmentSlotGroup.getByName((String) attributeMap.get("slot"))
         );

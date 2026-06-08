@@ -295,6 +295,7 @@ public interface Inventory {
      * }
      * </pre>
      */
+    @Deprecated
     ClearInvType getClearInvType();
 
     /**

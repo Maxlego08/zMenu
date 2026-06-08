@@ -4,10 +4,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public record Placeholders(Map<String, String> placeholders) {
 
@@ -91,17 +88,17 @@ public record Placeholders(Map<String, String> placeholders) {
             }
 
             if (string.contains("%upper_" + key + "%")) {
-                string = string.replace("%upper_" + key + "%", value.toUpperCase());
+                string = string.replace("%upper_" + key + "%", value.toUpperCase(Locale.ROOT));
             }
 
             if (string.contains("%lower_" + key + "%")) {
-                string = string.replace("%lower_" + key + "%", value.toLowerCase());
+                string = string.replace("%lower_" + key + "%", value.toLowerCase(Locale.ROOT));
             }
 
             if (string.contains("%capitalize_" + key + "%")) {
                 String capitalize = value.isEmpty()
                         ? value
-                        : value.substring(0, 1).toUpperCase() + value.substring(1);
+                        : value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1);
                 string = string.replace("%capitalize_" + key + "%", capitalize);
             }
 

@@ -18,6 +18,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.Locale;
 import java.util.Optional;
 
 public class DataMechanic implements ITargetedEntitySkill {
@@ -37,7 +38,7 @@ public class DataMechanic implements ITargetedEntitySkill {
         this.value = config.getPlaceholderString("value", "");
         this.seconds = config.getLong(new String[]{"seconds"}, 0);
         this.enableMathExpression = config.getBoolean(new String[]{"math"}, false);
-        String action = config.getString(new String[]{"action"}, "set").toUpperCase();
+        String action = config.getString(new String[]{"action"}, "set").toUpperCase(Locale.ROOT);
         try{
             this.actionPlayerDataType = ActionPlayerDataType.valueOf(action);
         } catch (IllegalArgumentException e){

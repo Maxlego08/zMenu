@@ -2,10 +2,7 @@ package fr.maxlego08.menu.api.rules;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Helper class for extracting values from rule configuration maps.
@@ -167,7 +164,7 @@ public final class RuleConfigHelper {
             return defaultValue;
         }
         try {
-            return Enum.valueOf(enumClass, value.toUpperCase());
+            return Enum.valueOf(enumClass, value.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             return defaultValue;
         }

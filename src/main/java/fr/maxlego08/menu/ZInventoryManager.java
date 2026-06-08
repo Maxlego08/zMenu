@@ -219,7 +219,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
-        this.inventoryByName.put(inventory.getFileName().toLowerCase(), inventory);
+        this.inventoryByName.put(inventory.getFileName().toLowerCase(Locale.ROOT), inventory);
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
@@ -250,7 +250,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (name == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(this.inventoryByName.get(name.toLowerCase()));
+        return Optional.ofNullable(this.inventoryByName.get(name.toLowerCase(Locale.ROOT)));
     }
 
     @Override
@@ -292,7 +292,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
-        this.inventoryByName.remove(inventory.getFileName().toLowerCase());
+        this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -309,7 +309,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void deleteInventories(Plugin plugin) {
         List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
-            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase()));
+            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase(Locale.ROOT)));
         }
     }
 
@@ -823,7 +823,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 clickTypes.addAll(Configuration.allClicksType);
             } else {
                 try {
-                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase()));
+                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase(Locale.ROOT)));
                 } catch (Exception ignored) {
                     Logger.info(clickType + " click type was not found.", LogType.ERROR);
                 }
@@ -839,12 +839,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
-        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(), itemStackSimilar);
+        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(Locale.ROOT), itemStackSimilar);
     }
 
     @Override
     public Optional<ItemStackSimilar> getItemStackVerification(String name) {
-        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(), null));
+        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(Locale.ROOT), null));
     }
 
     @Override

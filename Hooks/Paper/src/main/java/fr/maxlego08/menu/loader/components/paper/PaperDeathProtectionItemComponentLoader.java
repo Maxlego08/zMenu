@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @AutoComponentLoader
@@ -46,7 +47,7 @@ public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemC
             Map<String, Object> effectMap = (Map<String, Object>) map;
             ConsumeEffectType type;
             try {
-                type = ConsumeEffectType.valueOf(((String) effectMap.get("type")).toUpperCase());
+                type = ConsumeEffectType.valueOf(((String) effectMap.get("type")).toUpperCase(Locale.ROOT));
             } catch (Exception e) {
                 continue;
             }

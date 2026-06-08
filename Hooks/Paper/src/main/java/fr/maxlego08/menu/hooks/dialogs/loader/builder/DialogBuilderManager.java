@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -62,7 +63,7 @@ public abstract class DialogBuilderManager {
                 .externalTitle(this.toComponent(externalTitle))
                 .canCloseWithEscape(canCloseWithEscape)
                 .pause(canPauseGame)
-                .afterAction(DialogBase.DialogAfterAction.valueOf(afterAction.toUpperCase()));
+                .afterAction(DialogBase.DialogAfterAction.valueOf(afterAction.toUpperCase(Locale.ROOT)));
     }
 
     public ComponentMeta getPaperComponent() {

@@ -20,10 +20,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class BedrockLoader implements Loader<BedrockInventory> {
@@ -47,7 +44,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
         String typeString = configuration.getString("type", "SIMPLE");
         BedrockType bedrockType;
         try {
-            bedrockType = BedrockType.valueOf(typeString.toUpperCase());
+            bedrockType = BedrockType.valueOf(typeString.toUpperCase(Locale.ROOT));
             bedrockInventory.setBedrockType(bedrockType);
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid dialog type: " + typeString);

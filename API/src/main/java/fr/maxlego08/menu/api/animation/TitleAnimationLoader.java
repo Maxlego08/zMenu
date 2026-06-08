@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,7 +33,7 @@ public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
         this.showItemsAfterAnimation = configuration.getBoolean(path + "show-items-after-animation", false);
         this.itemUpdateInterval = configuration.getInt(path + "item-update-interval", 1);
         try {
-            this.timeUnit = TimeUnit.valueOf(configuration.getString(path + "time-unit", "SECONDS").toUpperCase());
+            this.timeUnit = TimeUnit.valueOf(configuration.getString(path + "time-unit", "SECONDS").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             this.timeUnit = TimeUnit.SECONDS;
         }

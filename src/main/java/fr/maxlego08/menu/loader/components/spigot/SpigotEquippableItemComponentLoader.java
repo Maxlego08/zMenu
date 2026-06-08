@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 
 @AutoComponentLoader
@@ -66,7 +67,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     private Optional<EquipmentSlot> loadEquipmentSlot(String value) {
         if (value.isBlank()) return Optional.empty();
         try {
-            return Optional.of(EquipmentSlot.valueOf(value.toUpperCase()));
+            return Optional.of(EquipmentSlot.valueOf(value.toUpperCase(Locale.ROOT)));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
@@ -75,7 +76,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     private Optional<Sound> loadSound(String value) {
         if (value.isBlank()) return Optional.empty();
         try {
-            NamespacedKey key = NamespacedKey.fromString(value.toLowerCase());
+            NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
             return key == null ? Optional.empty() : Optional.of(Registry.SOUNDS.getOrThrow(key));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
@@ -85,7 +86,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     private Optional<NamespacedKey> loadNamespacedKey(String value) {
         if (value.isBlank()) return Optional.empty();
         try {
-            return Optional.ofNullable(NamespacedKey.fromString(value.toLowerCase()));
+            return Optional.ofNullable(NamespacedKey.fromString(value.toLowerCase(Locale.ROOT)));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
@@ -123,7 +124,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     }
 
     private Optional<EntityType> loadEntityType(String entityString) {
-        NamespacedKey key = NamespacedKey.fromString(entityString.toLowerCase());
+        NamespacedKey key = NamespacedKey.fromString(entityString.toLowerCase(Locale.ROOT));
         if (key == null) return Optional.empty();
 
         try {
@@ -134,7 +135,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     }
 
     private Optional<Tag<EntityType>> loadEntityTag(String entityString) {
-        NamespacedKey key = NamespacedKey.fromString(entityString.toLowerCase());
+        NamespacedKey key = NamespacedKey.fromString(entityString.toLowerCase(Locale.ROOT));
         if (key == null) return Optional.empty();
 
         try {

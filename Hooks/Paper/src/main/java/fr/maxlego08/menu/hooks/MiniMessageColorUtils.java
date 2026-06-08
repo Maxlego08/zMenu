@@ -2,6 +2,7 @@ package fr.maxlego08.menu.hooks;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,8 +84,8 @@ public class MiniMessageColorUtils {
 
             message = message.replace("&" + key, value)
                     .replace("§" + key, value)
-                    .replace("&" + key.toUpperCase(), value)
-                    .replace("§" + key.toUpperCase(), value);
+                    .replace("&" + key.toUpperCase(Locale.ROOT), value)
+                    .replace("§" + key.toUpperCase(Locale.ROOT), value);
         }
         return message;
     }

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.function.Function;
 
 public abstract class CollarColorLoader extends AbstractColorItemComponentLoader {
@@ -30,7 +31,7 @@ public abstract class CollarColorLoader extends AbstractColorItemComponentLoader
         DyeColor dyeColor;
         if (color == null) {
             try {
-                dyeColor = DyeColor.valueOf(rawColor.toString().toUpperCase());
+                dyeColor = DyeColor.valueOf(rawColor.toString().toUpperCase(Locale.ROOT));
             } catch (IllegalArgumentException e) {
                 return null;
             }

@@ -19,12 +19,12 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.loader.container.EmptyContainerInventoryTypeLoader;
 import fr.maxlego08.menu.registry.InventoryTypeRegistry;
-import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,10 +35,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -64,7 +61,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         InventoryType inventoryType;
         int size;
-        String nameType = configuration.getString("type", "CHEST").toUpperCase();
+        String nameType = configuration.getString("type", "CHEST").toUpperCase(Locale.ROOT);
         try {
             inventoryType = InventoryType.valueOf(nameType);
             if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) {
@@ -150,7 +147,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
         String clearInvTypeStr = configuration.getString("clear-inventory-type", "DEFAULT");
         try {
-            ClearInvType clearInvType = ClearInvType.valueOf(clearInvTypeStr.toUpperCase());
+            ClearInvType clearInvType = ClearInvType.valueOf(clearInvTypeStr.toUpperCase(Locale.ROOT));
             if (clearInvType.hasRequiredPlugin() && !this.plugin.getServer().getPluginManager().isPluginEnabled(clearInvType.getRequiredPlugin())) {
                 clearInvType = ClearInvType.DEFAULT;
             }
@@ -278,7 +275,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 List<Action> actions = new ArrayList<>(actionStrings.size());
                 for (String string : actionStrings) {
                     try {
-                        actions.add(Action.valueOf(string.toUpperCase()));
+                        actions.add(Action.valueOf(string.toUpperCase(Locale.ROOT)));
                     } catch (Exception ignored) {
                     }
                 }

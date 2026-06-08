@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
@@ -29,7 +30,7 @@ public class SpigotContainerLootItemComponentLoader extends ItemComponentLoader 
         if (lootTable != null) {
             long seed = componentSection.getLong("seed", 0L);
             try {
-                LootTables lootTables = LootTables.valueOf(lootTable.toUpperCase());
+                LootTables lootTables = LootTables.valueOf(lootTable.toUpperCase(Locale.ROOT));
                 return new ContainerLootComponent(lootTables, seed);
             } catch (IllegalArgumentException ignored) {
             }

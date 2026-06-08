@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
@@ -28,7 +29,7 @@ public class SpigotBaseColorItemComponentLoader extends ItemComponentLoader {
             path = this.normalizePath(path);
             String string = configuration.getString(path);
             if (string == null) return null;
-            DyeColor baseColor = DyeColor.valueOf(string.toUpperCase());
+            DyeColor baseColor = DyeColor.valueOf(string.toUpperCase(Locale.ROOT));
             return new BaseColorComponent(baseColor);
         } catch (IllegalArgumentException e) {
             return null;

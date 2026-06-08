@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.function.Function;
 
 public abstract class EnumVariantLoader<T extends Enum<T>> extends ItemComponentLoader {
@@ -27,7 +28,7 @@ public abstract class EnumVariantLoader<T extends Enum<T>> extends ItemComponent
         String value = configuration.getString(path);
         if (value == null) return null;
         try {
-            T variant = Enum.valueOf(enumClass, value.toUpperCase());
+            T variant = Enum.valueOf(enumClass, value.toUpperCase(Locale.ROOT));
             return componentFactory.apply(variant);
         } catch (IllegalArgumentException e) {
             return null;

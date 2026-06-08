@@ -12,6 +12,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 @AutoPermissibleLoader
 public class PlaceholderPermissibleLoader extends PermissibleLoader {
@@ -25,7 +26,9 @@ public class PlaceholderPermissibleLoader extends PermissibleLoader {
 
     @Override
     public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        PlaceholderAction action = PlaceholderAction.from(accessor.getString("action").toUpperCase());
+        String strAction = accessor.getString("action");
+        if (strAction == null) return null;
+        PlaceholderAction action = PlaceholderAction.from(strAction.toUpperCase(Locale.ROOT));
         String placeholder = accessor.getString("placeholder", accessor.getString("placeHolder"));
         String value = accessor.getString("value");
         String targetPlayer = accessor.getString("target", null);

@@ -9,6 +9,7 @@ import fr.maxlego08.menu.hooks.luckperms.LuckpermAction;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 @AutoActionLoader
@@ -28,7 +29,7 @@ public class LuckPermissionSetLoader extends ActionLoader {
         String timeUnitStr = accessor.getString("time-unit");
         if (timeUnitStr != null) {
             try {
-                timeUnit = TimeUnit.valueOf(timeUnitStr.toUpperCase());
+                timeUnit = TimeUnit.valueOf(timeUnitStr.toUpperCase(Locale.ROOT));
             } catch (IllegalArgumentException ignored) {
             }
         }

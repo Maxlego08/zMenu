@@ -13,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @AutoActionLoader
 public class ResetPaginationLoader extends ActionLoader {
@@ -25,10 +26,10 @@ public class ResetPaginationLoader extends ActionLoader {
 
     @Override
     public @Nullable Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        String typeStr = accessor.getString("type", "context").toLowerCase();
+        String typeStr = accessor.getString("type", "context").toLowerCase(Locale.ROOT);
         
         try {
-            ResetPaginationAction.ResetType resetType = ResetPaginationAction.ResetType.valueOf(typeStr.toUpperCase());
+            ResetPaginationAction.ResetType resetType = ResetPaginationAction.ResetType.valueOf(typeStr.toUpperCase(Locale.ROOT));
 
             if (resetType == ResetPaginationAction.ResetType.CONTEXT) {
                 List<String> contextIds = this.loadContextIds(accessor);

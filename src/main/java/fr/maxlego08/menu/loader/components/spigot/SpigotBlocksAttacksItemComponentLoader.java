@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @AutoComponentLoader
@@ -63,7 +64,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
 
     private void addDamageType(List<DamageType> damageTypes, String typeString) {
         try {
-            NamespacedKey key = NamespacedKey.fromString(typeString.toUpperCase());
+            NamespacedKey key = NamespacedKey.fromString(typeString.toUpperCase(Locale.ROOT));
             if (key != null) {
                 damageTypes.add(Registry.DAMAGE_TYPE.getOrThrow(key));
             }

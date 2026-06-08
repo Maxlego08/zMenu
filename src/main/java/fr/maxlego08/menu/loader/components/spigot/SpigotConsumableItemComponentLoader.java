@@ -20,10 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @AutoComponentLoader
 @SinceVersion("1.21.2")
@@ -50,7 +47,7 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
 
     private ConsumableComponent.Animation parseAnimation(String animationString) {
         try {
-            return ConsumableComponent.Animation.valueOf(animationString.toUpperCase());
+            return ConsumableComponent.Animation.valueOf(animationString.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             return ConsumableComponent.Animation.EAT;
         }

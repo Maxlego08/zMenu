@@ -54,7 +54,7 @@ public class DialogLoader implements Loader<DialogInventory> {
         String typeString = configuration.getString("type", "NOTICE");
         DialogType dialogType;
         try {
-            dialogType = DialogType.valueOf(typeString.toUpperCase());
+            dialogType = DialogType.valueOf(typeString.toUpperCase(Locale.ROOT));
             dialogInventory.setDialogType(dialogType);
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid dialog type: " + typeString);
@@ -62,7 +62,7 @@ public class DialogLoader implements Loader<DialogInventory> {
 
         String afterActionString = configuration.getString("after-action", "CLOSE");
         try {
-            dialogInventory.setAfterAction(afterActionString.toUpperCase());
+            dialogInventory.setAfterAction(afterActionString.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid after action: " + afterActionString);
         }

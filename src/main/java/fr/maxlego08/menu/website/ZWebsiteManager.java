@@ -9,8 +9,8 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.NoneLoader;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
+import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.website.buttons.*;
 import fr.maxlego08.menu.website.request.HttpRequest;
@@ -24,10 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
@@ -451,7 +448,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
         if (host == null || host.isBlank()) {
             return false;
         }
-        final String lowerCaseHost = host.toLowerCase();
+        final String lowerCaseHost = host.toLowerCase(Locale.ROOT);
         return Configuration.allowedDownloadableWebsite.stream()
                 .map(String::toLowerCase)
                 .anyMatch(lowerCaseHost::equals);

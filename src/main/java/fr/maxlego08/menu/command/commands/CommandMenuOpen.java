@@ -12,10 +12,7 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class CommandMenuOpen extends VCommand {
 
@@ -27,7 +24,7 @@ public class CommandMenuOpen extends VCommand {
         this.addRequireArg("inventory name", (a, b) -> {
             List<String> inventories = new ArrayList<>();
             for (Inventory inventory : inventoryManager.getInventories()) {
-                inventories.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase());
+                inventories.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
             }
             return inventories;
         });

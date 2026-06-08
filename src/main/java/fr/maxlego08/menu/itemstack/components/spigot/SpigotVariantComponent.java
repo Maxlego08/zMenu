@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public class SpigotVariantComponent implements VariantComponent {
@@ -135,7 +136,7 @@ public class SpigotVariantComponent implements VariantComponent {
     private static <T extends Entity> void applyVariantToSpawnEgg(@NotNull SpawnEggMeta meta, @Nullable Player player, @NotNull EntityType entityType, Class<T> entityClass, Consumer<T> variantApplier) {
         EntitySnapshot spawnedEntity = meta.getSpawnedEntity();
         if (spawnedEntity == null){
-            spawnedEntity = Bukkit.getEntityFactory().createEntitySnapshot("{id:\"minecraft:" + entityType.name().toLowerCase() + "\"}");
+            spawnedEntity = Bukkit.getEntityFactory().createEntitySnapshot("{id:\"minecraft:" + entityType.name().toLowerCase(Locale.ROOT) + "\"}");
         }
         if (player == null) {
             return;

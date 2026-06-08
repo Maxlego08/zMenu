@@ -234,7 +234,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         try {
-            return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase()) : null;
+            return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase(Locale.ROOT)) : null;
         } catch (Exception ignored) {
             return null;
         }
@@ -908,7 +908,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.setData(configuration.getString("data", "0"));
         this.setDurability(configuration.getString("durability", null));
         this.setAmount(configuration.getString("amount", "1"));
-        this.setAmountType(AmountType.valueOf(configuration.getString("amount-type", "SET").toUpperCase()));
+        this.setAmountType(AmountType.valueOf(configuration.getString("amount-type", "SET").toUpperCase(Locale.ROOT)));
         this.setMaterial(configuration.getString("material", null));
         this.setTargetPlayer(configuration.getString("target", null));
         this.setUrl(configuration.getString("url", null));
@@ -916,7 +916,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         Color potionColor = this.getColor(configuration, "color", null);
 
         try {
-            Material material = Material.valueOf(configuration.getString("material", "").toUpperCase());
+            Material material = Material.valueOf(configuration.getString("material", "").toUpperCase(Locale.ROOT));
             String materialName = material.toString();
             if (materialName.startsWith("LEATHER_")) {
                 Color armorColor = this.getColor(configuration, "color", Color.fromRGB(160, 101, 64));
@@ -927,7 +927,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (configuration.contains("potion")) {
-            PotionType type = PotionType.valueOf(configuration.getString("potion", "REGEN").toUpperCase());
+            PotionType type = PotionType.valueOf(configuration.getString("potion", "REGEN").toUpperCase(Locale.ROOT));
             int level = configuration.getInt("level", 1);
             boolean splash = configuration.getBoolean("splash", false);
             boolean extended = configuration.getBoolean("extended", false);
@@ -940,7 +940,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         if (configuration.contains("banner")) {
 
-            DyeColor dyeColor = DyeColor.valueOf(configuration.getString("banner", "WHITE").toUpperCase());
+            DyeColor dyeColor = DyeColor.valueOf(configuration.getString("banner", "WHITE").toUpperCase(Locale.ROOT));
             List<String> stringPattern = configuration.getStringList("patterns");
             List<Pattern> patterns = new ArrayList<>();
             for (String string : stringPattern) {
@@ -1030,7 +1030,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.setEnchantments(enchantments);
         this.setFlags(flags);
         this.setAttributes(attributeModifiers);
-        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
+        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase(Locale.ROOT)));
     }
 
     private Color getColor(MapConfiguration configuration, String key, Color def) {

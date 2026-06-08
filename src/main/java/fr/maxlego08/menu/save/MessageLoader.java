@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -38,7 +39,7 @@ public class MessageLoader {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         for (Message message : Message.values()) {
 
-            String path = message.name().toLowerCase().replace("_", "-");
+            String path = message.name().toLowerCase(Locale.ROOT).replace("_", "-");
 
             if (configuration.contains(path)) continue;
 
@@ -116,11 +117,11 @@ public class MessageLoader {
     private void loadMessage(YamlConfiguration configuration, String key) {
         try {
 
-            Message message = Message.valueOf(key.toUpperCase().replace("-", "_"));
+            Message message = Message.valueOf(key.toUpperCase(Locale.ROOT).replace("-", "_"));
 
             if (configuration.contains(key + ".type")) {
 
-                MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type", "TCHAT").toUpperCase());
+                MessageType messageType = MessageType.valueOf(configuration.getString(key + ".type", "TCHAT").toUpperCase(Locale.ROOT));
                 message.setType(messageType);
                 switch (messageType) {
                     case ACTION:
