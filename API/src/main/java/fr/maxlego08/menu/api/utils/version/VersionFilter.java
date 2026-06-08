@@ -27,9 +27,10 @@ public class VersionFilter {
         RequiresPlugin requiresPlugin = clazz.getAnnotation(RequiresPlugin.class);
         if (requiresPlugin != null) {
             Plugin plugin = Bukkit.getPluginManager().getPlugin(requiresPlugin.value());
-            if (plugin == null || !plugin.isEnabled()) {
-                return false;
-            }
+
+            if (plugin == null) return false;
+
+            if (requiresPlugin.checkMode() == RequiresPlugin.CheckMode.EXISTS_AND_ENABLED && !plugin.isEnabled()) return false;
 
             String requiredVersionStr = requiresPlugin.version();
             if (!requiredVersionStr.isEmpty()) {

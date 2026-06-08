@@ -19,4 +19,13 @@ public @interface RequiresPlugin {
 
     @NotNull
     Comparison type() default Comparison.GREATER_THAN_OR_EQUAL_TO;
+
+    @NotNull
+    CheckMode checkMode() default CheckMode.EXISTS;
+
+    enum CheckMode {
+        EXISTS,
+        EXISTS_AND_ENABLED
+    }
+
 }

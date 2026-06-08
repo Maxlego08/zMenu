@@ -387,7 +387,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
-        if (this.plugin.isEnable(Plugins.PACKETEVENTS)) {
+        if (this.plugin.isActive(Plugins.PACKETEVENTS)) {
             Optional<PacketManager> packetManager = this.plugin.getPacketManager();
             packetManager.ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         }
