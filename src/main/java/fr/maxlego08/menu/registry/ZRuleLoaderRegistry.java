@@ -1,17 +1,15 @@
 package fr.maxlego08.menu.registry;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoRuleLoader;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.registry.RuleLoaderRegistry;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
-import fr.maxlego08.menu.api.utils.ReflectionsCache;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
-
-import java.util.Set;
 
 public class ZRuleLoaderRegistry extends RuleLoaderRegistry {
     private static ZRuleLoaderRegistry instance;
@@ -24,28 +22,16 @@ public class ZRuleLoaderRegistry extends RuleLoaderRegistry {
     }
 
     public void registerDefaultLoaders(@NotNull ZMenuPlugin plugin) {
-        Reflections reflection = ReflectionsCache.getInstance().getOrCreate(plugin, "fr.maxlego08.menu");
+        ClassRegistry<RuleLoader, MenuPlugin> registry = ClassRegistry
+                .<RuleLoader, MenuPlugin>of(RuleLoader.class, this::register)
+                .tryNoArgsConstructor()
+                .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(pl));
 
-        int count = 0;
-        Set<Class<?>> typesAnnotatedWith = reflection.getTypesAnnotatedWith(AutoRuleLoader.class);
-        for (Class<?> clazz : typesAnnotatedWith) {
-            if (!RuleLoader.class.isAssignableFrom(clazz)) {
-                Logger.info("Class " + clazz.getName() + " is annotated with @AutoRuleLoader but does not implement RuleLoader.");
-                continue;
-            }
-            if (!VersionFilter.passes(clazz)) continue;
-            try {
-                RuleLoader loader = (RuleLoader) clazz.getDeclaredConstructor().newInstance();
-                register(loader);
-                count++;
-            } catch (Exception e) {
-                Logger.info("Failed to register rule loader: " + clazz.getName());
-                e.printStackTrace();
-            }
-        }
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", plugin, AutoRuleLoader.class, registry);
 
         if (Configuration.enableInformationMessage) {
-            Logger.info("Registered " + count + " rule loaders.");
+            Logger.info("Registered " + count + " auto rule loader(s).");
         }
+
     }
 }
