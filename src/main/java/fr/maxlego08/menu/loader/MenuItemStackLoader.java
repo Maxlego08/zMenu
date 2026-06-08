@@ -17,8 +17,8 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
-import fr.maxlego08.menu.common.MinecraftVersion;
-import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.test.common.MinecraftVersion;
+import fr.maxlego08.menu.test.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
@@ -120,6 +120,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
         this.loadItemModel(configuration, menuItemStack, path, file);
 
+        boolean skipFirstCache = configuration.getBoolean(path + "skip-first-cache", false);
+
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
             if (componentsSection != null) {
@@ -146,7 +148,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial()) {
+
+        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial() && !skipFirstCache) {
             try {
                 menuItemStack.build(new ZBuildContext.Builder().build());
             } catch (Exception ignored) { // Fail when a item requires a player to be built.

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.components;
 
-import fr.maxlego08.menu.common.enums.ConsumeEffectType;
+import fr.maxlego08.menu.test.common.enums.ConsumeEffectType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;

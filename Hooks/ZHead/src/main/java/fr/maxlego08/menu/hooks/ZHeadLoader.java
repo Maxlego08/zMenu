@@ -3,7 +3,7 @@ package fr.maxlego08.menu.hooks;
 import fr.maxlego08.head.api.HeadManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
-import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

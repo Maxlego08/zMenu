@@ -2,8 +2,8 @@ package fr.maxlego08.menu.hooks.itemsadder;
 
 import dev.lone.itemsadder.api.CustomStack;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;

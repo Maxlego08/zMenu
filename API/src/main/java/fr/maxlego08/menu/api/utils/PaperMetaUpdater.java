@@ -10,5 +10,7 @@ public interface PaperMetaUpdater extends MetaUpdater {
 
     void buildMiniMessage();
 
+    void clearCache();
+
     @NotNull Component getComponent(@Nullable String text);
 }

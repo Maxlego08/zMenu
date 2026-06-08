@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.test.common.utils.ZUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

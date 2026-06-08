@@ -3,7 +3,7 @@ package fr.maxlego08.menu.hooks;
 import com.hibiscusmc.hmccosmetics.api.HMCCosmeticsAPI;
 import com.hibiscusmc.hmccosmetics.cosmetic.CosmeticSlot;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
-import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;

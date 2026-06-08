@@ -4,7 +4,7 @@ import com.muhammaddaffa.nextgens.NextGens;
 import com.muhammaddaffa.nextgens.generators.Generator;
 import com.muhammaddaffa.nextgens.generators.managers.GeneratorManager;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
-import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

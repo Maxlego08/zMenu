@@ -28,11 +28,6 @@ import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
-import fr.maxlego08.menu.common.MinecraftVersion;
-import fr.maxlego08.menu.common.VersionFilter;
-import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
-import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
-import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
@@ -62,6 +57,11 @@ import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
+import fr.maxlego08.menu.test.common.MinecraftVersion;
+import fr.maxlego08.menu.test.common.VersionFilter;
+import fr.maxlego08.menu.test.common.network.NMSMenuPacketListener;
+import fr.maxlego08.menu.test.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.test.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
@@ -336,7 +336,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (this.isActive(Plugins.NEXO)) {
             if (this.metaUpdater instanceof ComponentMeta componentMeta) {
-                NexoTagResolverLoader.register(componentMeta);
+                new NexoTagResolverLoader(this, componentMeta);
             }
         }
 

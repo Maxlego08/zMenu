@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.test.common.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;

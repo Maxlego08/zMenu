@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.itemstack;
 
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
-import fr.maxlego08.menu.common.MinecraftVersion;
+import fr.maxlego08.menu.test.common.MinecraftVersion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jspecify.annotations.NonNull;

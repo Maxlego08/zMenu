@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
-import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -67,7 +66,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
     @Override
     public void withTagResolver(@NotNull TagResolver tagResolver) {
         Preconditions.checkNotNull(tagResolver, "TagResolver cannot be null");
-        this.tagResolvers.addFirst(tagResolver);
+        this.tagResolvers.add(tagResolver);
     }
 
     private void withStandardTags() {
@@ -77,11 +76,17 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
     @Override
     public void buildMiniMessage() {
         MiniMessage.Builder builder = MiniMessage.builder();
-        Logger.info("Building MiniMessage with " + this.tagResolvers.size() + " tag resolvers.");
-        for (TagResolver tagResolver : this.tagResolvers) {
-            builder.tags(tagResolver);
+        if (!this.tagResolvers.isEmpty()) {
+            TagResolver.Builder tagBuilder = TagResolver.builder();
+            tagBuilder.resolvers(this.tagResolvers);
+            builder.tags(tagBuilder.build());
         }
         this.MINI_MESSAGE = builder.build();
+    }
+
+    @Override
+    public void clearCache() {
+        this.cache.clear();
     }
 
     private TextDecoration.State getState(String text) {

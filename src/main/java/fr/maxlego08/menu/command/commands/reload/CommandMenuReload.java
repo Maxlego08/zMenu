@@ -8,8 +8,8 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.test.common.enums.Permission;
+import fr.maxlego08.menu.test.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 import org.bukkit.entity.Player;
 

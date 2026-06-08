@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.website;
 
-import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.test.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.utils.ElapsedTime;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;

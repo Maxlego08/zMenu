@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.hooks.mmoitems;
 
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import net.Indyuce.mmoitems.MMOItems;

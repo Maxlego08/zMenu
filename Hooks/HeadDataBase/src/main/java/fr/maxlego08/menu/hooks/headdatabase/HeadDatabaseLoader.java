@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.headdatabase;
 
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
-import fr.maxlego08.menu.api.configuration.annotation.RequiresPlugin;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.configuration.file.YamlConfiguration;

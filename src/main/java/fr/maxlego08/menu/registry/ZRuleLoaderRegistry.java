@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.registry.RuleLoaderRegistry;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.utils.ReflectionsCache;
-import fr.maxlego08.menu.common.VersionFilter;
+import fr.maxlego08.menu.test.common.VersionFilter;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
