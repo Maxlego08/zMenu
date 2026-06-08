@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+@AutoActionLoader
 public class SetItemActionLoader extends ActionLoader {
     private final MenuPlugin menuPlugin;
 

@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.ComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
-import fr.maxlego08.menu.test.common.interfaces.VariantComponent;
+import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import org.bukkit.entity.Salmon;
 
 @ComponentLoader

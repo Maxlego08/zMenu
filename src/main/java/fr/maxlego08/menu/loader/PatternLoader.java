@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.pattern.ZPattern;
-import fr.maxlego08.menu.test.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

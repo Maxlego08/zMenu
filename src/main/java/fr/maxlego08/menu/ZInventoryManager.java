@@ -2,6 +2,8 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
+import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
@@ -16,14 +18,19 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
-import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.api.loader.NoneLoader;
+import fr.maxlego08.menu.api.loader.*;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
+import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
-import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
+import fr.maxlego08.menu.common.utils.PlayerUtil;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.*;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
@@ -32,17 +39,12 @@ import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.loader.actions.*;
+import fr.maxlego08.menu.loader.actions.BedrockLoader;
+import fr.maxlego08.menu.loader.actions.DialogLoader;
+import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
-import fr.maxlego08.menu.loader.permissible.*;
 import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
-import fr.maxlego08.menu.test.common.utils.PlayerUtil;
-import fr.maxlego08.menu.test.common.utils.ZUtils;
-import fr.maxlego08.menu.test.common.utils.cache.YamlFileCache;
-import fr.maxlego08.menu.test.common.utils.cache.YamlFileCacheEntry;
-import fr.maxlego08.menu.test.common.utils.nms.ItemStackUtils;
-import fr.maxlego08.menu.test.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
@@ -366,69 +368,41 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         // Load Permissible before
-        buttonManager.registerPermissible(new PlaceholderPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new PermissionPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new ItemPermissibleLoader(this.plugin));
-        buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new PlayerNamePermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new CuboidPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new CheckInventoryLoader(this.plugin));
-        if (this.plugin.isEnable(Plugins.JOBS)) {
-            buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
-        }
-        if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
-            buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
+        ClassRegistry<PermissibleLoader, MenuPlugin> permissibleRegistry = ClassRegistry.
+                <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, buttonManager::registerPermissible)
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryConstructor(((clazz, plugin) -> clazz.getConstructor(ButtonManager.class).newInstance(buttonManager)))
+                .tryNoArgsConstructor();
+
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoPermissibleLoader.class, permissibleRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + count + " auto permissible loader(s).");
         }
 
         // Load actions
-        buttonManager.registerAction(new BroadcastLoader(this.plugin));
-        buttonManager.registerAction(new MessageLoader());
-        buttonManager.registerAction(new MessageToLoader());
-        buttonManager.registerAction(new BookLoader());
-        buttonManager.registerAction(new SoundLoader());
-        buttonManager.registerAction(new BroadcastSoundLoader());
-        buttonManager.registerAction(new CloseLoader());
-        buttonManager.registerAction(new ConnectLoader(this.plugin));
-        buttonManager.registerAction(new DataLoader(this.plugin));
-        buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
-        buttonManager.registerAction(new ChatLoader());
+
         if (Configuration.enablePlayerCommandsAsOPAction) { // Disabled by default for security reasons
             buttonManager.registerAction(new PlayerCommandAsOPLoader());
         }
-        buttonManager.registerAction(new PlayerCommandLoader());
-        buttonManager.registerAction(new ConsoleCommandLoader());
-        buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.BackLoader(this.plugin));
-        buttonManager.registerAction(new ShopkeeperLoader(this.plugin));
-        buttonManager.registerAction(new TitleLoader());
-        buttonManager.registerAction(new ActionBarLoader());
-        buttonManager.registerAction(new RefreshLoader());
-        buttonManager.registerAction(new RefreshInventoryLoader());
-        buttonManager.registerAction(new ResetPaginationLoader(this.paginationManager));
-        buttonManager.registerAction(new DiscordLoader());
-        buttonManager.registerAction(new DiscordComponentV2Loader());
-        buttonManager.registerAction(new TeleportLoader(this.plugin));
-        buttonManager.registerAction(new CurrencyWithdrawLoader());
-        buttonManager.registerAction(new CurrencyDepositLoader());
-        buttonManager.registerAction(new TakeItemLoader(this.plugin));
-        buttonManager.registerAction(new ItemEditLoader(this.plugin));
-        buttonManager.registerAction(new ItemGiveLoader(this.plugin));
-        buttonManager.registerAction(new SetItemActionLoader(this.plugin));
-        buttonManager.registerAction(new RefreshSlotActionLoader());
-        if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
-            buttonManager.registerAction(new LuckPermissionSetLoader());
-        }
-        buttonManager.registerAction(new ToastLoader(this.plugin));
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
         if (this.plugin.isEnable(Plugins.PACKETEVENTS)) {
-
             Optional<PacketManager> packetManager = this.plugin.getPacketManager();
             packetManager.ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         }
         if (this.plugin.getBedrockManager() != null) {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
+        }
+
+        ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
+                <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryNoArgsConstructor();
+
+        int actionCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoActionLoader.class, actionRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + actionCount + " auto action loader(s).");
         }
 
         // Loading ButtonLoader

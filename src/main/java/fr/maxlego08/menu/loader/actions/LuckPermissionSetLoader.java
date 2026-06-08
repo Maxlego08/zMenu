@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -9,6 +11,8 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+@AutoActionLoader
+@RequiresPlugin("LuckPerms")
 public class LuckPermissionSetLoader extends ActionLoader {
 
     public LuckPermissionSetLoader() {

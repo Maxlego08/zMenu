@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -12,12 +14,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@AutoActionLoader
 public class ResetPaginationLoader extends ActionLoader {
     private final PaginationManager paginationManager;
 
-    public ResetPaginationLoader(PaginationManager paginationManager) {
+    public ResetPaginationLoader(MenuPlugin plugin) {
         super("reset-pagination");
-        this.paginationManager = paginationManager;
+        this.paginationManager = plugin.getInventoryManager().getPaginationManager();
     }
 
     @Override

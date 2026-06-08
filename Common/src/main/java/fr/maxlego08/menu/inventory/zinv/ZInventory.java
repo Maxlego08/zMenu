@@ -17,7 +17,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
-import fr.maxlego08.menu.test.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;

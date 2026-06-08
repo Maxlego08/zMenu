@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
-import fr.maxlego08.menu.test.common.utils.ActionHelper;
+import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;

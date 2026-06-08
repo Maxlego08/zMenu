@@ -3,7 +3,7 @@ package fr.maxlego08.menu.itemstack.components.spigot;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.test.common.interfaces.VariantComponent;
+import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Art;
 import org.bukkit.Bukkit;

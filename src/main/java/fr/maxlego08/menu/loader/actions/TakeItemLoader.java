@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.Map;
 
+@AutoActionLoader
 public class TakeItemLoader extends ActionLoader {
     private final MenuPlugin menuPlugin;
 

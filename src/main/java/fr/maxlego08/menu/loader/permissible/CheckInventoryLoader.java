@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+@AutoPermissibleLoader
 public class CheckInventoryLoader extends PermissibleLoader {
     private final InventoryManager inventoryManager;
     private final ButtonManager buttonManager;

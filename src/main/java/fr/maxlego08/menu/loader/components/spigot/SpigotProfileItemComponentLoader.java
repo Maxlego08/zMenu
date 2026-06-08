@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.ProfileComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
-import fr.maxlego08.menu.test.common.utils.PlayerUtil;
+import fr.maxlego08.menu.common.utils.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;

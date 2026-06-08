@@ -11,8 +11,8 @@ import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
 import fr.maxlego08.menu.command.commands.website.CommandMenuLogin;
-import fr.maxlego08.menu.test.common.MinecraftVersion;
-import fr.maxlego08.menu.test.common.enums.Permission;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
+import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 public class CommandMenu extends VCommand {

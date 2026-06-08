@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.test.common;
 
+import fr.maxlego08.menu.api.utils.version.PluginVersion;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

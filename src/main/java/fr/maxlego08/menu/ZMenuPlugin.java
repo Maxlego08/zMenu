@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
+import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
@@ -25,9 +26,14 @@ import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.ReflectionsCache;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
+import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
+import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
+import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
@@ -57,11 +63,6 @@ import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
-import fr.maxlego08.menu.test.common.MinecraftVersion;
-import fr.maxlego08.menu.test.common.VersionFilter;
-import fr.maxlego08.menu.test.common.network.NMSMenuPacketListener;
-import fr.maxlego08.menu.test.common.utils.cache.YamlFileCache;
-import fr.maxlego08.menu.test.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
@@ -353,28 +354,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     private void registerMaterialLoaders() {
-        int count = 0;
-        Reflections reflection = ReflectionsCache.getInstance().getOrCreate(this, "fr.maxlego08.menu");
-        Set<Class<?>> candidates = reflection.getTypesAnnotatedWith(AutoMaterialLoader.class);
-        for (Class<?> clazz : candidates) {
-            if (!MaterialLoader.class.isAssignableFrom(clazz)) continue;
-            if (!VersionFilter.passes(clazz)) continue;
-            try {
-                MaterialLoader materialLoader;
-                try {
-                    materialLoader = (MaterialLoader) clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(this);
-                } catch (Exception e) {
-                    materialLoader = (MaterialLoader) clazz.getDeclaredConstructor().newInstance();
-                }
-                this.inventoryManager.registerMaterialLoader(materialLoader);
-                count++;
-            } catch (Exception e) {
-                if (Configuration.enableDebug) {
-                    Logger.info("Failed to instantiate auto material loader: " + clazz.getName());
-                    e.printStackTrace();
-                }
-            }
-        }
+        ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry
+                .<MaterialLoader, MenuPlugin>of(MaterialLoader.class, this.inventoryManager::registerMaterialLoader)
+                .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryNoArgsConstructor();
+
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoMaterialLoader.class, registry);
+
         if (Configuration.enableInformationMessage)
             Logger.info("Registered " + count + " auto material loader(s).");
     }

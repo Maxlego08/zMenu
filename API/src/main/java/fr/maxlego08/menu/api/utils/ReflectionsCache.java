@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.utils;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -25,7 +25,7 @@ public class ReflectionsCache {
         return instance;
     }
 
-    public Reflections getOrCreate(JavaPlugin plugin, String packageName) {
+    public Reflections getOrCreate(Plugin plugin, String packageName) {
         if (packageName == null || packageName.trim().isEmpty()) {
             throw new IllegalArgumentException("Package name cannot be null or empty");
         }

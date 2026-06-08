@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
@@ -11,6 +12,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
+@AutoActionLoader
 public class DataLoader extends ActionLoader {
 
     private final MenuPlugin plugin;

@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.utils.ClearInvType;
-import fr.maxlego08.menu.test.common.utils.nms.ItemStackUtils;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
