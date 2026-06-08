@@ -19,6 +19,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -275,6 +276,34 @@ public class ZInventory extends ZUtils implements Inventory {
         }
     }
 
+    private List<ItemStack> collectSessionItems(Player player, InventoryEngine inventoryDefault) {
+        Set<Integer> buttonSlots = new HashSet<>(inventoryDefault.getPlayerInventoryItems().keySet());
+        for (Button button : inventoryDefault.getButtons()) {
+            if (button.isPlayerInventory()) {
+                for (int slot : button.getSlots()) {
+                    buttonSlots.add(slot);
+                }
+            }
+        }
+
+        List<ItemStack> sessionItems = new ArrayList<>();
+        var playerInventory = player.getInventory();
+        for (int slot = 0; slot < playerInventory.getSize(); slot++) {
+            if (buttonSlots.contains(slot)) continue;
+            ItemStack item = playerInventory.getItem(slot);
+            if (item != null && !item.getType().isAir()) {
+                sessionItems.add(item.clone());
+            }
+        }
+        return sessionItems;
+    }
+
+    private void restoreSessionItems(Player player, List<ItemStack> sessionItems) {
+        if (sessionItems.isEmpty()) return;
+        Map<Integer, ItemStack> leftovers = player.getInventory().addItem(sessionItems.toArray(new ItemStack[0]));
+        leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
+    }
+
     @Override
     public void postOpenInventory(Player player, InventoryEngine inventoryDefault) {
 
@@ -287,11 +316,15 @@ public class ZInventory extends ZUtils implements Inventory {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             boolean isInNewzMenuInventory = newHolder instanceof InventoryDefault;
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
+
+                List<ItemStack> sessionItems = this.clearInventory ? collectSessionItems(player, inventoryDefault) : Collections.emptyList();
+
                 this.clearPlayerInventoryButtons(player, inventoryDefault);
 
                 if (this.clearInventory) {
                     InventoriesPlayer inventoriesPlayer = inventoryDefault.getPlugin().getInventoriesPlayer();
                     inventoriesPlayer.giveInventory(player);
+                    restoreSessionItems(player, sessionItems);
                 }
             }
             var placeholders = new Placeholders();

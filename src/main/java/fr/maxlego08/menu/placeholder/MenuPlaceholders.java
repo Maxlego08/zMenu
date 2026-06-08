@@ -7,9 +7,11 @@ import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -98,5 +100,30 @@ public class MenuPlaceholders extends ZUtils {
         placeholder.register("time_unix_timestamp", (player, args) -> String.valueOf(System.currentTimeMillis() / 1000));
         placeholder.register("time_next_day_unix_timestamp", (player, args) -> String.valueOf(LocalDateTime.now().toLocalDate().plusDays(1L).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond()));
         placeholder.register("time_today_start_unix_timestamp", (player, args) -> String.valueOf(LocalDateTime.now().toLocalDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond()));
+
+        // Player inventory slots
+        placeholder.register("player_empty_slots", (offlinePlayer, s) -> {
+            if (!offlinePlayer.isOnline()) return "0";
+            Player player = offlinePlayer.getPlayer();
+            if (player == null) return "0";
+            int emptySlots = 0;
+            for (ItemStack itemStack : player.getInventory().getStorageContents()) {
+                if (itemStack == null || itemStack.getType() == Material.AIR) emptySlots++;
+            }
+            return String.valueOf(emptySlots);
+        });
+
+        placeholder.register("player_item_count_", (offlinePlayer, args) -> {
+            if (!offlinePlayer.isOnline()) return "0";
+            Player player = offlinePlayer.getPlayer();
+            if (player == null) return "0";
+            Material material = Material.matchMaterial(args.toUpperCase());
+            if (material == null) return "0";
+            int count = 0;
+            for (ItemStack itemStack : player.getInventory().getStorageContents()) {
+                if (itemStack != null && itemStack.getType() == material) count += itemStack.getAmount();
+            }
+            return String.valueOf(count);
+        });
     }
 }

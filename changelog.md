@@ -42,6 +42,17 @@
 
 # Unreleased
 
+## New Features
+
+- **Player Inventory Placeholders**: Added `%zmenu_player_empty_slots%` to get the number of free slots in the player's inventory, and `%zmenu_player_item_count_<MATERIAL>%` to count the total amount of a specific item. These placeholders work even when the bottom inventory is hidden with `clear-inventory: true`, allowing shop menus to check if the player has enough space before purchasing.
+
+## Bug Fixes
+
+- **Clear Inventory Session Items**: Fixed a bug where items given to the player during a menu session (e.g., via shop purchase actions) were lost when closing a menu with `clear-inventory: true`. Session items are now collected before restoring the original inventory and properly restored afterward.
+- **ItemGiveAction Inventory Update**: Added `player.updateInventory()` after giving items via the `give_item` action, ensuring the client inventory display updates immediately.
+
+- **Inventory Desync on Item Give**: Fixed `ItemGiveAction` not calling `player.updateInventory()` after adding items, causing a visual desynchronization where the player's hotbar/inventory wouldn't visually update until the next interaction.
+
 # 1.1.1.4
 
 ## New Features
