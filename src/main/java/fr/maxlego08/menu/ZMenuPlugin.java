@@ -24,7 +24,6 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
-import fr.maxlego08.menu.api.utils.ReflectionsCache;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
@@ -85,7 +84,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
-import org.reflections.Reflections;
 
 import java.io.File;
 import java.util.*;
@@ -295,30 +293,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     private void registerAutoListeners() {
-        Reflections reflection = ReflectionsCache.getInstance().getOrCreate(this, "fr.maxlego08.menu");
+        ClassRegistry<Listener, MenuPlugin> registry = ClassRegistry
+                .<Listener, MenuPlugin>of(Listener.class, this::addListener)
+                .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryNoArgsConstructor();
 
-        Set<Class<?>> candidates = reflection.getTypesAnnotatedWith(AutoListener.class);
-
-        int count = 0;
-        for (Class<?> clazz : candidates) {
-            if (!Listener.class.isAssignableFrom(clazz)) continue;
-            if (!VersionFilter.passes(clazz)) continue;
-            try {
-                Listener listener;
-                try {
-                    listener = (Listener) clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(this);
-                } catch (NoSuchMethodException e) {
-                    listener = (Listener) clazz.getDeclaredConstructor().newInstance();
-                }
-                this.addListener(listener);
-                count++;
-            } catch (Exception e) {
-                if (Configuration.enableDebug) {
-                    Logger.info("Failed to instantiate auto listener: " + clazz.getName());
-                    e.printStackTrace();
-                }
-            }
-        }
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoListener.class, registry);
 
         if (Configuration.enableInformationMessage)
             Logger.info("Registered " + count + " auto listener(s).");
