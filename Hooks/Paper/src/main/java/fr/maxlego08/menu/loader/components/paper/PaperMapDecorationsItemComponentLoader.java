@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.components.paper;
 
-import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-@ComponentLoader
+@AutoComponentLoader
 @SinceVersion("1.20.5")
 @PaperOnly
 public class PaperMapDecorationsItemComponentLoader extends ItemComponentLoader {

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
-import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@ComponentLoader
+@AutoComponentLoader
 @SinceVersion("1.20.5")
 public class SpigotFireworksItemComponentLoader extends AbstractFireworkItemComponentLoader {
 

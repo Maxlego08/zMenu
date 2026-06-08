@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.components.paper;
 
-import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-@ComponentLoader
+@AutoComponentLoader
 @SinceVersion("1.21.11")
 @PaperOnly
 public class PaperAttackRangeItemComponentLoader extends AbstractAttackRangeItemComponentLoader {

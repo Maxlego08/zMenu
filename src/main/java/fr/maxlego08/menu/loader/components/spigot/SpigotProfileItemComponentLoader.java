@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
-import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
@@ -21,7 +21,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.UUID;
 
-@ComponentLoader
+@AutoComponentLoader
 @SinceVersion("1.21.9")
 public class SpigotProfileItemComponentLoader extends ItemComponentLoader {
 

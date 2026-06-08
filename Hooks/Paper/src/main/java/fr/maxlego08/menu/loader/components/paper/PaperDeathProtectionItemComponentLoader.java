@@ -1,13 +1,13 @@
 package fr.maxlego08.menu.loader.components.paper;
 
-import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import fr.maxlego08.menu.itemstack.components.paper.PaperDeathProtectionComponent;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
-import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import io.papermc.paper.datacomponent.item.DeathProtection;
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
 import io.papermc.paper.registry.RegistryKey;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@ComponentLoader
+@AutoComponentLoader
 @SinceVersion("1.21.2")
 @PaperOnly
 public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemComponentLoader {

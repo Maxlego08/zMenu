@@ -1,12 +1,12 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
-import fr.maxlego08.menu.api.annotations.ComponentLoader;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.itemstack.*;
-import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
+import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@ComponentLoader
+@AutoComponentLoader
 @SinceVersion("1.21.2")
 public class SpigotConsumableItemComponentLoader extends AbstractEffectItemComponentLoader {
 
