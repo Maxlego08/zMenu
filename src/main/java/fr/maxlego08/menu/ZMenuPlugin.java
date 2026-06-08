@@ -46,7 +46,6 @@ import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
-import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
@@ -235,7 +234,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
         this.addListener(new ItemUpdaterListener(this.itemManager));
-        this.addSimpleListener(this.inventoryManager);
+        this.addListener(this.inventoryManager);
 
         this.registerMaterialLoaders();
         this.registerHooks();
@@ -325,9 +324,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.fontImage = new ItemsAdderFont();
         }
 
-        if (this.isActive(Plugins.MYTHICMOBS)) {
-            this.addListener(new MythicManager(this));
-        }
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }

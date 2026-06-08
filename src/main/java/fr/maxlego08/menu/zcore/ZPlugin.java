@@ -100,15 +100,6 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     /**
-     * Add a listener
-     *
-     * @param listener New Listener
-     */
-    public void addSimpleListener(Listener listener) {
-        Bukkit.getPluginManager().registerEvents(listener, this);
-    }
-
-    /**
      * Add a listener from ListenerAdapter
      *
      * @param adapter New {@link ListenerAdapter}
