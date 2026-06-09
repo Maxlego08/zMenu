@@ -29,5 +29,7 @@ public class ItemGiveAction extends ActionHelper {
                 player.getWorld().dropItemNaturally(player.getLocation(), leftover);
             });
         }
+
+        player.updateInventory();
     }
 }

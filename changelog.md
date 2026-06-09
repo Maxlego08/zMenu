@@ -42,14 +42,17 @@
 
 # Unreleased
 
-- **Take Item Action**: New `take-item` action to remove a specified amount of an item from the player's inventory.
-```yaml
-- type: take-item
-  item:
-    material: DIAMOND
-  amount: 5
-```
+## New Features
+
+- **Player Inventory Placeholders**: Added `%zmenu_player_empty_slots%` to get the number of free slots in the player's inventory, and `%zmenu_player_item_count_<MATERIAL>%` to count the total amount of a specific item. These placeholders work even when the bottom inventory is hidden with `clear-inventory: true`, allowing shop menus to check if the player has enough space before purchasing.
 - **Custom Commands**: Add a new field `actions-requirements` for custom commands, allowing you to specify requirements that must be met for the command's actions to execute. This provides more control over argument conditions and enhances command functionality.
+
+## Bug Fixes
+
+- **Clear Inventory Session Items**: Fixed a bug where items given to the player during a menu session (e.g., via shop purchase actions) were lost when closing a menu with `clear-inventory: true`. Session items are now collected before restoring the original inventory and properly restored afterward.
+- **ItemGiveAction Inventory Update**: Added `player.updateInventory()` after giving items via the `give_item` action, ensuring the client inventory display updates immediately.
+
+- **Inventory Desync on Item Give**: Fixed `ItemGiveAction` not calling `player.updateInventory()` after adding items, causing a visual desynchronization where the player's hotbar/inventory wouldn't visually update until the next interaction.
 
 **Internal Changes**
 
@@ -61,7 +64,7 @@
     - `@SpigotOnly` | These annotations can be used to mark classes that should only be loaded if the server is a spigot version, check in the `VersionFilter` class for more details.
     - `@ComponentLoader` | Allow to load dynamically all items component loader without having to register them one by one in the `ZComponentManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
     - `@AutoListener`  | Allow to load dynamically all listeners who take a `MenuPlugin` in their constructor or no-arg constructor without having to register them one by one in the `ZListenerManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
-
+//TODO: more here
 
 # 1.1.1.4
 
