@@ -29,7 +29,8 @@ public class ZComponentsManager implements ComponentsManager {
                 ClassRegistry.<ItemComponentLoader, MenuPlugin>of(ItemComponentLoader.class, this::registerComponent)
                         .tryNoArgsConstructor()
                         .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(pl))
-                        .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class, VariantComponent.class).newInstance(pl, variantComponent));
+                        .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class, VariantComponent.class).newInstance(pl, variantComponent))
+                        .errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", plugin, AutoComponentLoader.class, registry);
 

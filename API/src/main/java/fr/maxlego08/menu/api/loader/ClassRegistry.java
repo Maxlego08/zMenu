@@ -11,6 +11,7 @@ public class ClassRegistry<T, P extends Plugin> {
     private final List<ConstructorStrategy<P>> strategies = new ArrayList<>();
     private final Consumer<T> registrar;
     private final Class<T> expectedType;
+    private Consumer<String> errorLogger;
 
     private ClassRegistry(Class<T> expectedType, Consumer<T> registrar) {
         this.expectedType = expectedType;
@@ -26,24 +27,43 @@ public class ClassRegistry<T, P extends Plugin> {
         return this;
     }
 
+    public ClassRegistry<T, P> errorLogger(Consumer<String> errorLogger) {
+        this.errorLogger = errorLogger;
+        return this;
+    }
+
     public ClassRegistry<T, P> tryNoArgsConstructor() {
-        return tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor().newInstance());
+        return this.tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor().newInstance());
     }
 
     public boolean load(P plugin, Class<?> clazz) {
-        for (ConstructorStrategy<P> strategy : strategies) {
+        for (ConstructorStrategy<P> strategy : this.strategies) {
             try {
                 Object instance = strategy.instantiate(clazz, plugin);
-                if (expectedType.isInstance(instance)) {
-                    registrar.accept(expectedType.cast(instance));
+                if (this.expectedType.isInstance(instance)) {
+                    this.registrar.accept(this.expectedType.cast(instance));
                     return true;
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
+
+        if (this.errorLogger != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Could not find a valid constructor for ").append(clazz.getName()).append(". Available constructors: ");
+            for (int i = 0; i < clazz.getDeclaredConstructors().length; i++) {
+                stringBuilder.append(clazz.getDeclaredConstructors()[i]);
+                if (i < clazz.getDeclaredConstructors().length - 1) {
+                    stringBuilder.append(", ");
+                }
+            }
+            this.errorLogger.accept(stringBuilder.toString());
+        }
+
         return false;
     }
 
     public Class<T> getExpectedType() {
-        return expectedType;
+        return this.expectedType;
     }
 }

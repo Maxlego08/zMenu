@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
-import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -14,9 +14,9 @@ import java.util.List;
 @AutoActionLoader
 public class InventoryLoader extends ActionLoader {
 
-    private final ZMenuPlugin plugin;
+    private final MenuPlugin plugin;
 
-    public InventoryLoader(ZMenuPlugin plugin) {
+    public InventoryLoader(MenuPlugin plugin) {
         super("inventory", "inv");
         this.plugin = plugin;
     }

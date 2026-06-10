@@ -295,7 +295,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         ClassRegistry<Listener, MenuPlugin> registry = ClassRegistry
                 .<Listener, MenuPlugin>of(Listener.class, this::addListener)
                 .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
-                .tryNoArgsConstructor();
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoListener.class, registry);
 
@@ -333,7 +334,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry
                 .<MaterialLoader, MenuPlugin>of(MaterialLoader.class, this.inventoryManager::registerMaterialLoader)
                 .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
-                .tryNoArgsConstructor();
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoMaterialLoader.class, registry);
 

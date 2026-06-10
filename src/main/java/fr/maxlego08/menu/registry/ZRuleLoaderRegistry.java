@@ -25,7 +25,8 @@ public class ZRuleLoaderRegistry extends RuleLoaderRegistry {
         ClassRegistry<RuleLoader, MenuPlugin> registry = ClassRegistry
                 .<RuleLoader, MenuPlugin>of(RuleLoader.class, this::register)
                 .tryNoArgsConstructor()
-                .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(pl));
+                .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(pl))
+                .errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", plugin, AutoRuleLoader.class, registry);
 

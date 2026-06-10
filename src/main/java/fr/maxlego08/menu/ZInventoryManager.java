@@ -372,7 +372,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, buttonManager::registerPermissible)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor(((clazz, plugin) -> clazz.getConstructor(ButtonManager.class).newInstance(buttonManager)))
-                .tryNoArgsConstructor();
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoPermissibleLoader.class, permissibleRegistry);
         if (Configuration.enableInformationMessage) {
@@ -398,7 +399,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
                 <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
-                .tryNoArgsConstructor();
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
 
         int actionCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoActionLoader.class, actionRegistry);
         if (Configuration.enableInformationMessage) {

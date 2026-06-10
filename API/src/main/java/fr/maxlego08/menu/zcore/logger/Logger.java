@@ -33,6 +33,10 @@ public abstract class Logger {
         getLogger().log(message, type, args);
     }
 
+    public static void error(String message) {
+        getLogger().log(message, LogType.ERROR);
+    }
+
     public void log(String message) {
         this.log(message, LogType.INFO);
     }

@@ -10,7 +10,7 @@ after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
 # Dialog body content - can contain multiple sections
 body:
   plain_message:
-    type: dialog_dialog_plain_message
+    type: dialog_plain_message
     messages:
       - "&6&lWelcome to our amazing server!"
       - ""
@@ -53,7 +53,7 @@ body:
     height: 150           # Item display height (1-256)
   server_rules:
     # Another message section
-    type: dialog_dialog_plain_message
+    type: dialog_plain_message
     messages:
       - "&a&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       - "&6Server Rules"
