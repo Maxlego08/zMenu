@@ -13,9 +13,11 @@ import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.hooks.packetevents.animation.PacketPlayerTitleAnimation;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,106 +57,130 @@ public class PacketAnimationListener implements PacketListener {
         }
     }
 
+    private void runInventoryTask(@NotNull Player player,@NotNull Inventory inventory,@NotNull Runnable task) {
+        if (Bukkit.isPrimaryThread()) {
+            task.run();
+            return;
+        }
+
+        if (!this.plugin.isEnabled()) {
+            return;
+        }
+
+        Location location = this.resolveSafeLocation(inventory);
+
+        if (location != null) {
+            this.plugin.getScheduler().runAtLocation(location, w -> task.run());
+        } else {
+            this.plugin.getScheduler().runAtEntity(player, w -> task.run());
+        }
+    }
+
+    private Location resolveSafeLocation(@NotNull Inventory inventory) {
+        try {
+            Location location = inventory.getLocation();
+            if (location != null && location.getWorld() != null) {
+                return location;
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
     @Override
     public void onPacketSend(PacketSendEvent event) {
         PacketTypeCommon packetType = event.getPacketType();
-        if (packetType == PacketType.Play.Server.OPEN_WINDOW){
-            WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(event);
-            int containerId = wrapper.getContainerId();
-            Player player = event.getPlayer();
-            if (player == null) return;
-            UUID playerUniqueId = player.getUniqueId();
+        switch (packetType) {
+            case PacketType.Play.Server.OPEN_WINDOW -> {
+                WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(event);
+                int containerId = wrapper.getContainerId();
+                Player player = event.getPlayer();
+                if (player == null) return;
+                UUID playerUniqueId = player.getUniqueId();
 
-            PlayerAnimationData data = this.playerAnimationData.get(playerUniqueId);
-            if (data != null && data.getContainerId() == containerId){
-                return;
-            }
-            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-            if (topInventory == null) {
-                return;
-            }
-
-            Runnable task = () -> {
-                InventoryHolder holder = topInventory.getHolder();
-                if (holder instanceof BaseInventory baseInventory){
-                    TitleAnimation titleAnimation = baseInventory.getTitleAnimation();
-                    if (titleAnimation == null) {
-                        return;
-                    }
-                    Inventory inventory = baseInventory.getInventory();
-                    PlayerTitleAnimation playerTitleAnimation = titleAnimation.playTitleAnimation(this.plugin, containerId, inventory.getType(), inventory.getSize(), wrapper);
-                    if (playerTitleAnimation != null){
-                        playerTitleAnimation.start(player, Arrays.asList(inventory.getContents()));
-                    }
-                    baseInventory.setPlayerTitleAnimation(playerTitleAnimation);
-                    this.playerAnimationData.put(playerUniqueId, new PlayerAnimationData(containerId));
+                PlayerAnimationData data = this.playerAnimationData.get(playerUniqueId);
+                if (data != null && data.getContainerId() == containerId) {
+                    return;
                 }
-            };
-
-            if (Bukkit.isPrimaryThread()) {
-                task.run();
-            } else if (this.plugin.isEnabled()) {
-                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
-            }
-        } else if (packetType == PacketType.Play.Server.CLOSE_WINDOW){
-            Player player = event.getPlayer();
-            if (player == null) return;
-            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-            if (topInventory == null) {
-                return;
-            }
-
-            Runnable task = () -> {
-                InventoryHolder holder = topInventory.getHolder();
-                if (holder instanceof BaseInventory){
-                    UUID playerUniqueId = player.getUniqueId();
-                    this.playerAnimationData.remove(playerUniqueId);
+                Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+                if (topInventory == null) {
+                    return;
                 }
-            };
 
-            if (Bukkit.isPrimaryThread()) {
-                task.run();
-            } else if (this.plugin.isEnabled()) {
-                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
-            }
-        } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS){
-            WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
-            Player player = event.getPlayer();
-            if (player == null) return;
-            UUID playerUniqueId = player.getUniqueId();
-
-            int windowId = wrapper.getWindowId();
-
-            PlayerAnimationData data = this.playerAnimationData.get(playerUniqueId);
-            if (data != null && data.getWindowId() == windowId){
-                return;
-            }
-
-            if (data == null) {
-                data = new PlayerAnimationData(0);
-                this.playerAnimationData.put(playerUniqueId, data);
-            }
-            data.setWindowId(windowId);
-
-            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-            if (topInventory == null) {
-                return;
-            }
-
-            Runnable task = () -> {
-                InventoryHolder holder = topInventory.getHolder();
-                if (holder instanceof BaseInventory baseInventory && baseInventory.getPlayerTitleAnimation() instanceof PacketPlayerTitleAnimation playerTitleAnimation){
-                    playerTitleAnimation.setWrapperPlayServerWindowItems(wrapper);
-                    if (playerTitleAnimation.getSettings().showItemsAfterAnimation()){
-                        event.setCancelled(true);
+                Runnable task = () -> {
+                    InventoryHolder holder = topInventory.getHolder();
+                    if (holder instanceof BaseInventory baseInventory) {
+                        TitleAnimation titleAnimation = baseInventory.getTitleAnimation();
+                        if (titleAnimation == null) {
+                            return;
+                        }
+                        Inventory inventory = baseInventory.getInventory();
+                        PlayerTitleAnimation playerTitleAnimation = titleAnimation.playTitleAnimation(this.plugin, containerId, inventory.getType(), inventory.getSize(), wrapper);
+                        if (playerTitleAnimation != null) {
+                            playerTitleAnimation.start(player, Arrays.asList(inventory.getContents()));
+                        }
+                        baseInventory.setPlayerTitleAnimation(playerTitleAnimation);
+                        this.playerAnimationData.put(playerUniqueId, new PlayerAnimationData(containerId));
                     }
-                }
-            };
+                };
 
-            if (Bukkit.isPrimaryThread()) {
-                task.run();
-            } else if (this.plugin.isEnabled()) {
-                this.plugin.getScheduler().runAtEntity(player, w -> task.run());
+                this.runInventoryTask(player, topInventory, task);
+            }
+            case PacketType.Play.Server.CLOSE_WINDOW -> {
+                Player player = event.getPlayer();
+                if (player == null) return;
+                Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+                if (topInventory == null) {
+                    return;
+                }
+
+                Runnable task = () -> {
+                    InventoryHolder holder = topInventory.getHolder();
+                    if (holder instanceof BaseInventory) {
+                        UUID playerUniqueId = player.getUniqueId();
+                        this.playerAnimationData.remove(playerUniqueId);
+                    }
+                };
+
+                this.runInventoryTask(player, topInventory, task);
+            }
+            case PacketType.Play.Server.WINDOW_ITEMS -> {
+                WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
+                Player player = event.getPlayer();
+                if (player == null) return;
+                UUID playerUniqueId = player.getUniqueId();
+
+                int windowId = wrapper.getWindowId();
+
+                PlayerAnimationData data = this.playerAnimationData.get(playerUniqueId);
+                if (data != null && data.getWindowId() == windowId) {
+                    return;
+                }
+
+                if (data == null) {
+                    data = new PlayerAnimationData(0);
+                    this.playerAnimationData.put(playerUniqueId, data);
+                }
+                data.setWindowId(windowId);
+
+                Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+                if (topInventory == null) {
+                    return;
+                }
+
+                Runnable task = () -> {
+                    InventoryHolder holder = topInventory.getHolder();
+                    if (holder instanceof BaseInventory baseInventory && baseInventory.getPlayerTitleAnimation() instanceof PacketPlayerTitleAnimation playerTitleAnimation) {
+                        playerTitleAnimation.setWrapperPlayServerWindowItems(wrapper);
+                        if (playerTitleAnimation.getSettings().showItemsAfterAnimation()) {
+                            event.setCancelled(true);
+                        }
+                    }
+                };
+
+                this.runInventoryTask(player, topInventory, task);
+            }
+            default -> {
             }
         }
     }
