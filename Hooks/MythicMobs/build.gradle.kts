@@ -8,5 +8,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("io.lumine:Mythic-Dist:5.6.1")
+    compileOnly(libs.mythicmobs)
 }

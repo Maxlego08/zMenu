@@ -1,9 +1,10 @@
 plugins {
-    id("re.alwyn974.groupez.publish") version "1.0.0"
+    alias(libs.plugins.groupez.publish)
 }
 
 dependencies{
-    implementation("net.kyori:adventure-api:4.25.0")
+    compileOnly(libs.adventure.api)
+    compileOnly(libs.adventure.text.minimessage)
 }
 
 rootProject.extra.properties["sha"]?.let { sha ->

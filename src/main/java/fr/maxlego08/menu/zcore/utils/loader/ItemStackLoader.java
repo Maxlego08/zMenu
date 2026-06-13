@@ -4,8 +4,8 @@ import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.exceptions.ItemFlagException;
 import fr.maxlego08.menu.api.itemstack.Potion;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import org.bukkit.Material;
@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @SuppressWarnings("deprecation")
@@ -44,7 +45,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         if (material == null) {
             String str = configuration.getString(path + "material", null);
             if (str == null) return null;
-            material = Material.getMaterial(str.toUpperCase());
+            material = Material.getMaterial(str.toUpperCase(Locale.ROOT));
         }
 
         if (modelID < 0) modelID = 0;
@@ -61,7 +62,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
         } else if (configuration.contains(path + "potion")) {
 
-            PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
+            PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase(Locale.ROOT));
             int level = configuration.getInt(path + "level", 1);
             boolean splash = configuration.getBoolean(path + "splash", false);
             boolean extended = configuration.getBoolean(path + "extended", false);
@@ -171,7 +172,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 
         configuration.set(path + "material", item.getType().name());
         if (item.getAmount() != 1) configuration.set(path + "amount", item.getAmount());
-        if (NmsVersion.getCurrentVersion().isItemLegacy()) {
+        if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
             if (item.getData().getData() != 0) configuration.set(path + "data", item.getData().getData());
             if (item.getDurability() != 0) configuration.set(path + "durability", item.getDurability());
         }
@@ -209,7 +210,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                 configuration.set(path + "enchants", enchantList);
             }
 
-            if (NmsVersion.getCurrentVersion().isCustomModelData() && meta.hasCustomModelData()) {
+            if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) && meta.hasCustomModelData()) {
                 configuration.set(path + "model-id", meta.getCustomModelData());
             }
         }

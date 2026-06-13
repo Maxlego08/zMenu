@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class ItemButton {
 
     private final int slot;
-    private final ItemStack displayItem;
+    private ItemStack displayItem;
     private final Map<ClickType, Consumer<InventoryClickEvent>> onClickType = new HashMap<>();
     private final boolean inPlayerInventory;
     private final BaseInventory baseInventory;
@@ -58,6 +58,15 @@ public class ItemButton {
     public ItemButton setLeftClick(@NotNull Consumer<InventoryClickEvent> onLeftClick) {
         this.onClickType.put(ClickType.LEFT, onLeftClick);
         return this;
+    }
+
+    public void updateDisplayItem(@NotNull ItemStack displayItem) {
+        this.displayItem = displayItem;
+        if (this.inPlayerInventory) {
+            this.baseInventory.getPlayerInventoryItems().put(this.slot, this);
+        } else {
+            this.baseInventory.getSpigotInventory().setItem(this.slot, displayItem);
+        }
     }
 
     @Contract("_-> this")

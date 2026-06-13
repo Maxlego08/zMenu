@@ -1,8 +1,9 @@
 package fr.maxlego08.menu.loader.permissible;
 
-import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -13,7 +14,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
+@AutoPermissibleLoader
 public class ItemPermissibleLoader extends PermissibleLoader {
 
     private final MenuPlugin plugin;
@@ -27,8 +30,12 @@ public class ItemPermissibleLoader extends PermissibleLoader {
     public Permissible load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         ButtonManager buttonManager = this.plugin.getButtonManager();
 
-        ZMenuItemStack menuItemStack = new ZMenuItemStack(this.plugin.getInventoryManager(), file.getPath(), path);
-        menuItemStack.setTypeMapAccessor(accessor);
+        MenuItemStack menuItemStack;
+        if (accessor.contains("item")) {
+            menuItemStack = this.plugin.getInventoryManager().loadItemStack(file, path, (Map<String, Object>) accessor.getObject("item"));
+        } else {
+            menuItemStack = this.plugin.getInventoryManager().loadItemStack(file, path, accessor.map());
+        }
 
         int amount = accessor.getInt("amount");
         ItemVerification itemVerification = ItemVerification.valueOf(accessor.getString("verification", ItemVerification.SIMILAR.name()));

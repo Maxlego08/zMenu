@@ -61,7 +61,7 @@ public class ZStorageManager implements StorageManager {
 
         String storageType = this.plugin.getConfig().getString("storage-type", "SQLITE");
         if (storageType.equalsIgnoreCase("NONE")) {
-            this.plugin.getLogger().info("You are not using a database.");
+            fr.maxlego08.menu.zcore.logger.Logger.info("You are not using a database.");
             this.isEnable = false;
             return;
         }
@@ -77,11 +77,11 @@ public class ZStorageManager implements StorageManager {
         this.requestHelper = new RequestHelper(databaseConnection, logger);
 
         if (!databaseConnection.isValid()) {
-            this.plugin.getLogger().severe("Unable to connect to database !");
+            fr.maxlego08.menu.zcore.logger.Logger.info("Unable to connect to database !", fr.maxlego08.menu.zcore.logger.Logger.LogType.ERROR);
             Bukkit.getPluginManager().disablePlugin(this.plugin);
             return;
         } else {
-            this.plugin.getLogger().info("The database connection is valid ! (" + (storageType.equalsIgnoreCase("SQLITE") ? "SQLITE" : databaseConnection.getDatabaseConfiguration().getHost()) + ")");
+            fr.maxlego08.menu.zcore.logger.Logger.info("The database connection is valid ! (" + (storageType.equalsIgnoreCase("SQLITE") ? "SQLITE" : databaseConnection.getDatabaseConfiguration().getHost()) + ")");
         }
 
         MigrationManager.setDatabaseConfiguration(databaseConnection.getDatabaseConfiguration());

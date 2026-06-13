@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 

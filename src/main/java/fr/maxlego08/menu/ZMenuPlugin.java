@@ -3,6 +3,8 @@ package fr.maxlego08.menu;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.annotations.AutoListener;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
@@ -12,6 +14,8 @@ import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
+import fr.maxlego08.menu.api.loader.ClassRegistry;
+import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.placeholder.Placeholder;
@@ -21,50 +25,49 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
+import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
+import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
-import fr.maxlego08.menu.hooks.*;
+import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
+import fr.maxlego08.menu.hooks.OraxenFont;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.executableblocks.ExecutableBlocksLoader;
-import fr.maxlego08.menu.hooks.executableitems.ExecutableItemsLoader;
-import fr.maxlego08.menu.hooks.headdatabase.HeadDatabaseLoader;
 import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
-import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderLoader;
-import fr.maxlego08.menu.hooks.mmoitems.MMOItemsLoader;
-import fr.maxlego08.menu.hooks.mythicmobs.MythicManager;
-import fr.maxlego08.menu.hooks.mythicmobs.MythicMobsItemsLoader;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
+import fr.maxlego08.menu.inventory.inventories.AnvilInventoryDefault;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.listener.AdapterListener;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
-import fr.maxlego08.menu.listener.SwapKeyListener;
-import fr.maxlego08.menu.loader.materials.ArmorLoader;
-import fr.maxlego08.menu.loader.materials.Base64Loader;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
 import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
+import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
+import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
+import fr.maxlego08.menu.zcore.LegacyItemStackPlatformHelper;
 import fr.maxlego08.menu.zcore.ZPlugin;
+import fr.maxlego08.menu.zcore.logger.BukkitLogger;
+import fr.maxlego08.menu.zcore.logger.ComponentLogger;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.meta.ClassicMeta;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
@@ -75,6 +78,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -118,11 +123,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
-    private PlatformScheduler scheduler;
+    private final PlatformScheduler scheduler = this.foliaLib.getScheduler();
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
     private PacketManager packetManager;
+
+    public ZMenuPlugin() {
+        new BukkitLogger(this.getDescription().getFullName());
+    }
 
     public static ZMenuPlugin getInstance() {
         return instance;
@@ -141,6 +150,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onEnable() {
 
+        NMSMenuPacketListener.init(this);
+
         instance = this;
 
         this.saveDefaultConfig();
@@ -150,9 +161,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             this.packetManager.onEnable();
         }
 
-        this.scheduler = this.foliaLib.getScheduler();
-
-        this.dupeManager = NmsVersion.nmsVersion.isPdcVersion() ? new PDCDupeManager(this) : new NMSDupeManager();
+        this.dupeManager = MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
 
         this.preEnable();
@@ -163,6 +172,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.loadMeta();
 
+        ZRuleLoaderRegistry.getInstance().registerDefaultLoaders(this);
         this.componentsManager.initializeDefaultComponents(this);
 
         List<String> files = this.getInventoriesFiles();
@@ -195,7 +205,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
             if (Configuration.enableMiniMessageFormat) {
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
@@ -216,18 +226,17 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
+        this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
 
         /* Add Listener */
-        this.addListener(new SwapKeyListener());
-        this.addListener(new AdapterListener(this));
+        this.registerAutoListeners();
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
         this.addListener(new ItemUpdaterListener(this.itemManager));
-        this.addSimpleListener(this.inventoryManager);
+        this.addListener(this.inventoryManager);
 
-        this.inventoryManager.registerMaterialLoader(new Base64Loader());
-        this.inventoryManager.registerMaterialLoader(new ArmorLoader());
+        this.registerMaterialLoaders();
         this.registerHooks();
 
         this.inventoryManager.load();
@@ -277,9 +286,22 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
         if (this.isActive(Plugins.PACKETEVENTS))
-            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager());
+            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
 
         this.postEnable();
+    }
+
+    private void registerAutoListeners() {
+        ClassRegistry<Listener, MenuPlugin> registry = ClassRegistry
+                .<Listener, MenuPlugin>of(Listener.class, this::addListener)
+                .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
+
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoListener.class, registry);
+
+        if (Configuration.enableInformationMessage)
+            Logger.info("Registered " + count + " auto listener(s).");
     }
 
     /**
@@ -289,66 +311,36 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
-
-        if (this.isActive(Plugins.HEADDATABASE)) {
-            this.inventoryManager.registerMaterialLoader(new HeadDatabaseLoader());
-        }
-        if (this.isActive(Plugins.ZHEAD)) {
-            this.inventoryManager.registerMaterialLoader(new ZHeadLoader(this));
-        }
         if (this.isActive(Plugins.ORAXEN)) {
-            this.inventoryManager.registerMaterialLoader(new OraxenLoader());
+            this.fontImage = new OraxenFont();
         }
-        if (this.isActive(Plugins.CRAFTENGINE)) {
-            this.inventoryManager.registerMaterialLoader(new CraftEngineLoader());
-        }
+
         if (this.isActive(Plugins.NEXO)) {
-            this.inventoryManager.registerMaterialLoader(new NexoLoader());
+            if (this.metaUpdater instanceof ComponentMeta componentMeta) {
+                new NexoTagResolverLoader(this, componentMeta);
+            }
         }
-        if (this.isEnable(Plugins.MAGICCOSMETICS)) {
-            this.inventoryManager.registerMaterialLoader(new MagicCosmeticsLoader());
-        }
-        if (this.isEnable(Plugins.HMCCOSMETICS)) {
-            this.inventoryManager.registerMaterialLoader(new HmccosmeticsLoader());
-        }
-        if (this.isEnable(Plugins.ITEMSADDER)) {
-            this.inventoryManager.registerMaterialLoader(new ItemsAdderLoader(this));
+
+        if (this.isActive(Plugins.ITEMSADDER)) {
             this.fontImage = new ItemsAdderFont();
         }
-        if (this.isActive(Plugins.SLIMEFUN)) {
-            this.inventoryManager.registerMaterialLoader(new SlimeFunLoader());
-        }
-        if (this.isActive(Plugins.NOVA)) {
-            this.inventoryManager.registerMaterialLoader(new NovaLoader());
-        }
-        if (this.isActive(Plugins.ECO)) {
-            this.inventoryManager.registerMaterialLoader(new EcoLoader());
-        }
-        if (this.isActive(Plugins.ZITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new ZItemsLoader(this));
-        }
-        if (this.isActive(Plugins.EXECUTABLE_ITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new ExecutableItemsLoader());
-        }
-        if (this.isActive(Plugins.EXECUTABLE_BLOCKS)) {
-            this.inventoryManager.registerMaterialLoader(new ExecutableBlocksLoader());
-        }
-        if (this.isActive(Plugins.NEXTGENS)) {
-            this.inventoryManager.registerMaterialLoader(new NextGensGeneratorLoader());
-        }
-        if (this.isActive(Plugins.MYTHICMOBS)) {
-            this.inventoryManager.registerMaterialLoader(new MythicMobsItemsLoader());
-            this.addListener(new MythicManager(this));
-        }
-        if (this.isActive(Plugins.BREWERYX)) {
-            this.inventoryManager.registerMaterialLoader(new BreweryXLoader());
-        }
-        if (this.isActive(Plugins.MMOITEMS)) {
-            this.inventoryManager.registerMaterialLoader(new MMOItemsLoader());
-        }
+
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
+    }
+
+    private void registerMaterialLoaders() {
+        ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry
+                .<MaterialLoader, MenuPlugin>of(MaterialLoader.class, this.inventoryManager::registerMaterialLoader)
+                .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
+
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoMaterialLoader.class, registry);
+
+        if (Configuration.enableInformationMessage)
+            Logger.info("Registered " + count + " auto material loader(s).");
     }
 
     private List<String> getInventoriesFiles() {
@@ -372,7 +364,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (this.isPaperOrFolia() && NmsVersion.getCurrentVersion().isDialogsVersion()) {
+        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -615,7 +607,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     public <T> T getProvider(Class<T> classPath) {
         RegisteredServiceProvider<T> provider = this.getServer().getServicesManager().getRegistration(classPath);
         if (provider == null) {
-            this.getLogger().info("Unable to retrieve the provider " + classPath);
+            Logger.info("Unable to retrieve the provider " + classPath);
             return null;
         }
         return provider.getProvider();
@@ -644,16 +636,22 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private void loadMeta() {
         if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
             this.metaUpdater = new ClassicMeta();
-            this.getLogger().info("Use ClassicMeta");
+            Logger.info("Use ClassicMeta");
         } else {
             try {
                 Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
                 this.metaUpdater = new ComponentMeta(this);
-                this.getLogger().info("Use ComponentMeta");
+                new ComponentLogger(this.getDescription().getFullName(), (ComponentMeta) this.metaUpdater);
+                Logger.info("Use ComponentMeta");
             } catch (Exception ignored) {
                 this.metaUpdater = new ClassicMeta();
-                this.getLogger().info("Use ClassicMeta");
+                Logger.info("Use ClassicMeta");
             }
+        }
+        if (this.metaUpdater instanceof ComponentMeta componentMeta) {
+            new ComponentItemStackPlatformHelper(componentMeta);
+        } else {
+            new LegacyItemStackPlatformHelper((ClassicMeta) this.metaUpdater);
         }
     }
 

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.context;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
+import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
@@ -61,6 +62,13 @@ public interface MenuItemStackContext {
      * @return the amount expression as a string.
      */
     String getAmount();
+
+    /**
+     * Retrieves the amount type for the item stack.
+     *
+     * @return the amount type.
+     */
+    AmountType getAmountType();
 
     /**
      * Returns the skull texture URL associated with this item stack, when applicable.
@@ -328,6 +336,12 @@ public interface MenuItemStackContext {
      * @return the item model identifier.
      */
     NamespacedKey getItemModel();
+
+    /**
+     * Retrieves the item model identifier as a string, if applicable.
+     * @return the item model identifier as a string, or {@code null} if not set or not applicable.
+     */
+    String getItemModelString();
 
     /**
      * Retrieves the equipped model identifier used for wearable items.

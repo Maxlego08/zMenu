@@ -13,6 +13,10 @@ public class SimpleCache<K, V> {
         return this.cache.computeIfAbsent(key, k -> loader.load());
     }
 
+    public void clear() {
+        this.cache.clear();
+    }
+
     public interface Loader<V> {
         V load();
     }

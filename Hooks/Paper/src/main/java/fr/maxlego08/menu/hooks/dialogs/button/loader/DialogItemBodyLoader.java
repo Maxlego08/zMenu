@@ -13,7 +13,7 @@ import java.util.List;
 public class DialogItemBodyLoader extends ButtonLoader {
 
     public DialogItemBodyLoader(Plugin plugin) {
-        super(plugin, "dialog_item");
+        super(plugin, "dialog_item", "item");
     }
 
     @Override

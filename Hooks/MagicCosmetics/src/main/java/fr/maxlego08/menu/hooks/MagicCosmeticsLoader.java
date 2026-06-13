@@ -1,13 +1,17 @@
 package fr.maxlego08.menu.hooks;
 
+import com.francobm.magicosmetics.api.MagicAPI;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.francobm.magicosmetics.api.MagicAPI;
 import org.jspecify.annotations.NonNull;
 
+@AutoMaterialLoader
+@RequiresPlugin("MagicCosmetics")
 public class MagicCosmeticsLoader extends MaterialLoader {
 
     public MagicCosmeticsLoader() {

@@ -13,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.*;
 
+import java.util.Locale;
+
 public class ItemPlaceholders extends ZUtils {
 
     public void register(MenuPlugin plugin) {
@@ -43,8 +45,8 @@ public class ItemPlaceholders extends ZUtils {
         String[] parts = input.split(":", 2);
         if (parts.length != 2) return null;
 
-        String type = parts[0].toLowerCase();
-        String value = parts[1].toLowerCase();
+        String type = parts[0].toLowerCase(Locale.ROOT);
+        String value = parts[1].toLowerCase(Locale.ROOT);
 
         switch (type) {
             case "inventory": {
@@ -123,7 +125,7 @@ public class ItemPlaceholders extends ZUtils {
                 }
                 return "";
             case "unbreakable":
-                return (meta != null && meta.isUnbreakable()) ? "true" : "false";
+                return Boolean.toString(meta != null && meta.isUnbreakable());
 
             // 🧴 Potion
             case "potion_type":

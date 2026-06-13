@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.hooks;
 
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,6 +13,8 @@ import xyz.xenondevs.nova.api.item.NovaItemRegistry;
 
 import java.util.Objects;
 
+@AutoMaterialLoader
+@RequiresPlugin("Nova")
 public class NovaLoader extends MaterialLoader {
     public NovaLoader() {
         super("nova");

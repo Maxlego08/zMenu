@@ -1,0 +1,105 @@
+[versions]
+# Build / Plugins
+shadow = "9.0.0"
+groupez = "1.0.0"
+paperweight = "2.0.0-beta.21"
+
+# Platforms (Paper / Spigot / NMS)
+spigot = "26.1-R0.1-SNAPSHOT"
+paper-api = "1.21.11-R0.1-SNAPSHOT"
+paperDevBundle = "26.1.2.build.+"
+paperDevBundle120R3 = "1.20.4-R0.1-SNAPSHOT"
+paperDevBundle120R4 = "1.20.6-R0.1-SNAPSHOT"
+paperDevBundle121R1 = "1.21.1-R0.1-SNAPSHOT"
+adventure-api = "4.25.0"
+adventure-text-minimessage = "4.21.0"
+item-nbt-api = "2.15.0"
+
+# Utilities / Libraries
+sarah = "1.22"
+currenciesapi = "1.0.13"
+folialib = "0.5.1"
+xseries = "13.3.0"
+exp4j = "0.4.8"
+
+# Integration Hooks
+placeholderapi = "2.11.6"
+reflections = "0.10.2"
+slimefun4 = "RC-34"
+oraxen = "1.190.0"
+packetevents = "2.12.1"
+nova-api = "0.18"
+nexo = "1.21.0"
+mythicmobs = "5.6.1"
+mmoitems = "6.9.5-SNAPSHOT"
+mythiclib = "1.7.1-SNAPSHOT"
+luckperms = "5.4"
+magiccosmetics = "2.2.8"
+itemsadder = "3.6.1"
+hmccosmetics = "2.7.7"
+headdatabase = "1.3.2"
+score = "5.25.6.9"
+craft-engine = "26.5"
+eco = "6.53.0"
+floodgate = "2.2.4-SNAPSHOT"
+breweryx = "3.6.0"
+denizen = "1.3.1-SNAPSHOT"
+
+# Testing
+junit-bom = "5.10.0"
+
+[libraries]
+# Platforms (Paper / Spigot / NMS)
+spigot-api = { group = "org.spigotmc", name = "spigot-api", version.ref = "spigot" }
+paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
+paperDevBundle120R3 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R3" }
+paperDevBundle120R4 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R4" }
+paperDevBundle121R1 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle121R1" }
+adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure-api" }
+adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure-text-minimessage" }
+item-nbt-api = { group = "de.tr7zw", name = "item-nbt-api", version.ref = "item-nbt-api" }
+
+# Utilities / Libraries
+sarah = { group = "fr.maxlego08.sarah", name = "sarah", version.ref = "sarah" }
+currenciesapi = { group = "fr.traqueur.currencies", name = "currenciesapi", version.ref = "currenciesapi" }
+folialib = { group = "com.tcoded", name = "FoliaLib", version.ref = "folialib" }
+xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
+exp4j = { group = "net.objecthunter", name = "exp4j", version.ref = "exp4j" }
+
+# Integration Hooks
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
+slimefun4 = { group = "com.github.Slimefun", name = "Slimefun4", version.ref = "slimefun4" }
+oraxen = { group = "io.th0rgal", name = "oraxen", version.ref = "oraxen" }
+packetevents = { group = "com.github.retrooper", name = "packetevents-spigot", version.ref = "packetevents" }
+nova-api = { group = "xyz.xenondevs.nova", name = "nova-api", version.ref = "nova-api" }
+nexo = { group = "com.nexomc", name = "nexo", version.ref = "nexo" }
+mythicmobs = { group = "io.lumine", name = "Mythic-Dist", version.ref = "mythicmobs" }
+mmoitems = { group = "net.Indyuce", name = "MMOItems-API", version.ref = "mmoitems" }
+mythicLib = { group = "io.lumine", name = "MythicLib-dist", version.ref = "mythiclib" }
+luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
+magiccosmetics = { group = "com.github.FrancoBM12", name = "API-MagicCosmetics", version.ref = "magiccosmetics" }
+itemsadder = { group = "com.github.LoneDev6", name = "api-itemsadder", version.ref = "itemsadder" }
+hmccosmetics = { group = "com.hibiscusmc", name = "HMCCosmetics", version.ref = "hmccosmetics" }
+headdatabase = { group = "com.arcaniax", name = "HeadDatabase-API", version.ref = "headdatabase" }
+score = { group = "maven.modrinth", name = "SCore", version.ref = "score" }
+craft-engine-core = { group = "net.momirealms", name = "craft-engine-core", version.ref = "craft-engine" }
+craft-engine-bukkit = { group = "net.momirealms", name = "craft-engine-bukkit", version.ref = "craft-engine" }
+eco = { group = "com.willfp", name = "eco", version.ref = "eco" }
+floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
+breweryx = { group = "com.dre.brewery", name = "BreweryX", version.ref = "breweryx" }
+denizen = { group= "com.denizenscript", name = "denizen", version.ref = "denizen" }
+
+# Testing
+junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit-bom" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+
+[plugins]
+# Build Tools
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+groupez-repository = { id = "re.alwyn974.groupez.repository", version.ref = "groupez" }
+groupez-publish = { id = "re.alwyn974.groupez.publish", version.ref = "groupez" }
+
+# Platforms
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }

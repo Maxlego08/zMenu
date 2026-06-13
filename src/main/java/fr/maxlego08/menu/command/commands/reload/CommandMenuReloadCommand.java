@@ -11,6 +11,7 @@ import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class CommandMenuReloadCommand extends VCommand {
@@ -22,7 +23,7 @@ public class CommandMenuReloadCommand extends VCommand {
         this.addOptionalArg("command", (a, b) -> {
             List<String> commands = new ArrayList<>();
             for (Command command : plugin.getCommandManager().getCommands()) {
-                commands.add(command.command().toLowerCase());
+                commands.add(command.command().toLowerCase(Locale.ROOT));
             }
             return commands;
         });

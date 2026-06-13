@@ -78,7 +78,7 @@ public class VersionChecker extends ZUtils {
                 scanner.close();
 
             } catch (IOException exception) {
-                this.plugin.getLogger().info("Cannot look for updates: " + exception.getMessage());
+                Logger.info("Cannot look for updates: " + exception.getMessage());
             }
         });
     }

@@ -1,12 +1,16 @@
 package fr.maxlego08.menu.hooks;
 
 import com.dre.brewery.api.BreweryApi;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 
+@AutoMaterialLoader
+@RequiresPlugin("BreweryX")
 public class BreweryXLoader extends MaterialLoader {
     public BreweryXLoader(){
         super("breweryx");

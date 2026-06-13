@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.requirement.actions.BroadcastSoundAction;
@@ -7,6 +8,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
+@AutoActionLoader
 public class BroadcastSoundLoader extends SoundLoader {
 
     public BroadcastSoundLoader() {

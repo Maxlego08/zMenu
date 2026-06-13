@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,11 +25,11 @@ import java.util.List;
  * @param file          File
  */
 public record ZCommand(Plugin plugin, String command, List<String> aliases, boolean consoleCanUse, String permission, String inventory, List<CommandArgument> arguments,
-                       List<Action> actions, List<Command> subCommands, String denyMessage, String path, File file) implements Command {
+                       List<Action> actions, List<Command> subCommands, List<Requirement> actions_requirements, String denyMessage, String path, File file) implements Command {
 
     @Override
     public @NotNull String toString() {
-        return "ZCommand{" + "plugin=" + this.plugin + ", command='" + this.command + '\'' + ", aliases=" + this.aliases + ", permission='" + this.permission + '\'' + ", inventory='" + this.inventory + '\'' + ", arguments=" + this.arguments + ", actions=" + this.actions + ", subCommands=" + this.subCommands + ", path='" + this.path + '\'' + ", file=" + this.file + '}';
+        return "ZCommand{" + "plugin=" + this.plugin + ", command='" + this.command + '\'' + ", aliases=" + this.aliases + ", permission='" + this.permission + '\'' + ", inventory='" + this.inventory + '\'' + ", arguments=" + this.arguments + ", actions=" + this.actions + ", subCommands=" + this.subCommands + ", actions-requirements=" + this.actions_requirements + ", path='" + this.path + '\'' + ", file=" + this.file + '}';
     }
 
     @Override

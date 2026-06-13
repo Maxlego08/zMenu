@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.loader.components.paper;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.PaperOnly;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
@@ -22,8 +25,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+@AutoComponentLoader
+@SinceVersion("1.21.2")
+@PaperOnly
 public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public PaperDeathProtectionItemComponentLoader(){
@@ -40,7 +47,7 @@ public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemC
             Map<String, Object> effectMap = (Map<String, Object>) map;
             ConsumeEffectType type;
             try {
-                type = ConsumeEffectType.valueOf(((String) effectMap.get("type")).toUpperCase());
+                type = ConsumeEffectType.valueOf(((String) effectMap.get("type")).toUpperCase(Locale.ROOT));
             } catch (Exception e) {
                 continue;
             }

@@ -10,14 +10,15 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enchantment.MenuEnchantment;
+import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
@@ -72,6 +73,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getString(path + "durability", null));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
+        try {
+            menuItemStack.setAmountType(AmountType.valueOf(configuration.getString(path + "amount-type", "SET").toUpperCase(Locale.ROOT)));
+        } catch (Exception ignored) {
+        }
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
 
         var url = configuration.getString(path + "url", null);
@@ -87,7 +92,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setCenterName(configuration.getBoolean(path + "center-name", false));
         menuItemStack.setCenterLore(configuration.getBoolean(path + "center-lore", false));
         try {
-            menuItemStack.setLoreType(LoreType.valueOf(configuration.getString(path + "lore-type", LoreType.REPLACE.name()).toUpperCase()));
+            menuItemStack.setLoreType(LoreType.valueOf(configuration.getString(path + "lore-type", LoreType.REPLACE.name()).toUpperCase(Locale.ROOT)));
         } catch (Exception ignored) {
         }
 
@@ -107,15 +112,17 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         this.loadAttributes(menuItemStack, configuration, path);
 
-        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21"))) {
             this.loadNewItemStacks(menuItemStack, configuration, path, file);
         }
-        if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20"))) {
             this.loadTrims(menuItemStack, configuration, path, file);
         }
         this.loadItemModel(configuration, menuItemStack, path, file);
 
-        if (NmsVersion.getCurrentVersion().isAttributItemStack()) { // 1.20.5+
+        boolean skipFirstCache = configuration.getBoolean(path + "skip-first-cache", false);
+
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
             if (componentsSection != null) {
                 ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
@@ -141,7 +148,8 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial()) {
+
+        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial() && !skipFirstCache) {
             try {
                 menuItemStack.build(new ZBuildContext.Builder().build());
             } catch (Exception ignored) { // Fail when a item requires a player to be built.
@@ -173,20 +181,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     }
 
     private void loadItemModel(@NonNull YamlConfiguration configuration, ZMenuItemStack menuItemStack, @NonNull String path, File file) {
-        if (NmsVersion.getCurrentVersion().isNewItemModelAPI()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.4"))) {
             String itemModel = configuration.getString(path + "item-model");
             if (itemModel != null) {
-                try {
-                    NamespacedKey namespacedKey = NamespacedKey.fromString(itemModel.toLowerCase());
-                    if (namespacedKey != null) {
-                        menuItemStack.setItemModel(namespacedKey);
-                    }
-                } catch (Exception e) {
-                    if (Configuration.enableDebug) {
-                        Logger.info("An error occurred while loading the item model " + itemModel + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
-                        e.printStackTrace();
-                    }
-                }
+                menuItemStack.setItemModel(itemModel);
             }
         }
     }
@@ -202,7 +200,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      */
     private void loadLeather(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         try {
-            Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase());
+            Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase(Locale.ROOT));
             String materialName = material.toString();
             if (materialName.startsWith("LEATHER_")) {
                 Color armorColor = this.getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
@@ -236,7 +234,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             }
         }
 
-        menuItemStack.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString(path + "attribute-merge-strategy", AttributeMergeStrategy.ADD.name()).toUpperCase()));
+        menuItemStack.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString(path + "attribute-merge-strategy", AttributeMergeStrategy.ADD.name()).toUpperCase(Locale.ROOT)));
         menuItemStack.setAttributes(attributeModifiers);
         menuItemStack.setClearDefaultAttributes(configuration.getBoolean(path + "clear-default-attributes", false));
     }
@@ -318,7 +316,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (configuration.contains(path + "potion")) {
 
             Color potionColor = this.getColor(configuration, path + "color", null);
-            PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase());
+            PotionType type = PotionType.valueOf(configuration.getString(path + "potion", "REGEN").toUpperCase(Locale.ROOT));
             int level = configuration.getInt(path + "level", 1);
             boolean splash = configuration.getBoolean(path + "splash", false);
             boolean extended = configuration.getBoolean(path + "extended", false);
@@ -346,7 +344,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     private void loadBanner(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
         if (configuration.contains(path + "banner")) {
 
-            DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase());
+            DyeColor dyeColor = DyeColor.valueOf(configuration.getString(path + "banner", "WHITE").toUpperCase(Locale.ROOT));
             List<String> stringPattern = configuration.getStringList(path + "patterns");
             List<Pattern> patterns = new ArrayList<>();
             for (String string : stringPattern) {
@@ -431,7 +429,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (map.containsKey("locale") && map.containsKey("lore")) {
                     String locale = (String) map.get("locale");
                     List<String> name = (List<String>) map.get("lore");
-                    translatedLore.put(locale.toLowerCase(), name);
+                    translatedLore.put(locale.toLowerCase(Locale.ROOT), name);
                 }
             });
         }
@@ -459,7 +457,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 if (map.containsKey("locale") && map.containsKey("name")) {
                     String locale = (String) map.get("locale");
                     String name = (String) map.get("name");
-                    translatedDisplayName.put(locale.toLowerCase(), name);
+                    translatedDisplayName.put(locale.toLowerCase(Locale.ROOT), name);
                 }
             });
         }
@@ -509,7 +507,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
 
         String rarityString = configuration.getString("item-rarity", null);
         if (rarityString != null) {
-            menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase()));
+            menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase(Locale.ROOT)));
         }
         String tooltypestyleString = configuration.getString(path + "tooltip-style", null);
         if (tooltypestyleString != null) {
@@ -525,7 +523,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     private void loadTrims(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
         boolean enableTrim = configuration.getBoolean(path + "trim.enable", false);
         if (enableTrim) {
-            String patternKey = configuration.getString(path + "trim.pattern", "").toLowerCase();
+            String patternKey = configuration.getString(path + "trim.pattern", "").toLowerCase(Locale.ROOT);
             TrimPattern trimPattern = null;
             try {
                 NamespacedKey patternNamespace = NamespacedKey.fromString(patternKey);
@@ -545,7 +543,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 Logger.info("Invalid namespace for trim pattern: '" + patternKey + "' in file '" + file.getAbsolutePath() + "'", Logger.LogType.ERROR);
             }
 
-            String materialKey = configuration.getString(path + "trim.material", "").toLowerCase();
+            String materialKey = configuration.getString(path + "trim.material", "").toLowerCase(Locale.ROOT);
             TrimMaterial trimMaterial = null;
             try {
                 NamespacedKey materialNamespace = NamespacedKey.fromString(materialKey);

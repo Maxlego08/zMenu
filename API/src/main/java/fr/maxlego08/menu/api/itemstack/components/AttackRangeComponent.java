@@ -1,24 +1,17 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("unused")
-public class AttackRangeComponent extends ItemComponent {
+public abstract class AttackRangeComponent extends ItemComponent {
+    protected final float minReach;
+    protected final float maxReach;
+    protected final float minCreativeReach;
+    protected final float maxCreativeReach;
+    protected final float hitboxMargin;
+    protected final float mobFactor;
 
-    private final float minReach;
-    private final float maxReach;
-    private final float minCreativeReach;
-    private final float maxCreativeReach;
-    private final float hitboxMargin;
-    private final float mobFactor;
 
-    public AttackRangeComponent(float minReach, float maxReach, float minCreativeReach, float maxCreativeReach, float hitboxMargin, float mobFactor) {
+    protected AttackRangeComponent(float minReach, float maxReach, float minCreativeReach, float maxCreativeReach, float hitboxMargin, float mobFactor) {
         this.minReach = minReach;
         this.maxReach = maxReach;
         this.minCreativeReach = minCreativeReach;
@@ -50,19 +43,4 @@ public class AttackRangeComponent extends ItemComponent {
     public float getMobFactor() {
         return this.mobFactor;
     }
-
-    @Override
-    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return;
-        org.bukkit.inventory.meta.components.AttackRangeComponent attackRange = itemMeta.getAttackRange();
-        attackRange.setMinReach(this.minReach);
-        attackRange.setMaxReach(this.maxReach);
-        attackRange.setMinCreativeReach(this.minCreativeReach);
-        attackRange.setMaxCreativeReach(this.maxCreativeReach);
-        attackRange.setHitboxMargin(this.hitboxMargin);
-        attackRange.setMobFactor(this.mobFactor);
-        itemStack.setItemMeta(itemMeta);
-    }
-
 }

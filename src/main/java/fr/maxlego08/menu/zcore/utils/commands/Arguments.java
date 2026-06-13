@@ -9,6 +9,8 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.util.Locale;
+
 public abstract class Arguments extends ZUtils {
 
     protected String[] args;
@@ -116,12 +118,12 @@ public abstract class Arguments extends ZUtils {
     }
 
     protected EntityType argAsEntityType(int index) {
-        return EntityType.valueOf(this.argAsString(index).toUpperCase());
+        return EntityType.valueOf(this.argAsString(index).toUpperCase(Locale.ROOT));
     }
 
     protected EntityType argAsEntityType(int index, EntityType defaultValue) {
         try {
-            return EntityType.valueOf(this.argAsString(index).toUpperCase());
+            return EntityType.valueOf(this.argAsString(index).toUpperCase(Locale.ROOT));
         } catch (Exception e) {
             return defaultValue;
         }

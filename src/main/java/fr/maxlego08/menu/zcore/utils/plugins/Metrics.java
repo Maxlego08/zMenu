@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -156,7 +157,7 @@ public class Metrics {
             throw new IllegalAccessException("This method must not be called from the main thread!");
         }
         if (logSentData) {
-            plugin.getLogger().info("Sending data to bStats: " + data);
+            Logger.info("Sending data to bStats: " + data);
         }
         HttpsURLConnection connection = (HttpsURLConnection) new URL(URL).openConnection();
 
@@ -187,7 +188,7 @@ public class Metrics {
         }
 
         if (logResponseStatusText) {
-            plugin.getLogger().info("Sent data to bStats and received response: " + builder);
+            Logger.info("Sent data to bStats and received response: " + builder);
         }
     }
 

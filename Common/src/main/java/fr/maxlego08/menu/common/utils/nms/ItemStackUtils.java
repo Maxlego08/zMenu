@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.common.utils.nms;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -13,8 +14,9 @@ import java.util.zip.GZIPInputStream;
 
 public class ItemStackUtils {
 
-    private static final fr.maxlego08.menu.common.utils.nms.NmsVersion NMS_VERSION = fr.maxlego08.menu.common.utils.nms.NmsVersion.nmsVersion;
+    private static final NmsVersion NMS_VERSION = NmsVersion.nmsVersion;
     private static final Map<ItemStack, String> itemStackSerialized = new HashMap<>();
+    private static final MinecraftVersion MINECRAFT_VERSION = MinecraftVersion.getCurrentVersion();
 
     public static String serializeItemStack(ItemStack paramItemStack) {
 
@@ -26,7 +28,7 @@ public class ItemStackUtils {
             return itemStackSerialized.get(paramItemStack);
         }
 
-        if (fr.maxlego08.menu.common.utils.nms.NmsVersion.getCurrentVersion().isAttributItemStack()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) {
             return Base64ItemStack.encode(paramItemStack);
         }
 
@@ -67,7 +69,7 @@ public class ItemStackUtils {
             return null;
         }
 
-        if (fr.maxlego08.menu.common.utils.nms.NmsVersion.getCurrentVersion().isAttributItemStack()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) {
             return Base64ItemStack.decode(paramString);
         }
 
@@ -83,7 +85,7 @@ public class ItemStackUtils {
         ItemStack localItemStack = null;
         Object localObject2 = null;
         try {
-            if (fr.maxlego08.menu.common.utils.nms.NmsVersion.nmsVersion == fr.maxlego08.menu.common.utils.nms.NmsVersion.V_1_20_4) {
+            if (NmsVersion.nmsVersion == NmsVersion.V_1_20_4) {
 
                 DataInputStream datainputstream = new DataInputStream(
                         new BufferedInputStream(new GZIPInputStream(localByteArrayInputStream)));
@@ -96,10 +98,10 @@ public class ItemStackUtils {
                         .invoke(null, localByteArrayInputStream);
             }
 
-            if (NMS_VERSION == fr.maxlego08.menu.common.utils.nms.NmsVersion.V_1_11 || NMS_VERSION == fr.maxlego08.menu.common.utils.nms.NmsVersion.V_1_12) {
+            if (NMS_VERSION == NmsVersion.V_1_11 || NMS_VERSION == NmsVersion.V_1_12) {
                 Constructor<?> localConstructor = localClass2.getConstructor(localClass1);
                 localObject2 = localConstructor.newInstance(localObject1);
-            } else if (!NMS_VERSION.isItemLegacy()) {
+            } else if (MINECRAFT_VERSION.isAtMost(MinecraftVersion.parse("1.13"))) {
                 localObject2 = localClass2.getMethod("a", new Class[]{localClass1}).invoke(null,
                         localObject1);
             } else {

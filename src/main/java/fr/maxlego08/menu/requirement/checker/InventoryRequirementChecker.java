@@ -16,10 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class InventoryRequirementChecker extends ConfigurationChecker {
 
@@ -220,7 +217,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
 
         boolean hasMalformedStructure = false;
         for (String key : section.getKeys(false)) {
-            if (REQUIREMENT_LEVEL_KEYS.contains(key.toLowerCase())) {
+            if (REQUIREMENT_LEVEL_KEYS.contains(key.toLowerCase(Locale.ROOT))) {
                 hasMalformedStructure = true;
                 break;
             }

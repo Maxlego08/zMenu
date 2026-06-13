@@ -11,19 +11,13 @@ import java.util.*;
 /**
  * Represents a group of cuboids as a region, useful for area grouping, protection, or bulk operations.
  */
-public class Region {
-    private final List<Cuboid> cuboids;
-
+public record Region(List<Cuboid> cuboids) {
     public Region() {
-        this.cuboids = new ArrayList<>();
-    }
-
-    public Region(List<Cuboid> cuboids) {
-        this.cuboids = cuboids;
+        this(new ArrayList<>());
     }
 
     public Region(Cuboid... cuboids) {
-        this.cuboids = Arrays.asList(cuboids);
+        this(Arrays.asList(cuboids));
     }
 
     public void addCube(Cuboid cube) {
@@ -37,10 +31,6 @@ public class Region {
             }
         }
         return false;
-    }
-
-    public List<Cuboid> getCuboids() {
-        return this.cuboids;
     }
 
     public Collection<Player> getPlayers() {

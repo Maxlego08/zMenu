@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class VCommandManager extends ZUtils implements CommandExecutor, TabCompleter {
 
@@ -43,7 +44,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public void validCommands() {
-        this.plugin.getLog().log("Loading " + this.getUniqueCommand() + " commands", LogType.SUCCESS);
+        Logger.info("Loading %d commands", LogType.SUCCESS, this.getUniqueCommand());
         this.commandChecking();
     }
 
@@ -54,12 +55,12 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, String[] args) {
         for (VCommand command : this.commands) {
-            if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
+            if (command.getSubCommands().contains(cmd.getName().toLowerCase(Locale.ROOT))) {
                 if ((args.length == 0 || command.isIgnoreParent()) && command.getParent() == null) {
                     CommandType type = this.processRequirements(command, sender, args);
                     if (!type.equals(CommandType.CONTINUE)) return true;
                 }
-            } else if (args.length >= 1 && command.getParent() != null && this.canExecute(args, cmd.getName().toLowerCase(), command)) {
+            } else if (args.length >= 1 && command.getParent() != null && this.canExecute(args, cmd.getName().toLowerCase(Locale.ROOT), command)) {
                 CommandType type = this.processRequirements(command, sender, args);
                 if (!type.equals(CommandType.CONTINUE)) return true;
             }
@@ -70,7 +71,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
 
     private boolean canExecute(String[] args, String cmd, VCommand command) {
         for (int index = args.length - 1; index > -1; index--) {
-            if (command.getSubCommands().contains(args[index].toLowerCase())) {
+            if (command.getSubCommands().contains(args[index].toLowerCase(Locale.ROOT))) {
                 if (command.isIgnoreArgs() && (command.getParent() == null || this.canExecute(args, cmd, command.getParent(), index - 1)))
                     return true;
                 if (index < args.length - 1) return false;
@@ -81,9 +82,9 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     private boolean canExecute(String[] args, String cmd, VCommand command, int index) {
-        if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase())) return true;
+        if (index < 0 && command.getSubCommands().contains(cmd.toLowerCase(Locale.ROOT))) return true;
         else if (index < 0) return false;
-        else if (command.getSubCommands().contains(args[index].toLowerCase()))
+        else if (command.getSubCommands().contains(args[index].toLowerCase(Locale.ROOT)))
             return this.canExecute(args, cmd, command.getParent(), index - 1);
         else return false;
     }
@@ -133,7 +134,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     }
 
     public boolean isValid(VCommand command, String commandString) {
-        return command.getParent() != null ? this.isValid(command.getParent(), commandString) : command.getSubCommands().contains(commandString.toLowerCase());
+        return command.getParent() != null ? this.isValid(command.getParent(), commandString) : command.getSubCommands().contains(commandString.toLowerCase(Locale.ROOT));
     }
 
     private void commandChecking() {
@@ -150,11 +151,11 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
 
         for (VCommand command : this.commands) {
 
-            if (command.getSubCommands().contains(cmd.getName().toLowerCase())) {
+            if (command.getSubCommands().contains(cmd.getName().toLowerCase(Locale.ROOT))) {
                 return this.processTab(sender, command, args);
             } else {
                 String[] newArgs = Arrays.copyOf(args, args.length - 1);
-                if (newArgs.length >= 1 && command.getParent() != null && this.canExecute(newArgs, cmd.getName().toLowerCase(), command)) {
+                if (newArgs.length >= 1 && command.getParent() != null && this.canExecute(newArgs, cmd.getName().toLowerCase(Locale.ROOT), command)) {
                     return this.processTab(sender, command, args);
                 }
             }

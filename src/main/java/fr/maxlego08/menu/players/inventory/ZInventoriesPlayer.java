@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -51,7 +52,15 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         this.inventories.put(player.getUniqueId(), inventoryPlayer);
     }
 
-
+    @Override
+    public void storeInventoryTemporaryOrClear(@NotNull Player player) {
+        Optional<InventoryPlayer> playerInventory = this.getPlayerInventory(player.getUniqueId());
+        if (playerInventory.isPresent()) {
+            playerInventory.get().clearInventory(player);
+        } else {
+            storeInventoryTemporary(player);
+        }
+    }
 
     private void restoreInventory(Player player, BiConsumer<InventoryPlayer, Player> restoreAction) {
         Optional<InventoryPlayer> optional = this.getPlayerInventory(player.getUniqueId());

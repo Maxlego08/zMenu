@@ -5,9 +5,9 @@ import org.bukkit.Bukkit;
 public class NMSUtils {
 
     /**
-     * Get minecraft serveur version
+     * Get minecraft serveur value
      *
-     * @return version
+     * @return value
      */
     public static double getNMSVersion() {
         if (version != 0)
@@ -24,7 +24,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if minecraft version has shulker
+     * Check if minecraft value has shulker
      *
      * @return boolean
      */
@@ -33,7 +33,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if minecraft version has barrel
+     * Check if minecraft value has barrel
      *
      * @return booleab
      */
@@ -44,7 +44,7 @@ public class NMSUtils {
     }
 
     /**
-     * check if version is granther than 1.13
+     * check if value is granther than 1.13
      *
      * @return boolean
      */
@@ -53,7 +53,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if version has one hand
+     * Check if value has one hand
      *
      * @return boolean
      */
@@ -62,7 +62,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check is version is minecraft 1.7
+     * Check is value is minecraft 1.7
      *
      * @return boolean
      */
@@ -71,7 +71,7 @@ public class NMSUtils {
     }    public static double version = getNMSVersion();
 
     /**
-     * Check if version has itemmeta unbreakable
+     * Check if value has itemmeta unbreakable
      *
      * @return boolean
      */
@@ -80,7 +80,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if version is old version of minecraft with old material system
+     * Check if value is old value of minecraft with old material system
      *
      * @return boolean
      */
@@ -90,7 +90,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if server vesion is new version
+     * Check if server vesion is new value
      *
      * @return boolean
      */
@@ -101,7 +101,7 @@ public class NMSUtils {
     }
 
     /**
-     * Allows to check if the version has the colors in hex
+     * Allows to check if the value has the colors in hex
      *
      * @return boolean
      */
@@ -111,7 +111,7 @@ public class NMSUtils {
     }
 
     /**
-     * Allows to check if the version has the colors in hex
+     * Allows to check if the value has the colors in hex
      *
      * @return boolean
      */
@@ -121,7 +121,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if server version is new version
+     * Check if server value is new value
      *
      * @return boolean
      */
@@ -133,7 +133,7 @@ public class NMSUtils {
     }
 
     /**
-     * Check if server version is new version
+     * Check if server value is new value
      *
      * @return boolean
      */

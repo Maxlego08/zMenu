@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Locale;
+
 public class BedrockButtonLoader extends ButtonLoader {
 
     public BedrockButtonLoader(Plugin plugin) {
@@ -23,7 +25,7 @@ public class BedrockButtonLoader extends ButtonLoader {
         BedrockImageType imageType;
         String imageTypeStr = configuration.getString(path + ".image-type", "");
         try {
-            imageType = BedrockImageType.valueOf(imageTypeStr.toUpperCase());
+            imageType = BedrockImageType.valueOf(imageTypeStr.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException | NullPointerException e) {
             imageType = BedrockImageType.NONE;
         }

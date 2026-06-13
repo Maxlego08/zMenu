@@ -9,10 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractEffectItemComponentLoader extends AbstractColorItemComponentLoader {
 
@@ -21,12 +18,12 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
     }
 
     protected @Nullable NamespacedKey parseNamespacedKey(String value) {
-        return NamespacedKey.fromString(value.toLowerCase());
+        return NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
     }
 
     protected @Nullable ConsumeEffectType parseConsumableType(String type) {
         try {
-            return ConsumeEffectType.valueOf(type.toUpperCase());
+            return ConsumeEffectType.valueOf(type.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException | NullPointerException e) {
             return null;
         }

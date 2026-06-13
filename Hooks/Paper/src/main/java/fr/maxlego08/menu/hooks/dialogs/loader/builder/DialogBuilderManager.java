@@ -7,8 +7,10 @@ import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -56,13 +58,12 @@ public abstract class DialogBuilderManager {
         return results;
     }
 
-    protected DialogBase.Builder createDialogBase(String dialogName, String externalTitle, boolean canCloseWithEscape, boolean canPauseGame, String afterAction){
-        DialogBase.Builder dialogBuilder = DialogBase.builder(this.toComponent(dialogName))
+    protected DialogBase.Builder createDialogBase(@NotNull String dialogName,@NotNull String externalTitle, boolean canCloseWithEscape, boolean canPauseGame,@NotNull String afterAction){
+        return DialogBase.builder(this.toComponent(dialogName))
                 .externalTitle(this.toComponent(externalTitle))
                 .canCloseWithEscape(canCloseWithEscape)
                 .pause(canPauseGame)
-                .afterAction(DialogBase.DialogAfterAction.valueOf(afterAction));
-        return dialogBuilder;
+                .afterAction(DialogBase.DialogAfterAction.valueOf(afterAction.toUpperCase(Locale.ROOT)));
     }
 
     public ComponentMeta getPaperComponent() {

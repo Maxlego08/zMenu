@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Configuration {
 
@@ -408,7 +409,7 @@ public class Configuration {
 
         enablePlayerCommandsAsOPAction = fileConfiguration.getBoolean(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath());
         try {
-            opGrantMethod = OpGrantMethod.valueOf(fileConfiguration.getString(ConfigPath.OP_GRANT_METHOD.getPath(), OpGrantMethod.ATTACHMENT.name()).toUpperCase());
+            opGrantMethod = OpGrantMethod.valueOf(fileConfiguration.getString(ConfigPath.OP_GRANT_METHOD.getPath(), OpGrantMethod.ATTACHMENT.name()).toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             Logger.info("Invalid op grant method in config, defaulting to ATTACHMENT.");
             opGrantMethod = OpGrantMethod.ATTACHMENT;
@@ -423,7 +424,7 @@ public class Configuration {
         performanceFilterOperations = fileConfiguration.getStringList(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath());
         skipCloseActionsOnInventorySwitch = fileConfiguration.getStringList(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath());
         try {
-            performanceFilterMode = PerformanceFilterMode.valueOf(fileConfiguration.getString(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), PerformanceFilterMode.DISABLED.name()).toUpperCase());
+            performanceFilterMode = PerformanceFilterMode.valueOf(fileConfiguration.getString(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), PerformanceFilterMode.DISABLED.name()).toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             Logger.info("Invalid performance filter mode in config, defaulting to DISABLED.");
             performanceFilterMode = PerformanceFilterMode.DISABLED;

@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.DialogManager;
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -11,6 +14,7 @@ import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -267,11 +271,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                     );
 
             case MULTI_ACTION ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(this.createActionButtons(zDialog,inputs,zDialog.getActionButtons(player))).build()).base(dialogBase.body(bodies).inputs(inputs).build())
-                    );
+                    Dialog.create(builder ->
+                                    builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(this.createActionButtons(zDialog,inputs,zDialog.getActionButtons(player))).columns(zDialog.getNumberOfColumns()).exitAction(this.createActionButton(zDialog.getExitActionButton(player),inputs)).build()).base(dialogBase.body(bodies).inputs(inputs).build()));
 
             case SERVER_LINKS ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(this.createActionButton(zDialog.getActionButtonServerLink(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
+                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(this.createActionButton(zDialog.getExitActionButton(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
                     );
         };
     }
@@ -285,7 +289,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         }
         return actionButtons;
     }
+
     private ActionButton createActionButton(ActionButtonRecord actionButtonRecord, List<DialogInput> inputs) {
+        if (actionButtonRecord == null) {
+            return null;
+        }
         return ActionButton.create(this.paperComponent.getComponent(actionButtonRecord.label()), this.paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), this.createAction(inputs,actionButtonRecord.actions()));
     }
 

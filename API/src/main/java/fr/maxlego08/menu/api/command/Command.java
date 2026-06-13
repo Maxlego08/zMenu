@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.command;
 
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -101,6 +102,12 @@ public interface Command {
      * @return The list of sub-commands associated with the command.
      */
     List<Command> subCommands();
+
+    /**
+     * Gets the list of requirements that must be met for the command's actions to be executed.
+     * @return The list of requirements that must be met for the command's actions to be executed.
+     */
+    List<Requirement> actions_requirements();
 
     /**
      * Gets the message to display when the player does not have the required permission.

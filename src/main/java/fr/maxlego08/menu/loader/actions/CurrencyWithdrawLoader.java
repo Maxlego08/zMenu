@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -8,7 +9,9 @@ import fr.traqueur.currencies.Currencies;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import java.util.Locale;
 
+@AutoActionLoader
 public class CurrencyWithdrawLoader extends ActionLoader {
 
     public CurrencyWithdrawLoader() {
@@ -18,7 +21,7 @@ public class CurrencyWithdrawLoader extends ActionLoader {
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         String bigDecimal = accessor.getString("amount");
-        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase());
+        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase(Locale.ROOT));
         String economyName = accessor.getString("economy", null);
         String reason = accessor.getString("reason", "no reason");
         return new CurrencyWithdrawAction(bigDecimal, currencies, economyName, reason);

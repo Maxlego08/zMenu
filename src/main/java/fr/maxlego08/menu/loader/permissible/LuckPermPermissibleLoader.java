@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.loader.permissible;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
@@ -11,6 +13,8 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.util.List;
 
+@AutoPermissibleLoader
+@RequiresPlugin("LuckPerms")
 public class LuckPermPermissibleLoader extends PermissibleLoader {
 
     private final ButtonManager buttonManager;

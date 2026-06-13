@@ -45,6 +45,7 @@
 ## New Features
 
 - **Player Inventory Placeholders**: Added `%zmenu_player_empty_slots%` to get the number of free slots in the player's inventory, and `%zmenu_player_item_count_<MATERIAL>%` to count the total amount of a specific item. These placeholders work even when the bottom inventory is hidden with `clear-inventory: true`, allowing shop menus to check if the player has enough space before purchasing.
+- **Custom Commands**: Add a new field `actions-requirements` for custom commands, allowing you to specify requirements that must be met for the command's actions to execute. This provides more control over argument conditions and enhances command functionality.
 
 ## Bug Fixes
 
@@ -52,6 +53,18 @@
 - **ItemGiveAction Inventory Update**: Added `player.updateInventory()` after giving items via the `give_item` action, ensuring the client inventory display updates immediately.
 
 - **Inventory Desync on Item Give**: Fixed `ItemGiveAction` not calling `player.updateInventory()` after adding items, causing a visual desynchronization where the player's hotbar/inventory wouldn't visually update until the next interaction.
+
+**Internal Changes**
+
+- New Minecraft version detection system `MinecraftVersion` over old `NMSVersion` enum, allowing more flexible version checks and better support for future Minecraft versions without needing to update the plugin.
+- New utils annotations
+    - `@SinceVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.
+    - `@UntilVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.
+    - `@PaperOnly` | These annotations can be used to mark classes that should only be loaded if the server is a Paper version, check in the `VersionFilter` class for more details.
+    - `@SpigotOnly` | These annotations can be used to mark classes that should only be loaded if the server is a spigot version, check in the `VersionFilter` class for more details.
+    - `@ComponentLoader` | Allow to load dynamically all items component loader without having to register them one by one in the `ZComponentManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
+    - `@AutoListener`  | Allow to load dynamically all listeners who take a `MenuPlugin` in their constructor or no-arg constructor without having to register them one by one in the `ZListenerManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
+//TODO: more here
 
 # 1.1.1.4
 
@@ -64,7 +77,7 @@
 
 ## Bug Fixes
 
-- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`. Items are now physically cleared from the player inventory during storage, ensuring container content packets don't reveal hidden items. The close handler also uses physical restoration (`giveInventory`) instead of packet-based restoration.
+- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`.
 - **Item Pickup with Clear Inventory**: Fixed items being picked up by the player when `clear-inventory` is enabled.
 - **Lore Metadata Duplication**: Fixed "lore" metadata duplication when loading items.
 - **Color Handling**: Fixed and simplified color handling for leather armor and banner patterns in `MenuItemStackLoader`.

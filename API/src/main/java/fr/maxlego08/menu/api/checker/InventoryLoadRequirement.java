@@ -7,10 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InventoryLoadRequirement {
 
@@ -84,7 +81,7 @@ public class InventoryLoadRequirement {
         StringBuilder sb = new StringBuilder();
         this.requirements.forEach((type, names) -> {
             if (!names.isEmpty()) {
-                sb.append(type.name().toUpperCase()).append(" : ");
+                sb.append(type.name().toUpperCase(Locale.ROOT)).append(" : ");
                 sb.append(String.join(", ", names));
                 sb.append("\n");
             }

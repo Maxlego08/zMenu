@@ -4,10 +4,12 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.enums.Folder;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 public class Persist extends ZUtils {
 
@@ -22,7 +24,7 @@ public class Persist extends ZUtils {
     // ------------------------------------------------------------ //
 
     public static String getName(Class<?> clazz) {
-        return clazz.getSimpleName().toLowerCase();
+        return clazz.getSimpleName().toLowerCase(Locale.ROOT);
     }
 
     public static String getName(Object o) {
@@ -69,7 +71,7 @@ public class Persist extends ZUtils {
 
     public <T> T loadOrSaveDefault(T def, Class<T> clazz, File file) {
         if (!file.exists()) {
-            this.plugin.getLog().log("Creating default: " + file, LogType.SUCCESS);
+            Logger.info("Creating default: " + file, LogType.SUCCESS);
             this.save(def, file);
             return def;
         }
@@ -77,7 +79,7 @@ public class Persist extends ZUtils {
         T loaded = this.load(clazz, file);
 
         if (loaded == null) {
-            this.plugin.getLog().log("Using default as I failed to load: " + file, LogType.WARNING);
+            Logger.info("Using default as I failed to load: " + file, LogType.WARNING);
 
             /*
              * Create new config backup
@@ -86,7 +88,7 @@ public class Persist extends ZUtils {
             File backup = new File(file.getPath() + "_bad");
             if (backup.exists())
                 backup.delete();
-            this.plugin.getLog().log("Backing up copy of bad file to: " + backup, LogType.WARNING);
+            Logger.info("Backing up copy of bad file to: " + backup, LogType.WARNING);
 
             file.renameTo(backup);
 
@@ -94,7 +96,7 @@ public class Persist extends ZUtils {
         } else {
 
             if (Configuration.enableLogStorageFile) {
-                this.plugin.getLog().log(file.getPath() + " loaded successfully !", LogType.SUCCESS);
+                Logger.info(file.getPath() + " loaded successfully !", LogType.SUCCESS);
             }
 
         }
@@ -122,12 +124,12 @@ public class Persist extends ZUtils {
 
             boolean b = DiscUtils.writeCatch(file, this.plugin.getGson().toJson(instance));
             if (Configuration.enableLogStorageFile) {
-                this.plugin.getLog().log(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
+                Logger.info(file.getAbsolutePath() + " successfully saved !", LogType.SUCCESS);
             }
             return b;
 
         } catch (Exception e) {
-            this.plugin.getLog().log("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
+            Logger.info("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
             e.printStackTrace();
 
             return false;
@@ -155,7 +157,7 @@ public class Persist extends ZUtils {
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely
-            this.plugin.getLog().log(ex.getMessage(), LogType.ERROR);
+            Logger.info(ex.getMessage(), LogType.ERROR);
         }
 
         return null;
@@ -177,7 +179,7 @@ public class Persist extends ZUtils {
         } catch (Exception ex) { // output the error message rather than full
             // stack trace; error parsing the file, most
             // likely
-            this.plugin.getLog().log(ex.getMessage(), LogType.ERROR);
+            Logger.info(ex.getMessage(), LogType.ERROR);
         }
 
         return null;

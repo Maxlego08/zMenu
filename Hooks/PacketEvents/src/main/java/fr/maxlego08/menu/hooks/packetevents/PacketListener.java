@@ -30,7 +30,8 @@ public class PacketListener implements com.github.retrooper.packetevents.event.P
                 FakeInventory fakeInventory = PacketUtils.fakeContents.get(event.getUser().getUUID());
                 for (int i = 0; i != 36; i++) {
                     org.bukkit.inventory.ItemStack itemStack = fakeInventory.getFrom(i);
-                    items.add(SpigotConversionUtil.fromBukkitItemStack(itemStack));
+                    if (itemStack != null)
+                        items.add(SpigotConversionUtil.fromBukkitItemStack(itemStack));
                 }
 
                 wrapper.setItems(items);

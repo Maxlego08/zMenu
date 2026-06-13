@@ -4,6 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public abstract class AbstractFireworkItemComponentLoader extends AbstractColorI
         String shape = (String) data.get("shape");
         if (shape != null) {
             try {
-                FireworkEffect.Type type = FireworkEffect.Type.valueOf(shape.toUpperCase());
+                FireworkEffect.Type type = FireworkEffect.Type.valueOf(shape.toUpperCase(Locale.ROOT));
                 builder.with(type);
             } catch (IllegalArgumentException e) {
                 return Optional.empty();

@@ -7,5 +7,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("com.hibiscusmc:HMCCosmetics:2.7.7")
+    compileOnly(libs.hmccosmetics)
 }

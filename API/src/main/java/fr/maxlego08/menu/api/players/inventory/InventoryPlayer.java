@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.players.inventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ public interface InventoryPlayer {
      * @param player The player
      */
     void storeInventory(@NotNull Player player);
+
+    void clearInventory(@NonNull Player player);
 
     /**
      * Allows giving the inventory back to the player

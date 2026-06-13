@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
+import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
@@ -24,7 +24,6 @@ public class ItemEditAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         ItemStack item = ItemPlaceholders.getItem(player, this.slot);
-        if (item == null) return;
 
         this.menuItemStack.build(new ZBuildContext.Builder().player(player).useCache(false).baseItemStack(item).build());
     }

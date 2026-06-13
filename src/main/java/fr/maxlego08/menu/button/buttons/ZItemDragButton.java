@@ -2,12 +2,15 @@ package fr.maxlego08.menu.button.buttons;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.ItemDragButton;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.rules.ZRuleContext;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,10 +27,14 @@ import java.util.UUID;
 public class ZItemDragButton extends ItemDragButton {
 
     private final DupeManager dupeManager;
+    private final PlatformScheduler scheduler;
     //Check item section
     private boolean enableCheckItem = false;
+
     private MenuItemStack checkItems;
     private ItemStackSimilar itemStackSimilar;
+
+    private Rule rule;
 
     //Error item section
     private boolean enableErrorItem = false;
@@ -35,11 +42,11 @@ public class ZItemDragButton extends ItemDragButton {
     private boolean useErrorItemCache = true;
     private final Map<UUID, Map<Integer, Boolean>> activeTasks = new HashMap<>();
     private int ticks;
-    private PlatformScheduler scheduler;
 
-    public ZItemDragButton(DupeManager dupeManager) {
+    public ZItemDragButton(@NotNull MenuPlugin plugin) {
         super();
-        this.dupeManager = dupeManager;
+        this.dupeManager = plugin.getDupeManager();
+        this.scheduler = plugin.getInventoryManager().getScheduler();
     }
 
     public void setCheckItem(MenuItemStack menuItemStack, ItemStackSimilar itemStackSimilar) {
@@ -48,12 +55,16 @@ public class ZItemDragButton extends ItemDragButton {
         this.itemStackSimilar = itemStackSimilar;
     }
 
-    public void setErrorItem(MenuItemStack menuItemStack, PlatformScheduler scheduler, int ticks, boolean useCache) {
+    public void setErrorItem(MenuItemStack menuItemStack, int ticks, boolean useCache) {
         this.enableErrorItem = true;
         this.errorItems = menuItemStack;
-        this.scheduler = scheduler;
         this.ticks = ticks;
         this.useErrorItemCache = useCache;
+    }
+
+    public void setRule(Rule rule) {
+        this.enableCheckItem = true;
+        this.rule = rule;
     }
 
     @Override
@@ -85,7 +96,8 @@ public class ZItemDragButton extends ItemDragButton {
                     })
                     .mapToInt(Integer::intValue)
                     .toArray();
-            inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
+            if (this.getItemStack() != null)
+                inventoryEngine.displayFinalButton(this, new Placeholders(), slots);
         }
     }
 
@@ -114,19 +126,28 @@ public class ZItemDragButton extends ItemDragButton {
     @Override
     public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventoryEngine, int slot, @NonNull Placeholders placeholders) {
 
-        ItemStack currentItem = event.getCurrentItem();
+        ItemStack clickedItem = event.getCurrentItem();
         ItemStack cursorItem = event.getCursor();
 
-        if (currentItem == null || currentItem.getType() == Material.AIR) {
+        if (clickedItem == null || clickedItem.getType() == Material.AIR) {
             return;
         }
 
-        if (!this.dupeManager.isDupeItem(currentItem)){
-            event.setCancelled(false);
+        if (!this.dupeManager.isDupeItem(clickedItem)){
 
             if (this.isAirItem(cursorItem)) {
+                event.setCancelled(false);
                 this.refreshInventory(inventoryEngine, player, placeholders);
                 return;
+            } else {
+                if (!this.enableCheckItem) {
+                    event.setCancelled(false);
+                    return;
+                }
+                boolean isSuccess = this.isSuccess(player, cursorItem);
+                if (isSuccess) {
+                    event.setCancelled(false);
+                }
             }
             return;
         }
@@ -139,11 +160,10 @@ public class ZItemDragButton extends ItemDragButton {
             return;
         }
 
-        ItemStack itemStackCheck = this.checkItems.build(player);
-        boolean isSuccess = this.itemStackSimilar.isSimilar(itemStackCheck, cursorItem);
+        boolean isSuccess = this.isSuccess(player, cursorItem);
 
         if (isSuccess){
-            if (this.dupeManager.isDupeItem(currentItem)){
+            if (this.dupeManager.isDupeItem(clickedItem)){
                 event.setCurrentItem(new ItemStack(Material.AIR));
             }
             event.setCancelled(false);
@@ -156,6 +176,10 @@ public class ZItemDragButton extends ItemDragButton {
         if (!isSuccess & this.enableErrorItem) {
             this.errorItems(inventoryEngine, player, slot, placeholders);
         }
+    }
+
+    private boolean isSuccess(@NotNull Player player, @NotNull ItemStack itemStack){
+        return (rule == null || rule.matches(new ZRuleContext(itemStack))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(itemStack, this.checkItems.build(player)));
     }
 
     protected void refreshInventory(@NotNull InventoryEngine inventoryEngine,@NotNull Player player,@NotNull Placeholders placeholders){
@@ -183,16 +207,14 @@ public class ZItemDragButton extends ItemDragButton {
         // Marquer la tâche comme active
         playerTasks.put(slot, true);
 
-        Inventory inventory = inventoryEngine.getSpigotInventory();
-        ItemStack itemStack = inventory.getItem(slot);
-        inventory.setItem(slot, this.errorItems.build(player, this.useErrorItemCache, placeholders));
+        inventoryEngine.addItem(slot, this.errorItems.build(player, this.useErrorItemCache, placeholders));
 
         this.scheduler.runAtEntityLater(player, w -> {
 
             try {
                 Inventory topInventory = player.getOpenInventory().getTopInventory();
-                if (topInventory.getHolder() instanceof InventoryEngine invEng && topInventory.getHolder().equals(inventoryEngine)) {
-                    invEng.addItem(slot, itemStack);
+                if (topInventory.getHolder() instanceof InventoryEngine && topInventory.getHolder().equals(inventoryEngine)) {
+                    inventoryEngine.displayFinalButton(this, placeholders, slot);
                 }
             } finally {
                 // Libérer le slot après l'exécution

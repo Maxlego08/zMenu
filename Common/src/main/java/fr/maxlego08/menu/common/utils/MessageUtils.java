@@ -3,7 +3,7 @@ package fr.maxlego08.menu.common.utils;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -130,7 +130,7 @@ public abstract class MessageUtils extends LocationUtils {
 
     protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
 
-        if (NmsVersion.nmsVersion.isNewMaterial()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
             player.sendTitle(title, subtitle, fadeInTime, showTime, fadeOutTime);
             return;
         }

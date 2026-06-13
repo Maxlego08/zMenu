@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
@@ -7,8 +9,11 @@ import fr.maxlego08.menu.hooks.luckperms.LuckpermAction;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+@AutoActionLoader
+@RequiresPlugin("LuckPerms")
 public class LuckPermissionSetLoader extends ActionLoader {
 
     public LuckPermissionSetLoader() {
@@ -24,7 +29,7 @@ public class LuckPermissionSetLoader extends ActionLoader {
         String timeUnitStr = accessor.getString("time-unit");
         if (timeUnitStr != null) {
             try {
-                timeUnit = TimeUnit.valueOf(timeUnitStr.toUpperCase());
+                timeUnit = TimeUnit.valueOf(timeUnitStr.toUpperCase(Locale.ROOT));
             } catch (IllegalArgumentException ignored) {
             }
         }
