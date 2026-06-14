@@ -53,6 +53,7 @@
 - **ItemGiveAction Inventory Update**: Added `player.updateInventory()` after giving items via the `give_item` action, ensuring the client inventory display updates immediately.
 
 - **Inventory Desync on Item Give**: Fixed `ItemGiveAction` not calling `player.updateInventory()` after adding items, causing a visual desynchronization where the player's hotbar/inventory wouldn't visually update until the next interaction.
+- `width` not working with `plain_message` inside dialogs.
 
 **Internal Changes**
 
@@ -64,7 +65,6 @@
     - `@SpigotOnly` | These annotations can be used to mark classes that should only be loaded if the server is a spigot version, check in the `VersionFilter` class for more details.
     - `@ComponentLoader` | Allow to load dynamically all items component loader without having to register them one by one in the `ZComponentManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
     - `@AutoListener`  | Allow to load dynamically all listeners who take a `MenuPlugin` in their constructor or no-arg constructor without having to register them one by one in the `ZListenerManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
-//TODO: more here
 
 # 1.1.1.4
 

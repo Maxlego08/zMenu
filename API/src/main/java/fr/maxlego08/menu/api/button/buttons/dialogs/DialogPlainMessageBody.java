@@ -10,12 +10,12 @@ public class DialogPlainMessageBody extends BodyButton {
     public DialogPlainMessageBody(List<String> messages, int width) {
         super(DialogBodyType.PLAIN_MESSAGE);
         this.setMessages(messages);
-        this.setWidth(width);
+        this.setMessageWidth(width);
     }
 
     public DialogPlainMessageBody(List<String> messages) {
         super(DialogBodyType.PLAIN_MESSAGE);
         this.setMessages(messages);
-        this.setWidth(128);
+        this.setMessageWidth(128);
     }
 }

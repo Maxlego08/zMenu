@@ -104,7 +104,7 @@ public abstract class BodyButton extends Button {
 
     @Contract("_ -> this")
     public BodyButton setMessageWidth(int messageWidth) {
-        this.messageWidth = Math.max(1, Math.min(messageWidth, 1024));
+        this.messageWidth = Math.clamp(messageWidth, 1, 1024);
         return this;
     }
 }
