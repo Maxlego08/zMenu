@@ -1,12 +1,17 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
+import io.papermc.paper.dialog.Dialog;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ZDialogInventoryDeveloper extends ZDialogInventory{
+public class ZDialogInventoryDeveloper extends AbstractDialogInventory {
     private final Map<String, Consumer<Boolean>> consumerMap = new HashMap<>();
     private final Map<String, Consumer<Float>> floatConsumerMap = new HashMap<>();
     private final Map<String, Consumer<Integer>> integerConsumerMap = new HashMap<>();
@@ -82,5 +87,10 @@ public class ZDialogInventoryDeveloper extends ZDialogInventory{
 
     public Consumer<Boolean> getUpdateConsumer() {
         return this.updateConsumer;
+    }
+
+    @Override
+    public Dialog buildDialog(@NotNull Player player, @NotNull ComponentMeta paperComponent) {
+        return null;
     }
 }

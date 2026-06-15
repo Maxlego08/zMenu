@@ -46,6 +46,7 @@
 
 - **Player Inventory Placeholders**: Added `%zmenu_player_empty_slots%` to get the number of free slots in the player's inventory, and `%zmenu_player_item_count_<MATERIAL>%` to count the total amount of a specific item. These placeholders work even when the bottom inventory is hidden with `clear-inventory: true`, allowing shop menus to check if the player has enough space before purchasing.
 - **Custom Commands**: Add a new field `actions-requirements` for custom commands, allowing you to specify requirements that must be met for the command's actions to execute. This provides more control over argument conditions and enhances command functionality.
+- **Enhanced Dialog Action Buttons**: Added support for `usage-limit` and `duration-limit` on dialog action buttons. The duration limit supports structured configuration with units like `MILLISECONDS`, `SECONDS`, `MINUTES`, etc.
 
 ## Bug Fixes
 
@@ -57,6 +58,8 @@
 
 **Internal Changes**
 
+- **Dialog System Refactor**: Significant overhaul of the dialog inventory system. Introduced specialized interfaces (`NoticeDialogInventory`, `ConfirmationDialogInventory`, etc.) and refactored implementation classes to improve type safety and maintainability.
+- **Consolidated Action Button Loading**: All dialog types now use a shared `loadActionButtonRecord` logic, ensuring consistent behavior and full backward compatibility with legacy configuration keys.
 - New Minecraft version detection system `MinecraftVersion` over old `NMSVersion` enum, allowing more flexible version checks and better support for future Minecraft versions without needing to update the plugin.
 - New utils annotations
     - `@SinceVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.

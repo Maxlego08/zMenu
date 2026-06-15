@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.dialogs.button.loader;
+package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;

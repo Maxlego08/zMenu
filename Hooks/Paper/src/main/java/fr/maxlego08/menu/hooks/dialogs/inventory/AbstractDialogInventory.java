@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.hooks.dialogs;
+package fr.maxlego08.menu.hooks.dialogs.inventory;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
@@ -16,20 +16,28 @@ import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
+import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.registry.data.dialog.DialogBase;
+import io.papermc.paper.registry.data.dialog.action.DialogAction;
+import io.papermc.paper.registry.data.dialog.body.DialogBody;
+import io.papermc.paper.registry.data.dialog.input.*;
+import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
-public class ZDialogInventory implements DialogInventory {
+public abstract class AbstractDialogInventory implements DialogInventory {
 
-    private final MenuPlugin menuPlugin;
+    protected final MenuPlugin menuPlugin;
     private final String fileName;
     private File file;
     private InventoryReplacement inventoryReplacement;
@@ -39,40 +47,15 @@ public class ZDialogInventory implements DialogInventory {
     private boolean canCloseWithEscape = true;
     private boolean pause = false;
     private String afterAction = "CLOSE";
-    private DialogType dialogType = DialogType.NOTICE;
+    protected DialogType dialogType = DialogType.NOTICE;
     private List<BodyButton> bodyButtons = new ArrayList<>();
     private List<InputButton> inputButtons = new ArrayList<>();
-
-    // Notice
-    private final List<Requirement> actions = new ArrayList<>();
-    private String label;
-    private String labelTooltip;
-    private int labelWidth = 200;
-
-    // When {@link DialogType#CONFIRM} is used
-    private final List<Requirement> yesActions = new ArrayList<>();
-    private String yesText = "Yes";
-    private String yesTooltip = "";
-    private int yesWidth = 100;
-
-    private final List<Requirement> noActions = new ArrayList<>();
-    private String noText = "No";
-    private String noTooltip = "";
-    private int noWidth = 100;
-
-    // MultiAction
-    private final List<ActionButtonRecord> actionButtons = new ArrayList<>();
-    // Use numberOfColums
-
-    // Server link
-    private ActionButtonRecord actionButtonRecordServerLink;
-    private int numberOfColumns = 1;
 
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
     private String targetPlayerNamePlaceholder;
     private Requirement openRequirement;
 
-    public ZDialogInventory(@NotNull MenuPlugin plugin,@NotNull String name,@NotNull String fileName,@NotNull String externalTitle) {
+    public AbstractDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle) {
         this.menuPlugin = plugin;
         this.name = name;
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
@@ -139,6 +122,7 @@ public class ZDialogInventory implements DialogInventory {
     public @NonNull String getExternalTitle() {
         return this.externalTitle;
     }
+
     @Override
     public void setDialogType(DialogType dialogType) {
         this.dialogType = dialogType;
@@ -187,22 +171,21 @@ public class ZDialogInventory implements DialogInventory {
         );
     }
 
+    @Deprecated
     @Override
     public void setExitActionButton(ActionButtonRecord actionButtonRecord) {
-        this.actionButtonRecordServerLink = actionButtonRecord;
     }
 
+    @Deprecated
     @Override
     public ActionButtonRecord getExitActionButton(@NotNull Player player) {
-        if (this.actionButtonRecordServerLink != null) {
-            return this.actionButtonRecordServerLink.parse(player);
-        }
         return null;
     }
 
+    @Deprecated
     @Override
     public ActionButtonRecord getExitActionButton() {
-        return this.actionButtonRecordServerLink;
+        return null;
     }
 
     public void setOpenRequirement(Requirement openRequirement) {
@@ -290,184 +273,200 @@ public class ZDialogInventory implements DialogInventory {
         return this.filterByViewRequirement(this.inputButtons, player);
     }
 
+    @Deprecated
     @Override
     public List<Requirement> getYesActions() {
-        return this.yesActions;
+        return Collections.emptyList();
     }
 
+    @Deprecated
     @Override
     public List<Requirement> getNoActions() {
-        return this.noActions;
+        return Collections.emptyList();
     }
 
+    @Deprecated
     @Override
     public void addYesAction(List<Requirement> actions) {
-        this.yesActions.addAll(actions);
     }
+
+    @Deprecated
     @Override
     public void addNoAction(List<Requirement> actions) {
-        this.noActions.addAll(actions);
     }
+
+    @Deprecated
     @Override
     public String getYesText() {
-        return this.yesText;
+        return "";
     }
 
+    @Deprecated
     @Override
     public String getYesText(Player player) {
-        return this.menuPlugin.parse(player, this.yesText);
+        return "";
     }
 
+    @Deprecated
     @Override
     public void setYesText(String yesText) {
-        this.yesText = yesText;
     }
+
+    @Deprecated
     @Override
     public String getNoText() {
-        return this.noText;
+        return "";
     }
 
+    @Deprecated
     @Override
     public String getNoText(Player player) {
-        return this.menuPlugin.parse(player, this.noText);
+        return "";
     }
 
+    @Deprecated
     @Override
     public void setNoText(String noText) {
-        this.noText = noText;
     }
+
+    @Deprecated
     @Override
     public String getYesTooltip() {
-        return this.yesTooltip;
+        return "";
     }
 
+    @Deprecated
     @Override
     public String getYesTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.yesTooltip);
+        return "";
     }
 
+    @Deprecated
     @Override
     public void setYesTooltip(String yesTooltip) {
-        this.yesTooltip = yesTooltip;
     }
+
+    @Deprecated
     @Override
     public String getNoTooltip() {
-        return this.noTooltip;
+        return "";
     }
 
+    @Deprecated
     @Override
     public String getNoTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.noTooltip);
+        return "";
     }
 
+    @Deprecated
     @Override
     public int getYesWidth() {
-        return this.yesWidth;
+        return 0;
     }
 
+    @Deprecated
     @Override
     public int getNoWidth() {
-        return this.noWidth;
+        return 0;
     }
 
+    @Deprecated
     @Override
     public void setYesWidth(int yesWidth) {
-        this.yesWidth = yesWidth;
     }
 
+    @Deprecated
     @Override
     public void setNoWidth(int noWidth) {
-        this.noWidth = noWidth;
     }
 
+    @Deprecated
     @Override
     public String getLabel() {
-        return this.label != null ? this.label : "";
+        return "";
     }
 
+    @Deprecated
     @Override
     public String getLabel(Player player) {
-        return this.menuPlugin.parse(player, this.label);
+        return "";
     }
 
+    @Deprecated
     @Override
     public void setLabel(String label) {
-        this.label = label;
     }
 
+    @Deprecated
     @Override
     public String getLabelTooltip() {
-        return this.labelTooltip != null ? this.labelTooltip : "";
+        return "";
     }
 
+    @Deprecated
     @Override
     public String getLabelTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.labelTooltip);
+        return "";
     }
 
+    @Deprecated
     @Override
     public void setLabelTooltip(String labelTooltip) {
-        this.labelTooltip = labelTooltip;
     }
 
+    @Deprecated
     @Override
     public int getLabelWidth() {
-        return this.labelWidth;
+        return 0;
     }
 
+    @Deprecated
     @Override
     public void setLabelWidth(int labelWidth) {
-        this.labelWidth = labelWidth;
     }
 
+    @Deprecated
     @Override
     public List<ActionButtonRecord> getActionButtons(Player player) {
-        List<ActionButtonRecord> actionButtonsParse = new ArrayList<>();
-        for (ActionButtonRecord actionButtonRecord : this.actionButtons) {
-            actionButtonsParse.add(actionButtonRecord.parse(player));
-        }
-        return actionButtonsParse;
+        return Collections.emptyList();
     }
 
+    @Deprecated
     @Override
     public List<ActionButtonRecord> getActionButtons() {
-        return this.actionButtons;
+        return Collections.emptyList();
     }
 
+    @Deprecated
     @Override
     public void addActionButton(ActionButtonRecord actionButton) {
-        if (actionButton != null) {
-            this.actionButtons.add(actionButton);
-        }
     }
 
+    @Deprecated
     @Override
     public int getNumberOfColumns() {
-        return this.numberOfColumns;
+        return 0;
     }
 
+    @Deprecated
     @Override
     public void setNumberOfColumns(int numberOfColumns) {
-        if (numberOfColumns > 0) {
-            this.numberOfColumns = numberOfColumns;
-        } else {
-            throw new IllegalArgumentException("Number of columns must be greater than 0");
-        }
     }
 
+    @Deprecated
     @Override
     public void addAction(List<Requirement> actions) {
-        this.actions.addAll(actions);
     }
 
+    @Deprecated
     @Override
     public List<Requirement> getActions() {
-        return this.actions;
+        return Collections.emptyList();
     }
 
+    @Deprecated
     @Override
     public void setNoTooltip(String noTooltip) {
-        this.noTooltip = noTooltip;
     }
 
     @SuppressWarnings("unchecked")
@@ -501,5 +500,116 @@ public class ZDialogInventory implements DialogInventory {
         } else {
             return button;
         }
+    }
+
+    public abstract Dialog buildDialog(@NotNull Player player, @NotNull ComponentMeta paperComponent);
+
+    protected DialogBase createDialogBase(@NotNull ComponentMeta paperComponent, @NotNull Player player, @NotNull List<DialogBody> dialogBodies, @NotNull List<DialogInput> dialogInputs) {
+        DialogBase.Builder builder = DialogBase.builder(paperComponent.getComponent(this.menuPlugin.parse(player, this.name)));
+        builder.externalTitle(paperComponent.getComponent(this.menuPlugin.parse(player, this.externalTitle)));
+        builder.canCloseWithEscape(this.canCloseWithEscape);
+        builder.pause(this.pause);
+        try {
+            builder.afterAction(DialogBase.DialogAfterAction.valueOf(this.afterAction.toUpperCase(Locale.ROOT)));
+        } catch (IllegalArgumentException e) {
+            builder.afterAction(DialogBase.DialogAfterAction.CLOSE);
+        }
+        builder.body(dialogBodies);
+        builder.inputs(dialogInputs);
+        return builder.build();
+    }
+
+    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player) {
+        return this.buildDialogs(
+                player,
+                this.bodyButtons,
+                BodyButton::getBodyType,
+                DialogBuilderClass::getDialogBuilder,
+                (builder, button) -> builder.build(player, button)
+        );
+    }
+
+    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player) {
+        return this.buildDialogs(
+                player,
+                this.inputButtons,
+                InputButton::getInputType,
+                DialogBuilderClass::getDialogInputBuilder,
+                (builder, button) -> builder.build(player, button)
+        );
+    }
+
+
+    protected DialogAction createAction(@NotNull List<DialogInput> inputs,@NotNull List<Requirement> requirements, int usageLimit, @Nullable TemporalAmount actionDurationLimit) {
+        ClickCallback.Options.Builder builder = ClickCallback.Options.builder();
+        builder.uses(usageLimit);
+        if (actionDurationLimit != null) {
+            builder.lifetime(actionDurationLimit);
+        }
+        return DialogAction.customClick((view,audience)-> {
+            Placeholders placeholders = new Placeholders();
+            for (DialogInput input : inputs) {
+                String key = input.key();
+                String value = null;
+
+                Object rawValue;
+
+                switch (input) {
+                    case NumberRangeDialogInput numberRangeDialogInput -> {
+                        rawValue = view.getFloat(key);
+                        value = String.valueOf(rawValue);
+                    }
+                    case TextDialogInput textDialogInput -> {
+                        rawValue = view.getText(key);
+                        value = (String) rawValue;
+                    }
+                    case BooleanDialogInput booleanDialogInput -> {
+                        rawValue = view.getBoolean(key);
+                        value = String.valueOf(rawValue);
+                        placeholders.register(key+"_text", (Boolean) rawValue ? booleanDialogInput.onTrue() : booleanDialogInput.onFalse());
+                    }
+                    case SingleOptionDialogInput singleOptionDialogInput -> {
+                        rawValue = view.getText(key);
+                        value = (String) rawValue;
+                    }
+                    default -> {
+                    }
+                }
+                if (value == null) {
+                    continue;
+                }
+
+                placeholders.register(key, value);
+            }
+
+            for (Requirement requirement : requirements) {
+                requirement.execute((Player) audience, null, this.menuPlugin.getInventoryManager().getFakeInventory(), placeholders);
+            }
+
+        }, builder.build());
+    }
+
+    protected <B, T, TYPE, BUILDER> List<T> buildDialogs(
+            Player player,
+            List<B> buttons,
+            Function<B, TYPE> typeExtractor,
+            Function<TYPE, Optional<BUILDER>> builderResolver,
+            BiFunction<BUILDER, B, T> builderExecutor
+    ) {
+        List<T> results = new ArrayList<>(buttons.size());
+        for (B button : buttons) {
+            TYPE type = typeExtractor.apply(button);
+            if (type == null) {
+                continue;
+            }
+            Optional<BUILDER> builderOptional = builderResolver.apply(type);
+            if (builderOptional.isPresent()) {
+                T value = builderExecutor.apply(builderOptional.get(), button);
+                if (value != null) {
+                    results.add(value);
+                }
+            }
+        }
+        return results;
     }
 }

@@ -64,83 +64,259 @@ public interface DialogInventory extends Inventory {
      */
     List<InputButton> getDialogInputs(Player player);
 
+    /**
+     * @return Empty list of requirements
+     * @deprecated Use:
+     * <pre>{@code
+     *     if (dialogInventory instanceof ConfirmationDialogInventory confirmationDialogInventory) {
+     *         List<Requirement> noRequirements = confirmationDialogInventory.getNoActionButtonRecord().actions();
+     *     }
+     * }</pre>
+
+     */
+    @Deprecated(since = "1.1.1.5")
     List<Requirement> getYesActions();
 
+    /**
+     * @return Empty list of requirements
+     * @deprecated Use:
+     * <pre>{@code
+     *     if (dialogInventory instanceof ConfirmationDialogInventory confirmationDialogInventory) {
+     *         List<Requirement> noRequirements = confirmationDialogInventory.getNoActionButtonRecord().actions();
+     *     }
+     * }</pre>
+
+     */
+    @Deprecated(since = "1.1.1.5")
     List<Requirement> getNoActions();
 
+    /**
+     * @deprecated Use:
+     * <pre>{@code
+     *     if (dialogInventory instanceof ConfirmationDialogInventory confirmationDialogInventory) {
+     *         confirmationDialogInventory.addYesRequirements(action);
+     *     }
+     * }</pre>
+     */
+    @Deprecated(since = "1.1.1.5")
     void addYesAction(List<Requirement> action);
 
+    /**
+     * @deprecated Use:
+     * <pre>{@code
+     *     if (dialogInventory instanceof ConfirmationDialogInventory confirmationDialogInventory) {
+     *         confirmationDialogInventory.addNoRequirements(action);
+     *     }
+     * }</pre>
+     */
+    @Deprecated(since = "1.1.1.5")
     void addNoAction(List<Requirement> action);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#addAction(List)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void addAction(List<Requirement> action);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#getActions()}
+     */
+    @Deprecated(since = "1.1.1.5")
     List<Requirement> getActions();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#setYesText(String)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setYesText(String yesText);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#setNoText(String)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setNoText(String noText);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#setYesTooltip(String)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setYesTooltip(String yesTooltip);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#setNoTooltip(String)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setNoTooltip(String noTooltip);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getYesText()}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getYesText();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getYesText(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getYesText(Player player);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getNoText()}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getNoText();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getNoText(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getNoText(Player player);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getYesTooltip()}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getYesTooltip();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getYesTooltip(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getYesTooltip(Player player);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getNoTooltip()}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getNoTooltip();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getNoTooltip(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getNoTooltip(Player player);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getYesWidth()}
+     */
+    @Deprecated(since = "1.1.1.5")
     int getYesWidth();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#getNoWidth()}
+     */
+    @Deprecated(since = "1.1.1.5")
     int getNoWidth();
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#setYesWidth(int)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setYesWidth(int yesWidth);
 
+    /**
+     * @deprecated Use {@link ConfirmationDialogInventory#setNoWidth(int)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setNoWidth(int noWidth);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#getLabel()}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getLabel();
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#getLabel(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getLabel(Player player);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#setLabel(String)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setLabel(String label);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#getLabelTooltip()}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getLabelTooltip();
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#getLabelTooltip(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     String getLabelTooltip(Player player);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#setLabelTooltip(String)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setLabelTooltip(String labelTooltip);
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#getLabelWidth()}
+     */
+    @Deprecated(since = "1.1.1.5")
     int getLabelWidth();
 
+    /**
+     * @deprecated Use {@link NoticeDialogInventory#setLabelWidth(int)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setLabelWidth(int labelWidth);
 
+    /**
+     * @deprecated Use {@link MultiActionDialogInventory#getActionButtons(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     List<ActionButtonRecord> getActionButtons(Player player);
 
+    /**
+     * @deprecated Use {@link MultiActionDialogInventory#getActionButtons()}
+     */
+    @Deprecated(since = "1.1.1.5")
     List<ActionButtonRecord> getActionButtons();
 
+    /**
+     * @deprecated Use {@link MultiActionDialogInventory#addActionButton(ActionButtonRecord)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void addActionButton(ActionButtonRecord actionButton);
 
+    /**
+     * @deprecated Use {@link MultiActionDialogInventory#getNumberOfColumns()}
+     */
+    @Deprecated(since = "1.1.1.5")
     int getNumberOfColumns();
 
+    /**
+     * @deprecated Use {@link MultiActionDialogInventory#setNumberOfColumns(int)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setNumberOfColumns(int numberOfColumns);
 
     ZDialogInventoryBuild getBuild(Player player);
 
+    /**
+     * @deprecated Use {@link ServerLinksDialogInventory#setExitActionButton(ActionButtonRecord)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setExitActionButton(ActionButtonRecord actionButtonRecord);
 
 
+    /**
+     * @deprecated Use {@link ServerLinksDialogInventory#getExitActionButton(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     ActionButtonRecord getExitActionButton(@NotNull Player player);
 
+    /**
+     * @deprecated Use {@link ServerLinksDialogInventory#getExitActionButton()}
+     */
+    @Deprecated(since = "1.1.1.5")
     ActionButtonRecord getExitActionButton();
 
     //TODO getOpenWithItem not implemented but need
