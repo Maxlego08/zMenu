@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractPluginRuleLoader implements RuleLoader {
+public abstract class AbstractPluginRuleLoader implements fr.maxlego08.menu.api.rules.loader.RuleLoader {
 
     /**
      * Creates the plugin-specific rule instance.

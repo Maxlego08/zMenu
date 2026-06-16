@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public abstract class InputButton extends Button {
+public abstract class InputButton extends DialogButton<DialogInput> {
     private final DialogInputType inputType;
     private String key; // Unique identifier for the input button
     private String label;
@@ -46,6 +46,7 @@ public abstract class InputButton extends Button {
     private Supplier<Float> initialValueRangeSupplier;
     private String labelFormat = "options.generic_value"; // Default label format
 
+    //TODO: refaire toute la class
     public InputButton(DialogInputType inputType) {
         super();
         this.inputType = inputType;

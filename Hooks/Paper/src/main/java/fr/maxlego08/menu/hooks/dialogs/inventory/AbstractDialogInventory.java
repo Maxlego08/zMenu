@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.dialogs.DialogButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
@@ -470,7 +472,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Button> List<T> filterByViewRequirement(List<T> buttons, Player player) {
+    protected <T extends DialogButton<?>> List<T> filterByViewRequirement(List<T> buttons, Player player) {
         List<T> visibleButtons = new ArrayList<>();
         for (T button : buttons) {
             Button masterParent = button.getMasterParentButton();
@@ -485,7 +487,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Button> T getFirstVisibleButtonRecursive(T button, Player player) {
+    private <T extends DialogButton<?>> T getFirstVisibleButtonRecursive(T button, Player player) {
         if (button.hasPermission()) {
             boolean hasPermission = button.checkPermission(player, this.menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
             if (!hasPermission) {
@@ -519,23 +521,25 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         return builder.build();
     }
 
-    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player) {
+    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player, @NotNull ComponentMeta componentMeta) {
         return this.buildDialogs(
                 player,
-                this.bodyButtons,
+                this.getDialogBodies(player),
                 BodyButton::getBodyType,
                 DialogBuilderClass::getDialogBuilder,
-                (builder, button) -> builder.build(player, button)
+                (builder, button) -> builder.build(player, button),
+                componentMeta
         );
     }
 
-    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player) {
+    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull ComponentMeta componentMeta) {
         return this.buildDialogs(
                 player,
-                this.inputButtons,
+                this.getDialogInputs(player),
                 InputButton::getInputType,
                 DialogBuilderClass::getDialogInputBuilder,
-                (builder, button) -> builder.build(player, button)
+                (builder, button) -> builder.build(player, button),
+                componentMeta
         );
     }
 
@@ -589,24 +593,30 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         }, builder.build());
     }
 
-    protected <B, T, TYPE, BUILDER> List<T> buildDialogs(
+    protected <B extends DialogButton<T>, T, TYPE, BUILDER> List<T> buildDialogs(
             Player player,
             List<B> buttons,
             Function<B, TYPE> typeExtractor,
             Function<TYPE, Optional<BUILDER>> builderResolver,
-            BiFunction<BUILDER, B, T> builderExecutor
-    ) {
+            BiFunction<BUILDER, B, T> builderExecutor,
+            @NotNull ComponentMeta paperMetaUpdater
+            ) {
         List<T> results = new ArrayList<>(buttons.size());
         for (B button : buttons) {
-            TYPE type = typeExtractor.apply(button);
-            if (type == null) {
-                continue;
-            }
-            Optional<BUILDER> builderOptional = builderResolver.apply(type);
-            if (builderOptional.isPresent()) {
-                T value = builderExecutor.apply(builderOptional.get(), button);
-                if (value != null) {
-                    results.add(value);
+            if (button.hasCustomRender()) {
+                DialogRenderContext<T> context = new DialogRenderContext<>(results, player, this, paperMetaUpdater);
+                button.onRender(context);
+            } else {
+                TYPE type = typeExtractor.apply(button);
+                if (type == null) {
+                    continue;
+                }
+                Optional<BUILDER> builderOptional = builderResolver.apply(type);
+                if (builderOptional.isPresent()) {
+                    T value = builderExecutor.apply(builderOptional.get(), button);
+                    if (value != null) {
+                        results.add(value);
+                    }
                 }
             }
         }

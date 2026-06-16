@@ -4,12 +4,14 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderInput;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -28,7 +30,7 @@ public class NumberRangeInputBuilder implements DialogBuilderInput {
     }
 
     @Override
-    public DialogInput build(Player player, InputButton button) {
+    public DialogInput build(Player player, InputButton button, @NotNull Placeholders placeholders) {
         String key = button.getKey();
         int width = button.getWidth();
         Component label = this.dialogManager.getPaperComponent().getComponent(this.menuPlugin.parse(player, button.getLabel()));

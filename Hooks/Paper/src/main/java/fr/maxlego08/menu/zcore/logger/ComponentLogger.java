@@ -4,7 +4,7 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
-public class ComponentLogger extends Logger {
+public class ComponentLogger extends fr.maxlego08.menu.zcore.logger.Logger {
     private final ComponentMeta componentMeta;
 
     public ComponentLogger(@NotNull String prefix,@NotNull ComponentMeta componentMeta) {

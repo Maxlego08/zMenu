@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.api.button.dialogs;
 
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
+import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BodyButton extends Button {
+public abstract class BodyButton extends DialogButton<DialogBody> {
     private final DialogBodyType bodyType;
 
     // Item-specific properties
@@ -38,7 +38,7 @@ public abstract class BodyButton extends Button {
 
     @Contract("_ -> this")
     public BodyButton setWidth(int width) {
-        this.width = Math.max(1, Math.min(width, this.bodyType == DialogBodyType.ITEM ? 256 : 1024));
+        this.width = Math.clamp(width, 1, this.bodyType == DialogBodyType.ITEM ? 256 : 1024);
         return this;
     }
 
@@ -49,7 +49,7 @@ public abstract class BodyButton extends Button {
 
     @Contract("_ -> this")
     public BodyButton setHeight(int height) {
-        this.height = Math.max(1, Math.min(height, 256));
+        this.height = Math.clamp(height, 1, 256);
         return this;
     }
 

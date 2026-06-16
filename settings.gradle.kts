@@ -13,6 +13,7 @@ pluginManagement {
 }
 
 
+include("Paper-API")
 include("API")
 include("Common")
 

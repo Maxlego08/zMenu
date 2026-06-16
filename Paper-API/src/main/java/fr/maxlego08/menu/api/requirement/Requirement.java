@@ -37,7 +37,7 @@ public interface Requirement {
      * @return List of deny actions.
      */
     @NotNull
-    List<Action> getDenyActions();
+    List<fr.maxlego08.menu.api.requirement.Action> getDenyActions();
 
     /**
      * Gets the list of actions performed if the player has permission.

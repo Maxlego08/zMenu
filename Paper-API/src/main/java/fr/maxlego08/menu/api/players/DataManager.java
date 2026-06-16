@@ -17,7 +17,7 @@ public interface DataManager {
      * @return optional
      */
     @NotNull
-    Optional<PlayerData> getPlayer(@NotNull UUID uniqueId);
+    Optional<fr.maxlego08.menu.api.players.PlayerData> getPlayer(@NotNull UUID uniqueId);
 
     /**
      * @param uniqueId Player {@link UUID}

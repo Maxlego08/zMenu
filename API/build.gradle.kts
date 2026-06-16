@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies{
+    api(project(":Paper-API"))
     compileOnly(libs.adventure.api)
     compileOnly(libs.adventure.text.minimessage)
 }

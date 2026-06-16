@@ -106,7 +106,7 @@ allprojects {
     }
 
     dependencies {
-        if (project.name != "Paper" && project.name != "Common") {
+        if (project.name != "Paper" && project.name != "Common" && project.name != "Paper-API") {
             compileOnly(rootLibs.spigot.api)
         }
         compileOnly(rootLibs.placeholderapi)

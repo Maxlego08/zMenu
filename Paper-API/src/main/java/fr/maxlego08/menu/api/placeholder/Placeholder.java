@@ -22,7 +22,7 @@ public interface Placeholder {
         private final Placeholder localPlaceholder;
 
         public Api() {
-            PlaceholderExpansion expansion = new fr.maxlego08.menu.api.placeholder.DistantPlaceholder(LocalPlaceholder.getInstance());
+            PlaceholderExpansion expansion = new fr.maxlego08.menu.api.placeholder.DistantPlaceholder(fr.maxlego08.menu.api.placeholder.LocalPlaceholder.getInstance());
             expansion.register();
             this.localPlaceholder = new Local();
         }

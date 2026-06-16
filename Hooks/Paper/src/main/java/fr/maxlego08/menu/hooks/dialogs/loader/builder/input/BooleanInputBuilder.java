@@ -3,11 +3,13 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderInput;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -26,15 +28,15 @@ public class BooleanInputBuilder implements DialogBuilderInput {
     }
 
     @Override
-    public DialogInput build(Player player, InputButton button) {
+    public DialogInput build(Player player, InputButton button, @NotNull Placeholders placeholders) {
         String key = button.getKey();
-        Component label = this.dialogManager.getPaperComponent().getComponent(this.menuPlugin.parse(player, button.getLabel()));
+        Component label = this.dialogManager.getPaperComponent().getComponent(this.menuPlugin.parse(player, placeholders.parse(button.getLabel())));
         Optional<Boolean> initialValueSupplier = button.getInitialValueSupplier();
         boolean initialValue;
-        initialValue = initialValueSupplier.orElseGet(() -> Boolean.parseBoolean(this.menuPlugin.parse(player, button.getInitialValueBool())));
+        initialValue = initialValueSupplier.orElseGet(() -> Boolean.parseBoolean(this.menuPlugin.parse(player, placeholders.parse(button.getInitialValueBool()))));
 
-        String onTrueText = this.menuPlugin.parse(player, button.getTextTrue());
-        String onFalseText = this.menuPlugin.parse(player, button.getTextFalse());
+        String onTrueText = this.menuPlugin.parse(player, placeholders.parse(button.getTextTrue()));
+        String onFalseText = this.menuPlugin.parse(player, placeholders.parse(button.getTextFalse()));
 
         return DialogInput.bool(key,label,initialValue,onTrueText,onFalseText);
     }

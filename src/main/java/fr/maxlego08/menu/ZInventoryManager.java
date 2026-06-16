@@ -32,12 +32,10 @@ import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
+import fr.maxlego08.menu.hooks.dialogs.loader.body.DialogDynamicBodyButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.DialogItemBodyLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.body.DialogPlainMessageBodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.DialogBooleanInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.DialogNumberRangeInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.DialogSingleOptionInputLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.DialogTextInputLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.input.*;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
@@ -401,7 +399,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
         }
 
-        ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
+        ClassRegistry<fr.maxlego08.menu.api.loader.ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
                 <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryNoArgsConstructor()
@@ -435,10 +433,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Register Button Dialog Body
         buttonManager.register(new DialogItemBodyLoader(this.plugin));
         buttonManager.register(new DialogPlainMessageBodyLoader(this.plugin));
+        buttonManager.register(new DialogDynamicBodyButtonLoader(this.plugin));
         // Register Button Dialog Input
         buttonManager.register(new DialogTextInputLoader(this.plugin));
         buttonManager.register(new DialogBooleanInputLoader(this.plugin));
         buttonManager.register(new DialogNumberRangeInputLoader(this.plugin));
+        buttonManager.register(new DialogDynamicInputButtonLoader(this.plugin));
         buttonManager.register(new DialogSingleOptionInputLoader(this.plugin));
 
         // Register Button Bedrock

@@ -90,9 +90,9 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     }
     public Optional<DialogInventory> getDialogOptional(String name) {
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
-            for (DialogInventory dialog : dialogList) {
+            for (AbstractDialogInventory dialog : dialogList) {
                 if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
-                    return Optional.of(dialog);
+                    return Optional.of((DialogInventory) dialog);
                 }
             }
         }
@@ -262,6 +262,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
                 if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
+                    e.printStackTrace();
                 }
             }
         }

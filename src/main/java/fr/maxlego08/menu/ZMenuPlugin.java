@@ -369,6 +369,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
             files.add("dialogs/server_link-dialog.yml");
+            files.add("dialogs/dynamic-dialog-example.yml");
         }
 
         if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){

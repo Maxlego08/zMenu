@@ -2,14 +2,16 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderInput;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -28,18 +30,18 @@ public class TextInputBuilder implements DialogBuilderInput {
     }
 
     @Override
-    public DialogInput build(Player player, InputButton button) {
+    public DialogInput build(Player player, InputButton button, @NotNull Placeholders placeholders) {
         String key = button.getKey();
 
         int width = button.getWidth();
-        String label = this.menuPlugin.parse(player, button.getLabel());
+        String label = this.menuPlugin.parse(player, placeholders.parse(button.getLabel()));
         boolean labelVisible = button.isLabelVisible();
         Optional<String> defaultTextSupplier = button.getDefaultTextSupplier();
         String defaultText;
         if (defaultTextSupplier.isPresent()) {
-            defaultText = this.menuPlugin.parse(player, defaultTextSupplier.get());
+            defaultText = this.menuPlugin.parse(player, placeholders.parse(defaultTextSupplier.get()));
         } else {
-            defaultText = this.menuPlugin.parse(player, button.getDefaultText());
+            defaultText = this.menuPlugin.parse(player, placeholders.parse(button.getDefaultText()));
         }
         int maxLength = button.getMaxLength();
         int multilineMaxLines = button.getMultilineMaxLines();

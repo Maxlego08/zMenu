@@ -152,8 +152,8 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
     @Override
     public Dialog buildDialog(@NotNull Player player, @NotNull ComponentMeta paperComponent) {
 
-        List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player);
-        List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player);
+        List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent);
+        List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent);
 
         return Dialog.create(builder ->
                 builder.empty()

@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZServerLinksDialogInventory;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
-import java.util.List;
 
 public class ServerLinksDialogInventoryTypeLoader implements DialogInventoryTypeLoader<ZServerLinksDialogInventory> {
     @Override

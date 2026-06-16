@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader.builder.input;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
@@ -11,6 +12,7 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class SingleOptionInputBuilder implements DialogBuilderInput {
     }
 
     @Override
-    public DialogInput build(Player player, InputButton button) {
+    public DialogInput build(Player player, InputButton button, @NotNull Placeholders placeholders) {
         ComponentMeta paperComponent = this.dialogManager.getPaperComponent();
         
         String key = button.getKey();

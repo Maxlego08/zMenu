@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
-public class BukkitLogger extends Logger {
+public class BukkitLogger extends fr.maxlego08.menu.zcore.logger.Logger {
 
     public BukkitLogger(@NotNull String prefix) {
         super(prefix);
