@@ -1,16 +1,20 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
+import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogNumberRangeInput;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
+@AutoButtonLoader
+@RequireSupport(RequireSupport.SupportType.DIALOG)
 public class DialogNumberRangeInputLoader extends ButtonLoader {
 
-    public DialogNumberRangeInputLoader(Plugin plugin) {
+    public DialogNumberRangeInputLoader(MenuPlugin plugin) {
         super(plugin, "dialog_number_range");
     }
 

@@ -1,18 +1,22 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.body;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
+import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogItemBody;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
+@AutoButtonLoader
+@RequireSupport(RequireSupport.SupportType.DIALOG)
 public class DialogItemBodyLoader extends ButtonLoader {
 
-    public DialogItemBodyLoader(Plugin plugin) {
+    public DialogItemBodyLoader(MenuPlugin plugin) {
         super(plugin, "dialog_item", "item");
     }
 

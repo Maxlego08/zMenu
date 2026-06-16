@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class Configuration {
+    public static boolean HAS_DIALOG_SUPPORT = false;
+    public static boolean HAS_BEDROCK_INVENTORY_SUPPORT = false;
 
     // Enable debug, allows you to display errors in the console that would normally be hidden.
     @ConfigOption(

@@ -1,20 +1,24 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.input;
 
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
+import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogSingleOptionInput;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AutoButtonLoader
+@RequireSupport(RequireSupport.SupportType.DIALOG)
 public class DialogSingleOptionInputLoader extends ButtonLoader {
 
-    public DialogSingleOptionInputLoader(Plugin plugin) {
+    public DialogSingleOptionInputLoader(MenuPlugin plugin) {
         super(plugin, "dialog_single_option");
     }
 

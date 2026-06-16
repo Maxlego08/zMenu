@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.utils.version;
 
 import fr.maxlego08.menu.api.annotations.*;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.ReflectionsCache;
@@ -56,6 +57,11 @@ public class VersionFilter {
         if (until != null) {
             MinecraftVersion maximum = MinecraftVersion.parse(until.value());
             return serverVersion.isAtMost(maximum);
+        }
+
+        RequireSupport requireSupport = clazz.getAnnotation(RequireSupport.class);
+        if (requireSupport != null) {
+            return requireSupport.value().evaluate();
         }
 
         return true;

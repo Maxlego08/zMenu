@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoActionLoader;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
@@ -23,7 +24,6 @@ import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.*;
 import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.ZUtils;
@@ -31,11 +31,6 @@ import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
-import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.DialogDynamicBodyButtonLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.DialogItemBodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.body.DialogPlainMessageBodyLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.input.*;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
@@ -399,7 +394,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
         }
 
-        ClassRegistry<fr.maxlego08.menu.api.loader.ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
+        ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
                 <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryNoArgsConstructor()
@@ -410,45 +405,22 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             Logger.info("Registered " + actionCount + " auto action loader(s).");
         }
 
-        // Loading ButtonLoader
-        // The first step will be to load the buttons in the plugin, so each
-        // inventory will have the same list of buttons
-
+        // NoneLoader
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
-        buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin));
-        buttonManager.register(new BackLoader(this.plugin));
-        buttonManager.register(new HomeLoader(this.plugin));
-        buttonManager.register(new NextLoader(this.plugin));
-        buttonManager.register(new PreviousLoader(this.plugin));
-        buttonManager.register(new MainMenuLoader(this.plugin));
-        buttonManager.register(new JumpLoader(this.plugin));
-        buttonManager.register(new SwitchLoader(this.plugin));
-        buttonManager.register(new PaginationNextButtonLoader(this.plugin));
-        buttonManager.register(new PaginationPreviousButtonLoader(this.plugin));
-        buttonManager.register(new ItemDragLoader(this.plugin));
 
-        // Loading Button Dialog
-        // Register Button Dialog Body
-        buttonManager.register(new DialogItemBodyLoader(this.plugin));
-        buttonManager.register(new DialogPlainMessageBodyLoader(this.plugin));
-        buttonManager.register(new DialogDynamicBodyButtonLoader(this.plugin));
-        // Register Button Dialog Input
-        buttonManager.register(new DialogTextInputLoader(this.plugin));
-        buttonManager.register(new DialogBooleanInputLoader(this.plugin));
-        buttonManager.register(new DialogNumberRangeInputLoader(this.plugin));
-        buttonManager.register(new DialogDynamicInputButtonLoader(this.plugin));
-        buttonManager.register(new DialogSingleOptionInputLoader(this.plugin));
+        ClassRegistry<ButtonLoader, MenuPlugin> buttonRegistry = ClassRegistry.
+                <ButtonLoader, MenuPlugin>of(ButtonLoader.class, buttonManager::register)
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryConstructor(((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin)))
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
 
-        // Register Button Bedrock
-        buttonManager.register(new BedrockButtonLoader(this.plugin));
-        buttonManager.register(new BedrockModalButtonLoader(this.plugin));
-        buttonManager.register(new BedrockLabelLoader(this.plugin));
-        buttonManager.register(new BedrockTextInputLoader(this.plugin));
-        buttonManager.register(new BedrockToggleInputLoader(this.plugin));
-        buttonManager.register(new BedrockSliderInputLoader(this.plugin));
-        buttonManager.register(new BedrockDropDownInputLoader(this.plugin));
+        int buttonCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoButtonLoader.class, buttonRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + buttonCount + " auto button loader(s).");
+        }
 
         // Register ItemStackSimilar
         this.registerItemStackVerification(new FullSimilar());

@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.body;
 
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
+import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
@@ -10,6 +12,8 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@AutoButtonLoader
+@RequireSupport(RequireSupport.SupportType.DIALOG)
 public class DialogDynamicBodyButtonLoader extends DialogDynamicAbstractLoader {
 
     public DialogDynamicBodyButtonLoader(@NotNull MenuPlugin plugin) {

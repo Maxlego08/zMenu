@@ -157,6 +157,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
 
+        Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat;
+        Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
+
         if (this.packetManager != null) {
             this.packetManager.onEnable();
         }
