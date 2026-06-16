@@ -4,6 +4,7 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
+import fr.maxlego08.menu.api.annotations.AutoItemStackSimilar;
 import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
@@ -422,13 +423,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             Logger.info("Registered " + buttonCount + " auto button loader(s).");
         }
 
-        // Register ItemStackSimilar
-        this.registerItemStackVerification(new FullSimilar());
-        this.registerItemStackVerification(new LoreSimilar());
-        this.registerItemStackVerification(new MaterialSimilar());
-        this.registerItemStackVerification(new ModelIdSimilar());
-        this.registerItemStackVerification(new NameSimilar());
-        this.registerItemStackVerification(new ItemModelSimilar()); // 1.21.4+
+        ClassRegistry<ItemStackSimilar, MenuPlugin> itemStackRegistry = ClassRegistry.
+                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, this::registerItemStackVerification)
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
+
+        int itemStackCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoItemStackSimilar.class, itemStackRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + itemStackCount + " auto item stack similar(s).");
+        }
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
