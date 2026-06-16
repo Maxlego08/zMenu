@@ -131,7 +131,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, section.getStringList("deny_commands"));
 
         String permission = section.getString("permission");
-        switch (type.toLowerCase()) {
+        switch (type.toLowerCase(Locale.ROOT)) {
             case "has permission":
             case "has perm":
             case "haspermission":

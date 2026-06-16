@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
@@ -10,7 +11,9 @@ import fr.maxlego08.menu.requirement.actions.DataAction;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import java.util.Locale;
 
+@AutoActionLoader
 public class DataLoader extends ActionLoader {
 
     private final MenuPlugin plugin;
@@ -22,7 +25,7 @@ public class DataLoader extends ActionLoader {
 
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("action", "SET").toUpperCase());
+        ActionPlayerDataType type = ActionPlayerDataType.valueOf(accessor.getString("action", "SET").toUpperCase(Locale.ROOT));
         String key = accessor.getString("key");
         Object object = accessor.getObject("value", true);
         String seconds = accessor.getString("seconds");

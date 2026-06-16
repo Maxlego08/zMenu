@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.engine.BaseInventory;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import org.bukkit.entity.Player;
 
@@ -23,6 +24,10 @@ public interface InventoryListener {
     }
 
     default void onButtonClick(Player player, ItemButton button){
+
+    }
+
+    default void onInventorySwitch(Player player, InventoryEngine oldInventoryEngine, InventoryEngine newInventoryEngine) {
 
     }
 }

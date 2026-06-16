@@ -2,6 +2,8 @@ package fr.maxlego08.menu.hooks;
 
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,6 +13,8 @@ import org.jspecify.annotations.NonNull;
 /*
 * If you have problems compiling this class, delete it there; At the moment, it is impossible to access the nexo API.
 * */
+@AutoMaterialLoader
+@RequiresPlugin("Nexo")
 public class NexoLoader extends MaterialLoader {
 
     public NexoLoader() {

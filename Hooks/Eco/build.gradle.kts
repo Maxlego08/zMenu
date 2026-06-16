@@ -7,5 +7,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("com.willfp:eco:6.53.0")
+    compileOnly(libs.eco)
 }

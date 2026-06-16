@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.RarityComponent;
@@ -11,7 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
 public class SpigotRarityItemComponentLoader extends ItemComponentLoader {
 
     public SpigotRarityItemComponentLoader(){
@@ -25,7 +30,7 @@ public class SpigotRarityItemComponentLoader extends ItemComponentLoader {
         if (value == null) return null;
         ItemRarity rarity = ItemRarity.COMMON;
         try {
-            rarity = ItemRarity.valueOf(value.toUpperCase());
+            rarity = ItemRarity.valueOf(value.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ignored) {
         }
         return new RarityComponent(rarity);

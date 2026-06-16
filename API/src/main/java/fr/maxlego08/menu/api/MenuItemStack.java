@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
+import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
@@ -81,6 +82,13 @@ public interface MenuItemStack extends MenuItemStackContext {
      * @param amount the amount expression to set.
      */
     void setAmount(String amount);
+
+    /**
+     * Updates the configured amount type for the item stack.
+     *
+     * @param amountType the amount type to set.
+     */
+    void setAmountType(AmountType amountType);
 
     /**
      * Defines the skull texture URL for this item stack.
@@ -400,6 +408,12 @@ public interface MenuItemStack extends MenuItemStackContext {
      * @param itemModel the item model identifier to set.
      */
     void setItemModel(NamespacedKey itemModel);
+
+    /**
+     * Sets the item model identifier using a string value.
+     * @param itemModel the item model identifier to set, as a string.
+     */
+    void setItemModel(String itemModel);
 
     /**
      * Sets the equipped model identifier used for wearable items.

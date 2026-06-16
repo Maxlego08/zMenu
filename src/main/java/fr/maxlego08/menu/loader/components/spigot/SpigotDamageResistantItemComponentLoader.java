@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.DamageResistantComponent;
@@ -14,7 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
 public class SpigotDamageResistantItemComponentLoader extends ItemComponentLoader {
 
     public SpigotDamageResistantItemComponentLoader(){
@@ -26,7 +31,7 @@ public class SpigotDamageResistantItemComponentLoader extends ItemComponentLoade
         if(componentSection == null) return null;
         String damageTypeString = componentSection.getString("types");
         if(damageTypeString == null || damageTypeString.isBlank()) return null;
-        NamespacedKey damageTypeKey = NamespacedKey.fromString(damageTypeString.toLowerCase());
+        NamespacedKey damageTypeKey = NamespacedKey.fromString(damageTypeString.toLowerCase(Locale.ROOT));
         if(damageTypeKey == null) return null;
         Tag<DamageType> damageType = Bukkit.getTag("damage-types", damageTypeKey, DamageType.class);
         if(damageType == null) return null;

@@ -2,6 +2,8 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
+import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
@@ -16,13 +18,12 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
-import fr.maxlego08.menu.api.loader.MaterialLoader;
-import fr.maxlego08.menu.api.loader.NoneLoader;
+import fr.maxlego08.menu.api.loader.*;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
+import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.button.loader.*;
-import fr.maxlego08.menu.button.loader.BackLoader;
 import fr.maxlego08.menu.command.validators.*;
 import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.ZUtils;
@@ -34,12 +35,14 @@ import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
 import fr.maxlego08.menu.hooks.dialogs.button.loader.*;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.loader.actions.*;
+import fr.maxlego08.menu.loader.actions.BedrockLoader;
+import fr.maxlego08.menu.loader.actions.DialogLoader;
+import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
-import fr.maxlego08.menu.loader.permissible.*;
 import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -133,9 +136,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
+        return this.loadItemStack(file, map);
+    }
+
+    @Override
+    public MenuItemStack loadItemStack(File file, Map<String, Object> map) {
         YamlConfiguration configuration = new YamlConfiguration();
-        configuration.set("item", map);
-        return new MenuItemStackLoader(this).load(configuration, "item", file);
+        configuration.createSection("item", map);
+        return new MenuItemStackLoader(this).load(configuration, "item.", file);
     }
 
     @Override
@@ -195,7 +203,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 Logger.info("Cannot load inventory " + file.getPath() + ", inventory is waiting.", LogType.WARNING);
 
                 InventoryLoadRequirement inventoryLoadRequirement = optional.get();
-                plugin.getLogger().info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError());
+                Logger.info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError(), LogType.WARNING);
             }
 
             this.inventoryLoadRequirements.add(optional.get());
@@ -211,7 +219,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
-        this.inventoryByName.put(inventory.getFileName().toLowerCase(), inventory);
+        this.inventoryByName.put(inventory.getFileName().toLowerCase(Locale.ROOT), inventory);
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
@@ -242,7 +250,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (name == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(this.inventoryByName.get(name.toLowerCase()));
+        return Optional.ofNullable(this.inventoryByName.get(name.toLowerCase(Locale.ROOT)));
     }
 
     @Override
@@ -284,7 +292,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
-        this.inventoryByName.remove(inventory.getFileName().toLowerCase());
+        this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -301,7 +309,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void deleteInventories(Plugin plugin) {
         List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
-            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase()));
+            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase(Locale.ROOT)));
         }
     }
 
@@ -360,64 +368,43 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         ButtonManager buttonManager = this.plugin.getButtonManager();
         // Load Permissible before
-        buttonManager.registerPermissible(new PlaceholderPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new PermissionPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new ItemPermissibleLoader(this.plugin));
-        buttonManager.registerPermissible(new RegexPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new PlayerNamePermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new CurrencyPermissibleLoader(buttonManager));
-        buttonManager.registerPermissible(new CuboidPermissibleLoader(buttonManager));
-        if (this.plugin.isEnable(Plugins.JOBS)) {
-            buttonManager.registerPermissible(new JobPermissibleLoader(buttonManager));
-        }
-        if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
-            buttonManager.registerPermissible(new LuckPermPermissibleLoader(buttonManager));
+        ClassRegistry<PermissibleLoader, MenuPlugin> permissibleRegistry = ClassRegistry.
+                <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, buttonManager::registerPermissible)
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryConstructor(((clazz, plugin) -> clazz.getConstructor(ButtonManager.class).newInstance(buttonManager)))
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
+
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoPermissibleLoader.class, permissibleRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + count + " auto permissible loader(s).");
         }
 
         // Load actions
-        buttonManager.registerAction(new BroadcastLoader(this.plugin));
-        buttonManager.registerAction(new MessageLoader());
-        buttonManager.registerAction(new MessageToLoader());
-        buttonManager.registerAction(new BookLoader());
-        buttonManager.registerAction(new SoundLoader());
-        buttonManager.registerAction(new BroadcastSoundLoader());
-        buttonManager.registerAction(new CloseLoader());
-        buttonManager.registerAction(new ConnectLoader(this.plugin));
-        buttonManager.registerAction(new DataLoader(this.plugin));
-        buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.InventoryLoader(this.plugin));
-        buttonManager.registerAction(new ChatLoader());
+
         if (Configuration.enablePlayerCommandsAsOPAction) { // Disabled by default for security reasons
             buttonManager.registerAction(new PlayerCommandAsOPLoader());
         }
-        buttonManager.registerAction(new PlayerCommandLoader());
-        buttonManager.registerAction(new ConsoleCommandLoader());
-        buttonManager.registerAction(new fr.maxlego08.menu.loader.actions.BackLoader(this.plugin));
-        buttonManager.registerAction(new ShopkeeperLoader(this.plugin));
-        buttonManager.registerAction(new TitleLoader());
-        buttonManager.registerAction(new ActionBarLoader());
-        buttonManager.registerAction(new RefreshLoader());
-        buttonManager.registerAction(new RefreshInventoryLoader());
-        buttonManager.registerAction(new DiscordLoader());
-        buttonManager.registerAction(new DiscordComponentV2Loader());
-        buttonManager.registerAction(new TeleportLoader(this.plugin));
-        buttonManager.registerAction(new CurrencyWithdrawLoader());
-        buttonManager.registerAction(new CurrencyDepositLoader());
-        buttonManager.registerAction(new ItemEditLoader(this.plugin));
-        buttonManager.registerAction(new ItemGiveLoader(this.plugin));
-        if (this.plugin.isEnable(Plugins.LUCKPERMS)) {
-            buttonManager.registerAction(new LuckPermissionSetLoader());
-        }
-        buttonManager.registerAction(new ToastLoader(this.plugin));
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
-        if (this.plugin.isEnable(Plugins.PACKETEVENTS)) {
-
+        if (this.plugin.isActive(Plugins.PACKETEVENTS)) {
             Optional<PacketManager> packetManager = this.plugin.getPacketManager();
             packetManager.ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         }
         if (this.plugin.getBedrockManager() != null) {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
+        }
+
+        ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
+                <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
+
+        int actionCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoActionLoader.class, actionRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + actionCount + " auto action loader(s).");
         }
 
         // Loading ButtonLoader
@@ -838,7 +825,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 clickTypes.addAll(Configuration.allClicksType);
             } else {
                 try {
-                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase()));
+                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase(Locale.ROOT)));
                 } catch (Exception ignored) {
                     Logger.info(clickType + " click type was not found.", LogType.ERROR);
                 }
@@ -854,12 +841,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
-        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(), itemStackSimilar);
+        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(Locale.ROOT), itemStackSimilar);
     }
 
     @Override
     public Optional<ItemStackSimilar> getItemStackVerification(String name) {
-        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(), null));
+        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(Locale.ROOT), null));
     }
 
     @Override

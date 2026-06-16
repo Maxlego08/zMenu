@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -19,9 +20,9 @@ import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.*;
@@ -49,6 +50,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String material;
     private String targetPlayer;
     private String amount;
+    private AmountType amountType = AmountType.SET;
     private String url;
     private String data;
     private String tooltipStyle;
@@ -61,7 +63,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
     private String modelID;
-    private NamespacedKey itemModel;
+    private String itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -144,7 +146,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
         performanceDebug.start("build.createItemStack");
-        ItemStack itemStack = this.applySpecialItemStack(player, offlinePlayer, placeholders, amount, context.getItemStack() != null ? context.getItemStack() : this.createItemStack(player, placeholders, offlinePlayer, amount));
+        boolean editContextItem = context.getItemStack() != null;
+        ItemStack itemStack = this.applySpecialItemStack(player, offlinePlayer, placeholders, amount, editContextItem ? context.getItemStack() : this.createItemStack(player, placeholders, offlinePlayer, amount));
         performanceDebug.end();
 
         performanceDebug.start("build.applyItemMeta");
@@ -171,6 +174,17 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         performanceDebug.end();
+
+        performanceDebug.start("build.setStackSize");
+        if (this.amountType == AmountType.ADD) {
+            itemStack.setAmount(Math.max(1, itemStack.getAmount() + amount));
+        } else if (this.amountType == AmountType.REMOVE) {
+            itemStack.setAmount(Math.max(1, itemStack.getAmount() - amount));
+        } else if (!editContextItem) {
+            itemStack.setAmount(Math.max(1, amount));
+        }
+        performanceDebug.end();
+
 
         if (!this.needPlaceholderAPI && Configuration.enableCacheItemStack) {
             this.cacheItemStack = itemStack;
@@ -220,7 +234,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         try {
-            return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase()) : null;
+            return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase(Locale.ROOT)) : null;
         } catch (Exception ignored) {
             return null;
         }
@@ -278,7 +292,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.leatherArmor != null) {
             itemStack = this.leatherArmor.toItemStack(amount);
         }
-        itemStack.setAmount(Math.max(1 , amount));
 
         if (this.durability != null) {
             int dura = this.parseDura(offlinePlayer == null ? player : offlinePlayer, placeholders);
@@ -346,15 +359,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private void applyVersionSpecificMeta(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
-        if (NmsVersion.getCurrentVersion().isNewItemStackAPI()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21"))) {
             this.buildNewItemStackAPI(itemStack, itemMeta, player, placeholders);
         }
 
-        if (NmsVersion.getCurrentVersion().isNewHeadApi()) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20"))) {
             this.buildTrimAPI(itemStack, itemMeta, player, placeholders);
         }
 
-        if (this.clearDefaultAttributes && this.attributes.isEmpty() && NmsVersion.getCurrentVersion().getVersion() >= NmsVersion.V_1_20_4.getVersion()) {
+        if (this.clearDefaultAttributes && this.attributes.isEmpty() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.4"))) {
             itemMeta.setAttributeModifiers(ArrayListMultimap.create());
         }
     }
@@ -477,7 +490,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         if (this.itemModel != null) {
-            itemMeta.setItemModel(this.itemModel);
+            NamespacedKey itemModelKey = this.parseItemModel(player, placeholders);
+            if (itemModelKey != null) {
+                itemMeta.setItemModel(itemModelKey);
+            }
         }
 
         if (this.equippedModel != null) {
@@ -797,11 +813,38 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public NamespacedKey getItemModel() {
+        return this.parseItemModel(null, new Placeholders());
+    }
+
+    @Override
+    public String getItemModelString() {
         return this.itemModel;
+    }
+
+    private NamespacedKey parseItemModel(@Nullable Player player, @NotNull Placeholders placeholders) {
+        String itemModel = this.papi(placeholders.parse(this.itemModel), player, true);
+        if (itemModel == null) {
+            return null;
+        }
+        try {
+            String[] split = itemModel.split(":", 2);
+            if (split.length == 2) {
+                return new NamespacedKey(split[0], split[1]);
+            } else {
+                return NamespacedKey.minecraft(itemModel);
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public void setItemModel(NamespacedKey itemModel) {
+        this.itemModel = itemModel != null ? itemModel.toString() : null;
+    }
+
+    @Override
+    public void setItemModel(String itemModel) {
         this.itemModel = itemModel;
     }
 
@@ -840,6 +883,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return amount;
     }
 
+    @Override
+    public AmountType getAmountType() {
+        return amountType;
+    }
+
+    @Override
+    public void setAmountType(AmountType amountType) {
+        this.amountType = amountType;
+    }
+
     /**
      * Let's know if the ItemStack needs a placeholder, if not then the ItemStack will be cached
      *
@@ -855,6 +908,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.setData(configuration.getString("data", "0"));
         this.setDurability(configuration.getString("durability", null));
         this.setAmount(configuration.getString("amount", "1"));
+        this.setAmountType(AmountType.valueOf(configuration.getString("amount-type", "SET").toUpperCase(Locale.ROOT)));
         this.setMaterial(configuration.getString("material", null));
         this.setTargetPlayer(configuration.getString("target", null));
         this.setUrl(configuration.getString("url", null));
@@ -862,7 +916,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         Color potionColor = this.getColor(configuration, "color", null);
 
         try {
-            Material material = Material.valueOf(configuration.getString("material", "").toUpperCase());
+            Material material = Material.valueOf(configuration.getString("material", "").toUpperCase(Locale.ROOT));
             String materialName = material.toString();
             if (materialName.startsWith("LEATHER_")) {
                 Color armorColor = this.getColor(configuration, "color", Color.fromRGB(160, 101, 64));
@@ -873,7 +927,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (configuration.contains("potion")) {
-            PotionType type = PotionType.valueOf(configuration.getString("potion", "REGEN").toUpperCase());
+            PotionType type = PotionType.valueOf(configuration.getString("potion", "REGEN").toUpperCase(Locale.ROOT));
             int level = configuration.getInt("level", 1);
             boolean splash = configuration.getBoolean("splash", false);
             boolean extended = configuration.getBoolean("extended", false);
@@ -886,7 +940,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         if (configuration.contains("banner")) {
 
-            DyeColor dyeColor = DyeColor.valueOf(configuration.getString("banner", "WHITE").toUpperCase());
+            DyeColor dyeColor = DyeColor.valueOf(configuration.getString("banner", "WHITE").toUpperCase(Locale.ROOT));
             List<String> stringPattern = configuration.getStringList("patterns");
             List<Pattern> patterns = new ArrayList<>();
             for (String string : stringPattern) {
@@ -976,7 +1030,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.setEnchantments(enchantments);
         this.setFlags(flags);
         this.setAttributes(attributeModifiers);
-        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase()));
+        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase(Locale.ROOT)));
     }
 
     private Color getColor(MapConfiguration configuration, String key, Color def) {

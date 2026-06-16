@@ -42,6 +42,53 @@
 
 # Unreleased
 
+# 1.1.1.5
+
+## New Features
+
+- **Player Inventory Placeholders**: Added `%zmenu_player_empty_slots%` to get the number of free slots in the player's inventory, and `%zmenu_player_item_count_<MATERIAL>%` to count the total amount of a specific item. These placeholders work even when the bottom inventory is hidden with `clear-inventory: true`, allowing shop menus to check if the player has enough space before purchasing.
+- **Custom Commands**: Add a new field `actions-requirements` for custom commands, allowing you to specify requirements that must be met for the command's actions to execute. This provides more control over argument conditions and enhances command functionality.
+- **Anvil Inventory Support**: Added a new `ANVIL` inventory type, with `rename-requirements` to validate the text entered by the player before running the rename actions. Inventory types are now resolved through a dedicated `InventoryType` registry (currently `ANVIL` and `CHEST`), making it easier to add new container types in the future.
+- **Item Rules System**: Added a flexible item-matching system configurable through a `rule` section. Built-in rule types: `material`, `material-contains`, `material-prefix`, `material-suffix`, `name`, `lore`, `tag`, `custom-model-data`, and the `and` / `or` composites to combine several rules. Plugin-specific item rules (match by item id, supporting wildcards and `ignore-case`) are available for CraftEngine, Denizen, Eco, ExecutableBlocks, ExecutableItems, HeadDatabase, ItemsAdder, MMOItems, Nexo, NextGens, Nova, Oraxen and SlimeFun. The `item_drag` button now accepts a `rule` section to validate which items a player is allowed to drop.
+- **New Action `set_item`** (`set_item` / `set-item`): place an item in one or several inventory slots (menu or player inventory via `in-player-inventory: true`), with `dupe-protection` enabled by default.
+- **New Action `take_item`** (`take_item` / `take-item`): remove a configurable `amount` of matching items from the player's inventory, with `verification: SIMILAR` (default) or `MODELID` to control how items are matched.
+- **New Action `refresh_slot`** (`refresh_slot` / `refresh-slot`): refresh only the given `slots` (menu or player inventory) without rebuilding the whole inventory.
+- **Check Inventory Requirement** (`check-inventory` permissible): verify that a given `slot` contains a specific item (or that the player owns it), with `success` and `deny` actions and a configurable comparison `type`.
+- **Denizen Support**: Added a new hook for Denizen, allowing Denizen items to be matched through the item rules system (`denizen` rule type).
+
+## Bug Fixes
+
+- **Clear Inventory Session Items**: Fixed a bug where items given to the player during a menu session (e.g., via shop purchase actions) were lost when closing a menu with `clear-inventory: true`. Session items are now collected before restoring the original inventory and properly restored afterward.
+- **ItemGiveAction Inventory Update**: Added `player.updateInventory()` after giving items via the `give_item` action, ensuring the client inventory display updates immediately.
+
+- **Inventory Desync on Item Give**: Fixed `ItemGiveAction` not calling `player.updateInventory()` after adding items, causing a visual desynchronization where the player's hotbar/inventory wouldn't visually update until the next interaction.
+- **Multi Dialogs `number-of-columns`**: Fixed multi-action dialogs not supporting the `number-of-columns` option.
+- **Nexo Glyphs in Items**: Fixed Nexo glyphs not working inside items. Add `skip-first-cache: true` to the item configuration to use them.
+- **Animation Listener**: Fixed an issue with `PacketAnimationListener` ([#245](https://github.com/Maxlego08/zMenu/issues/245)).
+
+**Internal Changes**
+
+- New Minecraft version detection system `MinecraftVersion` over old `NMSVersion` enum, allowing more flexible version checks and better support for future Minecraft versions without needing to update the plugin.
+- New utils annotations
+    - `@SinceVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.
+    - `@UntilVersion` | These annotations can be used to mark classes that should only be loaded for specific Minecraft versions, check in the `VersionFilter` class for more details.
+    - `@PaperOnly` | These annotations can be used to mark classes that should only be loaded if the server is a Paper version, check in the `VersionFilter` class for more details.
+    - `@SpigotOnly` | These annotations can be used to mark classes that should only be loaded if the server is a spigot version, check in the `VersionFilter` class for more details.
+    - `@AutoComponentLoader` (renamed from `@ComponentLoader`) | Allow to load dynamically all items component loader without having to register them one by one in the `ZComponentManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
+    - `@AutoListener`  | Allow to load dynamically all listeners who take a `MenuPlugin` in their constructor or no-arg constructor without having to register them one by one in the `ZListenerManager` class for "fr.maxlego08.zmenu" package, filtering by version and server type with the new annotations by the helper of `VersionFilter` class.
+    - `@AutoActionLoader` | Allow to load dynamically all action loaders without having to register them one by one, filtering by version and server type via the `VersionFilter` class.
+    - `@AutoMaterialLoader` | Allow to load dynamically all material loaders without having to register them one by one, filtering by version and server type via the `VersionFilter` class.
+    - `@AutoPermissibleLoader` | Allow to load dynamically all permissible (requirement) loaders without having to register them one by one, filtering by version and server type via the `VersionFilter` class.
+    - `@AutoRuleLoader` | Allow to load dynamically all item rule loaders without having to register them one by one in the `ZRuleLoaderRegistry`, filtering by version and server type via the `VersionFilter` class.
+    - `@RequiresPlugin` | Mark a class so it is only loaded when a given plugin is present. Now supports a `version` and a `type` (`Comparison`) to only load the class when the plugin version comparison is true, plus a `checkMode` (`EXISTS` / `EXISTS_AND_ENABLED`) to choose between "plugin installed" and "plugin installed and enabled".
+- All action, component, listener, material, permissible and rule loaders are now discovered and registered automatically at startup through `ClassRegistry` and the annotations above, instead of being registered one by one.
+- `ClassRegistry` now logs constructor instantiation failures, making it easier to diagnose why a loader did not register.
+- New dedicated NMS modules (`NMS/Base`, `NMS/v1_20_R3`, `NMS/v1_20_R4`, `NMS/v1_21_R1`) with a versioned `NMSHandler` abstraction.
+- New item packet management classes: `NMSMenuPacketListener`, `PacketQueue` and `ForceChannelPromise`.
+- New item components: `AttackRange` and `MaxStackSize` (with Spigot and Paper implementations); entity variant loaders refactored onto shared base classes (`CollarColor`, `DyeColor`, `Enum`, `Registry` variant loaders).
+- Standardized string casing using `Locale.ROOT` across all classes for consistent, locale-independent behavior.
+- Migrated the build to a Gradle version catalog (`gradle/libs.versions.toml`).
+
 # 1.1.1.4
 
 ## New Features
@@ -53,7 +100,7 @@
 
 ## Bug Fixes
 
-- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`. Items are now physically cleared from the player inventory during storage, ensuring container content packets don't reveal hidden items. The close handler also uses physical restoration (`giveInventory`) instead of packet-based restoration.
+- **Clear Inventory + BACK Button**: Fixed items being restored to the player when clicking a BACK button between two inventories with `clear-inventory: true` and `clear-inventory-type: PACKET_EVENT`.
 - **Item Pickup with Clear Inventory**: Fixed items being picked up by the player when `clear-inventory` is enabled.
 - **Lore Metadata Duplication**: Fixed "lore" metadata duplication when loading items.
 - **Color Handling**: Fixed and simplified color handling for leather armor and banner patterns in `MenuItemStackLoader`.

@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.itemstack.*;
@@ -18,11 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+@AutoComponentLoader
+@SinceVersion("1.21.2")
 public class SpigotConsumableItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public SpigotConsumableItemComponentLoader() {
@@ -46,7 +47,7 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
 
     private ConsumableComponent.Animation parseAnimation(String animationString) {
         try {
-            return ConsumableComponent.Animation.valueOf(animationString.toUpperCase());
+            return ConsumableComponent.Animation.valueOf(animationString.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             return ConsumableComponent.Animation.EAT;
         }

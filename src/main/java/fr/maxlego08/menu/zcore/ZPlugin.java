@@ -36,11 +36,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 public abstract class ZPlugin extends JavaPlugin {
-
-    private final Logger log = new Logger(this.getDescription().getFullName());
     private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
     protected VCommandManager zCommandManager;
     protected VInventoryManager vinventoryManager;
@@ -54,8 +51,8 @@ public abstract class ZPlugin extends JavaPlugin {
 
         this.enableTime = System.currentTimeMillis();
 
-        this.log.log("=== ENABLE START ===");
-        this.log.log("Plugin Version V<&>c" + this.getDescription().getVersion(), LogType.INFO);
+        Logger.info("=== ENABLE START ===");
+        Logger.info("Plugin Version V<&>c" + this.getDescription().getVersion(), LogType.INFO);
 
         this.getDataFolder().mkdirs();
 
@@ -71,17 +68,17 @@ public abstract class ZPlugin extends JavaPlugin {
             this.zCommandManager.validCommands();
         }
 
-        this.log.log("=== ENABLE DONE <&>7(<&>6" + Math.abs(this.enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+        Logger.info("=== ENABLE DONE <&>7(<&>6" + Math.abs(this.enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
     }
 
     protected void preDisable() {
         this.enableTime = System.currentTimeMillis();
-        this.log.log("=== DISABLE START ===");
+        Logger.info("=== DISABLE START ===");
     }
 
     protected void postDisable() {
-        this.log.log("=== DISABLE DONE <&>7(<&>6" + Math.abs(this.enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
+        Logger.info("=== DISABLE DONE <&>7(<&>6" + Math.abs(this.enableTime - System.currentTimeMillis()) + "ms<&>7) <&>e===");
 
     }
 
@@ -103,15 +100,6 @@ public abstract class ZPlugin extends JavaPlugin {
     }
 
     /**
-     * Add a listener
-     *
-     * @param listener New Listener
-     */
-    public void addSimpleListener(Listener listener) {
-        Bukkit.getPluginManager().registerEvents(listener, this);
-    }
-
-    /**
      * Add a listener from ListenerAdapter
      *
      * @param adapter New {@link ListenerAdapter}
@@ -119,15 +107,6 @@ public abstract class ZPlugin extends JavaPlugin {
     public void addListener(ListenerAdapter adapter) {
         if (adapter == null) throw new ListenerNullException("Warning, your listener is null");
         this.listenerAdapters.add(adapter);
-    }
-
-    /**
-     * Get logger
-     *
-     * @return loggers
-     */
-    public Logger getLog() {
-        return this.log;
     }
 
     /**
@@ -227,7 +206,7 @@ public abstract class ZPlugin extends JavaPlugin {
 
                 try {
                     if (outFile.exists() && !replace) {
-                        this.getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+                        Logger.info("Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.", LogType.WARNING);
                     } else {
                         OutputStream out = Files.newOutputStream(outFile.toPath());
                         byte[] buf = new byte[1024];
@@ -241,7 +220,8 @@ public abstract class ZPlugin extends JavaPlugin {
                         in.close();
                     }
                 } catch (IOException var10) {
-                    this.getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, var10);
+                    Logger.info("Could not save " + outFile.getName() + " to " + outFile, LogType.ERROR);
+                    var10.printStackTrace();
                 }
 
             }

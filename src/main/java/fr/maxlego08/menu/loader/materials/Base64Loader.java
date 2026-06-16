@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.materials;
 
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -7,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 
+@AutoMaterialLoader
 public class Base64Loader extends MaterialLoader {
     
     public Base64Loader() {

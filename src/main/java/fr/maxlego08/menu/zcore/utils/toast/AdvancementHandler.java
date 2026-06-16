@@ -90,7 +90,7 @@ class AdvancementHandler {
                 " \"text\": \"\"\n" + //
                 " },\n" + //
                 " \"background\": \"minecraft:textures/gui/advancements/backgrounds/adventure.png\",\n" + //
-                " \"frame\": \"" + style.toString().toLowerCase() + "\",\n" + //
+                " \"frame\": \"" + style.toString().toLowerCase(Locale.ROOT) + "\",\n" + //
                 " \"announce_to_chat\": false,\n" + //
                 " \"show_toast\": true,\n" + //
                 " \"hidden\": true\n" + //
@@ -150,7 +150,7 @@ class AdvancementHandler {
                 "     \"text\": \"\"\n" + //
                 "   },\n" + //
                 "   \"background\": \"minecraft:textures/gui/advancements/backgrounds/adventure.png\",\n" + //
-                "   \"frame\": \"" + style.toString().toLowerCase() + "\",\n" + //
+                "   \"frame\": \"" + style.toString().toLowerCase(Locale.ROOT) + "\",\n" + //
                 "   \"announce_to_chat\": false,\n" + //
                 "   \"show_toast\": true,\n" + //
                 "   \"hidden\": true\n" + //
@@ -207,7 +207,7 @@ class AdvancementHandler {
                 " \"text\": \"\"\n" + //
                 " },\n" + //
                 " \"background\": \"minecraft:textures/gui/advancements/backgrounds/adventure.png\",\n" + //
-                " \"frame\": \"" + style.toString().toLowerCase() + "\",\n" + //
+                " \"frame\": \"" + style.toString().toLowerCase(Locale.ROOT) + "\",\n" + //
                 " \"announce_to_chat\": false,\n" + //
                 " \"show_toast\": true,\n" + //
                 " \"hidden\": true\n" + //
@@ -219,7 +219,7 @@ class AdvancementHandler {
     }
 
     /**
-     * Helper method to determine which advancement creation method to use based on server version
+     * Helper method to determine which advancement creation method to use based on server value
      *
      * @param icon          The Minecraft item ID to use as the toast icon
      * @param message       The message to display in the toast
@@ -235,7 +235,7 @@ class AdvancementHandler {
         List<Map<String, Object>> msgList = ColorParser.process(message);
         String json = ColorParser.formatToJsonString(msgList);
         json = json.replace("|", "\n");
-        icon = icon.toLowerCase().replace("İ", "I").replace("ı", "i");
+        icon = icon.toLowerCase(Locale.ROOT).replace("İ", "I").replace("ı", "i");
 
         UUID randomUUID = UUID.randomUUID();
         NamespacedKey advancementKey = new NamespacedKey(this.plugin, "anelib_" + randomUUID);

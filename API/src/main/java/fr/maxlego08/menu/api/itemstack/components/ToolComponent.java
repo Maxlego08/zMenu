@@ -68,13 +68,13 @@ public class ToolComponent extends ItemComponent {
             tool.setDamagePerBlock(this.damagePerBlock);
             tool.setCanDestroyBlocksInCreative(this.canDestroyBlocksInCreative);
             for (ZToolRule<Material> rule : this.materialRules) {
-                tool.addRule(rule.getData(), rule.getSpeed(), rule.isCorrectForDrop());
+                tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
             }
             for (ZToolRule<Collection<Material>> rule : this.materialGroups) {
-                tool.addRule(rule.getData(), rule.getSpeed(), rule.isCorrectForDrop());
+                tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
             }
             for (ZToolRule<Tag<Material>> rule : this.tagRules) {
-                tool.addRule(rule.getData(), rule.getSpeed(), rule.isCorrectForDrop());
+                tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
             }
             itemStack.setItemMeta(itemMeta);
         }

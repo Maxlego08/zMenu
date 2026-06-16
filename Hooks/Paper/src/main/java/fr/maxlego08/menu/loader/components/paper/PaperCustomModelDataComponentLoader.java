@@ -1,9 +1,12 @@
 package fr.maxlego08.menu.loader.components.paper;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.PaperOnly;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.itemstack.components.paper.PaperCustomModelDataComponent;
-import fr.maxlego08.menu.loader.components.spigot.SpigotCustomModelDataItemComponentLoader;
+import fr.maxlego08.menu.loader.components.SpigotCustomModelDataItemComponentLoader;
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,6 +17,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.List;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
+@PaperOnly
 public class PaperCustomModelDataComponentLoader extends SpigotCustomModelDataItemComponentLoader {
 
     @Override

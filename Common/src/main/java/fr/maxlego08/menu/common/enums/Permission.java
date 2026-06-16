@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.enums;
 
+import java.util.Locale;
+
 public enum Permission {
 	
 	ZMENU_RELOAD,
@@ -33,7 +35,7 @@ public enum Permission {
 	private final String permission;
 
 	Permission() {
-		this.permission = this.name().toLowerCase().replace("_", ".");
+		this.permission = this.name().toLowerCase(Locale.ROOT).replace("_", ".");
 	}
 
 	public String getPermission() {

@@ -6,5 +6,5 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("com.github.LoneDev6:api-itemsadder:3.6.1")
+    compileOnly(libs.itemsadder)
 }

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.common.utils.nms;
 
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 
@@ -60,9 +61,7 @@ public enum NmsVersion {
     V_1_21_10(12110),
     V_1_21_11(12111),
 
-    UNKNOWN(Integer.MAX_VALUE)
-
-    ;
+    UNKNOWN(Integer.MAX_VALUE);
 
     public static final NmsVersion nmsVersion = getNmsVersion();
     private final int version;
@@ -75,12 +74,14 @@ public enum NmsVersion {
      * Gets the current version of the Bukkit server.
      *
      * @return The NmsVersion instance corresponding to the current version.
+     * @deprecated Use {@link MinecraftVersion#getCurrentVersion()} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public static NmsVersion getCurrentVersion() {
         return nmsVersion;
     }
 
-    private static NmsVersion getNmsVersion(){
+    private static NmsVersion getNmsVersion() {
         Matcher matcher = Pattern.compile("(?<version>\\d+\\.\\d+)(?<patch>\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
         int currentVersion = matcher.find() ? Integer.parseInt(matcher.group("version").replace(".", "") + (matcher.group("patch") != null ? matcher.group("patch").replace(".", "") : "0")) : 0;
 
@@ -93,11 +94,11 @@ public enum NmsVersion {
 
         if (currentVersion > highestSupportedVersionEnum.version) {
             Logger.info(String.format(
-                "Running Minecraft %s (newer than highest supported version %s). " +
-                "Please report this version to help us add support. " +
-                "Check for plugin updates if you experience issues.",
-                currentVersion,
-                highestSupportedVersionEnum.name()
+                    "Running Minecraft %s (newer than highest supported version %s). " +
+                            "Please report this version to help us add support. " +
+                            "Check for plugin updates if you experience issues.",
+                    currentVersion,
+                    highestSupportedVersionEnum.name()
             ), Logger.LogType.WARNING);
             return UNKNOWN;
         }
@@ -116,160 +117,217 @@ public enum NmsVersion {
     }
 
     /**
-     * Checks if the current version supports PlayerProfiles.
-     *
-     * @return True if PlayerProfiles are supported, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.18.1"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean hasPlayerProfiles() {
         return this.version >= NmsVersion.V_1_18_1.version;
     }
 
     /**
-     * Checks if the current version uses obfuscated names.
-     *
-     * @return True if names are obfuscated, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.17"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean hasObfuscatedNames() {
         return this.version >= NmsVersion.V_1_17.version;
     }
 
     /**
-     * Checks if the current version supports components.
-     *
-     * @param isPaper True if the server uses Paper, else False.
-     * @return True if components are supported, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.16.5"))} instead (combined with your Paper check).
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isComponent(boolean isPaper) {
         return isPaper && this.version >= NmsVersion.V_1_16_5.version;
     }
 
     /**
-     * Checks if the current version is a legacy item version.
-     *
-     * @return True if the version is legacy, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isItemLegacy() {
         return this.version < NmsVersion.V_1_13.version;
     }
 
     /**
-     * Checks if the current version supports PersistentDataContainer.
-     *
-     * @return True if PersistentDataContainer is supported, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isPdcVersion() {
         return this.version >= NmsVersion.V_1_14.version;
     }
 
     /**
-     * Checks if the current version is a legacy version for Skull owners.
-     *
-     * @return True if the version is legacy, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtMost(MinecraftVersion.parse("1.12"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isSkullOwnerLegacy() {
         return this.version <= NmsVersion.V_1_12.version;
     }
 
     /**
-     * Checks if the current version supports CustomModelData.
-     *
-     * @return True if CustomModelData is supported, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isCustomModelData() {
         return this.version >= NmsVersion.V_1_14.version;
     }
 
     /**
-     * Checks if the current version is a hexadecimal version.
-     *
-     * @return True if the version is hexadecimal, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.16"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isHexVersion() {
         return this.version >= NmsVersion.V_1_16.version;
     }
 
     /**
-     * Checks if the current version is an Attribute version.
-     *
-     * @return True if the version is Attribute, else False.
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAfter(MinecraftVersion.parse("1.8.8"))} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isAttributeVersion() {
         return this.version != NmsVersion.V_1_8_8.version;
     }
 
     /**
-     * Gets the version number associated with the enumeration.
-     *
-     * @return The version number.
+     * @deprecated Use {@link MinecraftVersion#getMinor()} or comparisons via {@link MinecraftVersion} instead.
      */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public int getVersion() {
         return this.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isAttributItemStack() {
         return this.version >= NmsVersion.V_1_20_5.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().equals(MinecraftVersion.parse("1.8.8"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isOneHand() {
         return this.version == NmsVersion.V_1_8_8.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isBarrel() {
         return this.version >= V_1_14.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.9"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isShulker() {
         return this.version >= V_1_9.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewMaterial() {
         return this.version >= V_1_13.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.18"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewNBTVersion() {
         return this.version >= V_1_18.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewHeadApi() {
         return this.version >= V_1_20.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.17"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewNMSVersion() {
         return this.version >= V_1_17.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.11"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_11OrNewer() {
         return this.version >= V_1_11.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.12"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_12OrNewer() {
         return this.version >= V_1_12.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewItemStackAPI() {
         return this.version >= V_1_21.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.4"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isNewItemModelAPI() {
         return this.version >= V_1_21_4.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean isDialogsVersion() {
         return this.version >= V_1_21_7.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.2"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_2OrNewer() {
         return this.version >= V_1_21_2.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.5"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_5OrNewer() {
         return this.version >= V_1_21_5.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.9"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_9OrNewer() {
         return this.version >= V_1_21_9.version;
     }
 
+    /**
+     * @deprecated Use {@code MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.11"))} instead.
+     */
+    @Deprecated(since = "1.1.1.4", forRemoval = true)
     public boolean is1_21_11OrNewer() {
         return this.version >= V_1_21_11.version;
     }

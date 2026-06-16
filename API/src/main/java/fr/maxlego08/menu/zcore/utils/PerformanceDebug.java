@@ -3,6 +3,8 @@ package fr.maxlego08.menu.zcore.utils;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.PerformanceFilterMode;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -19,23 +21,25 @@ public class PerformanceDebug {
     private final List<OperationRecord> records = new ArrayList<>();
     private final Deque<ActiveOperation> stack = new ArrayDeque<>();
 
-    private PerformanceDebug(String context, boolean enabled) {
+    private PerformanceDebug(@Nullable String context, boolean enabled) {
         this.context = context;
         this.enabled = enabled;
     }
 
+    @NotNull
     public static PerformanceDebug disabled() {
         return DISABLED_INSTANCE;
     }
 
-    public static PerformanceDebug create(String context) {
+    @NotNull
+    public static PerformanceDebug create(@NotNull String context) {
         if (!Configuration.enablePerformanceDebug) {
             return DISABLED_INSTANCE;
         }
         return new PerformanceDebug(context, true);
     }
 
-    public void start(String operationName) {
+    public void start(@NotNull String operationName) {
         if (!this.enabled) return;
         this.stack.push(new ActiveOperation(operationName, System.nanoTime()));
     }
@@ -48,7 +52,7 @@ public class PerformanceDebug {
         this.records.add(new OperationRecord(active.name, duration));
     }
 
-    public void measure(String operationName, Runnable action) {
+    public void measure(@NotNull String operationName, @NotNull Runnable action) {
         if (!this.enabled) {
             action.run();
             return;
@@ -99,7 +103,7 @@ public class PerformanceDebug {
         Logger.info(String.format("[PerformanceDebug] --- Total: %.2f ms (%d operations recorded) ---", totalMs, this.records.size()));
     }
 
-    private boolean matchesFilter(String operationName, PerformanceFilterMode mode, List<Pattern> patterns) {
+    private boolean matchesFilter(@NotNull String operationName,@NotNull PerformanceFilterMode mode,@NotNull List<Pattern> patterns) {
         if (mode == PerformanceFilterMode.DISABLED || patterns.isEmpty()) {
             return true;
         }
@@ -112,12 +116,12 @@ public class PerformanceDebug {
             }
         }
 
-        return mode == PerformanceFilterMode.WHITELIST ? matches : !matches;
+        return (mode == PerformanceFilterMode.WHITELIST) == matches;
     }
 
-    private record ActiveOperation(String name, long startNanos) {
+    private record ActiveOperation(@NotNull String name, long startNanos) {
     }
 
-    private record OperationRecord(String name, long durationNanos) {
+    private record OperationRecord(@NotNull String name, long durationNanos) {
     }
 }

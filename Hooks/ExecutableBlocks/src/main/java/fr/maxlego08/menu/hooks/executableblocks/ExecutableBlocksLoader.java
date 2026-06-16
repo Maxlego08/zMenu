@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.hooks.executableblocks;
 
 import com.ssomar.score.api.executableblocks.ExecutableBlocksAPI;
+import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -9,6 +11,8 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
+@AutoMaterialLoader
+@RequiresPlugin("ExecutableBlocks")
 public class ExecutableBlocksLoader extends MaterialLoader {
     public ExecutableBlocksLoader() {
         super("eb");

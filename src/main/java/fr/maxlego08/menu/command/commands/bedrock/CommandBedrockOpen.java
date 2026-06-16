@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.command.commands.bedrock;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.BedrockInventory;
 import fr.maxlego08.menu.api.BedrockManager;
+import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
@@ -11,6 +11,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 
 public class CommandBedrockOpen extends VCommand {
@@ -18,7 +19,7 @@ public class CommandBedrockOpen extends VCommand {
         super(plugin);
         this.addSubCommand("open", "o");
         BedrockManager dialogManager = plugin.getBedrockManager();
-        this.addRequireArg("bedrock name", (a,b)-> dialogManager.getBedrockInventory().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase())).toList());
+        this.addRequireArg("bedrock name", (a,b)-> dialogManager.getBedrockInventory().stream().map(e-> (e.getPlugin().getName()+":"+e.getFileName().toLowerCase(Locale.ROOT))).toList());
 
         this.addOptionalArg("player");
         this.addOptionalArg("display message", (a,b)-> Arrays.asList("true", "false"));

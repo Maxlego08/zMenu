@@ -17,8 +17,10 @@ jobs:
     uses: GroupeZ-dev/actions/.github/workflows/build.yml@main
     with:
       project-name: "zMenu"
+      java-version: '25'
       publish: true
       project-to-publish: "API:publish"
+      build-command: './gradlew build'
       discord-avatar-url: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
     secrets:
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}

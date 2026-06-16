@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -21,8 +23,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
 public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLoader {
     private final MenuPlugin plugin;
 
@@ -37,7 +42,7 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
         String mergeStrategyStr = componentSection.getString("attribute-merge-strategy", "");
         AttributeMergeStrategy mergeStrategy;
         try {
-            mergeStrategy = AttributeMergeStrategy.valueOf(mergeStrategyStr.toUpperCase());
+            mergeStrategy = AttributeMergeStrategy.valueOf(mergeStrategyStr.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             mergeStrategy = AttributeMergeStrategy.ADD;
         }
@@ -50,7 +55,7 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
             if (type == null) continue;
             Attribute attribute;
             try {
-                NamespacedKey key = NamespacedKey.fromString(type.toLowerCase());
+                NamespacedKey key = NamespacedKey.fromString(type.toLowerCase(Locale.ROOT));
                 if (key == null) continue;
                 attribute = Registry.ATTRIBUTE.get(key);
             } catch (IllegalArgumentException e) {

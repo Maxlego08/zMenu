@@ -8,5 +8,6 @@ repositories {
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly("net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT")
+    compileOnly(libs.mmoitems)
+    compileOnly(libs.mythicLib)
 }

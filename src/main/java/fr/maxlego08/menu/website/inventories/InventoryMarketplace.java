@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.website.inventories;
 
-import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.website.Resource;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

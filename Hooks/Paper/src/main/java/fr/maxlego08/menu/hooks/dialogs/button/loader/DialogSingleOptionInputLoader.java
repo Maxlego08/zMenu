@@ -2,8 +2,6 @@ package fr.maxlego08.menu.hooks.dialogs.button.loader;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
 import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogSingleOptionInput;
@@ -23,6 +21,7 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
     @Override
     public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
 
+        int width = configuration.getInt(path + ".width", 200);
         String label = configuration.getString(path + ".label", "");
         boolean labelVisible = configuration.getBoolean(path + ".label-visible", true);
         List<SingleOption> singleOptionList = new ArrayList<>();
@@ -46,6 +45,8 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
                 singleOptionList.add(singleOption);
             }
         }
-        return new ZDialogSingleOptionInput(label, labelVisible,  singleOptionList);
+        ZDialogSingleOptionInput zDialogSingleOptionInput = new ZDialogSingleOptionInput(label, labelVisible, singleOptionList);
+        zDialogSingleOptionInput.setWidth(width);
+        return zDialogSingleOptionInput;
     }
 }

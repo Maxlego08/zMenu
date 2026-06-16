@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Locale;
+
 public class ZSoundOption implements SoundOption {
 
     private final XSound sound;
@@ -23,7 +25,7 @@ public class ZSoundOption implements SoundOption {
         XSound.Category localCategory;
         this.sound = sound;
         try {
-            localCategory = XSound.Category.valueOf(categoryName.toUpperCase());
+            localCategory = XSound.Category.valueOf(categoryName.toUpperCase(Locale.ROOT));
         } catch (Exception e) {
             localCategory = XSound.Category.MASTER;
         }

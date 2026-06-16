@@ -2,6 +2,8 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BundleContentsComponent;
@@ -15,6 +17,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
 public class SpigotBundleContentsItemComponentLoader extends AbstractMenuItemStackListComponentLoaderBase {
 
     public SpigotBundleContentsItemComponentLoader(MenuPlugin plugin){

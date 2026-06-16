@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils.nms;
 
+import fr.maxlego08.menu.nms.NMSHandler;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils.EnumReflectionItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,14 +14,14 @@ public class ItemStackCompound {
 
     // Static block to initialize the itemStackCompound based on the NmsVersion
     static {
-        fr.maxlego08.menu.common.utils.nms.NmsVersion nmsVersion = fr.maxlego08.menu.common.utils.nms.NmsVersion.nmsVersion;
-        if (nmsVersion == fr.maxlego08.menu.common.utils.nms.NmsVersion.V_1_18_2) {
+        MinecraftVersion currentVersion = MinecraftVersion.getCurrentVersion();
+        if (currentVersion.equals(MinecraftVersion.parse("1.18.2"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_18_2);
-        } else if (nmsVersion.getVersion() >= 1200) {
+        } else if (currentVersion.isAtLeast(MinecraftVersion.parse("1.12"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_12);
-        } else if (nmsVersion.getVersion() >= 1190) {
+        } else if (currentVersion.isAtLeast(MinecraftVersion.parse("1.19"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_19);
-        } else if (nmsVersion.getVersion() >= 1170) {
+        } else if (currentVersion.isAtLeast(MinecraftVersion.parse("1.17"))) {
             itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_17);
         } else itemStackCompound = new ItemStackCompound(EnumReflectionCompound.V1_8_8);
     }
@@ -29,7 +31,7 @@ public class ItemStackCompound {
     /**
      * Constructs an ItemStackCompound instance based on the given EnumReflectionCompound.
      *
-     * @param reflection The EnumReflectionCompound representing the NBT tag reflection version.
+     * @param reflection The EnumReflectionCompound representing the NBT tag reflection value.
      */
     public ItemStackCompound(EnumReflectionCompound reflection) {
         super();
@@ -77,6 +79,8 @@ public class ItemStackCompound {
      * @return The modified ItemStack.
      */
     public ItemStack setString(ItemStack itemStack, String key, String value) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.setString(itemStack, key, value);
         try {
             Object compoundObject = this.getCompound(itemStack);
             if (compoundObject == null) return null;
@@ -97,6 +101,8 @@ public class ItemStackCompound {
      * @return The string value.
      */
     public String getString(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.getString(itemStack, key);
         try {
             Object compoundObject = this.getCompound(itemStack);
             if (compoundObject == null) return null;
@@ -117,6 +123,8 @@ public class ItemStackCompound {
      * @return The double value.
      */
     public double getDouble(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.getDouble(itemStack, key);
         try {
             Object compoundObject = this.getCompound(itemStack);
             if (compoundObject == null) return 0;
@@ -136,6 +144,8 @@ public class ItemStackCompound {
      * @return The long value.
      */
     public long getLong(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.getLong(itemStack, key);
         try {
             Object compoundObject = this.getCompound(itemStack);
             if (compoundObject == null) return 0;
@@ -154,6 +164,8 @@ public class ItemStackCompound {
      * @return The integer value.
      */
     public int getInt(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.getInt(itemStack, key);
         try {
             Object compoundObject = this.getCompound(itemStack);
             if (compoundObject == null) return 0;
@@ -173,6 +185,8 @@ public class ItemStackCompound {
      * @return The float value.
      */
     public float getFloat(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.getFloat(itemStack, key);
         try {
             Object compoundObject = this.getCompound(itemStack);
             return (float) compoundObject.getClass().getMethod(this.reflection.getMethodGetFloat(), String.class).invoke(compoundObject, new Object[]{key});
@@ -191,6 +205,8 @@ public class ItemStackCompound {
      * @return The boolean value.
      */
     public boolean getBoolean(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.getBoolean(itemStack, key);
         try {
             Object compoundObject = this.getCompound(itemStack);
             return (boolean) compoundObject.getClass().getMethod(this.reflection.getMethodGetBoolean(), String.class).invoke(compoundObject, new Object[]{key});
@@ -210,6 +226,8 @@ public class ItemStackCompound {
      * @return The modified ItemStack.
      */
     public ItemStack setInt(ItemStack itemStack, String key, int value) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.setInt(itemStack, key, value);
         try {
             Object compoundObject = this.getCompound(itemStack);
             compoundObject.getClass().getMethod(this.reflection.getMethodSetInt(), String.class, int.class).invoke(compoundObject, key, value);
@@ -230,6 +248,8 @@ public class ItemStackCompound {
      * @return The modified ItemStack.
      */
     public ItemStack setLong(ItemStack itemStack, String key, long value) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.setLong(itemStack, key, value);
         try {
             Object compoundObject = this.getCompound(itemStack);
             compoundObject.getClass().getMethod(this.reflection.getMethodSetLong(), String.class, long.class).invoke(compoundObject, key, value);
@@ -250,6 +270,8 @@ public class ItemStackCompound {
      * @return The modified ItemStack.
      */
     public ItemStack setFloat(ItemStack itemStack, String key, float value) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.setFloat(itemStack, key, value);
         try {
             Object compoundObject = this.getCompound(itemStack);
             compoundObject.getClass().getMethod(this.reflection.getMethodSetFloat(), String.class, float.class).invoke(compoundObject, key, value);
@@ -270,6 +292,8 @@ public class ItemStackCompound {
      * @return The modified ItemStack.
      */
     public ItemStack setBoolean(ItemStack itemStack, String key, boolean value) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.setBoolean(itemStack, key, value);
 
         try {
             Object compoundObject = this.getCompound(itemStack);
@@ -291,6 +315,8 @@ public class ItemStackCompound {
      * @return The modified ItemStack.
      */
     public ItemStack setDouble(ItemStack itemStack, String key, double value) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.setDouble(itemStack, key, value);
         try {
             Object compoundObject = this.getCompound(itemStack);
             compoundObject.getClass().getMethod(this.reflection.getMethodSetDouble(), String.class, double.class).invoke(compoundObject, key, value);
@@ -310,6 +336,8 @@ public class ItemStackCompound {
      * @return True if the key is present, false otherwise.
      */
     public boolean isKey(ItemStack itemStack, String key) {
+        NMSHandler handler = NMSProvider.getHandler();
+        if (handler != null) return handler.hasKey(itemStack, key);
         try {
             Object nbttagCompound = this.getCompound(itemStack);
             if (nbttagCompound == null) return false;

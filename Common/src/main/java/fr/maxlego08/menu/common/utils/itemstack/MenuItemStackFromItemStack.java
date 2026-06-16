@@ -4,8 +4,8 @@ import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.itemstack.Firework;
 import fr.maxlego08.menu.api.itemstack.Potion;
+import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
-import fr.maxlego08.menu.common.utils.nms.NmsVersion;
 import org.bukkit.FireworkEffect;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -24,7 +24,7 @@ public class MenuItemStackFromItemStack {
         menuItemStack.setMaterial(itemStack.getType().name());
         int amount = itemStack.getAmount();
         if (amount > 1) menuItemStack.setAmount(String.valueOf(itemStack.getAmount()));
-        if (NmsVersion.getCurrentVersion().isItemLegacy()) {
+        if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
             int durability = itemStack.getDurability();
             if (durability > 0) menuItemStack.setDurability(durability);
             int data = itemStack.getData().getData();
@@ -45,7 +45,7 @@ public class MenuItemStackFromItemStack {
             menuItemStack.setFlags(new ArrayList<>(itemMeta.getItemFlags()));
             menuItemStack.setEnchantments(itemMeta.getEnchants());
 
-            if (NmsVersion.getCurrentVersion().isCustomModelData() && itemMeta.hasCustomModelData()) {
+            if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) && itemMeta.hasCustomModelData()) {
                 menuItemStack.setModelID(itemMeta.getCustomModelData());
             }
 

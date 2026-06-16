@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.StoredEnchantmentsComponent;
@@ -16,6 +18,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
 public class SpigotStoredEnchantItemComponentLoader extends ItemComponentLoader {
 
     public SpigotStoredEnchantItemComponentLoader(){

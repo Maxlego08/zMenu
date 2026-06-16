@@ -12,10 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public abstract class ItemComponentLoader {
@@ -87,7 +84,7 @@ public abstract class ItemComponentLoader {
             names.add(this.componentName);
             names.add("minecraft:" + this.componentName);
         } else if (this.ownerType == ComponentOwnerType.PLUGIN && this.plugin != null) {
-            names.add(this.plugin.getName().toLowerCase() + ":" + this.componentName);
+            names.add(this.plugin.getName().toLowerCase(Locale.ROOT) + ":" + this.componentName);
         }
         return Collections.unmodifiableList(names);
     }

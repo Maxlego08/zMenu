@@ -4,18 +4,9 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class Placeholders {
-
-    private final Map<String, String> placeholders;
-
-    public Placeholders(Map<String, String> placeholders) {
-        this.placeholders = placeholders;
-    }
+public record Placeholders(Map<String, String> placeholders) {
 
     public Placeholders() {
         this(new HashMap<>());
@@ -27,7 +18,7 @@ public class Placeholders {
      * @param key   the key of the placeholder.
      * @param value the value of the placeholder.
      */
-    public void register(@Nullable String key,@Nullable String value) {
+    public void register(@Nullable String key, @Nullable String value) {
         this.placeholders.put(key, value);
     }
 
@@ -36,8 +27,9 @@ public class Placeholders {
      *
      * @return the map of placeholders.
      */
+    @Override
     @NotNull
-    public Map<String, String> getPlaceholders() {
+    public Map<String, String> placeholders() {
         return this.placeholders;
     }
 
@@ -87,7 +79,7 @@ public class Placeholders {
      * @return the parsed string
      */
     @NotNull
-    public String parse(@NotNull String string,@NotNull String key,@NotNull String value) {
+    public String parse(@NotNull String string, @NotNull String key, @NotNull String value) {
         try {
             if (!string.contains("%")) return string;
 
@@ -96,17 +88,17 @@ public class Placeholders {
             }
 
             if (string.contains("%upper_" + key + "%")) {
-                string = string.replace("%upper_" + key + "%", value.toUpperCase());
+                string = string.replace("%upper_" + key + "%", value.toUpperCase(Locale.ROOT));
             }
 
             if (string.contains("%lower_" + key + "%")) {
-                string = string.replace("%lower_" + key + "%", value.toLowerCase());
+                string = string.replace("%lower_" + key + "%", value.toLowerCase(Locale.ROOT));
             }
 
             if (string.contains("%capitalize_" + key + "%")) {
                 String capitalize = value.isEmpty()
                         ? value
-                        : value.substring(0, 1).toUpperCase() + value.substring(1);
+                        : value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1);
                 string = string.replace("%capitalize_" + key + "%", capitalize);
             }
 
@@ -131,6 +123,6 @@ public class Placeholders {
     }
 
     public void merge(@NotNull Placeholders placeholders) {
-        this.placeholders.putAll(placeholders.getPlaceholders());
+        this.placeholders.putAll(placeholders.placeholders());
     }
 }

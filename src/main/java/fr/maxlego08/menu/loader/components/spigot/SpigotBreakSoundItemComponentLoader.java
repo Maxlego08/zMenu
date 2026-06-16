@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BreakSoundComponent;
@@ -12,7 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
+@AutoComponentLoader
+@SinceVersion("1.21.5")
 public class SpigotBreakSoundItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBreakSoundItemComponentLoader(){
@@ -26,7 +31,7 @@ public class SpigotBreakSoundItemComponentLoader extends ItemComponentLoader {
         String sound = configuration.getString(path);
         if (sound != null) {
             try {
-                NamespacedKey key = NamespacedKey.fromString(sound.toLowerCase());
+                NamespacedKey key = NamespacedKey.fromString(sound.toLowerCase(Locale.ROOT));
                 if (key != null) {
                     return new BreakSoundComponent(Registry.SOUNDS.getOrThrow(key));
                 }

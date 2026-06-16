@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader.permissible;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
@@ -11,7 +12,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
+@AutoPermissibleLoader
 public class CurrencyPermissibleLoader extends PermissibleLoader {
 
     private final ButtonManager buttonManager;
@@ -26,7 +29,7 @@ public class CurrencyPermissibleLoader extends PermissibleLoader {
         List<Action> denyActions = this.loadAction(this.buttonManager, accessor, "deny", path, file);
         List<Action> successActions = this.loadAction(this.buttonManager, accessor, "success", path, file);
         String amount = accessor.getString("amount");
-        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase());
+        Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase(Locale.ROOT));
         String economyName = accessor.getString("economy", null);
         return new ZCurrencyPermissible(denyActions, successActions, currencies, amount, economyName);
     }

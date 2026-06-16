@@ -4,12 +4,15 @@ import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.utils.Message;
 import org.bukkit.entity.EntityType;
 
+import java.util.Locale;
+
 public class EntityTypeArgumentValidator implements CommandArgumentValidator {
 
     @Override
     public boolean isValid(String value) {
         try {
-            return EntityType.valueOf(value.toUpperCase()) != null;
+            EntityType.valueOf(value.toUpperCase(Locale.ROOT));
+            return true;
         } catch (IllegalArgumentException e) {
             return false;
         }

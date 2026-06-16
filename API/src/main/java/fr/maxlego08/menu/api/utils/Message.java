@@ -79,7 +79,7 @@ public enum Message implements IMessage {
     DESCRIPTION_OPEN("Allows you to open an inventory"),
     DESCRIPTION_SAVE("Allows you to save the item in your hand"),
     DESCRIPTION_RELOAD("Allows you to reload configuration files"),
-    DESCRIPTION_VERSION("Show plugin version"),
+    DESCRIPTION_VERSION("Show plugin value"),
     DESCRIPTION_LIST("Inventory list"),
     DESCRIPTION_TEST_DUPE("Test dupe"),
     DESCRIPTION_OPEN_ITEM("Give open item"),

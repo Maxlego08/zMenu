@@ -1,16 +1,17 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
-import fr.maxlego08.menu.ZInventory;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -132,21 +133,21 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         inventory.setOpenRequirement(requirement);
 
         if (Configuration.enableDebug) {
-            this.plugin.getLogger().warning("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!");
+            Logger.info("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!", Logger.LogType.WARNING);
         }
 
         return inventory;
     }
 
     @Override
-    public void save(Inventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
-        configuration.set("name", object.getName());
-        configuration.set("size", object.size());
+        configuration.set("name", inventory.getName());
+        configuration.set("size", inventory.size());
 
-        if (object.getFillItemStack() != null) {
-            itemStackLoader.save(object.getFillItemStack(), configuration, "fillItem.", file);
+        if (inventory instanceof ContainerInventory containerInventory && containerInventory.getFillItemStack() != null) {
+            itemStackLoader.save(containerInventory.getFillItemStack(), configuration, "fillItem.", file);
         }
 
         // TODO: FINISH THE SAVE METHOD

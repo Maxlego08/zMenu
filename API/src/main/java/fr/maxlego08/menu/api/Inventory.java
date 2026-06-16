@@ -15,6 +15,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -34,7 +35,14 @@ public interface Inventory {
      * Returns the size of the inventory.
      *
      * @return The size of the inventory. This value is the number of slots in the inventory.
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ChestInventory chestInventory) {
+     *     int size = chestInventory.size();
+     * }
+     * </pre>
      */
+    @Deprecated(since = "1.1.1.5")
     int size();
 
     /**
@@ -49,19 +57,33 @@ public interface Inventory {
      *
      * @return The name of the inventory, translated to the player's language.
      */
-    String getName(Player player, InventoryEngine InventoryEngine, Placeholders placeholders);
+    String getName(@NotNull Player player, InventoryEngine InventoryEngine, Placeholders placeholders);
 
     /**
      * Returns the type of the inventory.
      *
      * @return The type of the inventory.
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     InventoryType type = containerInventory.getType();
+     * }
+     * </pre>
      */
+    @Deprecated(since = "1.1.1.5")
     InventoryType getType();
 
     /**
      * Indicates whether the inventory prevents the player from picking up items from the ground.
      * @return true if item pickup is blocked while this inventory is open, false otherwise.
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     boolean shouldCancel = containerInventory.shouldCancelItemPickup();
+     * }
+     * </pre>
      */
+    @Deprecated(since = "1.1.1.5")
     boolean shouldCancelItemPickup();
 
     /**
@@ -159,7 +181,14 @@ public interface Inventory {
      * Returns the item stack used to fill empty slots in the inventory.
      *
      * @return The fill item stack.
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     MenuItemStack fillItemStack = containerInventory.getFillItemStack();
+     * }
+     * </pre>
      */
+    @Deprecated(since = "1.1.1.5")
     MenuItemStack getFillItemStack();
 
     /**
@@ -180,7 +209,14 @@ public interface Inventory {
      * Determines whether the player's inventory should be cleared upon closing the inventory.
      *
      * @return True if the player's inventory should be cleaned, false otherwise.
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     boolean shouldClear = containerInventory.clearInventory();
+     * }
+     * </pre>
      */
+    @Deprecated(since = "1.1.1.5")
     boolean cleanInventory();
 
     /**
@@ -222,16 +258,56 @@ public interface Inventory {
      */
     String getTargetPlayerNamePlaceholder();
 
+
+    /**
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     containerInventory.setTitleAnimation(animation);
+     * }
+     * </pre>
+     */
+    @Deprecated(since = "1.1.1.5")
     void setTitleAnimation(TitleAnimation load);
 
+    /**
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     TitleAnimation animation = containerInventory.getTitleAnimation();
+     * }
+     * </pre>
+     */
+    @Deprecated(since = "1.1.1.5")
+    @Nullable
     TitleAnimation getTitleAnimation();
 
     List<Action> getOpenActions();
 
     List<Action> getCloseActions();
 
+    /**
+     *
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     ClearInvType clearInvType = containerInventory.getClearInvType();
+     * }
+     * </pre>
+     */
+    @Deprecated
     ClearInvType getClearInvType();
 
+    /**
+     *
+     * @deprecated Use:
+     * <pre>
+     * if (inventory instanceof ContainerInventory containerInventory) {
+     *     boolean isEnabled = containerInventory.isClickLimiterEnabled();
+     * }
+     * </pre>
+     */
+    @Deprecated(since = "1.1.1.5")
     boolean isClickLimiterEnabled();
 
     @Nullable

@@ -391,7 +391,7 @@ public abstract class VCommand extends Arguments {
 
         if (defaultString != null) {
             for (VCommand subCommand : this.subVCommands) {
-                if (subCommand.getSubCommands().contains(defaultString.toLowerCase()))
+                if (subCommand.getSubCommands().contains(defaultString.toLowerCase(Locale.ROOT)))
                     return CommandType.CONTINUE;
             }
         }
@@ -513,8 +513,8 @@ public abstract class VCommand extends Arguments {
         List<String> newList = new ArrayList<>();
         for (String str : defaultList) {
             if (startWith.isEmpty()
-                    || (tab.equals(Tab.START) ? str.toLowerCase().startsWith(startWith.toLowerCase())
-                    : str.toLowerCase().contains(startWith.toLowerCase()))) {
+                    || (tab.equals(Tab.START) ? str.toLowerCase(Locale.ROOT).startsWith(startWith.toLowerCase(Locale.ROOT))
+                    : str.toLowerCase(Locale.ROOT).contains(startWith.toLowerCase(Locale.ROOT)))) {
                 newList.add(str);
             }
         }

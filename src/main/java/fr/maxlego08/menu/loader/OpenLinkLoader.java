@@ -12,6 +12,7 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class OpenLinkLoader implements Loader<OpenLink> {
 
@@ -24,7 +25,7 @@ public class OpenLinkLoader implements Loader<OpenLink> {
     @Override
     public OpenLink load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
-        Action action = Action.valueOf(configuration.getString(path + "action", "OPEN_URL").toUpperCase());
+        Action action = Action.valueOf(configuration.getString(path + "action", "OPEN_URL").toUpperCase(Locale.ROOT));
         String link = configuration.getString(path + "link");
         String message = configuration.getString(path + "message");
         String replace = configuration.getString(path + "replace");

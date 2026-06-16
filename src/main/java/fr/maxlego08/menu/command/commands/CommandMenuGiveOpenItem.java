@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class CommandMenuGiveOpenItem extends VCommand {
@@ -28,7 +29,7 @@ public class CommandMenuGiveOpenItem extends VCommand {
         this.addRequireArg("inventory name", (a, b) -> {
             List<String> inventories = new ArrayList<>();
             for (Inventory inventory : inventoryManager.getInventories()) {
-                inventories.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase());
+                inventories.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
             }
             return inventories;
         });

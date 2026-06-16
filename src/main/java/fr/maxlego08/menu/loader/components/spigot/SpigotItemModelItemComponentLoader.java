@@ -1,10 +1,11 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.ItemModelComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
+@AutoComponentLoader
+@SinceVersion("1.21.2")
 public class SpigotItemModelItemComponentLoader extends ItemComponentLoader {
 
     public SpigotItemModelItemComponentLoader(){
@@ -23,7 +26,6 @@ public class SpigotItemModelItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         String modelIdStr = configuration.getString(path);
         if (modelIdStr == null) return null;
-        NamespacedKey modelId = NamespacedKey.fromString(modelIdStr);
-        return modelId == null ? null : new ItemModelComponent(modelId);
+        return new ItemModelComponent(modelIdStr);
     }
 }

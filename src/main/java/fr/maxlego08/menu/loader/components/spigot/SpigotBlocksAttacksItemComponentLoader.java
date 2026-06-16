@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.loader.components.spigot;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
@@ -19,8 +21,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+@AutoComponentLoader
+@SinceVersion("1.21.5")
 public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader {
 
     public SpigotBlocksAttacksItemComponentLoader(){
@@ -59,7 +64,7 @@ public class SpigotBlocksAttacksItemComponentLoader extends ItemComponentLoader 
 
     private void addDamageType(List<DamageType> damageTypes, String typeString) {
         try {
-            NamespacedKey key = NamespacedKey.fromString(typeString.toUpperCase());
+            NamespacedKey key = NamespacedKey.fromString(typeString.toUpperCase(Locale.ROOT));
             if (key != null) {
                 damageTypes.add(Registry.DAMAGE_TYPE.getOrThrow(key));
             }
