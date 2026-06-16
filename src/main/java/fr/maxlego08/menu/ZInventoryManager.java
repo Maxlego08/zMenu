@@ -2,14 +2,12 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
-import fr.maxlego08.menu.api.annotations.AutoActionLoader;
-import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
-import fr.maxlego08.menu.api.annotations.AutoItemStackSimilar;
-import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
+import fr.maxlego08.menu.api.annotations.*;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
+import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
@@ -25,7 +23,7 @@ import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.command.validators.*;
+import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
 import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
@@ -35,7 +33,6 @@ import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
-import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.BedrockLoader;
@@ -439,17 +436,20 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin.getWebsiteManager().loadButtons(buttonManager);
 
         var commandManager = this.plugin.getCommandManager();
-        commandManager.registerArgumentValidator(new IntArgumentValidator());
-        commandManager.registerArgumentValidator(new DoubleArgumentValidator());
-        commandManager.registerArgumentValidator(new BedrockPlayerArgumentValidator(this.plugin.getBedrockManager()));
-        commandManager.registerArgumentValidator(new BooleanArgumentValidator());
-        commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
+        // MaterialArgumentValidator
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
-        commandManager.registerArgumentValidator(new OnlinePlayerArgumentValidator(this.plugin));
-        commandManager.registerArgumentValidator(new PlayerArgumentValidator(this.plugin));
-        commandManager.registerArgumentValidator(new LocationArgumentValidator(this.plugin));
-        commandManager.registerArgumentValidator(new WorldArgumentValidator(this.plugin));
+
+        ClassRegistry<CommandArgumentValidator, MenuPlugin> validatorRegistry = ClassRegistry.
+                <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, commandManager::registerArgumentValidator)
+                .tryNoArgsConstructor()
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .errorLogger(Logger::error);
+
+        int validatorCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoCommandArgumentValidator.class, validatorRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + validatorCount + " auto command argument validator(s).");
+        }
     }
 
     @Override
