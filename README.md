@@ -76,7 +76,7 @@ items:
 <dependency>
     <groupId>fr.maxlego08.menu</groupId>
     <artifactId>zmenu-api</artifactId>
-    <version>1.1.1.4</version>
+    <version>1.1.1.5</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -88,7 +88,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("fr.maxlego08.menu:zmenu-api:1.1.1.4")
+    compileOnly("fr.maxlego08.menu:zmenu-api:1.1.1.5")
 }
 ```
 
