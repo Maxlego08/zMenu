@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.dialogs.inputs.DialogTextInput;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogTextInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -28,6 +28,6 @@ public class DialogTextInputLoader extends ButtonLoader {
         int multilineMaxLines = configuration.getInt(path + ".multiline.max-lines");
         int multilineHeight = configuration.getInt(path + ".multiline.height", 20);
 
-        return new ZDialogTextInput(label, labelVisible, defaultValue, width, maxLength, multilineMaxLines, multilineHeight);
+        return new DialogTextInput(label, labelVisible, defaultValue, width, maxLength, multilineMaxLines, multilineHeight);
     }
 }

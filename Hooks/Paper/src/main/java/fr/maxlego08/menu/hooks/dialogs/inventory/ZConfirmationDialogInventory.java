@@ -4,8 +4,8 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.inventory.dialog.ConfirmationDialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -150,7 +150,7 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
     }
 
     @Override
-    public Dialog buildDialog(@NotNull Player player, @NotNull ComponentMeta paperComponent) {
+    public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
 
         List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent);
         List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent);

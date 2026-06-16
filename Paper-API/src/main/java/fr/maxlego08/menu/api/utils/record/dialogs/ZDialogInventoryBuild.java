@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.api.utils.dialogs.record;
+package fr.maxlego08.menu.api.utils.record.dialogs;
 
 import org.jetbrains.annotations.NotNull;
 

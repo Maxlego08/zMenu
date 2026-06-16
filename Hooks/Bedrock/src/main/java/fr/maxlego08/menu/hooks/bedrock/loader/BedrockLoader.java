@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -153,7 +153,7 @@ public class BedrockLoader implements Loader<BedrockInventory> {
                 bedrockInventory.setBedrockButtons(bodyButtons);
             }
             case CUSTOM -> {
-                List<InputButton> inputButtons = this.loadButtons(configuration, file, "buttons", InputButton.class, InputButton::setKey);
+                List<BedrockInputButton> inputButtons = this.loadButtons(configuration, file, "buttons", BedrockInputButton.class, BedrockInputButton::setKey);
                 List<Requirement> actions = this.loadRequirements(configuration, "actions", file);
                 bedrockInventory.setInputButtons(inputButtons);
                 bedrockInventory.setRequirements(actions);

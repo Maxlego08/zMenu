@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.inventory.dialog;
 
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import org.bukkit.entity.Player;
 
 import java.util.List;

@@ -15,12 +15,10 @@ import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
-import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
-import io.papermc.paper.dialog.Dialog;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.record.dialogs.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -34,8 +32,6 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public abstract class AbstractDialogInventory implements DialogInventory {
 
@@ -504,9 +500,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         }
     }
 
-    public abstract Dialog buildDialog(@NotNull Player player, @NotNull ComponentMeta paperComponent);
-
-    protected DialogBase createDialogBase(@NotNull ComponentMeta paperComponent, @NotNull Player player, @NotNull List<DialogBody> dialogBodies, @NotNull List<DialogInput> dialogInputs) {
+    protected DialogBase createDialogBase(@NotNull PaperMetaUpdater paperComponent, @NotNull Player player, @NotNull List<DialogBody> dialogBodies, @NotNull List<DialogInput> dialogInputs) {
         DialogBase.Builder builder = DialogBase.builder(paperComponent.getComponent(this.menuPlugin.parse(player, this.name)));
         builder.externalTitle(paperComponent.getComponent(this.menuPlugin.parse(player, this.externalTitle)));
         builder.canCloseWithEscape(this.canCloseWithEscape);
@@ -521,24 +515,18 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         return builder.build();
     }
 
-    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player, @NotNull ComponentMeta componentMeta) {
+    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
         return this.buildDialogs(
                 player,
                 this.getDialogBodies(player),
-                BodyButton::getBodyType,
-                DialogBuilderClass::getDialogBuilder,
-                (builder, button) -> builder.build(player, button),
                 componentMeta
         );
     }
 
-    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull ComponentMeta componentMeta) {
+    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
         return this.buildDialogs(
                 player,
                 this.getDialogInputs(player),
-                InputButton::getInputType,
-                DialogBuilderClass::getDialogInputBuilder,
-                (builder, button) -> builder.build(player, button),
                 componentMeta
         );
     }
@@ -593,30 +581,20 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         }, builder.build());
     }
 
-    protected <B extends DialogButton<T>, T, TYPE, BUILDER> List<T> buildDialogs(
+    protected <B extends DialogButton<T>, T> List<T> buildDialogs(
             Player player,
             List<B> buttons,
-            Function<B, TYPE> typeExtractor,
-            Function<TYPE, Optional<BUILDER>> builderResolver,
-            BiFunction<BUILDER, B, T> builderExecutor,
-            @NotNull ComponentMeta paperMetaUpdater
+            @NotNull PaperMetaUpdater paperMetaUpdater
             ) {
         List<T> results = new ArrayList<>(buttons.size());
+        DialogRenderContext<T, DialogInventory, PaperMetaUpdater, MenuPlugin> context = new DialogRenderContext<>(results, player, this, paperMetaUpdater, new Placeholders(), this.menuPlugin);
         for (B button : buttons) {
             if (button.hasCustomRender()) {
-                DialogRenderContext<T> context = new DialogRenderContext<>(results, player, this, paperMetaUpdater);
                 button.onRender(context);
             } else {
-                TYPE type = typeExtractor.apply(button);
-                if (type == null) {
-                    continue;
-                }
-                Optional<BUILDER> builderOptional = builderResolver.apply(type);
-                if (builderOptional.isPresent()) {
-                    T value = builderExecutor.apply(builderOptional.get(), button);
-                    if (value != null) {
-                        results.add(value);
-                    }
+                T build = button.build(context);
+                if (build != null) {
+                    results.add(build);
                 }
             }
         }

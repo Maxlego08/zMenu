@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.hooks.dialogs.inventory;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public abstract class AbstractButtonUtilsInventory extends AbstractDialogInvento
         super(plugin, name, fileName, externalTitle);
     }
 
-    protected List<ActionButton> createActionButtons(List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords, @NotNull ComponentMeta paperComponent) {
+    protected List<ActionButton> createActionButtons(List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords, @NotNull PaperMetaUpdater paperComponent) {
         List<ActionButton> actionButtons = new ArrayList<>();
         for (ActionButtonRecord actionButtonRecord : actionButtonRecords) {
             ActionButton actionButton = this.createActionButton(actionButtonRecord, inputs, paperComponent);
@@ -27,7 +27,7 @@ public abstract class AbstractButtonUtilsInventory extends AbstractDialogInvento
         return actionButtons;
     }
 
-    protected ActionButton createActionButton(ActionButtonRecord actionButtonRecord, List<DialogInput> inputs, @NotNull ComponentMeta paperComponent) {
+    protected ActionButton createActionButton(ActionButtonRecord actionButtonRecord, List<DialogInput> inputs, @NotNull PaperMetaUpdater paperComponent) {
         if (actionButtonRecord == null) {
             return null;
         }

@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
@@ -33,7 +33,7 @@ public class ZBedrockInventory implements BedrockInventory {
     private final String content;
     private BedrockType bedrockType = BedrockType.SIMPLE;
     private List<BedrockButton> bedrockButtons = new ArrayList<>();
-    private List<InputButton> inputButtons = new ArrayList<>();
+    private List<BedrockInputButton> inputButtons = new ArrayList<>();
 
     private final List<Requirement> actions = new ArrayList<>();
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
@@ -116,17 +116,17 @@ public class ZBedrockInventory implements BedrockInventory {
         return this.filterByViewRequirement(this.bedrockButtons, player);
     }
 
-    public void setInputButtons(List<InputButton> inputButtons) {
+    public void setInputButtons(List<BedrockInputButton> inputButtons) {
         this.inputButtons = inputButtons != null ? inputButtons : new ArrayList<>();
     }
 
     @Override
-    public List<InputButton> getInputButtons() {
+    public List<BedrockInputButton> getInputButtons() {
         return this.inputButtons;
     }
 
     @Override
-    public List<InputButton> getInputButtons(Player player) {
+    public List<BedrockInputButton> getInputButtons(Player player) {
         return this.filterByViewRequirement(this.inputButtons, player);
     }
 

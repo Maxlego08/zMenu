@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.dialogs.inputs.DialogBooleanInput;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogBooleanInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -25,6 +25,6 @@ public class DialogBooleanInputLoader extends ButtonLoader {
         String textTrue = configuration.getString(path + ".text-true", "True");
         String textFalse = configuration.getString(path + ".text-false", "False");
 
-        return new ZDialogBooleanInput(label, defaultValue, textTrue, textFalse);
+        return new DialogBooleanInput(label, defaultValue, textTrue, textFalse);
     }
 }

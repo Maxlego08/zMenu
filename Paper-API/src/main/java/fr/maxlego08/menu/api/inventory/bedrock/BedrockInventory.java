@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
@@ -27,9 +27,9 @@ public interface BedrockInventory extends Inventory {
 
     List<BedrockButton> getBedrockButtons(Player player);
 
-    List<InputButton> getInputButtons();
+    List<BedrockInputButton> getInputButtons();
 
-    List<InputButton> getInputButtons(Player player);
+    List<BedrockInputButton> getInputButtons(Player player);
 
     InventoryReplacement getInventoryReplacement();
 

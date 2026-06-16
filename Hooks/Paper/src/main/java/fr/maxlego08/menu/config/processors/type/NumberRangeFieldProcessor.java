@@ -14,10 +14,10 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
         this.validateField(field, configOption);
 
         InputButton inputButton = this.createBaseInputButton(configOption, DialogInputType.NUMBER_RANGE);
-
-        inputButton.setStart(configOption.startRange());
-        inputButton.setEnd(configOption.endRange());
-        inputButton.setStep(configOption.stepRange());
+//TODO: refaire
+//         inputButton.setStart(configOption.startRange());
+//         inputButton.setEnd(configOption.endRange());
+//         inputButton.setStep(configOption.stepRange());
 
         String key = configOption.key();
         Class<?> fieldType = field.getType();
@@ -36,13 +36,13 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
     }
 
     private void setupIntegerField(Field field, InputButton inputButton, ConfigFieldContext context, String key) {
-        inputButton.setInitialValueRangeSupplier(() -> {
-            try {
-                return (float) field.getInt(null);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("get int value", field.getName(), e);
-            }
-        });
+//         inputButton.setInitialValueRangeSupplier(() -> {
+//             try {
+//                 return (float) field.getInt(null);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("get int value", field.getName(), e);
+//             }
+//         });
 
         context.addIntegerConsumer(key, value -> {
             try {
@@ -54,13 +54,13 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
     }
 
     private void setupLongField(Field field, InputButton inputButton, ConfigFieldContext context, String key) {
-        inputButton.setInitialValueRangeSupplier(() -> {
-            try {
-                return (float) field.getLong(null);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("get long value", field.getName(), e);
-            }
-        });
+//         inputButton.setInitialValueRangeSupplier(() -> {
+//             try {
+//                 return (float) field.getLong(null);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("get long value", field.getName(), e);
+//             }
+//         });
 
         context.addIntegerConsumer(key, value -> {
             try {
@@ -72,13 +72,13 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
     }
 
     private void setupFloatField(Field field, InputButton inputButton, ConfigFieldContext context, String key) {
-        inputButton.setInitialValueRangeSupplier(() -> {
-            try {
-                return field.getFloat(null);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("get float value", field.getName(), e);
-            }
-        });
+//         inputButton.setInitialValueRangeSupplier(() -> {
+//             try {
+//                 return field.getFloat(null);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("get float value", field.getName(), e);
+//             }
+//         });
 
         context.addFloatConsumer(key, value -> {
             try {
@@ -90,13 +90,13 @@ public class NumberRangeFieldProcessor extends AbstractConfigFieldProcessor {
     }
 
     private void setupDoubleField(Field field, InputButton inputButton, ConfigFieldContext context, String key) {
-        inputButton.setInitialValueRangeSupplier(() -> {
-            try {
-                return (float) field.getDouble(null);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("get double value", field.getName(), e);
-            }
-        });
+//         inputButton.setInitialValueRangeSupplier(() -> {
+//             try {
+//                 return (float) field.getDouble(null);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("get double value", field.getName(), e);
+//             }
+//         });
 
         context.addFloatConsumer(key, value -> {
             try {

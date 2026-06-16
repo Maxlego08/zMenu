@@ -14,38 +14,38 @@ public class TextFieldProcessor extends AbstractConfigFieldProcessor {
         this.validateField(field, configOption);
 
         InputButton inputButton = this.createBaseInputButton(configOption, DialogInputType.TEXT);
-
-        inputButton.setWidth(configOption.width());
-        inputButton.setMaxLength(configOption.maxLength());
-
-        int multilineMaxLines = configOption.multilineMaxLines();
-        if (multilineMaxLines > 0) {
-            inputButton.setMultilineMaxLines(multilineMaxLines);
-        }
-
-        int multilineHeight = configOption.multilineHeight();
-        if (multilineHeight > 0) {
-            inputButton.setMultilineHeight(multilineHeight);
-        }
-
-        inputButton.setDefaultTextSupplier(() -> {
-            try {
-                return (String) field.get(null);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("get string value", field.getName(), e);
-            }
-        });
-
-        String key = configOption.key();
-        context.addStringConsumer(key, value -> {
-            try {
-                field.set(null, value);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("set string value", field.getName(), e);
-            }
-        });
-
-        context.addInputButton(inputButton);
+//TODO: refaire
+//         inputButton.setWidth(configOption.width());
+//         inputButton.setMaxLength(configOption.maxLength());
+//
+//         int multilineMaxLines = configOption.multilineMaxLines();
+//         if (multilineMaxLines > 0) {
+//             inputButton.setMultilineMaxLines(multilineMaxLines);
+//         }
+//
+//         int multilineHeight = configOption.multilineHeight();
+//         if (multilineHeight > 0) {
+//             inputButton.setMultilineHeight(multilineHeight);
+//         }
+//
+//         inputButton.setDefaultTextSupplier(() -> {
+//             try {
+//                 return (String) field.get(null);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("get string value", field.getName(), e);
+//             }
+//         });
+//
+//         String key = configOption.key();
+//         context.addStringConsumer(key, value -> {
+//             try {
+//                 field.set(null, value);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("set string value", field.getName(), e);
+//             }
+//         });
+//
+//         context.addInputButton(inputButton);
     }
 
     @Override

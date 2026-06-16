@@ -1,16 +1,14 @@
 package fr.maxlego08.menu.hooks.bedrock.loader.builder;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
+import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.component.Component;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public abstract class BedrockBuilderManager {
     protected final MenuPlugin menuPlugin;
@@ -19,31 +17,30 @@ public abstract class BedrockBuilderManager {
         this.menuPlugin = menuPlugin;
     }
 
-    protected List<Component> getInputComponents(Player player, List<InputButton> inputButtons, Placeholders placeholders) {
+    protected List<Component> getInputComponents(Player player, List<BedrockInputButton> inputButtons, Placeholders placeholders) {
         return this.buildComponents(
                 inputButtons,
-                InputButton::getInputType,
-                BedrockBuilderClass::getDialogInputBuilder,
-                (builder, button) -> builder.build(player, button, placeholders)
+                player
         );
     }
 
-    protected <B, T, TYPE, BUILDER> List<T> buildComponents(
+    protected <B extends BedrockInputButton> List<Component> buildComponents(
             List<B> buttons,
-            Function<B, TYPE> typeExtractor,
-            Function<TYPE, Optional<BUILDER>> builderResolver,
-            BiFunction<BUILDER, B, T> builderExecutor
+            Player player
     ) {
-        return buttons.stream()
-                .map(button -> {
-                    TYPE type = typeExtractor.apply(button);
-                    if (type == null) return null;
-
-                    return builderResolver.apply(type)
-                            .map(builder -> builderExecutor.apply(builder, button))
-                            .orElse(null);
-                })
-                .filter(Objects::nonNull)
-                .toList();
+        List<Component> result = new ArrayList<>();
+        //TODO: remodifier
+        BedrockRenderContext bedrockRenderContext = new BedrockRenderContext(result, player, null, this.menuPlugin.getMetaUpdater(), new Placeholders(), this.menuPlugin);
+        for (B button : buttons) {
+            if (button.hasSpecialRender()) {
+                button.onRender(bedrockRenderContext);
+            } else {
+                Component build = button.build(bedrockRenderContext);
+                if (build != null) {
+                    result.add(build);
+                }
+            }
+        }
+        return result;
     }
 }

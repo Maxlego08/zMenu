@@ -22,6 +22,7 @@ public abstract class BodyButton extends DialogButton<DialogBody> {
 
     private int messageWidth = 300;
 
+    //TODO: refractor cette class aussi
     public BodyButton(DialogBodyType bodyType) {
         this.bodyType = bodyType;
     }

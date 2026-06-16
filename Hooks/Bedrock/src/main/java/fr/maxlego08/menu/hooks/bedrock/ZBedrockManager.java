@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
@@ -296,12 +296,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                 CustomForm.Builder builder = CustomForm.builder()
                         .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, null, placeholders)));
                 
-                List<InputButton> buttons = inventory.getInputButtons(player);
+                List<BedrockInputButton> buttons = inventory.getInputButtons(player);
                 this.getInputComponents(player, buttons, placeholders).forEach(builder::component);
 
                 builder.validResultHandler((form, responseData) -> {
                     for (int i = 0; i < buttons.size(); i++) {
-                        InputButton input = buttons.get(i);
+                        BedrockInputButton input = buttons.get(i);
                         String key = input.getKey();
 
                         Object rawValue = responseData.valueAt(i);

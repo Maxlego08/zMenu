@@ -1,37 +1,51 @@
 package fr.maxlego08.menu.api.context;
 
-import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
-import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-public class DialogRenderContext<T> {
+public class DialogRenderContext<T, I extends Inventory, M extends MetaUpdater, P extends Plugin> {
     private final List<T> content;
     private final Player player;
-    private final DialogInventory dialogInventory;
-    private final PaperMetaUpdater paperMetaUpdater;
+    private final I inventory;
+    private final M metaUpdater;
+    private final Placeholders placeholders;
+    private final P plugin;
 
-    public DialogRenderContext(List<T> content, Player player, DialogInventory dialogInventory, PaperMetaUpdater paperMetaUpdater) {
+    public DialogRenderContext(List<T> content, Player player, I inventory, M metaUpdater, Placeholders placeholders, P plugin) {
         this.content = content;
         this.player = player;
-        this.dialogInventory = dialogInventory;
-        this.paperMetaUpdater = paperMetaUpdater;
+        this.inventory = inventory;
+        this.metaUpdater = metaUpdater;
+        this.placeholders = placeholders;
+        this.plugin = plugin;
     }
 
     public List<T> getContent() {
-        return content;
+        return this.content;
     }
 
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
-    public DialogInventory getDialogInventory() {
-        return dialogInventory;
+    public I getInventory() {
+        return this.inventory;
     }
 
-    public PaperMetaUpdater getPaperMetaUpdater() {
-        return paperMetaUpdater;
+    public M getMetaUpdater() {
+        return metaUpdater;
+    }
+
+    public Placeholders getPlaceholders() {
+        return this.placeholders;
+    }
+
+    public P getPlugin() {
+        return this.plugin;
     }
 }

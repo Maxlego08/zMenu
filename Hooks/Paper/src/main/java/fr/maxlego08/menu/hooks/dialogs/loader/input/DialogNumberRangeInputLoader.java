@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.dialogs.inputs.DialogNumberRangeInput;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogNumberRangeInput;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -28,6 +28,6 @@ public class DialogNumberRangeInputLoader extends ButtonLoader {
         String initialValue = configuration.getString(path + ".initial-value", String.valueOf((end + start) / 2));
         String labelFormat = configuration.getString(path + ".label-format", "options.generic_value");
 
-        return new ZDialogNumberRangeInput(label, start, end, step, initialValue, width, labelFormat);
+        return new DialogNumberRangeInput(label, width, labelFormat, start, end, step, initialValue);
     }
 }

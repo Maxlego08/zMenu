@@ -5,9 +5,9 @@ import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.dialogs.inputs.DialogSingleOptionInput;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.api.utils.dialogs.record.SingleOption;
-import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogSingleOptionInput;
+import fr.maxlego08.menu.api.utils.record.dialogs.SingleOption;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -49,8 +49,6 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
                 singleOptionList.add(singleOption);
             }
         }
-        ZDialogSingleOptionInput zDialogSingleOptionInput = new ZDialogSingleOptionInput(label, labelVisible, singleOptionList);
-        zDialogSingleOptionInput.setWidth(width);
-        return zDialogSingleOptionInput;
+        return new DialogSingleOptionInput(label, width, labelVisible, singleOptionList);
     }
 }

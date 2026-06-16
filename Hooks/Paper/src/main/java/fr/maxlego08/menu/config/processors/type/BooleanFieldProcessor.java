@@ -12,28 +12,29 @@ public class BooleanFieldProcessor extends AbstractConfigFieldProcessor {
     @Override
     public void processField(Field field, ConfigOption configOption, ConfigFieldContext context) {
         this.validateField(field, configOption);
+        //TODO: refaire
 
         InputButton inputButton = this.createBaseInputButton(configOption, DialogInputType.BOOLEAN);
 
-        inputButton.setInitialValueSupplier(() -> {
-            try {
-                return field.getBoolean(null);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("get boolean value", field.getName(), e);
-            }
-        });
-
-        inputButton.setTextTrue(configOption.trueText());
-        inputButton.setTextFalse(configOption.falseText());
-
-        String key = configOption.key();
-        context.addBooleanConsumer(key, value -> {
-            try {
-                field.setBoolean(null, value);
-            } catch (IllegalAccessException e) {
-                throw this.createReflectionException("set boolean value", field.getName(), e);
-            }
-        });
+//         inputButton.setInitialValueSupplier(() -> {
+//             try {
+//                 return field.getBoolean(null);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("get boolean value", field.getName(), e);
+//             }
+//         });
+//
+//         inputButton.setTextTrue(configOption.trueText());
+//         inputButton.setTextFalse(configOption.falseText());
+//
+//         String key = configOption.key();
+//         context.addBooleanConsumer(key, value -> {
+//             try {
+//                 field.setBoolean(null, value);
+//             } catch (IllegalAccessException e) {
+//                 throw this.createReflectionException("set boolean value", field.getName(), e);
+//             }
+//         });
 
         context.addInputButton(inputButton);
     }

@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZServerLinksDialogInventory;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZMultiActionDialogInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;

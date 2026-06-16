@@ -4,7 +4,6 @@ import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -18,8 +17,7 @@ import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
@@ -241,18 +239,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                 return;
             }
 
-            Dialog dialog;
-            if (dialogInventory instanceof AbstractDialogInventory abstractDialogInventory) {
-                dialog = abstractDialogInventory.buildDialog(targetPlayer, this.paperComponent);
-            } else {
-                ZDialogInventoryBuild dialogBuild = dialogInventory.getBuild(targetPlayer);
-                List<DialogBody> bodies = this.getDialogBodies(targetPlayer, dialogInventory.getDialogBodies(targetPlayer));
-                List<DialogInput> inputs = this.getDialogInputs(targetPlayer, dialogInventory.getDialogInputs(targetPlayer));
-
-                DialogBase.Builder dialogBase = this.createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), dialogInventory.isPause(), dialogInventory.getAfterAction());
-                dialog = this.createDialogByType(dialogInventory.getDialogType(), dialogBase, bodies, inputs, dialogInventory, player);
-            }
-
+            Dialog dialog = dialogInventory.buildDialog(targetPlayer, this.paperComponent);
 
             player.showDialog(dialog);
 
@@ -394,16 +381,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
 
     public Optional<DialogBuilderBody> getDialogBuilder(DialogBodyType type) {
         return DialogBuilderClass.getDialogBuilder(type);
-    }
-
-    protected List<DialogBody> getDialogBodies(Player player, List<BodyButton> bodyButtons) {
-        return this.buildDialogs(
-                player,
-                bodyButtons,
-                BodyButton::getBodyType,
-                DialogBuilderClass::getDialogBuilder,
-                (builder, button) -> builder.build(player, button)
-        );
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {

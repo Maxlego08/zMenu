@@ -2,13 +2,11 @@ package fr.maxlego08.menu.config;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessor;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorFactory;
 import fr.maxlego08.menu.config.processors.ConfigFieldProcessorRegistry;
@@ -16,9 +14,6 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventoryDeveloper;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import io.papermc.paper.dialog.Dialog;
-import io.papermc.paper.registry.data.dialog.ActionButton;
-import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.input.BooleanDialogInput;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -148,54 +143,55 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
 
     @Override
     public void openConfig(@NonNull String pluginName, @NonNull Player player) {
-        try {
-            ZDialogInventoryDeveloper zDialog = this.zDialogInventoryDev.get(pluginName);
-            if (zDialog == null) {
-                if (Configuration.enableDebug) {
-                    Logger.info("No dialog found for plugin: " + pluginName);
-                }
-                return;
-            }
-
-            ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogInput> inputs = this.getDialogInputs(player, zDialog.getDialogInputs(player));
-            DialogBase.Builder dialogBase = this.createDialogBase(
-                    dialogBuild.name(),
-                    dialogBuild.externalTitle(),
-                    dialogBuild.canCloseWithEscape(),
-                    zDialog.isPause(),
-                    zDialog.getAfterAction()
-            );
-
-            Dialog dialog = Dialog.create(builder -> builder.empty()
-                    .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
-                            ActionButton.create(
-                                    this.paperComponent.getComponent(zDialog.getYesText(player)),
-                                    this.paperComponent.getComponent(zDialog.getYesTooltip(player)),
-                                    zDialog.getYesWidth(),
-                                    this.createAction(inputs, zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),
-                                            zDialog.getFloatConsumerMap(), zDialog.getIntegerConsumerMap(),
-                                            zDialog.getNumberRangeConfirmText(), zDialog.getStringConsumerMap(),
-                                            zDialog.getStringConfirmText(), zDialog.getUpdateConsumer())
-                            ),
-                            ActionButton.create(
-                                    this.paperComponent.getComponent(zDialog.getNoText(player)),
-                                    this.paperComponent.getComponent(zDialog.getNoTooltip(player)),
-                                    zDialog.getNoWidth(),
-                                    this.createAction(new ArrayList<>(), new HashMap<>(), "", new HashMap<>(),
-                                            new HashMap<>(), "", new HashMap<>(), "", null)
-                            )
-                    ))
-                    .base(dialogBase.inputs(inputs).build())
-            );
-
-            player.showDialog(dialog);
-        } catch (Exception e) {
-            if (Configuration.enableDebug) {
-                Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error :" + e.getMessage(), Logger.LogType.ERROR);
-                e.printStackTrace();
-            }
-        }
+        //TODO: refaire tout ca
+        //         try {
+//             ZDialogInventoryDeveloper zDialog = this.zDialogInventoryDev.get(pluginName);
+//             if (zDialog == null) {
+//                 if (Configuration.enableDebug) {
+//                     Logger.info("No dialog found for plugin: " + pluginName);
+//                 }
+//                 return;
+//             }
+//
+//             ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
+//             List<DialogInput> inputs = this.getDialogInputs(player, zDialog.getDialogInputs(player));
+//             DialogBase.Builder dialogBase = this.createDialogBase(
+//                     dialogBuild.name(),
+//                     dialogBuild.externalTitle(),
+//                     dialogBuild.canCloseWithEscape(),
+//                     zDialog.isPause(),
+//                     zDialog.getAfterAction()
+//             );
+//
+//             Dialog dialog = Dialog.create(builder -> builder.empty()
+//                     .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
+//                             ActionButton.create(
+//                                     this.paperComponent.getComponent(zDialog.getYesText(player)),
+//                                     this.paperComponent.getComponent(zDialog.getYesTooltip(player)),
+//                                     zDialog.getYesWidth(),
+//                                     this.createAction(inputs, zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),
+//                                             zDialog.getFloatConsumerMap(), zDialog.getIntegerConsumerMap(),
+//                                             zDialog.getNumberRangeConfirmText(), zDialog.getStringConsumerMap(),
+//                                             zDialog.getStringConfirmText(), zDialog.getUpdateConsumer())
+//                             ),
+//                             ActionButton.create(
+//                                     this.paperComponent.getComponent(zDialog.getNoText(player)),
+//                                     this.paperComponent.getComponent(zDialog.getNoTooltip(player)),
+//                                     zDialog.getNoWidth(),
+//                                     this.createAction(new ArrayList<>(), new HashMap<>(), "", new HashMap<>(),
+//                                             new HashMap<>(), "", new HashMap<>(), "", null)
+//                             )
+//                     ))
+//                     .base(dialogBase.inputs(inputs).build())
+//             );
+//
+//             player.showDialog(dialog);
+//         } catch (Exception e) {
+//             if (Configuration.enableDebug) {
+//                 Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error :" + e.getMessage(), Logger.LogType.ERROR);
+//                 e.printStackTrace();
+//             }
+//         }
     }
 
     private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap,

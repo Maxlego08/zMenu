@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import io.papermc.paper.dialog.Dialog;
 import org.bukkit.entity.Player;
@@ -90,7 +90,7 @@ public class ZDialogInventoryDeveloper extends AbstractDialogInventory {
     }
 
     @Override
-    public Dialog buildDialog(@NotNull Player player, @NotNull ComponentMeta paperComponent) {
+    public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
         return null;
     }
 }

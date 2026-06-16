@@ -11,8 +11,10 @@ import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.record.dialogs.ZDialogInventoryBuild;
+import io.papermc.paper.dialog.Dialog;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface DialogInventory extends Inventory {
+
+    Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent);
 
     @NotNull
     String getExternalTitle();

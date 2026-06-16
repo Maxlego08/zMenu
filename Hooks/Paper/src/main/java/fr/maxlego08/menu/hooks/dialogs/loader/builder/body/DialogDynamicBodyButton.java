@@ -4,11 +4,14 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
+import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogDynamicAbstractLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderBody;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -27,7 +30,7 @@ public class DialogDynamicBodyButton extends BodyButton {
     }
 
     @Override
-    public void onRender(DialogRenderContext<DialogBody> context) {
+    public void onRender(@NonNull DialogRenderContext<DialogBody, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
         int startValue = DialogDynamicAbstractLoader.stringToInt(this.plugin, this.start, context.getPlayer());
         int endValue = DialogDynamicAbstractLoader.stringToInt(this.plugin, this.end, context.getPlayer());
 
