@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.5
+
 ## New Features
 
 - **Player Inventory Placeholders**: Added `%zmenu_player_empty_slots%` to get the number of free slots in the player's inventory, and `%zmenu_player_item_count_<MATERIAL>%` to count the total amount of a specific item. These placeholders work even when the bottom inventory is hidden with `clear-inventory: true`, allowing shop menus to check if the player has enough space before purchasing.
