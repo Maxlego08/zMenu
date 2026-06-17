@@ -173,10 +173,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         this.loadOpenRequirement(configuration, inventory, file);
         this.loadOpenAndCloseActions(configuration, inventory, file);
 
-        /*Map<String, String> translatedDisplayName = new HashMap<>();
-        MenuItemStackLoader.getTranslatedName(configuration, path, translatedDisplayName);
-        String loadString;
-        inventory.setTranslatedNames(translatedDisplayName);*/
+        inventory.setTranslatedNames(MenuItemStackLoader.getTranslatedName(configuration, path));
 
         List<InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {

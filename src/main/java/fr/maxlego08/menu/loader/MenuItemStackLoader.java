@@ -450,6 +450,10 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param path          the path to the configuration key for the translated name
      */
     private void loadTranslatedName(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        menuItemStack.setTranslatedDisplayName(getTranslatedName(configuration, path));
+    }
+
+    public static Map<String, String> getTranslatedName(YamlConfiguration configuration, String path) {
         Map<String, String> translatedDisplayName = new HashMap<>();
         String loadString = configuration.contains(path + "translatedName") ? "translatedName" : configuration.contains(path + "translated-name") ? "translated-name" : null;
         if (loadString != null) {
@@ -461,7 +465,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 }
             });
         }
-        menuItemStack.setTranslatedDisplayName(translatedDisplayName);
+        return translatedDisplayName;
     }
 
     /**
