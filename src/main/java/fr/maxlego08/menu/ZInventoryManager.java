@@ -444,6 +444,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, commandManager::registerArgumentValidator)
                 .tryNoArgsConstructor()
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin))
                 .errorLogger(Logger::error);
 
         int validatorCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoCommandArgumentValidator.class, validatorRegistry);
