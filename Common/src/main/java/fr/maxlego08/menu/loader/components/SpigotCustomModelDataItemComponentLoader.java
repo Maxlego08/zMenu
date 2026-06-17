@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.annotations.SpigotOnly;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.CustomModelDataComponent;
+import fr.maxlego08.menu.api.utils.ColorUtils;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -65,7 +66,7 @@ public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemC
         List<?> colorsList = section.getList("colors");
         if (colorsList != null) {
             for (Object obj : colorsList) {
-                Color color = this.parseColor(obj);
+                Color color = ColorUtils.parse(obj);
                 if (color != null) {
                     colors.add(color);
                 }

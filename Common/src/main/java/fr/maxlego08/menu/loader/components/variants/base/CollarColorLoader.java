@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader.components.variants.base;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.utils.ColorUtils;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -24,10 +25,10 @@ public abstract class CollarColorLoader extends AbstractColorItemComponentLoader
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         Object rawColor = configuration.get(path);
         if (rawColor == null) return null;
-        Color color = parseColor(rawColor);
+        Color color = ColorUtils.parse(rawColor);
         DyeColor dyeColor;
         if (color == null) {
             try {
@@ -39,6 +40,6 @@ public abstract class CollarColorLoader extends AbstractColorItemComponentLoader
             dyeColor = DyeColor.getByColor(color);
         }
         if (dyeColor == null) return null;
-        return componentFactory.apply(dyeColor);
+        return this.componentFactory.apply(dyeColor);
     }
 }

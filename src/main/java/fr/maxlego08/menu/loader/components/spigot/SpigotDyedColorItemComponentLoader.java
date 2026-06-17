@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.DyeColorComponent;
+import fr.maxlego08.menu.api.utils.ResolvableColor;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
-import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +28,10 @@ public class SpigotDyedColorItemComponentLoader extends AbstractColorItemCompone
 
         Object obj = configuration.get(path);
         if (obj == null) return null;
-        Color color = this.parseColor(obj);
+
+        ResolvableColor color = this.parseColor(obj);
         if (color == null) return null;
+
         return new DyeColorComponent(color);
     }
 }

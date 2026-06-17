@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.PotionContentsComponent;
+import fr.maxlego08.menu.api.utils.ColorUtils;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
@@ -46,7 +47,7 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
         @Nullable Color color = null;
         Object customColor = componentSection.get("custom-color");
         if (customColor != null) {
-            color = this.parseColor(customColor);
+            color = ColorUtils.parse(customColor);
         }
 
         List<PotionEffect> customEffects = this.parsePotionEffects(componentSection.getMapList("custom-effects"));
