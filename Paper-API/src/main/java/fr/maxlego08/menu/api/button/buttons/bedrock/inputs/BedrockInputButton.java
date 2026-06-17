@@ -21,11 +21,11 @@ public abstract class BedrockInputButton extends Button {
         return this;
     }
 
-    public Component build(@NotNull BedrockRenderContext context) {
+    public Component build(@NotNull BedrockRenderContext<Component> context) {
         return null;
     }
 
-    public void onRender(@NotNull BedrockRenderContext context) {
+    public void onRender(@NotNull BedrockRenderContext<Component> context) {
 
     }
 }

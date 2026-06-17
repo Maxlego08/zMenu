@@ -4,8 +4,6 @@ import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
@@ -19,18 +17,13 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
-import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderClass;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderManager;
-import fr.maxlego08.menu.hooks.bedrock.loader.builder.bedrock.ButtonBuilder;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.geysermc.cumulus.form.CustomForm;
 import org.geysermc.cumulus.form.Form;
-import org.geysermc.cumulus.form.ModalForm;
-import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.form.util.FormBuilder;
 import org.geysermc.cumulus.response.FormResponse;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -46,21 +39,19 @@ import java.util.stream.Stream;
 public class ZBedrockManager extends BedrockBuilderManager implements BedrockManager {
     private final MenuPlugin menuPlugin;
     private final InventoryManager inventoryManager;
-    private final Map<String, List<BedrockInventory>> bedrockInventory = new HashMap<>();
-    private final Map<UUID, BedrockInventory> activeBedrockInventory = new HashMap<>();
-    private final BedrockBuilderClass dialogBuilders;
+    private final Map<String, List<BedrockInventory<?,?,?>>> bedrockInventory = new HashMap<>();
+    private final Map<UUID, BedrockInventory<?,?,?>> activeBedrockInventory = new HashMap<>();
     private final MetaUpdater metaUpdater;
 
     public ZBedrockManager(final MenuPlugin menuPlugin) {
         super(menuPlugin);
         this.menuPlugin = menuPlugin;
-        this.dialogBuilders = new BedrockBuilderClass(this.menuPlugin);
         this.inventoryManager = menuPlugin.getInventoryManager();
         this.metaUpdater = menuPlugin.getMetaUpdater();
     }
 
     @Override
-    public BedrockInventory loadBedrockInventory(Plugin plugin, String fileName) throws DialogException {
+    public BedrockInventory<?,?,?> loadBedrockInventory(Plugin plugin, String fileName) throws DialogException {
         try {
             return this.loadInventory(plugin, fileName);
         } catch (InventoryException e) {
@@ -69,8 +60,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     @Override
-    public Optional<BedrockInventory> getBedrockInventory(String dialogName) {
-        Optional<BedrockInventory> dialogs;
+    public Optional<BedrockInventory<?,?,?>> getBedrockInventory(String dialogName) {
+        Optional<BedrockInventory<?,?,?>> dialogs;
         if (dialogName.contains(":")){
             String[] values = dialogName.split(":",2);
             dialogs = this.getBedrockInventory(values[0], values[1]);
@@ -79,9 +70,9 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         }
         return dialogs;
     }
-    public Optional<BedrockInventory> getBedrockInventoryOptional(String name) {
-        for (List<BedrockInventory> dialogList : this.bedrockInventory.values()) {
-            for (BedrockInventory dialog : dialogList) {
+    public Optional<BedrockInventory<?,?,?>> getBedrockInventoryOptional(String name) {
+        for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
+            for (BedrockInventory<?,?,?> dialog : dialogList) {
                 if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
                     return Optional.of(dialog);
                 }
@@ -90,8 +81,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         return Optional.empty();
     }
     @Override
-    public Optional<BedrockInventory> getBedrockInventory(String pluginName, String fileName) {
-        List<BedrockInventory> pluginDialogs = this.bedrockInventory.get(pluginName);
+    public Optional<BedrockInventory<?,?,?>> getBedrockInventory(String pluginName, String fileName) {
+        List<BedrockInventory<?,?,?>> pluginDialogs = this.bedrockInventory.get(pluginName);
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
@@ -100,8 +91,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     @Override
-    public Optional<BedrockInventory> getBedrockInventory(Plugin plugin, String fileName) {
-        List<BedrockInventory> pluginDialogs = this.bedrockInventory.get(plugin.getName());
+    public Optional<BedrockInventory<?,?,?>> getBedrockInventory(Plugin plugin, String fileName) {
+        List<BedrockInventory<?,?,?>> pluginDialogs = this.bedrockInventory.get(plugin.getName());
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
@@ -111,7 +102,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
 
     @Override
     public void deleteBedrockInventory(String name) {
-        for (List<BedrockInventory> dialogList : this.bedrockInventory.values()) {
+        for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             dialogList.removeIf(dialog ->
                     dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
@@ -150,17 +141,18 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     @Override
-    public BedrockInventory loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException {
-        return this.loadInventory(plugin, fileName, ZBedrockInventory.class);
+    public BedrockInventory<?,?,?> loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException {
+        return this.loadInventory(plugin, fileName, (Class) BedrockInventory.class);
     }
 
     @Override
-    public BedrockInventory loadInventory(Plugin plugin, File file) throws DialogException, InventoryException {
-        return this.loadInventory(plugin, file, ZBedrockInventory.class);
+    public BedrockInventory<?,?,?> loadInventory(Plugin plugin, File file) throws DialogException, InventoryException {
+        return this.loadInventory(plugin, file, (Class) BedrockInventory.class);
     }
 
     @Override
-    public BedrockInventory loadInventory(Plugin plugin, String fileName, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException {
+    @SuppressWarnings("unchecked")
+    public BedrockInventory<?,?,?> loadInventory(Plugin plugin, String fileName, Class<? extends BedrockInventory<?, ?, ?>> dialogClass) throws DialogException, InventoryException {
         File file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
             throw new DialogFileNotFound("Dialog file not found: " + fileName + " in " + plugin.getDataFolder().getAbsolutePath() + "/" + fileName);
@@ -169,13 +161,14 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     @Override
-    public BedrockInventory loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException {
+    @SuppressWarnings("unchecked")
+    public BedrockInventory<?,?,?> loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory<?, ?, ?>> dialogClass) throws DialogException, InventoryException {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        Loader<BedrockInventory> loader = new BedrockLoader(this.menuPlugin, this);
-        BedrockInventory dialog = loader.load(configuration, "", file, dialogClass, plugin);
+        Loader<AbstractBedrockInventory<?,?,?>> loader = new BedrockLoader(this.menuPlugin, this);
+        BedrockInventory<?,?,?> dialog = loader.load(configuration, "", file, (Class<AbstractBedrockInventory<?,?,?>>) dialogClass, plugin);
 
-        List<BedrockInventory> dialogsList = this.bedrockInventory.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
+        List<BedrockInventory<?,?,?>> dialogsList = this.bedrockInventory.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
         if (Configuration.enableInformationMessage) {
@@ -200,12 +193,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
      */
 
     @Override
-    public void openBedrockInventory(Player player, BedrockInventory bedrockInventory) {
+    public void openBedrockInventory(Player player, BedrockInventory<?,?,?> bedrockInventory) {
         this.openBedrockInventory(player, bedrockInventory, new ArrayList<>());
     }
 
     @Override
-    public void openBedrockInventory(Player player, BedrockInventory bedrockInventory, List<Inventory> oldInventories) {
+    public void openBedrockInventory(Player player, BedrockInventory<?,?,?> bedrockInventory, List<Inventory> oldInventories) {
         if (!this.isBedrockPlayer(player)){
             this.menuPlugin.getMetaUpdater().sendMessage(player, Message.BEDROCK_OPEN_ERROR_NOT_BEDROCK_PLAYER.getMessage());
             return;
@@ -228,10 +221,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                 return;
             }
 
-            Form form = this.createBedrockByType(bedrockInventory, targetPlayer);
+            InventoryEngine fakeInventory = this.inventoryManager.getFakeInventory();
+            FormBuilder formBuilder = bedrockInventory.buildForm(targetPlayer, this.metaUpdater, fakeInventory);
+            Form form = this.withDefaultResultHandler(formBuilder, player, bedrockInventory);
+
             FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
 
-            InventoryEngine fakeInventory = this.inventoryManager.getFakeInventory();
             bedrockInventory.getOpenActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
 
             this.activeBedrockInventory.put(player.getUniqueId(), bedrockInventory);
@@ -243,87 +238,6 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                 }
             }
         }
-    }
-
-    /**
-     * Creates a dialog based on the dialog type
-     */
-    private Form createBedrockByType(BedrockInventory inventory, Player player) {
-        return switch (inventory.getBedrockType()) {
-            case MODAL -> {
-                Placeholders placeholders = new Placeholders();
-                placeholders.register("player", player.getName());
-                List<BedrockButton> buttons = inventory.getBedrockButtons(player);
-                ModalForm.Builder builder = ModalForm.builder()
-                        .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, this.inventoryManager.getFakeInventory(), placeholders)))
-                        .content(this.metaUpdater.getLegacyMessage(inventory.getContent(player)))
-                        .button1(this.metaUpdater.getLegacyMessage(this.menuPlugin.parse(player, buttons.get(0).getText(placeholders))))
-                        .button2(this.metaUpdater.getLegacyMessage(this.menuPlugin.parse(player, buttons.get(1).getText(placeholders))))
-                        .validResultHandler((form, responseData) -> {
-                            placeholders.register("content", form.content());
-
-                            int id = responseData.clickedButtonId();
-                            buttons.get(id).onClick(player, this.inventoryManager.getFakeInventory(), id, placeholders);
-                        });
-                
-                yield this.withDefaultResultHandler(builder, player, inventory);
-            }
-
-            case SIMPLE -> {
-                Placeholders placeholders = new Placeholders();
-                placeholders.register("player", player.getName());
-                SimpleForm.Builder builder = SimpleForm.builder()
-                        .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, null, placeholders)))
-                        .content(this.metaUpdater.getLegacyMessage(inventory.getContent(player)));
-                
-                List<BedrockButton> buttons = inventory.getBedrockButtons(player);
-                ButtonBuilder buttonBuilder = this.dialogBuilders.getBedrockButtonBuilder();
-                buttons.forEach(button -> {
-                    builder.button(buttonBuilder.build(player, button, placeholders));
-                });
-                builder.validResultHandler((form, responseData) -> {
-                    placeholders.register("content", form.content());
-                    int slot = responseData.clickedButtonId();
-                    BedrockButton bedrockButton = buttons.get(slot);
-                    bedrockButton.onClick(player, this.inventoryManager.getFakeInventory(), slot, placeholders);
-                });
-                yield this.withDefaultResultHandler(builder, player, inventory);
-            }
-
-            case CUSTOM -> {
-                Placeholders placeholders = new Placeholders();
-                placeholders.register("player", player.getName());
-                CustomForm.Builder builder = CustomForm.builder()
-                        .title(this.metaUpdater.getLegacyMessage(inventory.getName(player, null, placeholders)));
-                
-                List<BedrockInputButton> buttons = inventory.getInputButtons(player);
-                this.getInputComponents(player, buttons, placeholders).forEach(builder::component);
-
-                builder.validResultHandler((form, responseData) -> {
-                    for (int i = 0; i < buttons.size(); i++) {
-                        BedrockInputButton input = buttons.get(i);
-                        String key = input.getKey();
-
-                        Object rawValue = responseData.valueAt(i);
-                        if (rawValue == null) {
-                            continue;
-                        }
-
-                        String value = rawValue.toString();
-                        if (value == null) {
-                            continue;
-                        }
-
-                        placeholders.register(key, value);
-                    }
-
-                    for (Requirement requirement : inventory.getRequirements()) {
-                        requirement.execute(player, null, this.inventoryManager.getFakeInventory(), placeholders);
-                    }
-                });
-                yield this.withDefaultResultHandler(builder, player, inventory);
-            }
-        };
     }
 
     protected  <B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> Form withDefaultResultHandler(B builder, Player player, BedrockInventory inventory) {
@@ -339,7 +253,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     /**
      * Gets the active bedrock Inventory for a player
      */
-    public Optional<BedrockInventory> getActiveBedrockInventory(Player player) {
+    public Optional<BedrockInventory<?,?,?>> getActiveBedrockInventory(Player player) {
         return Optional.ofNullable(this.activeBedrockInventory.get(player.getUniqueId()));
     }
 
@@ -351,7 +265,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
 
     public boolean openBedrockInventoryByName(Player player, String dialogName) {
-        Optional<BedrockInventory> dialog = this.getBedrockInventory(dialogName);
+        Optional<BedrockInventory<?,?,?>> dialog = this.getBedrockInventory(dialogName);
         if (dialog.isPresent()) {
             this.openBedrockInventory(player, dialog.get());
             return true;
@@ -367,9 +281,9 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
     
     @Override
-    public Collection<BedrockInventory> getBedrockInventory() {
-        List<BedrockInventory> allDialogs = new ArrayList<>();
-        for (List<BedrockInventory> dialogList : this.bedrockInventory.values()) {
+    public Collection<BedrockInventory<?,?,?>> getBedrockInventory() {
+        List<BedrockInventory<?,?,?>> allDialogs = new ArrayList<>();
+        for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             allDialogs.addAll(dialogList);
         }
         return Collections.unmodifiableCollection(allDialogs);

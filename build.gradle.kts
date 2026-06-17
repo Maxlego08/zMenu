@@ -39,6 +39,8 @@ allprojects {
         maven(url = "https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven(url = "https://libraries.minecraft.net/")
         maven(url = "https://repo.jsinco.dev/releases")
+        maven("https://repo.opencollab.dev/maven-releases")
+        maven("https://repo.opencollab.dev/maven-snapshots")
         maven {
             url = uri("https://jitpack.io")
             content {
@@ -111,6 +113,7 @@ allprojects {
         }
         compileOnly(rootLibs.placeholderapi)
         compileOnly(rootLibs.reflections)
+        compileOnly(rootLibs.floodgate)
 
         implementation(rootLibs.sarah)
         implementation(rootLibs.currenciesapi)

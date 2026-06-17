@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
-import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.bedrock.button.buttons.ZBedrockButton;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -19,7 +19,7 @@ public class BedrockModalButtonLoader extends ButtonLoader {
     }
 
     @Override
-    public BedrockButton load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public BedrockComponentButton load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
 
         return new ZBedrockButton(text);

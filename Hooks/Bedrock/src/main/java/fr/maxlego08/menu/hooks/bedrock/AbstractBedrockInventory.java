@@ -3,8 +3,7 @@ package fr.maxlego08.menu.hooks.bedrock;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
+import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
@@ -15,6 +14,9 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.geysermc.cumulus.form.Form;
+import org.geysermc.cumulus.form.util.FormBuilder;
+import org.geysermc.cumulus.response.FormResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -22,18 +24,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
-public class ZBedrockInventory implements BedrockInventory {
+public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> implements BedrockInventory<B, F, R> {
 
-    private final MenuPlugin menuPlugin;
+    protected final MenuPlugin menuPlugin;
     private final String fileName;
     private File file;
 
     private final String name;
-    private final String content;
-    private BedrockType bedrockType = BedrockType.SIMPLE;
-    private List<BedrockButton> bedrockButtons = new ArrayList<>();
-    private List<BedrockInputButton> inputButtons = new ArrayList<>();
+    private final BedrockType bedrockType;
 
     private final List<Requirement> actions = new ArrayList<>();
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
@@ -45,11 +45,11 @@ public class ZBedrockInventory implements BedrockInventory {
     private List<Action> closeActions = new ArrayList<>();
 
 
-    public ZBedrockInventory(MenuPlugin plugin, String fileName, String name, String content) {
+    public AbstractBedrockInventory(@NotNull MenuPlugin plugin, @NotNull String fileName, @NotNull String name, @NotNull BedrockType bedrockType) {
         this.menuPlugin = plugin;
         this.name = name;
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
-        this.content = content;
+        this.bedrockType = bedrockType;
     }
 
     @Override
@@ -71,11 +71,6 @@ public class ZBedrockInventory implements BedrockInventory {
     }
 
     @Override
-    public String getContent(Player player) {
-        return this.menuPlugin.parse(player, this.content);
-    }
-
-    @Override
     public String getFileName() {
         return this.fileName;
     }
@@ -93,41 +88,9 @@ public class ZBedrockInventory implements BedrockInventory {
         this.file = file;
     }
 
-    public void setBedrockType(BedrockType bedrockType) {
-        this.bedrockType = bedrockType;
-    }
-
     @Override
-    public BedrockType getBedrockType() {
+    public @NotNull BedrockType getBedrockType() {
         return this.bedrockType;
-    }
-
-    public void setBedrockButtons(List<BedrockButton> bedrockButtons) {
-        this.bedrockButtons = bedrockButtons;
-    }
-
-    @Override
-    public List<BedrockButton> getBedrockButtons() {
-        return this.bedrockButtons;
-    }
-
-    @Override
-    public List<BedrockButton> getBedrockButtons(Player player) {
-        return this.filterByViewRequirement(this.bedrockButtons, player);
-    }
-
-    public void setInputButtons(List<BedrockInputButton> inputButtons) {
-        this.inputButtons = inputButtons != null ? inputButtons : new ArrayList<>();
-    }
-
-    @Override
-    public List<BedrockInputButton> getInputButtons() {
-        return this.inputButtons;
-    }
-
-    @Override
-    public List<BedrockInputButton> getInputButtons(Player player) {
-        return this.filterByViewRequirement(this.inputButtons, player);
     }
 
     public void setOpenRequirement(Requirement openRequirement) {
@@ -200,6 +163,55 @@ public class ZBedrockInventory implements BedrockInventory {
         return false;
     }
 
+    protected Placeholders createPlaceholders(Player player) {
+        Placeholders placeholders = new Placeholders();
+        placeholders.register("player", player.getName());
+        return placeholders;
+    }
+
+    protected String getLegacyTitle(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
+        return this.menuPlugin.getMetaUpdater().getLegacyMessage(this.getName(player, inventoryEngine, placeholders));
+    }
+
+    protected String getLegacyMessage(Player player, Placeholders placeholders, String message) {
+        return this.menuPlugin.getMetaUpdater().getLegacyMessage(this.menuPlugin.parse(player, placeholders.parse(message)));
+    }
+
+    protected <C, T extends Button> List<C> renderButtons(
+            List<T> buttons,
+            Player player,
+            Placeholders placeholders,
+            java.util.function.BiConsumer<T, fr.maxlego08.menu.api.context.BedrockRenderContext<C>> renderLogic) {
+        return renderButtons(buttons, player, placeholders, null, renderLogic);
+    }
+
+    protected <C, T extends Button> List<C> renderButtons(
+            List<T> buttons,
+            Player player,
+            Placeholders placeholders,
+            List<T> expandedButtons,
+            java.util.function.BiConsumer<T, fr.maxlego08.menu.api.context.BedrockRenderContext<C>> renderLogic) {
+        List<C> result = new ArrayList<>();
+        fr.maxlego08.menu.api.context.BedrockRenderContext<C> context = new fr.maxlego08.menu.api.context.BedrockRenderContext<>(result, player, this, this.menuPlugin.getMetaUpdater(), placeholders, this.menuPlugin);
+
+        for (T button : buttons) {
+            int beforeSize = result.size();
+            if (expandedButtons != null && button instanceof fr.maxlego08.menu.hooks.bedrock.button.BedrockDynamicButton dynamic) {
+                dynamic.onRender(context, expandedButton -> expandedButtons.add((T) expandedButton));
+            } else {
+                renderLogic.accept(button, context);
+                int afterSize = result.size();
+
+                if (expandedButtons != null) {
+                    for (int i = 0; i < (afterSize - beforeSize); i++) {
+                        expandedButtons.add(button);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
         this.targetPlayerNamePlaceholder = targetPlaceholder;
     }
@@ -214,12 +226,12 @@ public class ZBedrockInventory implements BedrockInventory {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Button> List<T> filterByViewRequirement(List<T> buttons, Player player) {
+    protected <T extends Button> List<T> filterByViewRequirement(List<T> buttons, Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
         List<T> visibleButtons = new ArrayList<>();
         for (T button : buttons) {
             Button masterParent = button.getMasterParentButton();
             if (button.getClass().isInstance(masterParent)) {
-                T visible = this.getFirstVisibleButtonRecursive((T) masterParent, player);
+                T visible = this.getFirstVisibleButtonRecursive((T) masterParent, player, placeholders, inventoryEngine);
                 if (visible != null) {
                     visibleButtons.add(visible);
                 }
@@ -229,12 +241,12 @@ public class ZBedrockInventory implements BedrockInventory {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Button> T getFirstVisibleButtonRecursive(T button, Player player) {
+    private <T extends Button> T getFirstVisibleButtonRecursive(T button, Player player, Placeholders placeholders, InventoryEngine inventoryEngine) {
         if (button.hasPermission()) {
-            boolean hasPermission = button.checkPermission(player, this.menuPlugin.getInventoryManager().getFakeInventory(), new Placeholders());
+            boolean hasPermission = button.checkPermission(player, inventoryEngine, placeholders);
             if (!hasPermission) {
                 if (button.hasElseButton()) {
-                    return this.getFirstVisibleButtonRecursive((T) button.getElseButton(), player);
+                    return this.getFirstVisibleButtonRecursive((T) button.getElseButton(), player, placeholders, inventoryEngine);
                 } else {
                     return null;
                 }

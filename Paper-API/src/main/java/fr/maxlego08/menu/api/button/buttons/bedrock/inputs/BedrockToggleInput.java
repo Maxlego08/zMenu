@@ -18,7 +18,8 @@ public class BedrockToggleInput extends VanillaBedrockInput {
         this.defaultValue = defaultValue;
     }
 
-    public Component build(@NotNull BedrockRenderContext context) {
+    @Override
+    public Component build(@NotNull BedrockRenderContext<Component> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
         MetaUpdater metaUpdater = context.getMetaUpdater();

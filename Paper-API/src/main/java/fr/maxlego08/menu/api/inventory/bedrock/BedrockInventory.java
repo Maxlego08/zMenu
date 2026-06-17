@@ -3,38 +3,34 @@ package fr.maxlego08.menu.api.inventory.bedrock;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
-import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
+import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.geysermc.cumulus.form.Form;
+import org.geysermc.cumulus.form.util.FormBuilder;
+import org.geysermc.cumulus.response.FormResponse;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public interface BedrockInventory extends Inventory {
-    String getContent(Player player);
-
-    List<BedrockButton> getBedrockButtons();
-
-    List<BedrockButton> getBedrockButtons(Player player);
-
-    List<BedrockInputButton> getInputButtons();
-
-    List<BedrockInputButton> getInputButtons(Player player);
+public interface BedrockInventory<B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> extends Inventory {
+    B buildForm(@NotNull Player player, @NotNull MetaUpdater metaUpdater, @NotNull InventoryEngine inventoryEngine);
 
     InventoryReplacement getInventoryReplacement();
 
     List<Requirement> getRequirements();
 
+    @NotNull
     BedrockType getBedrockType();
 
     //TODO getOpenWithItem not implemented but need

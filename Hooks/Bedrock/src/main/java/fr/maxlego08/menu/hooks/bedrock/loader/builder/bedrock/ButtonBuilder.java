@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.bedrock.loader.builder.bedrock;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -19,7 +19,7 @@ public class ButtonBuilder {
         this.metaUpdater = this.menuPlugin.getMetaUpdater();
     }
 
-    public ButtonComponent build(Player player, BedrockButton button, Placeholders placeholders) {
+    public ButtonComponent build(Player player, BedrockComponentButton button, Placeholders placeholders) {
         String text = this.parseAndColor(button.getRawText(), player, placeholders);
 
         BedrockImageType imageType = button.getImageType(player);

@@ -38,7 +38,7 @@ public class CommandBedrockOpen extends VCommand {
             this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? Message.BEDROCK_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
             return CommandType.DEFAULT;
         }
-        Optional<BedrockInventory> optional = bedrockManager.getBedrockInventory(dialogName);
+        Optional<? extends BedrockInventory<?, ?, ?>> optional = bedrockManager.getBedrockInventory(dialogName);
 
         if (optional.isEmpty()) {
             this.message(plugin, this.sender, Message.BEDROCK_OPEN_ERROR_NOT_FOUND,"%name%", dialogName);
@@ -53,7 +53,7 @@ public class CommandBedrockOpen extends VCommand {
             }
         }
 
-        BedrockInventory bedrockInventory = optional.get();
+        BedrockInventory<?, ?, ?> bedrockInventory = optional.get();
         bedrockManager.openBedrockInventory(targetPlayer, bedrockInventory);
 
 

@@ -37,7 +37,7 @@ public class BedrockAction extends ActionHelper {
             List<Inventory> oldInventories = inventory.getOldInventories();
 
             String dialogName = this.papi(placeholders.parse(this.bedrockInventory), player);
-            Optional<BedrockInventory> optional = this.plugin == null ? this.bedrockManager.getBedrockInventory(dialogName) : this.bedrockManager.getBedrockInventory(this.plugin, dialogName);
+            Optional<? extends BedrockInventory<?, ?, ?>> optional = this.plugin == null ? this.bedrockManager.getBedrockInventory(dialogName) : this.bedrockManager.getBedrockInventory(this.plugin, dialogName);
             if (optional.isPresent()) {
                 oldInventories.add(fromInventory);
 

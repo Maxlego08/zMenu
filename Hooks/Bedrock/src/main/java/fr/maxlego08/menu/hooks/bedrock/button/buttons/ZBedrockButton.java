@@ -1,15 +1,17 @@
 package fr.maxlego08.menu.hooks.bedrock.button.buttons;
 
-import fr.maxlego08.menu.api.button.bedrock.BedrockButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
 
-public class ZBedrockButton extends BedrockButton {
+public class ZBedrockButton extends BedrockComponentButton {
 
     public ZBedrockButton(String text, BedrockImageType imageType, String imageData) {
-        super(text, imageType, imageData);
+        this.setText(text);
+        this.setImageType(imageType);
+        this.setImageData(imageData);
     }
 
     public ZBedrockButton(String text) {
-        super(text);
+        this.setText(text);
     }
 }

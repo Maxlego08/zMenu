@@ -1,26 +1,18 @@
-package fr.maxlego08.menu.api.button.bedrock;
+package fr.maxlego08.menu.api.button.buttons.bedrock.components;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
+import org.geysermc.cumulus.component.ButtonComponent;
+import org.jetbrains.annotations.Nullable;
 
-public class BedrockButton extends Button {
+public abstract class BedrockComponentButton extends Button {
     private String text;
     private BedrockImageType imageType = BedrockImageType.NONE;
     private String imageData;
 
-    public BedrockButton(String text) {
-        super();
-        this.text = text;
-    }
-
-    public BedrockButton(String text, BedrockImageType imageType, String imageData) {
-        super();
-        this.text = text;
-        this.imageType = imageType;
-        this.imageData = imageData;
-    }
 
     public void setText(String text){
         this.text = text;
@@ -48,5 +40,13 @@ public class BedrockButton extends Button {
 
     public String getImageData() {
         return this.imageData;
+    }
+
+    public void onRender(BedrockRenderContext<ButtonComponent> context) {
+    }
+
+    @Nullable
+    public ButtonComponent build(BedrockRenderContext<ButtonComponent> context) {
+        return null;
     }
 }
