@@ -23,19 +23,14 @@ public class SpigotAttackRangeItemComponentLoader extends AbstractAttackRangeIte
         if (componentSection == null) {
             return null;
         }
-        float minReach = getMinReach(componentSection, path);
-        float maxReach = getMaxReach(componentSection, path);
-        float minCreativeReach = getMinCreativeReach(componentSection, path);
-        float maxCreativeReach = getMaxCreativeReach(componentSection, path);
-        float hitboxMargin = getHitboxMargin(componentSection, path);
-        float mobFactor = getMobFactor(componentSection, path);
+
         return new SpigotAttackRangeComponent(
-                minReach,
-                maxReach,
-                minCreativeReach,
-                maxCreativeReach,
-                hitboxMargin,
-                mobFactor
+                this.getMinReachResolvable(componentSection, path),
+                this.getMaxReachResolvable(componentSection, path),
+                this.getMinCreativeReachResolvable(componentSection, path),
+                this.getMaxCreativeReachResolvable(componentSection, path),
+                this.getHitboxMarginResolvable(componentSection, path),
+                this.getMobFactorResolvable(componentSection, path)
         );
     }
 }

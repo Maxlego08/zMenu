@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.api.utils.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.ResolvableColor;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ public class DyeColorComponent extends ItemComponent {
         Color resolved = this.color.resolve(context);
         if (resolved == null) {
             if (Configuration.enableDebug && this.color.isDynamic()) {
-                Logger.info("Could not resolve dynamic color '" + this.color.getDynamicValue() + "' for item: " + itemStack.getType().name());
+                Logger.info("Could not resolve dynamic color '" + this.color.getExpression() + "' for item: " + itemStack.getType().name());
             }
             return;
         }
