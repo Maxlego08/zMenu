@@ -77,12 +77,13 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         dialogInventory.setBooleanConfirmText(configDialog.getBooleanConfirmText());
         dialogInventory.setNumberRangeConfirmText(configDialog.getNumberRangeConfirmText());
         dialogInventory.setStringConfirmText(configDialog.getTextConfirmText());
-        dialogInventory.setYesText(configDialog.getYesText());
-        dialogInventory.setYesWidth(configDialog.getYesWidth());
-        dialogInventory.setYesTooltip(configDialog.getYesTooltip());
-        dialogInventory.setNoText(configDialog.getNoText());
-        dialogInventory.setNoWidth(configDialog.getNoWidth());
-        dialogInventory.setNoTooltip(configDialog.getNoTooltip());
+        //TODO: refaire
+        //         dialogInventory.setYesText(configDialog.getYesText());
+//         dialogInventory.setYesWidth(configDialog.getYesWidth());
+//         dialogInventory.setYesTooltip(configDialog.getYesTooltip());
+//         dialogInventory.setNoText(configDialog.getNoText());
+//         dialogInventory.setNoWidth(configDialog.getNoWidth());
+//         dialogInventory.setNoTooltip(configDialog.getNoTooltip());
         dialogInventory.setPause(true);
         dialogInventory.setCanCloseWithEscape(false);
 

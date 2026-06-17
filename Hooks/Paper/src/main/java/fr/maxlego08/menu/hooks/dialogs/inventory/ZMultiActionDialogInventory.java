@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.hooks.dialogs.inventory;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.inventory.dialog.MultiActionDialogInventory;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -58,15 +60,15 @@ public class ZMultiActionDialogInventory extends AbstractButtonUtilsInventory im
     }
 
     @Override
-    public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
+    public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent);
         List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent);
 
         return Dialog.create(builder -> {
             builder.empty()
                     .type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(
-                            this.createActionButtons(dialogInputsForPlayer, this.getActionButtons(player), paperComponent),
-                            this.exitButton != null ? this.createActionButton(this.exitButton.parse(player), dialogInputsForPlayer, paperComponent) : null,
+                            this.createActionButtons(dialogInputsForPlayer, this.getActionButtons(player), paperComponent, placeholders, player, inventoryEngine, null),
+                            this.exitButton != null ? this.createActionButton(this.exitButton.parse(player), dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null,
                             this.numberOfColumns
                     ))
                     .base(

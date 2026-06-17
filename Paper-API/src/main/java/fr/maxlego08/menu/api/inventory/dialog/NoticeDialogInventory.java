@@ -1,9 +1,6 @@
 package fr.maxlego08.menu.api.inventory.dialog;
 
-import fr.maxlego08.menu.api.requirement.Requirement;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public interface NoticeDialogInventory extends DialogInventory {
 
@@ -22,9 +19,5 @@ public interface NoticeDialogInventory extends DialogInventory {
     int getLabelWidth();
 
     void setLabelWidth(int labelWidth);
-
-    void addAction(List<Requirement> action);
-
-    List<Requirement> getActions();
 
 }

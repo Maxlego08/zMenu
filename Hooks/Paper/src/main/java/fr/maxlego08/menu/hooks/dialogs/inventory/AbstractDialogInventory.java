@@ -20,17 +20,14 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.record.dialogs.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
-import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
-import io.papermc.paper.registry.data.dialog.input.*;
-import net.kyori.adventure.text.event.ClickCallback;
+import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.time.temporal.TemporalAmount;
 import java.util.*;
 
 public abstract class AbstractDialogInventory implements DialogInventory {
@@ -271,202 +268,6 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         return this.filterByViewRequirement(this.inputButtons, player);
     }
 
-    @Deprecated
-    @Override
-    public List<Requirement> getYesActions() {
-        return Collections.emptyList();
-    }
-
-    @Deprecated
-    @Override
-    public List<Requirement> getNoActions() {
-        return Collections.emptyList();
-    }
-
-    @Deprecated
-    @Override
-    public void addYesAction(List<Requirement> actions) {
-    }
-
-    @Deprecated
-    @Override
-    public void addNoAction(List<Requirement> actions) {
-    }
-
-    @Deprecated
-    @Override
-    public String getYesText() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public String getYesText(Player player) {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public void setYesText(String yesText) {
-    }
-
-    @Deprecated
-    @Override
-    public String getNoText() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public String getNoText(Player player) {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public void setNoText(String noText) {
-    }
-
-    @Deprecated
-    @Override
-    public String getYesTooltip() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public String getYesTooltip(Player player) {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public void setYesTooltip(String yesTooltip) {
-    }
-
-    @Deprecated
-    @Override
-    public String getNoTooltip() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public String getNoTooltip(Player player) {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public int getYesWidth() {
-        return 0;
-    }
-
-    @Deprecated
-    @Override
-    public int getNoWidth() {
-        return 0;
-    }
-
-    @Deprecated
-    @Override
-    public void setYesWidth(int yesWidth) {
-    }
-
-    @Deprecated
-    @Override
-    public void setNoWidth(int noWidth) {
-    }
-
-    @Deprecated
-    @Override
-    public String getLabel() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public String getLabel(Player player) {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public void setLabel(String label) {
-    }
-
-    @Deprecated
-    @Override
-    public String getLabelTooltip() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public String getLabelTooltip(Player player) {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public void setLabelTooltip(String labelTooltip) {
-    }
-
-    @Deprecated
-    @Override
-    public int getLabelWidth() {
-        return 0;
-    }
-
-    @Deprecated
-    @Override
-    public void setLabelWidth(int labelWidth) {
-    }
-
-    @Deprecated
-    @Override
-    public List<ActionButtonRecord> getActionButtons(Player player) {
-        return Collections.emptyList();
-    }
-
-    @Deprecated
-    @Override
-    public List<ActionButtonRecord> getActionButtons() {
-        return Collections.emptyList();
-    }
-
-    @Deprecated
-    @Override
-    public void addActionButton(ActionButtonRecord actionButton) {
-    }
-
-    @Deprecated
-    @Override
-    public int getNumberOfColumns() {
-        return 0;
-    }
-
-    @Deprecated
-    @Override
-    public void setNumberOfColumns(int numberOfColumns) {
-    }
-
-    @Deprecated
-    @Override
-    public void addAction(List<Requirement> actions) {
-    }
-
-    @Deprecated
-    @Override
-    public List<Requirement> getActions() {
-        return Collections.emptyList();
-    }
-
-    @Deprecated
-    @Override
-    public void setNoTooltip(String noTooltip) {
-    }
-
     @SuppressWarnings("unchecked")
     protected <T extends DialogButton<?>> List<T> filterByViewRequirement(List<T> buttons, Player player) {
         List<T> visibleButtons = new ArrayList<>();
@@ -531,55 +332,6 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         );
     }
 
-
-    protected DialogAction createAction(@NotNull List<DialogInput> inputs,@NotNull List<Requirement> requirements, int usageLimit, @Nullable TemporalAmount actionDurationLimit) {
-        ClickCallback.Options.Builder builder = ClickCallback.Options.builder();
-        builder.uses(usageLimit);
-        if (actionDurationLimit != null) {
-            builder.lifetime(actionDurationLimit);
-        }
-        return DialogAction.customClick((view,audience)-> {
-            Placeholders placeholders = new Placeholders();
-            for (DialogInput input : inputs) {
-                String key = input.key();
-                String value = null;
-
-                Object rawValue;
-
-                switch (input) {
-                    case NumberRangeDialogInput numberRangeDialogInput -> {
-                        rawValue = view.getFloat(key);
-                        value = String.valueOf(rawValue);
-                    }
-                    case TextDialogInput textDialogInput -> {
-                        rawValue = view.getText(key);
-                        value = (String) rawValue;
-                    }
-                    case BooleanDialogInput booleanDialogInput -> {
-                        rawValue = view.getBoolean(key);
-                        value = String.valueOf(rawValue);
-                        placeholders.register(key+"_text", (Boolean) rawValue ? booleanDialogInput.onTrue() : booleanDialogInput.onFalse());
-                    }
-                    case SingleOptionDialogInput singleOptionDialogInput -> {
-                        rawValue = view.getText(key);
-                        value = (String) rawValue;
-                    }
-                    default -> {
-                    }
-                }
-                if (value == null) {
-                    continue;
-                }
-
-                placeholders.register(key, value);
-            }
-
-            for (Requirement requirement : requirements) {
-                requirement.execute((Player) audience, null, this.menuPlugin.getInventoryManager().getFakeInventory(), placeholders);
-            }
-
-        }, builder.build());
-    }
 
     protected <B extends DialogButton<T>, T> List<T> buildDialogs(
             Player player,

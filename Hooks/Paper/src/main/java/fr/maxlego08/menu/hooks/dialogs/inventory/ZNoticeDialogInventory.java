@@ -1,10 +1,11 @@
 package fr.maxlego08.menu.hooks.dialogs.inventory;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.inventory.dialog.NoticeDialogInventory;
-import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -26,11 +27,6 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
     }
 
     @Override
-    public List<Requirement> getActions() {
-        return this.actionButtonRecord.actions();
-    }
-
-    @Override
     public String getLabel() {
         return this.actionButtonRecord.label();
     }
@@ -42,7 +38,7 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
 
     @Override
     public void setLabel(String label) {
-        this.actionButtonRecord = new ActionButtonRecord(label, this.actionButtonRecord.tooltip(), this.actionButtonRecord.width(), this.actionButtonRecord.actions(), this.actionButtonRecord.usageLimit(), this.actionButtonRecord.actionDurationLimit());
+        this.actionButtonRecord = new ActionButtonRecord(label, this.actionButtonRecord.tooltip(), this.actionButtonRecord.width(), this.actionButtonRecord.action());
     }
 
     @Override
@@ -57,7 +53,7 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
 
     @Override
     public void setLabelTooltip(String labelTooltip) {
-        this.actionButtonRecord = new ActionButtonRecord(this.actionButtonRecord.label(), labelTooltip, this.actionButtonRecord.width(), this.actionButtonRecord.actions(), this.actionButtonRecord.usageLimit(), this.actionButtonRecord.actionDurationLimit());
+        this.actionButtonRecord = new ActionButtonRecord(this.actionButtonRecord.label(), labelTooltip, this.actionButtonRecord.width(), this.actionButtonRecord.action());
     }
 
     @Override
@@ -67,16 +63,11 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
 
     @Override
     public void setLabelWidth(int labelWidth) {
-        this.actionButtonRecord = new ActionButtonRecord(this.actionButtonRecord.label(), this.actionButtonRecord.tooltip(), labelWidth, this.actionButtonRecord.actions(), this.actionButtonRecord.usageLimit(), this.actionButtonRecord.actionDurationLimit());
+        this.actionButtonRecord = new ActionButtonRecord(this.actionButtonRecord.label(), this.actionButtonRecord.tooltip(), labelWidth, this.actionButtonRecord.action());
     }
 
     @Override
-    public void addAction(List<Requirement> action) {
-        this.actionButtonRecord.actions().addAll(action);
-    }
-
-    @Override
-    public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
+    public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent);
         List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent);
         ActionButtonRecord parsedRecord = this.actionButtonRecord.parse(player);
@@ -87,7 +78,7 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
                                         paperComponent.getComponent(parsedRecord.label()),
                                         paperComponent.getComponent(parsedRecord.tooltip()),
                                         parsedRecord.width(),
-                                        this.createAction(dialogInputsForPlayer, parsedRecord.actions(), parsedRecord.usageLimit(), parsedRecord.actionDurationLimit())
+                                        parsedRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 )
                         )
                         ).base(

@@ -230,7 +230,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                 return;
             }
 
-            Dialog dialog = dialogInventory.buildDialog(targetPlayer, this.paperComponent);
+            InventoryEngine fakeInventory = this.menuPlugin.getInventoryManager().getFakeInventory();
+            Placeholders placeholders = new Placeholders();
+            placeholders.register("player", player.getName());
+
+            Dialog dialog = dialogInventory.buildDialog(targetPlayer, this.paperComponent, fakeInventory, placeholders);
 
             player.showDialog(dialog);
 
