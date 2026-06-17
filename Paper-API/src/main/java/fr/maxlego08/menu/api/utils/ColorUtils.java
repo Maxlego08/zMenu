@@ -45,8 +45,15 @@ public final class ColorUtils {
         }
 
         if (obj instanceof String str) {
+            String trimmed = str.trim();
+
+            Color delimited = parseDelimited(trimmed);
+            if (delimited != null) {
+                return delimited;
+            }
+
             try {
-                String cleaned = str.trim()
+                String cleaned = trimmed
                         .replace("#", "")
                         .replace("0x", "")
                         .replace("0X", "");
@@ -68,6 +75,41 @@ public final class ColorUtils {
         }
 
         return null;
+    }
+
+    @Nullable
+    private static Color parseDelimited(@NotNull String value) {
+        if (!value.contains(",")) {
+            return null;
+        }
+
+        String[] parts = value.split("\\s*,\\s*");
+        if (parts.length != 3 && parts.length != 4) {
+            return null;
+        }
+
+        try {
+            int r = clamp(parseComponent(parts[0]));
+            int g = clamp(parseComponent(parts[1]));
+            int b = clamp(parseComponent(parts[2]));
+
+            if (parts.length == 3) {
+                return Color.fromRGB(r, g, b);
+            }
+
+            int a = clamp(parseComponent(parts[3]));
+            return Color.fromARGB(a, r, g, b);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    private static int parseComponent(@NotNull String raw) {
+        return (int) Math.round(Double.parseDouble(raw.trim()));
+    }
+
+    private static int clamp(int value) {
+        return Math.clamp(value, 0, 255);
     }
 
     @NotNull
