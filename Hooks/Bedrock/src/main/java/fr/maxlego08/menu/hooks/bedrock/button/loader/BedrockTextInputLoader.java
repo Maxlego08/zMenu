@@ -15,7 +15,7 @@ import org.jspecify.annotations.NonNull;
 public class BedrockTextInputLoader extends ButtonLoader {
 
     public BedrockTextInputLoader(MenuPlugin plugin) {
-        super(plugin, "bedrock_text");
+        super(plugin, "bedrock_text", "bedrock_text_input");
     }
 
     @Override
