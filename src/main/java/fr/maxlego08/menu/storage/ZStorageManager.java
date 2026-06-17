@@ -107,18 +107,17 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
-        List<Schema> schemas = new ArrayList<>();
+        List<DataDTO> dataList = this.cache.get(DataDTO.class);
+        this.cache.clear(DataDTO.class);
 
-        var iterator = this.cache.get(DataDTO.class).iterator();
-        while (iterator.hasNext()) {
-            var dto = iterator.next();
+        List<Schema> schemas = new ArrayList<>();
+        for (DataDTO dto : dataList) {
             schemas.add(SchemaBuilder.upsert(Tables.PLAYER_DATAS, table -> {
                 table.uuid("player_id", dto.player_id()).primary();
                 table.string("key", dto.key()).primary();
                 table.string("data", dto.data());
                 table.object("expired_at", dto.expired_at() == null ? null : dto.expired_at());
             }));
-            iterator.remove();
         }
 
         this.requestHelper.upsertMultiple(schemas);
@@ -128,10 +127,11 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
+        List<PlayerOpenInventoryEvent> events = this.cache.get(PlayerOpenInventoryEvent.class);
+        this.cache.clear(PlayerOpenInventoryEvent.class);
+
         List<Schema> schemas = new ArrayList<>();
-        var iterator = this.cache.get(PlayerOpenInventoryEvent.class).iterator();
-        while (iterator.hasNext()) {
-            var event = iterator.next();
+        for (PlayerOpenInventoryEvent event : events) {
             if (event != null) {
                 schemas.add(SchemaBuilder.insert(Tables.PLAYER_OPEN_INVENTORIES, table -> {
                     table.uuid("player_id", event.getPlayer().getUniqueId());
@@ -150,7 +150,6 @@ public class ZStorageManager implements StorageManager {
                     table.string("old_inventories", inventoriesBuilder.toString());
                 }));
             }
-            iterator.remove();
         }
         this.requestHelper.insertMultiple(schemas);
     }
