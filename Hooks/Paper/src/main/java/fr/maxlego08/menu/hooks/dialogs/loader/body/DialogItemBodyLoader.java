@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.dialogs.body.DialogItemBody;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogItemBody;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -28,8 +28,7 @@ public class DialogItemBodyLoader extends ButtonLoader {
         boolean showTooltip = configuration.getBoolean(path+".show-tooltip", true);
         List<String> descriptionMessages = configuration.getStringList(path+".description.messages");
         int descriptionWidth = configuration.getInt(path+".description.width", 512);
-        boolean useCache = configuration.getBoolean(path+".use-cache", true);
 
-        return new ZDialogItemBody(descriptionMessages, descriptionWidth, showDecoration, showTooltip, useCache, width, height);
+        return new DialogItemBody(descriptionMessages, descriptionWidth, showDecoration, showTooltip, width, height);
     }
 }

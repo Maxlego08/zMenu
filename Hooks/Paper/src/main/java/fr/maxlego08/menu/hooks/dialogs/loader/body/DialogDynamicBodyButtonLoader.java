@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.body;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.dialogs.BodyButton;
+import fr.maxlego08.menu.api.button.buttons.dialogs.body.VanillaDialogBody;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogDynamicAbstractLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.body.DialogDynamicBodyButton;
@@ -31,8 +31,8 @@ public class DialogDynamicBodyButtonLoader extends DialogDynamicAbstractLoader {
             if (Configuration.enableDebug)
                 Logger.info("DialogDynamicBodyButtonLoader: Button is null for buttonName: " + buttonName);
         }
-        if (button instanceof BodyButton bodyButton && !button.hasCustomRender()) {
-            return new DialogDynamicBodyButton(this.plugin, start, end, bodyButton);
+        if (button instanceof VanillaDialogBody vanillaDialogBody && !button.hasCustomRender()) {
+            return new DialogDynamicBodyButton(this.plugin, start, end, vanillaDialogBody);
         }
         return null;
     }

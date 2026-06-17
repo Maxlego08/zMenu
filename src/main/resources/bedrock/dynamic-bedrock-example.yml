@@ -2,9 +2,6 @@ name: "&6Dynamic Bedrock Example"
 type: CUSTOM
 
 buttons:
-  # Labels generated dynamically
-  # These will create %dynamic_label_1%, %dynamic_label_2%, etc. in the actions if needed, 
-  # although labels don't typically have values.
   dynamic_label:
     type: bedrock-dynamic-input-button
     start: 1

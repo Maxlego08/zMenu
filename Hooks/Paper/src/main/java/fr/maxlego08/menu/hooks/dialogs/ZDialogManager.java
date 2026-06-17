@@ -7,7 +7,6 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
@@ -19,8 +18,6 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderBody;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
 import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
@@ -44,7 +41,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     private static InventoryManager inventoryManager;
     private final Map<String, List<AbstractDialogInventory>> dialogs = new HashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
-    private final DialogBuilderClass dialogBuilders;
 
     private final ComponentMeta paperComponent;
 
@@ -53,7 +49,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
-        this.dialogBuilders = new DialogBuilderClass(this, this.menuPlugin);
         inventoryManager = menuPlugin.getInventoryManager();
     }
 
@@ -188,10 +183,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         return dialog;
     }
 
-    public void registerBuilder(DialogBuilderBody builder) {
-        this.dialogBuilders.registerBuilder(builder);
-    }
-
     @Override
     public void reloadDialogs() {
         this.dialogs.clear();
@@ -284,10 +275,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     @Override
     public ConfigManagerInt getConfigManager(){
         return this.configManager;
-    }
-
-    public Optional<DialogBuilderBody> getDialogBuilder(DialogBodyType type) {
-        return DialogBuilderClass.getDialogBuilder(type);
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {

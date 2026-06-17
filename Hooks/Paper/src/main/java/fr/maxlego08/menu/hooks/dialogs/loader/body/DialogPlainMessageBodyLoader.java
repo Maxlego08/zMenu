@@ -5,8 +5,8 @@ import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.dialogs.body.DialogPlainMessageBody;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.hooks.dialogs.button.buttons.ZDialogPlainMessageBody;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -25,6 +25,6 @@ public class DialogPlainMessageBodyLoader extends ButtonLoader {
         List<String> messages = configuration.getStringList(path+".messages");
         int width = configuration.getInt(path+".width",128);
 
-        return new ZDialogPlainMessageBody(messages, width);
+        return new DialogPlainMessageBody(messages, width);
     }
 }
