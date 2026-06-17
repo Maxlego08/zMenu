@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZSimpleBedrockInventory extends AbstractBedrockComponentInventory<SimpleForm.Builder, SimpleForm, SimpleFormResponse> {
+public class ZSimpleBedrockInventory extends AbstractBedrockComponentInventory<SimpleForm.Builder, SimpleForm, SimpleFormResponse,BedrockComponentButton> {
 
     public ZSimpleBedrockInventory(MenuPlugin plugin, String fileName, String name, String content, List<BedrockComponentButton> bodyButtons) {
         super(plugin, fileName, name, content, bodyButtons, BedrockType.SIMPLE);

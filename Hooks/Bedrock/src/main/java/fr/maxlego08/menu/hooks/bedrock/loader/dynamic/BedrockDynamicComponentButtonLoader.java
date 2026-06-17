@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
+import fr.maxlego08.menu.api.button.buttons.bedrock.components.BasicBedrockComponentButton;
 import fr.maxlego08.menu.hooks.bedrock.button.buttons.BedrockDynamicComponentButton;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockDynamicAbstractLoader;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,8 @@ public class BedrockDynamicComponentButtonLoader extends BedrockDynamicAbstractL
 
     @Override
     protected @Nullable Button wrap(Button button, String buttonName, String start, String end) {
-        if (button instanceof BedrockComponentButton componentButton && !button.hasSpecialRender()) {
+
+        if (button instanceof BasicBedrockComponentButton componentButton && !button.hasSpecialRender()) {
             return new BedrockDynamicComponentButton(this.plugin, start, end, componentButton);
         }
         return null;

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.bedrock.button.buttons;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.button.buttons.bedrock.components.BasicBedrockComponentButton;
 import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.hooks.bedrock.button.BedrockDynamicButton;
@@ -17,7 +18,7 @@ public class BedrockDynamicComponentButton extends BedrockComponentButton implem
     private final String end;
     private final BedrockComponentButton button;
 
-    public BedrockDynamicComponentButton(MenuPlugin plugin, String start, String end, BedrockComponentButton button) {
+    public BedrockDynamicComponentButton(MenuPlugin plugin, String start, String end, BasicBedrockComponentButton button) {
         this.plugin = plugin;
         this.start = start;
         this.end = end;

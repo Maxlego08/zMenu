@@ -1,0 +1,47 @@
+name: "&6Dynamic Bedrock Example"
+type: CUSTOM
+
+buttons:
+  # Labels generated dynamically
+  # These will create %dynamic_label_1%, %dynamic_label_2%, etc. in the actions if needed, 
+  # although labels don't typically have values.
+  dynamic_label:
+    type: bedrock-dynamic-input-button
+    start: 1
+    end: 3
+    input:
+      type: bedrock_label
+      text: "&eInformation Section #%index%"
+
+  # Dynamic text inputs
+  # If the player enters "Value A" in the first box, %dynamic_input_1% will be "Value A"
+  dynamic_input:
+    type: bedrock-dynamic-input-button
+    start: 1
+    end: 2
+    input:
+      type: bedrock_text_input
+      text: "&6Enter your name #%index%:"
+      placeholder: "Your name here..."
+
+  # Dynamic toggles
+  # %dynamic_toggle_1% will be "true" or "false"
+  dynamic_toggle:
+    type: bedrock-dynamic-input-button
+    start: 1
+    end: 2
+    input:
+      type: bedrock_toggle
+      text: "&bEnable feature #%index%?"
+      default: true
+
+actions:
+  1:
+    success:
+      - type: message
+        messages:
+          - "&aForm submitted!"
+          - "&eInput 1: &f%dynamic_input_1%"
+          - "&eInput 2: &f%dynamic_input_2%"
+          - "&eToggle 1: &f%dynamic_toggle_1%"
+          - "&eToggle 2: &f%dynamic_toggle_2%"

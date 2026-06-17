@@ -19,12 +19,12 @@ public class ExpandedBedrockComponentButton extends BedrockComponentButton {
 
     @Override
     public void onClick(Player player, InventoryEngine inventoryEngine, int slot, Placeholders placeholders) {
-        placeholders.register("index", String.valueOf(index));
-        original.onClick(player, inventoryEngine, slot, placeholders);
+        placeholders.register("index", String.valueOf(this.index));
+        this.original.onClick(player, inventoryEngine, slot, placeholders);
     }
 
     @Override
     public @Nullable ButtonComponent build(BedrockRenderContext<ButtonComponent> context) {
-        return original.build(context);
+        return this.original.build(context);
     }
 }

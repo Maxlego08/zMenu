@@ -20,6 +20,16 @@ public class BasicBedrockComponentButton extends BedrockComponentButton {
         this.imageData = null;
     }
 
+    public BasicBedrockComponentButton(@NotNull String text, @NotNull BedrockImageType imageType, @NotNull String imageData) {
+        this.text = text;
+        this.imageType = imageType;
+        this.imageData = imageData;
+    }
+
+    public @NotNull String getText() {
+        return this.text;
+    }
+
     @Override
     public ButtonComponent build(BedrockRenderContext<ButtonComponent> context) {
         MenuPlugin plugin = context.getPlugin();

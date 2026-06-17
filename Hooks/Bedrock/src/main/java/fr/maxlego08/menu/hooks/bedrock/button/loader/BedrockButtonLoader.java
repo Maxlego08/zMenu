@@ -4,10 +4,10 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.annotations.RequireSupport;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import fr.maxlego08.menu.api.button.buttons.bedrock.components.BasicBedrockComponentButton;
 import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import fr.maxlego08.menu.hooks.bedrock.button.buttons.ZBedrockButton;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
@@ -37,6 +37,6 @@ public class BedrockButtonLoader extends ButtonLoader {
         // Données de l'image
         String imageData = configuration.getString(path + ".image-value", "");
 
-        return new ZBedrockButton(text, imageType, imageData);
+        return new BasicBedrockComponentButton(text, imageType, imageData);
     }
 }

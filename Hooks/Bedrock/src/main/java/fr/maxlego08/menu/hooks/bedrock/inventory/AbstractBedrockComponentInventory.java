@@ -10,11 +10,11 @@ import org.geysermc.cumulus.response.FormResponse;
 
 import java.util.List;
 
-public abstract class AbstractBedrockComponentInventory<B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> extends AbstractBedrockInventory<B, F, R> {
-    protected final List<BedrockComponentButton> bodyButtons;
+public abstract class AbstractBedrockComponentInventory<B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse, Bu extends BedrockComponentButton> extends AbstractBedrockInventory<B, F, R> {
+    protected final List<Bu> bodyButtons;
     protected final String content;
 
-    public AbstractBedrockComponentInventory(MenuPlugin plugin, String fileName, String name, String content, List<BedrockComponentButton> bodyButtons, BedrockType bedrockType) {
+    public AbstractBedrockComponentInventory(MenuPlugin plugin, String fileName, String name, String content, List<Bu> bodyButtons, BedrockType bedrockType) {
         super(plugin, fileName, name, bedrockType);
         this.bodyButtons = bodyButtons;
         this.content = content;
