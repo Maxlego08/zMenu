@@ -273,9 +273,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         Set<Integer> buttonSlots = new HashSet<>(inventoryDefault.getPlayerInventoryItems().keySet());
         for (Button button : inventoryDefault.getButtons()) {
             if (button.isPlayerInventory()) {
-                for (int slot : button.getSlots()) {
-                    buttonSlots.add(slot);
-                }
+                buttonSlots.addAll(button.getSlots());
             }
         }
 
@@ -311,14 +309,14 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
             boolean isInNewzMenuInventory = newHolder instanceof InventoryDefault;
             if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
 
-                List<ItemStack> sessionItems = this.clearInventory ? collectSessionItems(player, inventoryDefault) : Collections.emptyList();
+                List<ItemStack> sessionItems = this.clearInventory && this.clearInvType != ClearInvType.PACKET_EVENT ? this.collectSessionItems(player, inventoryDefault) : Collections.emptyList();
 
                 this.clearPlayerInventoryButtons(player, inventoryDefault);
 
                 if (this.clearInventory) {
                     InventoriesPlayer inventoriesPlayer = menuPlugin.getInventoriesPlayer();
                     this.clearInvType.getOnInventoryClose().accept(inventoriesPlayer, player);
-                    restoreSessionItems(player, sessionItems);
+                    this.restoreSessionItems(player, sessionItems);
                 }
             }
             var placeholders = new Placeholders();
