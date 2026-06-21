@@ -1,15 +1,17 @@
-package fr.maxlego08.menu.loader.components;
+package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
-import fr.maxlego08.menu.api.annotations.SpigotOnly;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.CustomModelDataComponent;
+import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
+import fr.maxlego08.menu.itemstack.components.paper.PaperCustomModelDataComponent;
+import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -21,10 +23,9 @@ import java.util.List;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
-@SpigotOnly
-public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemComponentLoader {
+public class CustomModelDataItemComponentLoader extends AbstractColorItemComponentLoader {
 
-    public SpigotCustomModelDataItemComponentLoader(){
+    public CustomModelDataItemComponentLoader(){
         super("custom-model-data");
     }
 
@@ -43,12 +44,7 @@ public class SpigotCustomModelDataItemComponentLoader extends AbstractColorItemC
             return null;
         }
 
-        return new CustomModelDataComponent(
-            colorList,
-            booleans,
-            floats,
-            strings
-        );
+        return PlatformType.isPaper() ? new PaperCustomModelDataComponent(floats, booleans, strings, colorList) : new CustomModelDataComponent(colorList, booleans, floats, strings);
     }
 
     protected @NotNull List<ResolvableFloat> getFloats(@NotNull ConfigurationSection section) {
