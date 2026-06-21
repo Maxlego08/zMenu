@@ -1,5 +1,11 @@
 package fr.maxlego08.menu.loader.components;
 
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableByte;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -111,5 +117,42 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
+    }
+
+    protected @Nullable ResolvablePotionEffect parseResolvablePotionEffect(Map<String, Object> potionEffectMap) {
+        try {
+            Object idObj = potionEffectMap.get("id");
+            if (!(idObj instanceof String idString)) return null;
+
+            Resolvable<String> typeId = idString.contains("%") ? ResolvableString.ofExpression(idString) : ResolvableString.of(idString);
+            ResolvableInt duration = ResolvableInt.of(potionEffectMap, "duration", 1);
+            ResolvableBoolean amplified = ResolvableBoolean.of(potionEffectMap, "amplified", false);
+
+            ResolvableByte amplifier;
+            if (amplified.isDynamic()) {
+                amplifier = ResolvableByte.of(amplified.getExpression());
+            } else {
+                amplifier = ResolvableByte.of((byte) (Boolean.TRUE.equals(amplified.getResolvedValue()) ? 1 : 0));
+            }
+
+            ResolvableBoolean ambient = ResolvableBoolean.of(potionEffectMap, "ambient", false);
+            ResolvableBoolean particles = ResolvableBoolean.of(potionEffectMap, "show_particles", true);
+            ResolvableBoolean showIcon = ResolvableBoolean.of(potionEffectMap, "show_icon", true);
+
+            return new ResolvablePotionEffect(typeId, duration, amplifier, ambient, particles, showIcon);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    protected List<ResolvablePotionEffect> parseResolvablePotionEffects(@NotNull List<Map<?, ?>> potionEffectsRaw) {
+        List<ResolvablePotionEffect> potionEffects = new ArrayList<>();
+        for (var rawPotionEffect : potionEffectsRaw) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> potionEffectMap = (Map<String, Object>) rawPotionEffect;
+            ResolvablePotionEffect effect = this.parseResolvablePotionEffect(potionEffectMap);
+            if (effect != null) potionEffects.add(effect);
+        }
+        return potionEffects;
     }
 }

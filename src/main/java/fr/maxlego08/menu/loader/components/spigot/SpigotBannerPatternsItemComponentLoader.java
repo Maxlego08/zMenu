@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BannerPatternsComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.block.banner.Pattern;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableBannerPattern;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -29,15 +29,15 @@ public class SpigotBannerPatternsItemComponentLoader extends ItemComponentLoader
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
         List<Map<?, ?>> rawPatterns = configuration.getMapList(path);
-        List<@NotNull Pattern> patterns = new ArrayList<>();
+        List<ResolvableBannerPattern> resolvablePatterns = new ArrayList<>();
         for (var rawPattern : rawPatterns) {
             @SuppressWarnings("unchecked")
             Map<String, Object> patternMap = (Map<String, Object>) rawPattern;
-            try {
-                patterns.add(new Pattern(patternMap));
-            } catch (IllegalArgumentException ignored) {
+            ResolvableBannerPattern resolvable = ResolvableBannerPattern.fromMap(patternMap);
+            if (resolvable != null) {
+                resolvablePatterns.add(resolvable);
             }
         }
-        return patterns.isEmpty() ? null : new BannerPatternsComponent(patterns);
+        return resolvablePatterns.isEmpty() ? null : new BannerPatternsComponent(resolvablePatterns);
     }
 }

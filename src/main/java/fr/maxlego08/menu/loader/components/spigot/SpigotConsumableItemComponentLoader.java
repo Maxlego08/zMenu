@@ -2,9 +2,15 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
+import fr.maxlego08.menu.api.annotations.SpigotOnly;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.itemstack.components.SpigotConsumableComponent;
 import fr.maxlego08.menu.api.utils.itemstack.*;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import org.bukkit.NamespacedKey;
@@ -20,10 +26,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @AutoComponentLoader
 @SinceVersion("1.21.2")
+@SpigotOnly
 public class SpigotConsumableItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public SpigotConsumableItemComponentLoader() {
@@ -34,23 +44,19 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        double consumeSeconds = componentSection.getDouble("consume-seconds", 1.6f);
-        ConsumableComponent.Animation animation = this.parseAnimation(configuration.getString("animation", "EAT"));
-        Sound consumeSound = this.parseSound(configuration.getString("consume-sound", "ENTITY-GENERIC-EAT")).orElse(Sound.ENTITY_GENERIC_EAT);
-        boolean hasConsumeParticles = componentSection.getBoolean("has-consume-particles", true);
+        ResolvableFloat consumeSeconds = this.asResolvableFloat(componentSection, "consume-seconds", 1.6f);
+        ResolvableEnum<ConsumableComponent.Animation> animation = this.asResolvableEnum(componentSection, "animation", ConsumableComponent.Animation.class, ConsumableComponent.Animation.EAT);
+        ResolvableSound consumeSound = this.asResolvableSound(componentSection, "consume-sound", Sound.ENTITY_GENERIC_EAT);
+        ResolvableBoolean hasConsumeParticles = this.asResolvableBoolean(componentSection, "has-consume-particles",true);
         List<ConsumableEffect> effects = this.parseEffects(componentSection.getMapList("on-consume-effects"));
 
-        return new fr.maxlego08.menu.api.itemstack.components.ConsumableComponent(
-                (float) consumeSeconds, animation, consumeSound, hasConsumeParticles, effects
+        return new SpigotConsumableComponent(
+                consumeSeconds,
+                animation,
+                consumeSound,
+                hasConsumeParticles,
+                effects
         );
-    }
-
-    private ConsumableComponent.Animation parseAnimation(String animationString) {
-        try {
-            return ConsumableComponent.Animation.valueOf(animationString.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            return ConsumableComponent.Animation.EAT;
-        }
     }
 
     private List<ConsumableEffect> parseEffects(List<Map<?, ?>> onConsumeEffectsRaw) {

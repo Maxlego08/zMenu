@@ -36,7 +36,7 @@ public class PacketQueue<T extends Packet<?>> {
 
     /** Raw queue — hand this to MenuPacketListener if needed. */
     public Queue<T> queue() {
-        return queue;
+        return this.queue;
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -52,12 +52,12 @@ public class PacketQueue<T extends Packet<?>> {
      * Otherwise the packet is queued for later {@link #dispatch()} on the main thread.
      */
     public void offer(T packet) {
-        if (discard) return;
-        if (directDispatch) {
-            dispatchSingle(packet);
+        if (this.discard) return;
+        if (this.directDispatch) {
+            this.dispatchSingle(packet);
             return;
         }
-        queue.offer(packet);
+        this.queue.offer(packet);
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ public class PacketQueue<T extends Packet<?>> {
      */
     public void dispatch() {
         T packet;
-        while ((packet = queue.poll()) != null) dispatchSingle(packet);
+        while ((packet = this.queue.poll()) != null) this.dispatchSingle(packet);
     }
 
     /**
@@ -79,17 +79,17 @@ public class PacketQueue<T extends Packet<?>> {
      * Returns {@code true} if a packet was dispatched.
      */
     public boolean dispatchOne() {
-        T packet = queue.poll();
+        T packet = this.queue.poll();
         if (packet == null) return false;
-        dispatchSingle(packet);
+        this.dispatchSingle(packet);
         return true;
     }
 
     @SuppressWarnings("unchecked")
     private void dispatchSingle(T packet) {
-        Consumer<? super T> handler = handlers.get(packet.getClass());
+        Consumer<? super T> handler = this.handlers.get(packet.getClass());
         if (handler != null) handler.accept(packet);
-        else if (fallback != null) fallback.accept(packet);
+        else if (this.fallback != null) this.fallback.accept(packet);
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -115,14 +115,14 @@ public class PacketQueue<T extends Packet<?>> {
      * Schedules at 1-tick period on the player's entity thread.
      */
     public PacketQueue<T> schedule(MenuPlugin plugin, Player player) {
-        return schedule(r -> plugin.getScheduler().runAtEntityTimer(player, r, 1L, 1L));
+        return this.schedule(r -> plugin.getScheduler().runAtEntityTimer(player, r, 1L, 1L));
     }
 
     /** Cancels the scheduled dispatch task if one was started via {@link #schedule}. */
     public void cancel() {
-        if (task != null) {
-            task.cancel();
-            task = null;
+        if (this.task != null) {
+            this.task.cancel();
+            this.task = null;
         }
     }
 
@@ -130,9 +130,10 @@ public class PacketQueue<T extends Packet<?>> {
     // Utility
     // ──────────────────────────────────────────────────────────────
 
-    public boolean isEmpty() { return queue.isEmpty(); }
-    public int size()        { return queue.size(); }
-    public void clear()      { queue.clear(); }
+    public boolean isEmpty() { return this.queue.isEmpty(); }
+    public int size()        { return this.queue.size(); }
+    public void clear()      {
+        this.queue.clear(); }
 
     // ──────────────────────────────────────────────────────────────
     // Static factories
@@ -219,7 +220,7 @@ public class PacketQueue<T extends Packet<?>> {
          */
         @SuppressWarnings("unchecked")
         public <P extends T> Builder<T> on(Class<P> type, Consumer<? super P> handler) {
-            handlers.put(type, (Consumer<? super T>) handler);
+            this.handlers.put(type, (Consumer<? super T>) handler);
             return this;
         }
 

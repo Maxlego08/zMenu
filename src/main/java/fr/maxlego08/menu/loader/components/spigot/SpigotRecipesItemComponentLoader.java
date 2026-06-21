@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.RecipesComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.NamespacedKey;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -28,12 +28,9 @@ public class SpigotRecipesItemComponentLoader extends ItemComponentLoader {
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
         List<String> rawRecipes = configuration.getStringList(path);
-        List<NamespacedKey> recipes = new ArrayList<>();
+        List<ResolvableNamespacedKey> recipes = new ArrayList<>();
         for (String rawRecipe : rawRecipes){
-            NamespacedKey key = NamespacedKey.fromString(rawRecipe);
-            if (key != null){
-                recipes.add(key);
-            }
+            recipes.add(ResolvableNamespacedKey.auto(rawRecipe));
         }
         return recipes.isEmpty() ? null : new RecipesComponent(recipes);
     }

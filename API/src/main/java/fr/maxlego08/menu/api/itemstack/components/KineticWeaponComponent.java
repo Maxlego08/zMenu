@@ -1,30 +1,38 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
+import fr.maxlego08.menu.api.SpigotKineticWeaponResolvable;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.Sound;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 @SuppressWarnings("unused")
 public class KineticWeaponComponent extends ItemComponent {
-    private final int delayTicks;
-    private final @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> damageCondition;
-    private final @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> dismountCondition;
-    private final @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> knockbackCondition;
-    private final float forwardMovement;
-    private final float damageMultiplier;
-    private final @NotNull Optional<Sound> sound;
-    private final @NotNull Optional<Sound> hitSound;
+    private final @Nullable ResolvableInt delayTicks;
+    private final @Nullable SpigotKineticWeaponResolvable damageCondition;
+    private final @Nullable SpigotKineticWeaponResolvable dismountCondition;
+    private final @Nullable SpigotKineticWeaponResolvable knockbackCondition;
+    private final @Nullable ResolvableFloat forwardMovement;
+    private final @Nullable ResolvableFloat damageMultiplier;
+    private final @Nullable ResolvableSound sound;
+    private final @Nullable ResolvableSound hitSound;
 
-    public KineticWeaponComponent(int delayTicks, @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> damageCondition,
-            @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> dismountCondition, @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> knockbackCondition,
-            float forwardMovement, float damageMultiplier, @NotNull Optional<Sound> sound, @NotNull Optional<Sound> hitSound) {
+    public KineticWeaponComponent(
+            @Nullable ResolvableInt delayTicks,
+            @Nullable SpigotKineticWeaponResolvable damageCondition,
+            @Nullable SpigotKineticWeaponResolvable dismountCondition,
+            @Nullable SpigotKineticWeaponResolvable knockbackCondition,
+            @Nullable ResolvableFloat forwardMovement,
+            @Nullable ResolvableFloat damageMultiplier,
+            @Nullable ResolvableSound sound,
+            @Nullable ResolvableSound hitSound
+    ) {
         this.delayTicks = delayTicks;
         this.damageCondition = damageCondition;
         this.dismountCondition = dismountCondition;
@@ -35,58 +43,62 @@ public class KineticWeaponComponent extends ItemComponent {
         this.hitSound = hitSound;
     }
 
-    public int getDelayTicks() {
+    public @Nullable ResolvableInt getDelayTicks() {
         return this.delayTicks;
     }
 
-    public @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> getDamageCondition() {
+    public @Nullable SpigotKineticWeaponResolvable getDamageCondition() {
         return this.damageCondition;
     }
 
-    public @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> getDismountCondition() {
+    public @Nullable SpigotKineticWeaponResolvable getDismountCondition() {
         return this.dismountCondition;
     }
 
-    public @NotNull Optional<org.bukkit.inventory.meta.components.KineticWeaponComponent.Condition> getKnockbackCondition() {
+    public @Nullable SpigotKineticWeaponResolvable getKnockbackCondition() {
         return this.knockbackCondition;
     }
 
-    public float getForwardMovement() {
+    public @Nullable ResolvableFloat getForwardMovement() {
         return this.forwardMovement;
     }
 
-    public float getDamageMultiplier() {
+    public @Nullable ResolvableFloat getDamageMultiplier() {
         return this.damageMultiplier;
     }
 
-    public @NotNull Optional<Sound> getSound() {
+    public @Nullable ResolvableSound getSound() {
         return this.sound;
     }
 
-    public @NotNull Optional<Sound> getHitSound() {
+    public @Nullable ResolvableSound getHitSound() {
         return this.hitSound;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
+        if (itemMeta == null) return;
 
-            org.bukkit.inventory.meta.components.KineticWeaponComponent kineticWeapon = itemMeta.getKineticWeapon();
+        org.bukkit.inventory.meta.components.KineticWeaponComponent kineticWeapon = itemMeta.getKineticWeapon();
 
-            kineticWeapon.setDelayTicks(this.delayTicks);
+        this.applyResolvable(context, kineticWeapon::setDelayTicks, this.delayTicks);
 
-            this.damageCondition.ifPresent(kineticWeapon::setDamageConditions);
-            this.dismountCondition.ifPresent(kineticWeapon::setDismountConditions);
-            this.knockbackCondition.ifPresent(kineticWeapon::setKnockbackConditions);
-
-            kineticWeapon.setForwardMovement(this.forwardMovement);
-            kineticWeapon.setDamageMultipler(this.damageMultiplier);
-
-            this.sound.ifPresent(kineticWeapon::setSound);
-            this.hitSound.ifPresent(kineticWeapon::setHitSound);
-
-            itemStack.setItemMeta(itemMeta);
+        if (this.damageCondition != null) {
+            kineticWeapon.setDamageConditions(this.damageCondition.applyTo(kineticWeapon.getDamageConditions(), context));
         }
+        if (this.dismountCondition != null) {
+            kineticWeapon.setDismountConditions(this.dismountCondition.applyTo(kineticWeapon.getDismountConditions(), context));
+        }
+        if (this.knockbackCondition != null) {
+            kineticWeapon.setKnockbackConditions(this.knockbackCondition.applyTo(kineticWeapon.getKnockbackConditions(), context));
+        }
+
+        this.applyResolvable(context, kineticWeapon::setForwardMovement, this.forwardMovement);
+        this.applyResolvable(context, kineticWeapon::setDamageMultipler, this.damageMultiplier);
+        this.applyResolvable(context, kineticWeapon::setSound, this.sound);
+        this.applyResolvable(context, kineticWeapon::setHitSound, this.hitSound);
+
+        itemStack.setItemMeta(itemMeta);
     }
 }

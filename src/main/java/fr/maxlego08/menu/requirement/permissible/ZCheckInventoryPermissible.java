@@ -65,7 +65,7 @@ public class ZCheckInventoryPermissible extends Permissible {
             return false;
         }
 
-        if (requirePlayerItem && inventoryEngine.getPlugin().getDupeManager().isDupeItem(itemStackA)) {
+        if (this.requirePlayerItem && inventoryEngine.getPlugin().getDupeManager().isDupeItem(itemStackA)) {
             return false;
         }
 

@@ -166,7 +166,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
         Loader<AbstractBedrockInventory<?,?,?>> loader = new BedrockLoader(this.menuPlugin, this);
-        BedrockInventory<?,?,?> dialog = loader.load(configuration, "", file, (Class<AbstractBedrockInventory<?,?,?>>) dialogClass, plugin);
+        BedrockInventory<?,?,?> dialog = loader.load(configuration, "", file, dialogClass, plugin);
 
         List<BedrockInventory<?,?,?>> dialogsList = this.bedrockInventory.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);

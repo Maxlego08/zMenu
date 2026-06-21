@@ -69,18 +69,18 @@ public class NMSMenuPacketListener implements Listener {
      * Useful to suppress vanilla inventory updates while a custom GUI is open.
      */
     public void discardOutgoing(Player player, Class<? extends Packet<ClientGamePacketListener>> type) {
-        handler(player).discardRules.add(type);
+        this.handler(player).discardRules.add(type);
     }
 
     public void stopDiscarding(Player player, Class<? extends Packet<ClientGamePacketListener>> type) {
-        handler(player).discardRules.remove(type);
+        this.handler(player).discardRules.remove(type);
     }
 
     /**
      * Send a packet directly to the player, bypassing normal server logic.
      */
     public void sendPacket(Player player, Packet<? super ClientGamePacketListener> packet) {
-        handler(player).sendPacket(packet);
+        this.handler(player).sendPacket(packet);
     }
 
     /**
@@ -88,7 +88,7 @@ public class NMSMenuPacketListener implements Listener {
      */
     public void sendPackets(Player player, List<Packet<? super ClientGamePacketListener>> packets) {
         if (packets.isEmpty()) return;
-        sendPacket(player, new ClientboundBundlePacket(packets));
+        this.sendPacket(player, new ClientboundBundlePacket(packets));
     }
 
     /**
@@ -99,11 +99,11 @@ public class NMSMenuPacketListener implements Listener {
             Player player,
             Class<? extends T> type,
             PacketQueue<Packet<? super ServerGamePacketListener>> queue) {
-        handler(player).redirections.put(type, queue);
+        this.handler(player).redirections.put(type, queue);
     }
 
     public void stopRedirecting(Player player, Class<? extends Packet<ServerGamePacketListener>> type) {
-        handler(player).redirections.remove(type);
+        this.handler(player).redirections.remove(type);
     }
 
     /**
@@ -115,11 +115,11 @@ public class NMSMenuPacketListener implements Listener {
             Player player,
             Class<? extends T> type,
             PacketQueue<Packet<? super ServerGamePacketListener>> queue) {
-        handler(player).listeners.put(type, queue);
+        this.handler(player).listeners.put(type, queue);
     }
 
     public void stopListening(Player player, Class<? extends Packet<? super ServerGamePacketListener>> type) {
-        handler(player).listeners.remove(type);
+        this.handler(player).listeners.remove(type);
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -128,12 +128,12 @@ public class NMSMenuPacketListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     private void onJoin(PlayerJoinEvent e) {
-        inject(e.getPlayer());
+        this.inject(e.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     private void onQuit(PlayerQuitEvent e) {
-        handlers.remove(e.getPlayer().getUniqueId());
+        this.handlers.remove(e.getPlayer().getUniqueId());
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -141,15 +141,15 @@ public class NMSMenuPacketListener implements Listener {
     // ──────────────────────────────────────────────────────────────
 
     private void inject(Player player) {
-        if (handlers.containsKey(player.getUniqueId())) return;
+        if (this.handlers.containsKey(player.getUniqueId())) return;
         Channel channel = ((CraftPlayer) player).getHandle().connection.connection.channel;
         MenuPacketHandler h = new MenuPacketHandler(channel);
-        handlers.put(player.getUniqueId(), h);
+        this.handlers.put(player.getUniqueId(), h);
         channel.pipeline().addBefore(MC_HANDLER, MENU_HANDLER, h);
     }
 
     private void eject(Player player) {
-        handlers.remove(player.getUniqueId());
+        this.handlers.remove(player.getUniqueId());
         Channel channel = ((CraftPlayer) player).getHandle().connection.connection.channel;
         try {
             channel.pipeline().remove(MENU_HANDLER);
@@ -158,7 +158,7 @@ public class NMSMenuPacketListener implements Listener {
     }
 
     private MenuPacketHandler handler(Player player) {
-        MenuPacketHandler h = handlers.get(player.getUniqueId());
+        MenuPacketHandler h = this.handlers.get(player.getUniqueId());
         if (h == null) throw new IllegalStateException("No handler for player: " + player.getName());
         return h;
     }
@@ -184,12 +184,12 @@ public class NMSMenuPacketListener implements Listener {
         }
 
         void sendPacket(Packet<? super ClientGamePacketListener> packet) {
-            if (!channel.eventLoop().inEventLoop()) {
-                channel.eventLoop().execute(() -> sendPacket(packet));
+            if (!this.channel.eventLoop().inEventLoop()) {
+                this.channel.eventLoop().execute(() -> this.sendPacket(packet));
                 return;
             }
 
-            channel.writeAndFlush(packet, new ForceChannelPromise(channel.newPromise().channel()));
+            this.channel.writeAndFlush(packet, new ForceChannelPromise(this.channel.newPromise().channel()));
         }
 
 
@@ -203,21 +203,21 @@ public class NMSMenuPacketListener implements Listener {
 
             if (msg instanceof ClientboundBundlePacket bundle) {
                 var kept = StreamSupport.stream(bundle.subPackets().spliterator(), false)
-                        .<Packet<? super ClientGamePacketListener>>map(p -> filterOutgoing((Packet<ClientGamePacketListener>) p))
+                        .<Packet<? super ClientGamePacketListener>>map(p -> this.filterOutgoing((Packet<ClientGamePacketListener>) p))
                         .filter(Objects::nonNull)
                         .toList();
 
                 if (kept.isEmpty()) promise.setSuccess();
                 else ctx.write(new ClientboundBundlePacket(kept), promise);
             } else {
-                var out = filterOutgoing((Packet<ClientGamePacketListener>) msg);
+                var out = this.filterOutgoing((Packet<ClientGamePacketListener>) msg);
                 if (out == null) promise.setSuccess();
                 else ctx.write(out, promise);
             }
         }
 
         private @Nullable <P extends Packet<? super ClientGamePacketListener>> P filterOutgoing(P packet) {
-            return discardRules.contains(packet.getClass()) ? null : packet;
+            return this.discardRules.contains(packet.getClass()) ? null : packet;
         }
 
         @SuppressWarnings("unchecked")
@@ -231,10 +231,10 @@ public class NMSMenuPacketListener implements Listener {
             @SuppressWarnings("unchecked")
             var p = (Packet<? super ServerGamePacketListener>) packet;
 
-            var listener = listeners.get(packet.getClass());
+            var listener = this.listeners.get(packet.getClass());
             if (listener != null) listener.offer(p);
 
-            var redirect = redirections.get(packet.getClass());
+            var redirect = this.redirections.get(packet.getClass());
             if (redirect != null) redirect.offer(p);
             else super.channelRead(ctx, packet);
         }

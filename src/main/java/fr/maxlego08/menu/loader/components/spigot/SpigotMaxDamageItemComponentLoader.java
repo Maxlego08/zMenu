@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.MaxDamageComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ public class SpigotMaxDamageItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        int maxDamage = configuration.getInt(path);
-        return new MaxDamageComponent(maxDamage);
+        ResolvableInt maxDamage = this.asResolvableInt(configuration, path);
+        return maxDamage == null ? null : new MaxDamageComponent(maxDamage);
     }
 }

@@ -27,6 +27,6 @@ public abstract class AbstractPluginRuleLoader implements fr.maxlego08.menu.api.
         if (items.isEmpty()) return null;
 
         boolean ignoreCase = RuleConfigHelper.getBoolean(configuration, "ignore-case", true);
-        return createRule(items, ignoreCase);
+        return this.createRule(items, ignoreCase);
     }
 }

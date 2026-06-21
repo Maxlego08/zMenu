@@ -2,59 +2,56 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.Sound;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 @SuppressWarnings("unused")
 public class PiercingWeaponComponent extends ItemComponent {
-    private final boolean dealsKnockback;
-    private final boolean dismounts;
-    private final Optional<Sound> sound;
-    private final Optional<Sound> hitSound;
+    private final @NotNull ResolvableBoolean dealsKnockback;
+    private final @NotNull ResolvableBoolean dismounts;
+    private final @Nullable ResolvableSound sound;
+    private final @Nullable ResolvableSound hitSound;
 
-    public PiercingWeaponComponent(boolean dealsKnockback, boolean dismounts, Optional<Sound> sound, Optional<Sound> hitSound) {
+    public PiercingWeaponComponent(@NotNull ResolvableBoolean dealsKnockback, @NotNull ResolvableBoolean dismounts, @Nullable ResolvableSound sound, @Nullable ResolvableSound hitSound) {
         this.dealsKnockback = dealsKnockback;
         this.dismounts = dismounts;
         this.sound = sound;
         this.hitSound = hitSound;
     }
 
-    public boolean isDealsKnockback() {
+    public @NotNull ResolvableBoolean isDealsKnockback() {
         return this.dealsKnockback;
     }
 
-    public boolean isDismounts() {
+    public @NotNull ResolvableBoolean isDismounts() {
         return this.dismounts;
     }
 
-    public Optional<Sound> getSound() {
+    public @Nullable ResolvableSound getSound() {
         return this.sound;
     }
 
-    public Optional<Sound> getHitSound() {
+    public @Nullable ResolvableSound getHitSound() {
         return this.hitSound;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
+        if (itemMeta == null) return;
 
-            org.bukkit.inventory.meta.components.PiercingWeaponComponent piercingWeapon = itemMeta.getPiercingWeapon();
+        org.bukkit.inventory.meta.components.PiercingWeaponComponent piercingWeapon = itemMeta.getPiercingWeapon();
 
-            piercingWeapon.setDealsKnockback(this.dealsKnockback);
-            piercingWeapon.setDismounts(this.dismounts);
+        this.applyResolvable(context, piercingWeapon::setDealsKnockback, this.dealsKnockback);
+        this.applyResolvable(context, piercingWeapon::setDismounts, this.dismounts);
+        this.applyResolvable(context, piercingWeapon::setSound, this.sound);
+        this.applyResolvable(context, piercingWeapon::setHitSound, this.hitSound);
 
-            this.sound.ifPresent(piercingWeapon::setSound);
-            this.hitSound.ifPresent(piercingWeapon::setHitSound);
-
-            itemStack.setItemMeta(itemMeta);
-        }
+        itemStack.setItemMeta(itemMeta);
     }
 }

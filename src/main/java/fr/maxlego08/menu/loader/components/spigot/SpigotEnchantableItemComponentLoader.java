@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.EnchantableComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,12 @@ public class SpigotEnchantableItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        int value = componentSection.getInt("value", -1);
-        return value<0 ? null : new EnchantableComponent(value);
+        ResolvableInt value = this.asResolvableInt(componentSection, "value");
+        if (value == null) return null;
+        if (!value.isDynamic()) {
+            Integer resolved = value.getResolvedValue();
+            if (resolved == null || resolved < 0) return null;
+        }
+        return new EnchantableComponent(value);
     }
 }

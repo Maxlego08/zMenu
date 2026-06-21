@@ -1,28 +1,25 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 public abstract class AttackRangeComponent extends ItemComponent {
 
-    protected final Resolvable<Float> minReach;
-    protected final Resolvable<Float> maxReach;
-    protected final Resolvable<Float> minCreativeReach;
-    protected final Resolvable<Float> maxCreativeReach;
-    protected final Resolvable<Float> hitboxMargin;
-    protected final Resolvable<Float> mobFactor;
+    protected final ResolvableFloat minReach;
+    protected final ResolvableFloat maxReach;
+    protected final ResolvableFloat minCreativeReach;
+    protected final ResolvableFloat maxCreativeReach;
+    protected final ResolvableFloat hitboxMargin;
+    protected final ResolvableFloat mobFactor;
 
     protected AttackRangeComponent(
-            @NotNull Resolvable<Float> minReach,
-            @NotNull Resolvable<Float> maxReach,
-            @NotNull Resolvable<Float> minCreativeReach,
-            @NotNull Resolvable<Float> maxCreativeReach,
-            @NotNull Resolvable<Float> hitboxMargin,
-            @NotNull Resolvable<Float> mobFactor) {
+            @NotNull ResolvableFloat minReach,
+            @NotNull ResolvableFloat maxReach,
+            @NotNull ResolvableFloat minCreativeReach,
+            @NotNull ResolvableFloat maxCreativeReach,
+            @NotNull ResolvableFloat hitboxMargin,
+            @NotNull ResolvableFloat mobFactor) {
         this.minReach = minReach;
         this.maxReach = maxReach;
         this.minCreativeReach = minCreativeReach;
@@ -31,34 +28,27 @@ public abstract class AttackRangeComponent extends ItemComponent {
         this.mobFactor = mobFactor;
     }
 
-    public Resolvable<Float> getMinReach() {
+    public ResolvableFloat getMinReach() {
         return this.minReach;
     }
 
-    public Resolvable<Float> getMaxReach() {
+    public ResolvableFloat getMaxReach() {
         return this.maxReach;
     }
 
-    public Resolvable<Float> getMinCreativeReach() {
+    public ResolvableFloat getMinCreativeReach() {
         return this.minCreativeReach;
     }
 
-    public Resolvable<Float> getMaxCreativeReach() {
+    public ResolvableFloat getMaxCreativeReach() {
         return this.maxCreativeReach;
     }
 
-    public Resolvable<Float> getHitboxMargin() {
+    public ResolvableFloat getHitboxMargin() {
         return this.hitboxMargin;
     }
 
-    public Resolvable<Float> getMobFactor() {
+    public ResolvableFloat getMobFactor() {
         return this.mobFactor;
-    }
-
-    protected void applyDataComponent(@NotNull Consumer<Float> consumer, @NotNull BuildContext context, @NotNull Resolvable<Float> resolvable) {
-        Float value = resolvable.resolve(context);
-        if (value != null) {
-            consumer.accept(value);
-        }
     }
 }

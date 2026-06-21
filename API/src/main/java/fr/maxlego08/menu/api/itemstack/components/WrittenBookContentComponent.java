@@ -3,8 +3,10 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,41 +18,41 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class WrittenBookContentComponent extends ItemComponent {
-    private final @Nullable String title;
-    private final @Nullable String author;
-    private final @Nullable BookMeta.Generation generation;
-    private final @NotNull List<@NotNull String> pages;
+    private final @Nullable ResolvableString title;
+    private final @Nullable ResolvableString author;
+    private final @Nullable ResolvableEnum<BookMeta.Generation> generation;
+    private final @NotNull List<@NotNull ResolvableString> pages;
 
-    public WrittenBookContentComponent(@Nullable String title, @Nullable String author, @Nullable BookMeta.Generation generation, @NotNull List<@NotNull String> pages) {
+    public WrittenBookContentComponent(@Nullable ResolvableString title, @Nullable ResolvableString author, @Nullable ResolvableEnum<BookMeta.Generation> generation, @NotNull List<@NotNull ResolvableString> pages) {
         this.title = title;
         this.author = author;
         this.generation = generation;
         this.pages = pages;
     }
 
-    public @Nullable String getTitle() {
+    public @Nullable ResolvableString getTitle() {
         return this.title;
     }
 
-    public @Nullable String getAuthor() {
+    public @Nullable ResolvableString getAuthor() {
         return this.author;
     }
 
-    public @Nullable BookMeta.Generation getGeneration() {
+    public @Nullable ResolvableEnum<BookMeta.Generation> getGeneration() {
         return this.generation;
     }
 
-    public @NotNull List<@NotNull String> getPages() {
+    public @NotNull List<@NotNull ResolvableString> getPages() {
         return this.pages;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, BookMeta.class, bookMeta -> {
-            bookMeta.setTitle(this.title == null ? null : Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.title)));
-            bookMeta.setAuthor(this.author == null ? null : Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.author)));
-            bookMeta.setGeneration(this.generation);
-            bookMeta.setPages(Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.pages)));
+            Resolvable.applyResolvable(context, this.title, bookMeta::setTitle);
+            Resolvable.applyResolvable(context, this.author, bookMeta::setAuthor);
+            Resolvable.applyResolvable(context, this.generation, bookMeta::setGeneration);
+            Resolvable.applyResolvable(context, this.pages, bookMeta::setPages);
         });
         if (!apply && Configuration.enableDebug)
             Logger.info("Could not apply WritableBookContentComponent to item: " + itemStack.getType().name());

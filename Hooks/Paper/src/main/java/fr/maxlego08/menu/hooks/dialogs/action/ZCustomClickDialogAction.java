@@ -30,9 +30,9 @@ public class ZCustomClickDialogAction implements ZDialogAction {
     @Override
     public DialogAction build(@NotNull List<@NotNull DialogInput> inputs, @NotNull Player player, @NotNull MenuPlugin plugin, @NotNull InventoryEngine inventoryEngine, @Nullable DialogButton<?> button, @NotNull Placeholders placeholders) {
         ClickCallback.Options.Builder builder = ClickCallback.Options.builder();
-        builder.uses(usageLimit);
-        if (actionDurationLimit != null) {
-            builder.lifetime(actionDurationLimit);
+        builder.uses(this.usageLimit);
+        if (this.actionDurationLimit != null) {
+            builder.lifetime(this.actionDurationLimit);
         }
         return DialogAction.customClick((view, audience)-> {
             for (DialogInput input : inputs) {

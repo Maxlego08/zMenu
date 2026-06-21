@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.api.utils.resolvable;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public final class SimpleResolvable<T> extends Resolvable<T> {
+public final class SimpleResolvable<T> extends ParsableResolvable<T> {
     private final Function<String, T> parser;
 
     private SimpleResolvable(@Nullable T resolvedValue, @Nullable String expression, @NotNull Function<String, T> parser) {

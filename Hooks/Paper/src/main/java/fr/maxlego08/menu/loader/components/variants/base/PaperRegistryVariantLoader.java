@@ -27,14 +27,14 @@ public abstract class PaperRegistryVariantLoader<T extends Keyed> extends ItemCo
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
         NamespacedKey key = NamespacedKey.fromString(value);
         if (key == null) return null;
         try {
             T registryValue = RegistryAccess.registryAccess().getRegistry(this.registryKey).getOrThrow(key);
-            return componentFactory.apply(registryValue);
+            return this.componentFactory.apply(registryValue);
         } catch (IllegalArgumentException e) {
             return null;
         }

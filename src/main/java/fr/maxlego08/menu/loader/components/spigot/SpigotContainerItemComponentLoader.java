@@ -2,12 +2,13 @@ package fr.maxlego08.menu.loader.components.spigot;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ResolvableContainerSlot;
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.ContainerComponent;
-import fr.maxlego08.menu.api.utils.itemstack.ZContainerSlot;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.loader.components.AbstractMenuItemStackListComponentLoaderBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,15 +33,20 @@ public class SpigotContainerItemComponentLoader extends AbstractMenuItemStackLis
         path = this.normalizePath(path);
 
         List<Map<?, ?>> mapList = configuration.getMapList(path);
-        List<ZContainerSlot> contents = new ArrayList<>();
+        List<ResolvableContainerSlot> contents = new ArrayList<>();
         int index = 0;
         for (var rawMap : mapList){
             @SuppressWarnings("unchecked")
             Map<String, Object> itemMap = (Map<String, Object>) rawMap;
             MenuItemStack menuItemStack = this.loadItemStack(itemMap, file);
             if (menuItemStack != null) {
-                int slot = itemMap.containsKey("slot") ? (int) itemMap.get("slot") : index++;
-                contents.add(new ZContainerSlot(menuItemStack, slot));
+                ResolvableInt slotResolvable;
+                if (itemMap.containsKey("slot")) {
+                    slotResolvable = ResolvableInt.of(itemMap, "slot", 0);
+                } else {
+                    slotResolvable = ResolvableInt.of(index++);
+                }
+                contents.add(new ResolvableContainerSlot(menuItemStack, slotResolvable));
             }
 
         }

@@ -1,9 +1,10 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
+import fr.maxlego08.menu.api.ResolvableDamageReduction;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.itemstack.ZDamageReductionRecord;
-import org.bukkit.Sound;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,28 +15,28 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class BlocksAttacksComponent extends ItemComponent {
-    private final float blockDelaySeconds;
-    private final float disableCooldownScale;
-    private final List<ZDamageReductionRecord> damageReductions;
-    private final float itemDamageThreshold;
-    private final float itemDamageBase;
-    private final float itemDamageFactor;
-    private final Sound blockSound;
-    private final Sound disabledSound;
+    private final ResolvableFloat blockDelaySeconds;
+    private final ResolvableFloat disableCooldownScale;
+    private final @Nullable List<ResolvableDamageReduction> resolvableDamageReductions;
+    private final ResolvableFloat itemDamageThreshold;
+    private final ResolvableFloat itemDamageBase;
+    private final ResolvableFloat itemDamageFactor;
+    private final ResolvableSound blockSound;
+    private final ResolvableSound disabledSound;
 
     public BlocksAttacksComponent(
-        float blockDelaySeconds,
-        float disableCooldownScale,
-        List<@NotNull ZDamageReductionRecord> damageReductions,
-        float itemDamageThreshold,
-        float itemDamageBase,
-        float itemDamageFactor,
-        Sound blockSound,
-        Sound disabledSound
+            ResolvableFloat blockDelaySeconds,
+        ResolvableFloat disableCooldownScale,
+        @Nullable List<ResolvableDamageReduction> resolvableDamageReductions,
+        ResolvableFloat itemDamageThreshold,
+        ResolvableFloat itemDamageBase,
+        ResolvableFloat itemDamageFactor,
+        ResolvableSound blockSound,
+        ResolvableSound disabledSound
     ) {
         this.blockDelaySeconds = blockDelaySeconds;
         this.disableCooldownScale = disableCooldownScale;
-        this.damageReductions = damageReductions;
+        this.resolvableDamageReductions = resolvableDamageReductions;
         this.itemDamageThreshold = itemDamageThreshold;
         this.itemDamageBase = itemDamageBase;
         this.itemDamageFactor = itemDamageFactor;
@@ -43,35 +44,35 @@ public class BlocksAttacksComponent extends ItemComponent {
         this.disabledSound = disabledSound;
     }
 
-    public float getBlockDelaySeconds() {
+    public ResolvableFloat getBlockDelaySeconds() {
         return this.blockDelaySeconds;
     }
 
-    public float getDisableCooldownScale() {
+    public ResolvableFloat getDisableCooldownScale() {
         return this.disableCooldownScale;
     }
 
-    public List<ZDamageReductionRecord> getDamageReductions() {
-        return this.damageReductions;
+    public @Nullable List<ResolvableDamageReduction> getDamageReductions() {
+        return this.resolvableDamageReductions;
     }
 
-    public float getItemDamageThreshold() {
+    public ResolvableFloat getItemDamageThreshold() {
         return this.itemDamageThreshold;
     }
 
-    public float getItemDamageBase() {
+    public ResolvableFloat getItemDamageBase() {
         return this.itemDamageBase;
     }
 
-    public float getItemDamageFactor() {
+    public ResolvableFloat getItemDamageFactor() {
         return this.itemDamageFactor;
     }
 
-    public Sound getBlockSound() {
+    public ResolvableSound getBlockSound() {
         return this.blockSound;
     }
 
-    public Sound getDisabledSound() {
+    public ResolvableSound getDisabledSound() {
         return this.disabledSound;
     }
 
@@ -80,27 +81,30 @@ public class BlocksAttacksComponent extends ItemComponent {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
             org.bukkit.inventory.meta.components.BlocksAttacksComponent blocksAttacks = itemMeta.getBlocksAttacks();
-            blocksAttacks.setBlockDelaySeconds(this.blockDelaySeconds);
-            blocksAttacks.setDisableCooldownScale(this.disableCooldownScale);
 
-            for (ZDamageReductionRecord record : this.damageReductions) {
-                blocksAttacks.addDamageReduction(
-                    record.damageTypes(),
-                    record.base(),
-                    record.factor(),
-                    record.horizontalBlockingAngle()
-                );
+            this.applyResolvable(context, blocksAttacks::setBlockDelaySeconds, this.blockDelaySeconds);
+
+            this.applyResolvable(context, blocksAttacks::setDisableCooldownScale, this.disableCooldownScale);
+
+            this.applyResolvable(context, blocksAttacks::setItemDamageThreshold, this.itemDamageThreshold);
+
+            this.applyResolvable(context, blocksAttacks::setItemDamageBase, this.itemDamageBase);
+
+            this.applyResolvable(context, blocksAttacks::setItemDamageFactor, this.itemDamageFactor);
+
+            this.applyResolvable(context, blocksAttacks::setBlockSound, this.blockSound);
+
+            this.applyResolvable(context, blocksAttacks::setDisableSound, this.disabledSound);
+
+            if (this.resolvableDamageReductions != null) {
+                for (ResolvableDamageReduction reduction : this.resolvableDamageReductions) {
+                    reduction.applyTo(blocksAttacks, context);
+                }
             }
-
-            blocksAttacks.setItemDamageThreshold(this.itemDamageThreshold);
-            blocksAttacks.setItemDamageBase(this.itemDamageBase);
-            blocksAttacks.setItemDamageFactor(this.itemDamageFactor);
-
-            blocksAttacks.setBlockSound(this.blockSound);
-            blocksAttacks.setDisableSound(this.disabledSound);
-
 
             itemStack.setItemMeta(itemMeta);
         }
     }
+
+
 }

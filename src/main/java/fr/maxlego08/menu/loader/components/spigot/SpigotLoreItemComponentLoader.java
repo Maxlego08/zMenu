@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.itemstack.components.LoreComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.itemstack.components.paper.PaperLoreComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,12 +35,12 @@ public class SpigotLoreItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         Object o = configuration.get(path);
         if (o instanceof String str) {
-            return this.getItemComponent(List.of(str));
+            return this.getItemComponent(List.of(ResolvableString.auto(str)));
         } else if (o instanceof List<?> list) {
-            List<String> loreLines = new ArrayList<>();
+            List<ResolvableString> loreLines = new ArrayList<>();
             for (Object line : list) {
                 if (line instanceof String s) {
-                    loreLines.add(s);
+                    loreLines.add(ResolvableString.auto(s));
                 }
             }
             return this.getItemComponent(loreLines);
@@ -47,7 +48,7 @@ public class SpigotLoreItemComponentLoader extends ItemComponentLoader {
         return null;
     }
 
-    private ItemComponent getItemComponent(@NotNull List<@NotNull String> lore){
+    private ItemComponent getItemComponent(@NotNull List<@NotNull ResolvableString> lore){
         if (this.metaUpdater instanceof PaperMetaUpdater paperMetaUpdater)
             return new PaperLoreComponent(lore, paperMetaUpdater);
         return new LoreComponent(lore);

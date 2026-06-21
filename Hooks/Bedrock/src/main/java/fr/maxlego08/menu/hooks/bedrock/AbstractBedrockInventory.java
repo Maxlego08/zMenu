@@ -3,7 +3,6 @@ package fr.maxlego08.menu.hooks.bedrock;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> implements BedrockInventory<B, F, R> {
 
@@ -182,7 +180,7 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
             Player player,
             Placeholders placeholders,
             java.util.function.BiConsumer<T, fr.maxlego08.menu.api.context.BedrockRenderContext<C>> renderLogic) {
-        return renderButtons(buttons, player, placeholders, null, renderLogic);
+        return this.renderButtons(buttons, player, placeholders, null, renderLogic);
     }
 
     protected <C, T extends Button> List<C> renderButtons(

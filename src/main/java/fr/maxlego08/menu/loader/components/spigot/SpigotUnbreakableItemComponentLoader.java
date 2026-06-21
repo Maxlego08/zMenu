@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.UnbreakableComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,8 @@ public class SpigotUnbreakableItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        return new UnbreakableComponent(true);
+        path = this.normalizePath(path);
+        ResolvableBoolean unbreakable = this.asResolvableBoolean(configuration, path);
+        return new UnbreakableComponent(unbreakable != null ? unbreakable : ResolvableBoolean.of(true));
     }
 }

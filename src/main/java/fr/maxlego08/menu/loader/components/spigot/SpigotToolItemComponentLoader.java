@@ -7,6 +7,9 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.ToolComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.itemstack.ZToolRule;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,12 +29,12 @@ public class SpigotToolItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration,
-                                        @NotNull String path, @Nullable ConfigurationSection componentSection) {
+                                         @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        float defaultMiningSpeed = (float) componentSection.getDouble("default-mining-speed", 1.0);
-        int damagePerBlock = componentSection.getInt("damage-per-block", 1);
-        boolean canDestroyBlocksInCreative = componentSection.getBoolean("can-destroy-blocks-in-creative", true);
+        ResolvableFloat defaultMiningSpeed = this.asResolvableFloat(componentSection, "default-mining-speed", 1.0f);
+        ResolvableInt damagePerBlock = this.asResolvableInt(componentSection, "damage-per-block", 1);
+        ResolvableBoolean canDestroyBlocksInCreative = this.asResolvableBoolean(componentSection, "can-destroy-blocks-in-creative", true);
 
         List<Map<?, ?>> rawRulesList = componentSection.getMapList("rules");
         List<ZToolRule<Material>> materialRules = new ArrayList<>();

@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -10,13 +12,17 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class UnbreakableComponent extends ItemComponent {
-    private final boolean unbreakable;
+    private final ResolvableBoolean unbreakable;
 
     public UnbreakableComponent(boolean unbreakable) {
+        this.unbreakable = ResolvableBoolean.of(unbreakable);
+    }
+
+    public UnbreakableComponent(ResolvableBoolean unbreakable) {
         this.unbreakable = unbreakable;
     }
 
-    public boolean isUnbreakable() {
+    public ResolvableBoolean getUnbreakable() {
         return this.unbreakable;
     }
 
@@ -25,7 +31,7 @@ public class UnbreakableComponent extends ItemComponent {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
 
-            itemMeta.setUnbreakable(this.unbreakable);
+            Resolvable.applyResolvable(context, this.unbreakable, itemMeta::setUnbreakable);
 
             itemStack.setItemMeta(itemMeta);
         }

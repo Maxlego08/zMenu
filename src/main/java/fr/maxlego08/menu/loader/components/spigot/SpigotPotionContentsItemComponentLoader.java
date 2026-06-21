@@ -5,15 +5,16 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.PotionContentsComponent;
-import fr.maxlego08.menu.api.utils.ColorUtils;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionType;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
-import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,27 +33,38 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        @Nullable PotionType basePotionType = null;
+        ResolvablePotionType basePotionType = null;
         String potion = componentSection.getString("potion", "");
         if (!potion.isEmpty()) {
-            try {
-                NamespacedKey potionKey = NamespacedKey.fromString(potion);
-                if (potionKey != null) {
-                    basePotionType = Registry.POTION.getOrThrow(potionKey);
+            if (potion.contains("%")) {
+                basePotionType = ResolvablePotionType.of(potion);
+            } else {
+                try {
+                    NamespacedKey potionKey = NamespacedKey.fromString(potion);
+                    if (potionKey != null) {
+                        basePotionType = ResolvablePotionType.of(Registry.POTION.getOrThrow(potionKey));
+                    }
+                } catch (Exception ignored) {
                 }
-            } catch (Exception ignored) {
             }
         }
 
-        @Nullable Color color = null;
+        ResolvableColor color = null;
         Object customColor = componentSection.get("custom-color");
         if (customColor != null) {
-            color = ColorUtils.parse(customColor);
+            color = ResolvableColor.of(customColor);
         }
 
-        List<PotionEffect> customEffects = this.parsePotionEffects(componentSection.getMapList("custom-effects"));
+        List<ResolvablePotionEffect> customEffects = this.parseResolvablePotionEffects(componentSection.getMapList("custom-effects"));
 
-        String customName = componentSection.getString("custom-name", null);
+        Resolvable<String> customName = null;
+        String customNameStr = componentSection.getString("custom-name");
+        if (customNameStr != null) {
+            customName = customNameStr.contains("%") ? ResolvableString.ofExpression(customNameStr) : ResolvableString.of(customNameStr);
+        }
+
         return new PotionContentsComponent(basePotionType, customName, color, customEffects);
     }
+
+
 }

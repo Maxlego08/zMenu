@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -10,22 +11,23 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class EnchantableComponent extends ItemComponent {
-    private final int value;
+    private final @NotNull ResolvableInt value;
 
-    public EnchantableComponent(int value) {
+    public EnchantableComponent(@NotNull ResolvableInt value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public @NotNull ResolvableInt getValue() {
         return this.value;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            itemMeta.setEnchantable(this.value);
-            itemStack.setItemMeta(itemMeta);
-        }
+        if (itemMeta == null) return;
+
+        this.applyResolvable(context, itemMeta::setEnchantable, this.value);
+
+        itemStack.setItemMeta(itemMeta);
     }
 }

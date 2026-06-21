@@ -3,6 +3,10 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.itemstack.ZToolRule;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.Player;
@@ -17,14 +21,14 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class ToolComponent extends ItemComponent {
 
-    private final float defaultMiningSpeed;
-    private final int damagePerBlock;
-    private final boolean canDestroyBlocksInCreative;
+    private final @NotNull ResolvableFloat defaultMiningSpeed;
+    private final @NotNull ResolvableInt damagePerBlock;
+    private final @NotNull ResolvableBoolean canDestroyBlocksInCreative;
     private final List<ZToolRule<Material>> materialRules;
     private final List<ZToolRule<Collection<Material>>> materialGroups;
     private final List<ZToolRule<Tag<Material>>> tagRules;
 
-    public ToolComponent(float defaultMiningSpeed, int damagePerBlock, boolean canDestroyBlocksInCreative,
+    public ToolComponent(@NotNull ResolvableFloat defaultMiningSpeed, @NotNull ResolvableInt damagePerBlock, @NotNull ResolvableBoolean canDestroyBlocksInCreative,
                          List<ZToolRule<Material>> materialRules, List<ZToolRule<Collection<Material>>> materialGroups,
                          List<ZToolRule<Tag<Material>>> tagRules) {
         this.defaultMiningSpeed = defaultMiningSpeed;
@@ -35,15 +39,15 @@ public class ToolComponent extends ItemComponent {
         this.tagRules = tagRules;
     }
 
-    public float getDefaultMiningSpeed() {
+    public @NotNull ResolvableFloat getDefaultMiningSpeed() {
         return this.defaultMiningSpeed;
     }
 
-    public int getDamagePerBlock() {
+    public @NotNull ResolvableInt getDamagePerBlock() {
         return this.damagePerBlock;
     }
 
-    public boolean isCanDestroyBlocksInCreative() {
+    public @NotNull ResolvableBoolean isCanDestroyBlocksInCreative() {
         return this.canDestroyBlocksInCreative;
     }
 
@@ -62,22 +66,25 @@ public class ToolComponent extends ItemComponent {
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            org.bukkit.inventory.meta.components.ToolComponent tool = itemMeta.getTool();
-            tool.setDefaultMiningSpeed(this.defaultMiningSpeed);
-            tool.setDamagePerBlock(this.damagePerBlock);
-            tool.setCanDestroyBlocksInCreative(this.canDestroyBlocksInCreative);
-            for (ZToolRule<Material> rule : this.materialRules) {
-                tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-            }
-            for (ZToolRule<Collection<Material>> rule : this.materialGroups) {
-                tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-            }
-            for (ZToolRule<Tag<Material>> rule : this.tagRules) {
-                tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-            }
-            itemStack.setItemMeta(itemMeta);
+        if (itemMeta == null) return;
+
+        org.bukkit.inventory.meta.components.ToolComponent tool = itemMeta.getTool();
+
+        Resolvable.applyResolvable(context, this.defaultMiningSpeed, tool::setDefaultMiningSpeed);
+        Resolvable.applyResolvable(context, this.damagePerBlock, tool::setDamagePerBlock);
+        Resolvable.applyResolvable(context, this.canDestroyBlocksInCreative, tool::setCanDestroyBlocksInCreative);
+
+        for (ZToolRule<Material> rule : this.materialRules) {
+            tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
         }
+        for (ZToolRule<Collection<Material>> rule : this.materialGroups) {
+            tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
+        }
+        for (ZToolRule<Tag<Material>> rule : this.tagRules) {
+            tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
+        }
+
+        itemStack.setItemMeta(itemMeta);
     }
 
 }

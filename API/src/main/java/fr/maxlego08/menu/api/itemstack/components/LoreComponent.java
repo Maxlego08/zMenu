@@ -2,7 +2,8 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.placeholder.Placeholder;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,13 +15,13 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class LoreComponent extends ItemComponent {
 
-    private final List<@NotNull String> lore;
+    private final List<@NotNull ResolvableString> lore;
 
-    public LoreComponent(List<@NotNull String> lore) {
+    public LoreComponent(List<@NotNull ResolvableString> lore) {
         this.lore = lore;
     }
 
-    public List<@NotNull String> getLore() {
+    public List<@NotNull ResolvableString> getLore() {
         return this.lore;
     }
 
@@ -29,7 +30,7 @@ public class LoreComponent extends ItemComponent {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
 
-            itemMeta.setLore(Placeholder.Placeholders.getPlaceholder().setPlaceholders(player,context.getPlaceholders().parse(this.lore)));
+            Resolvable.applyResolvable(context, this.lore, itemMeta::setLore);
 
             itemStack.setItemMeta(itemMeta);
         }

@@ -6,15 +6,13 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BreakSoundComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.21.5")
@@ -28,16 +26,8 @@ public class SpigotBreakSoundItemComponentLoader extends ItemComponentLoader {
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
 
-        String sound = configuration.getString(path);
-        if (sound != null) {
-            try {
-                NamespacedKey key = NamespacedKey.fromString(sound.toLowerCase(Locale.ROOT));
-                if (key != null) {
-                    return new BreakSoundComponent(Registry.SOUNDS.getOrThrow(key));
-                }
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return null;
+        ResolvableSound resolvableSound = this.asResolvableSound(configuration, path);
+
+        return new BreakSoundComponent(resolvableSound);
     }
 }

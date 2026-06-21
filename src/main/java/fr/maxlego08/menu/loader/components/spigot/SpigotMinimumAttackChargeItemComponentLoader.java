@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.MinimumAttackChargeComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,10 @@ public class SpigotMinimumAttackChargeItemComponentLoader extends ItemComponentL
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        float charge = (float) configuration.getDouble(path, -1);
-        return charge < 0 ? null : new MinimumAttackChargeComponent(charge);
+        ResolvableFloat charge = this.asResolvableFloat(configuration, path, -1f);
+        if (!charge.isDynamic() && (charge.getResolvedValue() == null || charge.getResolvedValue() < 0)) {
+            return null;
+        }
+        return new MinimumAttackChargeComponent(charge);
     }
 }

@@ -24,12 +24,12 @@ public abstract class EnumVariantLoader<T extends Enum<T>> extends ItemComponent
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
         try {
-            T variant = Enum.valueOf(enumClass, value.toUpperCase(Locale.ROOT));
-            return componentFactory.apply(variant);
+            T variant = Enum.valueOf(this.enumClass, value.toUpperCase(Locale.ROOT));
+            return this.componentFactory.apply(variant);
         } catch (IllegalArgumentException e) {
             return null;
         }

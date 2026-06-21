@@ -21,6 +21,6 @@ public class ExpandedBedrockInputButton extends BedrockInputButton {
 
     @Override
     public Component build(@NotNull BedrockRenderContext<Component> context) {
-        return original.build(context);
+        return this.original.build(context);
     }
 }

@@ -9,9 +9,9 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.api.utils.TextChangeType;
-import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.common.network.PacketQueue;
+import fr.maxlego08.menu.inventory.VInventory;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
@@ -35,8 +35,8 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
 
     private TextChange updateText(String newText) {
         if (newText == null) newText = "";
-        TextChange change = TextChange.compute(currentText, newText);
-        currentText = newText;
+        TextChange change = TextChange.compute(this.currentText, newText);
+        this.currentText = newText;
         return change;
     }
 
@@ -55,15 +55,15 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
 
     @Override
     public void postOpen(MenuPlugin plugin, Player player, int page, Object[] objects) {
-        incomingPackets = PacketQueue.<Packet<? super ServerGamePacketListener>>builder()
+        this.incomingPackets = PacketQueue.<Packet<? super ServerGamePacketListener>>builder()
                 .on(ServerboundRenameItemPacket.class, packet -> {
                     if (!(this.getMenuInventory() instanceof AnvilInventory anvilInventory)) return;
 
-                    TextChange textChange = updateText(packet.getName());
+                    TextChange textChange = this.updateText(packet.getName());
 
-                    if (!firstPacketReceived && textChange.type() == TextChangeType.EQUAL) {
+                    if (!this.firstPacketReceived && textChange.type() == TextChangeType.EQUAL) {
                         // The client sends an initial packet with the default text when the menu is opened, ignore it
-                        firstPacketReceived = true;
+                        this.firstPacketReceived = true;
                         return;
                     }
 
@@ -74,7 +74,7 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
                     if (item != null) {
                         ItemStack nmsCopy = CraftItemStack.asNMSCopy(item.getDisplayItem());
                         ClientboundContainerSetSlotPacket clientboundContainerSetSlotPacket = new ClientboundContainerSetSlotPacket(
-                                containerId,
+                                this.containerId,
                                 8,
                                 2,
                                 nmsCopy
@@ -98,7 +98,7 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
                         requirement.execute(player, null, this, placeholders);
                     }
 
-                    List<Button> buttons = getButtons();
+                    List<Button> buttons = this.getButtons();
                     for (Button button : buttons) {
                         button.onAnvilTextChange(player, this, textChange, placeholders);
                     }
@@ -107,7 +107,7 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
                 .build()
                 .schedule(plugin, player);
 
-        NMSMenuPacketListener.get().redirectIncoming(player, ServerboundRenameItemPacket.class, incomingPackets);
+        NMSMenuPacketListener.get().redirectIncoming(player, ServerboundRenameItemPacket.class, this.incomingPackets);
 
         super.postOpen(plugin, player, page, objects);
     }
@@ -115,7 +115,7 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
     @Override
     protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
         NMSMenuPacketListener.get().stopRedirecting(player, ServerboundRenameItemPacket.class);
-        incomingPackets.cancel();
+        this.incomingPackets.cancel();
         super.onClose(event, plugin, player);
     }
 
@@ -125,7 +125,7 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
         if (!(newInventoryEngine instanceof AnvilInventoryEngine)) {
             this.onClose(event, this.plugin, player);
         } else {
-            incomingPackets.cancel();
+            this.incomingPackets.cancel();
             super.onClose(event, this.plugin, player);
         }
     }

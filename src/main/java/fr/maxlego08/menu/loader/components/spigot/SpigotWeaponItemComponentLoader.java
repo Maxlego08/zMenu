@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.WeaponComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -14,18 +16,24 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 @AutoComponentLoader
-@SinceVersion("1.21.5")
+@SinceVersion("1.21.2")
 public class SpigotWeaponItemComponentLoader extends ItemComponentLoader {
 
-    public SpigotWeaponItemComponentLoader(){
+    public SpigotWeaponItemComponentLoader() {
         super("weapon");
     }
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        int itemDamagePerAttack = componentSection.getInt("item-damage-per-attack", 1);
-        float disableBlockingForSeconds = (float) componentSection.getDouble("disable-blocking-for-seconds", 0);
-        return new WeaponComponent(itemDamagePerAttack, disableBlockingForSeconds);
+
+        ResolvableInt itemDamagePerAttack = this.asResolvableInt(componentSection, "item-damage-per-attack");
+        ResolvableFloat disableBlockingForSeconds = this.asResolvableFloat(componentSection, "disable-blocking-for-seconds");
+
+        return new WeaponComponent(
+                itemDamagePerAttack != null ? itemDamagePerAttack : ResolvableInt.of(1),
+                disableBlockingForSeconds != null ? disableBlockingForSeconds : ResolvableFloat.of(0)
+        );
     }
 }
+

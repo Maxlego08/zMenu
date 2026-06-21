@@ -2,36 +2,46 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
-import org.bukkit.Tag;
-import org.bukkit.entity.EntityType;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.*;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class EquippableComponent extends ItemComponent {
-    private final Optional<EquipmentSlot> slot;
-    private final Optional<Sound> equipSound;
-    private final Optional<NamespacedKey> assetId;
-    private final Boolean dispensable;
-    private final Boolean swappable;
-    private final Boolean damageOnHurt;
-    private final Boolean equipOnInteract;
-    private final Optional<NamespacedKey> cameraOverlay;
-    private final Boolean canBeSheared;
-    private final Optional<Sound> shearingSound;
-    private final Optional<Collection<EntityType>> allowedEntities;
-    private final Optional<Tag<EntityType>> allowedEntityTags;
+    private final @Nullable ResolvableEquipmentSlot slot;
+    private final @Nullable ResolvableSound equipSound;
+    private final @Nullable ResolvableNamespacedKey assetId;
+    private final @Nullable ResolvableBoolean dispensable;
+    private final @Nullable ResolvableBoolean swappable;
+    private final @Nullable ResolvableBoolean damageOnHurt;
+    private final @Nullable ResolvableBoolean equipOnInteract;
+    private final @Nullable ResolvableNamespacedKey cameraOverlay;
+    private final @Nullable ResolvableBoolean canBeSheared;
+    private final @Nullable ResolvableSound shearingSound;
+    private final @Nullable List<ResolvableEntityType> allowedEntities;
+    private final @Nullable ResolvableEntityTypeTag allowedEntityTags;
 
-    public EquippableComponent(Optional<EquipmentSlot> slot, Optional<Sound> equipSound, Optional<NamespacedKey> assetId, Boolean dispensable, Boolean swappable, Boolean damageOnHurt, Boolean equipOnInteract, Optional<NamespacedKey> cameraOverlay, Boolean canBeSheared, Optional<Sound> shearingSound, Optional<Collection<EntityType>> allowedEntities, Optional<Tag<EntityType>> allowedEntityTags) {
+    public EquippableComponent(
+            @Nullable ResolvableEquipmentSlot slot,
+            @Nullable ResolvableSound equipSound,
+            @Nullable ResolvableNamespacedKey assetId,
+            @Nullable ResolvableBoolean dispensable,
+            @Nullable ResolvableBoolean swappable,
+            @Nullable ResolvableBoolean damageOnHurt,
+            @Nullable ResolvableBoolean equipOnInteract,
+            @Nullable ResolvableNamespacedKey cameraOverlay,
+            @Nullable ResolvableBoolean canBeSheared,
+            @Nullable ResolvableSound shearingSound,
+            @Nullable List<ResolvableEntityType> allowedEntities,
+            @Nullable ResolvableEntityTypeTag allowedEntityTags
+    ) {
         this.slot = slot;
         this.equipSound = equipSound;
         this.assetId = assetId;
@@ -46,79 +56,76 @@ public class EquippableComponent extends ItemComponent {
         this.allowedEntityTags = allowedEntityTags;
     }
 
-    public Optional<EquipmentSlot> getSlot() {
+    public @Nullable ResolvableEquipmentSlot getSlot() {
         return this.slot;
     }
 
-    public Optional<Sound> getEquipSound() {
+    public @Nullable ResolvableSound getEquipSound() {
         return this.equipSound;
     }
 
-    public Optional<NamespacedKey> getAssetId() {
+    public @Nullable ResolvableNamespacedKey getAssetId() {
         return this.assetId;
     }
 
-    public Boolean getDispensable() {
+    public @Nullable ResolvableBoolean getDispensable() {
         return this.dispensable;
     }
 
-    public Boolean getSwappable() {
+    public @Nullable ResolvableBoolean getSwappable() {
         return this.swappable;
     }
 
-    public Boolean getDamageOnHurt() {
+    public @Nullable ResolvableBoolean getDamageOnHurt() {
         return this.damageOnHurt;
     }
 
-    public Boolean getEquipOnInteract() {
+    public @Nullable ResolvableBoolean getEquipOnInteract() {
         return this.equipOnInteract;
     }
 
-    public Optional<NamespacedKey> getCameraOverlay() {
+    public @Nullable ResolvableNamespacedKey getCameraOverlay() {
         return this.cameraOverlay;
     }
 
-    public Boolean getCanBeSheared() {
+    public @Nullable ResolvableBoolean getCanBeSheared() {
         return this.canBeSheared;
     }
 
-    public Optional<Sound> getShearingSound() {
+    public @Nullable ResolvableSound getShearingSound() {
         return this.shearingSound;
     }
 
-    public Optional<Collection<EntityType>> getAllowedEntities() {
+    public @Nullable List<ResolvableEntityType> getAllowedEntities() {
         return this.allowedEntities;
     }
 
-    public Optional<Tag<EntityType>> getAllowedEntityTags() {
+    public @Nullable ResolvableEntityTypeTag getAllowedEntityTags() {
         return this.allowedEntityTags;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            org.bukkit.inventory.meta.components.EquippableComponent equippable = itemMeta.getEquippable();
+        if (itemMeta == null) return;
 
-            this.slot.ifPresent(equippable::setSlot);
-            this.equipSound.ifPresent(equippable::setEquipSound);
-            this.assetId.ifPresent(equippable::setModel);
+        org.bukkit.inventory.meta.components.EquippableComponent equippable = itemMeta.getEquippable();
+        
+        this.applyResolvable(context, equippable::setSlot, this.slot);
+        this.applyResolvable(context, equippable::setEquipSound, this.equipSound);
+        this.applyResolvable(context, equippable::setModel, this.assetId);
+        this.applyResolvable(context, equippable::setDispensable, this.dispensable);
+        this.applyResolvable(context, equippable::setSwappable, this.swappable);
+        this.applyResolvable(context, equippable::setDamageOnHurt, this.damageOnHurt);
+        this.applyResolvable(context, equippable::setEquipOnInteract, this.equipOnInteract);
+        this.applyResolvable(context, equippable::setCameraOverlay, this.cameraOverlay);
+        this.applyResolvable(context, equippable::setCanBeSheared, this.canBeSheared);
+        this.applyResolvable(context, equippable::setShearingSound, this.shearingSound);
 
-            equippable.setDispensable(this.dispensable);
-            equippable.setSwappable(this.swappable);
-            equippable.setDamageOnHurt(this.damageOnHurt);
+        Resolvable.applyResolvable(context, this.allowedEntities, equippable::setAllowedEntities);
 
-            equippable.setEquipOnInteract(this.equipOnInteract);
+        Resolvable.applyResolvable(context, this.allowedEntityTags, equippable::setAllowedEntities);
 
-            this.cameraOverlay.ifPresent(equippable::setCameraOverlay);
-
-            equippable.setCanBeSheared(this.canBeSheared);
-            this.shearingSound.ifPresent(equippable::setShearingSound);
-
-            this.allowedEntities.ifPresent(equippable::setAllowedEntities);
-            this.allowedEntityTags.ifPresent(equippable::setAllowedEntities);
-
-            itemStack.setItemMeta(itemMeta);
-        }
+        itemStack.setItemMeta(itemMeta);
     }
 }

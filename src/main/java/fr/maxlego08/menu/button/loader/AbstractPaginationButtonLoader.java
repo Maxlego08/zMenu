@@ -23,7 +23,7 @@ public abstract class AbstractPaginationButtonLoader extends ButtonLoader {
             return null;
         }
         boolean onlyRefreshButton = configuration.getBoolean(path + "only-refresh-button", false);
-        return createButton(contextId, onlyRefreshButton);
+        return this.createButton(contextId, onlyRefreshButton);
     }
 
     protected abstract Button createButton(String contextId, boolean onlyRefreshButton);

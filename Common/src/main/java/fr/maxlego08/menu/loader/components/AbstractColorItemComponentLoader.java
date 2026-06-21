@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.resolvable.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 

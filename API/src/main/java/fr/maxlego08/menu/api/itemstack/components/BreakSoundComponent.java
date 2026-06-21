@@ -2,7 +2,7 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.Sound;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,21 +11,23 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class BreakSoundComponent extends ItemComponent {
-    private final Sound breakSound;
+    private final @Nullable ResolvableSound breakSoundResolvable;
 
-    public BreakSoundComponent(@NotNull Sound breakSound) {
-        this.breakSound = breakSound;
+    public BreakSoundComponent(@Nullable ResolvableSound breakSoundResolvable) {
+        this.breakSoundResolvable = breakSoundResolvable;
     }
 
-    public @NotNull Sound getBreakSound() {
-        return this.breakSound;
+    public @Nullable ResolvableSound getBreakSound() {
+        return this.breakSoundResolvable;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
-            itemMeta.setBreakSound(this.breakSound);
+
+            this.applyResolvable(context, itemMeta::setBreakSound, this.breakSoundResolvable);
+
             itemStack.setItemMeta(itemMeta);
         }
     }

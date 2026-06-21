@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.UseEffectsComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +26,9 @@ public class SpigotUseEffectsItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        boolean canSprint = componentSection.getBoolean("can-sprint", false);
-        float speedMultiplier = (float) componentSection.getDouble("speed-multiplier", 0.2f);
-        boolean interactVibrations = componentSection.getBoolean("interact-vibrations", true);
+        ResolvableBoolean canSprint = this.asResolvableBoolean(componentSection, "can-sprint", false);
+        ResolvableFloat speedMultiplier = this.asResolvableFloat(componentSection, "speed-multiplier", 0.2f);
+        ResolvableBoolean interactVibrations = this.asResolvableBoolean(componentSection, "interact-vibrations", true);
         return new UseEffectsComponent(canSprint, speedMultiplier, interactVibrations);
     }
 }

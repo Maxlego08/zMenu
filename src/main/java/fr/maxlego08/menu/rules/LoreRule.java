@@ -23,8 +23,8 @@ public abstract class LoreRule implements Rule {
         List<String> lore = context.getLore();
         for (String value : this.values) {
             for (String line : lore) {
-                String normalizedLine = ignoreCase ? line.toLowerCase(Locale.ROOT) : line;
-                if (matchesLine(normalizedLine, value)) return true;
+                String normalizedLine = this.ignoreCase ? line.toLowerCase(Locale.ROOT) : line;
+                if (this.matchesLine(normalizedLine, value)) return true;
             }
         }
         return false;

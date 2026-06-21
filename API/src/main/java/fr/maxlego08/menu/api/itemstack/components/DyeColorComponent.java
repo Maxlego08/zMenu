@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.api.utils.resolvable.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;

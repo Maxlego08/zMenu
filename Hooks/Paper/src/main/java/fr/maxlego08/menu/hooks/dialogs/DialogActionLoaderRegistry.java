@@ -20,8 +20,8 @@ public class DialogActionLoaderRegistry extends Registry<String, DialogActionLoa
     }
 
     private void registerDefaults() {
-        registerLoader(new ZCustomClickDialogActionLoader());
-        registerLoader(new ZStaticDialogActionLoader());
+        this.registerLoader(new ZCustomClickDialogActionLoader());
+        this.registerLoader(new ZStaticDialogActionLoader());
     }
 
     public void registerLoader(DialogActionLoader loader) {

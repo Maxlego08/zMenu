@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.api.utils.version;
 
 import fr.maxlego08.menu.api.annotations.*;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.ReflectionsCache;

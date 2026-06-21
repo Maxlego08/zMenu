@@ -1,17 +1,24 @@
-package fr.maxlego08.menu.api.utils.resolvable;
+package fr.maxlego08.menu.api.utils.resolvable.bukkit;
 
 import fr.maxlego08.menu.api.utils.ColorUtils;
+import fr.maxlego08.menu.api.utils.resolvable.ParsableResolvable;
 import org.bukkit.Color;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ResolvableColor extends Resolvable<Color> {
+public final class ResolvableColor extends ParsableResolvable<Color> {
 
     private ResolvableColor(@Nullable Color resolvedValue, @Nullable String expression) {
         super(resolvedValue, expression);
     }
 
-    public static @Nullable ResolvableColor of(@NotNull Object raw) {
+    @Nullable
+    @Contract("null -> null")
+    public static ResolvableColor of(@Nullable Object raw) {
+        if (raw == null) {
+            return null;
+        }
 
         Color color = ColorUtils.parse(raw);
         if (color != null) {
@@ -23,6 +30,12 @@ public final class ResolvableColor extends Resolvable<Color> {
         }
 
         return null;
+    }
+
+    @Nullable
+    @Contract("null -> null")
+    public static ResolvableColor autoOrNull(@Nullable Object raw) {
+        return of(raw);
     }
 
     public static @NotNull ResolvableColor of(@NotNull Color color) {

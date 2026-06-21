@@ -33,10 +33,10 @@ public class RefreshSlotAction extends ActionHelper {
         for (Button b : buttons) {
 
             if (b == null) continue;
-            if (b.isPlayerInventory() != isInPlayerInventory) continue;
+            if (b.isPlayerInventory() != this.isInPlayerInventory) continue;
 
             int[] matchingSlots = b.getSlots().stream()
-                    .filter(slots::contains)
+                    .filter(this.slots::contains)
                     .mapToInt(Integer::intValue)
                     .toArray();
 

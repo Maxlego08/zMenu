@@ -17,9 +17,9 @@ public class PaginationPreviousButton extends PaginationButton {
     @Override
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
-        GenericPaginateButton paginateButton = findPaginateButton(inventory, player);
+        GenericPaginateButton paginateButton = this.findPaginateButton(inventory, player);
         if (paginateButton != null && paginateButton.previousPage(player)) {
-            onPageChange(player, inventory, paginateButton);
+            this.onPageChange(player, inventory, paginateButton);
         }
     }
 }

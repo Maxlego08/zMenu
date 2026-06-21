@@ -6,6 +6,9 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.StoredEnchantmentsComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableEnchantment;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableEnchantmentEntry;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @AutoComponentLoader
@@ -30,20 +34,27 @@ public class SpigotStoredEnchantItemComponentLoader extends ItemComponentLoader 
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         Map<String, Object> values = componentSection.getValues(false);
-        Map<Enchantment,Integer> storedEnchants = new HashMap<>();
-        for (Map.Entry<String, Object> entry : values.entrySet()){
+        List<ResolvableEnchantmentEntry> entries = new ArrayList<>();
+
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
             String enchantName = entry.getKey();
-            NamespacedKey enchantKey = NamespacedKey.fromString(enchantName);
-            if (enchantKey == null) continue;
-            try {
-                Enchantment enchantment = Registry.ENCHANTMENT.get(enchantKey);
-                int level = componentSection.getInt(enchantName);
-                if (enchantment != null && level > 0){
-                    storedEnchants.put(enchantment, level);
-                }
-            } catch (IllegalArgumentException ignored) {
+            Object levelObj = entry.getValue();
+
+            ResolvableEnchantment enchantment = ResolvableEnchantment.autoOrNull(enchantName);
+            if (enchantment == null) continue;
+
+            ResolvableInt level;
+            if (levelObj instanceof Number number) {
+                level = ResolvableInt.of(number.intValue());
+            } else if (levelObj instanceof String expr) {
+                level = ResolvableInt.of(expr);
+            } else {
+                continue;
             }
+
+            entries.add(new ResolvableEnchantmentEntry(enchantment, level));
         }
-        return storedEnchants.isEmpty() ? null : new StoredEnchantmentsComponent(storedEnchants);
+
+        return entries.isEmpty() ? null : new StoredEnchantmentsComponent(entries);
     }
 }

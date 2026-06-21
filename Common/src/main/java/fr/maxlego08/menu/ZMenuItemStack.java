@@ -20,6 +20,7 @@ import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
@@ -62,7 +63,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, String> translatedDisplayName = new HashMap<>();
     private Map<String, List<String>> translatedLore = new HashMap<>();
     private boolean isGlowing;
-    private String modelID;
+    private ResolvableInt modelID;
     private String itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -333,12 +334,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private void applyCustomModelData(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, ItemMeta itemMeta) {
-        try {
-            int customModelData = Integer.parseInt(this.papi(placeholders.parse(this.modelID), offlinePlayer == null ? player : offlinePlayer, true));
-            if (customModelData != 0) {
-                itemMeta.setCustomModelData(customModelData);
-            }
-        } catch (NumberFormatException ignored) {
+        if (this.modelID == null) {
+            return;
+        }
+        Integer customModelData = this.modelID.resolve(new ZBuildContext.Builder().player(player).placeholders(placeholders).build());
+        if (customModelData != null && customModelData != 0) {
+            itemMeta.setCustomModelData(customModelData);
         }
     }
 
@@ -703,14 +704,22 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the modelID
      */
     public String getModelID() {
-        return this.modelID;
+        return this.modelID != null ? this.modelID.getExpression() : null;
     }
 
     /**
      * @param modelID the modelID to set
      */
     public void setModelID(String modelID) {
-        this.modelID = modelID;
+        if (modelID == null) {
+            this.modelID = null;
+            return;
+        }
+        try {
+            this.modelID = ResolvableInt.of(Integer.parseInt(modelID));
+        } catch (NumberFormatException e) {
+            this.modelID = ResolvableInt.of(modelID);
+        }
         this.updatePlaceholder(modelID);
     }
 
@@ -718,7 +727,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param modelID the modelID to set
      */
     public void setModelID(int modelID) {
-        this.modelID = String.valueOf(modelID);
+        this.modelID = ResolvableInt.of(modelID);
     }
 
     /**
@@ -885,7 +894,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public AmountType getAmountType() {
-        return amountType;
+        return this.amountType;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class DialogRenderContext<T, I extends Inventory, M extends MetaUpdater, 
     }
 
     public M getMetaUpdater() {
-        return metaUpdater;
+        return this.metaUpdater;
     }
 
     public Placeholders getPlaceholders() {

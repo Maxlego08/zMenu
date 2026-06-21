@@ -76,7 +76,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             for (AbstractDialogInventory dialog : dialogList) {
                 if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
-                    return Optional.of((DialogInventory) dialog);
+                    return Optional.of(dialog);
                 }
             }
         }

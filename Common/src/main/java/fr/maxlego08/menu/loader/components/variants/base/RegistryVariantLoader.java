@@ -27,13 +27,13 @@ public abstract class RegistryVariantLoader<T extends Keyed> extends ItemCompone
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
         NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
         if (key == null) return null;
         try {
-            return componentFactory.apply(registry.getOrThrow(key));
+            return this.componentFactory.apply(this.registry.getOrThrow(key));
         } catch (IllegalArgumentException e) {
             return null;
         }

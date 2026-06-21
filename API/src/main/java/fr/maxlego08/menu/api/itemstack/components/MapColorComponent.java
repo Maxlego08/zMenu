@@ -4,8 +4,8 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
@@ -15,20 +15,20 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public class MapColorComponent extends ItemComponent {
 
-    private final @NotNull Color color;
+    private final @NotNull ResolvableColor color;
 
-    public MapColorComponent(@NotNull Color color) {
+    public MapColorComponent(@NotNull ResolvableColor color) {
         this.color = color;
     }
 
-    public @NotNull Color getColor() {
+    public @NotNull ResolvableColor getColor() {
         return this.color;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, MapMeta.class, mapMeta -> {
-            mapMeta.setColor(this.color);
+            this.applyResolvable(context, mapMeta::setColor, this.color);
         });
         if (!apply && Configuration.enableDebug)
             Logger.info("Could not apply MapColorComponent to itemStack: " + itemStack.getType().name());

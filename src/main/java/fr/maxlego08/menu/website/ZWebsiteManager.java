@@ -384,38 +384,38 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     @Override
     public void downloadFromUrl(@NonNull CommandSender sender, @NonNull String baseUrl, boolean force) {
 
-        message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
-        plugin.getScheduler().runAsync(w -> {
-            DownloadResult result = performDownload(baseUrl, force, sender);
+        this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_START);
+        this.plugin.getScheduler().runAsync(w -> {
+            DownloadResult result = this.performDownload(baseUrl, force, sender);
             switch (result) {
                 case SUCCESS -> {}
                 case ERROR_HOST_NOT_ALLOWED -> {
-                    String host = getHostFromUrl(baseUrl);
-                    message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_HOST,
+                    String host = this.getHostFromUrl(baseUrl);
+                    this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_HOST,
                             "%host%", host != null ? host : "<invalid>",
                             "%allowed%", String.join(", ", Configuration.allowedDownloadableWebsite));
                 }
-                case ERROR_IO -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
-                case ERROR_INVALID_FILE_TYPE -> message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
-                case ERROR_FILE_ALREADY_EXISTS -> message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
+                case ERROR_IO -> this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_CONSOLE);
+                case ERROR_INVALID_FILE_TYPE -> this.message(this.plugin, sender, Message.WEBSITE_DOWNLOAD_ERROR_TYPE);
+                case ERROR_FILE_ALREADY_EXISTS -> this.message(this.plugin, sender, Message.WEBSITE_INVENTORY_EXIST);
             }
         });
     }
 
     private DownloadResult performDownload(String baseUrl, boolean force, CommandSender sender) {
         try {
-            String finalUrl = followRedirection(baseUrl);
+            String finalUrl = this.followRedirection(baseUrl);
 
             String fileName;
             URL url = new URL(finalUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setInstanceFollowRedirects(false);
             try {
-                if (!isYmlFile(httpURLConnection)) {
+                if (!this.isYmlFile(httpURLConnection)) {
                     return DownloadResult.ERROR_INVALID_FILE_TYPE;
                 }
 
-                fileName = getFileNameFromContentDisposition(httpURLConnection);
+                fileName = this.getFileNameFromContentDisposition(httpURLConnection);
             } finally {
                 httpURLConnection.disconnect();
             }
@@ -431,7 +431,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             final String finalFileName = fileName;
             HttpRequest request = new HttpRequest(finalUrl, new JsonObject());
             request.setMethod("GET");
-            request.submitForFileDownload(this.plugin, file, isSuccess -> message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", finalFileName));
+            request.submitForFileDownload(this.plugin, file, isSuccess -> this.message(this.plugin, sender, isSuccess ? Message.WEBSITE_INVENTORY_SUCCESS : Message.WEBSITE_INVENTORY_ERROR, "%name%", finalFileName));
 
             return DownloadResult.SUCCESS;
         } catch (DisallowedHostException exception) {
@@ -444,7 +444,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     private boolean isValidHost(String urlString) throws IOException {
-        String host = getHostFromUrl(urlString);
+        String host = this.getHostFromUrl(urlString);
         if (host == null || host.isBlank()) {
             return false;
         }
@@ -455,7 +455,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     private String followRedirection(String urlString) throws IOException {
-        return resolveRedirectChain(urlString, 0);
+        return this.resolveRedirectChain(urlString, 0);
     }
 
     private String resolveRedirectChain(String urlString, int hopCount) throws IOException {
@@ -463,7 +463,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             throw new IOException("Too many redirects (>10 hops)");
         }
 
-        if (!isValidHost(urlString)) {
+        if (!this.isValidHost(urlString)) {
             throw new DisallowedHostException("Disallowed host in redirect chain");
         }
 
@@ -477,7 +477,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             if (location == null || location.isBlank()) {
                 throw new IOException("Redirect has no Location header");
             }
-            return resolveRedirectChain(location, hopCount + 1);
+            return this.resolveRedirectChain(location, hopCount + 1);
         }
 
         return urlString;
@@ -508,6 +508,6 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             }
         }
 
-        return generateRandomString(16) + ".yml";
+        return this.generateRandomString(16) + ".yml";
     }
 }

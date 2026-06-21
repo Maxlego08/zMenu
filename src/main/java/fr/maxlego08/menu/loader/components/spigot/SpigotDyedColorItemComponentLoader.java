@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.DyeColorComponent;
-import fr.maxlego08.menu.api.utils.resolvable.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

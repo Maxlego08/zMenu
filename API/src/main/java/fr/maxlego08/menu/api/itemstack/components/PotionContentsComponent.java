@@ -4,13 +4,15 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionType;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,42 +20,48 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class PotionContentsComponent extends ItemComponent {
-    private final @Nullable PotionType basePotionType;
-    private final @Nullable String customName;
-    private final @Nullable Color color;
-    private final @NotNull List<@NotNull PotionEffect> potionEffects;
+    private final @Nullable ResolvablePotionType basePotionType;
+    private final @Nullable Resolvable<String> customName;
+    private final @Nullable ResolvableColor color;
+    private final @NotNull List<ResolvablePotionEffect> potionEffects;
 
-    public PotionContentsComponent(@Nullable PotionType basePotionType, @Nullable String customName, @Nullable Color color, @NotNull List<@NotNull PotionEffect> potionEffects) {
+    public PotionContentsComponent(@Nullable ResolvablePotionType basePotionType, @Nullable Resolvable<String> customName, @Nullable ResolvableColor color, @NotNull List<ResolvablePotionEffect> potionEffects) {
         this.basePotionType = basePotionType;
         this.customName = customName;
         this.color = color;
         this.potionEffects = potionEffects;
     }
 
-    public @Nullable PotionType getBasePotionType() {
+    public @Nullable ResolvablePotionType getBasePotionType() {
         return this.basePotionType;
     }
 
-    public @Nullable String getCustomName() {
+    public @Nullable Resolvable<String> getCustomName() {
         return this.customName;
     }
 
-    public @Nullable Color getColor() {
+    public @Nullable ResolvableColor getColor() {
         return this.color;
     }
 
-    public @NotNull List<@NotNull PotionEffect> getPotionEffects() {
+    public @NotNull List<ResolvablePotionEffect> getPotionEffects() {
         return this.potionEffects;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, PotionMeta.class, potionMeta -> {
-            potionMeta.setBasePotionType(this.basePotionType);
-            potionMeta.setCustomName(this.customName);
-            potionMeta.setColor(this.color);
-            for (PotionEffect potionEffect : this.potionEffects) {
-                potionMeta.addCustomEffect(potionEffect, true);
+            this.applyResolvable(context, potionMeta::setBasePotionType, this.basePotionType);
+
+            this.applyResolvable(context, potionMeta::setCustomName, this.customName);
+
+            this.applyResolvable(context, potionMeta::setColor, this.color);
+
+            for (ResolvablePotionEffect resolvableEffect : this.potionEffects) {
+                PotionEffect effect = resolvableEffect.resolve(context);
+                if (effect != null) {
+                    potionMeta.addCustomEffect(effect, true);
+                }
             }
         });
         if (!apply && Configuration.enableDebug)

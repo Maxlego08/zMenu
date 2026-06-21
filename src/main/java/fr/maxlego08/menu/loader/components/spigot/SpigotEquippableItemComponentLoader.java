@@ -6,7 +6,12 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.EquippableComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.*;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.*;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -16,9 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @AutoComponentLoader
 @SinceVersion("1.21.2")
@@ -32,117 +36,61 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        Optional<EquipmentSlot> slot = this.loadEquipmentSlot(componentSection.getString("slot", ""));
-        Optional<Sound> equipSound = this.loadSound(componentSection.getString("equip-sound", ""));
-        Optional<NamespacedKey> assetId = this.loadNamespacedKey(componentSection.getString("asset-id", ""));
+        ResolvableEquipmentSlot slot = this.loadEquipmentSlot(componentSection.getString("slot"));
+        ResolvableSound equipSound = this.loadSound(componentSection.getString("equip-sound"));
+        ResolvableNamespacedKey assetId = this.loadNamespacedKey(componentSection.getString("asset-id"));
 
-        boolean dispensable = componentSection.getBoolean("dispensable", true);
-        boolean swappable = componentSection.getBoolean("swappable", true);
-        boolean damageOnHurt = componentSection.getBoolean("damage-on-hurt", true);
-        boolean equipOnInteract = componentSection.getBoolean("equip-on-interact", false);
+        ResolvableBoolean dispensable = this.asResolvableBoolean(componentSection, "dispensable", true);
+        ResolvableBoolean swappable = this.asResolvableBoolean(componentSection, "swappable", true);
+        ResolvableBoolean damageOnHurt = this.asResolvableBoolean(componentSection, "damage-on-hurt", true);
+        ResolvableBoolean equipOnInteract = this.asResolvableBoolean(componentSection, "equip-on-interact", false);
 
-        Optional<NamespacedKey> cameraOverlay = this.loadNamespacedKey(componentSection.getString("camera-overlay", ""));
-        boolean canBeSheared = componentSection.getBoolean("can-be-sheared", false);
-        Optional<Sound> shearingSound = this.loadSound(componentSection.getString("shearing-sound", ""));
+        ResolvableNamespacedKey cameraOverlay = this.loadNamespacedKey(componentSection.getString("camera-overlay"));
+        ResolvableBoolean canBeSheared = this.asResolvableBoolean(componentSection, "can-be-sheared", false);
+        ResolvableSound shearingSound = this.loadSound(componentSection.getString("shearing-sound"));
 
-        Optional<Collection<EntityType>> allowedEntities = this.loadAllowedEntities(componentSection.get("allowed-entities"));
-        Optional<Tag<EntityType>> allowedEntityTags = this.loadAllowedEntityTags(componentSection.get("allowed-entities"));
+        List<String> entityStrings = new ArrayList<>();
+        Object allowedEntitiesObj = componentSection.get("allowed-entities");
+        if (allowedEntitiesObj instanceof List<?> list) {
+            for (Object obj : list) {
+                if (obj instanceof String s) entityStrings.add(s);
+            }
+        } else if (allowedEntitiesObj instanceof String s) {
+            entityStrings.add(s);
+        }
+
+        List<ResolvableEntityType> allowedEntities = null;
+        ResolvableEntityTypeTag allowedEntityTags = null;
+
+        for (String es : entityStrings) {
+            if (es.startsWith("#")) {
+                allowedEntityTags = ResolvableEntityTypeTag.autoOrNull(es.substring(1));
+            } else {
+                if (allowedEntities == null) allowedEntities = new ArrayList<>();
+                ResolvableEntityType et = ResolvableEntityType.autoOrNull(es);
+                if (et != null) {
+                    allowedEntities.add(et);
+                }
+            }
+        }
 
         return new EquippableComponent(
-                slot,
-                equipSound,
-                assetId,
-                dispensable,
-                swappable,
-                damageOnHurt,
-                equipOnInteract,
-                cameraOverlay,
-                canBeSheared,
-                shearingSound,
-                allowedEntities,
-                allowedEntityTags
+                slot, equipSound, assetId,
+                dispensable, swappable, damageOnHurt, equipOnInteract,
+                cameraOverlay, canBeSheared, shearingSound,
+                allowedEntities, allowedEntityTags
         );
     }
 
-    private Optional<EquipmentSlot> loadEquipmentSlot(String value) {
-        if (value.isBlank()) return Optional.empty();
-        try {
-            return Optional.of(EquipmentSlot.valueOf(value.toUpperCase(Locale.ROOT)));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
+    private @Nullable ResolvableEquipmentSlot loadEquipmentSlot(@Nullable String value) {
+        return ResolvableEquipmentSlot.autoOrNull(value);
     }
 
-    private Optional<Sound> loadSound(String value) {
-        if (value.isBlank()) return Optional.empty();
-        try {
-            NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
-            return key == null ? Optional.empty() : Optional.of(Registry.SOUNDS.getOrThrow(key));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
+    private @Nullable ResolvableSound loadSound(@Nullable String value) {
+        return ResolvableSound.autoOrNull(value);
     }
 
-    private Optional<NamespacedKey> loadNamespacedKey(String value) {
-        if (value.isBlank()) return Optional.empty();
-        try {
-            return Optional.ofNullable(NamespacedKey.fromString(value.toLowerCase(Locale.ROOT)));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<Collection<EntityType>> loadAllowedEntities(Object allowedEntitiesObj) {
-        Collection<EntityType> entityTypes = new ArrayList<>();
-
-        if (allowedEntitiesObj instanceof Collection<?> collection) {
-            for (Object obj : collection) {
-                if (obj instanceof String entityString) {
-                    this.loadEntityType(entityString).ifPresent(entityTypes::add);
-                }
-            }
-        } else if (allowedEntitiesObj instanceof String entityString) {
-            this.loadEntityType(entityString).ifPresent(entityTypes::add);
-        }
-
-        return entityTypes.isEmpty() ? Optional.empty() : Optional.of(entityTypes);
-    }
-
-    private Optional<Tag<EntityType>> loadAllowedEntityTags(Object allowedEntitiesObj) {
-        if (allowedEntitiesObj instanceof Collection<?> collection) {
-            for (Object obj : collection) {
-                if (obj instanceof String entityString) {
-                    Optional<Tag<EntityType>> tag = this.loadEntityTag(entityString);
-                    if (tag.isPresent()) return tag;
-                }
-            }
-        } else if (allowedEntitiesObj instanceof String entityString) {
-            return this.loadEntityTag(entityString);
-        }
-
-        return Optional.empty();
-    }
-
-    private Optional<EntityType> loadEntityType(String entityString) {
-        NamespacedKey key = NamespacedKey.fromString(entityString.toLowerCase(Locale.ROOT));
-        if (key == null) return Optional.empty();
-
-        try {
-            return Optional.of(Registry.ENTITY_TYPE.getOrThrow(key));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<Tag<EntityType>> loadEntityTag(String entityString) {
-        NamespacedKey key = NamespacedKey.fromString(entityString.toLowerCase(Locale.ROOT));
-        if (key == null) return Optional.empty();
-
-        try {
-            Tag<EntityType> tag = Bukkit.getTag("entity-types", key, EntityType.class);
-            return Optional.ofNullable(tag);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+    private @Nullable ResolvableNamespacedKey loadNamespacedKey(@Nullable String value) {
+        return ResolvableNamespacedKey.autoOrNull(value);
     }
 }
