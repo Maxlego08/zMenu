@@ -41,10 +41,7 @@ public final class ResolvableString extends ParsableResolvable<String> {
     public static ResolvableString of(@NotNull Map<String, Object> map, @NotNull String key, @Nullable String defaultValue) {
         Object value = map.get(key);
         if (value instanceof String strValue) {
-            if (Resolvable.isExpression(strValue)) {
-                return new ResolvableString(null, strValue);
-            }
-            return new ResolvableString(strValue, null);
+            return auto(strValue);
         }
         return defaultValue != null ? new ResolvableString(defaultValue, null) : null;
     }

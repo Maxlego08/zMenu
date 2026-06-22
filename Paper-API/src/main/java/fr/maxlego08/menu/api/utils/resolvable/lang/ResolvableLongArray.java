@@ -30,7 +30,7 @@ public final class ResolvableLongArray extends ParsableResolvable<long[]> {
     }
 
     @Override
-    protected @Nullable long[] parse(@NotNull String value) {
+    protected long @Nullable [] parse(@NotNull String value) {
         try {
             return parseArray(value);
         } catch (NumberFormatException e) {
@@ -38,8 +38,7 @@ public final class ResolvableLongArray extends ParsableResolvable<long[]> {
         }
     }
 
-    @Nullable
-    private static long[] parseArray(@NotNull String value) {
+    private static long @Nullable [] parseArray(@NotNull String value) {
         String[] parts = value.split(",");
         long[] arr = new long[parts.length];
         for (int i = 0; i < parts.length; i++) {

@@ -7,7 +7,7 @@ import org.bukkit.FireworkEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ResolvableFireworkEffect extends Resolvable<FireworkEffect> {
+public final class ResolvableFireworkEffect implements Resolvable<FireworkEffect> {
 
     private final @Nullable Resolvable<FireworkEffect.Type> shape;
     private final @Nullable ResolvableColor color;
@@ -41,13 +41,13 @@ public final class ResolvableFireworkEffect extends Resolvable<FireworkEffect> {
             return null;
         }
 
-        applyResolvable(context, this.color, builder::withColor);
+        Resolvable.applyResolvable(context, this.color, builder::withColor);
 
-        applyResolvable(context, this.fadeColor, builder::withFade);
+        Resolvable.applyResolvable(context, this.fadeColor, builder::withFade);
 
-        applyResolvable(context, this.hasTrail, builder::trail);
+        Resolvable.applyResolvable(context, this.hasTrail, builder::trail);
 
-        applyResolvable(context, this.hasTwinkle, builder::flicker);
+        Resolvable.applyResolvable(context, this.hasTwinkle, builder::flicker);
 
         return builder.build();
     }

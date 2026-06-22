@@ -11,14 +11,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public final class ResolvableBannerPattern extends Resolvable<Pattern> {
+public final class ResolvableBannerPattern implements Resolvable<Pattern> {
 
     private final ResolvableEnum<DyeColor> color;
-    private final RegistryEntry<PatternType> patternType;
+    private final ResolvableRegistryEntry<PatternType> patternType;
 
     public ResolvableBannerPattern(
             @NotNull ResolvableEnum<DyeColor> color,
-            @NotNull RegistryEntry<PatternType> patternType
+            @NotNull ResolvableRegistryEntry<PatternType> patternType
     ) {
         this.color = color;
         this.patternType = patternType;
@@ -31,7 +31,7 @@ public final class ResolvableBannerPattern extends Resolvable<Pattern> {
         if (!(colorObj instanceof String colorStr) || !(patternObj instanceof String patternStr)) return null;
 
         ResolvableEnum<DyeColor> color = ResolvableEnum.auto(DyeColor.class, colorStr);
-        RegistryEntry<PatternType> patternTypeRegistry = ResolvableRegistry.auto(patternStr, PatternType.class);
+        ResolvableRegistryEntry<PatternType> patternTypeRegistry = ResolvableRegistry.auto(patternStr, PatternType.class);
 
         return new ResolvableBannerPattern(color, patternTypeRegistry);
     }

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
-public final class ResolvableAttributeWrapper extends Resolvable<AttributeWrapper> {
+public final class ResolvableAttributeWrapper implements Resolvable<AttributeWrapper> {
 
     private final Resolvable<String> attributeKey;
     private final ResolvableEnum<AttributeModifier.Operation> operation;
@@ -74,11 +74,11 @@ public final class ResolvableAttributeWrapper extends Resolvable<AttributeWrappe
 
     @Override
     public @Nullable AttributeWrapper resolve(@NotNull BuildContext context) {
-        String attrKeyStr = resolve(context, this.attributeKey);
+        String attrKeyStr = Resolvable.resolve(context, this.attributeKey);
         AttributeModifier.Operation operation = this.operation.resolve(context);
-        Double amountVal = resolve(context, this.amount);
-        String slotKeyStr = resolve(context, this.slotKey);
-        String nskStr = this.namespacedKey != null ? resolve(context, this.namespacedKey) : null;
+        Double amountVal = Resolvable.resolve(context, this.amount);
+        String slotKeyStr = Resolvable.resolve(context, this.slotKey);
+        String nskStr = this.namespacedKey != null ? Resolvable.resolve(context, this.namespacedKey) : null;
 
         if (attrKeyStr == null || operation == null || amountVal == null || slotKeyStr == null) return null;
 

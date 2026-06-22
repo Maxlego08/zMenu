@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.utils.resolvable.paper;
 
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.RegistryEntry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
@@ -28,34 +28,34 @@ public final class PaperRegistries {
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> auto(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> auto(
             @NotNull String value,
             @NotNull RegistryKey<T> registryKey
     ) {
-        return RegistryEntry.auto(value, resolverFor(registryKey));
+        return ResolvableRegistryEntry.auto(value, resolverFor(registryKey));
     }
 
     @Nullable
-    public static <T extends Keyed> RegistryEntry<T> autoOrNull(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> autoOrNull(
             @Nullable String value,
             @NotNull RegistryKey<T> registryKey
     ) {
-        return RegistryEntry.autoOrNull(value, resolverFor(registryKey));
+        return ResolvableRegistryEntry.autoOrNull(value, resolverFor(registryKey));
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofValue(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofValue(
             @NotNull T value,
             @NotNull RegistryKey<T> registryKey
     ) {
-        return RegistryEntry.ofValue(value, resolverFor(registryKey));
+        return ResolvableRegistryEntry.ofValue(value, resolverFor(registryKey));
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofExpression(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofExpression(
             @NotNull String expression,
             @NotNull RegistryKey<T> registryKey
     ) {
-        return RegistryEntry.ofExpression(expression, resolverFor(registryKey));
+        return ResolvableRegistryEntry.ofExpression(expression, resolverFor(registryKey));
     }
 }

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class ParsableResolvable<T> extends Resolvable<T> {
+public abstract class ParsableResolvable<T> implements Resolvable<T> {
     private final @Nullable T resolvedValue;
     private final @Nullable String expression;
 
@@ -66,6 +66,9 @@ public abstract class ParsableResolvable<T> extends Resolvable<T> {
             @NotNull Function<String, T> parser,
             @NotNull BiFunction<T, String, R> factory
     ) {
+        if (Resolvable.isExpression(value)) {
+            return factory.apply(null, value);
+        }
         try {
             T parsed = parser.apply(value);
             return factory.apply(parsed, null);
@@ -74,12 +77,24 @@ public abstract class ParsableResolvable<T> extends Resolvable<T> {
         }
     }
 
+    protected static <T, R extends ParsableResolvable<T>> @NotNull R auto(
+            @Nullable String value,
+            @NotNull T defaultValue,
+            @NotNull Function<String, T> parser,
+            @NotNull BiFunction<T, String, R> factory
+    ) {
+        if (value == null) {
+            return factory.apply(defaultValue, null);
+        }
+        return auto(value, parser, factory);
+    }
+
     protected static <T, R extends ParsableResolvable<T>> @Nullable R autoOrNull(
             @Nullable String value,
             @NotNull Function<String, T> parser,
             @NotNull BiFunction<T, String, R> factory
     ) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null) return null;
         return auto(value, parser, factory);
     }
 }

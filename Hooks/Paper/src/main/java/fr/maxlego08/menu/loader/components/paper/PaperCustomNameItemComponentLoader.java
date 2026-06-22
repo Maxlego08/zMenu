@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableComponent;
 import fr.maxlego08.menu.itemstack.components.paper.PaperCustomNameComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,9 +32,7 @@ public class PaperCustomNameItemComponentLoader extends ItemComponentLoader {
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
         String customName = configuration.getString(path);
-        if (customName != null) {
-            return new PaperCustomNameComponent(customName, this.metaUpdater);
-        }
-        return null;
+        ResolvableComponent resolvableString = ResolvableComponent.autoOrNull(customName, this.metaUpdater);
+        return resolvableString != null ? new PaperCustomNameComponent(resolvableString) : null;
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ResolvableLodestoneLocation extends Resolvable<Location> {
+public final class ResolvableLodestoneLocation implements Resolvable<Location> {
 
     private final @Nullable ResolvableInt x;
     private final @Nullable ResolvableInt y;

@@ -29,34 +29,34 @@ public final class BukkitRegistries {
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> auto(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> auto(
             @NotNull String value,
             @NotNull Class<T> type
     ) {
-        return RegistryEntry.auto(value, resolverFor(type));
+        return ResolvableRegistryEntry.auto(value, resolverFor(type));
     }
 
     @Nullable
-    public static <T extends Keyed> RegistryEntry<T> autoOrNull(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> autoOrNull(
             @Nullable String value,
             @NotNull Class<T> type
     ) {
-        return RegistryEntry.autoOrNull(value, resolverFor(type));
+        return ResolvableRegistryEntry.autoOrNull(value, resolverFor(type));
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofValue(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofValue(
             @NotNull T value,
             @NotNull Class<T> type
     ) {
-        return RegistryEntry.ofValue(value, resolverFor(type));
+        return ResolvableRegistryEntry.ofValue(value, resolverFor(type));
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofExpression(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofExpression(
             @NotNull String expression,
             @NotNull Class<T> type
     ) {
-        return RegistryEntry.ofExpression(expression, resolverFor(type));
+        return ResolvableRegistryEntry.ofExpression(expression, resolverFor(type));
     }
 }

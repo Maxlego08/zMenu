@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ResolvablePotionEffect extends Resolvable<PotionEffect> {
+public final class ResolvablePotionEffect implements Resolvable<PotionEffect> {
 
     private final Resolvable<String> typeId;
     private final ResolvableInt duration;

@@ -23,6 +23,10 @@ public final class ResolvableBoolean extends ParsableResolvable<Boolean> {
         return auto(value, Boolean::parseBoolean, ResolvableBoolean::new);
     }
 
+    public static @NotNull ResolvableBoolean auto(@Nullable String value, @NotNull Boolean defaultValue) {
+        return auto(value, defaultValue, Boolean::parseBoolean, ResolvableBoolean::new);
+    }
+
     @Nullable
     @Contract("null -> null; !null -> !null")
     public static ResolvableBoolean autoOrNull(@Nullable String value) {

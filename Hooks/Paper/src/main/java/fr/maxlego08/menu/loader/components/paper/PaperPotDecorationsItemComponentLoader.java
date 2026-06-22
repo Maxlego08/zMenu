@@ -6,10 +6,9 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.itemstack.components.paper.PaperPotDecorationsComponent;
-import io.papermc.paper.datacomponent.item.PotDecorations;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemType;
@@ -36,23 +35,11 @@ public class PaperPotDecorationsItemComponentLoader extends ItemComponentLoader 
 
         if (decorations.size() < SIDES) return null;
 
-        ItemType[] types = new ItemType[SIDES];
+        ResolvableRegistryEntry<ItemType>[] keys = new ResolvableRegistryEntry[SIDES];
         for (int i = 0; i < SIDES; i++) {
-            types[i] = this.getItemTypeFromString(decorations.get(i));
-            if (types[i] == null) return null;
+            keys[i] = ResolvableRegistry.auto(decorations.get(i), ItemType.class);
         }
 
-        return new PaperPotDecorationsComponent(PotDecorations.potDecorations(types[0], types[1], types[2], types[3]));
-    }
-
-    private @Nullable ItemType getItemTypeFromString(String keyString) {
-        try {
-            NamespacedKey key = NamespacedKey.fromString(keyString);
-            if (key == null) return null;
-            return Registry.ITEM.getOrThrow(key);
-        } catch (Exception e) {
-            return null;
-        }
+        return new PaperPotDecorationsComponent(keys);
     }
 }
-

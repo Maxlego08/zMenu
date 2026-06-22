@@ -6,12 +6,15 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.itemstack.components.paper.PaperProvidesTrimMaterialComponent;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,13 +33,7 @@ public class PaperProvidesTrimMaterialItemComponentLoader extends ItemComponentL
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
         String value = configuration.getString(path);
-        if (value == null) return null;
-        NamespacedKey key = NamespacedKey.fromString(value);
-        if (key == null) return null;
-        try {
-            return new PaperProvidesTrimMaterialComponent(RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_MATERIAL).getOrThrow(key));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        ResolvableRegistryEntry<TrimMaterial> trimMaterialResolvableRegistryEntry = ResolvableRegistry.autoOrNull(value, TrimMaterial.class);
+        return new PaperProvidesTrimMaterialComponent(trimMaterialResolvableRegistryEntry);
     }
 }

@@ -30,7 +30,7 @@ public final class ResolvableByteArray extends ParsableResolvable<byte[]> {
     }
 
     @Override
-    protected @Nullable byte[] parse(@NotNull String value) {
+    protected byte @Nullable [] parse(@NotNull String value) {
         try {
             return parseArray(value);
         } catch (NumberFormatException e) {
@@ -38,8 +38,7 @@ public final class ResolvableByteArray extends ParsableResolvable<byte[]> {
         }
     }
 
-    @Nullable
-    private static byte[] parseArray(@NotNull String value) {
+    private static byte @Nullable [] parseArray(@NotNull String value) {
         String[] parts = value.split(",");
         byte[] arr = new byte[parts.length];
         for (int i = 0; i < parts.length; i++) {

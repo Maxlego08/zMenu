@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableComponent;
 import fr.maxlego08.menu.itemstack.components.paper.PaperLoreComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
@@ -31,28 +32,53 @@ public class SpigotLoreItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = this.normalizePath(path);
-        Object o = configuration.get(path);
-        if (o instanceof String str) {
-            return this.getItemComponent(List.of(ResolvableString.auto(str)));
-        } else if (o instanceof List<?> list) {
-            List<ResolvableString> loreLines = new ArrayList<>();
-            for (Object line : list) {
-                if (line instanceof String s) {
-                    loreLines.add(ResolvableString.auto(s));
-                }
-            }
-            return this.getItemComponent(loreLines);
+    public @Nullable ItemComponent load(
+            @NotNull MenuItemStackContext context,
+            @NotNull File file,
+            @NotNull YamlConfiguration configuration,
+            @NotNull String path,
+            @Nullable ConfigurationSection componentSection
+    ) {
+
+        List<String> lines = this.readLore(configuration, this.normalizePath(path));
+
+        if (lines.isEmpty()) {
+            return null;
         }
-        return null;
+
+        return this.metaUpdater instanceof PaperMetaUpdater paperMetaUpdater ? this.loadPaperComponent(lines, paperMetaUpdater) : this.loadSpigotComponent(lines);
     }
 
-    private ItemComponent getItemComponent(@NotNull List<@NotNull ResolvableString> lore){
-        if (this.metaUpdater instanceof PaperMetaUpdater paperMetaUpdater)
-            return new PaperLoreComponent(lore, paperMetaUpdater);
-        return new LoreComponent(lore);
+    private @NotNull List<String> readLore(
+            @NotNull YamlConfiguration configuration,
+            @NotNull String path
+    ) {
+
+        Object value = configuration.get(path);
+
+        if (value instanceof String str) {
+            return List.of(str);
+        }
+
+        if (value instanceof List<?> list) {
+            return list.stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .toList();
+        }
+
+        return List.of();
     }
 
+    private @NotNull PaperLoreComponent loadPaperComponent(@NotNull List<String> lines, PaperMetaUpdater paperMetaUpdater) {
+        return new PaperLoreComponent(this.mapLore(lines, (s -> ResolvableComponent.auto(s, paperMetaUpdater))));
+    }
 
+    private @NotNull LoreComponent loadSpigotComponent(@NotNull List<String> lines) {
+        return new LoreComponent(lines.stream().map(ResolvableString::auto).toList());
+    }
+
+    private <T> List<T> mapLore(List<String> lines, Function<String, T> mapper) {
+        return lines.stream().map(mapper).toList();
+    }
 }

@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public final class RegistryEntry<T extends Keyed> extends ParsableResolvable<T> {
+public final class ResolvableRegistryEntry<T extends Keyed> extends ParsableResolvable<T> {
 
     private final @NotNull Function<NamespacedKey, @Nullable T> resolver;
 
-    private RegistryEntry(
+    private ResolvableRegistryEntry(
             @Nullable T resolvedValue,
             @Nullable String expression,
             @NotNull Function<NamespacedKey, @Nullable T> resolver
@@ -35,23 +35,23 @@ public final class RegistryEntry<T extends Keyed> extends ParsableResolvable<T> 
     // ── Internal builders ───────────────────────────────────────────────────
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofValue(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofValue(
             @NotNull T value,
             @NotNull Function<NamespacedKey, @Nullable T> resolver
     ) {
-        return new RegistryEntry<>(value, null, resolver);
+        return new ResolvableRegistryEntry<>(value, null, resolver);
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofExpression(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofExpression(
             @NotNull String expression,
             @NotNull Function<NamespacedKey, @Nullable T> resolver
     ) {
-        return new RegistryEntry<>(null, expression, resolver);
+        return new ResolvableRegistryEntry<>(null, expression, resolver);
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> auto(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> auto(
             @NotNull String value,
             @NotNull Function<NamespacedKey, @Nullable T> resolver
     ) {
@@ -66,7 +66,7 @@ public final class RegistryEntry<T extends Keyed> extends ParsableResolvable<T> 
     }
 
     @Nullable
-    public static <T extends Keyed> RegistryEntry<T> autoOrNull(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> autoOrNull(
             @Nullable String value,
             @NotNull Function<NamespacedKey, @Nullable T> resolver
     ) {

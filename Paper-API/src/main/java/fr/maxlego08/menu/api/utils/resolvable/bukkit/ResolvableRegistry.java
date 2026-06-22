@@ -14,7 +14,7 @@ public final class ResolvableRegistry {
     private ResolvableRegistry() {}
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> auto(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> auto(
             @NotNull String value,
             @NotNull Class<T> type
     ) {
@@ -27,7 +27,7 @@ public final class ResolvableRegistry {
 
     @Nullable
     @Contract("null, _ -> null; !null, _ -> !null")
-    public static <T extends Keyed> RegistryEntry<T> autoOrNull(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> autoOrNull(
             @Nullable String value,
             @NotNull Class<T> type
     ) {
@@ -36,7 +36,7 @@ public final class ResolvableRegistry {
     }
 
     @NotNull
-    public static <T extends Keyed> RegistryEntry<T> ofValue(
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofValue(
             @NotNull T value,
             @NotNull Class<T> type
     ) {

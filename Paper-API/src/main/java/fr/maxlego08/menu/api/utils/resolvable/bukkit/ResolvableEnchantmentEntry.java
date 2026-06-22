@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractMap;
 
-public final class ResolvableEnchantmentEntry extends Resolvable<AbstractMap.SimpleEntry<Enchantment, Integer>> {
+public final class ResolvableEnchantmentEntry implements Resolvable<AbstractMap.SimpleEntry<Enchantment, Integer>> {
     private final ResolvableEnchantment enchantment;
     private final ResolvableInt level;
 

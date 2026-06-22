@@ -30,7 +30,7 @@ public final class ResolvableIntArray extends ParsableResolvable<int[]> {
     }
 
     @Override
-    protected @Nullable int[] parse(@NotNull String value) {
+    protected int @Nullable [] parse(@NotNull String value) {
         try {
             return parseArray(value);
         } catch (NumberFormatException e) {
@@ -38,8 +38,7 @@ public final class ResolvableIntArray extends ParsableResolvable<int[]> {
         }
     }
 
-    @Nullable
-    private static int[] parseArray(@NotNull String value) {
+    private static int @Nullable [] parseArray(@NotNull String value) {
         String[] parts = value.split(",");
         int[] arr = new int[parts.length];
         for (int i = 0; i < parts.length; i++) {

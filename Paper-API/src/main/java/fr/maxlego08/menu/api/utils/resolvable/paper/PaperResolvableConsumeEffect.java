@@ -2,13 +2,14 @@ package fr.maxlego08.menu.api.utils.resolvable.paper;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.set.RegistryKeySet;
 import io.papermc.paper.registry.set.RegistrySet;
-import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.potion.PotionEffect;
@@ -19,22 +20,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public sealed interface PaperResolvableConsumeEffect {
+public sealed interface PaperResolvableConsumeEffect extends Resolvable<ConsumeEffect> permits PaperResolvableConsumeEffect.PlaySound, PaperResolvableConsumeEffect.ApplyEffects, PaperResolvableConsumeEffect.TeleportRandomly, PaperResolvableConsumeEffect.ClearAllEffects, PaperResolvableConsumeEffect.RemoveEffects {
 
-    @Nullable ConsumeEffect resolve(@NotNull BuildContext context);
-
-    record PlaySound(@NotNull Resolvable<String> sound) implements PaperResolvableConsumeEffect {
+    record PlaySound(@NotNull ResolvableNamespacedKey sound) implements PaperResolvableConsumeEffect {
         @Override
         public @Nullable ConsumeEffect resolve(@NotNull BuildContext context) {
-            String resolvedSound = this.sound.resolve(context);
+            NamespacedKey resolvedSound = this.sound.resolve(context);
             if (resolvedSound == null) return null;
-            return ConsumeEffect.playSoundConsumeEffect(Key.key(resolvedSound));
+            return ConsumeEffect.playSoundConsumeEffect(resolvedSound);
         }
     }
 
-    record ApplyEffects(@NotNull List<ResolvablePotionEffect> potionEffects, float probability) implements PaperResolvableConsumeEffect {
+    record ApplyEffects(@NotNull List<ResolvablePotionEffect> potionEffects, ResolvableFloat probability) implements PaperResolvableConsumeEffect {
         @Override
         public @Nullable ConsumeEffect resolve(@NotNull BuildContext context) {
+            Float resolveProb = Resolvable.resolve(context, this.probability);
+            if (resolveProb == null) return null;
             List<PotionEffect> effects = new ArrayList<>();
             for (ResolvablePotionEffect pe : this.potionEffects) {
                 PotionEffect resolved = pe.resolve(context);
@@ -43,14 +44,16 @@ public sealed interface PaperResolvableConsumeEffect {
                 }
             }
             if (effects.isEmpty()) return null;
-            return ConsumeEffect.applyStatusEffects(effects, this.probability);
+            return ConsumeEffect.applyStatusEffects(effects, resolveProb);
         }
     }
 
-    record TeleportRandomly(float diameter) implements PaperResolvableConsumeEffect {
+    record TeleportRandomly(ResolvableFloat diameter) implements PaperResolvableConsumeEffect {
         @Override
-        public @NotNull ConsumeEffect resolve(@NotNull BuildContext context) {
-            return ConsumeEffect.teleportRandomlyEffect(this.diameter);
+        public @Nullable ConsumeEffect resolve(@NotNull BuildContext context) {
+            Float resolved = Resolvable.resolve(context, this.diameter);
+            if (resolved == null) return null;
+            return ConsumeEffect.teleportRandomlyEffect(resolved);
         }
     }
 

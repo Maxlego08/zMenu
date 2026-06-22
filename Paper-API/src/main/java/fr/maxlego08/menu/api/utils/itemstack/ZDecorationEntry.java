@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils;
+package fr.maxlego08.menu.api.utils.itemstack;
 
 import io.papermc.paper.datacomponent.item.MapDecorations;
 import org.bukkit.map.MapCursor;

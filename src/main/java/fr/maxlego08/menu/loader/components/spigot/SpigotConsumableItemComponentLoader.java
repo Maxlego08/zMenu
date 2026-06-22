@@ -48,7 +48,7 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         ResolvableEnum<ConsumableComponent.Animation> animation = this.asResolvableEnum(componentSection, "animation", ConsumableComponent.Animation.class, ConsumableComponent.Animation.EAT);
         ResolvableSound consumeSound = this.asResolvableSound(componentSection, "consume-sound", Sound.ENTITY_GENERIC_EAT);
         ResolvableBoolean hasConsumeParticles = this.asResolvableBoolean(componentSection, "has-consume-particles",true);
-        List<ConsumableEffect> effects = this.parseEffects(componentSection.getMapList("on-consume-effects"));
+        List<ConsumableEffect> effects = this.parseEffectsLegacy(componentSection.getMapList("on-consume-effects"));
 
         return new SpigotConsumableComponent(
                 consumeSeconds,
@@ -59,17 +59,17 @@ public class SpigotConsumableItemComponentLoader extends AbstractEffectItemCompo
         );
     }
 
-    private List<ConsumableEffect> parseEffects(List<Map<?, ?>> onConsumeEffectsRaw) {
+    private List<ConsumableEffect> parseEffectsLegacy(List<Map<?, ?>> onConsumeEffectsRaw) {
         List<ConsumableEffect> effects = new ArrayList<>();
         for (var rawEffect : onConsumeEffectsRaw) {
             @SuppressWarnings("unchecked")
             Map<String, Object> effectMap = (Map<String, Object>) rawEffect;
-            this.parseEffect(effectMap).ifPresent(effects::add);
+            this.parseEffectLegacy(effectMap).ifPresent(effects::add);
         }
         return effects;
     }
 
-    private Optional<ConsumableEffect> parseEffect(Map<String, Object> effectMap) {
+    private Optional<ConsumableEffect> parseEffectLegacy(Map<String, Object> effectMap) {
         try {
             ConsumeEffectType type = this.parseConsumableType((String) effectMap.get("type"));
             if (type == null) return Optional.empty();

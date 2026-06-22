@@ -6,9 +6,9 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.TrimComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.RegistryEntry;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableArmorTrim;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
@@ -41,8 +41,8 @@ public class SpigotTrimItemComponentLoader extends ItemComponentLoader {
 //         } catch (IllegalArgumentException e) {
 //             return null;
 //         }
-        RegistryEntry<TrimMaterial> trimMaterialRegistryEntry = ResolvableRegistry.autoOrNull(materialString, TrimMaterial.class);
-        RegistryEntry<TrimPattern> trimPatternRegistryEntry = ResolvableRegistry.autoOrNull(patternString, TrimPattern.class);
+        ResolvableRegistryEntry<TrimMaterial> trimMaterialRegistryEntry = ResolvableRegistry.autoOrNull(materialString, TrimMaterial.class);
+        ResolvableRegistryEntry<TrimPattern> trimPatternRegistryEntry = ResolvableRegistry.autoOrNull(patternString, TrimPattern.class);
         if (trimMaterialRegistryEntry == null || trimPatternRegistryEntry == null) return null;
         return new TrimComponent(new ResolvableArmorTrim(trimMaterialRegistryEntry, trimPatternRegistryEntry));
     }

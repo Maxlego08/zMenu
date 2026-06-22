@@ -16,7 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
-public final class ResolvablePlayerProfile extends Resolvable<PlayerProfile> {
+public final class ResolvablePlayerProfile implements Resolvable<PlayerProfile> {
 
     private final @Nullable ResolvableUUID uuid;
     private final @Nullable Resolvable<String> name;
@@ -41,8 +41,8 @@ public final class ResolvablePlayerProfile extends Resolvable<PlayerProfile> {
 
     @Override
     public @Nullable PlayerProfile resolve(@NotNull BuildContext context) {
-        UUID uuidVal = resolve(context, this.uuid);
-        String name = resolve(context, this.name);
+        UUID uuidVal = Resolvable.resolve(context, this.uuid);
+        String name = Resolvable.resolve(context, this.name);
         PlayerProfile profile = null;
 
         if (uuidVal != null) {
@@ -58,19 +58,19 @@ public final class ResolvablePlayerProfile extends Resolvable<PlayerProfile> {
 
         if (profile == null) return null;
 
-        String textureUrl = resolve(context, this.textureUrl);
+        String textureUrl = Resolvable.resolve(context, this.textureUrl);
         if (textureUrl != null) {
             try {
                 URL url = new URL(textureUrl);
                 PlayerTextures textures = profile.getTextures();
-                PlayerTextures.SkinModel model = resolve(context, this.skinModel);
+                PlayerTextures.SkinModel model = Resolvable.resolve(context, this.skinModel);
                 textures.setSkin(url, model);
                 profile.setTextures(textures);
             } catch (MalformedURLException ignored) {
             }
         }
 
-        String capeUrl = resolve(context, this.capeUrl);
+        String capeUrl = Resolvable.resolve(context, this.capeUrl);
         if (capeUrl != null) {
             try {
                 URL url = new URL(capeUrl);

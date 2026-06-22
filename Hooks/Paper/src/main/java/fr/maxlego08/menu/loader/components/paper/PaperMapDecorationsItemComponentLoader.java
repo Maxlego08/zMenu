@@ -6,11 +6,12 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import fr.maxlego08.menu.api.utils.resolvable.paper.PaperResolvableMapDecorationEntry;
 import fr.maxlego08.menu.itemstack.components.paper.PaperMapDecorationsComponent;
-import fr.maxlego08.menu.zcore.utils.ZDecorationEntry;
-import io.papermc.paper.datacomponent.item.MapDecorations;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.map.MapCursor;
@@ -33,23 +34,19 @@ public class PaperMapDecorationsItemComponentLoader extends ItemComponentLoader 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        Map<String, MapDecorations.DecorationEntry> decorations = new HashMap<>();
+        Map<String, PaperResolvableMapDecorationEntry> decorations = new HashMap<>();
         for (String key : componentSection.getKeys(false)) {
             ConfigurationSection decorationSection = componentSection.getConfigurationSection(key);
             if (decorationSection == null) continue;
             String typeName = decorationSection.getString("type");
-            if (typeName == null) continue;
-            NamespacedKey typeKey = NamespacedKey.fromString(typeName);
-            if (typeKey == null) continue;
-            try {
-                MapCursor.Type type = Registry.MAP_DECORATION_TYPE.getOrThrow(typeKey);
-                double x = decorationSection.getDouble("x");
-                double z = decorationSection.getDouble("z");
-                float rotation = (float) decorationSection.getDouble("rotation", 0);
-                MapDecorations.DecorationEntry entry = new ZDecorationEntry(type, x, z, rotation);
-                decorations.put(key, entry);
-            } catch (IllegalArgumentException ignored) {
-            }
+            ResolvableRegistryEntry<MapCursor.Type> mapCursorTypeRegistryEntry = ResolvableRegistry.autoOrNull(typeName, MapCursor.Type.class);
+            ResolvableInt x = ResolvableInt.autoOrNull(decorationSection.getString("x"));
+            ResolvableInt z = ResolvableInt.autoOrNull(decorationSection.getString("z"));
+            ResolvableFloat rotation = ResolvableFloat.autoOrNull(decorationSection.getString("rotation"));
+
+            if (mapCursorTypeRegistryEntry == null || x == null || z == null || rotation == null) continue;
+            PaperResolvableMapDecorationEntry entry = new PaperResolvableMapDecorationEntry(mapCursorTypeRegistryEntry, x, z, rotation);
+            decorations.put(key, entry);
         }
         return decorations.isEmpty() ? null : new PaperMapDecorationsComponent(decorations);
     }
