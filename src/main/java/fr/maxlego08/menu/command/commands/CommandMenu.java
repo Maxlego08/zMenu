@@ -7,6 +7,7 @@ import fr.maxlego08.menu.command.commands.bedrock.CommandBedrock;
 import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
+import fr.maxlego08.menu.command.commands.website.CommandMenuConnect;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDisconnect;
 import fr.maxlego08.menu.command.commands.website.CommandMenuDownload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuInventories;
@@ -40,6 +41,7 @@ public class CommandMenu extends VCommand {
         // Disable website connexion for beta
         this.addSubCommand(new CommandMenuDownload(plugin));
         this.addSubCommand(new CommandMenuLogin(plugin));
+        this.addSubCommand(new CommandMenuConnect(plugin));
         this.addSubCommand(new CommandMenuDisconnect(plugin));
         this.addSubCommand(new CommandMenuInventories(plugin));
         // this.addSubCommand(new CommandMenuMarketplace(plugin));

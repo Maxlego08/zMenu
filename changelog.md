@@ -42,6 +42,31 @@
 
 # Unreleased
 
+## New Features
+
+- Added **live sync** with the website (Minecraft Inventory Builder): link your server with `/zmenu login`
+  (no argument starts a secure device-authorization flow — approve the shown code on the website), open the
+  live link with `/zmenu connect`, and close it with `/zmenu disconnect`. Once connected, clicking
+  "Sync to Server" on the web builder reloads the inventory on your server live, with no restart.
+- Added permissions `zmenu.connect` and `zmenu.disconnect`.
+
+## Improvements
+
+- `/zmenu login <token>` still works as before (legacy token paste); running `/zmenu login` with no argument
+  now links the server for live sync.
+
+## Security
+
+- The live link is end-to-end safe: the WebSocket carries only `{inventory_id, file_name, hash}` — the YAML
+  is pulled over the authenticated HTTPS API and its SHA-256 hash is verified before being applied. The file
+  is written atomically with a `.bak` backup and rolled back on a parse/reload failure; all network I/O runs
+  off the main thread and the reload happens on the main thread. The scoped server token is stored in
+  `live-sync.json` and never printed.
+
+## Fixes
+
+- Fixed `/zmenu disconnect` using the wrong permission node (`zmenu.description` → `zmenu.disconnect`).
+
 # 1.1.1.5
 
 ## New Features

@@ -13,11 +13,17 @@ public class CommandMenuDisconnect extends VCommand {
         super(plugin);
         this.setDescription(Message.DESCRIPTION_DISCONNECT);
         this.addSubCommand("disconnect", "logout");
-        this.setPermission(Permission.ZMENU_DESCRIPTION);
+        this.setPermission(Permission.ZMENU_DISCONNECT);
     }
 
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
+
+        // A live-sync link takes priority: /zmenu disconnect closes the live socket (kill switch).
+        if (plugin.getWebsiteManager().getLiveSyncManager().isLinked()) {
+            plugin.getWebsiteManager().getLiveSyncManager().disconnect(this.sender);
+            return CommandType.SUCCESS;
+        }
 
         WebsiteManager manager = plugin.getWebsiteManager();
         manager.disconnect(this.sender);

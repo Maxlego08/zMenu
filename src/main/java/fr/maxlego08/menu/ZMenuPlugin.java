@@ -265,6 +265,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             Token.getInstance().load(this.getPersist());
         }
 
+        // Live sync: load the link config and re-open the WebSocket if auto-connect is enabled.
+        this.websiteManager.getLiveSyncManager().onEnable();
+
         new VersionChecker(this, 253).useLastVersion();
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -397,6 +400,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         Configuration.getInstance().save(this.getConfig(), this.configFile);
 
         YamlFileCache.clearCache();
+
+        this.websiteManager.getLiveSyncManager().onDisable();
 
         if (Token.token != null) {
             Token.getInstance().save(this.getPersist());

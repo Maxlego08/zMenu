@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.website.buttons.*;
 import fr.maxlego08.menu.website.request.HttpRequest;
+import fr.maxlego08.menu.website.sync.LiveSyncManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -43,9 +44,11 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     }
 
     // private final String API_URL = "http://mib.test/api/v1/";
-    private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
+    // private final String API_URL = "https://minecraft-inventory-builder.com/api/v1/";
+    private final String API_URL = "http://mib.test/api/v1/";
 
     private final ZMenuPlugin plugin;
+    private final LiveSyncManager liveSyncManager;
     private final List<Folder> folders = new ArrayList<>();
     private boolean isLogin = false;
     private boolean isDownloadResource = false;
@@ -59,6 +62,21 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public ZWebsiteManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
+        this.liveSyncManager = new LiveSyncManager(plugin, this.API_URL);
+    }
+
+    /**
+     * @return the live-sync manager (WebSocket link + push-to-reload pipeline).
+     */
+    public LiveSyncManager getLiveSyncManager() {
+        return this.liveSyncManager;
+    }
+
+    /**
+     * @return the website API base url (ends with a slash).
+     */
+    public String getApiUrl() {
+        return this.API_URL;
     }
 
     @Override
