@@ -86,11 +86,11 @@ public class HttpRequest {
 
     public void submitForFileDownload(ZMenuPlugin plugin, File fileOut, Consumer<Boolean> consumer) {
         plugin.getScheduler().runAsync(w -> {
-            HttpURLConnection connection;
+            boolean success = false;
 
             try {
                 URL url = new URL(this.url);
-                connection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod(this.method);
                 connection.addRequestProperty("Accept", "application/yaml");
@@ -112,13 +112,16 @@ public class HttpRequest {
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
                         fileOutputStream.write(buffer, 0, bytesRead);
                     }
-                    consumer.accept(true);
+                    success = true;
                 }
-
             } catch (Exception exception) {
                 exception.printStackTrace();
-                consumer.accept(false);
             }
+
+            // Run the callback AFTER the FileOutputStream is closed — otherwise the downloaded temp file
+            // is still locked by this stream and the subsequent atomic move fails on Windows
+            // ("the file is used by another process").
+            consumer.accept(success);
         });
     }
 

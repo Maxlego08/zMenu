@@ -278,10 +278,81 @@ public class LiveSyncManager extends ZUtils {
         this.shouldStayConnected = true;
         this.reconnectAttempts = 0;
         this.connecting = true;
-        log("Opening live connection to " + this.config.wsUrl + " ...");
         this.message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECTING);
 
-        this.plugin.getScheduler().runAsync(w -> this.openSocket(sender));
+        // Verify the link is still valid + refresh the relay url/connection id before opening the socket.
+        this.refreshConnectionInfo(sender, () -> this.openSocket(sender));
+    }
+
+    /**
+     * Ask the website whether this link is still valid and refresh the stored relay url / connection id.
+     * On 401/403 the link is forgotten (revoked server-side); otherwise {@code onReady} runs — even on a
+     * transient API error, falling back to the stored url so a website hiccup doesn't block connecting.
+     */
+    private void refreshConnectionInfo(CommandSender sender, Runnable onReady) {
+        HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/connection", new JsonObject());
+        request.setBearer(this.config.token);
+        request.setMethod("GET");
+        request.submit(this.plugin, response -> {
+            int code = response.getCode();
+            if (code == 401 || code == 403) {
+                this.connecting = false;
+                this.shouldStayConnected = false;
+                log("The website reports this link is no longer valid (revoked); clearing it.", LogType.WARNING);
+                this.unlink();
+                this.message(this.plugin, sender, Message.WEBSITE_SYNC_AUTH_FAILED);
+                return;
+            }
+            if (code == 200) {
+                String wsUrl = (String) response.get("ws_url");
+                String connectionId = (String) response.get("connection_id");
+                boolean changed = false;
+                if (wsUrl != null && !wsUrl.isEmpty() && !wsUrl.equals(this.config.wsUrl)) {
+                    this.config.wsUrl = wsUrl;
+                    changed = true;
+                }
+                if (connectionId != null && !connectionId.equals(this.config.connectionId)) {
+                    this.config.connectionId = connectionId;
+                    changed = true;
+                }
+                if (changed) {
+                    this.config.save(this.plugin.getPersist());
+                    log("Live sync info updated (relay " + this.config.wsUrl + ").");
+                }
+            } else {
+                log("Could not refresh live sync info (HTTP " + code + "); using the stored relay url.", LogType.WARNING);
+            }
+            log("Opening live connection to " + this.config.wsUrl + " ...");
+            onReady.run();
+        });
+    }
+
+    /**
+     * Force-detach this server from the website: revoke the link server-side, then clear the local
+     * credential REGARDLESS of the API result (so a failed/unreachable site never leaves a stuck link).
+     */
+    public void forceUnlink(CommandSender sender) {
+        if (!this.isLinked()) {
+            log("Unlink requested but the server is not linked.", LogType.WARNING);
+            this.message(this.plugin, sender, Message.WEBSITE_SYNC_NOT_LINKED);
+            return;
+        }
+
+        log("Unlinking this server from the website...");
+
+        HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/unlink", new JsonObject());
+        request.setBearer(this.config.token);
+        request.setMethod("POST");
+        request.submit(this.plugin, response -> {
+            if (response.getCode() == 200) {
+                log("Website confirmed the unlink.", LogType.SUCCESS);
+            } else {
+                log("Website unlink call failed (HTTP " + response.getCode() + "); clearing the local link anyway.", LogType.WARNING);
+            }
+            this.shouldStayConnected = false;
+            this.unlink();
+            this.message(this.plugin, sender, Message.WEBSITE_SYNC_UNLINKED);
+        });
     }
 
     private void openSocket(CommandSender sender) {
@@ -472,22 +543,64 @@ public class LiveSyncManager extends ZUtils {
             return;
         }
 
-        log("Received sync notification for inventory '" + fileName + "' (id " + inventoryId + ").");
-
-        if (hash != null && hash.equalsIgnoreCase(this.lastAppliedHash.get(fileName.toLowerCase(Locale.ROOT)))) {
-            log("Inventory '" + fileName + "' is already up to date, nothing to do.");
+        // Optional subfolder under inventories/ (mirrors the website's folder tree). Reject traversal.
+        String rawPath = data.has("path") && !data.get("path").isJsonNull() ? data.get("path").getAsString() : "";
+        String subPath = sanitizeRelativePath(rawPath);
+        if (subPath == null) {
+            log("Ignored a sync notification: invalid path '" + rawPath + "'.", LogType.WARNING);
             return;
         }
 
-        this.downloadAndApply(inventoryId, fileName, hash);
+        String displayName = subPath.isEmpty() ? fileName : subPath + "/" + fileName;
+        log("Received sync notification for inventory '" + displayName + "' (id " + inventoryId + ").");
+
+        // Idempotency key includes the path so the same name in two folders is tracked separately.
+        String hashKey = (subPath + "/" + fileName).toLowerCase(Locale.ROOT);
+        if (hash != null && hash.equalsIgnoreCase(this.lastAppliedHash.get(hashKey))) {
+            log("Inventory '" + displayName + "' is already up to date, nothing to do.");
+            return;
+        }
+
+        this.downloadAndApply(inventoryId, fileName, subPath, hash);
     }
 
-    private void downloadAndApply(int inventoryId, String fileName, String hash) {
+    /**
+     * Normalise a relative subfolder path from the website (segments split on '/'). Returns "" for an
+     * empty path, the cleaned relative path, or null if it is unsafe (absolute, backslash, '.'/'..',
+     * or a segment with disallowed characters) so the caller can refuse to write outside inventories/.
+     */
+    private static String sanitizeRelativePath(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+        if (path.contains("\\") || path.startsWith("/")) {
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        for (String rawPart : path.split("/")) {
+            String part = rawPart.trim();
+            if (part.isEmpty()) {
+                continue; // tolerate accidental double slashes / all-whitespace segments
+            }
+            if (part.equals(".") || part.equals("..") || !part.matches("[A-Za-z0-9_\\- ]{1,64}")) {
+                return null;
+            }
+            if (builder.length() > 0) {
+                builder.append('/');
+            }
+            builder.append(part);
+        }
+        return builder.toString();
+    }
+
+    private void downloadAndApply(int inventoryId, String fileName, String subPath, String hash) {
         File tmpDir = new File(this.plugin.getDataFolder(), "live-sync");
         if (!tmpDir.exists()) {
             tmpDir.mkdirs();
         }
-        File tempFile = new File(tmpDir, fileName + ".tmp");
+        // Unique per inventory so concurrent syncs of same-named inventories in different folders never
+        // share a temp path.
+        File tempFile = new File(tmpDir, inventoryId + "_" + fileName + ".tmp");
 
         log("Downloading inventory '" + fileName + "' (id " + inventoryId + ")...");
 
@@ -529,6 +642,9 @@ public class LiveSyncManager extends ZUtils {
             }
 
             File invDir = new File(this.plugin.getDataFolder(), "inventories");
+            if (!subPath.isEmpty()) {
+                invDir = new File(invDir, subPath); // mirror the website folder tree (already sanitised)
+            }
             if (!invDir.exists()) {
                 invDir.mkdirs();
             }
@@ -551,18 +667,22 @@ public class LiveSyncManager extends ZUtils {
                 return;
             }
 
-            this.reloadOnMainThread(fileName, target, backup, hash);
+            this.reloadOnMainThread(fileName, subPath, target, backup, hash);
         });
     }
 
-    private void reloadOnMainThread(String fileName, File target, File backup, String hash) {
+    private void reloadOnMainThread(String fileName, String subPath, File target, File backup, String hash) {
+        String label = subPath.isEmpty() ? fileName : subPath + "/" + fileName;
         this.plugin.getScheduler().runNextTick(w -> {
             InventoryManager inventoryManager = this.plugin.getInventoryManager();
             YamlFileCache.invalidateCache(target.toPath());
 
             boolean applied;
             try {
-                Optional<Inventory> existing = inventoryManager.getInventory(fileName);
+                // zMenu's registry is keyed by bare file name (no path), so resolve by the actual TARGET
+                // file — a bare-name lookup could return a same-named inventory from another folder and
+                // reload the wrong file.
+                Optional<Inventory> existing = findInventoryByFile(inventoryManager, target);
                 if (existing.isPresent()) {
                     Inventory inventory = existing.get();
                     this.plugin.getVInventoryManager().close(v -> {
@@ -576,39 +696,62 @@ public class LiveSyncManager extends ZUtils {
                 applied = true;
             } catch (InventoryException exception) {
                 applied = false;
-                log("zMenu failed to load the synced inventory '" + fileName + "': " + exception.getMessage() + ".", LogType.ERROR);
+                log("zMenu failed to load the synced inventory '" + label + "': " + exception.getMessage() + ".", LogType.ERROR);
                 if (Configuration.enableDebug) {
                     exception.printStackTrace();
                 }
             }
 
             if (applied) {
-                this.lastAppliedHash.put(fileName.toLowerCase(Locale.ROOT), hash);
-                log("Inventory '" + fileName + "' synced and reloaded.", LogType.SUCCESS);
-                this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLIED, "%name%", fileName);
+                this.lastAppliedHash.put((subPath + "/" + fileName).toLowerCase(Locale.ROOT), hash);
+                log("Inventory '" + label + "' synced and reloaded.", LogType.SUCCESS);
+                this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLIED, "%name%", label);
             } else {
-                this.rollback(inventoryManager, fileName, target, backup);
-                log("Rolled back '" + fileName + "' to the previous version.", LogType.WARNING);
-                this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", fileName);
+                this.rollback(inventoryManager, target, backup);
+                log("Rolled back '" + label + "' to the previous version.", LogType.WARNING);
+                this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", label);
             }
         });
     }
 
-    private void rollback(InventoryManager inventoryManager, String fileName, File target, File backup) {
+    /**
+     * Find the loaded inventory whose backing file is exactly {@code target} (canonical comparison),
+     * regardless of its name — zMenu indexes by bare file name, which is ambiguous across subfolders.
+     */
+    private Optional<Inventory> findInventoryByFile(InventoryManager inventoryManager, File target) {
+        File canonicalTarget = canonical(target);
+        for (Inventory inventory : inventoryManager.getInventories()) {
+            File file = inventory.getFile();
+            if (file != null && canonical(file).equals(canonicalTarget)) {
+                return Optional.of(inventory);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static File canonical(File file) {
+        try {
+            return file.getCanonicalFile();
+        } catch (Exception exception) {
+            return file.getAbsoluteFile();
+        }
+    }
+
+    private void rollback(InventoryManager inventoryManager, File target, File backup) {
         try {
             if (!backup.exists()) {
                 return;
             }
             Files.copy(backup.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
             YamlFileCache.invalidateCache(target.toPath());
-            Optional<Inventory> old = inventoryManager.getInventory(fileName);
+            Optional<Inventory> old = findInventoryByFile(inventoryManager, target);
             if (old.isPresent()) {
                 inventoryManager.reloadInventory(old.get());
             } else {
                 inventoryManager.loadInventory(this.plugin, target);
             }
         } catch (Exception exception) {
-            log("Rollback of '" + fileName + "' failed: " + exception.getMessage() + ".", LogType.ERROR);
+            log("Rollback of '" + target.getName() + "' failed: " + exception.getMessage() + ".", LogType.ERROR);
         }
     }
 

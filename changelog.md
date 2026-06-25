@@ -57,6 +57,15 @@
 - Live sync now sends a stable, persistent `server_id` (stored in `live-sync.json`, kept across re-links) at
   pairing time, so the website recognises the same server across re-pairings and never creates duplicate
   linked-server entries.
+- Synced inventories are now written into a **subfolder** of `inventories/` mirroring the inventory's folder
+  on the website (e.g. `inventories/Shop/Weapons/menu.yml`). The subfolder path is taken from the sync
+  notification and sanitised (segments only, no `..`/absolute/backslash) before any file is written.
+- New command **`/zmenu unlink`** (perm `zmenu.unlink`): force-detach this server from the website — it
+  revokes the link on the site, and clears the local `live-sync.json` credential **even if** the site call
+  fails (so a down/unreachable website never leaves a stuck link).
+- `/zmenu connect` now first **verifies the link is still valid** with the website and **refreshes** the
+  stored relay url / connection id (so a changed `ZMENU_WS_URL` is picked up automatically); a revoked link
+  is detected and cleared up front.
 
 ## Security
 
@@ -73,6 +82,12 @@
   idle-eviction, relay restart or network blip, until you run `/zmenu disconnect` or the token is revoked.
   Previously the link could drop silently and "Sync to Server" on the website would report
   "server not connected" even though the operator believed the server was still connected.
+- Fixed synced inventories failing to write on Windows (`the file is used by another process`): the
+  downloaded temp file's stream was still open when the atomic move ran. The stream is now closed before
+  the file is applied.
+- Fixed a same-named inventory in two different folders reloading the **wrong** file (zMenu indexes
+  inventories by bare name): the synced inventory is now resolved by its actual file path. Concurrent
+  syncs of same-named inventories also no longer share a temp file.
 
 # 1.1.1.5
 
