@@ -33,7 +33,7 @@ public enum Permission {
     ZMENU_VERSION,
 
     ZMENU_ADDONS,
-    ZMENU_DOCUMENTATION;
+    ZMENU_DOCUMENTATION, ZMENU_WEBSITE;
 
 	private final String permission;
 

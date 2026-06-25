@@ -22,5 +22,4 @@ public class CommandMenuInventories extends VCommand {
         plugin.getWebsiteManager().fetchInventories(this.player);
         return CommandType.SUCCESS;
     }
-
 }

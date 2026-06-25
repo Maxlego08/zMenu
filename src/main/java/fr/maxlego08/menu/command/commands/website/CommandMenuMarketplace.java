@@ -22,5 +22,4 @@ public class CommandMenuMarketplace extends VCommand {
         plugin.getWebsiteManager().openMarketplace(this.player);
         return CommandType.SUCCESS;
     }
-
 }

@@ -85,6 +85,7 @@ public enum Message implements IMessage {
     DESCRIPTION_OPEN_ITEM("Give open item"),
     DESCRIPTION_DOWNLOAD("Download an inventory from a link (a discord link for example)"),
     DESCRIPTION_LOGIN("Login to the website"),
+    DESCRIPTION_WEBSITE("Display website commands syntax"),
     DESCRIPTION_MARKETPLACE("Open marketplace inventory"),
     DESCRIPTION_DISCONNECT("WIP"),
     DESCRIPTION_CONNECT("Connect this server to the website for live inventory sync"),

@@ -24,5 +24,4 @@ public class CommandMenuUnlink extends VCommand {
         plugin.getWebsiteManager().getLiveSyncManager().forceUnlink(this.sender);
         return CommandType.SUCCESS;
     }
-
 }
