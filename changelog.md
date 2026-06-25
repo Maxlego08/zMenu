@@ -54,6 +54,9 @@
 
 - `/zmenu login <token>` still works as before (legacy token paste); running `/zmenu login` with no argument
   now links the server for live sync.
+- Live sync now sends a stable, persistent `server_id` (stored in `live-sync.json`, kept across re-links) at
+  pairing time, so the website recognises the same server across re-pairings and never creates duplicate
+  linked-server entries.
 
 ## Security
 
@@ -66,6 +69,10 @@
 ## Fixes
 
 - Fixed `/zmenu disconnect` using the wrong permission node (`zmenu.description` → `zmenu.disconnect`).
+- Live sync now **stays connected** after `/zmenu connect`: it auto-reconnects (with backoff) after a relay
+  idle-eviction, relay restart or network blip, until you run `/zmenu disconnect` or the token is revoked.
+  Previously the link could drop silently and "Sync to Server" on the website would report
+  "server not connected" even though the operator believed the server was still connected.
 
 # 1.1.1.5
 

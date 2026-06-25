@@ -20,6 +20,13 @@ public class LiveSyncConfig {
     public String connectionId;
 
     /**
+     * Stable, persistent identifier for THIS server, sent to the website at pairing time (server_id).
+     * The website uses it to recognise the same server across re-pairings and avoid creating duplicate
+     * connections — so it must survive an unlink/re-link (it is NOT a credential and is never cleared).
+     */
+    public String serverId;
+
+    /**
      * Linked = pairing succeeded; we hold a token and the relay url needed to (re)connect on demand.
      */
     public boolean isLinked() {

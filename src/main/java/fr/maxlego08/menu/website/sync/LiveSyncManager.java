@@ -28,6 +28,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -50,6 +51,11 @@ public class LiveSyncManager extends ZUtils {
     private static final long MAX_YAML_BYTES = 512L * 1024L;
     private static final long DEFAULT_PAIR_TTL_SECONDS = 600L;
     private static final int CONNECTION_LOST_TIMEOUT_SECONDS = 30;
+    // /zmenu connect means "stay connected": auto-reconnect with backoff if the socket drops
+    // unexpectedly (relay idle-evict, restart, network blip), until /zmenu disconnect or revocation.
+    private static final int MAX_RECONNECT_ATTEMPTS = 10;
+    private static final long RECONNECT_BASE_SECONDS = 5L;
+    private static final long MAX_RECONNECT_DELAY_SECONDS = 60L;
 
     private final ZMenuPlugin plugin;
     private final String apiUrl;
@@ -60,6 +66,9 @@ public class LiveSyncManager extends ZUtils {
     private WebSocketClient client;
     private volatile boolean connecting;
     private volatile boolean connected;
+    // True between /zmenu connect and /zmenu disconnect (or revocation): drives auto-reconnect.
+    private volatile boolean shouldStayConnected;
+    private int reconnectAttempts;
 
     // Device-flow pairing state.
     private volatile boolean pairing;
@@ -95,11 +104,27 @@ public class LiveSyncManager extends ZUtils {
 
     public void onDisable() {
         this.pairing = false;
+        this.shouldStayConnected = false;
         this.closeSocket();
     }
 
     public boolean isLinked() {
         return this.config != null && this.config.isLinked();
+    }
+
+    /**
+     * This server's stable id (server_id), generated and persisted on first use and kept across
+     * unlink/relink so the website always recognises the same server and never duplicates its connection.
+     */
+    private String ensureServerId() {
+        if (this.config == null) {
+            this.config = new LiveSyncConfig();
+        }
+        if (this.config.serverId == null || this.config.serverId.isEmpty()) {
+            this.config.serverId = UUID.randomUUID().toString();
+            this.config.save(this.plugin.getPersist());
+        }
+        return this.config.serverId;
     }
 
     // ------------------------------------------------------------------ //
@@ -124,6 +149,8 @@ public class LiveSyncManager extends ZUtils {
         JsonObject body = new JsonObject();
         body.addProperty("server_name", this.plugin.getServer().getName());
         body.addProperty("plugin_version", this.plugin.getDescription().getVersion());
+        // Stable per-server id so the website recognises this server across re-pairings (no duplicates).
+        body.addProperty("server_id", this.ensureServerId());
 
         HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/pair/start", body);
         request.setMethod("POST");
@@ -248,6 +275,8 @@ public class LiveSyncManager extends ZUtils {
             return;
         }
 
+        this.shouldStayConnected = true;
+        this.reconnectAttempts = 0;
         this.connecting = true;
         log("Opening live connection to " + this.config.wsUrl + " ...");
         this.message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECTING);
@@ -283,6 +312,9 @@ public class LiveSyncManager extends ZUtils {
                     connected = false;
                     connecting = false;
                     log("Live connection closed (code " + code + (reason != null && !reason.isEmpty() ? ", " + reason : "") + ").", LogType.WARNING);
+                    // Re-establish if the operator still wants to be connected (no-op after an explicit
+                    // /zmenu disconnect or a revocation, which clear shouldStayConnected).
+                    scheduleReconnect();
                 }
 
                 @Override
@@ -331,6 +363,7 @@ public class LiveSyncManager extends ZUtils {
             case "welcome":
                 this.connected = true;
                 this.connecting = false;
+                this.reconnectAttempts = 0;
                 log("Live sync connected — ready to receive syncs.", LogType.SUCCESS);
                 this.message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECTED);
                 break;
@@ -363,6 +396,7 @@ public class LiveSyncManager extends ZUtils {
 
         this.pairing = false;
         this.deviceCode = null;
+        this.shouldStayConnected = false;
         this.closeSocket();
 
         log("Live sync " + (wasActive ? "disconnected." : "was not active."));
@@ -370,6 +404,7 @@ public class LiveSyncManager extends ZUtils {
     }
 
     private void unlink() {
+        this.shouldStayConnected = false;
         this.closeSocket();
         if (this.config != null) {
             this.config.token = null;
@@ -389,6 +424,32 @@ public class LiveSyncManager extends ZUtils {
             }
             this.client = null;
         }
+    }
+
+    /**
+     * Schedule an automatic reconnect with linear backoff so /zmenu connect keeps the server connected
+     * across idle-evictions, relay restarts and network blips. No-op once the operator runs
+     * /zmenu disconnect or the token is revoked (both clear {@code shouldStayConnected}); gives up after
+     * {@link #MAX_RECONNECT_ATTEMPTS} so a permanently unreachable relay doesn't retry forever.
+     */
+    private void scheduleReconnect() {
+        if (!this.shouldStayConnected || !this.isLinked()) {
+            return;
+        }
+        this.reconnectAttempts++;
+        if (this.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
+            this.shouldStayConnected = false;
+            log("Could not reconnect after " + MAX_RECONNECT_ATTEMPTS + " attempts — giving up. Run /zmenu connect to retry.", LogType.ERROR);
+            return;
+        }
+        long delay = Math.min(MAX_RECONNECT_DELAY_SECONDS, RECONNECT_BASE_SECONDS * this.reconnectAttempts);
+        log("Reconnecting in " + delay + "s (attempt " + this.reconnectAttempts + "/" + MAX_RECONNECT_ATTEMPTS + ")...", LogType.WARNING);
+        this.plugin.getScheduler().runLater(() -> {
+            if (this.shouldStayConnected && this.isLinked() && !this.connected && !this.connecting) {
+                this.connecting = true;
+                this.plugin.getScheduler().runAsync(w -> this.openSocket(Bukkit.getConsoleSender()));
+            }
+        }, delay, TimeUnit.SECONDS);
     }
 
     // ------------------------------------------------------------------ //
