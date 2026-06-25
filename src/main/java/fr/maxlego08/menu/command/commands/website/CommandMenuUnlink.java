@@ -7,7 +7,7 @@ import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
 /**
- * /zmenu unlink — force-detach this server from the website: revoke the link on the site (API call)
+ * /zmenu unlink - force-detach this server from the website: revoke the link on the site (API call)
  * and clear the local live-sync credential. The local data is cleared even if the API call fails.
  */
 public class CommandMenuUnlink extends VCommand {

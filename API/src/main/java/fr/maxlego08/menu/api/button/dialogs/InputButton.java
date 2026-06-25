@@ -23,7 +23,7 @@ public abstract class InputButton extends Button {
     private String defaultText = "";
     private int maxLength = 32; // Default max length for text input
     private int multilineMaxLines; // Optional positive integer. If present, limits maximum lines.
-    private int multilineHeight; // Value between 1 and 512 — Height of input.
+    private int multilineHeight; // Value between 1 and 512 - Height of input.
     private Supplier<String> defaultTextSupplier;
 
     // Single option input properties

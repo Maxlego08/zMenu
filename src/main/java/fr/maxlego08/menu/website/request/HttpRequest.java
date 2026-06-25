@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -36,12 +37,12 @@ public class HttpRequest {
 
     public void submit(ZMenuPlugin plugin, Consumer<Response> consumer) {
         plugin.getScheduler().runAsync(w -> {
-            Map<String, Object> map = new HashMap<>();
+            Map map = new HashMap<>();
             HttpURLConnection connection;
             int responseCode = -1;
 
             try {
-                URL url = new URL(this.url);
+                URL url = new URI(this.url).toURL();
                 connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod(this.method);
@@ -89,7 +90,7 @@ public class HttpRequest {
             boolean success = false;
 
             try {
-                URL url = new URL(this.url);
+                URL url = new URI(this.url).toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod(this.method);
@@ -118,7 +119,7 @@ public class HttpRequest {
                 exception.printStackTrace();
             }
 
-            // Run the callback AFTER the FileOutputStream is closed — otherwise the downloaded temp file
+            // Run the callback AFTER the FileOutputStream is closed - otherwise the downloaded temp file
             // is still locked by this stream and the subsequent atomic move fails on Windows
             // ("the file is used by another process").
             consumer.accept(success);

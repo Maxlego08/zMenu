@@ -1,4 +1,4 @@
-# zMenu Live Sync — Plugin Implementation Prompt / Spec
+# zMenu Live Sync - Plugin Implementation Prompt / Spec
 
 > **Companion to the website spec** (in the Minecraft-Inventory-Builder repo at
 > `docs/zmenu-live-sync-plan.md`). This document covers the **plugin (this repo) side**.
@@ -9,15 +9,15 @@
 ## 1. Objective (plugin side)
 
 Add a live link so that when the website pushes a notification, the plugin **downloads the inventory
-and reloads it in zMenu — live, no restart**:
+and reloads it in zMenu - live, no restart**:
 
-1. `/zmenu login` — link the server to the website account *(ALREADY EXISTS, see §2)*.
-2. `/zmenu connect` — open a persistent **WebSocket** to the site *(NEW)*.
+1. `/zmenu login` - link the server to the website account *(ALREADY EXISTS, see §2)*.
+2. `/zmenu connect` - open a persistent **WebSocket** to the site *(NEW)*.
 3. On a pushed `{inventory_id, file_name, hash}` message → download the YAML over the existing
    authenticated API → **verify the hash** → atomic write into `inventories/` → **reload that single
    inventory** → tell the player.
 
-## 2. What ALREADY exists in this repo (grounded — verified)
+## 2. What ALREADY exists in this repo (grounded - verified)
 
 **Good news: most of the plumbing is here.** Reuse it; don't reinvent.
 
@@ -28,7 +28,7 @@ and reloads it in zMenu — live, no restart**:
 | HTTP client (Bearer, async, file download) | `website/request/HttpRequest.java` (`setBearer`, `submit`, **`submitForFileDownload(plugin, file, cb)`**) | Download the inventory YAML. **No new HTTP lib needed.** |
 | Website manager | `website/ZWebsiteManager.java` (`login`, fetch inventories, download) | Add WS lifecycle + connect here (or a new `WebSocketManager`). |
 | API base URL | `https://minecraft-inventory-builder.com/api/v1/` | Same host; WS endpoint is separate (see §4). |
-| Existing API calls | `/auth/test`, `/resources`, `/inventories`, **`/inventory/{id}/download`** | The download endpoint is the data path — reuse it. |
+| Existing API calls | `/auth/test`, `/resources`, `/inventories`, **`/inventory/{id}/download`** | The download endpoint is the data path - reuse it. |
 | **Single-inventory reload** | `ZInventoryManager.reloadInventory(Inventory)` (deletes from cache + `loadInventory(plugin, file)`) and `loadInventory(Plugin, File)` for a brand-new file | The "reload live" step. |
 | Inventory lookup | `getInventory(String fileName)` (case-insensitive); files at `plugins/zMenu/inventories/<name>.yml`; name == file name | Resolve target inventory / file. |
 | Close open viewers before reload | pattern in `CommandMenuReloadInventory` (`getVInventoryManager().close(...)`) | Avoid stale open GUIs on reload. |
@@ -45,7 +45,7 @@ DSL + Shadow JAR (`com.gradleup.shadow` v9), relocations under `fr.maxlego08.men
 (not shaded). Adventure available (not shaded). Package root `fr.maxlego08.menu`. Z-prefix for impls; public
 interfaces go in the **API** module.
 
-## 3. Build change — add a WebSocket client
+## 3. Build change - add a WebSocket client
 
 Pick a transport consistent with the website spec (**Soketi/Pusher protocol recommended**, Laravel 10 can't use Reverb):
 
@@ -57,7 +57,7 @@ dependencies, and **relocate** in the shadowJar block, e.g.
 `org.java_websocket → fr.maxlego08.menu.hooks.java_websocket` (and the pusher client package). Verify the
 shaded jar still builds (`./gradlew clean build`, output `target/zMenu.jar`).
 
-> ⚠️ Confirm the transport with the website side before adding the dep — it determines the connect/auth code.
+> ⚠️ Confirm the transport with the website side before adding the dep - it determines the connect/auth code.
 
 ## 4. New command: `/zmenu connect` (+ `/zmenu disconnect`)
 
@@ -98,7 +98,7 @@ On a `inventory.sync` message `{inventory_id, file_name, hash}` (all async until
 - Add a small `ConnectionConfig` persisted via `Persist` (e.g. `connection.json`): `connectionId`, `channel`,
   `autoConnect` (bool), last-known transport params (refreshable). **Never log the token**; restrict file perms where the OS allows.
 
-## 7. Security model (plugin side — ultra secure)
+## 7. Security model (plugin side - ultra secure)
 
 - **Transport:** **WSS only** (TLS); HTTPS for all API calls. Refuse plaintext.
 - **Token:** keep it only in `token.json`; never print it (chat/console/logs); redact in errors. Treat as a
@@ -106,7 +106,7 @@ On a `inventory.sync` message `{inventory_id, file_name, hash}` (all async until
 - **Channel:** subscribe only to the opaque `connection_id` channel returned by the site; never derive it from
   the user id. Channel auth is server-validated.
 - **Payload trust:** the WS message carries only ids + hash. The plugin **pulls** the YAML over the
-  authenticated API and **verifies the hash** before applying — the WS is not trusted to deliver content.
+  authenticated API and **verifies the hash** before applying - the WS is not trusted to deliver content.
 - **Fail-safe:** hash mismatch, oversize, parse failure, or reload exception ⇒ **do not apply / roll back**;
   the previously-running inventory keeps working. Never crash the server on a bad payload.
 - **Thread safety:** all net I/O off the main thread; inventory mutation/reload **only** on the main thread
@@ -134,13 +134,13 @@ On a `inventory.sync` message `{inventory_id, file_name, hash}` (all async until
 4. **Hardening & QA:** revocation kills the live link, hash-mismatch rejected, malformed-YAML rolled back, Folia tested, reconnect storms bounded. Optional request signing.
 5. **Docs & changelog:** add an `# Unreleased` entry in `changelog.md`; update the Docusaurus docs (EN + FR) at `C:\Users\Admin\Desktop\groupez\documentation` describing `/zmenu connect` + live sync.
 
-## 10. Open questions (confirm with the website side — shared contract)
+## 10. Open questions (confirm with the website side - shared contract)
 
 - **Login flow:** keep the existing **`/zmenu login <token>`** (paste a scoped, revocable Sanctum token from
-  the account page) — simpler, already built — **or** upgrade to the website spec's **RFC 8628 device flow**
+  the account page) - simpler, already built - **or** upgrade to the website spec's **RFC 8628 device flow**
   (no token paste, more secure UX)? `/zmenu connect` works either way. *(Recommendation: ship with the
   existing token login + scope/expiry/revocation; offer device flow as a follow-up.)*
-- **Transport:** Soketi (self-host) vs hosted Pusher vs custom WS server — must match the site.
+- **Transport:** Soketi (self-host) vs hosted Pusher vs custom WS server - must match the site.
 - **Channel-auth & connection-info endpoints:** confirm exact URLs/shapes (`/api/v1/zmenu/connection-info`,
   `/api/v1/zmenu/ws-auth`) and the message schema (`{type, inventory_id, file_name, hash}`).
 - **Download ability:** confirm the server token's Sanctum abilities allow `/inventory/{id}/download`

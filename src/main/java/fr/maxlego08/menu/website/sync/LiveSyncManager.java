@@ -12,8 +12,6 @@ import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.website.request.HttpRequest;
-import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,25 +23,13 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
-/**
- * zMenu Live Sync — opens an EPHEMERAL WebSocket to the website's custom relay on demand. When the user
- * clicks "Sync" on the site, the relay forwards a tiny notification; the plugin downloads the inventory
- * over the authenticated API, verifies its hash, atomically swaps the file and reloads that single
- * inventory on the main thread.
- * <p>
- * The socket is opened by /zmenu connect and is dropped by the relay after a short idle window, so at
- * scale only the servers actively syncing hold a connection. The relay never sees inventory data: it only
- * forwards {@code {inventory_id, file_name, hash}}; the YAML is pulled over HTTPS and hash-verified.
- * <p>
- * Every step logs to the console with a {@code [Live Sync]} prefix. The token is never logged.
- */
 public class LiveSyncManager extends ZUtils {
 
     static final String LOG_PREFIX = "[Live Sync] ";
@@ -51,8 +37,6 @@ public class LiveSyncManager extends ZUtils {
     private static final long MAX_YAML_BYTES = 512L * 1024L;
     private static final long DEFAULT_PAIR_TTL_SECONDS = 600L;
     private static final int CONNECTION_LOST_TIMEOUT_SECONDS = 30;
-    // /zmenu connect means "stay connected": auto-reconnect with backoff if the socket drops
-    // unexpectedly (relay idle-evict, restart, network blip), until /zmenu disconnect or revocation.
     private static final int MAX_RECONNECT_ATTEMPTS = 10;
     private static final long RECONNECT_BASE_SECONDS = 5L;
     private static final long MAX_RECONNECT_DELAY_SECONDS = 60L;
@@ -66,11 +50,9 @@ public class LiveSyncManager extends ZUtils {
     private WebSocketClient client;
     private volatile boolean connecting;
     private volatile boolean connected;
-    // True between /zmenu connect and /zmenu disconnect (or revocation): drives auto-reconnect.
     private volatile boolean shouldStayConnected;
     private int reconnectAttempts;
 
-    // Device-flow pairing state.
     private volatile boolean pairing;
     private String deviceCode;
     private int pollSeconds = 5;
@@ -82,26 +64,39 @@ public class LiveSyncManager extends ZUtils {
         this.apiUrl = apiUrl;
     }
 
-    static void log(String message) {
-        Logger.info(LOG_PREFIX + message, LogType.INFO);
+    private void log(String message) {
+        this.plugin.getLogger().info(message);
     }
 
-    static void log(String message, LogType type) {
-        Logger.info(LOG_PREFIX + message, type);
+    private void log(Level level, String message) {
+        this.plugin.getLogger().log(level, message);
     }
 
-    // ------------------------------------------------------------------ //
-    // Lifecycle
-    // ------------------------------------------------------------------ //
+    private void warning(String message) {
+        this.log(Level.WARNING, message);
+    }
 
+    private void severe(String message) {
+        this.log(Level.SEVERE, message);
+    }
+
+    private void success(String message) {
+        this.log(Level.INFO, message);
+    }
+
+    /**
+     * This method is called when the plugin is enabled.
+     */
     public void onEnable() {
         this.config = this.plugin.getPersist().loadOrSaveDefault(new LiveSyncConfig(), LiveSyncConfig.class, "live-sync");
         if (this.config == null) {
             this.config = new LiveSyncConfig();
         }
-        // Ephemeral model: do NOT auto-connect on start. The operator runs /zmenu connect on demand.
     }
 
+    /**
+     * This method is called when the plugin is disabled.
+     */
     public void onDisable() {
         this.pairing = false;
         this.shouldStayConnected = false;
@@ -111,6 +106,10 @@ public class LiveSyncManager extends ZUtils {
     public boolean isLinked() {
         return this.config != null && this.config.isLinked();
     }
+
+    // ------------------------------------------------------------------ //
+    // Connection (ephemeral)
+    // ------------------------------------------------------------------ //
 
     /**
      * This server's stable id (server_id), generated and persisted on first use and kept across
@@ -127,18 +126,20 @@ public class LiveSyncManager extends ZUtils {
         return this.config.serverId;
     }
 
-    // ------------------------------------------------------------------ //
-    // Pairing — OAuth 2.0 Device Authorization Grant (RFC 8628)
-    // ------------------------------------------------------------------ //
-
+    /**
+     * This method is called when the player requests a pairing.
+     *
+     * @param sender The player who requested the pairing.
+     */
     public void startDeviceFlow(CommandSender sender) {
         if (this.isLinked()) {
-            log("Pairing requested but this server is already linked (use /zmenu connect).", LogType.WARNING);
+            warning("Pairing requested but this server is already linked (use /zmenu connect).");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_ALREADY_LINKED);
             return;
         }
+
         if (this.pairing) {
-            log("Pairing requested but a pairing is already in progress.", LogType.WARNING);
+            warning("Pairing requested but a pairing is already in progress.");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_PENDING);
             return;
         }
@@ -149,14 +150,13 @@ public class LiveSyncManager extends ZUtils {
         JsonObject body = new JsonObject();
         body.addProperty("server_name", this.plugin.getServer().getName());
         body.addProperty("plugin_version", this.plugin.getDescription().getVersion());
-        // Stable per-server id so the website recognises this server across re-pairings (no duplicates).
         body.addProperty("server_id", this.ensureServerId());
 
         HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/pair/start", body);
         request.setMethod("POST");
         request.submit(this.plugin, response -> {
             if (response.getCode() != 200) {
-                log("Pairing start failed: HTTP " + response.getCode() + " (is the API URL correct and reachable?).", LogType.ERROR);
+                severe("Pairing start failed: HTTP " + response.getCode() + " (is the API URL correct and reachable?).");
                 this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_ERROR);
                 return;
             }
@@ -171,7 +171,7 @@ public class LiveSyncManager extends ZUtils {
             long ttl = asInt(response.get("expires_in"), (int) DEFAULT_PAIR_TTL_SECONDS);
 
             if (this.deviceCode == null || userCode == null) {
-                log("Pairing start returned an incomplete response.", LogType.ERROR);
+                severe("Pairing start returned an incomplete response.");
                 this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_ERROR);
                 return;
             }
@@ -179,27 +179,34 @@ public class LiveSyncManager extends ZUtils {
             this.pairing = true;
             this.pairDeadline = System.currentTimeMillis() + (ttl * 1000L);
 
-            log("Pairing started — code " + userCode + ", verification url " + url + ".", LogType.SUCCESS);
+            success("Pairing started - code " + userCode + ", verification url " + url + ".");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_CODE, "%code%", userCode, "%url%", url == null ? "" : url);
             this.scheduleNextPoll(sender);
         });
     }
 
+    /**
+     * Schedules the next poll for the pairing process.
+     *
+     * @param sender The player who requested the pairing.
+     */
     private void scheduleNextPoll(CommandSender sender) {
-        if (!this.pairing) {
-            return;
-        }
+        if (!this.pairing) return;
         this.plugin.getScheduler().runLater(() -> this.pollOnce(sender), this.pollSeconds, TimeUnit.SECONDS);
     }
 
+    /**
+     * Polls the server for the pairing status.
+     *
+     * @param sender The player who requested the pairing.
+     */
     private void pollOnce(CommandSender sender) {
-        if (!this.pairing || this.deviceCode == null) {
-            return;
-        }
+        if (!this.pairing || this.deviceCode == null) return;
+
         if (System.currentTimeMillis() > this.pairDeadline) {
             this.pairing = false;
             this.deviceCode = null;
-            log("Pairing expired — no approval within the time limit.", LogType.WARNING);
+            warning("Pairing expired - no approval within the time limit.");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_EXPIRED);
             return;
         }
@@ -213,11 +220,13 @@ public class LiveSyncManager extends ZUtils {
             if (!this.pairing) {
                 return;
             }
+
             int code = response.getCode();
             if (code == 202) { // authorization_pending
                 this.scheduleNextPoll(sender);
                 return;
             }
+
             if (code == 200) {
                 this.handlePairSuccess(sender, response);
                 return;
@@ -226,11 +235,17 @@ public class LiveSyncManager extends ZUtils {
             this.pairing = false;
             this.deviceCode = null;
             String reason = code == 410 ? " (code expired or already used)" : code == 404 ? " (unknown code)" : code == 403 ? " (denied)" : "";
-            log("Pairing failed: HTTP " + code + reason + ".", LogType.ERROR);
+            severe("Pairing failed: HTTP " + code + reason + ".");
             this.message(this.plugin, sender, code == 410 ? Message.WEBSITE_SYNC_PAIR_EXPIRED : Message.WEBSITE_SYNC_PAIR_ERROR);
         });
     }
 
+    /**
+     * Handle the successful pairing response.
+     *
+     * @param sender   The player who requested the pairing.
+     * @param response The response from the server containing the pairing details.
+     */
     private void handlePairSuccess(CommandSender sender, fr.maxlego08.menu.website.request.Response response) {
         this.pairing = false;
         this.deviceCode = null;
@@ -240,7 +255,7 @@ public class LiveSyncManager extends ZUtils {
         String connectionId = (String) response.get("connection_id");
 
         if (token == null || wsUrl == null) {
-            log("Pairing was approved but the response was incomplete (missing token/ws_url).", LogType.ERROR);
+            severe("Pairing was approved but the response was incomplete (missing token/ws_url).");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_ERROR);
             return;
         }
@@ -252,25 +267,28 @@ public class LiveSyncManager extends ZUtils {
         this.config = cfg;
         this.config.save(this.plugin.getPersist());
 
-        log("Server linked successfully. Relay " + wsUrl + ".", LogType.SUCCESS);
+        success("Server linked successfully. Relay " + wsUrl + ".");
         this.message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_SUCCESS);
 
         // Open the first ephemeral window right away so the user can sync immediately.
         this.connect(sender);
     }
 
-    // ------------------------------------------------------------------ //
-    // Connection (ephemeral)
-    // ------------------------------------------------------------------ //
-
+    /**
+     * Connect to the live sync server.
+     *
+     * @param sender The player who requested the connection.
+     */
     public void connect(CommandSender sender) {
+
         if (!this.isLinked()) {
-            log("Connect requested but the server is not linked yet. Run /zmenu login first.", LogType.WARNING);
+            warning("Connect requested but the server is not linked yet. Run /zmenu login first.");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_NOT_LINKED);
             return;
         }
+
         if (this.connecting || this.connected) {
-            log("Connect requested but the live connection is already open/opening.", LogType.WARNING);
+            warning("Connect requested but the live connection is already open/opening.");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_ALREADY_CONNECTED);
             return;
         }
@@ -286,8 +304,11 @@ public class LiveSyncManager extends ZUtils {
 
     /**
      * Ask the website whether this link is still valid and refresh the stored relay url / connection id.
-     * On 401/403 the link is forgotten (revoked server-side); otherwise {@code onReady} runs — even on a
+     * On 401/403 the link is forgotten (revoked server-side); otherwise {@code onReady} runs - even on a
      * transient API error, falling back to the stored url so a website hiccup doesn't block connecting.
+     *
+     * @param sender  The player who requested the connection.
+     * @param onReady The callback to run when the connection info is ready.
      */
     private void refreshConnectionInfo(CommandSender sender, Runnable onReady) {
         HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/connection", new JsonObject());
@@ -298,7 +319,7 @@ public class LiveSyncManager extends ZUtils {
             if (code == 401 || code == 403) {
                 this.connecting = false;
                 this.shouldStayConnected = false;
-                log("The website reports this link is no longer valid (revoked); clearing it.", LogType.WARNING);
+                warning("The website reports this link is no longer valid (revoked); clearing it.");
                 this.unlink();
                 this.message(this.plugin, sender, Message.WEBSITE_SYNC_AUTH_FAILED);
                 return;
@@ -320,7 +341,7 @@ public class LiveSyncManager extends ZUtils {
                     log("Live sync info updated (relay " + this.config.wsUrl + ").");
                 }
             } else {
-                log("Could not refresh live sync info (HTTP " + code + "); using the stored relay url.", LogType.WARNING);
+                warning("Could not refresh live sync info (HTTP " + code + "); using the stored relay url.");
             }
             log("Opening live connection to " + this.config.wsUrl + " ...");
             onReady.run();
@@ -333,7 +354,7 @@ public class LiveSyncManager extends ZUtils {
      */
     public void forceUnlink(CommandSender sender) {
         if (!this.isLinked()) {
-            log("Unlink requested but the server is not linked.", LogType.WARNING);
+            warning("Unlink requested but the server is not linked.");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_NOT_LINKED);
             return;
         }
@@ -345,9 +366,9 @@ public class LiveSyncManager extends ZUtils {
         request.setMethod("POST");
         request.submit(this.plugin, response -> {
             if (response.getCode() == 200) {
-                log("Website confirmed the unlink.", LogType.SUCCESS);
+                success("Website confirmed the unlink.");
             } else {
-                log("Website unlink call failed (HTTP " + response.getCode() + "); clearing the local link anyway.", LogType.WARNING);
+                warning("Website unlink call failed (HTTP " + response.getCode() + "); clearing the local link anyway.");
             }
             this.shouldStayConnected = false;
             this.unlink();
@@ -355,6 +376,11 @@ public class LiveSyncManager extends ZUtils {
         });
     }
 
+    /**
+     * Open a WebSocket connection to the website.
+     *
+     * @param sender The player who requested the connection.
+     */
     private void openSocket(CommandSender sender) {
         try {
             URI uri = new URI(this.config.wsUrl);
@@ -362,14 +388,14 @@ public class LiveSyncManager extends ZUtils {
             WebSocketClient socket = new WebSocketClient(uri) {
                 @Override
                 public void onOpen(ServerHandshake handshake) {
-                    log("Socket open — authenticating...");
+                    log("Socket open - authenticating...");
                     JsonObject hello = new JsonObject();
                     hello.addProperty("type", "hello");
                     hello.addProperty("token", config.token);
                     try {
                         this.send(hello.toString());
                     } catch (Exception e) {
-                        log("Failed to send hello: " + e.getMessage() + ".", LogType.ERROR);
+                        severe("Failed to send hello: " + e.getMessage() + ".");
                     }
                 }
 
@@ -382,7 +408,7 @@ public class LiveSyncManager extends ZUtils {
                 public void onClose(int code, String reason, boolean remote) {
                     connected = false;
                     connecting = false;
-                    log("Live connection closed (code " + code + (reason != null && !reason.isEmpty() ? ", " + reason : "") + ").", LogType.WARNING);
+                    warning("Live connection closed (code " + code + (reason != null && !reason.isEmpty() ? ", " + reason : "") + ").");
                     // Re-establish if the operator still wants to be connected (no-op after an explicit
                     // /zmenu disconnect or a revocation, which clear shouldStayConnected).
                     scheduleReconnect();
@@ -391,7 +417,7 @@ public class LiveSyncManager extends ZUtils {
                 @Override
                 public void onError(Exception ex) {
                     connecting = false;
-                    log("Live connection error: " + ex.getMessage() + ".", LogType.ERROR);
+                    severe("Live connection error: " + ex.getMessage() + ".");
                     if (Configuration.enableDebug) {
                         ex.printStackTrace();
                     }
@@ -399,7 +425,7 @@ public class LiveSyncManager extends ZUtils {
             };
 
             if ("wss".equalsIgnoreCase(uri.getScheme())) {
-                socket.setSocketFactory((SSLSocketFactory) SSLSocketFactory.getDefault());
+                socket.setSocketFactory(SSLSocketFactory.getDefault());
             }
             socket.setConnectionLostTimeout(CONNECTION_LOST_TIMEOUT_SECONDS);
 
@@ -408,7 +434,7 @@ public class LiveSyncManager extends ZUtils {
 
         } catch (Throwable throwable) {
             this.connecting = false;
-            log("Failed to open the live connection: " + throwable.getMessage() + ".", LogType.ERROR);
+            severe("Failed to open the live connection: " + throwable.getMessage() + ".");
             this.message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECT_ERROR);
             if (Configuration.enableDebug) {
                 throwable.printStackTrace();
@@ -416,6 +442,12 @@ public class LiveSyncManager extends ZUtils {
         }
     }
 
+    /**
+     * Handle a message received from the website.
+     *
+     * @param sender  The player who requested the pairing.
+     * @param message The message received from the website.
+     */
     private void handleRelayMessage(CommandSender sender, String message) {
         if (message == null) {
             return;
@@ -435,7 +467,7 @@ public class LiveSyncManager extends ZUtils {
                 this.connected = true;
                 this.connecting = false;
                 this.reconnectAttempts = 0;
-                log("Live sync connected — ready to receive syncs.", LogType.SUCCESS);
+                success("Live sync connected - ready to receive syncs.");
                 this.message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECTED);
                 break;
             case "error":
@@ -450,18 +482,33 @@ public class LiveSyncManager extends ZUtils {
         }
     }
 
+    // ------------------------------------------------------------------ //
+    // Notification -> download -> verify -> reload
+    // ------------------------------------------------------------------ //
+
+    /**
+     * Handles a relay error by setting the connecting flag to false and sending a message to the sender.
+     *
+     * @param sender The player who requested the connection.
+     * @param error  The error message received from the relay.
+     */
     private void handleRelayError(CommandSender sender, String error) {
         this.connecting = false;
-        log("Relay rejected the connection: " + error + ".", LogType.ERROR);
+        severe("Relay rejected the connection: " + error + ".");
         this.message(this.plugin, sender, Message.WEBSITE_SYNC_AUTH_FAILED);
 
         if ("unauthorized".equals(error)) {
-            // The token is invalid/revoked — forget the link so the operator can re-link cleanly.
+            // The token is invalid/revoked - forget the link so the operator can re-link cleanly.
             this.unlink();
-            log("The stored link was cleared (token no longer valid). Run /zmenu login to re-link.", LogType.WARNING);
+            warning("The stored link was cleared (token no longer valid). Run /zmenu login to re-link.");
         }
     }
 
+    /**
+     * Disconnects the live sync.
+     *
+     * @param sender The player who requested the disconnection.
+     */
     public void disconnect(CommandSender sender) {
         boolean wasActive = this.connected || this.connecting || this.pairing;
 
@@ -474,6 +521,9 @@ public class LiveSyncManager extends ZUtils {
         this.message(this.plugin, sender, wasActive ? Message.WEBSITE_SYNC_DISCONNECTED : Message.WEBSITE_SYNC_NOT_CONNECTED);
     }
 
+    /**
+     * Unlink the live sync.
+     */
     private void unlink() {
         this.shouldStayConnected = false;
         this.closeSocket();
@@ -485,6 +535,9 @@ public class LiveSyncManager extends ZUtils {
         }
     }
 
+    /**
+     * Closes the socket connection.
+     */
     private void closeSocket() {
         this.connected = false;
         this.connecting = false;
@@ -510,11 +563,11 @@ public class LiveSyncManager extends ZUtils {
         this.reconnectAttempts++;
         if (this.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
             this.shouldStayConnected = false;
-            log("Could not reconnect after " + MAX_RECONNECT_ATTEMPTS + " attempts — giving up. Run /zmenu connect to retry.", LogType.ERROR);
+            severe("Could not reconnect after " + MAX_RECONNECT_ATTEMPTS + " attempts - giving up. Run /zmenu connect to retry.");
             return;
         }
         long delay = Math.min(MAX_RECONNECT_DELAY_SECONDS, RECONNECT_BASE_SECONDS * this.reconnectAttempts);
-        log("Reconnecting in " + delay + "s (attempt " + this.reconnectAttempts + "/" + MAX_RECONNECT_ATTEMPTS + ")...", LogType.WARNING);
+        warning("Reconnecting in " + delay + "s (attempt " + this.reconnectAttempts + "/" + MAX_RECONNECT_ATTEMPTS + ")...");
         this.plugin.getScheduler().runLater(() -> {
             if (this.shouldStayConnected && this.isLinked() && !this.connected && !this.connecting) {
                 this.connecting = true;
@@ -523,13 +576,14 @@ public class LiveSyncManager extends ZUtils {
         }, delay, TimeUnit.SECONDS);
     }
 
-    // ------------------------------------------------------------------ //
-    // Notification -> download -> verify -> reload
-    // ------------------------------------------------------------------ //
-
+    /**
+     * Apply a sync notification.
+     *
+     * @param data The JSON object containing the sync notification.
+     */
     private void applySync(JsonObject data) {
         if (!data.has("inventory_id") || !data.has("file_name") || !data.has("hash")) {
-            log("Ignored a sync notification: missing inventory_id/file_name/hash.", LogType.WARNING);
+            warning("Ignored a sync notification: missing inventory_id/file_name/hash.");
             return;
         }
 
@@ -539,7 +593,7 @@ public class LiveSyncManager extends ZUtils {
 
         // Defence in depth: never let a remote file_name escape the inventories directory.
         if (fileName == null || !fileName.matches("[A-Za-z0-9_\\- ]{1,64}")) {
-            log("Ignored a sync notification: invalid file name '" + fileName + "'.", LogType.WARNING);
+            warning("Ignored a sync notification: invalid file name '" + fileName + "'.");
             return;
         }
 
@@ -547,7 +601,7 @@ public class LiveSyncManager extends ZUtils {
         String rawPath = data.has("path") && !data.get("path").isJsonNull() ? data.get("path").getAsString() : "";
         String subPath = sanitizeRelativePath(rawPath);
         if (subPath == null) {
-            log("Ignored a sync notification: invalid path '" + rawPath + "'.", LogType.WARNING);
+            warning("Ignored a sync notification: invalid path '" + rawPath + "'.");
             return;
         }
 
@@ -565,34 +619,13 @@ public class LiveSyncManager extends ZUtils {
     }
 
     /**
-     * Normalise a relative subfolder path from the website (segments split on '/'). Returns "" for an
-     * empty path, the cleaned relative path, or null if it is unsafe (absolute, backslash, '.'/'..',
-     * or a segment with disallowed characters) so the caller can refuse to write outside inventories/.
+     * Download the inventory file and apply it.
+     *
+     * @param inventoryId The ID of the inventory to download.
+     * @param fileName    The name of the inventory file.
+     * @param subPath     The sub-path of the inventory file.
+     * @param hash        The hash of the inventory file.
      */
-    private static String sanitizeRelativePath(String path) {
-        if (path == null || path.isEmpty()) {
-            return "";
-        }
-        if (path.contains("\\") || path.startsWith("/")) {
-            return null;
-        }
-        StringBuilder builder = new StringBuilder();
-        for (String rawPart : path.split("/")) {
-            String part = rawPart.trim();
-            if (part.isEmpty()) {
-                continue; // tolerate accidental double slashes / all-whitespace segments
-            }
-            if (part.equals(".") || part.equals("..") || !part.matches("[A-Za-z0-9_\\- ]{1,64}")) {
-                return null;
-            }
-            if (builder.length() > 0) {
-                builder.append('/');
-            }
-            builder.append(part);
-        }
-        return builder.toString();
-    }
-
     private void downloadAndApply(int inventoryId, String fileName, String subPath, String hash) {
         File tmpDir = new File(this.plugin.getDataFolder(), "live-sync");
         if (!tmpDir.exists()) {
@@ -610,19 +643,19 @@ public class LiveSyncManager extends ZUtils {
         request.submitForFileDownload(this.plugin, tempFile, success -> {
             if (!success) {
                 deleteQuietly(tempFile);
-                log("Download failed for '" + fileName + "' (id " + inventoryId + "). Token revoked/expired, or inventory not owned by this account.", LogType.ERROR);
+                severe("Download failed for '" + fileName + "' (id " + inventoryId + "). Token revoked/expired, or inventory not owned by this account.");
                 this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", fileName);
                 return;
             }
             if (tempFile.length() <= 0 || tempFile.length() > MAX_YAML_BYTES) {
-                log("Rejected '" + fileName + "': downloaded size out of bounds (" + tempFile.length() + " bytes).", LogType.ERROR);
+                severe("Rejected '" + fileName + "': downloaded size out of bounds (" + tempFile.length() + " bytes).");
                 deleteQuietly(tempFile);
                 return;
             }
 
             String actual = sha256(tempFile);
-            if (actual == null || hash == null || !actual.equalsIgnoreCase(hash)) {
-                log("Rejected '" + fileName + "': hash mismatch (expected " + hash + ", got " + actual + ").", LogType.ERROR);
+            if (actual == null || !actual.equalsIgnoreCase(hash)) {
+                severe("Rejected '" + fileName + "': hash mismatch (expected " + hash + ", got " + actual + ").");
                 deleteQuietly(tempFile);
                 this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", fileName);
                 return;
@@ -631,12 +664,12 @@ public class LiveSyncManager extends ZUtils {
             try {
                 YamlConfiguration test = YamlConfiguration.loadConfiguration(tempFile);
                 if (test.getKeys(false).isEmpty()) {
-                    log("Rejected '" + fileName + "': downloaded file is empty or not valid YAML.", LogType.ERROR);
+                    severe("Rejected '" + fileName + "': downloaded file is empty or not valid YAML.");
                     deleteQuietly(tempFile);
                     return;
                 }
             } catch (Exception exception) {
-                log("Rejected '" + fileName + "': failed to parse the downloaded YAML.", LogType.ERROR);
+                severe("Rejected '" + fileName + "': failed to parse the downloaded YAML.");
                 deleteQuietly(tempFile);
                 return;
             }
@@ -661,7 +694,7 @@ public class LiveSyncManager extends ZUtils {
                     Files.move(tempFile.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (Exception exception) {
-                log("Failed to write '" + fileName + ".yml': " + exception.getMessage() + ".", LogType.ERROR);
+                severe("Failed to write '" + fileName + ".yml': " + exception.getMessage() + ".");
                 deleteQuietly(tempFile);
                 this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", fileName);
                 return;
@@ -671,6 +704,20 @@ public class LiveSyncManager extends ZUtils {
         });
     }
 
+    // ------------------------------------------------------------------ //
+    // Helpers
+    // ------------------------------------------------------------------ //
+
+
+    /**
+     * Reloads the inventory manager on the main thread.
+     *
+     * @param fileName The name of the inventory file.
+     * @param subPath  The sub-path of the inventory file.
+     * @param target   The target file.
+     * @param backup   The backup file.
+     * @param hash     The hash of the inventory file.
+     */
     private void reloadOnMainThread(String fileName, String subPath, File target, File backup, String hash) {
         String label = subPath.isEmpty() ? fileName : subPath + "/" + fileName;
         this.plugin.getScheduler().runNextTick(w -> {
@@ -680,7 +727,7 @@ public class LiveSyncManager extends ZUtils {
             boolean applied;
             try {
                 // zMenu's registry is keyed by bare file name (no path), so resolve by the actual TARGET
-                // file — a bare-name lookup could return a same-named inventory from another folder and
+                // file - a bare-name lookup could return a same-named inventory from another folder and
                 // reload the wrong file.
                 Optional<Inventory> existing = findInventoryByFile(inventoryManager, target);
                 if (existing.isPresent()) {
@@ -696,7 +743,7 @@ public class LiveSyncManager extends ZUtils {
                 applied = true;
             } catch (InventoryException exception) {
                 applied = false;
-                log("zMenu failed to load the synced inventory '" + label + "': " + exception.getMessage() + ".", LogType.ERROR);
+                severe("zMenu failed to load the synced inventory '" + label + "': " + exception.getMessage() + ".");
                 if (Configuration.enableDebug) {
                     exception.printStackTrace();
                 }
@@ -704,11 +751,11 @@ public class LiveSyncManager extends ZUtils {
 
             if (applied) {
                 this.lastAppliedHash.put((subPath + "/" + fileName).toLowerCase(Locale.ROOT), hash);
-                log("Inventory '" + label + "' synced and reloaded.", LogType.SUCCESS);
+                success("Inventory '" + label + "' synced and reloaded.");
                 this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLIED, "%name%", label);
             } else {
                 this.rollback(inventoryManager, target, backup);
-                log("Rolled back '" + label + "' to the previous version.", LogType.WARNING);
+                warning("Rolled back '" + label + "' to the previous version.");
                 this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", label);
             }
         });
@@ -716,7 +763,7 @@ public class LiveSyncManager extends ZUtils {
 
     /**
      * Find the loaded inventory whose backing file is exactly {@code target} (canonical comparison),
-     * regardless of its name — zMenu indexes by bare file name, which is ambiguous across subfolders.
+     * regardless of its name - zMenu indexes by bare file name, which is ambiguous across subfolders.
      */
     private Optional<Inventory> findInventoryByFile(InventoryManager inventoryManager, File target) {
         File canonicalTarget = canonical(target);
@@ -729,14 +776,13 @@ public class LiveSyncManager extends ZUtils {
         return Optional.empty();
     }
 
-    private static File canonical(File file) {
-        try {
-            return file.getCanonicalFile();
-        } catch (Exception exception) {
-            return file.getAbsoluteFile();
-        }
-    }
-
+    /**
+     * Rollback the inventory to the previous version.
+     *
+     * @param inventoryManager The inventory manager.
+     * @param target           The target file.
+     * @param backup           The backup file.
+     */
     private void rollback(InventoryManager inventoryManager, File target, File backup) {
         try {
             if (!backup.exists()) {
@@ -751,36 +797,7 @@ public class LiveSyncManager extends ZUtils {
                 inventoryManager.loadInventory(this.plugin, target);
             }
         } catch (Exception exception) {
-            log("Rollback of '" + target.getName() + "' failed: " + exception.getMessage() + ".", LogType.ERROR);
-        }
-    }
-
-    // ------------------------------------------------------------------ //
-    // Helpers
-    // ------------------------------------------------------------------ //
-
-    private static int asInt(Object value, int fallback) {
-        return value instanceof Number ? ((Number) value).intValue() : fallback;
-    }
-
-    private static void deleteQuietly(File file) {
-        if (file != null && file.exists()) {
-            file.delete();
-        }
-    }
-
-    private static String sha256(File file) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(Files.readAllBytes(file.toPath()));
-            StringBuilder builder = new StringBuilder(hashBytes.length * 2);
-            for (byte b : hashBytes) {
-                builder.append(Character.forDigit((b >> 4) & 0xF, 16));
-                builder.append(Character.forDigit(b & 0xF, 16));
-            }
-            return builder.toString();
-        } catch (Exception exception) {
-            return null;
+            severe("Rollback of '" + target.getName() + "' failed: " + exception.getMessage() + ".");
         }
     }
 }
