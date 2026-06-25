@@ -640,10 +640,10 @@ public class LiveSyncManager extends ZUtils {
         HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/inventory/" + inventoryId + "/download", new JsonObject());
         request.setBearer(this.config.token);
         request.setMethod("GET");
-        request.submitForFileDownload(this.plugin, tempFile, success -> {
-            if (!success) {
+        request.submitForFileDownloadDetailed(this.plugin, tempFile, result -> {
+            if (!result.success) {
                 deleteQuietly(tempFile);
-                severe("Download failed for '" + fileName + "' (id " + inventoryId + "). Token revoked/expired, or inventory not owned by this account.");
+                severe("Download failed for '" + fileName + "' (id " + inventoryId + "): " + describeDownloadFailure(result.code) + ".");
                 this.message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", fileName);
                 return;
             }
@@ -708,6 +708,31 @@ public class LiveSyncManager extends ZUtils {
     // Helpers
     // ------------------------------------------------------------------ //
 
+    /**
+     * Human-readable cause for a failed download, by final HTTP status (after the retry layer gave up),
+     * so the operator isn't always told "token revoked" when the real cause was a rate limit or a timeout.
+     *
+     * @param code The last HTTP status code, or -1 for a transport error (timeout / connection reset).
+     * @return A short explanation of the failure.
+     */
+    private String describeDownloadFailure(int code) {
+        if (code == 429) {
+            return "rate-limited by the website even after retries (HTTP 429) - too many inventories synced at once";
+        }
+        if (code == 401 || code == 403) {
+            return "unauthorized (HTTP " + code + ") - the link token was revoked/expired, or this inventory isn't owned by the linked account";
+        }
+        if (code == 404) {
+            return "not found (HTTP 404) - the inventory no longer exists on the website";
+        }
+        if (code == -1) {
+            return "could not reach the website after retries (timeout / connection error)";
+        }
+        if (code >= 500) {
+            return "website error (HTTP " + code + ") even after retries";
+        }
+        return "HTTP " + code;
+    }
 
     /**
      * Reloads the inventory manager on the main thread.
