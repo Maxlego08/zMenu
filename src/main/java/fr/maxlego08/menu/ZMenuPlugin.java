@@ -156,7 +156,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
-        this.websiteManager.onEnable();
 
         if (this.packetManager != null) {
             this.packetManager.onEnable();
@@ -166,7 +165,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.enchantments.register();
 
         this.preEnable();
-
 
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
@@ -262,6 +260,8 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) tokenFile.delete(); // Delete old token file
+
+        this.websiteManager.onEnable();
 
         new VersionChecker(this, 253).useLastVersion();
 
