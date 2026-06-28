@@ -15,9 +15,9 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
-import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -113,14 +113,16 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
             InventoryResult result = clonedInventory.preOpenInventory(this.plugin, player, page, objects);
             if (result == InventoryResult.SUCCESS) {
 
-                clonedInventory.postOpen(this.plugin, player, page, objects);
+                this.plugin.getScheduler().runAtEntity(player, wrappedTask -> {
+                    clonedInventory.postOpen(this.plugin, player, page, objects);
 
-                Inventory spigotInventory = clonedInventory.getSpigotInventory();
-                player.openInventory(spigotInventory);
+                    Inventory spigotInventory = clonedInventory.getSpigotInventory();
+                    player.openInventory(spigotInventory);
 
-                clonedInventory.onPostOpen(player, this.plugin, page, objects);
+                    clonedInventory.onPostOpen(player, this.plugin, page, objects);
 
-                this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPostOpen(player, clonedInventory));
+                    this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPostOpen(player, clonedInventory));
+                });
 
             } else if (result == InventoryResult.SUCCESS_ASYNC) {
 
