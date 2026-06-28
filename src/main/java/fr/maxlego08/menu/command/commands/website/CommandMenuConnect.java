@@ -18,7 +18,7 @@ public class CommandMenuConnect extends VCommand {
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
 
-        plugin.getWebsiteManager().getLiveSyncManager().connect(this.sender);
+        plugin.getWebsiteManager().connect(this.sender);
 
         return CommandType.SUCCESS;
     }

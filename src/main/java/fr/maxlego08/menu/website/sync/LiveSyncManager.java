@@ -32,7 +32,6 @@ import java.util.logging.Level;
 
 public class LiveSyncManager extends ZUtils {
 
-    static final String LOG_PREFIX = "[Live Sync] ";
     private static final String EVENT_SYNC = "inventory.sync";
     private static final long MAX_YAML_BYTES = 512L * 1024L;
     private static final long DEFAULT_PAIR_TTL_SECONDS = 600L;
@@ -502,23 +501,6 @@ public class LiveSyncManager extends ZUtils {
             this.unlink();
             warning("The stored link was cleared (token no longer valid). Run /zmenu login to re-link.");
         }
-    }
-
-    /**
-     * Disconnects the live sync.
-     *
-     * @param sender The player who requested the disconnection.
-     */
-    public void disconnect(CommandSender sender) {
-        boolean wasActive = this.connected || this.connecting || this.pairing;
-
-        this.pairing = false;
-        this.deviceCode = null;
-        this.shouldStayConnected = false;
-        this.closeSocket();
-
-        log("Live sync " + (wasActive ? "disconnected." : "was not active."));
-        this.message(this.plugin, sender, wasActive ? Message.WEBSITE_SYNC_DISCONNECTED : Message.WEBSITE_SYNC_NOT_CONNECTED);
     }
 
     /**

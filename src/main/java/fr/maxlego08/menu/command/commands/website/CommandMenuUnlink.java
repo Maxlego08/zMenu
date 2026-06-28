@@ -21,7 +21,7 @@ public class CommandMenuUnlink extends VCommand {
 
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
-        plugin.getWebsiteManager().getLiveSyncManager().forceUnlink(this.sender);
+        plugin.getWebsiteManager().forceUnlink(this.sender);
         return CommandType.SUCCESS;
     }
 }

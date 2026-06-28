@@ -202,3 +202,7 @@ enable-download-command: false
 # Time in seconds for clean the OfflinePlayer cache
 # OfflinePlayer is a variable that represents an offline player
 cache-offline-player: 300
+
+# API URL for inventory builder
+# Do not change this value, leave the default URL; otherwise the link with the site will not work
+api-url: "https://minecraft-inventory-builder.com/api/v2/"

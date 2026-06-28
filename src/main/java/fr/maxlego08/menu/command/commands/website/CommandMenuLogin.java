@@ -18,7 +18,7 @@ public class CommandMenuLogin extends VCommand {
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
 
-        plugin.getWebsiteManager().getLiveSyncManager().startDeviceFlow(this.sender);
+        plugin.getWebsiteManager().startDeviceFlow(this.sender);
         return CommandType.SUCCESS;
     }
 

@@ -25,8 +25,6 @@ public class CommandMenuWebsite extends VCommand {
         this.addSubCommand(new CommandMenuLogin(plugin));
         this.addSubCommand(new CommandMenuConnect(plugin));
         this.addSubCommand(new CommandMenuUnlink(plugin));
-        this.addSubCommand(new CommandMenuInventories(plugin));
-        // this.addSubCommand(new CommandMenuMarketplace(plugin));
     }
 
     @Override
