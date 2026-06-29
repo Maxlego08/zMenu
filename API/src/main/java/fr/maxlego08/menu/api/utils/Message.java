@@ -172,7 +172,7 @@ public enum Message implements IMessage {
     WEBSITE_DISCONNECT_ERROR("&cYou are not connected to the site."),
 
     WEBSITE_SYNC_PAIR_START("&7Linking your server, please wait..."),
-    WEBSITE_SYNC_PAIR_CODE("&aOpen &f%url%&a and enter the code &f&l%code%&a to authorize this server.", "&7Once approved, run &f/zmenu connect&7 to open the live link."),
+    WEBSITE_SYNC_PAIR_CODE("&aOpen &f<click:open_url:'%url%'>%url%</click>&a and enter the code &f&l<click:copy_to_clipboard:'%code%'>%code%</click>&a to authorize this server.", "&7Once approved, run &f/zmenu connect&7 to open the live link."),
     WEBSITE_SYNC_PAIR_PENDING("&7A pairing is already in progress, please wait."),
     WEBSITE_SYNC_PAIR_SUCCESS("&aServer linked successfully!"),
     WEBSITE_SYNC_PAIR_EXPIRED("&cThe pairing code expired or was already used. Run &f/zmenu login&c again."),

@@ -91,6 +91,10 @@ public class LiveSyncManager extends ZUtils {
         if (this.config == null) {
             this.config = new LiveSyncConfig();
         }
+
+        // On startup, make sure a stored link is still valid server-side; a revoked/expired token
+        // forces a local unlink so we never keep a dead link around.
+        this.validateStoredLink();
     }
 
     /**
@@ -324,27 +328,72 @@ public class LiveSyncManager extends ZUtils {
                 return;
             }
             if (code == 200) {
-                String wsUrl = (String) response.get("ws_url");
-                String connectionId = (String) response.get("connection_id");
-                boolean changed = false;
-                if (wsUrl != null && !wsUrl.isEmpty() && !wsUrl.equals(this.config.wsUrl)) {
-                    this.config.wsUrl = wsUrl;
-                    changed = true;
-                }
-                if (connectionId != null && !connectionId.equals(this.config.connectionId)) {
-                    this.config.connectionId = connectionId;
-                    changed = true;
-                }
-                if (changed) {
-                    this.config.save(this.plugin.getPersist());
-                    log("Live sync info updated (relay " + this.config.wsUrl + ").");
-                }
+                this.applyConnectionInfo(response);
             } else {
                 warning("Could not refresh live sync info (HTTP " + code + "); using the stored relay url.");
             }
             log("Opening live connection to " + this.config.wsUrl + " ...");
             onReady.run();
         });
+    }
+
+    /**
+     * On enable, confirm a stored link is still valid with the website. A revoked/expired token
+     * (HTTP 401/403) forces a local unlink so a dead link is never kept; any other outcome (200, or a
+     * transient error) leaves the stored credential untouched. Runs off the main thread via the HTTP
+     * client, so it never blocks server startup.
+     */
+    private void validateStoredLink() {
+        if (!this.isLinked()) {
+            return;
+        }
+
+        log("Verifying the stored website link is still valid...");
+
+        HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/connection", new JsonObject());
+        request.setBearer(this.config.token);
+        request.setMethod("GET");
+        request.submit(this.plugin, response -> {
+            int code = response.getCode();
+            // Only a genuine auth failure (401) clears the link unattended: the website returns 401 for a
+            // revoked/expired/inactive token. A 403 is kept here because at startup it is ambiguous - a
+            // reverse proxy / WAF / Cloudflare challenge in front of the API commonly answers a headless
+            // request with 403, and wiping a valid link on every restart would be worse than a stale one.
+            // The interactive /zmenu connect path (refreshConnectionInfo) still treats 403 as revocation.
+            if (code == 401) {
+                warning("The website reports this link is no longer valid (revoked/expired); clearing it. Run /zmenu login to re-link.");
+                this.unlink();
+                return;
+            }
+            if (code == 200) {
+                this.applyConnectionInfo(response);
+                success("Website link verified.");
+            } else {
+                warning("Could not verify the website link on startup (HTTP " + code + "); keeping the stored link.");
+            }
+        });
+    }
+
+    /**
+     * Apply the live-sync info from a successful /zmenu/connection response: refresh the stored relay
+     * url / connection id when the website hands back new values, and persist only if something changed.
+     */
+    private void applyConnectionInfo(fr.maxlego08.menu.website.request.Response response) {
+        String wsUrl = (String) response.get("ws_url");
+        String connectionId = (String) response.get("connection_id");
+        boolean changed = false;
+        if (wsUrl != null && !wsUrl.isEmpty() && !wsUrl.equals(this.config.wsUrl)) {
+            this.config.wsUrl = wsUrl;
+            changed = true;
+        }
+        if (connectionId != null && !connectionId.equals(this.config.connectionId)) {
+            this.config.connectionId = connectionId;
+            changed = true;
+        }
+        if (changed) {
+            this.config.save(this.plugin.getPersist());
+            log("Live sync info updated (relay " + this.config.wsUrl + ").");
+        }
     }
 
     /**
