@@ -42,6 +42,53 @@
 
 # Unreleased
 
+## New Features
+
+- Added **live sync** with the website (Minecraft Inventory Builder): link your server with `/zmenu login`
+  (no argument starts a secure device-authorization flow - approve the shown code on the website), open the
+  live link with `/zmenu connect`, and close it with `/zmenu disconnect`. Once connected, clicking
+  "Sync to Server" on the web builder reloads the inventory on your server live, with no restart.
+- Added permissions `zmenu.connect` and `zmenu.disconnect`.
+
+## Improvements
+
+- `/zmenu login <token>` still works as before (legacy token paste); running `/zmenu login` with no argument
+  now links the server for live sync.
+- Live sync now sends a stable, persistent `server_id` (stored in `live-sync.json`, kept across re-links) at
+  pairing time, so the website recognises the same server across re-pairings and never creates duplicate
+  linked-server entries.
+- Synced inventories are now written into a **subfolder** of `inventories/` mirroring the inventory's folder
+  on the website (e.g. `inventories/Shop/Weapons/menu.yml`). The subfolder path is taken from the sync
+  notification and sanitised (segments only, no `..`/absolute/backslash) before any file is written.
+- New command **`/zmenu unlink`** (perm `zmenu.unlink`): force-detach this server from the website - it
+  revokes the link on the site, and clears the local `live-sync.json` credential **even if** the site call
+  fails (so a down/unreachable website never leaves a stuck link).
+- `/zmenu connect` now first **verifies the link is still valid** with the website and **refreshes** the
+  stored relay url / connection id (so a changed `ZMENU_WS_URL` is picked up automatically); a revoked link
+  is detected and cleared up front.
+
+## Security
+
+- The live link is end-to-end safe: the WebSocket carries only `{inventory_id, file_name, hash}` - the YAML
+  is pulled over the authenticated HTTPS API and its SHA-256 hash is verified before being applied. The file
+  is written atomically with a `.bak` backup and rolled back on a parse/reload failure; all network I/O runs
+  off the main thread and the reload happens on the main thread. The scoped server token is stored in
+  `live-sync.json` and never printed.
+
+## Fixes
+
+- Fixed `/zmenu disconnect` using the wrong permission node (`zmenu.description` → `zmenu.disconnect`).
+- Live sync now **stays connected** after `/zmenu connect`: it auto-reconnects (with backoff) after a relay
+  idle-eviction, relay restart or network blip, until you run `/zmenu disconnect` or the token is revoked.
+  Previously the link could drop silently and "Sync to Server" on the website would report
+  "server not connected" even though the operator believed the server was still connected.
+- Fixed synced inventories failing to write on Windows (`the file is used by another process`): the
+  downloaded temp file's stream was still open when the atomic move ran. The stream is now closed before
+  the file is applied.
+- Fixed a same-named inventory in two different folders reloading the **wrong** file (zMenu indexes
+  inventories by bare name): the synced inventory is now resolved by its actual file path. Concurrent
+  syncs of same-named inventories also no longer share a temp file.
+
 # 1.1.1.5
 
 ## New Features
@@ -161,8 +208,8 @@
 - Fixed `openWithOldInventories` method crash on 1.20 by using `CompatibilityUtil.getTopInventory()` for safe inventory access.
 - Fixed trim pattern and material validation: now uses Bukkit `Registry` instead of the hardcoded `TrimHelper`, with proper error messages listing all available patterns/materials when a key is not found.
 - Fixed null `ItemFlag` entries causing errors when applying flags to item meta.
-- Fixed `EnchantmentGlintOverrideComponent` not handling `false` values correctly — previously only `true` was applied, now both `true` and `false` are respected.
-- Fixed click requirements defaulting to an empty click list when none are specified — now defaults to all click types.
+- Fixed `EnchantmentGlintOverrideComponent` not handling `false` values correctly - previously only `true` was applied, now both `true` and `false` are respected.
+- Fixed click requirements defaulting to an empty click list when none are specified - now defaults to all click types.
 - Fixed `AttributeWrapper` to support an optional `NamespacedKey` instead of always generating a random UUID, preventing attribute duplication on item rebuild.
 - Fixed database connection logger initialization order in `ZStorageManager`.
 - Fixed item loading from map (`loadItemStack`) to use `MenuItemStackLoader` instead of the removed `MenuItemStackFormMap` class.

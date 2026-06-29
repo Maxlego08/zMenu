@@ -15,6 +15,9 @@ public enum Permission {
 	ZMENU_CREATE,
     ZMENU_DOWNLOAD,
     ZMENU_LOGIN,
+    ZMENU_CONNECT,
+    ZMENU_DISCONNECT,
+    ZMENU_UNLINK,
     ZMENU_MARKETPLACE,
     ZMENU_INVENTORIES,
     ZMENU_DESCRIPTION,
@@ -30,7 +33,7 @@ public enum Permission {
     ZMENU_VERSION,
 
     ZMENU_ADDONS,
-    ZMENU_DOCUMENTATION;
+    ZMENU_DOCUMENTATION, ZMENU_WEBSITE;
 
 	private final String permission;
 

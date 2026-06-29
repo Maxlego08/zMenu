@@ -69,11 +69,11 @@ button:                   # Everything under here is copied into the final inven
 #         name: "Factory"
 #         key: "factory"
 #         price: 20
-# • You can add your own variables—anything wrapped in %…% becomes
+# • You can add your own variables-anything wrapped in %…% becomes
 #   editable from the inventory.
 # • `%zmenu_player_value_<key>%` pulls the player’s saved data,
 #   letting the button react to personal stats (levels, points…).
 # • `math: true` lets you write real formulas ( +  –  *  /  ^ ).
 #
 # Tip: remember to keep **name**, **type**, and **button** at the
-# root level of every pattern file—zMenu uses them to load it!
+# root level of every pattern file-zMenu uses them to load it!

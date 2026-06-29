@@ -34,7 +34,7 @@ public class PacketQueue<T extends Packet<?>> {
     // Queue access
     // ──────────────────────────────────────────────────────────────
 
-    /** Raw queue — hand this to MenuPacketListener if needed. */
+    /** Raw queue - hand this to MenuPacketListener if needed. */
     public Queue<T> queue() {
         return queue;
     }
@@ -48,7 +48,7 @@ public class PacketQueue<T extends Packet<?>> {
      * <p>
      * If {@code discard} is enabled the packet is silently dropped.
      * If {@code directDispatch} is enabled the handler fires immediately
-     * on the Netty thread — only safe for thread-safe, Bukkit-API-free handlers.
+     * on the Netty thread - only safe for thread-safe, Bukkit-API-free handlers.
      * Otherwise the packet is queued for later {@link #dispatch()} on the main thread.
      */
     public void offer(T packet) {
@@ -98,7 +98,7 @@ public class PacketQueue<T extends Packet<?>> {
 
     /**
      * Schedules a repeating task that calls {@link #dispatch()} every tick.
-     * The queue owns the task lifecycle — call {@link #cancel()} to stop it.
+     * The queue owns the task lifecycle - call {@link #cancel()} to stop it.
      * <p>
      * Accepts a scheduler function to keep PacketQueue decoupled from FoliaLib:
      * <pre>{@code
@@ -139,7 +139,7 @@ public class PacketQueue<T extends Packet<?>> {
     // ──────────────────────────────────────────────────────────────
 
     /**
-     * Silently discards every packet — useful to block a packet type
+     * Silently discards every packet - useful to block a packet type
      * without processing it.
      */
     public static <T extends Packet<?>> PacketQueue<T> empty() {
@@ -224,7 +224,7 @@ public class PacketQueue<T extends Packet<?>> {
         }
 
         /**
-         * Catch-all — fires for any packet whose class has no specific handler.
+         * Catch-all - fires for any packet whose class has no specific handler.
          */
         public Builder<T> orElse(Consumer<? super T> fallback) {
             this.fallback = fallback;

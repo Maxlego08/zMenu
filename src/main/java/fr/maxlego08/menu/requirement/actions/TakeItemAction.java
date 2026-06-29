@@ -39,7 +39,7 @@ public class TakeItemAction extends Action {
         ItemStack targetItem = this.menuItemStack.build(player, this.useCache, placeholders);
 
         if (targetItem == null) {
-            debugLog("Build failed — target item is null | player=%s", player.getName());
+            debugLog("Build failed - target item is null | player=%s", player.getName());
             return;
         }
 

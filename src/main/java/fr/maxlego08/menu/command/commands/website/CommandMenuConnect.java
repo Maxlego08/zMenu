@@ -6,20 +6,20 @@ import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.zcore.utils.commands.CommandType;
 
-public class CommandMenuInventories extends VCommand {
+public class CommandMenuConnect extends VCommand {
 
-    public CommandMenuInventories(ZMenuPlugin plugin) {
+    public CommandMenuConnect(ZMenuPlugin plugin) {
         super(plugin);
-        this.setDescription(Message.DESCRIPTION_INVENTORIES);
-        this.addSubCommand("inventories");
-        this.setPermission(Permission.ZMENU_INVENTORIES);
-        this.setConsoleCanUse(false);
+        this.setDescription(Message.DESCRIPTION_CONNECT);
+        this.addSubCommand("connect", "sync");
+        this.setPermission(Permission.ZMENU_CONNECT);
     }
 
     @Override
     protected CommandType perform(ZMenuPlugin plugin) {
 
-        plugin.getWebsiteManager().fetchInventories(this.player);
+        plugin.getWebsiteManager().connect(this.sender);
+
         return CommandType.SUCCESS;
     }
 

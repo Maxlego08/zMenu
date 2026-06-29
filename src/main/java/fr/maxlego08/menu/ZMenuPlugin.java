@@ -61,7 +61,6 @@ import fr.maxlego08.menu.players.inventory.ZInventoriesPlayer;
 import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
-import fr.maxlego08.menu.website.Token;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
 import fr.maxlego08.menu.zcore.LegacyItemStackPlatformHelper;
@@ -109,7 +108,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final CommandManager commandManager = new ZCommandManager(this);
     private final MessageLoader messageLoader = new MessageLoader(this);
     private final DataManager dataManager = new ZDataManager(this);
-    private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
     private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
     private final PatternManager patternManager = new ZPatternManager(this);
     private final Enchantments enchantments = new ZEnchantments();
@@ -120,10 +118,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private final ToastHelper toastHelper = new ToastManager(this);
     private final AttributApplier attributApplier = new ApplySpigotAttribute();
     private final File configFile = new File(this.getDataFolder(), "config.yml");
+    private final PlatformScheduler scheduler = this.foliaLib.getScheduler();
+    private WebsiteManager websiteManager;
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
-    private final PlatformScheduler scheduler = this.foliaLib.getScheduler();
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater = new ClassicMeta();
@@ -156,6 +155,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
+        this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
         if (this.packetManager != null) {
             this.packetManager.onEnable();
@@ -165,7 +165,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.enchantments.register();
 
         this.preEnable();
-
 
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
@@ -218,7 +217,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             }
         }
 
-        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)) {
             Logger.info("Geyser or Floodgate detected, loading Bedrock Inventory support");
             this.bedrockManager = new ZBedrockManager(this);
             this.addListener(new BedrockReplacementListener(this.bedrockManager));
@@ -252,7 +251,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             return optional.orElse(null);
         });
 
-        this.websiteManager.registerPlaceholders();
         new MenuPlaceholders().register(this);
         new ItemPlaceholders().register(this);
 
@@ -261,9 +259,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         new Metrics(this, 14951);
 
         File tokenFile = new File(this.getDataFolder(), "token.json");
-        if (tokenFile.exists()) {
-            Token.getInstance().load(this.getPersist());
+        if (tokenFile.exists()) tokenFile.delete(); // Delete old token file
+
+        if (getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
+            this.websiteManager.onEnable();
         }
+
 
         new VersionChecker(this, 253).useLastVersion();
 
@@ -275,33 +276,26 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         if (!this.isActive(Plugins.ZMENUPLUS)) {
             Logger.info("");
-            Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/account-upgrade");
-            Logger.info("zMenu’s site includes an inventory editor (under development), a marketplace (already available) is a forum (under development)");
+            Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/pricing");
+            // Logger.info("zMenu’s site includes an inventory editor, a marketplace an a surprise (soon)");
             Logger.info("");
         }
 
 
-        this.websiteManager.loadPlaceholders();
         this.dataManager.loadDefaultValues();
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
-        if (this.isActive(Plugins.PACKETEVENTS))
-            this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
+        if (this.isActive(Plugins.PACKETEVENTS)) this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
 
         this.postEnable();
     }
 
     private void registerAutoListeners() {
-        ClassRegistry<Listener, MenuPlugin> registry = ClassRegistry
-                .<Listener, MenuPlugin>of(Listener.class, this::addListener)
-                .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
-                .tryNoArgsConstructor()
-                .errorLogger(Logger::error);
+        ClassRegistry<Listener, MenuPlugin> registry = ClassRegistry.<Listener, MenuPlugin>of(Listener.class, this::addListener).tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin)).tryNoArgsConstructor().errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoListener.class, registry);
 
-        if (Configuration.enableInformationMessage)
-            Logger.info("Registered " + count + " auto listener(s).");
+        if (Configuration.enableInformationMessage) Logger.info("Registered " + count + " auto listener(s).");
     }
 
     /**
@@ -331,16 +325,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     }
 
     private void registerMaterialLoaders() {
-        ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry
-                .<MaterialLoader, MenuPlugin>of(MaterialLoader.class, this.inventoryManager::registerMaterialLoader)
-                .tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin))
-                .tryNoArgsConstructor()
-                .errorLogger(Logger::error);
+        ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry.<MaterialLoader, MenuPlugin>of(MaterialLoader.class, this.inventoryManager::registerMaterialLoader).tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin)).tryNoArgsConstructor().errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoMaterialLoader.class, registry);
 
-        if (Configuration.enableInformationMessage)
-            Logger.info("Registered " + count + " auto material loader(s).");
+        if (Configuration.enableInformationMessage) Logger.info("Registered " + count + " auto material loader(s).");
     }
 
     private List<String> getInventoriesFiles() {
@@ -371,7 +360,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/server_link-dialog.yml");
         }
 
-        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)){
+        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)) {
             files.add("bedrock/custom-form.yml");
             files.add("bedrock/modal-form.yml");
             files.add("bedrock/simple-form.yml");
@@ -398,9 +387,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         YamlFileCache.clearCache();
 
-        if (Token.token != null) {
-            Token.getInstance().save(this.getPersist());
-        }
+        this.websiteManager.onDisable();
 
         this.itemManager.unloadListeners();
 
@@ -481,7 +468,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * @return the BedrockManager
      */
     @Override
-    public BedrockManager getBedrockManager() {return this.bedrockManager;}
+    public BedrockManager getBedrockManager() {
+        return this.bedrockManager;
+    }
 
     @Override
     public String[] getClickRequirementKeys() {
@@ -531,9 +520,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     /**
      * Returns the class that will manage the website
      *
-     * @return the websitemanager
+     * @return the websiteManager
      */
-    public ZWebsiteManager getWebsiteManager() {
+    public WebsiteManager getWebsiteManager() {
         return this.websiteManager;
     }
 
