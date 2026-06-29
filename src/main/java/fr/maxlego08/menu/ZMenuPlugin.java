@@ -261,7 +261,10 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) tokenFile.delete(); // Delete old token file
 
-        this.websiteManager.onEnable();
+        if (getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
+            this.websiteManager.onEnable();
+        }
+
 
         new VersionChecker(this, 253).useLastVersion();
 

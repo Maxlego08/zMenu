@@ -33,7 +33,10 @@ public class CommandMenu extends VCommand {
         this.addSubCommand(new CommandDumplog(plugin));
         this.addSubCommand(new CommandContributors(plugin));
         this.addSubCommand(new CommandMenuGiveItem(plugin));
-        this.addSubCommand(new CommandMenuWebsite(plugin));
+
+        if (plugin.getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
+            this.addSubCommand(new CommandMenuWebsite(plugin));
+        }
 
         if (plugin.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat) {
             this.addSubCommand(new CommandDialog(plugin));
