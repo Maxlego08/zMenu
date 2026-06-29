@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.api.utils.version;
 
 import fr.maxlego08.menu.api.annotations.*;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.ReflectionsCache;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -79,7 +81,14 @@ public class VersionFilter {
         for (Class<?> clazz : reflection.getTypesAnnotatedWith(annotation)) {
             if (!registry.getExpectedType().isAssignableFrom(clazz)) continue;
             if (!passes(clazz)) continue;
-            if (registry.load(plugin, clazz)) count++;
+            try {
+                if (registry.load(plugin, clazz)) count++;
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.error("Failed to load class " + clazz.getName() + " for plugin " + plugin.getName() + " with annotation " + annotation.getSimpleName() + " due to: " + e.getMessage() + ". Please check reporte this error to the plugin developer (" + plugin.getDescription().getAuthors() + ")");
+                    e.printStackTrace();
+                }
+            }
         }
 
         return count;
