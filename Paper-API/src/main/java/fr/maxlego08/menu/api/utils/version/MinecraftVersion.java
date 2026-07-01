@@ -7,9 +7,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 public final class MinecraftVersion implements Comparable<MinecraftVersion> {
     private static final Map<String, MinecraftVersion> PARSE_CACHE = new ConcurrentHashMap<>();
+    private static final Pattern NUMERIC = Pattern.compile("\\d+");
 
     private static MinecraftVersion currentVersion;
 
@@ -38,15 +40,27 @@ public final class MinecraftVersion implements Comparable<MinecraftVersion> {
         return PARSE_CACHE.computeIfAbsent(rawVersion, raw -> {
             String clean = raw.contains("-") ? raw.substring(0, raw.indexOf('-')) : raw;
             String[] parts = clean.split("\\.");
-            try {
-                int major = parts.length > 0 ? Integer.parseInt(parts[0]) : 0;
-                int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
-                int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
-                return new MinecraftVersion(major, minor, patch);
-            } catch (NumberFormatException e) {
-                Logger.info("Could not parse Minecraft value '" + raw + "'. Version-gated classes will be skipped. (" + e.getMessage() + ")", Logger.LogType.WARNING);
-                return new MinecraftVersion(0, 0, 0);
+
+            int[] numbers = new int[3];
+            int index = 0;
+
+            for (String part : parts) {
+                if (index >= 3) break;
+                if (!NUMERIC.matcher(part).matches()) {
+                    continue;
+                }
+                try {
+                    numbers[index++] = Integer.parseInt(part);
+                } catch (NumberFormatException e) {
+                    Logger.info("Could not parse numeric segment '" + part + "' in Minecraft value '" + raw + "'. (" + e.getMessage() + ")", Logger.LogType.WARNING);
+                }
             }
+
+            if (index == 0) {
+                Logger.info("Could not parse Minecraft value '" + raw + "'. Version-gated classes will be skipped.", Logger.LogType.WARNING);
+            }
+
+            return new MinecraftVersion(numbers[0], numbers[1], numbers[2]);
         });
     }
 
