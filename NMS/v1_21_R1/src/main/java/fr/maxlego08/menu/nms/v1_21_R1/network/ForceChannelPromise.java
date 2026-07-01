@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.common.network;
+package fr.maxlego08.menu.nms.v1_21_R1.network;
 
 import io.netty.channel.Channel;
 import io.netty.channel.DefaultChannelPromise;

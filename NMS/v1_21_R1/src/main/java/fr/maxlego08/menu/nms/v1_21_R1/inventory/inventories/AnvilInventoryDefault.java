@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.inventory.inventories;
+package fr.maxlego08.menu.nms.v1_21_R1.inventory.inventories;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
@@ -9,9 +9,10 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.api.utils.TextChangeType;
-import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
-import fr.maxlego08.menu.common.network.PacketQueue;
 import fr.maxlego08.menu.inventory.VInventory;
+import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.nms.v1_21_R1.network.NMSMenuPacketListener;
+import fr.maxlego08.menu.nms.v1_21_R1.network.PacketQueue;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;

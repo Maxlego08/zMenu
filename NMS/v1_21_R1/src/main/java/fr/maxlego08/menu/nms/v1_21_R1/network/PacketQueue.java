@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.common.network;
+package fr.maxlego08.menu.nms.v1_21_R1.network;
 
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.MenuPlugin;
