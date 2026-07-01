@@ -45,7 +45,7 @@ public abstract class ZUtils extends MessageUtils {
     private static Material[] byId;
 
     static {
-        if (!MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
+        if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
             byId = new Material[0];
             for (Material material : Material.values()) {
                 if (byId.length <= material.getId()) {
