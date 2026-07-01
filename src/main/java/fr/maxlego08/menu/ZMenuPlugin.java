@@ -100,37 +100,58 @@ import java.util.*;
  * @author Maxlego08
  */
 public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
-
     private static ZMenuPlugin instance;
-    private final StorageManager storageManager = new ZStorageManager(this);
-    private final ButtonManager buttonManager = new ZButtonManager(this);
-    private final InventoryManager inventoryManager = new ZInventoryManager(this);
-    private final TitleAnimationManager titleAnimationManager = new ZTitleAnimationManager();
-    private final CommandManager commandManager = new ZCommandManager(this);
-    private final MessageLoader messageLoader = new MessageLoader(this);
-    private final DataManager dataManager = new ZDataManager(this);
-    private final ZWebsiteManager websiteManager = new ZWebsiteManager(this);
-    private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
-    private final PatternManager patternManager = new ZPatternManager(this);
-    private final Enchantments enchantments = new ZEnchantments();
-    private final ItemManager itemManager = new ZItemManager(this);
-    private final FoliaLib foliaLib = new FoliaLib(this);
-    private final ComponentsManager componentsManager = new ZComponentsManager();
+
+    private final StorageManager storageManager;
+    private final ButtonManager buttonManager;
+    private final InventoryManager inventoryManager;
+    private final TitleAnimationManager titleAnimationManager;
+    private final CommandManager commandManager;
+    private final MessageLoader messageLoader;
+    private final DataManager dataManager;
+    private final ZWebsiteManager websiteManager;
+    private final InventoriesPlayer inventoriesPlayer;
+    private final PatternManager patternManager;
+    private final Enchantments enchantments;
+    private final ItemManager itemManager;
+    private final FoliaLib foliaLib;
+    private final ComponentsManager componentsManager;
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
-    private final ToastHelper toastHelper = new ToastManager(this);
-    private final AttributApplier attributApplier = new ApplySpigotAttribute();
-    private final File configFile = new File(this.getDataFolder(), "config.yml");
+    private final ToastHelper toastHelper;
+    private final AttributApplier attributApplier;
+    private final File configFile;
+    private final PlatformScheduler scheduler;
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
-    private final PlatformScheduler scheduler = this.foliaLib.getScheduler();
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
-    private MetaUpdater metaUpdater = new ClassicMeta();
+    private MetaUpdater metaUpdater;
     private PacketManager packetManager;
 
     public ZMenuPlugin() {
         new BukkitLogger(this.getDescription().getFullName());
+
+        this.metaUpdater = new ClassicMeta();
+
+        this.storageManager = new ZStorageManager(this);
+        this.buttonManager = new ZButtonManager(this);
+        this.inventoryManager = new ZInventoryManager(this);
+        this.titleAnimationManager = new ZTitleAnimationManager();
+        this.commandManager = new ZCommandManager(this);
+        this.messageLoader = new MessageLoader(this);
+        this.dataManager = new ZDataManager(this);
+        this.websiteManager = new ZWebsiteManager(this);
+        this.inventoriesPlayer = new ZInventoriesPlayer(this);
+        this.patternManager = new ZPatternManager(this);
+        this.enchantments = new ZEnchantments();
+        this.itemManager = new ZItemManager(this);
+        this.foliaLib = new FoliaLib(this);
+        this.componentsManager = new ZComponentsManager();
+        this.toastHelper = new ToastManager(this);
+        this.attributApplier = new ApplySpigotAttribute();
+        this.configFile = new File(this.getDataFolder(), "config.yml");
+        this.scheduler = this.foliaLib.getScheduler();
     }
 
     public static ZMenuPlugin getInstance() {
@@ -154,6 +175,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
         instance = this;
 
+        this.loadMeta();
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
 
@@ -173,7 +195,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
-        this.loadMeta();
 
         ZRuleLoaderRegistry.getInstance().registerDefaultLoaders(this);
         this.componentsManager.initializeDefaultComponents(this);
