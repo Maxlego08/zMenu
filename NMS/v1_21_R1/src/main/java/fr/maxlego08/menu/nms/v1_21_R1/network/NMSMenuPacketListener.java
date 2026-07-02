@@ -1,10 +1,8 @@
 package fr.maxlego08.menu.nms.v1_21_R1.network;
 
 import fr.maxlego08.menu.api.MenuPlugin;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
+import fr.maxlego08.menu.zcore.logger.Logger;
+import io.netty.channel.*;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
@@ -142,10 +140,34 @@ public class NMSMenuPacketListener implements Listener {
 
     private void inject(Player player) {
         if (this.handlers.containsKey(player.getUniqueId())) return;
-        Channel channel = ((CraftPlayer) player).getHandle().connection.connection.channel;
-        MenuPacketHandler h = new MenuPacketHandler(channel);
-        this.handlers.put(player.getUniqueId(), h);
-        channel.pipeline().addBefore(MC_HANDLER, MENU_HANDLER, h);
+        try {
+            Channel channel = ((CraftPlayer) player).getHandle().connection.connection.channel;
+            MenuPacketHandler handler = new MenuPacketHandler(channel);
+
+            ChannelPipeline pipeline = channel.pipeline();
+
+            if (pipeline.get(MENU_HANDLER) != null)
+                return;
+
+            if (pipeline.get(MC_HANDLER) != null) {
+                pipeline.addBefore(MC_HANDLER, MENU_HANDLER, handler);
+                this.handlers.put(player.getUniqueId(), handler);
+                return;
+            }
+
+            for (String name : pipeline.names()) {
+                if (pipeline.get(name) instanceof ChannelDuplexHandler) {
+                    pipeline.addAfter(name, MENU_HANDLER, handler);
+                    this.handlers.put(player.getUniqueId(), handler);
+                    return;
+                }
+            }
+
+            pipeline.addLast(MENU_HANDLER, handler);
+            this.handlers.put(player.getUniqueId(), handler);
+        } catch (Exception exception) {
+            Logger.info("Failed to inject packet handler for player " + player.getName() + ": " + exception.getMessage(), Logger.LogType.WARNING);
+        }
     }
 
     private void eject(Player player) {
