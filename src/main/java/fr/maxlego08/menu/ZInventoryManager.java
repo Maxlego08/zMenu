@@ -433,8 +433,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
-        this.plugin.getWebsiteManager().loadButtons(buttonManager);
-
         var commandManager = this.plugin.getCommandManager();
         // MaterialArgumentValidator
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
@@ -500,8 +498,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         }
-
-        this.plugin.getWebsiteManager().loadInventories(this);
     }
 
     @Override
