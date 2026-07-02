@@ -35,10 +35,10 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
             var configOption = entry.configOption();
             String key = configOption.key().isEmpty() ? field.getName() : configOption.key();
             DialogInput input = switch (entry.resolvedType()) {
-                case BOOLEAN -> this.buildBooleanInput(key, field, configOption, componentMeta);
-                case NUMBER_RANGE -> this.buildNumberRangeInput(key, field, configOption, componentMeta);
-                case TEXT -> this.buildTextInput(key, field, configOption, componentMeta);
-                case SINGLE_OPTION -> this.buildSingleOptionInput(key, field, configOption, componentMeta);
+                case BOOLEAN -> this.buildBooleanInput(key, entry, componentMeta);
+                case NUMBER_RANGE -> this.buildNumberRangeInput(key, entry, componentMeta);
+                case TEXT -> this.buildTextInput(key, entry, componentMeta);
+                case SINGLE_OPTION -> this.buildSingleOptionInput(key, entry, componentMeta);
             };
             if (input != null) {
                 inputs.add(input);
@@ -47,10 +47,12 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
         return inputs;
     }
 
-    private DialogInput buildBooleanInput(String key, Field field, fr.maxlego08.menu.api.configuration.annotation.ConfigOption configOption, PaperMetaUpdater componentMeta) {
+    private DialogInput buildBooleanInput(String key, ConfigFieldContext.ConfigFieldEntry entry, PaperMetaUpdater componentMeta) {
+        var configOption = entry.configOption();
         boolean initialValue;
         try {
-            initialValue = field.getBoolean(null);
+            Object val = entry.processor() != null ? entry.processor().getDisplayValue(entry.field()) : entry.field().get(null);
+            initialValue = val instanceof Boolean b ? b : false;
         } catch (IllegalAccessException e) {
             initialValue = false;
         }
@@ -63,12 +65,26 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
         );
     }
 
-    private DialogInput buildNumberRangeInput(String key, Field field, fr.maxlego08.menu.api.configuration.annotation.ConfigOption configOption, PaperMetaUpdater componentMeta) {
+    private DialogInput buildNumberRangeInput(String key, ConfigFieldContext.ConfigFieldEntry entry, PaperMetaUpdater componentMeta) {
+        var configOption = entry.configOption();
         float initialValue;
         try {
-            initialValue = field.getFloat(null);
+            Object val = entry.processor() != null ? entry.processor().getDisplayValue(entry.field()) : entry.field().get(null);
+            initialValue = val instanceof Number n ? n.floatValue() : (configOption.startRange() + configOption.endRange()) / 2;
         } catch (IllegalAccessException e) {
             initialValue = (configOption.startRange() + configOption.endRange()) / 2;
+        }
+        float min = configOption.startRange();
+        float max = configOption.endRange();
+        if (min > max) {
+            float temp = min;
+            min = max;
+            max = temp;
+        }
+        if (initialValue < min) {
+            initialValue = min;
+        } else if (initialValue > max) {
+            initialValue = max;
         }
         return DialogInput.numberRange(
                 key,
@@ -82,28 +98,30 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
         );
     }
 
-    private DialogInput buildTextInput(String key, Field field, fr.maxlego08.menu.api.configuration.annotation.ConfigOption configOption, PaperMetaUpdater componentMeta) {
+    private DialogInput buildTextInput(String key, ConfigFieldContext.ConfigFieldEntry entry, PaperMetaUpdater componentMeta) {
+        var configOption = entry.configOption();
         String defaultText;
         try {
-            defaultText = (String) field.get(null);
+            Object val = entry.processor() != null ? entry.processor().getDisplayValue(entry.field()) : entry.field().get(null);
+            defaultText = val != null ? val.toString() : "";
         } catch (IllegalAccessException e) {
             defaultText = "";
         }
-        if (defaultText == null) {
-            defaultText = "";
-        }
+        int maxLength = configOption.maxLength() < 0 ? Integer.MAX_VALUE : configOption.maxLength();
         return DialogInput.text(
                 key,
                 configOption.width(),
                 componentMeta.getComponent(configOption.label()),
                 configOption.labelVisible(),
                 defaultText,
-                configOption.maxLength(),
+                maxLength,
                 null
         );
     }
 
-    private DialogInput buildSingleOptionInput(String key, Field field, fr.maxlego08.menu.api.configuration.annotation.ConfigOption configOption, PaperMetaUpdater componentMeta) {
+    private DialogInput buildSingleOptionInput(String key, ConfigFieldContext.ConfigFieldEntry entry, PaperMetaUpdater componentMeta) {
+        Field field = entry.field();
+        var configOption = entry.configOption();
         Class<?> fieldType = field.getType();
         if (!fieldType.isEnum()) {
             return null;
@@ -114,8 +132,8 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
         }
         String currentValue;
         try {
-            Enum<?> current = (Enum<?>) field.get(null);
-            currentValue = current != null ? current.name() : "";
+            Object val = entry.processor() != null ? entry.processor().getDisplayValue(field) : field.get(null);
+            currentValue = val instanceof Enum<?> e ? e.name() : (val != null ? val.toString() : "");
         } catch (IllegalAccessException e) {
             currentValue = "";
         }

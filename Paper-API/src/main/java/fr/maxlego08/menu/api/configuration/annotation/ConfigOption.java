@@ -22,7 +22,7 @@ public @interface ConfigOption {
     boolean labelVisible() default true;
 
     // For text type
-    int maxLength() default 32;
+    int maxLength() default -1;
     int multilineMaxLines() default 0;
     int multilineHeight() default 0;
 

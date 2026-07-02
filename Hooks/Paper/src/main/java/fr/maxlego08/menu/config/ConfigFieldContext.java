@@ -15,14 +15,14 @@ public class ConfigFieldContext {
     private final Map<String, Consumer<Object>> consumers = new LinkedHashMap<>();
     private Consumer<Boolean> updateConsumer;
 
-    public record ConfigFieldEntry(Field field, ConfigOption configOption, DialogInputType resolvedType) {
+    public record ConfigFieldEntry(Field field, ConfigOption configOption, DialogInputType resolvedType, fr.maxlego08.menu.api.configuration.ConfigFieldProcessor processor) {
     }
 
-    public void register(String key, Field field, ConfigOption configOption, DialogInputType resolvedType) {
+    public void register(String key, Field field, ConfigOption configOption, DialogInputType resolvedType, fr.maxlego08.menu.api.configuration.ConfigFieldProcessor processor) {
         if (this.entries.containsKey(key)) {
             throw new IllegalArgumentException("Duplicate config key: '" + key + "' in field " + field.getName());
         }
-        this.entries.put(key, new ConfigFieldEntry(field, configOption, resolvedType));
+        this.entries.put(key, new ConfigFieldEntry(field, configOption, resolvedType, processor));
     }
 
     public void registerConsumer(String key, Consumer<Object> consumer) {

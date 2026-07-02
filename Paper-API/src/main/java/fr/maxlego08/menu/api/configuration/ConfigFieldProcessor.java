@@ -37,4 +37,15 @@ public interface ConfigFieldProcessor {
      * @throws IllegalAccessException If the field cannot be set.
      */
     void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException;
+
+    /**
+     * Gets the display value of the field for the dialog input.
+     *
+     * @param field The field.
+     * @return The formatted/display value.
+     * @throws IllegalAccessException If the field value cannot be read.
+     */
+    default Object getDisplayValue(@NotNull Field field) throws IllegalAccessException {
+        return field.get(null);
+    }
 }

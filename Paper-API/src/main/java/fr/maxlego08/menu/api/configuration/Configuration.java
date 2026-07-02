@@ -126,6 +126,10 @@ public class Configuration {
     public static int secondsSavePlayerInventories = 600;
 
     // Default menu name
+    @ConfigOption(
+            type = DialogInputType.TEXT,
+            label = "Default menu name"
+    )
     public static String mainMenu = "example";
 
     // Open main menu when swap item offhand key is press
@@ -147,6 +151,10 @@ public class Configuration {
     public static boolean useSwapItemOffHandKeyToOpenMainMenuNeedsShift = false;
 
     // Load specific inventories
+    @ConfigOption(
+            type = DialogInputType.TEXT,
+            label = "Specify path menus (comma separated)"
+    )
     public static List<String> specifyPathMenus = new ArrayList<>();
 
     // Generate default configuration
@@ -196,6 +204,10 @@ public class Configuration {
     )
     public static String antiDupeMessage = "**%player%** use %amount% %itemname% which comes from zMenu. Removing it !";
 
+    @ConfigOption(
+            type = DialogInputType.TEXT,
+            label = "All click types (comma separated)"
+    )
     public static List<ClickType> allClicksType = Arrays.asList(ClickType.MIDDLE, ClickType.RIGHT, ClickType.LEFT, ClickType.SHIFT_RIGHT, ClickType.SHIFT_LEFT);
     // Enable cache itemstack in memory
     @ConfigOption(
@@ -276,6 +288,10 @@ public class Configuration {
     )
     public static long packetEventClickLimiterMilliseconds = 50L;
 
+    @ConfigOption(
+            type = DialogInputType.SINGLE_OPTION,
+            label = "OP grant method"
+    )
     public static OpGrantMethod opGrantMethod = OpGrantMethod.ATTACHMENT;
 
     @ConfigOption(
@@ -296,12 +312,36 @@ public class Configuration {
     )
     public static boolean enablePerformanceDebug = false;
 
+    @ConfigOption(
+            type = DialogInputType.TEXT,
+            label = "Skip close actions on inventory switch (comma separated)"
+    )
     public static List<String> skipCloseActionsOnInventorySwitch = Arrays.asList("inventory", "inv", "back");
 
+    @ConfigOption(
+            type = DialogInputType.TEXT,
+            label = "Allowed downloadable websites (comma separated)"
+    )
     public static List<String> allowedDownloadableWebsite = new ArrayList<>(List.of("minecraft-inventory-builder.com"));
 
+    @ConfigOption(
+            type = DialogInputType.SINGLE_OPTION,
+            label = "Performance debug filter mode"
+    )
     public static PerformanceFilterMode performanceFilterMode = PerformanceFilterMode.DISABLED;
+
+    @ConfigOption(
+            type = DialogInputType.TEXT,
+            label = "Performance filter operations (comma separated)"
+    )
     public static List<String> performanceFilterOperations = new ArrayList<>();
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Performance threshold milliseconds",
+            endRange = 1000,
+            stepRange = 1
+    )
     public static long performanceThresholdMs = 10;
 
     @ConfigUpdate

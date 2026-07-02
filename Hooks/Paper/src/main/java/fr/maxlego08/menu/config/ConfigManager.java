@@ -42,6 +42,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         this.processors.add(new DefaultBooleanProcessor());
         this.processors.add(new DefaultNumberProcessor());
         this.processors.add(new DefaultEnumProcessor());
+        this.processors.add(new DefaultListProcessor());
         this.processors.add(new DefaultTextProcessor());
     }
 
@@ -130,8 +131,6 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
             key = field.getName();
         }
 
-        context.register(key, field, configOption, resolvedType);
-
         ConfigFieldProcessor matchedProcessor = null;
         for (ConfigFieldProcessor processor : this.processors) {
             if (processor.canProcess(field, configOption)) {
@@ -139,6 +138,8 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
                 break;
             }
         }
+
+        context.register(key, field, configOption, resolvedType, matchedProcessor);
 
         final ConfigFieldProcessor finalProcessor = matchedProcessor;
         Consumer<Object> consumer = value -> {
@@ -323,6 +324,95 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
                 }
                 Logger.info("No enum constant found for value '" + strValue + "' in " + type.getSimpleName(), Logger.LogType.WARNING);
             }
+        }
+    }
+
+    private static class DefaultListProcessor implements ConfigFieldProcessor {
+        @Override
+        public boolean canProcess(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return field.getType() == List.class;
+        }
+
+        @Override
+        public @NotNull DialogInputType resolveInputType(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return DialogInputType.TEXT;
+        }
+
+        @Override
+        public Object getDisplayValue(@NotNull Field field) throws IllegalAccessException {
+            List<?> list = (List<?>) field.get(null);
+            if (list == null || list.isEmpty()) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < list.size(); i++) {
+                if (i > 0) {
+                    sb.append(", ");
+                }
+                Object item = list.get(i);
+                if (item instanceof Enum<?> e) {
+                    sb.append(e.name());
+                } else if (item != null) {
+                    sb.append(item);
+                }
+            }
+            return sb.toString();
+        }
+
+        @Override
+        public void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException {
+            if (!(value instanceof String str)) {
+                return;
+            }
+            Class<?> genericType = String.class; // default
+            if (field.getGenericType() instanceof java.lang.reflect.ParameterizedType pt) {
+                java.lang.reflect.Type[] actualTypeArguments = pt.getActualTypeArguments();
+                if (actualTypeArguments.length > 0 && actualTypeArguments[0] instanceof Class<?> c) {
+                    genericType = c;
+                }
+            }
+
+            String[] split = str.split(",");
+            List<Object> parsedList = new ArrayList<>();
+            for (String part : split) {
+                part = part.trim();
+                if (part.isEmpty()) {
+                    continue;
+                }
+                try {
+                    if (genericType == String.class) {
+                        parsedList.add(part);
+                    } else if (genericType == Integer.class || genericType == int.class) {
+                        parsedList.add(Integer.parseInt(part));
+                    } else if (genericType == Long.class || genericType == long.class) {
+                        parsedList.add(Long.parseLong(part));
+                    } else if (genericType == Double.class || genericType == double.class) {
+                        parsedList.add(Double.parseDouble(part));
+                    } else if (genericType == Float.class || genericType == float.class) {
+                        parsedList.add(Float.parseFloat(part));
+                    } else if (genericType == Boolean.class || genericType == boolean.class) {
+                        parsedList.add(Boolean.parseBoolean(part));
+                    } else if (genericType.isEnum()) {
+                        Object matchedConstant = null;
+                        for (Object constant : genericType.getEnumConstants()) {
+                            if (((Enum<?>) constant).name().equalsIgnoreCase(part)) {
+                                matchedConstant = constant;
+                                break;
+                            }
+                        }
+                        if (matchedConstant != null) {
+                            parsedList.add(matchedConstant);
+                        } else {
+                            Logger.info("No enum constant found for value '" + part + "' in " + genericType.getSimpleName(), Logger.LogType.WARNING);
+                        }
+                    } else {
+                        parsedList.add(part);
+                    }
+                } catch (Exception e) {
+                    Logger.info("Failed to parse list element '" + part + "' as " + genericType.getSimpleName(), Logger.LogType.WARNING);
+                }
+            }
+            field.set(null, parsedList);
         }
     }
 
