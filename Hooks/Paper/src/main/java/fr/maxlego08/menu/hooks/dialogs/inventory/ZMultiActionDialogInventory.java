@@ -23,8 +23,7 @@ public class ZMultiActionDialogInventory extends AbstractButtonUtilsInventory im
     private final @Nullable ActionButtonRecord exitButton;
 
     public ZMultiActionDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, @NotNull List<ActionButtonRecord> actionButtons, int numberOfColumns, ActionButtonRecord exitButton) {
-        super(plugin, name, fileName, externalTitle);
-        this.dialogType = DialogType.MULTI_ACTION;
+        super(plugin, name, fileName, externalTitle, DialogType.MULTI_ACTION);
         this.actionButtons = actionButtons;
         this.numberOfColumns = numberOfColumns;
         this.exitButton = exitButton;

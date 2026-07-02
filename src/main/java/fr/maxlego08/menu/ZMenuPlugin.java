@@ -429,6 +429,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             Token.getInstance().save(this.getPersist());
         }
 
+        NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
+        if (nmsMenuPacketListener != null) {
+            nmsMenuPacketListener.shutdown();
+        }
+
         this.itemManager.unloadListeners();
 
         this.getServer().getServicesManager().unregisterAll(this);

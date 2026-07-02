@@ -21,8 +21,7 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
     private ActionButtonRecord actionButtonRecord;
 
     public ZNoticeDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, @NotNull ActionButtonRecord actionButtonRecord) {
-        super(plugin, name, fileName, externalTitle);
-        this.dialogType = DialogType.NOTICE;
+        super(plugin, name, fileName, externalTitle, DialogType.NOTICE);
         this.actionButtonRecord = actionButtonRecord;
     }
 

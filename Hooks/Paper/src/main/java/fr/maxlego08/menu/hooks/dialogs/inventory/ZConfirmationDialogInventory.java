@@ -21,10 +21,7 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
     private ActionButtonRecord noActionButtonRecord;
 
     public ZConfirmationDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, ActionButtonRecord yesActionButtonRecord, ActionButtonRecord noActionButtonRecord) {
-        super(plugin, name, fileName, externalTitle);
-
-        this.dialogType = DialogType.CONFIRMATION;
-
+        super(plugin, name, fileName, externalTitle, DialogType.CONFIRMATION);
         this.yesActionButtonRecord = yesActionButtonRecord;
         this.noActionButtonRecord = noActionButtonRecord;
     }

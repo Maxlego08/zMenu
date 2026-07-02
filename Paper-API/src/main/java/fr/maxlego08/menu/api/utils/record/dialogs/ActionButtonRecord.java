@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.utils.dialogs.ZDialogAction;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public record ActionButtonRecord(
         @NotNull String label,

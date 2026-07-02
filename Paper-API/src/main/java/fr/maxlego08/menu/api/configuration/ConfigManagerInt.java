@@ -12,4 +12,11 @@ public interface ConfigManagerInt {
     @NotNull List<String> getRegisteredConfigs();
     void openConfig(@NotNull String pluginName,@NotNull Player player);
     void openConfig(@NotNull Plugin plugin,@NotNull Player player);
+
+    /**
+     * Registers a custom field processor for handling custom field types.
+     *
+     * @param processor The field processor to register.
+     */
+    void registerProcessor(@NotNull ConfigFieldProcessor processor);
 }

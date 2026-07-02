@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.dialogs.inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.DialogButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
@@ -17,8 +18,8 @@ import java.util.List;
 
 public abstract class AbstractButtonUtilsInventory extends AbstractDialogInventory {
 
-    protected AbstractButtonUtilsInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle) {
-        super(plugin, name, fileName, externalTitle);
+    protected AbstractButtonUtilsInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, DialogType dialogType) {
+        super(plugin, name, fileName, externalTitle, dialogType);
     }
 
     protected List<ActionButton> createActionButtons(List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords, @NotNull PaperMetaUpdater paperComponent, @NotNull Placeholders placeholders, @NotNull Player player, @NotNull InventoryEngine inventoryEngine, @Nullable DialogButton<?> button) {

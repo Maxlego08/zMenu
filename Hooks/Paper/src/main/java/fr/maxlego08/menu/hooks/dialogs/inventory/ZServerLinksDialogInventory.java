@@ -21,8 +21,7 @@ public class ZServerLinksDialogInventory extends AbstractButtonUtilsInventory im
     private final int buttonWidth = 100;
 
     public ZServerLinksDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, @NotNull ActionButtonRecord actionButton, int numberOfColumns) {
-        super(plugin, name, fileName, externalTitle);
-        this.dialogType = DialogType.SERVER_LINKS;
+        super(plugin, name, fileName, externalTitle, DialogType.SERVER_LINKS);
         this.actionButton = actionButton;
         this.numberOfColumns = numberOfColumns;
     }

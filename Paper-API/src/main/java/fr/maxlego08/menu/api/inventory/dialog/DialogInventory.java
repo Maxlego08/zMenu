@@ -43,8 +43,6 @@ public interface DialogInventory extends Inventory {
 
     void setPause(boolean pause);
 
-    void setDialogType(DialogType dialogType);
-
     DialogType getDialogType();
 
     List<BodyButton> getBodyButtons();

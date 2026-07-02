@@ -42,7 +42,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     private boolean canCloseWithEscape = true;
     private boolean pause = false;
     private String afterAction = "CLOSE";
-    protected DialogType dialogType = DialogType.NOTICE;
+    protected final DialogType dialogType;
     private List<BodyButton> bodyButtons = new ArrayList<>();
     private List<InputButton> inputButtons = new ArrayList<>();
 
@@ -50,11 +50,12 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     private String targetPlayerNamePlaceholder;
     private Requirement openRequirement;
 
-    public AbstractDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle) {
+    public AbstractDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, DialogType dialogType) {
         this.menuPlugin = plugin;
         this.name = name;
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
         this.externalTitle = externalTitle;
+        this.dialogType = dialogType;
     }
 
     @Override
@@ -118,10 +119,6 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         return this.externalTitle;
     }
 
-    @Override
-    public void setDialogType(DialogType dialogType) {
-        this.dialogType = dialogType;
-    }
     @Override
     public DialogType getDialogType() {
         return this.dialogType;
