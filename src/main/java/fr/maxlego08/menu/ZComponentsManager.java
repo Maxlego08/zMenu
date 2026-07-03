@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.common.interfaces.VariantComponent;
 import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
@@ -14,17 +15,14 @@ import fr.maxlego08.menu.itemstack.components.spigot.SpigotVariantComponent;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ZComponentsManager implements ComponentsManager {
     private final Map<String, ItemComponentLoader> components = new HashMap<>();
 
     @Override
     public void initializeDefaultComponents(MenuPlugin plugin) {
-        VariantComponent variantComponent = plugin.isPaperOrFolia() ? new PaperVariantComponent() : new SpigotVariantComponent();
+        VariantComponent variantComponent = PlatformType.isPaper() ? new PaperVariantComponent() : new SpigotVariantComponent();
         ClassRegistry<ItemComponentLoader,MenuPlugin> registry =
                 ClassRegistry.<ItemComponentLoader, MenuPlugin>of(ItemComponentLoader.class, this::registerComponent)
                         .tryNoArgsConstructor()
@@ -48,6 +46,10 @@ public class ZComponentsManager implements ComponentsManager {
             }
             this.components.put(name, loader);
         }
+    }
+
+    public @NotNull Set<String> getRegisteredComponentNames() {
+        return Collections.unmodifiableSet(this.components.keySet());
     }
 
     @Override

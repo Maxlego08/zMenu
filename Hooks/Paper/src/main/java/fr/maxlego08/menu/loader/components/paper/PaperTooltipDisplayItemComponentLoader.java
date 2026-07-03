@@ -26,7 +26,7 @@ import java.util.Objects;
 public class PaperTooltipDisplayItemComponentLoader extends ItemComponentLoader {
 
     public PaperTooltipDisplayItemComponentLoader(){
-        super("tooltip_display");
+        super("tooltip-display");
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.io.File;
 public class PaperNoteBlockSoundItemComponentLoader extends ItemComponentLoader {
 
     public PaperNoteBlockSoundItemComponentLoader(){
-        super("note_block_sound");
+        super("note-block-sound");
     }
 
     @Override

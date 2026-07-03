@@ -45,6 +45,12 @@ public class ZStorageManager implements StorageManager {
     @Override
     public void loadDatabase() {
 
+        if (this.plugin.isMockBukkitServer()) {
+            fr.maxlego08.menu.zcore.logger.Logger.info("You are using a MockBukkit server, the database is disabled.");
+            this.isEnable = false;
+            return;
+        }
+
         MigrationManager.setMigrationTableName("zmenu_migrations");
         MigrationManager.registerMigration(new PlayerOpenInventoryMigration());
         MigrationManager.registerMigration(new PlayerDataMigration());

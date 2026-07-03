@@ -20,7 +20,7 @@ import java.io.File;
 public class PaperIntangibleProjectileItemComponentLoader extends ItemComponentLoader {
 
     public PaperIntangibleProjectileItemComponentLoader(){
-        super("intangible_projectile");
+        super("intangible-projectile");
     }
 
     @Override

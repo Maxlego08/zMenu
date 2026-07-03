@@ -101,6 +101,8 @@ import java.util.*;
 public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private static ZMenuPlugin instance;
 
+    private final boolean isMockBukkitServer;
+
     private final StorageManager storageManager;
     private final ButtonManager buttonManager;
     private final InventoryManager inventoryManager;
@@ -129,6 +131,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     private PacketManager packetManager;
 
     public ZMenuPlugin() {
+        this(false);
+    }
+
+    public ZMenuPlugin(Boolean isMockBukkitServer) {
+        this.isMockBukkitServer = isMockBukkitServer != null && isMockBukkitServer;
+
         new BukkitLogger(this.getDescription().getFullName());
 
         this.metaUpdater = new ClassicMeta();
@@ -169,7 +177,9 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onEnable() {
 
-        NMSMenuPacketListener.init(this);
+        if (!this.isMockBukkitServer) {
+            NMSMenuPacketListener.init(this);
+        }
 
         instance = this;
 
@@ -248,7 +258,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
-        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21"))) {
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21")) && !this.isMockBukkitServer) {
             this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
         }
         this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
@@ -414,10 +424,12 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         YamlFileCache.clearCache();
 
         this.websiteManager.onDisable();
-
-        NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
-        if (nmsMenuPacketListener != null) {
-            nmsMenuPacketListener.shutdown();
+        
+        if (!this.isMockBukkitServer) {
+            NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
+            if (nmsMenuPacketListener != null) {
+                nmsMenuPacketListener.shutdown();
+            }
         }
 
         this.itemManager.unloadListeners();
@@ -609,6 +621,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public Map<String, Object> getGlobalPlaceholders() {
         return this.globalPlaceholders;
+    }
+
+    @Override
+    public boolean isMockBukkitServer() {
+        return this.isMockBukkitServer;
     }
 
     public void loadGlobalPlaceholders() {

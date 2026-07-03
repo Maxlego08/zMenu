@@ -56,6 +56,8 @@ public interface MenuPlugin extends Plugin {
      */
     PatternManager getPatternManager();
 
+    boolean isMockBukkitServer();
+
     /**
      * Retrieves a service provider of the specified class type.
      *

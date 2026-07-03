@@ -9,9 +9,6 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.itemstack.components.paper.PaperProvidesTrimMaterialComponent;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
@@ -26,7 +23,7 @@ import java.io.File;
 public class PaperProvidesTrimMaterialItemComponentLoader extends ItemComponentLoader {
 
     public PaperProvidesTrimMaterialItemComponentLoader(){
-        super("provides_trim_material");
+        super("provides-trim-material");
     }
 
     @Override

@@ -14,6 +14,8 @@ extra.set("sha", System.getProperty("github.sha"))
 
 val rootLibs = libs
 
+val nonSpigotProjects = listOf("Paper", "Common", "Paper-API")
+
 allprojects {
     apply(plugin = "java-library")
     apply(plugin = "com.gradleup.shadow")
@@ -110,7 +112,7 @@ allprojects {
     }
 
     dependencies {
-        if (project.name != "Paper" && project.name != "Common" && project.name != "Paper-API") {
+        if (project.name !in nonSpigotProjects) {
             compileOnly(rootLibs.spigot.api)
         }
         compileOnly(rootLibs.placeholderapi)

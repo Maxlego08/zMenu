@@ -24,7 +24,7 @@ import java.io.File;
 public class PaperProvidesBannerPatternsItemComponentLoader extends ItemComponentLoader {
 
     public PaperProvidesBannerPatternsItemComponentLoader(){
-        super("provides_banner_patterns");
+        super("provides-banner-patterns");
     }
 
     @Override

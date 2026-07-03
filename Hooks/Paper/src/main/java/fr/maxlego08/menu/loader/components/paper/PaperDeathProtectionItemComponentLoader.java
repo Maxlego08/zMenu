@@ -23,7 +23,7 @@ import java.util.List;
 public class PaperDeathProtectionItemComponentLoader extends AbstractEffectItemComponentLoader {
 
     public PaperDeathProtectionItemComponentLoader(){
-        super("death_protection");
+        super("death-protection");
     }
 
     @Override

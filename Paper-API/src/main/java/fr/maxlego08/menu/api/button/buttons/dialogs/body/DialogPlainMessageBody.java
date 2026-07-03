@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +42,7 @@ public class DialogPlainMessageBody extends VanillaDialogBody {
         if (components.size() == 1) {
             finalComponent = components.getFirst();
         } else {
-            finalComponent = Component.join(Component.newline(), components);
+            finalComponent = Component.join(JoinConfiguration.newlines(), components);
         }
         return DialogBody.plainMessage(finalComponent, this.width);
     }

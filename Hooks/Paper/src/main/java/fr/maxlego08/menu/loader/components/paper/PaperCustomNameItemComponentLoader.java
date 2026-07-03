@@ -24,7 +24,7 @@ public class PaperCustomNameItemComponentLoader extends ItemComponentLoader {
     private final PaperMetaUpdater metaUpdater;
 
     public PaperCustomNameItemComponentLoader(MenuPlugin plugin){
-        super("custom_name");
+        super("custom-name");
         this.metaUpdater = (PaperMetaUpdater) plugin.getMetaUpdater();
     }
 

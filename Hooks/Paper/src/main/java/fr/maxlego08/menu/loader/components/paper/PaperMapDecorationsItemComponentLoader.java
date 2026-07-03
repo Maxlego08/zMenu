@@ -28,7 +28,7 @@ import java.util.Map;
 public class PaperMapDecorationsItemComponentLoader extends ItemComponentLoader {
 
     public PaperMapDecorationsItemComponentLoader(){
-        super("map_decorations");
+        super("map-decorations");
     }
 
     @Override
