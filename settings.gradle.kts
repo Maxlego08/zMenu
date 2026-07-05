@@ -37,3 +37,4 @@ file("Test").listFiles()?.forEach { file ->
         include(":Test:${file.name}")
     }
 }
+include("Hooks:Paper-26")

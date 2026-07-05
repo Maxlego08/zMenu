@@ -50,7 +50,7 @@ public abstract class DataComponentTestBase {
 //         BEES("bees"),
 //         BLOCK_ENTITY_DATA("block_entity_data"),
         BLOCK_STATE("block_state"),
-        BLOCK_TRANSFORMER("block_transformer", "26.3"),
+//         BLOCK_TRANSFORMER("block_transformer", "26.3"),
         BLOCKS_ATTACKS("blocks_attacks", "1.21.5"),
         BREAK_SOUND("break_sound", "1.21.5"),
 //         BUCKET_ENTITY_DATA("bucket_entity_data"),
@@ -69,7 +69,7 @@ public abstract class DataComponentTestBase {
         DAMAGE_TYPE("damage_type", "1.21.11"),
         DEATH_PROTECTION("death_protection", "1.21.2"),
         DEBUG_STICK_STATE("debug_stick_state"),
-        DYE("dye", "26.1"),
+//         DYE("dye", "26.1"), // Impossible to keep compatibility with older server version if i add them because old ASM doesn't support jdk 25.
         DYED_COLOR("dyed_color"),
         ENCHANTABLE("enchantable", "1.21.2"),
         ENCHANTMENT_GLINT_OVERRIDE("enchantment_glint_override"),
@@ -109,7 +109,7 @@ public abstract class DataComponentTestBase {
         REPAIR_COST("repair_cost"),
         REPAIRABLE("repairable", "1.21.2"),
         STORED_ENCHANTMENTS("stored_enchantments"),
-        SULFUR_CUBE_CONTENT("sulfur_cube_content", "26.2"),
+//         SULFUR_CUBE_CONTENT("sulfur_cube_content", "26.2"), same as DYE
         SUSPICIOUS_STEW_EFFECTS("suspicious_stew_effects"),
         SWING_ANIMATION("swing_animation", "1.21.11"),
         TOOL("tool"),

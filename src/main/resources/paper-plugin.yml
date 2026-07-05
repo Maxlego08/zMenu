@@ -1,0 +1,89 @@
+name: zMenu
+authors: [ Maxlego08 ]
+main: fr.maxlego08.menu.ZMenuPlugin
+description: Inventory management plugin
+website: https://groupez.dev/resources/zmenu.253
+version: ${version}
+api-version: '1.19'
+contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag, alwyn974, 1robie, Funasitien ]
+bootstrapper: fr.maxlego08.menu.ZMenuBootstrapper
+loader: fr.maxlego08.menu.ZMenuPluginLoader
+folia-supported: true
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: BEFORE
+      join-classpath: true
+
+    HeadDatabase:
+      load: BEFORE
+      join-classpath: true
+
+    ItemsAdder:
+      load: BEFORE
+      join-classpath: true
+
+    Slimefun:
+      load: BEFORE
+      join-classpath: true
+
+    # JobsReborn
+    Jobs:
+      load: BEFORE
+      join-classpath: true
+
+    LuckPerms:
+      load: BEFORE
+      join-classpath: true
+
+    zHead:
+      load: BEFORE
+      join-classpath: true
+
+    MagicCosmetics:
+      load: BEFORE
+      join-classpath: true
+
+    packetevents:
+      load: BEFORE
+      join-classpath: true
+
+    HMCCosmetics:
+      load: BEFORE
+      join-classpath: true
+
+    SCore:
+      load: BEFORE
+      join-classpath: true
+
+    ExecutableItems:
+      load: BEFORE
+      join-classpath: true
+
+    ExecutableBlocks:
+      load: BEFORE
+      join-classpath: true
+
+    MythicMobs:
+      load: BEFORE
+      join-classpath: true
+
+    MMOItems:
+      load: BEFORE
+      join-classpath: true
+
+    BreweryX:
+      load: BEFORE
+      join-classpath: true
+
+    floodgate:
+      load: BEFORE
+      join-classpath: true
+
+    Geyser-Spigot:
+      load: BEFORE
+      join-classpath: true
+
+    SuperiorSkyblock2:
+      load: AFTER
+      join-classpath: true

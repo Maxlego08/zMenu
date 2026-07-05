@@ -14,7 +14,7 @@ extra.set("sha", System.getProperty("github.sha"))
 
 val rootLibs = libs
 
-val nonSpigotProjects = listOf("Paper", "Common", "Paper-API")
+val nonSpigotProjects = listOf("Paper", "Common", "Paper-API", "Paper-26", "v26_1_2")
 
 allprojects {
     apply(plugin = "java-library")
@@ -150,10 +150,21 @@ dependencies {
     implementation(libs.java.websocket) {
         exclude(group = "org.slf4j")
     }
+
 }
+
+dependencies {
+    compileOnly(project(":Hooks:Paper-26"))
+}
+
 
 tasks {
     shadowJar {
+        val paper26 = project(":Hooks:Paper-26")
+        dependsOn(paper26.tasks.jar)
+        val jarFile = paper26.tasks.jar.get().archiveFile.get().asFile
+        from(zipTree(jarFile))
+
         relocate("com.tcoded.folialib", "fr.maxlego08.menu.hooks.folialib")
         relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
         relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
@@ -177,7 +188,7 @@ tasks {
 
     processResources {
         from("resources")
-        filesMatching("plugin.yml") {
+        filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
             expand("version" to project.version)
         }
     }
