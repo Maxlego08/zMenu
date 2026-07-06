@@ -11,79 +11,103 @@ loader: fr.maxlego08.menu.ZMenuPluginLoader
 folia-supported: true
 dependencies:
   server:
+    Oraxen:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
     PlaceholderAPI:
       load: BEFORE
+      required: false
       join-classpath: true
 
     HeadDatabase:
       load: BEFORE
+      required: false
       join-classpath: true
 
     ItemsAdder:
       load: BEFORE
+      required: false
       join-classpath: true
 
     Slimefun:
       load: BEFORE
+      required: false
       join-classpath: true
 
     # JobsReborn
     Jobs:
       load: BEFORE
+      required: false
       join-classpath: true
 
     LuckPerms:
       load: BEFORE
+      required: false
       join-classpath: true
 
     zHead:
       load: BEFORE
+      required: false
       join-classpath: true
 
     MagicCosmetics:
       load: BEFORE
+      required: false
       join-classpath: true
 
     packetevents:
       load: BEFORE
+      required: false
       join-classpath: true
 
     HMCCosmetics:
       load: BEFORE
+      required: false
       join-classpath: true
 
     SCore:
       load: BEFORE
+      required: false
       join-classpath: true
 
     ExecutableItems:
       load: BEFORE
+      required: false
       join-classpath: true
 
     ExecutableBlocks:
       load: BEFORE
+      required: false
       join-classpath: true
 
     MythicMobs:
       load: BEFORE
+      required: false
       join-classpath: true
 
     MMOItems:
       load: BEFORE
+      required: false
       join-classpath: true
 
     BreweryX:
       load: BEFORE
+      required: false
       join-classpath: true
 
     floodgate:
       load: BEFORE
+      required: false
       join-classpath: true
 
     Geyser-Spigot:
       load: BEFORE
+      required: false
       join-classpath: true
 
     SuperiorSkyblock2:
       load: AFTER
+      required: false
       join-classpath: true
