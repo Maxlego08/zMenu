@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.annotations.AutoFontImage;
 import fr.maxlego08.menu.api.annotations.AutoListener;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
@@ -40,11 +41,9 @@ import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
-import fr.maxlego08.menu.hooks.OraxenFont;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
@@ -340,23 +339,19 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
-        if (this.isActive(Plugins.ORAXEN)) {
-            this.fontImage = new OraxenFont();
-        }
-
         if (this.isActive(Plugins.NEXO)) {
             if (this.metaUpdater instanceof ComponentMeta componentMeta) {
                 new NexoTagResolverLoader(this, componentMeta);
             }
         }
 
-        if (this.isActive(Plugins.ITEMSADDER)) {
-            this.fontImage = new ItemsAdderFont();
-        }
-
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
+
+        ClassRegistry<FontImage, MenuPlugin> registry = ClassRegistry.<FontImage, MenuPlugin>of(FontImage.class, fontImage1 -> this.fontImage = fontImage1).tryNoArgsConstructor().errorLogger(Logger::error);
+
+        VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoFontImage.class, registry);
     }
 
     private void registerMaterialLoaders() {
