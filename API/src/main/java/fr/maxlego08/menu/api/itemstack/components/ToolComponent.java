@@ -2,11 +2,14 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.utils.itemstack.ZToolRule;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Tool;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.Player;
@@ -65,26 +68,38 @@ public class ToolComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return;
+//         ItemMeta itemMeta = itemStack.getItemMeta();
+//         if (itemMeta == null) return;
+//
+//         org.bukkit.inventory.meta.components.ToolComponent tool = itemMeta.getTool();
+//
+//         Resolvable.applyResolvable(context, this.defaultMiningSpeed, tool::setDefaultMiningSpeed);
+//         Resolvable.applyResolvable(context, this.damagePerBlock, tool::setDamagePerBlock);
+// //         Resolvable.applyResolvable(context, this.canDestroyBlocksInCreative, tool::setCanDestroyBlocksInCreative);
+//
+//
+//         for (ZToolRule<Material> rule : this.materialRules) {
+//             tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
+//         }
+//         for (ZToolRule<Collection<Material>> rule : this.materialGroups) {
+//             tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
+//         }
+//         for (ZToolRule<Tag<Material>> rule : this.tagRules) {
+//             tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
+//         }
+//
+//         itemStack.setItemMeta(itemMeta);
 
-        org.bukkit.inventory.meta.components.ToolComponent tool = itemMeta.getTool();
+        Tool.Builder tool = Tool.tool();
 
-        Resolvable.applyResolvable(context, this.defaultMiningSpeed, tool::setDefaultMiningSpeed);
-        Resolvable.applyResolvable(context, this.damagePerBlock, tool::setDamagePerBlock);
-        Resolvable.applyResolvable(context, this.canDestroyBlocksInCreative, tool::setCanDestroyBlocksInCreative);
+        Resolvable.applyResolvable(context, this.defaultMiningSpeed, tool::defaultMiningSpeed);
+        Resolvable.applyResolvable(context, this.damagePerBlock, tool::damagePerBlock);
+        Resolvable.applyResolvable(context, this.canDestroyBlocksInCreative, tool::canDestroyBlocksInCreative);
 
-        for (ZToolRule<Material> rule : this.materialRules) {
-            tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-        }
-        for (ZToolRule<Collection<Material>> rule : this.materialGroups) {
-            tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-        }
-        for (ZToolRule<Tag<Material>> rule : this.tagRules) {
-            tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-        }
+        //TODO: Add rules to the tool component
 
-        itemStack.setItemMeta(itemMeta);
+        itemStack.setData(DataComponentTypes.TOOL, tool.build());
+
     }
 
 }

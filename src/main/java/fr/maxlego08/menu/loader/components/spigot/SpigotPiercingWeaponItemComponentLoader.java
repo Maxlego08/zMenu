@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.PiercingWeaponComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,8 +28,8 @@ public class SpigotPiercingWeaponItemComponentLoader extends ItemComponentLoader
         if (componentSection == null) return null;
         ResolvableBoolean dealsKnockback = this.asResolvableBoolean(componentSection, "deals-knockback", true);
         ResolvableBoolean dismounts = this.asResolvableBoolean(componentSection, "dismounts", false);
-        ResolvableSound sound = this.asResolvableSound(componentSection, "sound");
-        ResolvableSound hitSound = this.asResolvableSound(componentSection, "hit-sound");
+        ResolvableNamespacedKey sound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("sound"));
+        ResolvableNamespacedKey hitSound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("hit-sound"));
         return new PiercingWeaponComponent(dealsKnockback, dismounts, sound, hitSound);
     }
 }

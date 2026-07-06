@@ -1,14 +1,12 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,10 +24,9 @@ public class PotionDurationScaleComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, PotionMeta.class, potionMeta -> {
-            this.applyResolvable(context, potionMeta::setDurationScale, this.durationScale);
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("PotionContentsComponent couldn't be applied to " + itemStack.getType().name());
+        Float resolvedDurationScale = Resolvable.resolve(context, this.durationScale);
+        if (resolvedDurationScale != null) {
+            itemStack.setData(DataComponentTypes.POTION_DURATION_SCALE, resolvedDurationScale);
+        }
     }
 }

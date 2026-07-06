@@ -1,50 +1,35 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
-import fr.maxlego08.menu.api.utils.resolvable.SimpleResolvable;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableMusicInstrument;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.MusicInstrument;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.MusicInstrumentMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class InstrumentComponent extends ItemComponent {
-    private final @NotNull Resolvable<MusicInstrument> instrument;
+    private final @Nullable ResolvableMusicInstrument instrument;
 
-    public InstrumentComponent(@NotNull MusicInstrument instrument) {
-        this.instrument = SimpleResolvable.of(instrument, s -> {
-            try {
-                NamespacedKey key = NamespacedKey.fromString(s);
-                return key != null ? Registry.INSTRUMENT.getOrThrow(key) : null;
-            } catch (Exception e) {
-                return null;
-            }
-        });
+    public InstrumentComponent(@NotNull String instrument) {
+        this.instrument = new ResolvableMusicInstrument(ResolvableRegistry.autoOrNull(instrument, MusicInstrument.class));
     }
 
-    public InstrumentComponent(@NotNull Resolvable<MusicInstrument> instrument) {
+    public InstrumentComponent(@NotNull ResolvableMusicInstrument instrument) {
         this.instrument = instrument;
     }
 
-    public @NotNull Resolvable<MusicInstrument> getInstrument() {
+    public @Nullable ResolvableMusicInstrument getInstrument() {
         return this.instrument;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, MusicInstrumentMeta.class, musicInstrumentMeta -> {
-            this.applyResolvable(context, musicInstrumentMeta::setInstrument, this.instrument);
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("Could not apply InstrumentComponent to itemStack: " + itemStack.getType().name());
+        Resolvable.applyResolvable(context, this.instrument, musicInstrument -> itemStack.setData(DataComponentTypes.INSTRUMENT, musicInstrument));
     }
 }

@@ -78,6 +78,29 @@ public interface Resolvable<T> {
         return resolvable.resolve(context);
     }
 
+    static <X> @NotNull List<X> resolveList(
+            @NotNull BuildContext context,
+            @Nullable List<? extends @Nullable Resolvable<X>> resolvables
+    ) {
+        List<X> values = new ArrayList<>();
+
+        if (resolvables == null) {
+            return values;
+        }
+
+        for (Resolvable<X> resolvable : resolvables) {
+            if (resolvable != null) {
+                X value = resolvable.resolve(context);
+
+                if (value != null) {
+                    values.add(value);
+                }
+            }
+        }
+
+        return values;
+    }
+
     static <K, V> @NotNull Map<K, V> resolveMap(
             @NotNull BuildContext context,
             @Nullable Map<K, ? extends @Nullable Resolvable<V>> resolvables

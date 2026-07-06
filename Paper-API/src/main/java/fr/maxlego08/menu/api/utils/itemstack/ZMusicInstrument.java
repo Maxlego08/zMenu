@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.utils.itemstack;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.MusicInstrument;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -10,10 +11,10 @@ public class ZMusicInstrument extends MusicInstrument {
     private final NamespacedKey key;
     private final float duration;
     private final float range;
-    private final String description;
+    private final Component description;
     private final Sound soundEvent;
 
-    public ZMusicInstrument(@NotNull NamespacedKey key, float duration, float range, @NotNull String description, @NotNull Sound soundEvent) {
+    public ZMusicInstrument(@NotNull NamespacedKey key, float duration, float range, @NotNull Component description, @NotNull Sound soundEvent) {
         this.key = key;
         this.duration = duration;
         this.range = range;
@@ -32,32 +33,22 @@ public class ZMusicInstrument extends MusicInstrument {
     }
 
     @Override
-    public @NotNull String getDescription() {
+    public Component description() {
         return this.description;
     }
 
     @Override
-    public @NotNull Sound getSoundEvent() {
+    public @Nullable Sound getSound() {
         return this.soundEvent;
     }
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    public @Nullable NamespacedKey getKey() {
         return this.key;
     }
 
     @Override
-    public @NotNull NamespacedKey getKeyOrThrow() {
-        return this.key;
-    }
-
-    @Override
-    public @Nullable NamespacedKey getKeyOrNull() {
-        return this.key;
-    }
-
-    @Override
-    public boolean isRegistered() {
-        return false;
+    public String translationKey() {
+        return this.key.toString();
     }
 }

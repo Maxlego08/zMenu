@@ -4,9 +4,10 @@ import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.UseEffects;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,15 +38,12 @@ public class UseEffectsComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return;
+        UseEffects.Builder builder = UseEffects.useEffects();
 
-        org.bukkit.inventory.meta.components.UseEffectsComponent useEffects = itemMeta.getUseEffects();
+        this.applyResolvable(context, builder::canSprint, this.canSprint);
+        this.applyResolvable(context, builder::speedMultiplier, this.speedMultiplier);
+        this.applyResolvable(context, builder::interactVibrations, this.interactVibration);
 
-        this.applyResolvable(context, useEffects::setCanSprint, this.canSprint);
-        this.applyResolvable(context, useEffects::setSpeedMultiplier, this.speedMultiplier);
-        this.applyResolvable(context, useEffects::setInteractVibrations, this.interactVibration);
-
-        itemStack.setItemMeta(itemMeta);
+        itemStack.setData(DataComponentTypes.USE_EFFECTS, builder.build());
     }
 }

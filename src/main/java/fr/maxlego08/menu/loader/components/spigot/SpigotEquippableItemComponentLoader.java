@@ -8,21 +8,14 @@ import fr.maxlego08.menu.api.itemstack.components.EquippableComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.*;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.21.2")
@@ -37,7 +30,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
         if (componentSection == null) return null;
 
         ResolvableEquipmentSlot slot = this.loadEquipmentSlot(componentSection.getString("slot"));
-        ResolvableSound equipSound = this.loadSound(componentSection.getString("equip-sound"));
+        ResolvableNamespacedKey equipSound = this.loadNamespacedKey(componentSection.getString("equip-sound"));
         ResolvableNamespacedKey assetId = this.loadNamespacedKey(componentSection.getString("asset-id"));
 
         ResolvableBoolean dispensable = this.asResolvableBoolean(componentSection, "dispensable", true);
@@ -47,7 +40,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
 
         ResolvableNamespacedKey cameraOverlay = this.loadNamespacedKey(componentSection.getString("camera-overlay"));
         ResolvableBoolean canBeSheared = this.asResolvableBoolean(componentSection, "can-be-sheared", false);
-        ResolvableSound shearingSound = this.loadSound(componentSection.getString("shearing-sound"));
+        ResolvableNamespacedKey shearingSound = this.loadNamespacedKey(componentSection.getString("shearing-sound"));
 
         List<String> entityStrings = new ArrayList<>();
         Object allowedEntitiesObj = componentSection.get("allowed-entities");
@@ -68,9 +61,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
             } else {
                 if (allowedEntities == null) allowedEntities = new ArrayList<>();
                 ResolvableEntityType et = ResolvableEntityType.autoOrNull(es);
-                if (et != null) {
-                    allowedEntities.add(et);
-                }
+                allowedEntities.add(et);
             }
         }
 

@@ -8,7 +8,6 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.itemstack.components.paper.PaperMaxStackSizeComponent;
-import fr.maxlego08.menu.itemstack.components.spigot.SpigotMaxStackSizeComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +30,7 @@ public class MaxStackSizeItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         ResolvableInt maxStackSize = this.asResolvableInt(configuration, path);
         if (maxStackSize != null) {
-            return this.plugin.isPaperOrFolia() ? new PaperMaxStackSizeComponent(maxStackSize) : new SpigotMaxStackSizeComponent(maxStackSize);
+            return new PaperMaxStackSizeComponent(maxStackSize);
         }
         return null;
     }

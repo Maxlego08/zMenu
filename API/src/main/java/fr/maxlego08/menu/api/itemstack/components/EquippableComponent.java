@@ -3,11 +3,16 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.*;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableEntityType;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableEntityTypeTag;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableEquipmentSlot;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Equippable;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +21,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class EquippableComponent extends ItemComponent {
     private final @Nullable ResolvableEquipmentSlot slot;
-    private final @Nullable ResolvableSound equipSound;
+    private final @Nullable ResolvableNamespacedKey equipSound;
     private final @Nullable ResolvableNamespacedKey assetId;
     private final @Nullable ResolvableBoolean dispensable;
     private final @Nullable ResolvableBoolean swappable;
@@ -24,13 +29,13 @@ public class EquippableComponent extends ItemComponent {
     private final @Nullable ResolvableBoolean equipOnInteract;
     private final @Nullable ResolvableNamespacedKey cameraOverlay;
     private final @Nullable ResolvableBoolean canBeSheared;
-    private final @Nullable ResolvableSound shearingSound;
+    private final @Nullable ResolvableNamespacedKey shearingSound;
     private final @Nullable List<ResolvableEntityType> allowedEntities;
     private final @Nullable ResolvableEntityTypeTag allowedEntityTags;
 
     public EquippableComponent(
             @Nullable ResolvableEquipmentSlot slot,
-            @Nullable ResolvableSound equipSound,
+            @Nullable ResolvableNamespacedKey equipSound,
             @Nullable ResolvableNamespacedKey assetId,
             @Nullable ResolvableBoolean dispensable,
             @Nullable ResolvableBoolean swappable,
@@ -38,7 +43,7 @@ public class EquippableComponent extends ItemComponent {
             @Nullable ResolvableBoolean equipOnInteract,
             @Nullable ResolvableNamespacedKey cameraOverlay,
             @Nullable ResolvableBoolean canBeSheared,
-            @Nullable ResolvableSound shearingSound,
+            @Nullable ResolvableNamespacedKey shearingSound,
             @Nullable List<ResolvableEntityType> allowedEntities,
             @Nullable ResolvableEntityTypeTag allowedEntityTags
     ) {
@@ -60,7 +65,7 @@ public class EquippableComponent extends ItemComponent {
         return this.slot;
     }
 
-    public @Nullable ResolvableSound getEquipSound() {
+    public @Nullable ResolvableNamespacedKey getEquipSound() {
         return this.equipSound;
     }
 
@@ -92,7 +97,7 @@ public class EquippableComponent extends ItemComponent {
         return this.canBeSheared;
     }
 
-    public @Nullable ResolvableSound getShearingSound() {
+    public @Nullable ResolvableNamespacedKey getShearingSound() {
         return this.shearingSound;
     }
 
@@ -106,26 +111,23 @@ public class EquippableComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return;
+        EquipmentSlot resolvedEquipmentSlot = Resolvable.resolve(context, this.slot);
+        if (resolvedEquipmentSlot != null) {
+            Equippable.Builder equippable = Equippable.equippable(resolvedEquipmentSlot);
 
-        org.bukkit.inventory.meta.components.EquippableComponent equippable = itemMeta.getEquippable();
-        
-        this.applyResolvable(context, equippable::setSlot, this.slot);
-        this.applyResolvable(context, equippable::setEquipSound, this.equipSound);
-        this.applyResolvable(context, equippable::setModel, this.assetId);
-        this.applyResolvable(context, equippable::setDispensable, this.dispensable);
-        this.applyResolvable(context, equippable::setSwappable, this.swappable);
-        this.applyResolvable(context, equippable::setDamageOnHurt, this.damageOnHurt);
-        this.applyResolvable(context, equippable::setEquipOnInteract, this.equipOnInteract);
-        this.applyResolvable(context, equippable::setCameraOverlay, this.cameraOverlay);
-        this.applyResolvable(context, equippable::setCanBeSheared, this.canBeSheared);
-        this.applyResolvable(context, equippable::setShearingSound, this.shearingSound);
+            Resolvable.applyResolvable(context, this.equipSound, equippable::equipSound);
+            Resolvable.applyResolvable(context, this.assetId, equippable::assetId);
+            Resolvable.applyResolvable(context, this.dispensable, equippable::dispensable);
+            Resolvable.applyResolvable(context, this.swappable, equippable::swappable);
+            Resolvable.applyResolvable(context, this.damageOnHurt, equippable::damageOnHurt);
+            Resolvable.applyResolvable(context, this.equipOnInteract, equippable::equipOnInteract);
+            Resolvable.applyResolvable(context, this.cameraOverlay, equippable::cameraOverlay);
+            Resolvable.applyResolvable(context, this.canBeSheared, equippable::canBeSheared);
+            Resolvable.applyResolvable(context, this.shearingSound, equippable::shearSound);
 
-        Resolvable.applyResolvable(context, this.allowedEntities, equippable::setAllowedEntities);
+            //TODO: rework allowedEntities and allowedEntityTags to use RegistryKeySet and RegistrySet instead of List and Tag
 
-        Resolvable.applyResolvable(context, this.allowedEntityTags, equippable::setAllowedEntities);
-
-        itemStack.setItemMeta(itemMeta);
+            itemStack.setData(DataComponentTypes.EQUIPPABLE, equippable.build());
+        }
     }
 }

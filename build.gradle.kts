@@ -14,8 +14,6 @@ extra.set("sha", System.getProperty("github.sha"))
 
 val rootLibs = libs
 
-val nonSpigotProjects = listOf("Paper", "Common", "Paper-API", "Paper-26", "v26_1_2")
-
 allprojects {
     apply(plugin = "java-library")
     apply(plugin = "com.gradleup.shadow")
@@ -112,8 +110,11 @@ allprojects {
     }
 
     dependencies {
-        if (project.name !in nonSpigotProjects) {
-            compileOnly(rootLibs.spigot.api)
+
+        val hasAlreadyPaperDependency = configurations.matching { it.name == "compileOnly" || it.name == "implementation" || it.name == "api" }.flatMap { it.dependencies }.any { dep -> dep.group == "io.papermc.paper" }
+
+        if (!hasAlreadyPaperDependency) {
+            compileOnly(rootLibs.paper.api)
         }
         compileOnly(rootLibs.placeholderapi)
         compileOnly(rootLibs.reflections)

@@ -52,8 +52,7 @@ junit-bom = "5.10.0"
 mockbukkit = "4.114.0"
 
 [libraries]
-# Platforms (Paper / Spigot / NMS)
-spigot-api = { group = "org.spigotmc", name = "spigot-api", version.ref = "spigot" }
+# Platforms (Paper / NMS)
 paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
 paper-api-latest = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api-latest" }
 paperDevBundle120R3 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R3" }
