@@ -145,7 +145,13 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
                 T typedButton = this.getButtonType(button, buttonClass, path, file);
 
                 if (postProcess != null) {
-                    postProcess.accept(typedButton, key);
+                    Button current = button.getMasterParentButton();
+                    while (current != null) {
+                        if (buttonClass.isInstance(current)) {
+                            postProcess.accept(buttonClass.cast(current), key);
+                        }
+                        current = current.getElseButton();
+                    }
                 }
 
                 buttons.add(typedButton);

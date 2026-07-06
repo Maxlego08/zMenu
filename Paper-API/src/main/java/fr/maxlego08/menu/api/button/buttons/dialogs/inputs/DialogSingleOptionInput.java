@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.button.buttons.dialogs.inputs;
 
+import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
@@ -44,6 +45,6 @@ public class DialogSingleOptionInput extends VanillaDialogInput {
                     option.initialValue()));
         }
 
-        return DialogInput.singleOption(this.key, this.width, finalOptions, label, this.labelVisible);
+        return DialogInput.singleOption(Preconditions.checkNotNull(this.key, "Key cannot be null"), this.width, finalOptions, label, this.labelVisible);
     }
 }

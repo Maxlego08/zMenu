@@ -22,7 +22,7 @@ public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?
     @Nullable
     T load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String title);
 
-    default  <U extends Button> List<U> loadButtons(
+    static <U extends Button> List<U> loadButtons(
             YamlConfiguration configuration,
             File file,
             String sectionKey,
@@ -45,10 +45,16 @@ public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?
             String path = sectionKey + "." + key + ".";
             try {
                 Button button = loader.load(configuration, path, key);
-                U typedButton = this.getButtonType(button, buttonClass, path, file);
+                U typedButton = getButtonType(button, buttonClass, path, file);
 
                 if (postProcess != null) {
-                    postProcess.accept(typedButton, key);
+                    Button current = button.getMasterParentButton();
+                    while (current != null) {
+                        if (buttonClass.isInstance(current)) {
+                            postProcess.accept(buttonClass.cast(current), key);
+                        }
+                        current = current.getElseButton();
+                    }
                 }
 
                 buttons.add(typedButton);
@@ -59,10 +65,12 @@ public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?
         return buttons;
     }
 
-    private <T extends Button> T getButtonType(Button button, Class<T> verifClass, String path, File file) throws InventoryButtonException {
+
+
+    static  <T extends Button> T getButtonType(Button button, Class<T> verifClass, String path, File file) throws InventoryButtonException {
         if (verifClass.isInstance(button)) {
             if (button.getElseButton() != null){
-                return this.getButtonType(button.getElseButton(), verifClass, path, file);
+                return getButtonType(button.getElseButton(), verifClass, path, file);
             }
             return (T) button;
         } else {
