@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.CanPlaceOnComponent;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoComponentLoader
+@SinceVersion("1.20.5")
 public final class CanPlaceOnItemComponentLoader extends ItemComponentLoader {
 
     public CanPlaceOnItemComponentLoader() {

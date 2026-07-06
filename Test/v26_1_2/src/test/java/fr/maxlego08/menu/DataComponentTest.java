@@ -36,9 +36,9 @@ public class DataComponentTest extends DataComponentTestBase {
     @Test
     public void testAllKnownComponents() {
         componentsManager.initializeDefaultComponents(menuPlugin);
-
+        
         Set<String> registered = new HashSet<>(componentsManager.getRegisteredComponentNames());
 
-//         checkComponents(registered);
+        checkComponents(registered);
     }
 }

@@ -24,15 +24,31 @@ public class ZModalBedrockInventory extends AbstractBedrockComponentInventory<Mo
         Placeholders placeholders = this.createPlaceholders(player);
         List<BasicBedrockComponentButton> buttons = this.filterByViewRequirement(this.bodyButtons, player, inventoryEngine, placeholders);
 
-        return ModalForm.builder()
-                .title(this.getLegacyTitle(player, inventoryEngine, placeholders))
-                .content(this.getLegacyMessage(player, placeholders, this.content))
-                .button1(this.getLegacyMessage(player, placeholders, buttons.get(0).getText()))
-                .button2(this.getLegacyMessage(player, placeholders, buttons.get(1).getText()))
-                .validResultHandler((form, responseData) -> {
-                    placeholders.register("content", form.content());
-                    int id = responseData.clickedButtonId();
-                    buttons.get(id).onClick(player, inventoryEngine, id, placeholders);
-                });
+//         return ModalForm.builder()
+//
+//                 .content(this.getLegacyMessage(player, placeholders, this.content))
+//                 .button1(this.getLegacyMessage(player, placeholders, buttons.get(0).getText()))
+//                 .button2(this.getLegacyMessage(player, placeholders, buttons.get(1).getText()))
+//                 .validResultHandler((form, responseData) -> {
+//                     placeholders.register("content", form.content());
+//                     int id = responseData.clickedButtonId();
+//                     buttons.get(id).onClick(player, inventoryEngine, id, placeholders);
+//                 });
+        ModalForm.Builder builder = ModalForm.builder();
+
+        builder.title(this.getLegacyTitle(player, inventoryEngine, placeholders));
+        builder.content(this.getLegacyMessage(player, placeholders, this.content));
+
+        builder.button1(this.getLegacyMessage(player, placeholders, buttons.get(0).getText()));
+        if (buttons.size() > 1) {
+            builder.button2(this.getLegacyMessage(player, placeholders, buttons.get(1).getText()));
+        }
+
+        builder.validResultHandler((form, responseData) -> {
+            placeholders.register("content", form.content());
+            int id = responseData.clickedButtonId();
+            buttons.get(id).onClick(player, inventoryEngine, id, placeholders);
+        });
+        return builder;
     }
 }
