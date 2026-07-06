@@ -18,8 +18,8 @@ public class ModalBedrockInventoryTypeLoader extends AbstractBedrockInventoryTyp
         String content = configuration.getString("content", "");
         List<BasicBedrockComponentButton> bodyButtons = this.loadButtons(configuration, file, "buttons", BasicBedrockComponentButton.class, null, menuPlugin);
         int buttonSize = bodyButtons.size();
-        if (buttonSize < 1) {
-            Logger.error("MODAL type requires at least 1 button. Found: " + buttonSize + ". Please add more buttons to the configuration.");
+        if (buttonSize < 2) {
+            Logger.error("MODAL type requires at least 2 button. Found: " + buttonSize + ". Please add more buttons to the configuration.");
             return null;
         } else if (buttonSize > 2) {
             Logger.info("MODAL type supports a maximum of 2 buttons. Only the first two are considered.", Logger.LogType.ERROR);
