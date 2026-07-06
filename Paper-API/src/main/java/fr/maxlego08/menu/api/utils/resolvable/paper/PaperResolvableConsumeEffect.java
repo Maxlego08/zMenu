@@ -6,12 +6,8 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
-import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.set.RegistryKeySet;
-import io.papermc.paper.registry.set.RegistrySet;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -64,21 +60,12 @@ public sealed interface PaperResolvableConsumeEffect extends Resolvable<ConsumeE
         }
     }
 
-    record RemoveEffects(@NotNull List<Resolvable<String>> effectTypes) implements PaperResolvableConsumeEffect {
+    record RemoveEffects(@NotNull Resolvable<RegistryKeySet<PotionEffectType>> effectTypes) implements PaperResolvableConsumeEffect {
         @Override
         public @Nullable ConsumeEffect resolve(@NotNull BuildContext context) {
-            List<TypedKey<PotionEffectType>> keys = new ArrayList<>();
-            for (Resolvable<String> resolvableType : this.effectTypes) {
-                String resolved = resolvableType.resolve(context);
-                if (resolved == null) continue;
-                NamespacedKey key = NamespacedKey.fromString(resolved);
-                if (key == null) continue;
-                PotionEffectType pet = Registry.EFFECT.getOrThrow(key);
-                keys.add(TypedKey.create(RegistryKey.MOB_EFFECT, pet.key()));
-            }
-            if (keys.isEmpty()) return null;
-            RegistryKeySet<PotionEffectType> registryKeySet = RegistrySet.keySet(RegistryKey.MOB_EFFECT, keys);
-            return ConsumeEffect.removeEffects(registryKeySet);
+            RegistryKeySet<PotionEffectType> keys = this.effectTypes.resolve(context);
+            if (keys == null) return null;
+            return ConsumeEffect.removeEffects(keys);
         }
     }
 }

@@ -5,6 +5,7 @@ plugins {
 dependencies {
     testImplementation(project(":Test:Base"))
     testImplementation(project(":"))
+    testImplementation(project(":Hooks:Paper-26"))
     testRuntimeOnly(libs.reflections)
     paperweightDevelopmentBundle(libs.paperDevBundle2612)
     testImplementation(libs.paper.api.latest)

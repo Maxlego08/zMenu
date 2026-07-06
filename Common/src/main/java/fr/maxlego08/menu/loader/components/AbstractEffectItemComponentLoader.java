@@ -5,7 +5,9 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
 import fr.maxlego08.menu.api.utils.resolvable.lang.*;
 import fr.maxlego08.menu.api.utils.resolvable.paper.PaperResolvableConsumeEffect;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableRegistryKeySet;
 import fr.maxlego08.menu.common.enums.ConsumeEffectType;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.potion.PotionEffect;
@@ -191,19 +193,11 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
             }
             case CLEAR_ALL_EFFECTS -> new PaperResolvableConsumeEffect.ClearAllEffects();
             case REMOVE_EFFECTS -> {
-                List<Resolvable<String>> effectTypes = new ArrayList<>();
                 Object effectsObj = effectMap.get("effects");
-                if (effectsObj instanceof String single) {
-                    effectTypes.add(asResolvableString(single));
-                } else if (effectsObj instanceof List<?> list) {
-                    for (Object item : list) {
-                        if (item instanceof String s) {
-                            effectTypes.add(asResolvableString(s));
-                        }
-                    }
-                }
-                if (effectTypes.isEmpty()) yield null;
-                yield new PaperResolvableConsumeEffect.RemoveEffects(effectTypes);
+                if (effectsObj == null) yield null;
+                yield new PaperResolvableConsumeEffect.RemoveEffects(
+                        ResolvableRegistryKeySet.typedKeySet(RegistryKey.MOB_EFFECT, effectsObj)
+                );
             }
         };
     }
@@ -236,6 +230,10 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
         );
     }
 
+    private static @NotNull Resolvable<String> asResolvableString(@NotNull String value) {
+        return value.contains("%") ? ResolvableString.ofExpression(value) : ResolvableString.of(value);
+    }
+
     private static @NotNull ResolvableInt asRawResolvableInt(@NotNull Map<String, Object> map, @NotNull String key, int defaultValue) {
         Object value = map.get(key);
         if (value instanceof Number number) return ResolvableInt.of(number.intValue());
@@ -250,9 +248,4 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
         return ResolvableBoolean.of(defaultValue);
     }
 
-
-
-    private static @NotNull Resolvable<String> asResolvableString(@NotNull String value) {
-        return value.contains("%") ? ResolvableString.ofExpression(value) : ResolvableString.of(value);
-    }
 }

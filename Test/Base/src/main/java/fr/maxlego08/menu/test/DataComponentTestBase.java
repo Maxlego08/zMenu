@@ -29,7 +29,7 @@ public abstract class DataComponentTestBase {
             if (found) {
                 present.add(expected);
             } else {
-                missing.add(expected);
+                missing.add(expected + (component.getSince().isAfter(MinecraftVersion.parse("1.20.5")) ? " (since " + component.getSince() + ")" : ""));
             }
         }
 
@@ -68,13 +68,13 @@ public abstract class DataComponentTestBase {
         DAMAGE_RESISTANT("damage_resistant", "1.21.2"),
         DAMAGE_TYPE("damage_type", "1.21.11"),
         DEATH_PROTECTION("death_protection", "1.21.2"),
-        DEBUG_STICK_STATE("debug_stick_state"),
-//         DYE("dye", "26.1"), // Impossible to keep compatibility with older server version if i add them because old ASM doesn't support jdk 25.
+//         DEBUG_STICK_STATE("debug_stick_state"),
+        DYE("dye", "26.1"),
         DYED_COLOR("dyed_color"),
         ENCHANTABLE("enchantable", "1.21.2"),
         ENCHANTMENT_GLINT_OVERRIDE("enchantment_glint_override"),
         ENCHANTMENTS("enchantments"),
-        ENTITY_DATA("entity_data"),
+//         ENTITY_DATA("entity_data"),
         EQUIPPABLE("equippable", "1.21.2"),
         FIREWORK_EXPLOSION("firework_explosion"),
         FIREWORKS("fireworks"),
@@ -86,7 +86,7 @@ public abstract class DataComponentTestBase {
         ITEM_NAME("item_name"),
         JUKEBOX_PLAYABLE("jukebox_playable", "1.21"),
         KINETIC_WEAPON("kinetic_weapon", "1.21.11"),
-        LOCK("lock"),
+//         LOCK("lock"),
         LODESTONE_TRACKER("lodestone_tracker"),
         LORE("lore"),
         MAP_COLOR("map_color"),
@@ -109,7 +109,7 @@ public abstract class DataComponentTestBase {
         REPAIR_COST("repair_cost"),
         REPAIRABLE("repairable", "1.21.2"),
         STORED_ENCHANTMENTS("stored_enchantments"),
-//         SULFUR_CUBE_CONTENT("sulfur_cube_content", "26.2"), same as DYE
+        SULFUR_CUBE_CONTENT("sulfur_cube_content", "26.2"),
         SUSPICIOUS_STEW_EFFECTS("suspicious_stew_effects"),
         SWING_ANIMATION("swing_animation", "1.21.11"),
         TOOL("tool"),

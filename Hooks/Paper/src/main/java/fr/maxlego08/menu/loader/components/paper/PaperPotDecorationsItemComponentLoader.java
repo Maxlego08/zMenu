@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader.components.paper;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
-import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
@@ -20,12 +19,11 @@ import java.util.List;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
-@PaperOnly
 public class PaperPotDecorationsItemComponentLoader extends ItemComponentLoader {
     private static final int SIDES = 4;
 
     public PaperPotDecorationsItemComponentLoader() {
-        super("pot_decorations");
+        super("pot-decorations");
     }
 
     @Override
