@@ -88,6 +88,7 @@
 - Fixed a same-named inventory in two different folders reloading the **wrong** file (zMenu indexes
   inventories by bare name): the synced inventory is now resolved by its actual file path. Concurrent
   syncs of same-named inventories also no longer share a temp file.
+- Fixed dialog config permission : https://github.com/Maxlego08/zMenu/issues/252
 
 # 1.1.1.5
 
