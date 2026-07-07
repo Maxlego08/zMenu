@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.itemstack.components.PaperMaxStackSizeComponent;
+import fr.maxlego08.menu.api.itemstack.components.MaxStackSizeComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,7 +30,7 @@ public class MaxStackSizeItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         ResolvableInt maxStackSize = this.asResolvableInt(configuration, path);
         if (maxStackSize != null) {
-            return new PaperMaxStackSizeComponent(maxStackSize);
+            return new MaxStackSizeComponent(maxStackSize);
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.components.paper;
+package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
@@ -8,7 +8,6 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.PaperDeathProtectionComponent;
 import fr.maxlego08.menu.api.utils.resolvable.paper.PaperResolvableConsumeEffect;
 import fr.maxlego08.menu.api.utils.resolvable.paper.PaperResolvableDeathProtection;
-import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

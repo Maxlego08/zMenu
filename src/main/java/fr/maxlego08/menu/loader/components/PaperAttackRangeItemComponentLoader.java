@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.components.paper;
+package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
@@ -6,7 +6,6 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.AttackRangeComponent;
-import fr.maxlego08.menu.loader.components.AbstractAttackRangeItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.components.paper;
+package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;

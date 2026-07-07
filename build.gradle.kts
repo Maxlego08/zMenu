@@ -111,7 +111,9 @@ allprojects {
 
     dependencies {
 
-        val hasAlreadyPaperDependency = configurations.matching { it.name == "compileOnly" || it.name == "implementation" || it.name == "api" }.flatMap { it.dependencies }.any { dep -> dep.group == "io.papermc.paper" }
+        val hasAlreadyPaperDependency = configurations.matching { it.name == "compileOnly" || it.name == "implementation" || it.name == "api" }.flatMap { it.dependencies }.any {
+            dep -> dep.group == "io.papermc.paper"
+        }
 
         if (!hasAlreadyPaperDependency) {
             compileOnly(rootLibs.paper.api)
@@ -123,6 +125,7 @@ allprojects {
         implementation(rootLibs.sarah)
         implementation(rootLibs.currenciesapi)
         implementation(rootLibs.folialib)
+        implementation(rootLibs.paperdispatch)
 
         implementation(rootLibs.xseries)
         implementation(rootLibs.exp4j)
@@ -173,6 +176,7 @@ tasks {
         relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")
         relocate("org.java_websocket", "fr.maxlego08.menu.hooks.java_websocket")
+        relocate("fr.robie.paperdispatch", "fr.maxlego08.menu.hooks.paperdispatch")
 
         rootProject.extra.properties["sha"]?.let { sha ->
             archiveClassifier.set("${rootProject.extra.properties["classifier"]}-${sha}")

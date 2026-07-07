@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.loader.components.paper;
+package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
@@ -11,7 +11,6 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.paper.PaperResolvableConsumeEffect;
-import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;

@@ -1,5 +1,7 @@
-package fr.maxlego08.menu.loader.components.paper;
+package fr.maxlego08.menu.loader.components;
 
+import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
+import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.PaperProfileComponent;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@AutoComponentLoader
+@SinceVersion("1.20.5")
 public class PaperProfileComponentLoader extends ItemComponentLoader {
 
     public PaperProfileComponentLoader() {

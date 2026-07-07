@@ -23,6 +23,7 @@ folialib = "0.5.1"
 xseries = "13.3.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
+paper-dispatch = "1.0.1"
 
 # Integration Hooks
 placeholderapi = "2.11.6"
@@ -94,6 +95,7 @@ eco = { group = "com.willfp", name = "eco", version.ref = "eco" }
 floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
 breweryx = { group = "com.dre.brewery", name = "BreweryX", version.ref = "breweryx" }
 denizen = { group= "com.denizenscript", name = "denizen", version.ref = "denizen" }
+paperdispatch = { group = "com.github.1robie.paper-dispatch", name = "paper-dispatch", version.ref = "paper-dispatch" }
 
 # Testing
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit-bom" }

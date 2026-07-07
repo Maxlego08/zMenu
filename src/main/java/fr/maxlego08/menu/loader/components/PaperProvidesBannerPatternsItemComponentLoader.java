@@ -1,13 +1,16 @@
-package fr.maxlego08.menu.loader.components.paper;
+package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.itemstack.components.PaperNoteBlockSoundComponent;
+import fr.maxlego08.menu.api.itemstack.components.PaperProvidesBannerPatternsComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.tag.TagKey;
+import net.kyori.adventure.key.Key;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -16,19 +19,21 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 @PaperOnly
-public class PaperNoteBlockSoundItemComponentLoader extends ItemComponentLoader {
+public class PaperProvidesBannerPatternsItemComponentLoader extends ItemComponentLoader {
 
-    public PaperNoteBlockSoundItemComponentLoader(){
-        super("note-block-sound");
+    public PaperProvidesBannerPatternsItemComponentLoader(){
+        super("provides-banner-patterns");
     }
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        ResolvableNamespacedKey resolvableNamespacedKey = ResolvableNamespacedKey.autoOrNull(configuration.getString(path));
-        if (resolvableNamespacedKey == null) return null;
-        return new PaperNoteBlockSoundComponent(resolvableNamespacedKey);
+        String value = configuration.getString(path);
+        if (value == null) return null;
+        Key key = Key.key(value);
+        TagKey<PatternType> patternTypeTagKey = RegistryKey.BANNER_PATTERN.tagKey(key);
+        return new PaperProvidesBannerPatternsComponent(patternTypeTagKey);
     }
 }
