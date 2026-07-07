@@ -13,7 +13,6 @@ pluginManagement {
 }
 
 
-include("Paper-API")
 include("API")
 include("Common")
 
@@ -37,4 +36,3 @@ file("Test").listFiles()?.forEach { file ->
         include(":Test:${file.name}")
     }
 }
-include("Hooks:Paper-26")

@@ -7,11 +7,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
-import fr.maxlego08.menu.common.interfaces.VariantComponent;
-import fr.maxlego08.menu.itemstack.components.paper.PaperVariantComponent;
-import fr.maxlego08.menu.itemstack.components.spigot.SpigotVariantComponent;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +18,10 @@ public class ZComponentsManager implements ComponentsManager {
 
     @Override
     public void initializeDefaultComponents(MenuPlugin plugin) {
-        VariantComponent variantComponent = PlatformType.isPaper() ? new PaperVariantComponent() : new SpigotVariantComponent();
         ClassRegistry<ItemComponentLoader,MenuPlugin> registry =
                 ClassRegistry.<ItemComponentLoader, MenuPlugin>of(ItemComponentLoader.class, this::registerComponent)
                         .tryNoArgsConstructor()
                         .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(pl))
-                        .tryConstructor((clazz, pl) -> clazz.getDeclaredConstructor(MenuPlugin.class, VariantComponent.class).newInstance(pl, variantComponent))
                         .errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", plugin, AutoComponentLoader.class, registry);

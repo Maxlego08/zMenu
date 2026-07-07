@@ -175,7 +175,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         inventory.setTranslatedNames(MenuItemStackLoader.getTranslatedName(configuration, path));
 
-        List<InventoryOption> inventoryOptions = new ArrayList<>();
+        List<fr.maxlego08.menu.api.InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
             for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
                 InventoryOption instance = this.createInstance(entry.getKey(), optionClass);

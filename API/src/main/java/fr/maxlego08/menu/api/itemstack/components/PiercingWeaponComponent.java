@@ -3,13 +3,11 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.PiercingWeapon;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

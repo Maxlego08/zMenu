@@ -56,7 +56,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String data;
     private String tooltipStyle;
     private String durability;
-    private Potion potion;
+    private fr.maxlego08.menu.api.itemstack.Potion potion;
     private List<String> lore = new ArrayList<>();
     private List<ItemFlag> flags = new ArrayList<>();
     private String displayName;

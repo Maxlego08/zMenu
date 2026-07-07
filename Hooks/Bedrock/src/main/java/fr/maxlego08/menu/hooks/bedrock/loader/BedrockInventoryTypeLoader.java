@@ -38,7 +38,7 @@ public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?
             return buttons;
         }
 
-        Loader<Button> loader =menuPlugin.getButtonManager()
+        Loader<Button> loader = menuPlugin.getButtonManager()
                 .getLoaderButton(menuPlugin, file, 54, new HashMap<>());
 
         for (String key : section.getKeys(false)) {

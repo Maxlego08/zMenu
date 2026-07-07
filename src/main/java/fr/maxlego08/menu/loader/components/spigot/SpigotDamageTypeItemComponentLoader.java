@@ -7,8 +7,6 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.DamageTypeComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableDamageType;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

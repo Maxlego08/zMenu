@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.itemstack.components.paper.PaperAttackRangeComponent;
+import fr.maxlego08.menu.api.itemstack.components.AttackRangeComponent;
 import fr.maxlego08.menu.loader.components.AbstractAttackRangeItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,7 +32,7 @@ public class PaperAttackRangeItemComponentLoader extends AbstractAttackRangeItem
             return null;
         }
 
-        return new PaperAttackRangeComponent(
+        return new AttackRangeComponent(
                 this.getMinReachResolvable(componentSection, path),
                 this.getMaxReachResolvable(componentSection, path),
                 this.getMinCreativeReachResolvable(componentSection, path),

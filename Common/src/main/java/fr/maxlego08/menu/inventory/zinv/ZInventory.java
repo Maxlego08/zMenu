@@ -82,7 +82,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     }
 
     @Override
-    public String getName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+    public String getName(@NotNull Player player, InventoryEngine inventoryDefault, fr.maxlego08.menu.api.utils.Placeholders placeholders) {
 
         if (!this.conditionalNames.isEmpty()) {
             ConditionalName selected = null;

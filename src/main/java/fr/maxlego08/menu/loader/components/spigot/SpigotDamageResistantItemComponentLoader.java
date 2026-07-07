@@ -7,17 +7,12 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.DamageResistantComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableDamageTypeTag;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.damage.DamageType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")

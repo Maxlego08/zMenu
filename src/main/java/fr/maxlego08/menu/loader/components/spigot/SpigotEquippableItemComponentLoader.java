@@ -30,7 +30,7 @@ public class SpigotEquippableItemComponentLoader extends ItemComponentLoader {
         if (componentSection == null) return null;
 
         ResolvableEquipmentSlot slot = this.loadEquipmentSlot(componentSection.getString("slot"));
-        ResolvableNamespacedKey equipSound = this.loadNamespacedKey(componentSection.getString("equip-sound"));
+        fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey equipSound = this.loadNamespacedKey(componentSection.getString("equip-sound"));
         ResolvableNamespacedKey assetId = this.loadNamespacedKey(componentSection.getString("asset-id"));
 
         ResolvableBoolean dispensable = this.asResolvableBoolean(componentSection, "dispensable", true);

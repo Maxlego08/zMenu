@@ -975,7 +975,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        return this.postProcessSkullItemStack(itemStack, button, player, new Placeholders());
+        return this.postProcessSkullItemStack(itemStack, button, player, new fr.maxlego08.menu.api.utils.Placeholders());
     }
 
     @Override

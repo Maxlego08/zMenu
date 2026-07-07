@@ -114,7 +114,7 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
             Object idObj = potionEffectMap.get("id");
             if (!(idObj instanceof String idString)) return null;
 
-            ResolvableString typeId = ResolvableString.auto(idString);
+            fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString typeId = ResolvableString.auto(idString);
             ResolvableInt duration = ResolvableInt.of(potionEffectMap, "duration", 1);
             ResolvableBoolean amplified = ResolvableBoolean.of(potionEffectMap, "amplified", false);
 

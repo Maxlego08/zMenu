@@ -2,13 +2,13 @@ package fr.maxlego08.menu.loader.components.paper;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.itemstack.components.PaperProfileComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableProfileResolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableUUID;
-import fr.maxlego08.menu.itemstack.components.paper.PaperProfileComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.profile.PlayerTextures;

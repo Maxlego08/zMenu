@@ -97,7 +97,7 @@ import java.util.*;
  *
  * @author Maxlego08
  */
-public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
+public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPlugin {
     private static ZMenuPlugin instance;
 
     private final boolean isMockBukkitServer;

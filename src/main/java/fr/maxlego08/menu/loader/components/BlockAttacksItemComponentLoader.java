@@ -9,7 +9,10 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
-import fr.maxlego08.menu.api.utils.resolvable.paper.*;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableDamageReduction;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableItemDamageFunction;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableRegistryKeySet;
+import fr.maxlego08.menu.api.utils.resolvable.paper.TagKeyResolvable;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.set.RegistryKeySet;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,7 +41,7 @@ public final class BlockAttacksItemComponentLoader extends ItemComponentLoader {
         ResolvableFloat disableCooldownScale = this.asResolvableFloat(componentSection, "disable-cooldown-scale");
         ResolvableNamespacedKey blockSound = this.asResolvableKey(componentSection, "block-sound");
         ResolvableNamespacedKey disableSound = this.asResolvableKey(componentSection, "disable-sound");
-        TagKeyResolvable<DamageType> bypassedBy = ResolvableRegistryKey.tagKeyOrNull(RegistryKey.DAMAGE_TYPE, componentSection.getString("bypassed_by"));
+        TagKeyResolvable<DamageType> bypassedBy = fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableRegistryKey.tagKeyOrNull(RegistryKey.DAMAGE_TYPE, componentSection.getString("bypassed_by"));
 
         ResolvableItemDamageFunction itemDamage = null;
         ConfigurationSection itemDamageSection = componentSection.getConfigurationSection("item_damage");

@@ -1,25 +1,32 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
+import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.AttackRange;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class AttackRangeComponent extends ItemComponent {
+public final class AttackRangeComponent extends ItemComponent {
 
-    protected final ResolvableFloat minReach;
-    protected final ResolvableFloat maxReach;
-    protected final ResolvableFloat minCreativeReach;
-    protected final ResolvableFloat maxCreativeReach;
-    protected final ResolvableFloat hitboxMargin;
-    protected final ResolvableFloat mobFactor;
+    private final ResolvableFloat minReach;
+    private final ResolvableFloat maxReach;
+    private final ResolvableFloat minCreativeReach;
+    private final ResolvableFloat maxCreativeReach;
+    private final ResolvableFloat hitboxMargin;
+    private final ResolvableFloat mobFactor;
 
-    protected AttackRangeComponent(
-            @NotNull ResolvableFloat minReach,
-            @NotNull ResolvableFloat maxReach,
-            @NotNull ResolvableFloat minCreativeReach,
-            @NotNull ResolvableFloat maxCreativeReach,
-            @NotNull ResolvableFloat hitboxMargin,
-            @NotNull ResolvableFloat mobFactor) {
+    public AttackRangeComponent(
+            @Nullable ResolvableFloat minReach,
+            @Nullable ResolvableFloat maxReach,
+            @Nullable ResolvableFloat minCreativeReach,
+            @Nullable ResolvableFloat maxCreativeReach,
+            @Nullable ResolvableFloat hitboxMargin,
+            @Nullable ResolvableFloat mobFactor) {
         this.minReach = minReach;
         this.maxReach = maxReach;
         this.minCreativeReach = minCreativeReach;
@@ -50,5 +57,22 @@ public abstract class AttackRangeComponent extends ItemComponent {
 
     public ResolvableFloat getMobFactor() {
         return this.mobFactor;
+    }
+
+    @Override
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+        AttackRange.Builder builder = AttackRange.attackRange();
+
+        Resolvable.applyResolvable(context, this.minReach, builder::minReach);
+        Resolvable.applyResolvable(context, this.maxReach, builder::maxReach);
+        Resolvable.applyResolvable(context, this.minCreativeReach, builder::minCreativeReach);
+        Resolvable.applyResolvable(context, this.maxCreativeReach, builder::maxCreativeReach);
+        Resolvable.applyResolvable(context, this.hitboxMargin, builder::hitboxMargin);
+        Resolvable.applyResolvable(context, this.mobFactor, builder::mobFactor);
+
+        itemStack.setData(
+                DataComponentTypes.ATTACK_RANGE,
+                builder.build()
+        );
     }
 }

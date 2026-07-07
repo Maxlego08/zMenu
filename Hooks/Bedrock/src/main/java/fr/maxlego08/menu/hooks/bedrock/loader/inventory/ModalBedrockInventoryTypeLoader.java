@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.buttons.bedrock.components.BasicBedrockComponentButton;
 import fr.maxlego08.menu.hooks.bedrock.inventory.ZModalBedrockInventory;
 import fr.maxlego08.menu.hooks.bedrock.loader.AbstractBedrockInventoryTypeLoader;
+import fr.maxlego08.menu.hooks.bedrock.loader.BedrockInventoryTypeLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ public class ModalBedrockInventoryTypeLoader extends AbstractBedrockInventoryTyp
     @Override
     protected ZModalBedrockInventory loadInventory(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String title) {
         String content = configuration.getString("content", "");
-        List<BasicBedrockComponentButton> bodyButtons = this.loadButtons(configuration, file, "buttons", BasicBedrockComponentButton.class, null, menuPlugin);
+        List<BasicBedrockComponentButton> bodyButtons = BedrockInventoryTypeLoader.loadButtons(configuration, file, "buttons", BasicBedrockComponentButton.class, null, menuPlugin);
         int buttonSize = bodyButtons.size();
         if (buttonSize < 2) {
             Logger.error("MODAL type requires at least 2 button. Found: " + buttonSize + ". Please add more buttons to the configuration.");

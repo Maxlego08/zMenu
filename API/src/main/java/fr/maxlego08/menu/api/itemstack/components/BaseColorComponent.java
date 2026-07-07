@@ -1,15 +1,12 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ShieldMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,11 +24,6 @@ public class BaseColorComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, ShieldMeta.class, shieldMeta -> {
-            this.applyResolvable(context, shieldMeta::setBaseColor, this.baseColorResolvable);
-        });
-        if (!apply && Configuration.enableDebug) {
-            Logger.info("Could not apply BaseColorComponent to item: " + itemStack.getType().name() + " because it does not support shield meta.");
-        }
+        Resolvable.applyResolvable(context, this.baseColorResolvable, color -> itemStack.setData(DataComponentTypes.BASE_COLOR, color));
     }
 }

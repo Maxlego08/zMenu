@@ -2,7 +2,6 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.utils.itemstack.ZToolRule;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
@@ -14,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

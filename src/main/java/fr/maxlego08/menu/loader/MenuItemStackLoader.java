@@ -322,7 +322,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
             boolean extended = configuration.getBoolean(path + "extended", false);
             boolean arrow = configuration.getBoolean(path + "arrow", false);
 
-            Potion potion = new Potion(type, level, splash, extended, arrow);
+            fr.maxlego08.menu.api.itemstack.Potion potion = new Potion(type, level, splash, extended, arrow);
             potion.setColor(potionColor);
             menuItemStack.setPotion(potion);
         }
