@@ -1,44 +1,54 @@
 package fr.maxlego08.menu.command.commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuGiveItem extends VCommand {
+public class CommandMenuGiveItem extends SubCommand<ZMenuPlugin> {
     private final ItemManager itemManager;
+
     public CommandMenuGiveItem(ZMenuPlugin plugin) {
-        super(plugin);
+        super(plugin, "giveitem");
         this.itemManager = plugin.getItemManager();
-        this.addSubCommand("giveitem");
-        this.setDescription(Message.DESCRIPTION_GIVE_ITEM);
-        this.setPermission(Permission.ZMENU_GIVE_ITEM);
-        this.addRequireArg("itemId",(sender,args)-> this.itemManager.getItemIds().stream().toList());
-        this.addOptionalArg("player");
+        this.setPermission(Permission.ZMENU_GIVE_ITEM.getPermission());
+        this.addRequiredArgument(Commands.argument("item-id", StringArgumentType.string()).suggests((context, builder) -> {
+            this.itemManager.getItemIds().stream().filter(id -> id.toLowerCase().startsWith(builder.getRemainingLowerCase())).forEach(builder::suggest);
+            return builder.buildFuture();
+        }));
+        this.addOptionalArgument("player", ArgumentTypes.player());
 
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-        String itemId = this.argAsString(0);
-        Player target = this.argAsPlayer(1, this.player);
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        String itemId = commandDispatch.getArgument("item-id", String.class);
+        Player target = commandDispatch.getOptionalArgument("player", Player.class).orElse(commandDispatch.getPlayer());
         if (target == null) {
-            this.message(plugin, this.sender, Message.COMMAND_PLAYER_NOT_FOUND, "%player%", this.argAsString(1));
-            return CommandType.DEFAULT;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.COMMAND_PLAYER_NOT_FOUND, "%player%", commandDispatch.getArgument("player", String.class));
+            return CommandResultType.FAILURE;
         }
+
         if (!this.itemManager.isCustomItem(itemId)) {
-            this.message(plugin, this.sender, Message.GIVE_ITEM_NOT_FOUND, "%itemId%", itemId);
-            return CommandType.DEFAULT;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.GIVE_ITEM_NOT_FOUND, "%itemId%", itemId);
+            return CommandResultType.FAILURE;
         }
+
         this.itemManager.giveItem(target, itemId);
-        if (target.equals(this.player)) {
-            this.message(plugin, this.sender, Message.GIVE_ITEM_SUCCESS_SELF, "%itemId%", itemId);
+        if (target.equals(commandDispatch.getPlayer())) {
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.GIVE_ITEM_SUCCESS_SELF, "%itemId%", itemId);
         } else {
-            this.message(plugin, this.sender, Message.GIVE_ITEM_SUCCESS_OTHER, "%itemId%", itemId, "%player%", target.getName());
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.GIVE_ITEM_SUCCESS_OTHER, "%itemId%", itemId, "%player%", target.getName());
         }
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
 }

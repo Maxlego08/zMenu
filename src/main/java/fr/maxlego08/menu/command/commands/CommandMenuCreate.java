@@ -1,48 +1,51 @@
 package fr.maxlego08.menu.command.commands;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-public class CommandMenuCreate extends VCommand {
+public class CommandMenuCreate extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuCreate(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_CREATE);
-        this.setDescription(Message.DESCRIPTION_CREATE);
-        this.addSubCommand("create");
-        this.addRequireArg("file name", (a, b) -> new ArrayList<>());
-        this.addRequireArg("inventory size", (a, b) -> Arrays.asList("9", "18", "27", "36", "45", "54"));
-        this.addRequireArg("inventory name", (a, b) -> new ArrayList<>());
-        this.setExtendedArgs(true);
+        super(plugin, "create");
+        this.setPermission(Permission.ZMENU_CREATE.getPermission());
+
+        this.addRequiredArgument("file-name", StringArgumentType.string());
+        this.addRequiredArgument(Commands.argument("inventory-size", IntegerArgumentType.integer(9, 54)).suggests((context, builder) -> {
+            builder.suggest("9");
+            builder.suggest("18");
+            builder.suggest("27");
+            builder.suggest("36");
+            builder.suggest("45");
+            builder.suggest("54");
+            return builder.buildFuture();
+        }));
+
+        this.addRequiredArgument("inventory-name", StringArgumentType.greedyString());
+
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-
-        String fileName = this.argAsString(0);
-        int inventorySize = this.argAsInteger(1);
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        String fileName = commandDispatch.getArgument("file-name", String.class);
+        int inventorySize = commandDispatch.getArgument("inventory-size", Integer.class);
+        String inventoryName = commandDispatch.getArgument("inventory-name", String.class);
 
         if (inventorySize % 9 != 0 || inventorySize < 9 || inventorySize > 54) {
-            this.message(plugin, this.sender, Message.INVENTORY_CREATE_ERROR_SIZE);
-            return CommandType.DEFAULT;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_CREATE_ERROR_SIZE);
+            return CommandResultType.FAILURE;
         }
 
-        StringBuilder inventoryName = new StringBuilder();
+        this.plugin.getInventoryManager().createNewInventory(commandDispatch.getSender(), fileName, inventorySize, inventoryName);
 
-        for (int i = 3; i < this.args.length; i++) {
-            inventoryName.append(this.args[i]);
-            if (i != this.args.length - 1) inventoryName.append(" ");
-        }
-
-        this.plugin.getInventoryManager().createNewInventory(this.sender, fileName, inventorySize, inventoryName.toString());
-
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
-
 }

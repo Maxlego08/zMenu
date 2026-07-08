@@ -40,6 +40,8 @@ public interface DataManager {
     @NotNull
     Optional<Data> getData(@NotNull UUID uniqueId,@NotNull String key);
 
+    List<String> getKeys(@NotNull UUID playerId);
+
     /**
      * Clear all player's data
      */

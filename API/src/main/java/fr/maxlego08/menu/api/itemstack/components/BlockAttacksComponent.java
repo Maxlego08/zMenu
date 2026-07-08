@@ -43,16 +43,16 @@ public class BlockAttacksComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         BlocksAttacks.Builder builder = BlocksAttacks.blocksAttacks();
 
-        Resolvable.applyResolvable(context, blockDelaySeconds, builder::blockDelaySeconds);
-        Resolvable.applyResolvable(context, disableCooldownScale, builder::disableCooldownScale);
-        Resolvable.applyResolvable(context, blockSound, builder::blockSound);
-        Resolvable.applyResolvable(context, disableSound, builder::disableSound);
+        Resolvable.applyResolvable(context, this.blockDelaySeconds, builder::blockDelaySeconds);
+        Resolvable.applyResolvable(context, this.disableCooldownScale, builder::disableCooldownScale);
+        Resolvable.applyResolvable(context, this.blockSound, builder::blockSound);
+        Resolvable.applyResolvable(context, this.disableSound, builder::disableSound);
 
-        Resolvable.applyResolvable(context, bypassedBy, builder::bypassedBy);
+        Resolvable.applyResolvable(context, this.bypassedBy, builder::bypassedBy);
 
-        Resolvable.applyResolvable(context, itemDamageFunction, builder::itemDamage);
+        Resolvable.applyResolvable(context, this.itemDamageFunction, builder::itemDamage);
 
-        Resolvable.applyResolvable(context, damageReductions, builder::damageReductions);
+        Resolvable.applyResolvable(context, this.damageReductions, builder::damageReductions);
 
         itemStack.setData(DataComponentTypes.BLOCKS_ATTACKS, builder.build());
     }

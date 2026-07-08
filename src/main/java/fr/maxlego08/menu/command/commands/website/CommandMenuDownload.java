@@ -1,45 +1,42 @@
 package fr.maxlego08.menu.command.commands.website;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
-public class CommandMenuDownload extends VCommand {
+public class CommandMenuDownload extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuDownload(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setDescription(Message.DESCRIPTION_DOWNLOAD);
-        this.addSubCommand("download", "dl");
-        this.setPermission(Permission.ZMENU_DOWNLOAD);
-        this.addRequireArg("link");
-        this.addOptionalArg("force", (a, b) -> Arrays.asList("true", "false"));
+        super(plugin, "download", "dl");
+        this.setPermission(Permission.ZMENU_DOWNLOAD.getPermission());
+        this.addRequiredArgument("link", StringArgumentType.string());
+        this.addOptionalArgument("force", BoolArgumentType.bool());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
 
-        String link = this.argAsString(0);
-        boolean force = this.argAsBoolean(1, false);
+        String link = commandDispatch.getArgument("link", String.class);
+        boolean force = commandDispatch.getArgument("force", Boolean.class, false);
 
         if (Configuration.enableDownloadCommand) {
 
-            Logger.info(this.sender.getName() + " try to download the link '" + link + "' (force: " + force + ") while the command is disable !", Logger.LogType.WARNING);
-            this.message(plugin, this.sender, "&cThe command is disable for safety reason, you need to enable it in config.json.");
-
-            return CommandType.DEFAULT;
+            Logger.info(commandDispatch.getSender().getName() + " try to download the link '" + link + "' (force: " + force + ") while the command is disable !", Logger.LogType.WARNING);
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), "&cThe command is disable for safety reason, you need to enable it in config.json.");
+            return CommandResultType.SUCCESS;
         }
 
         /*DownloadFile downloadFile = new DownloadFile();
         runAsync(plugin, () -> downloadFile.download(plugin, this.sender, link));*/
-        plugin.getWebsiteManager().downloadFromUrl(this.sender, link, force);
-
-        return CommandType.SUCCESS;
+        this.plugin.getWebsiteManager().downloadFromUrl(commandDispatch.getSender(), link, force);
+        return CommandResultType.SUCCESS;
     }
-
 }

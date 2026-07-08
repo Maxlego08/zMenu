@@ -46,9 +46,9 @@ public class DataComponentTest extends DataComponentTestBase {
 
     @Test
     public void testAllKnownComponents() {
-        componentsManager.initializeDefaultComponents(menuPlugin);
+        this.componentsManager.initializeDefaultComponents(menuPlugin);
         
-        Set<String> registered = new HashSet<>(componentsManager.getRegisteredComponentNames());
+        Set<String> registered = new HashSet<>(this.componentsManager.getRegisteredComponentNames());
 
         checkComponents(registered);
     }
@@ -62,7 +62,7 @@ public class DataComponentTest extends DataComponentTestBase {
             }
         };
 
-        componentsManager.registerComponent(first);
+        this.componentsManager.registerComponent(first);
 
         ItemComponentLoader second = new ItemComponentLoader("duplicate-test") {
             @Override
@@ -71,7 +71,7 @@ public class DataComponentTest extends DataComponentTestBase {
             }
         };
 
-        assertThrows(ItemComponentAlreadyRegisterException.class, () -> componentsManager.registerComponent(second));
+        assertThrows(ItemComponentAlreadyRegisterException.class, () -> this.componentsManager.registerComponent(second));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class DataComponentTest extends DataComponentTestBase {
             }
         };
 
-        componentsManager.registerComponent(first);
-        componentsManager.registerComponent(second);
+        this.componentsManager.registerComponent(first);
+        this.componentsManager.registerComponent(second);
     }
 }

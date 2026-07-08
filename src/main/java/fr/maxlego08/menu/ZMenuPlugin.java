@@ -72,6 +72,7 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import fr.maxlego08.menu.zcore.utils.toast.ToastManager;
+import fr.robie.paperdispatch.manager.ICommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -102,6 +103,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     private final boolean isMockBukkitServer;
 
+    private final ICommandManager<ZMenuPlugin> commandManagerLib;
     private final StorageManager storageManager;
     private final ButtonManager buttonManager;
     private final InventoryManager inventoryManager;
@@ -140,6 +142,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         this.metaUpdater = new ClassicMeta();
 
+        this.commandManagerLib = new fr.robie.paperdispatch.manager.CommandManager<>(this);
         this.storageManager = new ZStorageManager(this);
         this.buttonManager = new ZButtonManager(this);
         this.inventoryManager = new ZInventoryManager(this);
@@ -260,7 +263,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21")) && !this.isMockBukkitServer) {
             this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
         }
-        this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
+        this.commandManagerLib.registerCommand(this.commandMenu = new CommandMenu(this));
 
         /* Add Listener */
         this.registerAutoListeners();
@@ -295,7 +298,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) tokenFile.delete(); // Delete old token file
 
-        if (getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
+        if (this.getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
             this.websiteManager.onEnable();
         }
 

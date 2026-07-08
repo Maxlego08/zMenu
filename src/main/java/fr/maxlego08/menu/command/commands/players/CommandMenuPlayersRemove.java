@@ -1,55 +1,56 @@
 package fr.maxlego08.menu.command.commands.players;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.players.ZDataManager;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.OfflinePlayerArgument;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public class CommandMenuPlayersRemove extends VCommand {
+public class CommandMenuPlayersRemove extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuPlayersRemove(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_PLAYERS);
-        this.setDescription(Message.DESCRIPTION_PLAYERS_REMOVE);
-        this.addSubCommand("remove");
-        this.addRequireArg("player");
-        this.addRequireArg("key", (sender, args) -> {
-            ZDataManager dataManager = (ZDataManager) plugin.getDataManager();
-            return dataManager.getKeys(args);
-        });
+        super(plugin, "remove", "r");
+        this.setPermission(Permission.ZMENU_PLAYERS_REMOVE.getPermission());
+        this.addRequiredArgument("player", new OfflinePlayerArgument());
+        this.addRequiredArgument(Commands.argument("key", StringArgumentType.string()).suggests((ctx, builder) -> {
+            UUID targetId = ctx.getArgument("player", UUID.class);
+            this.plugin.getDataManager().getKeys(targetId).stream().filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                    .forEach(builder::suggest);
+            return builder.buildFuture();
+        }));
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        DataManager dataManager = commandDispatch.getPlugin().getDataManager();
 
-        DataManager dataManager = plugin.getDataManager();
+        UUID targetId = commandDispatch.getArgument("player", UUID.class);
+        String key = commandDispatch.getArgument("key", String.class);
 
-        OfflinePlayer player = this.argAsOfflinePlayer(0);
-        String key = this.argAsString(1);
-
-        Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
+        Optional<PlayerData> optional = dataManager.getPlayer(targetId);
         if (optional.isEmpty()) {
-            this.message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
-            return CommandType.SUCCESS;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
+            return CommandResultType.SUCCESS;
         }
-
         PlayerData playerData = optional.get();
         if (!playerData.containsKey(key)) {
-            this.message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
-            return CommandType.SUCCESS;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
+            return CommandResultType.SUCCESS;
         }
-
         playerData.removeData(key);
-        this.message(plugin, this.sender, Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", player.getName());
-
-        return CommandType.SUCCESS;
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", commandDispatch.getArgument("player", OfflinePlayer.class).getName());
+        return CommandResultType.SUCCESS;
     }
-
 }

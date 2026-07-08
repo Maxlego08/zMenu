@@ -28,8 +28,8 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void messageWO(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, this.getMessage(message, args));
+    public static void messageWO(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
+        plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
     }
 
     /**
@@ -42,7 +42,7 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     protected void messageWO(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        String result = this.getMessage(message, args);
+        String result = getMessage(message, args);
         plugin.getMetaUpdater().sendMessage(sender, sender instanceof Player ? this.papi(result, (Player) sender, false) : result);
     }
 
@@ -55,8 +55,8 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void message(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(message, args));
+    public static void message(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
+        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
     }
 
     /**
@@ -68,13 +68,13 @@ public abstract class MessageUtils extends LocationUtils {
      * @param args    The arguments - The arguments work in pairs, you must put for
      *                example %test% and then the value
      */
-    protected void message(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
+    public static void message(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
 
         if (sender instanceof ConsoleCommandSender) {
             if (!message.getMessages().isEmpty()) {
-                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(msg, args)));
+                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
             } else {
-                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(message, args));
+                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
             }
         } else {
 
@@ -82,20 +82,20 @@ public abstract class MessageUtils extends LocationUtils {
             switch (message.getType()) {
                 case CENTER:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(this.getMessage(msg, args))));
+                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, getCenteredMessage(getMessage(msg, args))));
                     } else {
-                        plugin.getMetaUpdater().sendMessage(sender, this.getCenteredMessage(this.getMessage(message, args)));
+                        plugin.getMetaUpdater().sendMessage(sender, getCenteredMessage(getMessage(message, args)));
                     }
 
                     break;
                 case ACTION:
-                    plugin.getMetaUpdater().sendAction(player, this.getMessage(message, args));
+                    plugin.getMetaUpdater().sendAction(player, getMessage(message, args));
                     break;
                 case TCHAT:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(msg, args)));
+                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
                     } else {
-                        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + this.getMessage(message, args));
+                        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
                     }
                     break;
                 default:
@@ -104,11 +104,11 @@ public abstract class MessageUtils extends LocationUtils {
         }
     }
 
-    protected String getMessage(IMessage message, Object... args) {
-        return this.getMessage(message.getMessage(), args);
+    public static String getMessage(IMessage message, Object... args) {
+        return getMessage(message.getMessage(), args);
     }
 
-    protected String getMessage(String message, Object... args) {
+    public static String getMessage(String message, Object... args) {
 
         if (args.length % 2 != 0) throw new IllegalArgumentException("Number of invalid arguments. Arguments must be in pairs.");
 
@@ -161,7 +161,7 @@ public abstract class MessageUtils extends LocationUtils {
         }
     }
 
-    protected String getCenteredMessage(String message) {
+    protected static String getCenteredMessage(String message) {
         if (message == null || message.isEmpty()) return "";
         message = ChatColor.translateAlternateColorCodes('&', message);
 

@@ -1,18 +1,17 @@
 package fr.maxlego08.menu.command.commands.website;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuWebsite extends VCommand {
+public class CommandMenuWebsite extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuWebsite(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_WEBSITE);
-        this.setDescription(Message.DESCRIPTION_WEBSITE);
-        this.addSubCommand("website", "w");
+        super(plugin, "website", "w");
+        this.setPermission(Permission.ZMENU_WEBSITE.getPermission());
 
         this.addSubCommand(new CommandMenuDownload(plugin));
         this.addSubCommand(new CommandMenuLogin(plugin));
@@ -21,9 +20,7 @@ public class CommandMenuWebsite extends VCommand {
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-        this.sendSyntax();
-        return CommandType.SUCCESS;
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        return CommandResultType.FAILURE;
     }
-
 }

@@ -10,20 +10,20 @@ import java.time.temporal.TemporalAmount;
 public class ConfigDialogBuilder {
     private final String name;
     private final String externalTitle;
-    private boolean canCloseWithEscape = false;
-    private boolean pauseOnOpen = true;
+    private final boolean canCloseWithEscape = false;
+    private final boolean pauseOnOpen = true;
 
     private String yesText = "<green>Confirm";
     private String yesTooltip = "";
     private int yesWidth = 150;
-    private int yesUsageLimit = ClickCallback.UNLIMITED_USES;
-    private TemporalAmount yesCooldown = null;
+    private final int yesUsageLimit = ClickCallback.UNLIMITED_USES;
+    private final TemporalAmount yesCooldown = null;
 
     private String noText = "<red>Cancel";
     private String noTooltip = "";
     private int noWidth  = 150;
-    private int noUsageLimit = ClickCallback.UNLIMITED_USES;
-    private TemporalAmount noCooldown = null;
+    private final int noUsageLimit = ClickCallback.UNLIMITED_USES;
+    private final TemporalAmount noCooldown = null;
 
 
     private String booleanConfirmText = "<white>%key% :</white> %value% <gray>|</gray> %text%";

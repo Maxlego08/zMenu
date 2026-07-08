@@ -1,44 +1,44 @@
 package fr.maxlego08.menu.command.commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
-public class CommandMenuSave extends VCommand {
+public class CommandMenuSave extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuSave(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("save");
-        this.addRequireArg("item name");
-        this.addRequireArg("type", (a, b) -> Arrays.asList("yml", "base64"));
-        this.setDescription(Message.DESCRIPTION_SAVE);
-        this.setPermission(Permission.ZMENU_SAVE);
-        this.setConsoleCanUse(false);
+        super(plugin, "save");
+        this.setPermission(Permission.ZMENU_SAVE.getPermission());
+        this.addRequiredArgument("item-name", StringArgumentType.string());
+        this.addRequiredArgument(Commands.argument("type", StringArgumentType.string())
+                .suggests((context, builder) -> builder.suggest("yml").suggest("base64").buildFuture()));
+        this.setPlayerOnly();
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
 
-        InventoryManager inventoryManager = plugin.getInventoryManager();
-        String name = this.argAsString(0);
-        String type = this.argAsString(1);
+        InventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
+        String name = commandDispatch.getArgument("item-name", String.class);
+        String type = commandDispatch.getArgument("type", String.class);
 
-        ItemStack itemStack = this.player.getItemInHand();
-        if (itemStack == null || itemStack.getType() == Material.AIR) {
-            this.message(plugin, this.sender, Message.SAVE_ERROR_EMPTY);
-            return CommandType.DEFAULT;
+        ItemStack itemStack = commandDispatch.getPlayer().getItemInHand();
+        if (itemStack.getType() == Material.AIR) {
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.SAVE_ERROR_EMPTY);
+            return CommandResultType.SUCCESS;
         }
 
-        inventoryManager.saveItem(this.sender, itemStack, name, type);
-
-        return CommandType.SUCCESS;
+        inventoryManager.saveItem(commandDispatch.getSender(), itemStack, name, type);
+        return CommandResultType.SUCCESS;
     }
-
 }

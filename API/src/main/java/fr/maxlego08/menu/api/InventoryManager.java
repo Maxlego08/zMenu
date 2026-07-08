@@ -25,12 +25,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * <p>Inventory Management:</p>
@@ -155,6 +153,8 @@ public interface InventoryManager extends Listener {
      */
     Collection<Inventory> getInventories(Plugin plugin);
 
+    Optional<Inventory> findInventory(@NotNull String inventoryName);
+
     /**
      * Deletes an inventory.
      *
@@ -176,6 +176,8 @@ public interface InventoryManager extends Listener {
      * @param plugin The plugin.
      */
     void deleteInventories(Plugin plugin);
+
+    Set<String> getInventoryNames();
 
     /**
      * Opens an inventory for a player.

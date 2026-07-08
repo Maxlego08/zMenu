@@ -8,23 +8,8 @@ import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ResolvableArmorTrim implements Resolvable<ArmorTrim> {
-
-    private final @NotNull ResolvableRegistryEntry<TrimMaterial> material;
-    private final @NotNull ResolvableRegistryEntry<TrimPattern> pattern;
-
-    public ResolvableArmorTrim(@NotNull ResolvableRegistryEntry<TrimMaterial> material, @NotNull ResolvableRegistryEntry<TrimPattern> pattern) {
-        this.material = material;
-        this.pattern = pattern;
-    }
-
-    public @NotNull ResolvableRegistryEntry<TrimMaterial> getMaterial() {
-        return this.material;
-    }
-
-    public @NotNull ResolvableRegistryEntry<TrimPattern> getPattern() {
-        return this.pattern;
-    }
+public record ResolvableArmorTrim(@NotNull ResolvableRegistryEntry<TrimMaterial> material,
+                                  @NotNull ResolvableRegistryEntry<TrimPattern> pattern) implements Resolvable<ArmorTrim> {
 
     @Override
     public @Nullable ArmorTrim resolve(@NotNull BuildContext context) {

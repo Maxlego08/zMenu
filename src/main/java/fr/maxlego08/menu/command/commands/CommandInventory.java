@@ -126,7 +126,7 @@ public class CommandInventory extends VCommand {
                         }
 
                         if (!validator.isValid(result)) {
-                            this.message(this.plugin, this.sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
+                            message(this.plugin, this.sender, validator.getErrorMessage(), "%argument%", argument.getArgument());
                             return CommandType.DEFAULT;
                         }
                     }
@@ -138,7 +138,7 @@ public class CommandInventory extends VCommand {
         }
 
         if (targetPlayer == null){
-            this.message(this.plugin, this.sender, Message.COMMAND_NO_CONSOLE);
+            message(this.plugin, this.sender, Message.COMMAND_NO_CONSOLE);
             return CommandType.DEFAULT;
         }
         Player finalTargetPlayer = targetPlayer;

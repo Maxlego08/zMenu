@@ -1,55 +1,66 @@
 package fr.maxlego08.menu.command.commands.players;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
-import fr.maxlego08.menu.players.ZData;
-import fr.maxlego08.menu.players.ZDataManager;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import org.bukkit.OfflinePlayer;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.OfflinePlayerArgument;
+import fr.maxlego08.menu.players.ZData;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
-public class CommandMenuPlayersAdd extends VCommand {
+public class CommandMenuPlayersAdd extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuPlayersAdd(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_PLAYERS);
-        this.setDescription(Message.DESCRIPTION_PLAYERS_ADD);
-        this.addSubCommand("add");
-        this.addRequireArg("player");
-        this.addRequireArg("key", (sender, args) -> {
-            ZDataManager dataManager = (ZDataManager) plugin.getDataManager();
-            return dataManager.getKeys(args);
-        });
-        this.addRequireArg("number", (a, b) -> Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+        super(plugin, "add");
+        this.setPermission(Permission.ZMENU_PLAYERS_ADD.getPermission());
+        this.addRequiredArgument("player", new OfflinePlayerArgument());
+        this.addRequiredArgument(Commands.argument("key", StringArgumentType.string()).suggests((ctx, builder) -> {
+            UUID targetId = ctx.getArgument("player", UUID.class);
+            this.plugin.getDataManager().getKeys(targetId).stream().filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
+                    .forEach(builder::suggest);
+            return builder.buildFuture();
+        }));
+        this.addRequiredArgument(Commands.argument("number", IntegerArgumentType.integer()).suggests((ctx, builder) -> {
+            for (int i = 1; i <= 10; i++) {
+                String str = String.valueOf(i);
+                if (str.startsWith(builder.getRemainingLowerCase())) {
+                    builder.suggest(str);
+                }
+            }
+            return builder.buildFuture();
+        }));
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        UUID targetId = commandDispatch.getArgument("player", UUID.class);
+        String key = commandDispatch.getArgument("key", String.class);
+        int value = commandDispatch.getArgument("number", Integer.class);
 
-        OfflinePlayer offlinePlayer = this.argAsOfflinePlayer(0);
-        String key = this.argAsString(1);
-        int value = this.argAsInteger(2);
-
-        DataManager dataManager = plugin.getDataManager();
-        Optional<Data> optional = dataManager.getData(offlinePlayer.getUniqueId(), key);
+        DataManager dataManager = commandDispatch.getPlugin().getDataManager();
+        Optional<Data> optional = dataManager.getData(targetId, key);
         if (optional.isEmpty()) {
             Data data = new ZData(key, value, 0);
-            dataManager.addData(offlinePlayer.getUniqueId(), data);
+            dataManager.addData(targetId, data);
         } else {
             Data data = optional.get();
             data.add(value);
-            plugin.getStorageManager().upsertData(offlinePlayer.getUniqueId(), data);
+            commandDispatch.getPlugin().getStorageManager().upsertData(targetId, data);
         }
 
-        this.message(plugin, this.sender, Message.PLAYERS_DATA_ADD, "%player%", offlinePlayer.getName(), "%key%", key);
-
-        return CommandType.SUCCESS;
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_ADD, "%player%", OfflinePlayerCache.getName(targetId), "%key%", key);
+        return CommandResultType.SUCCESS;
     }
-
 }

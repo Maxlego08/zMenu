@@ -2,7 +2,6 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -38,7 +37,8 @@ import java.util.stream.Stream;
 public class ZDialogManager extends DialogBuilderManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
-    private static InventoryManager inventoryManager;
+
+    private final Set<String> dialogNames = new HashSet<>();
     private final Map<String, List<AbstractDialogInventory>> dialogs = new HashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
 
@@ -49,7 +49,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
-        inventoryManager = menuPlugin.getInventoryManager();
     }
 
     @Override
@@ -111,11 +110,13 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                     dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
         }
+        this.dialogNames.removeIf(dname -> dname.equals(dname.toLowerCase(Locale.ROOT)));
     }
 
     @Override
     public void deleteDialog(Plugin plugin) {
         this.dialogs.remove(plugin.getName());
+        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName().toLowerCase(Locale.ROOT) + ":"));
     }
 
     @Override
@@ -175,6 +176,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
 
         List<AbstractDialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
+        this.dialogNames.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()).toLowerCase(Locale.ROOT));
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
@@ -187,6 +189,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     public void reloadDialogs() {
         this.dialogs.clear();
         this.activeDialogs.clear();
+        this.dialogNames.clear();
 
         this.loadDialogs();
 
@@ -275,6 +278,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     @Override
     public ConfigManagerInt getConfigManager(){
         return this.configManager;
+    }
+
+    @Override
+    public Set<String> getDialogNames() {
+        return Set.of();
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {

@@ -5,55 +5,51 @@ import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import org.bukkit.OfflinePlayer;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.command.OfflinePlayerArgument;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class CommandMenuPlayersKeys extends VCommand {
+public class CommandMenuPlayersKeys extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuPlayersKeys(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_PLAYERS);
-        this.setDescription(Message.DESCRIPTION_PLAYERS_KEYS);
-        this.addSubCommand("keys");
-        this.addRequireArg("player");
+        super(plugin, "keys");
+        this.setPermission(Permission.ZMENU_PLAYERS_KEYS.getPermission());
+        this.addRequiredArgument("player", new OfflinePlayerArgument());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        DataManager dataManager = commandDispatch.getPlugin().getDataManager();
 
-        DataManager dataManager = plugin.getDataManager();
-
-        OfflinePlayer player = this.argAsOfflinePlayer(0);
-
-        Optional<PlayerData> optional = dataManager.getPlayer(player.getUniqueId());
+        UUID targetId = commandDispatch.getArgument("player", UUID.class);
+        Optional<PlayerData> optional = dataManager.getPlayer(targetId);
         if (optional.isEmpty()) {
-            this.message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", player.getName());
-            return CommandType.SUCCESS;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", OfflinePlayerCache.getName(targetId));
+            return CommandResultType.SUCCESS;
         }
 
         PlayerData playerData = optional.get();
         Collection<Data> collection = playerData.getDatas();
 
         if (collection.isEmpty()) {
-            this.message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_EMPTY);
-            return CommandType.SUCCESS;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", OfflinePlayerCache.getName(targetId));
+            return CommandResultType.SUCCESS;
         }
 
         List<String> keyList = new ArrayList<>(collection.size());
         for (Data data : collection) {
             keyList.add(data.getKey());
         }
-        String keys = this.toList(keyList, "§8", "§7");
-        this.message(plugin, this.sender, Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", player.getName());
-
-        return CommandType.SUCCESS;
+        String keys = ZUtils.toList(keyList, "§8", "§7");
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", OfflinePlayerCache.getName(targetId));
+        return CommandResultType.SUCCESS;
     }
-
 }

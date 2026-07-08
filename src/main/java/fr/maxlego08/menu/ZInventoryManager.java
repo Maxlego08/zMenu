@@ -74,6 +74,7 @@ import java.util.stream.Stream;
 public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final PaginationManager paginationManager = new ZPaginationManager();
 
+    private final Set<String> inventoryNames = new HashSet<>();
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
@@ -216,6 +217,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
         this.inventoryByName.put(inventory.getFileName().toLowerCase(Locale.ROOT), inventory);
+        this.inventoryNames.add((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
@@ -283,12 +285,29 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public Optional<Inventory> findInventory(@NotNull String inventoryName) {
+        Optional<Inventory> optional;
+        if (inventoryName.contains(":")) {
+            String[] parts = inventoryName.split(":", 2);
+            if (parts.length == 2) {
+                optional = this.getInventory(parts[0], parts[1]);
+            } else {
+                optional = this.getInventory(inventoryName);
+            }
+        } else {
+            optional = this.getInventory(inventoryName);
+        }
+        return optional;
+    }
+
+    @Override
     public void deleteInventory(Inventory inventory) {
         String pluginName = inventory.getPlugin().getName();
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
         this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
+        this.inventoryNames.remove((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -305,8 +324,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void deleteInventories(Plugin plugin) {
         List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
-            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase(Locale.ROOT)));
+            for (Inventory inventory : removed) {
+                this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
+                this.inventoryNames.remove(
+                        (inventory.getPlugin().getName() + ":" + inventory.getFileName())
+                                .toLowerCase(Locale.ROOT)
+                );
+            }
         }
+    }
+
+    @Override
+    public Set<String> getInventoryNames() {
+        return Collections.unmodifiableSet(this.inventoryNames);
     }
 
     @Override
@@ -457,6 +487,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.playerMaxPages.clear();
         this.playerPages.clear();
         this.inventoryByName.clear();
+        this.inventoryNames.clear();
 
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {
@@ -534,7 +565,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
             return;
         }
 
@@ -552,7 +583,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
             return;
         }
 
@@ -566,7 +597,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
             return;
         }
 
@@ -650,7 +681,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void sendInventories(CommandSender sender) {
 
         if (this.inventories.isEmpty()) {
-            this.message(this.plugin, sender, Message.LIST_EMPTY);
+            message(this.plugin, sender, Message.LIST_EMPTY);
             return;
         }
 
@@ -659,8 +690,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             for (Inventory inventory : inventories) {
                 fileNames.add(inventory.getFileName());
             }
-            String inventoriesAsString = this.toList(fileNames, "§8", "§7");
-            this.messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
+            String inventoriesAsString = ZUtils.toList(fileNames, "§8", "§7");
+            messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
         });
     }
 
@@ -670,13 +701,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         fileName = fileName.replace(".yml", "");
         File file = new File(this.plugin.getDataFolder(), "inventories/" + fileName + ".yml");
         if (file.exists()) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
             return;
         }
         try {
             file.createNewFile();
         } catch (IOException exception) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -688,15 +719,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         try {
             configuration.save(file);
         } catch (IOException exception) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
-        this.message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
+        message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
 
         try {
             this.loadInventory(this.plugin, file);
         } catch (InventoryException exception) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
     }
 
@@ -750,7 +781,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (configurationSection != null) {
             Set<String> names = configurationSection.getKeys(false);
             if (names.contains(name)) {
-                this.message(this.plugin, sender, Message.SAVE_ERROR_NAME);
+                message(this.plugin, sender, Message.SAVE_ERROR_NAME);
                 return;
             }
         }
@@ -770,11 +801,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
 
         } else {
-            this.message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
+            message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
             return;
         }
 
-        this.message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
+        message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
 
     }
 
@@ -1010,6 +1041,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void sendMessage(CommandSender sender, Message message, Object... args) {
-        this.message(this.plugin, sender, message, args);
+        message(this.plugin, sender, message, args);
     }
 }

@@ -1,40 +1,42 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.argument.EnumArgument;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
-public class CommandMenuTestDupe extends VCommand {
+public class CommandMenuTestDupe extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuTestDupe(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_TEST_DUPE);
-        this.setDescription(Message.DESCRIPTION_TEST_DUPE);
-        this.addSubCommand("testdupe");
-        this.addRequireArg("type", (a, b) -> Arrays.asList("inventory", "item"));
+        super(plugin, "testdupe");
+        this.setPermission(Permission.ZMENU_TEST_DUPE.getPermission());
+        this.addRequiredArgument("type", new EnumArgument<>(TestDupeType.class));
+        this.setPlayerOnly();
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
 
-        String arg = this.argAsString(0);
+        TestDupeType dupeType = commandDispatch.getArgument("type", TestDupeType.class);
 
         ItemStack itemStack = new ItemStack(Material.STONE);
-        itemStack = plugin.getDupeManager().protectItem(itemStack);
+        itemStack = commandDispatch.getPlugin().getDupeManager().protectItem(itemStack);
 
-        if (arg.equalsIgnoreCase("inventory")) {
-            this.player.getInventory().addItem(itemStack.clone());
-        } else if (arg.equalsIgnoreCase("item")) {
-            this.player.getWorld().dropItem(this.player.getLocation(), itemStack.clone());
-        } else return CommandType.SYNTAX_ERROR;
+        switch (dupeType) {
+            case INVENTORY -> commandDispatch.getPlayer().getInventory().addItem(itemStack.clone());
+            case ITEM -> commandDispatch.getPlayer().getWorld().dropItem(commandDispatch.getPlayer().getLocation(), itemStack.clone());
+        }
 
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
 
+    private enum TestDupeType {
+        INVENTORY,
+        ITEM
+    }
 }

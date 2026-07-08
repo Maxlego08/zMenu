@@ -1,43 +1,44 @@
 package fr.maxlego08.menu.command.commands;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import org.bukkit.command.ConsoleCommandSender;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Optional;
 
-public class CommandMenuOpenMainMenu extends VCommand {
+public class CommandMenuOpenMainMenu extends SubCommand<ZMenuPlugin> {
     /**
      * @param plugin the plugin
      */
     public CommandMenuOpenMainMenu(ZMenuPlugin plugin) {
-        super(plugin);
+        super(plugin, "openMainMenu", "omm");
+        this.setPermission(Permission.ZMENU_OPEN_MAIN_MENU.getPermission());
 
-        this.addSubCommand("openMainMenu", "omm");
-        this.addOptionalArg("player");
-        this.addOptionalArg("display message", (a, b) -> Arrays.asList("false", "true"));
-        this.setDescription(Message.DESCRIPTION_OPEN_MAIN_MENU);
-        this.setPermission(Permission.ZMENU_OPEN);
+        this.addOptionalArgument("player", ArgumentTypes.player());
+        this.addOptionalArgument("display-message", BoolArgumentType.bool());
+
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-        InventoryManager inventoryManager = plugin.getInventoryManager();
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        InventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
 
-        Player player = this.argAsPlayer(1, this.player);
-        boolean displayMessage = this.argAsBoolean(2, Configuration.enableOpenMessage);
+        Player player = commandDispatch.getOptionalArgument("player", Player.class).orElse(commandDispatch.getPlayer());
+        boolean displayMessage = commandDispatch.getOptionalArgument("display-message", Boolean.class).orElse(Configuration.enableOpenMessage);
         if (player == null) {
-            this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE
-                    : Message.INVENTORY_OPEN_ERROR_PLAYER);
-            return CommandType.DEFAULT;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_PLAYER);
+            return CommandResultType.SUCCESS;
         }
 
         String mainMenu = Configuration.mainMenu;
@@ -45,21 +46,21 @@ public class CommandMenuOpenMainMenu extends VCommand {
         Optional<Inventory> optional = inventoryManager.getInventory(mainMenu);
 
         if (optional.isEmpty()) {
-            this.message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);
-            return CommandType.DEFAULT;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);
+            return CommandResultType.SUCCESS;
         }
 
         if (displayMessage) {
-            if (this.sender == player) {
-                this.message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", mainMenu);
+            if (commandDispatch.getSender() == player) {
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_SUCCESS, "%name%", mainMenu);
             } else {
-                this.message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", mainMenu, "%player%",
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_OTHER, "%name%", mainMenu, "%player%",
                         player.getName());
             }
         }
 
         inventoryManager.openInventory(player, optional.get());
 
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
 }

@@ -41,6 +41,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     private final InventoryManager inventoryManager;
     private final Map<String, List<BedrockInventory<?,?,?>>> bedrockInventory = new HashMap<>();
     private final Map<UUID, BedrockInventory<?,?,?>> activeBedrockInventory = new HashMap<>();
+    private final Set<String> bedrockInventoryNames = new HashSet<>();
     private final MetaUpdater metaUpdater;
 
     public ZBedrockManager(final MenuPlugin menuPlugin) {
@@ -107,11 +108,23 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
                     dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
         }
+        this.rebuildInventoryNames();
+    }
+
+    private void rebuildInventoryNames() {
+        this.bedrockInventoryNames.clear();
+        for (Map.Entry<String, List<BedrockInventory<?, ?, ?>>> entry : this.bedrockInventory.entrySet()) {
+            String pluginName = entry.getKey();
+            for (BedrockInventory<?, ?, ?> inventory : entry.getValue()) {
+                this.bedrockInventoryNames.add((pluginName + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
+            }
+        }
     }
 
     @Override
     public void deleteBedrockInventory(Plugin plugin) {
         this.bedrockInventory.remove(plugin.getName());
+        this.bedrockInventoryNames.removeIf(name -> name.startsWith(plugin.getName() + ":"));
     }
 
     @Override
@@ -171,6 +184,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         List<BedrockInventory<?,?,?>> dialogsList = this.bedrockInventory.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
+        this.bedrockInventoryNames.add((plugin.getName() + ":" + dialog.getFileName()).toLowerCase(Locale.ROOT));
+
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
         }
@@ -182,6 +197,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public void reloadBedrockInventory() {
         this.bedrockInventory.clear();
         this.activeBedrockInventory.clear();
+        this.bedrockInventoryNames.clear();
 
         this.loadBedrockInventory();
 
@@ -280,6 +296,11 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         return requirement.execute(player, null, fakeInventory, placeholder);
     }
     
+    @Override
+    public Set<String> getBedrockInventoryNames() {
+        return Collections.unmodifiableSet(this.bedrockInventoryNames);
+    }
+
     @Override
     public Collection<BedrockInventory<?,?,?>> getBedrockInventory() {
         List<BedrockInventory<?,?,?>> allDialogs = new ArrayList<>();

@@ -88,7 +88,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         Optional<VInventory> optional = this.getInventoryOrDefault(id, containerInventory.getType());
 
         if (optional.isEmpty()) {
-            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -101,7 +101,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         VInventory clonedInventory = inventory.clone();
 
         if (clonedInventory == null) {
-            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -129,10 +129,10 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
                 clonedInventory.postOpen(this.plugin, player, page, objects);
             } else if (result == InventoryResult.ERROR) {
 
-                this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+                message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             }
         } catch (InventoryOpenException exception) {
-            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             exception.printStackTrace();
         }
     }
@@ -168,7 +168,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
         if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
-            this.message(this.plugin, player, Message.CLICK_COOLDOWN);
+            message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
 
@@ -315,7 +315,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            this.plugin.getScheduler().runAtEntityLater(player, w -> this.message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
+            this.plugin.getScheduler().runAtEntityLater(player, w -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
         }
     }
 
