@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
-import fr.maxlego08.menu.common.utils.command.OfflinePlayerArgument;
+import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;

@@ -3,10 +3,10 @@ package fr.maxlego08.menu.command.commands.players;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
-import fr.maxlego08.menu.common.utils.command.OfflinePlayerArgument;
+import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
+import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
@@ -30,7 +30,7 @@ public class CommandMenuPlayersClearPlayer extends SubCommand<ZMenuPlugin> {
 
         dataManager.clearPlayer(playerUUID);
 
-        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_CLEAR_PLAYER, "%player%", OfflinePlayerCache.getName(playerUUID));
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_CLEAR_PLAYER, "%player%", OfflinePlayerCache.getGlobalInstance().getName(playerUUID));
         return CommandResultType.SUCCESS;
     }
 }

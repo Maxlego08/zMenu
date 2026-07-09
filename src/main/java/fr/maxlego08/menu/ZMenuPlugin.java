@@ -72,6 +72,7 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import fr.maxlego08.menu.zcore.utils.toast.ToastManager;
+import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.manager.ICommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -192,6 +193,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat;
         Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
+        OfflinePlayerCache.install(this);
 
         if (this.packetManager != null) {
             this.packetManager.onEnable();

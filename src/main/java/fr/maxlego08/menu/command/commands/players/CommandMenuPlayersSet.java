@@ -6,11 +6,11 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
-import fr.maxlego08.menu.common.utils.command.OfflinePlayerArgument;
 import fr.maxlego08.menu.players.ZData;
+import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
+import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
@@ -52,7 +52,7 @@ public class CommandMenuPlayersSet extends SubCommand<ZMenuPlugin> {
         DataManager dataManager = commandDispatch.getPlugin().getDataManager();
         dataManager.addData(targetId, data);
 
-        MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.PLAYERS_DATA_SET, "%player%", OfflinePlayerCache.getName(targetId), "%key%", key);
+        MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.PLAYERS_DATA_SET, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId), "%key%", key);
         return CommandResultType.SUCCESS;
     }
 }

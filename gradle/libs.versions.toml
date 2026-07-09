@@ -23,7 +23,7 @@ folialib = "0.5.1"
 xseries = "13.3.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
-paper-dispatch = "1.0.1"
+paper-dispatch = "1.0.2"
 
 # Integration Hooks
 placeholderapi = "2.11.6"
