@@ -23,7 +23,7 @@ allprojects {
     version = rootProject.version
 
     repositories {
-        mavenLocal()
+        // mavenLocal()
         mavenCentral()
 
         maven {
@@ -110,14 +110,6 @@ allprojects {
     }
 
     dependencies {
-
-        val hasAlreadyPaperDependency = configurations.matching { it.name == "compileOnly" || it.name == "implementation" || it.name == "api" }.flatMap { it.dependencies }.any {
-            dep -> dep.group == "io.papermc.paper"
-        }
-
-        if (!hasAlreadyPaperDependency) {
-            compileOnly(rootLibs.paper.api)
-        }
         compileOnly(rootLibs.placeholderapi)
         compileOnly(rootLibs.reflections)
         compileOnly(rootLibs.floodgate)
@@ -133,6 +125,20 @@ allprojects {
         testImplementation(platform(rootLibs.junit.bom))
         testImplementation(rootLibs.junit.jupiter)
         testRuntimeOnly(rootLibs.junit.platform.launcher)
+    }
+
+    afterEvaluate {
+        if (!plugins.hasPlugin("io.papermc.paperweight.userdev")) {
+            val hasAlreadyPaperDependency = configurations.matching { it.name == "compileOnly" || it.name == "implementation" || it.name == "api" }.flatMap { it.dependencies }.any {
+                dep -> dep.group == "io.papermc.paper"
+            }
+
+            if (!hasAlreadyPaperDependency) {
+                dependencies {
+                    compileOnly(rootLibs.paper.api)
+                }
+            }
+        }
     }
 }
 
