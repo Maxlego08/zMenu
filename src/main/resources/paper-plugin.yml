@@ -106,8 +106,3 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
-
-    SuperiorSkyblock2:
-      load: AFTER
-      required: false
-      join-classpath: true
