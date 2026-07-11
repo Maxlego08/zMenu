@@ -6,6 +6,7 @@ import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.jspecify.annotations.NonNull;
 
 public class ZMenuPluginLoader implements PluginLoader {
 
@@ -13,7 +14,7 @@ public class ZMenuPluginLoader implements PluginLoader {
     public void classloader(PluginClasspathBuilder classpathBuilder) {
         final MavenLibraryResolver resolver = new MavenLibraryResolver();
         resolver.addRepository(new RemoteRepository.Builder(
-                "central", "default", MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR
+                "central", "default", this.getMavenCentralMirror()
         ).build());
         resolver.addDependency(new Dependency(
                 new DefaultArtifact("org.mariadb.jdbc:mariadb-java-client:3.5.6"),
@@ -26,5 +27,20 @@ public class ZMenuPluginLoader implements PluginLoader {
         ));
 
         classpathBuilder.addLibrary(resolver);
+    }
+
+    private @NonNull String getMavenCentralMirror() {
+        try {
+            return MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR;
+        } catch (NoSuchFieldError e) {
+            String central = System.getenv("PAPER_DEFAULT_CENTRAL_REPOSITORY");
+            if (central == null) {
+                central = System.getProperty("org.bukkit.plugin.java.LibraryLoader.centralURL");
+            }
+            if (central == null) {
+                central = "https://maven-central.storage-download.googleapis.com/maven2";
+            }
+            return central;
+        }
     }
 }
