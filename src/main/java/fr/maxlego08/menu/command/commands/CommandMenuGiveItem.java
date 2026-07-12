@@ -1,11 +1,11 @@
 package fr.maxlego08.menu.command.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
@@ -21,7 +21,7 @@ public class CommandMenuGiveItem extends SubCommand<ZMenuPlugin> {
         super(plugin, "giveitem");
         this.itemManager = plugin.getItemManager();
         this.setPermission(Permission.ZMENU_GIVE_ITEM.getPermission());
-        this.addRequiredArgument(Commands.argument("item-id", StringArgumentType.string()).suggests((context, builder) -> {
+        this.addRequiredArgument(Commands.argument("item-id", new NonSpaceStringArgumentType()).suggests((context, builder) -> {
             this.itemManager.getItemIds().stream().filter(id -> id.toLowerCase().startsWith(builder.getRemainingLowerCase())).forEach(builder::suggest);
             return builder.buildFuture();
         }));

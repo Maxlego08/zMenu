@@ -1,13 +1,13 @@
 package fr.maxlego08.menu.command.commands.dialogs;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
@@ -28,7 +28,7 @@ public class CommandDialogOpen extends SubCommand<ZMenuPlugin> {
         this.dialogManager = plugin.getDialogManager();
         this.setPermission(Permission.ZMENU_OPEN_DIALOG.getPermission());
 
-        this.addRequiredArgument(Commands.argument("dialog-name", StringArgumentType.string()).suggests(((context, builder) -> {
+        this.addRequiredArgument(Commands.argument("dialog-name", new NonSpaceStringArgumentType()).suggests(((context, builder) -> {
             this.dialogManager.getDialogNames().stream().filter(entry -> entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);
             return builder.buildFuture();

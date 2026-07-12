@@ -1,12 +1,12 @@
 package fr.maxlego08.menu.command.commands.reload;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
@@ -22,7 +22,7 @@ public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
         super(plugin, "inventory", "inv");
         this.setPermission(Permission.ZMENU_RELOAD_INVENTORY.getPermission());
 
-        this.addOptionalArgument(Commands.argument("menu", StringArgumentType.string()).suggests((ctx, builder) -> {
+        this.addOptionalArgument(Commands.argument("menu", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
             plugin.getInventoryManager().getInventoryNames().stream()
                     .filter(entry -> entry.startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);

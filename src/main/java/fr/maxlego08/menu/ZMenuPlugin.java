@@ -266,6 +266,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
             this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
         }
         this.commandManagerLib.registerCommand(this.commandMenu = new CommandMenu(this));
+        this.commandManagerLib.registerCommands();
 
         /* Add Listener */
         this.registerAutoListeners();
@@ -335,6 +336,15 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoListener.class, registry);
 
         if (Configuration.enableInformationMessage) Logger.info("Registered " + count + " auto listener(s).");
+    }
+
+    private boolean hasClass(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     /**

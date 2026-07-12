@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.command.commands;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -8,6 +7,7 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
@@ -29,7 +29,7 @@ public class CommandMenuGiveOpenItem extends SubCommand<ZMenuPlugin> {
         this.inventoryManager = plugin.getInventoryManager();
         this.setPermission(Permission.ZMENU_GIVE_OPEN_ITEM.getPermission());
 
-        this.addRequiredArgument(Commands.argument("inventory-name", StringArgumentType.string()).suggests((ctx, builder) -> {
+        this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
             this.inventoryManager.getInventoryNames().stream().filter(entry -> entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);
             return builder.buildFuture();
