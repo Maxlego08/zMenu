@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.itemstack.components.PaperPotDecorationsComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemType;
@@ -35,7 +36,7 @@ public class PaperPotDecorationsItemComponentLoader extends ItemComponentLoader 
 
         ResolvableRegistryEntry<ItemType>[] keys = new ResolvableRegistryEntry[SIDES];
         for (int i = 0; i < SIDES; i++) {
-            keys[i] = ResolvableRegistry.auto(decorations.get(i), ItemType.class);
+            keys[i] = ResolvableRegistry.auto(decorations.get(i), RegistryKey.ITEM);
         }
 
         return new PaperPotDecorationsComponent(keys);

@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.annotations.PaperOnly;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.itemstack.components.variants.pig.PigVariantComponent;
 import fr.maxlego08.menu.loader.components.variants.base.RegistryVariantLoader;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.entity.Pig;
 
 @AutoComponentLoader
@@ -12,6 +13,6 @@ import org.bukkit.entity.Pig;
 @SinceVersion("1.21.5")
 public final class PigVariantLoader extends RegistryVariantLoader<Pig.Variant> {
     public PigVariantLoader() {
-        super("pig/variant", Pig.Variant.class, PigVariantComponent::new);
+        super("pig/variant", RegistryKey.PIG_VARIANT, PigVariantComponent::new);
     }
 }

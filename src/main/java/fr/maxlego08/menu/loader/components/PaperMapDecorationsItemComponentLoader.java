@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import io.papermc.paper.registry.RegistryKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.api.utils.resolvable.paper.PaperResolvableMapDecorationEntry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,7 +40,7 @@ public class PaperMapDecorationsItemComponentLoader extends ItemComponentLoader 
             ConfigurationSection decorationSection = componentSection.getConfigurationSection(key);
             if (decorationSection == null) continue;
             String typeName = decorationSection.getString("type");
-            ResolvableRegistryEntry<MapCursor.Type> mapCursorTypeRegistryEntry = ResolvableRegistry.autoOrNull(typeName, MapCursor.Type.class);
+            ResolvableRegistryEntry<MapCursor.Type> mapCursorTypeRegistryEntry = ResolvableRegistry.autoOrNull(typeName, RegistryKey.MAP_DECORATION_TYPE);
             ResolvableInt x = ResolvableInt.autoOrNull(decorationSection.getString("x"));
             ResolvableInt z = ResolvableInt.autoOrNull(decorationSection.getString("z"));
             ResolvableFloat rotation = ResolvableFloat.autoOrNull(decorationSection.getString("rotation"));

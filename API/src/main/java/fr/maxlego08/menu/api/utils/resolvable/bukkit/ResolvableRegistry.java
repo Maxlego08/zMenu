@@ -1,49 +1,63 @@
 package fr.maxlego08.menu.api.utils.resolvable.bukkit;
 
-import fr.maxlego08.menu.api.utils.PlatformType;
-import fr.maxlego08.menu.api.utils.resolvable.paper.PaperRegistries;
-import fr.maxlego08.menu.api.utils.resolvable.utils.RegistryKeys;
+import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 public final class ResolvableRegistry {
 
     private ResolvableRegistry() {}
 
     @NotNull
+    public static <T extends Keyed> Function<NamespacedKey, @Nullable T> resolverFor(
+            @NotNull RegistryKey<T> registryKey
+    ) {
+        return key -> {
+            try {
+                return RegistryAccess.registryAccess().getRegistry(registryKey).get(key);
+            } catch (Exception e) {
+                return null;
+            }
+        };
+    }
+
+    @NotNull
     public static <T extends Keyed> ResolvableRegistryEntry<T> auto(
             @NotNull String value,
-            @NotNull Class<T> type
+            @NotNull RegistryKey<T> registryKey
     ) {
-        if (PlatformType.isPaper()) {
-            RegistryKey<T> key = RegistryKeys.forClass(type);
-            if (key != null) return PaperRegistries.auto(value, key);
-        }
-        return BukkitRegistries.auto(value, type);
+        return ResolvableRegistryEntry.auto(value, resolverFor(registryKey));
     }
 
     @Nullable
     @Contract("null, _ -> null; !null, _ -> !null")
     public static <T extends Keyed> ResolvableRegistryEntry<T> autoOrNull(
             @Nullable String value,
-            @NotNull Class<T> type
+            @NotNull RegistryKey<T> registryKey
     ) {
         if (value == null) return null;
-        return auto(value, type);
+        return auto(value, registryKey);
     }
 
     @NotNull
     public static <T extends Keyed> ResolvableRegistryEntry<T> ofValue(
             @NotNull T value,
-            @NotNull Class<T> type
+            @NotNull RegistryKey<T> registryKey
     ) {
-        if (PlatformType.isPaper()) {
-            RegistryKey<T> key = RegistryKeys.forClass(type);
-            if (key != null) return PaperRegistries.ofValue(value, key);
-        }
-        return BukkitRegistries.ofValue(value, type);
+        return ResolvableRegistryEntry.ofValue(value, resolverFor(registryKey));
+    }
+
+    @NotNull
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofExpression(
+            @NotNull String expression,
+            @NotNull RegistryKey<T> registryKey
+    ) {
+        return ResolvableRegistryEntry.ofExpression(expression, resolverFor(registryKey));
     }
 }

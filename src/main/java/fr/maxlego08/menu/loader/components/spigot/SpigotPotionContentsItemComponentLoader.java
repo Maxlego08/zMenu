@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.potion.PotionType;
@@ -33,7 +34,7 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        ResolvableRegistryEntry<PotionType> resolvableBasePotionType = ResolvableRegistry.autoOrNull(componentSection.getString("potion"), PotionType.class);
+        ResolvableRegistryEntry<PotionType> resolvableBasePotionType = ResolvableRegistry.autoOrNull(componentSection.getString("potion"), RegistryKey.POTION);
 
         ResolvableColor color = null;
         Object customColor = componentSection.get("custom-color");

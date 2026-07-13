@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
 import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableMusicInstrument;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.MusicInstrument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,7 @@ public class InstrumentComponent extends ItemComponent {
     private final @Nullable ResolvableMusicInstrument instrument;
 
     public InstrumentComponent(@NotNull String instrument) {
-        this.instrument = new ResolvableMusicInstrument(ResolvableRegistry.autoOrNull(instrument, MusicInstrument.class));
+        this.instrument = new ResolvableMusicInstrument(ResolvableRegistry.autoOrNull(instrument, RegistryKey.INSTRUMENT));
     }
 
     public InstrumentComponent(@NotNull ResolvableMusicInstrument instrument) {

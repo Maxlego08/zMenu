@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.utils.resolvable.bukkit;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.DyeColor;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -31,7 +32,7 @@ public final class ResolvableBannerPattern implements Resolvable<Pattern> {
         if (!(colorObj instanceof String colorStr) || !(patternObj instanceof String patternStr)) return null;
 
         ResolvableEnum<DyeColor> color = ResolvableEnum.auto(DyeColor.class, colorStr);
-        ResolvableRegistryEntry<PatternType> patternTypeRegistry = ResolvableRegistry.auto(patternStr, PatternType.class);
+        ResolvableRegistryEntry<PatternType> patternTypeRegistry = ResolvableRegistry.auto(patternStr, RegistryKey.BANNER_PATTERN);
 
         return new ResolvableBannerPattern(color, patternTypeRegistry);
     }

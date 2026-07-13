@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,7 @@ public class PaperTooltipDisplayItemComponentLoader extends ItemComponentLoader 
         if (componentSection == null) return null;
         ResolvableBoolean hideTooltip = ResolvableBoolean.auto(componentSection.getString("hide_tooltip"), false);
         List<ResolvableRegistryEntry<DataComponentType>> hiddenComponentEntries = componentSection.getStringList("hidden_components").stream()
-                .map(component -> ResolvableRegistry.autoOrNull(component, DataComponentType.class))
+                .map(component -> ResolvableRegistry.autoOrNull(component, RegistryKey.DATA_COMPONENT_TYPE))
                 .filter(Objects::nonNull)
                 .toList();
 
