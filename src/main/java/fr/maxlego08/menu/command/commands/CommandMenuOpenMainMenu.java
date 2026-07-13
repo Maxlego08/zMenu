@@ -8,10 +8,12 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +36,22 @@ public class CommandMenuOpenMainMenu extends SubCommand<ZMenuPlugin> {
     protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
         InventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
 
-        Player player = commandDispatch.getOptionalArgument("player", Player.class).orElse(commandDispatch.getPlayer());
+        Player player;
+        Optional<PlayerSelectorArgumentResolver> optionalPlayerSelector = commandDispatch.getOptionalArgument("player", PlayerSelectorArgumentResolver.class);
+        if (optionalPlayerSelector.isPresent()) {
+            PlayerSelectorArgumentResolver playerSelector = optionalPlayerSelector.get();
+            try {
+                player = playerSelector.resolve(commandDispatch.getSource()).getFirst();
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.info("Error while resolving player selector: " + e.getMessage());
+                }
+                return CommandResultType.SUCCESS;
+            }
+        } else {
+            player = commandDispatch.getPlayer();
+        }
+
         boolean displayMessage = commandDispatch.getOptionalArgument("display-message", Boolean.class).orElse(Configuration.enableOpenMessage);
         if (player == null) {
             MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_PLAYER);

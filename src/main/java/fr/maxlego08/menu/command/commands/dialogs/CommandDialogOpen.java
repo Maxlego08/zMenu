@@ -3,16 +3,19 @@ package fr.maxlego08.menu.command.commands.dialogs;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.DialogManager;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +43,21 @@ public class CommandDialogOpen extends SubCommand<ZMenuPlugin> {
     @Override
     protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
         String dialogName = commandDispatch.getArgument("dialog-name", String.class);
-        Player targetPlayer = commandDispatch.getOptionalArgument("player", Player.class).orElse(commandDispatch.getPlayer());
+        Player targetPlayer;
+        Optional<PlayerSelectorArgumentResolver> optionalPlayerSelector = commandDispatch.getOptionalArgument("player", PlayerSelectorArgumentResolver.class);
+        if (optionalPlayerSelector.isPresent()) {
+            PlayerSelectorArgumentResolver playerSelector = optionalPlayerSelector.get();
+            try {
+                targetPlayer = playerSelector.resolve(commandDispatch.getSource()).getFirst();
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.info("Error while resolving player selector: " + e.getMessage());
+                }
+                return CommandResultType.SUCCESS;
+            }
+        } else {
+            targetPlayer = commandDispatch.getPlayer();
+        }
         boolean displayMessage = commandDispatch.getArgument("display-message", Boolean.class, true);
 
         if (targetPlayer == null) {
