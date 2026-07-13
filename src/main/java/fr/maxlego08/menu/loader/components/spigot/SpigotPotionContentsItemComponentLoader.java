@@ -44,11 +44,7 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
 
         List<ResolvablePotionEffect> customEffects = this.parseResolvablePotionEffects(componentSection.getMapList("custom-effects"));
 
-        Resolvable<String> customName = null;
-        String customNameStr = componentSection.getString("custom-name");
-        if (customNameStr != null) {
-            customName = customNameStr.contains("%") ? ResolvableString.ofExpression(customNameStr) : ResolvableString.of(customNameStr);
-        }
+        Resolvable<String> customName = ResolvableString.autoOrNull(componentSection.getString("custom-name"));
 
         return new PotionContentsComponent(resolvableBasePotionType, customName, color, customEffects);
     }
