@@ -24,7 +24,7 @@ public final class ResolvableRegistryEntry<T extends Keyed> extends ParsableReso
 
     @Override
     protected @Nullable T parse(@NotNull String value) {
-        NamespacedKey key = NamespacedKey.fromString(value);
+        NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
         if (key == null) return null;
         try {
             return this.resolver.apply(key);
@@ -33,7 +33,7 @@ public final class ResolvableRegistryEntry<T extends Keyed> extends ParsableReso
         }
     }
 
-    // ── Internal builders ───────────────────────────────────────────────────
+    // -- Builders --
 
     @NotNull
     public static <T extends Keyed> ResolvableRegistryEntry<T> ofValue(
