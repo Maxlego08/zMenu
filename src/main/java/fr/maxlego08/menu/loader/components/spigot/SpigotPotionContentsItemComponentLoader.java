@@ -8,13 +8,13 @@ import fr.maxlego08.menu.api.itemstack.components.PotionContentsComponent;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionType;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,21 +33,7 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        ResolvablePotionType basePotionType = null;
-        String potion = componentSection.getString("potion", "");
-        if (!potion.isEmpty()) {
-            if (potion.contains("%")) {
-                basePotionType = ResolvablePotionType.of(potion);
-            } else {
-                try {
-                    NamespacedKey potionKey = NamespacedKey.fromString(potion);
-                    if (potionKey != null) {
-                        basePotionType = ResolvablePotionType.of(Registry.POTION.getOrThrow(potionKey));
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        }
+        ResolvableRegistryEntry<PotionType> resolvableBasePotionType = ResolvableRegistry.autoOrNull(componentSection.getString("potion"), PotionType.class);
 
         ResolvableColor color = null;
         Object customColor = componentSection.get("custom-color");
@@ -63,7 +49,7 @@ public class SpigotPotionContentsItemComponentLoader extends AbstractEffectItemC
             customName = customNameStr.contains("%") ? ResolvableString.ofExpression(customNameStr) : ResolvableString.of(customNameStr);
         }
 
-        return new PotionContentsComponent(basePotionType, customName, color, customEffects);
+        return new PotionContentsComponent(resolvableBasePotionType, customName, color, customEffects);
     }
 
 

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public final class ResolvableDamageType extends ParsableResolvable<DamageType> {
 
     private ResolvableDamageType(@Nullable DamageType resolvedValue, @Nullable String expression) {
@@ -27,7 +29,7 @@ public final class ResolvableDamageType extends ParsableResolvable<DamageType> {
             return new ResolvableDamageType(null, value);
         }
         return auto(value, s -> {
-            NamespacedKey k = NamespacedKey.fromString(s);
+            NamespacedKey k = NamespacedKey.fromString(s.toLowerCase(Locale.ROOT));
             return k != null ? Registry.DAMAGE_TYPE.getOrThrow(k) : null;
         }, ResolvableDamageType::new);
     }
@@ -36,7 +38,7 @@ public final class ResolvableDamageType extends ParsableResolvable<DamageType> {
     @Contract("null -> null; !null -> !null")
     public static ResolvableDamageType autoOrNull(@Nullable String value) {
         return autoOrNull(value, s -> {
-            NamespacedKey k = NamespacedKey.fromString(s);
+            NamespacedKey k = NamespacedKey.fromString(s.toLowerCase(Locale.ROOT));
             return k != null ? Registry.DAMAGE_TYPE.getOrThrow(k) : null;
         }, ResolvableDamageType::new);
     }
@@ -44,7 +46,7 @@ public final class ResolvableDamageType extends ParsableResolvable<DamageType> {
     @Override
     protected @Nullable DamageType parse(@NotNull String value) {
         try {
-            NamespacedKey key = NamespacedKey.fromString(value);
+            NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
             return key != null ? Registry.DAMAGE_TYPE.getOrThrow(key) : null;
         } catch (Exception e) {
             return null;

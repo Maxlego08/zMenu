@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public final class ResolvableEnchantment extends ParsableResolvable<Enchantment> {
 
     private ResolvableEnchantment(@Nullable Enchantment resolvedValue, @Nullable String expression) {
@@ -27,7 +29,7 @@ public final class ResolvableEnchantment extends ParsableResolvable<Enchantment>
             return new ResolvableEnchantment(null, value);
         }
         return auto(value, s -> {
-            NamespacedKey k = NamespacedKey.fromString(s);
+            NamespacedKey k = NamespacedKey.fromString(s.toLowerCase(Locale.ROOT));
             return k != null ? Registry.ENCHANTMENT.getOrThrow(k) : null;
         }, ResolvableEnchantment::new);
     }
@@ -36,7 +38,7 @@ public final class ResolvableEnchantment extends ParsableResolvable<Enchantment>
     @Contract("null -> null; !null -> !null")
     public static ResolvableEnchantment autoOrNull(@Nullable String value) {
         return autoOrNull(value, s -> {
-            NamespacedKey k = NamespacedKey.fromString(s);
+            NamespacedKey k = NamespacedKey.fromString(s.toLowerCase(Locale.ROOT));
             return k != null ? Registry.ENCHANTMENT.getOrThrow(k) : null;
         }, ResolvableEnchantment::new);
     }
@@ -44,7 +46,7 @@ public final class ResolvableEnchantment extends ParsableResolvable<Enchantment>
     @Override
     protected @Nullable Enchantment parse(@NotNull String value) {
         try {
-            NamespacedKey key = NamespacedKey.fromString(value);
+            NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
             return key != null ? Registry.ENCHANTMENT.getOrThrow(key) : null;
         } catch (Exception e) {
             return null;

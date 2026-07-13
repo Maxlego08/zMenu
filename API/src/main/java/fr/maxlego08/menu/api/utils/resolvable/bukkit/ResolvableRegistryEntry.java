@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.function.Function;
 
 public final class ResolvableRegistryEntry<T extends Keyed> extends ParsableResolvable<T> {
@@ -55,7 +56,7 @@ public final class ResolvableRegistryEntry<T extends Keyed> extends ParsableReso
             @NotNull String value,
             @NotNull Function<NamespacedKey, @Nullable T> resolver
     ) {
-        NamespacedKey key = NamespacedKey.fromString(value);
+        NamespacedKey key = NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
         if (key != null) {
             try {
                 T resolved = resolver.apply(key);

@@ -7,12 +7,13 @@ import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
-import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionType;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,19 +21,19 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class PotionContentsComponent extends ItemComponent {
-    private final @Nullable ResolvablePotionType basePotionType;
+    private final @Nullable ResolvableRegistryEntry<PotionType> basePotionType;
     private final @Nullable Resolvable<String> customName;
     private final @Nullable ResolvableColor color;
     private final @NotNull List<ResolvablePotionEffect> potionEffects;
 
-    public PotionContentsComponent(@Nullable ResolvablePotionType basePotionType, @Nullable Resolvable<String> customName, @Nullable ResolvableColor color, @NotNull List<ResolvablePotionEffect> potionEffects) {
+    public PotionContentsComponent(@Nullable ResolvableRegistryEntry<PotionType> basePotionType, @Nullable Resolvable<String> customName, @Nullable ResolvableColor color, @NotNull List<ResolvablePotionEffect> potionEffects) {
         this.basePotionType = basePotionType;
         this.customName = customName;
         this.color = color;
         this.potionEffects = potionEffects;
     }
 
-    public @Nullable ResolvablePotionType getBasePotionType() {
+    public @Nullable ResolvableRegistryEntry<PotionType> getBasePotionType() {
         return this.basePotionType;
     }
 

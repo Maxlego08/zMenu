@@ -99,7 +99,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 try {
                     buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
-                    Logger.info(exception.getMessage(), Logger.LogType.ERROR);
+                    if (Configuration.enableDebug) {
+                        Logger.info("Error while loading button " + buttonPath + " in " + file.getAbsolutePath() + ": " + exception.getMessage(), Logger.LogType.ERROR);
+                    }
                 }
             }
         } else {

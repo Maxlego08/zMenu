@@ -19,18 +19,18 @@ import java.util.Map;
 
 public final class ResolvableAttributeWrapper implements Resolvable<AttributeWrapper> {
 
-    private final Resolvable<String> attributeKey;
+    private final ResolvableString attributeKey;
     private final ResolvableEnum<AttributeModifier.Operation> operation;
     private final Resolvable<Double> amount;
-    private final Resolvable<String> slotKey;
-    private final @Nullable Resolvable<String> namespacedKey;
+    private final ResolvableString slotKey;
+    private final @Nullable ResolvableNamespacedKey namespacedKey;
 
     public ResolvableAttributeWrapper(
-            @NotNull Resolvable<String> attributeKey,
+            @NotNull ResolvableString attributeKey,
             @NotNull ResolvableEnum<AttributeModifier.Operation> operation,
             @NotNull Resolvable<Double> amount,
-            @NotNull Resolvable<String> slotKey,
-            @Nullable Resolvable<String> namespacedKey
+            @NotNull ResolvableString slotKey,
+            @Nullable ResolvableNamespacedKey namespacedKey
     ) {
         this.attributeKey = attributeKey;
         this.operation = operation;
@@ -67,9 +67,9 @@ public final class ResolvableAttributeWrapper implements Resolvable<AttributeWra
         if (slotKey == null) slotKey = ResolvableString.of("any");
 
         Object nameObj = map.get("name");
-        ResolvableString namespacedKey = nameObj instanceof String nameStr ? ResolvableString.auto(nameStr) : null;
+        ResolvableNamespacedKey resolvableNamespacedKey = ResolvableNamespacedKey.autoOrNull(nameObj instanceof String nameStr ? nameStr : null);
 
-        return new ResolvableAttributeWrapper(attributeKey, operation, amount, slotKey, namespacedKey);
+        return new ResolvableAttributeWrapper(attributeKey, operation, amount, slotKey, resolvableNamespacedKey);
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class ResolvableAttributeWrapper implements Resolvable<AttributeWra
         AttributeModifier.Operation operation = this.operation.resolve(context);
         Double amountVal = Resolvable.resolve(context, this.amount);
         String slotKeyStr = Resolvable.resolve(context, this.slotKey);
-        String nskStr = this.namespacedKey != null ? Resolvable.resolve(context, this.namespacedKey) : null;
+        NamespacedKey nsk = Resolvable.resolve(context, this.namespacedKey);
 
         if (attrKeyStr == null || operation == null || amountVal == null || slotKeyStr == null) return null;
 
@@ -90,7 +90,6 @@ public final class ResolvableAttributeWrapper implements Resolvable<AttributeWra
         EquipmentSlotGroup slot = EquipmentSlotGroup.getByName(slotKeyStr);
         if (slot == null) return null;
 
-        NamespacedKey nsk = nskStr != null ? NamespacedKey.fromString(nskStr) : null;
 
         return new AttributeWrapper(attribute, operation, amountVal, slot, nsk);
     }

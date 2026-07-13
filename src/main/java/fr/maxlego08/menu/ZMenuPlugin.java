@@ -191,7 +191,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         Configuration.getInstance().load(this.getConfig());
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
-        Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat;
+        Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
         Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
         OfflinePlayerCache.install(this);
 
@@ -241,7 +241,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
+        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction")) {
             if (Configuration.enableMiniMessageFormat) {
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
@@ -340,7 +340,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     private boolean hasClass(String className) {
         try {
-            Class.forName(className);
+            Class.forName(className.replace("{}", "."));
             return true;
         } catch (ClassNotFoundException e) {
             return false;

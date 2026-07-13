@@ -1,8 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.command.commands.bedrock.CommandBedrock;
 import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
@@ -42,7 +40,7 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
             this.addSubCommand(new CommandMenuWebsite(plugin));
         }
 
-        if (plugin.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat) {
+        if (plugin.getDialogManager() != null) {
             this.addSubCommand(new CommandDialog(plugin));
         }
 

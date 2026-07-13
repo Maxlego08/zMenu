@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public final class ResolvableNamespacedKey extends ParsableResolvable<NamespacedKey> {
 
     private ResolvableNamespacedKey(@Nullable NamespacedKey resolvedValue, @Nullable String expression) {
@@ -21,7 +23,7 @@ public final class ResolvableNamespacedKey extends ParsableResolvable<Namespaced
     }
 
     public static @NotNull ResolvableNamespacedKey auto(@NotNull String value) {
-        return auto(value, NamespacedKey::fromString, ResolvableNamespacedKey::new);
+        return auto(value, s -> NamespacedKey.fromString(s.toLowerCase(Locale.ROOT)), ResolvableNamespacedKey::new);
     }
 
     @Nullable
@@ -34,7 +36,7 @@ public final class ResolvableNamespacedKey extends ParsableResolvable<Namespaced
     @Override
     protected @Nullable NamespacedKey parse(@NotNull String value) {
         try {
-            return NamespacedKey.fromString(value);
+            return NamespacedKey.fromString(value.toLowerCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             return null;
         }
