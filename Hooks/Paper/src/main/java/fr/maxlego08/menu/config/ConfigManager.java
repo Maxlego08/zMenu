@@ -14,7 +14,6 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventoryDeveloper;
 import fr.maxlego08.menu.hooks.dialogs.action.ZConfigManagerCustomDialogAction;
 import fr.maxlego08.menu.hooks.dialogs.action.ZCustomClickDialogAction;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ConfigManager extends DialogBuilderManager implements ConfigManagerInt {
+public class ConfigManager implements ConfigManagerInt {
 
     private final MenuPlugin menuPlugin;
     private final Map<String, ZDialogInventoryDeveloper> zDialogInventoryDev = new HashMap<>();
@@ -36,7 +35,6 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
     private final List<ConfigFieldProcessor> processors = new ArrayList<>();
 
     public ConfigManager(MenuPlugin menuPlugin) {
-        super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.paperComponent = (ComponentMeta) menuPlugin.getMetaUpdater();
         this.processors.add(new DefaultBooleanProcessor());
@@ -80,7 +78,7 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
                 configDialogBuilder.getNoText(),
                 configDialogBuilder.getNoTooltip(),
                 configDialogBuilder.getNoWidth(),
-                new ZCustomClickDialogAction(List.of(), configDialogBuilder.getNoUsageLimit(), configDialogBuilder.getNoCooldown())
+                new ZCustomClickDialogAction(List.of(), configDialogBuilder.getNoUsageLimit(), configDialogBuilder.getNoCooldown(), Map.of())
         );
 
         ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(

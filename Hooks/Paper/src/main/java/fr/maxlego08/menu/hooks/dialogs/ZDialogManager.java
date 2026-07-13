@@ -17,7 +17,6 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import org.bukkit.Bukkit;
@@ -34,7 +33,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ZDialogManager extends DialogBuilderManager implements DialogManager {
+public class ZDialogManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
 
@@ -45,7 +44,6 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     private final ComponentMeta paperComponent;
 
     public ZDialogManager(final MenuPlugin menuPlugin, final ConfigManagerInt configManager) {
-        super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());

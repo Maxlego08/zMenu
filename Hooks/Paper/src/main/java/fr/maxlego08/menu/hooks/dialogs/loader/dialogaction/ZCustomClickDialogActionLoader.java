@@ -14,8 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ZCustomClickDialogActionLoader implements DialogActionLoader {
@@ -57,6 +59,19 @@ public class ZCustomClickDialogActionLoader implements DialogActionLoader {
                 actionDurationLimit = Duration.ofSeconds(configuration.getLong(path + ".duration-limit"));
             }
         }
-        return new ZCustomClickDialogAction(actions, usageLimit, actionDurationLimit);
+        Map<String, Boolean> enablePlaceholders = new HashMap<>();
+        String configKey = path + ".enable-placeholders";
+        if (configuration.contains(configKey)) {
+            if (configuration.isBoolean(configKey)) {
+                boolean global = configuration.getBoolean(configKey);
+                enablePlaceholders.put("", global);
+            } else if (configuration.isConfigurationSection(configKey)) {
+                ConfigurationSection section = configuration.getConfigurationSection(configKey);
+                for (String key : section.getKeys(false)) {
+                    enablePlaceholders.put(key, section.getBoolean(key));
+                }
+            }
+        }
+        return new ZCustomClickDialogAction(actions, usageLimit, actionDurationLimit, enablePlaceholders);
     }
 }

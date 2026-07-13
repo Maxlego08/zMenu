@@ -29,22 +29,26 @@ public interface Placeholder {
 
         @Override
         public String setPlaceholders(Player player, String string) {
-            return PlaceholderAPI.setPlaceholders(player, string);
+            return PlaceholderAPI.setPlaceholders(player, string).replace("\uF000", "%");
         }
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
-            return PlaceholderAPI.setPlaceholders(player, this.localPlaceholder.setPlaceholders(player, string));
+            return PlaceholderAPI.setPlaceholders(player, this.localPlaceholder.setPlaceholders(player, string)).replace("\uF000", "%");
         }
 
         @Override
         public List<String> setPlaceholders(Player player, List<String> list) {
-            return PlaceholderAPI.setPlaceholders(player, list);
+            return PlaceholderAPI.setPlaceholders(player, list).stream()
+                    .map(s -> s.replace("\uF000", "%"))
+                    .toList();
         }
 
         @Override
         public List<String> setPlaceholders(OfflinePlayer player, List<String> list) {
-            return PlaceholderAPI.setPlaceholders(player, list);
+            return PlaceholderAPI.setPlaceholders(player, list).stream()
+                    .map(s -> s.replace("\uF000", "%"))
+                    .toList();
         }
 
     }
