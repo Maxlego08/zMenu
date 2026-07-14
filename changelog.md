@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.6
+
 ## New Features
 
 - Added **live sync** with the website (Minecraft Inventory Builder): link your server with `/zmenu login`
