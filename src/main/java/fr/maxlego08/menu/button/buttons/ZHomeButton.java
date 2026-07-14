@@ -32,7 +32,7 @@ public class ZHomeButton extends HomeButton {
         }
 
         Inventory toInventory = this.inventory;
-        this.inventoryManager.openInventory(player, toInventory, 1, new ArrayList<>());
+        this.inventoryManager.openInventory(player, toInventory, new ArrayList<>());
     }
 
     @Override

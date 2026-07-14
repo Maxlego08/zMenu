@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.requirement.checker;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
@@ -38,7 +38,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * @param classz        the class of the inventory to load
      * @return an empty optional if the configuration can be loaded, or an optional containing an inventory load requirement otherwise
      */
-    public Optional<InventoryLoadRequirement> canLoadInventory(YamlConfiguration configuration, Plugin plugin, File file, Class<? extends Inventory> classz) {
+    public Optional<InventoryLoadRequirement> canLoadInventory(YamlConfiguration configuration, Plugin plugin, File file, Class<? extends ContainerInventory> classz) {
 
         InventoryLoadRequirement inventoryLoadRequirement = new InventoryLoadRequirement(plugin, configuration, classz, file);
 

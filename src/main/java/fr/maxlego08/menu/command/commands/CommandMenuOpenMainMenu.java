@@ -2,9 +2,9 @@ package fr.maxlego08.menu.command.commands;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
@@ -60,7 +60,7 @@ public class CommandMenuOpenMainMenu extends SubCommand<ZMenuPlugin> {
 
         String mainMenu = Configuration.mainMenu;
 
-        Optional<Inventory> optional = inventoryManager.getInventory(mainMenu);
+        Optional<ContainerInventory> optional = inventoryManager.getInventory(mainMenu);
 
         if (optional.isEmpty()) {
             MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);

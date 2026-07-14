@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
@@ -54,7 +55,7 @@ public class ZInventoryButton extends InventoryButton {
         Inventory fromInventory = inventory.getMenuInventory();
         List<Inventory> oldInventories = inventory.getOldInventories();
 
-        Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.getInventory(this.inventoryName) : this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
+        Optional<ContainerInventory> optional = this.pluginName == null ? this.inventoryManager.getInventory(this.inventoryName) : this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
         if (optional.isEmpty()) {
             player.closeInventory();
             inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
@@ -65,7 +66,7 @@ public class ZInventoryButton extends InventoryButton {
 
         this.inventoryArgument.process(player,placeholders);
 
-        Inventory toInventory = optional.get();
+        ContainerInventory toInventory = optional.get();
         this.inventoryManager.openInventory(player, toInventory, this.toPage, oldInventories);
     }
 

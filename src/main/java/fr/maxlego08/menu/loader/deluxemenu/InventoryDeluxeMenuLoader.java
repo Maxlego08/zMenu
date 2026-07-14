@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -29,7 +28,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
+public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<ContainerInventory> {
 
     private final ZMenuPlugin plugin;
 
@@ -39,7 +38,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public ContainerInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         String name = configuration.getString("name", configuration.getString("menu_title", configuration.getString("title")));
@@ -179,7 +178,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    public void save(ContainerInventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", inventory.getName());
