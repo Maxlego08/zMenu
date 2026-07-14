@@ -15,10 +15,10 @@ public final class ColorUtils {
     public static Color parse(@NotNull Object obj) {
         switch (obj) {
             case Float[] floatsArray when (floatsArray.length == 3 || floatsArray.length == 4) -> {
-                return getColor(floatsArray[0] * 255, floatsArray[1] * 255, floatsArray[2] * 255, floatsArray.length == 3, floatsArray[3] * 255);
+                return getColor(floatsArray[0] * 255, floatsArray[1] * 255, floatsArray[2] * 255, floatsArray.length == 3, floatsArray.length == 4 ? floatsArray[3] * 255 : 0);
             }
             case Double[] doublesArray when (doublesArray.length == 3 || doublesArray.length == 4) -> {
-                return getColor(doublesArray[0] * 255, doublesArray[1] * 255, doublesArray[2] * 255, doublesArray.length == 3, doublesArray[3] * 255);
+                return getColor(doublesArray[0] * 255, doublesArray[1] * 255, doublesArray[2] * 255, doublesArray.length == 3, doublesArray.length == 4 ? doublesArray[3] * 255 : 0);
             }
             case List<?> list when (list.size() == 3 || list.size() == 4) -> {
                 try {
@@ -114,14 +114,14 @@ public final class ColorUtils {
 
     @NotNull
     private static Color getColor(double v, double v2, double v3, boolean b2, double v4) {
-        int r = (int) (v);
-        int g = (int) (v2);
-        int b = (int) (v3);
+        int r = clamp((int) (v));
+        int g = clamp((int) (v2));
+        int b = clamp((int) (v3));
 
         if (b2) { // RGB
             return Color.fromRGB(r, g, b);
         } else { // RGBA
-            int a = (int) (v4);
+            int a = clamp((int) (v4));
             return Color.fromARGB(a, r, g, b);
         }
     }
