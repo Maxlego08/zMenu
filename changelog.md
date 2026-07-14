@@ -49,6 +49,13 @@
   live link with `/zmenu connect`, and close it with `/zmenu disconnect`. Once connected, clicking
   "Sync to Server" on the web builder reloads the inventory on your server live, with no restart.
 - Added permissions `zmenu.connect` and `zmenu.disconnect`.
+- **Custom item `on-click` mechanic**: custom items (defined in `items/*.yml`) can now run zMenu actions when their holder left/right-clicks. Configure it under `mechanics.on-click` with `cooldown` (seconds), `cancel-event`, `click-target` (`air` / `block` / `both`), `click-types` (`LEFT`, `RIGHT`, `SHIFT_LEFT`, `SHIFT_RIGHT`), `click-requirements` and `actions`.
+- **Dynamic dialog buttons**: two new dialog button types repeat a body or input element over a numeric range — `dialog-dynamic-body-button` (inside `body:`) and `dialog-dynamic-input-button` (inside `inputs:`), each with placeholder-aware `start` / `end` bounds. The `%index%` placeholder resolves to the current iteration, and each generated input value is available as `%<button-name>_<index>%` (e.g. `%my_input_1%`). See `dialogs/dynamic-dialog-example.yml`.
+- **Dynamic Bedrock buttons**: `bedrock-dynamic-input-button` (CUSTOM forms) and `bedrock-dynamic-button` (SIMPLE forms) repeat an input/button over `start` / `end`, exposing `%index%` and per-index response placeholders (e.g. `%dynamic_input_1%`, `%dynamic_toggle_1%`). See `bedrock/dynamic-bedrock-example.yml` and `bedrock/dynamic-simple-bedrock-example.yml`.
+- **Pluggable dialog action types**: dialog action buttons (yes/no, notice, multi-action, server-links) now accept a `type:` field — `custom-click` (default, runs zMenu `actions:`) or `static` for native client actions via `static-type:` (`OPEN_URL`, `OPEN_FILE`, `RUN_COMMAND`, `SUGGEST_COMMAND`, `COPY_TO_CLIPBOARD`).
+- **Dialog action limits**: dialog action buttons support `usage-limit` (maximum activations) and `duration-limit` — either plain seconds or a `{ value, type }` section with a `TimeUnit` (`SECONDS`, `MINUTES`, ...) — plus `enable-placeholders`.
+- **Placeholders inside item components**: item component fields now accept `%placeholder%` values, resolved per viewer at build time (local placeholders + PlaceholderAPI) through a new `Resolvable` framework. `dyed-color` and other color / enum / number / string fields can now be dynamic.
+- **New item components**: `tropical-fish/pattern`, `wolf/sound-variant`, `can-break`, `can-place-on`, and a now-functional `dye` component (Paper 1.26.1+).
 
 ## Improvements
 
@@ -71,6 +78,20 @@
 - `/zmenu connect` now first **verifies the link is still valid** with the website and **refreshes** the
   stored relay url / connection id (so a changed `ZMENU_WS_URL` is picked up automatically); a revoked link
   is detected and cleared up front.
+- **All integrations are now optional**: every integration plugin (Oraxen, ItemsAdder, PlaceholderAPI, LuckPerms, Geyser/Floodgate, MythicMobs, MMOItems, ...) is declared as a soft dependency in `paper-plugin.yml` — none are required for zMenu to start.
+- **Expanded color parsing**: color fields (`dyed-color`, `map-color`, firework `colors`/`fade_colors`, `custom-model-data` colors, `potion-contents` custom color, collar colors, ...) now also accept `"r,g,b"` and `"r,g,b,a"` strings (with or without spaces, values clamped 0–255) in addition to hex strings and RGB(A) lists.
+- **Backward-compatible dialog action buttons**: the new nested form (`<key>.label`, `<key>.tooltip`, `<key>.width`, `<key>.actions`, `<key>.type`) falls back to the old flat keys (`yes-text`, `notice.text`, `multi-actions.<key>.text`, ...), so existing dialog files keep working.
+- **Bedrock text input** now accepts both `bedrock_text` and `bedrock_text_input`.
+- **Page placeholders** (`%page%`, `%maxPage%`, `%max-page%`) now resolve everywhere inside an inventory (buttons, names, lore), not only in the title.
+- **DeluxeMenu import** (`zmenuconvert`) now honours DeluxeMenu's `inventory_type` (CHEST, HOPPER, DISPENSER, ...), rejects unsupported types with a clear message, and only enforces the multiple-of-9 size rule on CHEST inventories.
+- **Maven Central mirror fallback**: zMenu downloads its runtime libraries via Paper's library loader on startup; a mirror fallback (`PAPER_DEFAULT_CENTRAL_REPOSITORY` env var → `org.bukkit.plugin.java.LibraryLoader.centralURL` system property → Google mirror) keeps this working on older Paper builds and restricted networks.
+- Players can now safely type `%` inside dialog/chat answers (it is no longer misinterpreted as a placeholder).
+
+## Changes
+
+- **zMenu is now Paper-only.** The Spigot `plugin.yml` has been removed in favour of `paper-plugin.yml` (Paper `bootstrapper` + `loader`); zMenu **no longer runs on Spigot** — Paper, a Paper fork (Purpur/Pufferfish) or Folia is required. Work has also started on Paper 26+ support.
+- **Item component keys normalized to kebab-case** (no alias kept — existing configs must be updated): `custom_name` → `custom-name`, `death_protection` → `death-protection`, `intangible_projectile` → `intangible-projectile`, `map_decorations` → `map-decorations`, `note_block_sound` → `note-block-sound`, `pot_decorations` → `pot-decorations`, `provides_banner_patterns` → `provides-banner-patterns`, `provides_trim_material` → `provides-trim-material`, `tropical_fish/base_color` → `tropical-fish/base-color`, `tropical_fish/pattern_color` → `tropical-fish/pattern-color`.
+- **API**: `InventoryManager` methods now return/accept `ContainerInventory` instead of Bukkit `Inventory`; plugins compiling against `zmenu-api` must update.
 
 ## Security
 
@@ -94,10 +115,31 @@
   inventories by bare name): the synced inventory is now resolved by its actual file path. Concurrent
   syncs of same-named inventories also no longer share a temp file.
 - Fixed dialog config permission : https://github.com/Maxlego08/zMenu/issues/252
+- Fixed `width` being ignored inside `dialog_plain_message`.
+- Fixed translated inventory/item names (`translatedName` / `translated-name`) never being applied.
+- Fixed player-selector arguments (`@p`, `@a`, ...) in `/zmenu open`, `giveitem`, `giveopenitem`, `openmainmenu` and the Bedrock/dialog open commands.
+- Fixed commands sometimes not registering, and allowed `:` inside inventory names/arguments.
+- Fixed a `ConcurrentModificationException` while flushing player data ([#246](https://github.com/Maxlego08/zMenu/issues/246)).
+- Fixed the anvil inventory registration to only load on Minecraft 1.21+.
+- Fixed placeholder-driven commands being split in the wrong order in player-command actions.
+- Fixed button post-processing only applying to the last button of an `else` chain instead of every button.
+- Fixed the legacy (pre-1.13) material-by-ID mapping never being built.
+- Fixed the MythicMobs hook activating even when MythicMobs was installed but disabled.
+- Fixed font image handling for optional plugins ([#250](https://github.com/Maxlego08/zMenu/issues/250)).
+- Fixed a crash on older Paper builds where JDK 25 bytecode could not be read (ASM), and a build `StackOverflowError` during POM resolution.
+- Fixed version parsing for Paper 26+ build strings (e.g. `26.2.build.12-alpha`).
 
 **Internal Changes**:
 
-- Rework the Dialog and Bedrock system to allow custom button.
+- Reworked the Dialog and Bedrock systems to support custom, editable and dynamic buttons; dialog and Bedrock button/input loaders are now discovered by reflection.
+- New reflection-based auto-loading annotations: `@AutoButtonLoader`, `@AutoCommandArgumentValidator`, `@AutoFontImage`, `@AutoItemStackSimilar`, and `@RequireSupport` (gates loading on `DIALOG` / `BEDROCK_INVENTORY` support being active).
+- Dialog API split into specialized interfaces (`ConfirmationDialogInventory`, `NoticeDialogInventory`, `MultiActionDialogInventory`, `ServerLinksDialogInventory`); ~40 type-specific methods on `DialogInventory` were deprecated. A new `ConfigFieldProcessor` extension point lets integrators customize the `/zmenu dialogs config` editor.
+- Bedrock inputs now build Geyser Cumulus components directly; new `bedrock/inputs` and `bedrock/components` API packages; dialog body/input types moved into `body/` and `inputs/` subpackages (import paths changed for API consumers).
+- New `Resolvable` framework backing placeholder-aware component fields; `PotionContentsComponent` rewritten on Paper `DataComponentTypes`; `ResolvableRegistry` now uses Bukkit `RegistryKey`; entity variant loaders reorganized into per-entity packages; the Spigot/Paper `custom-model-data` loaders were merged into a single dynamic loader.
+- New `ResolvablePersistentDataEntry` / `ResolvableContainerSlot` API building blocks (typed, placeholder-resolvable persistent-data entries using a `value@type` syntax).
+- Commands migrated to the `paper-dispatch` library.
+- `openInventory` now runs on the entity scheduler (Folia-safe); hardened packet-handler injection.
+- Migrated compile/test to Paper 26 with a MockBukkit-based mock-server test harness; Gradle wrapper updated to 9.6.1.
 
 # 1.1.1.5
 
