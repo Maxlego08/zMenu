@@ -92,8 +92,14 @@ public class OnClickMechanicListener extends MechanicListener {
         if (cooldownSeconds <= 0) return false;
         Map<UUID, Long> playerCooldowns = this.cooldowns.get(itemId);
         if (playerCooldowns == null) return false;
+        long now = System.currentTimeMillis();
+        playerCooldowns.entrySet().removeIf(entry -> entry.getValue() <= now);
+        if (playerCooldowns.isEmpty()) {
+            this.cooldowns.remove(itemId);
+            return false;
+        }
         Long expiry = playerCooldowns.get(playerUuid);
-        return expiry != null && System.currentTimeMillis() < expiry;
+        return expiry != null && now < expiry;
     }
 
     private void setCooldown(String itemId, UUID playerUuid, int cooldownSeconds) {
