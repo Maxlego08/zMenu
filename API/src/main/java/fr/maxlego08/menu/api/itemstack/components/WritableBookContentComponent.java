@@ -3,8 +3,9 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,27 +17,27 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class WritableBookContentComponent extends ItemComponent {
-    private final @Nullable String title;
-    private final @NotNull List<@NotNull String> pages;
+    private final @Nullable ResolvableString title;
+    private final @NotNull List<ResolvableString> pages;
 
-    public WritableBookContentComponent(@Nullable String title, @NotNull List<@NotNull String> pages) {
+    public WritableBookContentComponent(@Nullable ResolvableString title, @NotNull List<ResolvableString> pages) {
         this.title = title;
         this.pages = pages;
     }
 
-    public @Nullable String getTitle() {
+    public @Nullable ResolvableString getTitle() {
         return this.title;
     }
 
-    public @NotNull List<@NotNull String> getPages() {
+    public @NotNull List<ResolvableString> getPages() {
         return this.pages;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, BookMeta.class, bookMeta -> {
-            bookMeta.setTitle(this.title != null ? Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.title)) : null);
-            bookMeta.setPages(Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.pages)));
+            Resolvable.applyResolvable(context, this.title, bookMeta::setTitle);
+            Resolvable.applyResolvable(context, this.pages, bookMeta::setPages);
         });
         if (!apply && Configuration.enableDebug)
             Logger.info("Could not apply WritableBookContentComponent to item: " + itemStack.getType().name());

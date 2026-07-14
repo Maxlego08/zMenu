@@ -5,17 +5,14 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Loader;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.hooks.dialogs.ZDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,7 +24,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-public class DialogLoader implements Loader<DialogInventory> {
+public class DialogLoader implements Loader<AbstractDialogInventory> {
     private final MenuPlugin menuPlugin;
     private final ZDialogManager manager;
 
@@ -37,28 +34,32 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     @Override
-    public DialogInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public AbstractDialogInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
         String name = configuration.getString("name", "");
         String externalTitle = configuration.getString("external-title", "");
 
-        ZDialogInventory dialogInventory = new ZDialogInventory(this.menuPlugin, name, file.getName(), externalTitle);
+        String typeString = configuration.getString("type", "NOTICE");
+        DialogType dialogType;
+        try {
+            dialogType = DialogType.valueOf(typeString.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new InventoryException("Invalid dialog type: " + typeString);
+        }
+
+
+        Optional<DialogInventoryTypeLoader<?>> dialogInventoryTypeLoader = DialogInventoryTypeRegistry.getInstance().get(dialogType);
+        if (dialogInventoryTypeLoader.isEmpty()) {
+            throw new InventoryException("No loader found for dialog type: " + dialogType);
+        }
+        AbstractDialogInventory dialogInventory = dialogInventoryTypeLoader.get().load(this.menuPlugin, file, configuration, name, externalTitle);
 
         boolean canCloseWithEscape = configuration.getBoolean("can-close-with-escape", true);
         dialogInventory.setCanCloseWithEscape(canCloseWithEscape);
 
         boolean pause = configuration.getBoolean("pause", false);
         dialogInventory.setPause(pause);
-
-        String typeString = configuration.getString("type", "NOTICE");
-        DialogType dialogType;
-        try {
-            dialogType = DialogType.valueOf(typeString.toUpperCase(Locale.ROOT));
-            dialogInventory.setDialogType(dialogType);
-        } catch (IllegalArgumentException e) {
-            throw new InventoryException("Invalid dialog type: " + typeString);
-        }
 
         String afterActionString = configuration.getString("after-action", "CLOSE");
         try {
@@ -81,8 +82,6 @@ public class DialogLoader implements Loader<DialogInventory> {
             InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
             dialogInventory.setInventoryReplacement(inventoryReplacement);
         }
-
-        this.loadSpecificItems(dialogType, configuration, dialogInventory, file);
 
         List<BodyButton> bodyButtons = this.loadButtons(configuration, file, "body", BodyButton.class, null);
         dialogInventory.setBodyButtons(bodyButtons);
@@ -146,7 +145,13 @@ public class DialogLoader implements Loader<DialogInventory> {
                 T typedButton = this.getButtonType(button, buttonClass, path, file);
 
                 if (postProcess != null) {
-                    postProcess.accept(typedButton, key);
+                    Button current = button.getMasterParentButton();
+                    while (current != null) {
+                        if (buttonClass.isInstance(current)) {
+                            postProcess.accept(buttonClass.cast(current), key);
+                        }
+                        current = current.getElseButton();
+                    }
                 }
 
                 buttons.add(typedButton);
@@ -158,91 +163,10 @@ public class DialogLoader implements Loader<DialogInventory> {
     }
 
     @Override
-    public void save(DialogInventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    public void save(AbstractDialogInventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         //TODO: Implement save logic if needed
     }
 
-    private void loadSpecificItems(DialogType dialogType, YamlConfiguration configuration, ZDialogInventory dialogInventory, File file) throws InventoryException {
-        switch (dialogType) {
-            case NOTICE -> {
-                dialogInventory.addAction(this.loadRequirements(configuration, "actions", file));
-                String noticeText = configuration.getString("notice.text","");
-                String noticeTooltip = configuration.getString("notice.tooltip","");
-                int noticeWidth = configuration.getInt("notice.width", 200);
-                dialogInventory.setLabel(noticeText);
-                dialogInventory.setLabelTooltip(noticeTooltip);
-                dialogInventory.setLabelWidth(noticeWidth);
-
-            }
-            case CONFIRMATION -> {
-                String yesText = configuration.getString("confirmation.yes-text");
-                String yesTooltip = configuration.getString("confirmation.yes-tooltip");
-                int yesWidth = configuration.getInt("confirmation.yes-width", 100);
-                String noText = configuration.getString("confirmation.no-text");
-                String noTooltip = configuration.getString("confirmation.no-tooltip");
-                int noWidth = configuration.getInt("confirmation.no-width", 100);
-                dialogInventory.setYesText(yesText);
-                dialogInventory.setNoText(noText);
-                dialogInventory.setYesTooltip(yesTooltip);
-                dialogInventory.setNoTooltip(noTooltip);
-                dialogInventory.setYesWidth(yesWidth);
-                dialogInventory.setNoWidth(noWidth);
-                dialogInventory.addYesAction(this.loadRequirements(configuration, "yes-actions", file));
-                dialogInventory.addNoAction(this.loadRequirements(configuration, "no-actions", file));
-            }
-            case MULTI_ACTION -> {
-                int numberOfColumns = configuration.getInt("number-of-columns", 3);
-                ConfigurationSection multiSection = configuration.getConfigurationSection("multi-actions");
-                if (multiSection == null) {
-                    return;
-                }
-                Set<String> keys = multiSection.getKeys(false);
-                if (keys.isEmpty()) {
-                    if (Configuration.enableDebug){
-                        Logger.info("A minimum of one action button is required for multi-action dialogs.", Logger.LogType.WARNING);
-                    }
-                    return;
-                }
-                for (String key : keys) {
-                    String path = "multi-actions."+key;
-                    String text = configuration.getString(path + ".text", "");
-                    String tooltip = configuration.getString(path + ".tooltip", "");
-                    int width = configuration.getInt(path + ".width", 100);
-                    List<Requirement> requirement = this.loadRequirements(configuration, path+".actions", file);
-                    ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
-                    dialogInventory.addActionButton(record);
-                }
-                dialogInventory.setNumberOfColumns(numberOfColumns);
-                if (configuration.isConfigurationSection("exit-button")){
-                    ConfigurationSection exitSection = configuration.getConfigurationSection("exit-button");
-                    if (exitSection == null) {
-                        return;
-                    }
-                    String exitText = exitSection.getString("text", "Exit");
-                    String exitTooltip = exitSection.getString("tooltip", "Exit the dialog");
-                    int exitWidth = exitSection.getInt("width", 100);
-                    List<Requirement> exitRequirements = this.loadRequirements(configuration, "exit-button.actions", file);
-                    ActionButtonRecord exitRecord = new ActionButtonRecord(exitText, exitTooltip, exitWidth, exitRequirements);
-                    dialogInventory.setExitActionButton(exitRecord);
-                }
-
-            }
-            case SERVER_LINKS -> {
-                String text = configuration.getString("server-links.text", "");
-                String tooltip = configuration.getString("server-links.tooltip", "");
-                int width = configuration.getInt("server-links.width", 100);
-                List<Requirement> requirement = this.loadRequirements(configuration, "server-links.actions", file);
-                int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
-                ActionButtonRecord record = new ActionButtonRecord(text, tooltip, width, requirement);
-                dialogInventory.setExitActionButton(record);
-                dialogInventory.setNumberOfColumns(numberOfColumns);
-            }
-        }
-    }
-
-    protected List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException {
-        return this.menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
-    }
     protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
         return this.menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }

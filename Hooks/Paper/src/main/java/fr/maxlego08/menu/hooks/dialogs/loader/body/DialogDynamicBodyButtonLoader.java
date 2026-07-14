@@ -1,0 +1,39 @@
+package fr.maxlego08.menu.hooks.dialogs.loader.body;
+
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
+import fr.maxlego08.menu.api.annotations.RequireSupport;
+import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.buttons.dialogs.body.VanillaDialogBody;
+import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.hooks.dialogs.loader.DialogDynamicAbstractLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.builder.body.DialogDynamicBodyButton;
+import fr.maxlego08.menu.zcore.logger.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+@AutoButtonLoader
+@RequireSupport(RequireSupport.SupportType.DIALOG)
+public class DialogDynamicBodyButtonLoader extends DialogDynamicAbstractLoader {
+
+    public DialogDynamicBodyButtonLoader(@NotNull MenuPlugin plugin) {
+        super(plugin, "dialog-dynamic-body-button");
+    }
+
+    @Override
+    protected String getChildPath() {
+        return "body.";
+    }
+
+    @Override
+    protected @Nullable Button wrap(Button button, String buttonName, String start, String end) {
+        if (button == null) {
+            if (Configuration.enableDebug)
+                Logger.info("DialogDynamicBodyButtonLoader: Button is null for buttonName: " + buttonName);
+        }
+        if (button instanceof VanillaDialogBody vanillaDialogBody && !button.hasCustomRender()) {
+            return new DialogDynamicBodyButton(this.plugin, start, end, vanillaDialogBody);
+        }
+        return null;
+    }
+}

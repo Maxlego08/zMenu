@@ -20,8 +20,8 @@ public class NexoTagResolverLoader implements Listener {
     @EventHandler
     public void onNexoLoad(NexoItemsLoadedEvent event) {
         this.paperMetaUpdater.clearCache();
-        if (!loaded) {
-            loaded = true;
+        if (!this.loaded) {
+            this.loaded = true;
             this.paperMetaUpdater.withTagResolver(GlyphTag.INSTANCE.getRESOLVER());
             this.paperMetaUpdater.buildMiniMessage();
         }

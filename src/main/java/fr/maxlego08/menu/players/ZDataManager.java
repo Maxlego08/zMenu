@@ -15,6 +15,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
@@ -100,6 +101,21 @@ public class ZDataManager implements DataManager {
         } catch (Exception e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public List<String> getKeys(@NotNull UUID playerId) {
+        Optional<PlayerData> optional = this.getPlayer(playerId);
+        if (optional.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        PlayerData playerData = optional.get();
+        List<String> keys = new ArrayList<>(playerData.getDatas().size());
+        for (Data data : playerData.getDatas()) {
+            keys.add(data.getKey());
+        }
+        return keys;
     }
 
     @Override

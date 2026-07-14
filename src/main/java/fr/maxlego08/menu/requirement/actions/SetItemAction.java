@@ -35,24 +35,24 @@ public class SetItemAction extends ActionHelper {
         ItemStack itemStack = this.menuItemStack.build(player);
 
 
-        if (dupeProtection) {
+        if (this.dupeProtection) {
             itemStack = inventoryEngine.getPlugin().getDupeManager().protectItem(itemStack);
         }
 
-        for (int slot : slots) {
-            if (inPlayerInventory) {
+        for (int slot : this.slots) {
+            if (this.inPlayerInventory) {
                 Map<Integer, ItemButton> playerInventoryItems = inventoryEngine.getPlayerInventoryItems();
                 if (playerInventoryItems.containsKey(slot)) {
                     playerInventoryItems.get(slot).updateDisplayItem(itemStack);
                 } else {
-                    inventoryEngine.addItem(true, slot, itemStack, dupeProtection);
+                    inventoryEngine.addItem(true, slot, itemStack, this.dupeProtection);
                 }
             } else {
                 Map<Integer, ItemButton> items = inventoryEngine.getItems();
                 if (items.containsKey(slot)) {
                     items.get(slot).updateDisplayItem(itemStack);
                 } else {
-                    inventoryEngine.addItem(false, slot, itemStack, dupeProtection);
+                    inventoryEngine.addItem(false, slot, itemStack, this.dupeProtection);
                 }
             }
         }

@@ -5,10 +5,10 @@ import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.SuspiciousStewEffectsComponent;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
 import fr.maxlego08.menu.loader.components.AbstractEffectItemComponentLoader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class SpigotSuspiciousStewEffectsItemComponentLoader extends AbstractEffe
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
         List<Map<?, ?>> effects = configuration.getMapList(path);
-        List<PotionEffect> potionEffects = this.parsePotionEffects(effects);
-        return potionEffects.isEmpty() ? null : new SuspiciousStewEffectsComponent(potionEffects);
+        List<ResolvablePotionEffect> resolvablePotionEffects = this.parseResolvablePotionEffects(effects);
+        return resolvablePotionEffects.isEmpty() ? null : new SuspiciousStewEffectsComponent(resolvablePotionEffects);
     }
 }

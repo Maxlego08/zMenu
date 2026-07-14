@@ -1,0 +1,27 @@
+name: "&6Dynamic Bedrock Simple Example"
+# SIMPLE type is a menu with a content section followed by a list of clickable buttons
+type: SIMPLE
+content: "&7This menu displays dynamically generated buttons.\n&7Each button will show its unique index."
+
+buttons:
+  dynamic_buttons:
+    type: bedrock-dynamic-button
+    start: 1
+    end: 5
+    button:
+      type: bedrock_modal_button
+      text: "&bClick Me! &e(Button #%index%)"
+      actions:
+        - type: MESSAGE
+          messages:
+            - "&aYou clicked on dynamic button &6#%index%&a!"
+            - "&7This button was generated automatically."
+
+  # A static back button
+  back_button:
+    type: bedrock_modal_button
+    text: "&cBack to Menu"
+    actions:
+      - type: MESSAGE
+        messages:
+          - "&cReturning..."

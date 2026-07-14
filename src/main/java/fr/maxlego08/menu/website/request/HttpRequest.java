@@ -241,29 +241,13 @@ public class HttpRequest {
     }
 
     /**
-     * Final outcome of a download: whether it succeeded and the last HTTP status code seen
-     * (or -1 for a transport-level error such as a timeout or connection reset).
-     */
-    public static class DownloadResult {
-        public final boolean success;
-        public final int code;
-
-        public DownloadResult(boolean success, int code) {
-            this.success = success;
-            this.code = code;
-        }
+         * Final outcome of a download: whether it succeeded and the last HTTP status code seen
+         * (or -1 for a transport-level error such as a timeout or connection reset).
+         */
+        public record DownloadResult(boolean success, int code) {
     }
 
-    private static class Attempt {
-        final boolean success;
-        final int code;
-        final long retryAfterMs;
-
-        Attempt(boolean success, int code, long retryAfterMs) {
-            this.success = success;
-            this.code = code;
-            this.retryAfterMs = retryAfterMs;
-        }
+    private record Attempt(boolean success, int code, long retryAfterMs) {
     }
 
 }

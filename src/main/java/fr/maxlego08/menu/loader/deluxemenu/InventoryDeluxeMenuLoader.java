@@ -1,22 +1,26 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
+import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
+import fr.maxlego08.menu.loader.container.EmptyContainerInventoryTypeLoader;
+import fr.maxlego08.menu.registry.InventoryTypeRegistry;
 import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
@@ -24,7 +28,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
+public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<ContainerInventory> {
 
     private final ZMenuPlugin plugin;
 
@@ -34,15 +38,33 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public ContainerInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         String name = configuration.getString("name", configuration.getString("menu_title", configuration.getString("title")));
         name = name == null ? "" : name;
 
-        int size = configuration.getInt("size", 54);
-        if (size % 9 != 0) {
-            throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
+        InventoryType inventoryType;
+        int size;
+        String nameType = configuration.getString("inventory_type", "CHEST").toUpperCase(Locale.ROOT);
+        try {
+            inventoryType = InventoryType.valueOf(nameType);
+            if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) {
+                throw new InventoryTypeException("Type Inventory " + nameType + " can't use for the moment for inventory " + file.getAbsolutePath());
+            }
+            size = inventoryType.getDefaultSize();
+        } catch (IllegalArgumentException exception) {
+            throw new InventoryTypeException("Type Inventory " + nameType + " is not valid for inventory " + file.getAbsolutePath());
+        }
+
+        if (inventoryType == InventoryType.CHEST) {
+            size = configuration.getInt("size", 54);
+            if (size % 9 != 0) {
+                int closestMultiple = (size / 9) * 9;
+                int nextMultiple = closestMultiple + 9;
+                int closest = (size - closestMultiple < nextMultiple - size) ? closestMultiple : nextMultiple;
+                throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath() + " because it's not a multiple of 9. The closest valid size would be " + closest);
+            }
         }
 
         List<Button> buttons = new ArrayList<>();
@@ -93,21 +115,37 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
             buttons.add(lastButton);
         }
 
+        Plugin pluginOwner;
+        if (objects.length >= 3 && objects[2] instanceof Plugin) {
+            pluginOwner = (Plugin) objects[2];
+        } else {
+            pluginOwner = this.plugin;
+        }
+
         String fileName = this.getFileNameWithoutExtension(file);
 
-        ZInventory inventory;
-
-        try {
-
-            Class<? extends ZInventory> classz = (Class<? extends ZInventory>) objects[1];
-            Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class, String.class, int.class, List.class);
-            Plugin plugin = (Plugin) objects[2];
-            inventory = constructor.newInstance(plugin, name, fileName, size, buttons);
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            inventory = new ZInventory(this.plugin, name, fileName, size, buttons);
+        ContainerInventorySetter inventory;
+        if (!((objects[1]) instanceof Class<?> rawClass)) {
+            inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
+        } else {
+            if (rawClass == ZInventory.class) {
+                inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
+            } else if (ZInventory.class.isAssignableFrom(rawClass)) {
+                try {
+                    Class<? extends ZInventory> classz = (Class<? extends ZInventory>) rawClass;
+                    Constructor<? extends ZInventory> constructor = classz.getDeclaredConstructor(Plugin.class, String.class, String.class, int.class, List.class);
+                    constructor.setAccessible(true);
+                    inventory = constructor.newInstance(pluginOwner, name, fileName, size, buttons);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
+                }
+            } else {
+                inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
+            }
         }
+
+
 
         inventory.setUpdateInterval(configuration.getInt(path + "update_interval", 1) * 1000);
         inventory.setClearInventory(false);
@@ -140,7 +178,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    public void save(ContainerInventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", inventory.getName());

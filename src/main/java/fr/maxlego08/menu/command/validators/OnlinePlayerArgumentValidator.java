@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.command.validators;
 
+import fr.maxlego08.menu.api.annotations.AutoCommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.utils.Message;
 import org.bukkit.plugin.Plugin;
 
+@AutoCommandArgumentValidator
 public class OnlinePlayerArgumentValidator implements CommandArgumentValidator {
 
     private final Plugin plugin;

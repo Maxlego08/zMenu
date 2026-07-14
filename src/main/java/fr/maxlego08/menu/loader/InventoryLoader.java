@@ -1,7 +1,10 @@
 package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.InventoryOption;
+import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.TitleAnimationManager;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import fr.maxlego08.menu.api.button.Button;
@@ -37,7 +40,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public class InventoryLoader extends ZUtils implements Loader<Inventory> {
+public class InventoryLoader extends ZUtils implements Loader<ContainerInventory> {
 
     private final ZMenuPlugin plugin;
 
@@ -47,7 +50,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public ContainerInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         var nameObject = configuration.get("name", configuration.get("title"));
@@ -99,7 +102,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 try {
                     buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
-                    Logger.info(exception.getMessage(), Logger.LogType.ERROR);
+                    if (Configuration.enableDebug) {
+                        Logger.info("Error while loading button " + buttonPath + " in " + file.getAbsolutePath() + ": " + exception.getMessage(), Logger.LogType.ERROR);
+                    }
                 }
             }
         } else {
@@ -173,12 +178,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         this.loadOpenRequirement(configuration, inventory, file);
         this.loadOpenAndCloseActions(configuration, inventory, file);
 
-        /*Map<String, String> translatedDisplayName = new HashMap<>();
-        MenuItemStackLoader.getTranslatedName(configuration, path, translatedDisplayName);
-        String loadString;
-        inventory.setTranslatedNames(translatedDisplayName);*/
+        inventory.setTranslatedNames(MenuItemStackLoader.getTranslatedName(configuration, path));
 
-        List<InventoryOption> inventoryOptions = new ArrayList<>();
+        List<fr.maxlego08.menu.api.InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
             for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
                 InventoryOption instance = this.createInstance(entry.getKey(), optionClass);
@@ -342,14 +344,14 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    public void save(ContainerInventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", inventory.getName());
         configuration.set("size", inventory.size());
 
-        if (inventory instanceof ContainerInventory containerInventory && containerInventory.getFillItemStack() != null) {
-            itemStackLoader.save(containerInventory.getFillItemStack(), configuration, "fill-item.", file);
+        if (inventory.getFillItemStack() != null) {
+            itemStackLoader.save(inventory.getFillItemStack(), configuration, "fill-item.", file);
         }
 
         // TODO: FINISH THE SAVE METHOD

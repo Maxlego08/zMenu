@@ -9,10 +9,12 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.pattern.Pattern;
-import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
+import fr.maxlego08.menu.api.utils.record.dialogs.ZDialogInventoryBuild;
+import io.papermc.paper.dialog.Dialog;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface DialogInventory extends Inventory {
+
+    Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders);
 
     @NotNull
     String getExternalTitle();
@@ -38,8 +42,6 @@ public interface DialogInventory extends Inventory {
     boolean isPause();
 
     void setPause(boolean pause);
-
-    void setDialogType(DialogType dialogType);
 
     DialogType getDialogType();
 
@@ -64,83 +66,25 @@ public interface DialogInventory extends Inventory {
      */
     List<InputButton> getDialogInputs(Player player);
 
-    List<Requirement> getYesActions();
-
-    List<Requirement> getNoActions();
-
-    void addYesAction(List<Requirement> action);
-
-    void addNoAction(List<Requirement> action);
-
-    void addAction(List<Requirement> action);
-
-    List<Requirement> getActions();
-
-    void setYesText(String yesText);
-
-    void setNoText(String noText);
-
-    void setYesTooltip(String yesTooltip);
-
-    void setNoTooltip(String noTooltip);
-
-    String getYesText();
-
-    String getYesText(Player player);
-
-    String getNoText();
-
-    String getNoText(Player player);
-
-    String getYesTooltip();
-
-    String getYesTooltip(Player player);
-
-    String getNoTooltip();
-
-    String getNoTooltip(Player player);
-
-    int getYesWidth();
-
-    int getNoWidth();
-
-    void setYesWidth(int yesWidth);
-
-    void setNoWidth(int noWidth);
-
-    String getLabel();
-
-    String getLabel(Player player);
-
-    void setLabel(String label);
-
-    String getLabelTooltip();
-
-    String getLabelTooltip(Player player);
-
-    void setLabelTooltip(String labelTooltip);
-
-    int getLabelWidth();
-
-    void setLabelWidth(int labelWidth);
-
-    List<ActionButtonRecord> getActionButtons(Player player);
-
-    List<ActionButtonRecord> getActionButtons();
-
-    void addActionButton(ActionButtonRecord actionButton);
-
-    int getNumberOfColumns();
-
-    void setNumberOfColumns(int numberOfColumns);
-
     ZDialogInventoryBuild getBuild(Player player);
 
+    /**
+     * @deprecated Use {@link ServerLinksDialogInventory#setExitActionButton(ActionButtonRecord)}
+     */
+    @Deprecated(since = "1.1.1.5")
     void setExitActionButton(ActionButtonRecord actionButtonRecord);
 
 
+    /**
+     * @deprecated Use {@link ServerLinksDialogInventory#getExitActionButton(Player)}
+     */
+    @Deprecated(since = "1.1.1.5")
     ActionButtonRecord getExitActionButton(@NotNull Player player);
 
+    /**
+     * @deprecated Use {@link ServerLinksDialogInventory#getExitActionButton()}
+     */
+    @Deprecated(since = "1.1.1.5")
     ActionButtonRecord getExitActionButton();
 
     //TODO getOpenWithItem not implemented but need

@@ -2,10 +2,13 @@ package fr.maxlego08.menu.api.itemstack;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 /**
  * Interface for an item component that can be applied to an item stack and optionally a player.
@@ -41,5 +44,9 @@ public abstract class ItemComponent {
      */
     public void setParentLoader(@NotNull ItemComponentLoader parentLoader) {
         this.parentLoader = parentLoader;
+    }
+
+    protected <T> void applyResolvable(@NotNull BuildContext context, @NotNull Consumer<T> consumer, @Nullable Resolvable<T> resolvable) {
+        Resolvable.applyResolvable(context, resolvable, consumer);
     }
 }

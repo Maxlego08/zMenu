@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.actions;
 
+import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoActionLoader;
 import fr.maxlego08.menu.api.loader.ActionLoader;
@@ -13,15 +14,15 @@ import java.io.File;
 @AutoActionLoader
 public class BackLoader extends ActionLoader {
 
-    private final MenuPlugin plugin;
+    private final InventoryManager inventoryManager;
 
     public BackLoader(MenuPlugin plugin) {
         super("back");
-        this.plugin = plugin;
+        this.inventoryManager = plugin.getInventoryManager();
     }
 
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        return new BackAction(this.plugin.getInventoryManager());
+        return new BackAction(this.inventoryManager);
     }
 }

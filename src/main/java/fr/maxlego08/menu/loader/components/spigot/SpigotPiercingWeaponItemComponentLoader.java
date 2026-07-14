@@ -6,14 +6,14 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.PiercingWeaponComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.Sound;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Optional;
 
 @AutoComponentLoader
 @SinceVersion("1.21.11")
@@ -26,10 +26,10 @@ public class SpigotPiercingWeaponItemComponentLoader extends ItemComponentLoader
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
-        boolean dealsKnockback = componentSection.getBoolean("deals-knockback", true);
-        boolean dismounts = componentSection.getBoolean("dismounts", false);
-        Optional<Sound> sound = this.getSound(componentSection.getString("sound"));
-        Optional<Sound> hitSound = this.getSound(componentSection.getString("hit-sound"));
+        ResolvableBoolean dealsKnockback = this.asResolvableBoolean(componentSection, "deals-knockback", true);
+        ResolvableBoolean dismounts = this.asResolvableBoolean(componentSection, "dismounts", false);
+        ResolvableNamespacedKey sound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("sound"));
+        ResolvableNamespacedKey hitSound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("hit-sound"));
         return new PiercingWeaponComponent(dealsKnockback, dismounts, sound, hitSound);
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class ApplyPaperAttribute implements AttributApplier {
 
     @Override
-    public void applyAttributesModern(@NotNull ItemStack itemStack, @NotNull List<AttributeWrapper> attributes, @NotNull MenuPlugin plugin, AttributeMergeStrategy strategy) {
+    public void applyAttributesModern(@NotNull ItemStack itemStack, @NotNull List<fr.maxlego08.menu.api.attribute.AttributeWrapper> attributes, @NotNull MenuPlugin plugin, AttributeMergeStrategy strategy) {
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.itemAttributes();
 
         // Get existing modifiers

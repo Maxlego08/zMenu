@@ -4,6 +4,9 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableLong;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,19 +19,19 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public class ContainerLootComponent extends ItemComponent {
 
-    private final @NotNull LootTables lootable;
-    private final long seed;
+    private final @Nullable ResolvableEnum<LootTables> resolvableLootTable;
+    private final @NotNull ResolvableLong seed;
 
-    public ContainerLootComponent(@NotNull LootTables lootable, long seed) {
-        this.lootable = lootable;
+    public ContainerLootComponent(@Nullable ResolvableEnum<LootTables> resolvableLootTable, @NotNull ResolvableLong seed) {
+        this.resolvableLootTable = resolvableLootTable;
         this.seed = seed;
     }
 
-    public @NotNull LootTables getLootable() {
-        return this.lootable;
+    public @Nullable ResolvableEnum<LootTables> getResolvableLootTable() {
+        return this.resolvableLootTable;
     }
 
-    public long getSeed() {
+    public @NotNull ResolvableLong getSeed() {
         return this.seed;
     }
 
@@ -36,8 +39,13 @@ public class ContainerLootComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, BlockStateMeta.class, blockStateMeta -> {
             if (blockStateMeta instanceof Lootable lootableMeta) {
-                lootableMeta.setLootTable(this.lootable.getLootTable());
-                lootableMeta.setSeed(this.seed);
+
+                Resolvable.applyResolvable(context, this.resolvableLootTable, lootTables -> {
+                   lootableMeta.setLootTable(lootTables.getLootTable());
+                });
+
+                Resolvable.applyResolvable(context, this.seed, lootableMeta::setSeed);
+
             }
         });
         if (!apply && Configuration.enableDebug) {

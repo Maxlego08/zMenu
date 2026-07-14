@@ -6,10 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.JukeboxPlayableComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.api.utils.itemstack.ZJukeboxPlayableComponent;
-import org.bukkit.JukeboxSong;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -28,16 +25,8 @@ public class SpigotJukeboxPlayableItemComponentLoader extends ItemComponentLoade
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        String soundStr = configuration.getString(path);
-        if (soundStr == null || soundStr.isEmpty()) return null;
-        NamespacedKey key = NamespacedKey.fromString(soundStr);
-        if (key != null) {
-            try {
-                JukeboxSong song = Registry.JUKEBOX_SONG.getOrThrow(key);
-                return new JukeboxPlayableComponent(new ZJukeboxPlayableComponent(song, key));
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return null;
+        ResolvableNamespacedKey songKey = this.asResolvableKey(configuration, path);
+        if (songKey == null) return null;
+        return new JukeboxPlayableComponent(songKey);
     }
 }

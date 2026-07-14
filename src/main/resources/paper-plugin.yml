@@ -1,0 +1,108 @@
+name: zMenu
+authors: [ Maxlego08 ]
+main: fr.maxlego08.menu.ZMenuPlugin
+description: Inventory management plugin
+website: https://groupez.dev/resources/zmenu.253
+version: ${version}
+api-version: '1.19'
+contributors: [ mani1232, lijinhong11, Adreez, EnzoShoes, Noltox, saildrag, alwyn974, 1robie, Funasitien ]
+bootstrapper: fr.maxlego08.menu.ZMenuBootstrapper
+loader: fr.maxlego08.menu.ZMenuPluginLoader
+folia-supported: true
+dependencies:
+  server:
+    Oraxen:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    HeadDatabase:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ItemsAdder:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    Slimefun:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    # JobsReborn
+    Jobs:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    LuckPerms:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    zHead:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    MagicCosmetics:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    packetevents:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    HMCCosmetics:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    SCore:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ExecutableItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ExecutableBlocks:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    MythicMobs:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    MMOItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    BreweryX:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    floodgate:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    Geyser-Spigot:
+      load: BEFORE
+      required: false
+      join-classpath: true

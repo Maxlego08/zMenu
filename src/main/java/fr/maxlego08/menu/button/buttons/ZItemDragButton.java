@@ -179,7 +179,7 @@ public class ZItemDragButton extends ItemDragButton {
     }
 
     private boolean isSuccess(@NotNull Player player, @NotNull ItemStack itemStack){
-        return (rule == null || rule.matches(new ZRuleContext(itemStack))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(itemStack, this.checkItems.build(player)));
+        return (this.rule == null || this.rule.matches(new ZRuleContext(itemStack))) && (this.itemStackSimilar == null || this.itemStackSimilar.isSimilar(itemStack, this.checkItems.build(player)));
     }
 
     protected void refreshInventory(@NotNull InventoryEngine inventoryEngine,@NotNull Player player,@NotNull Placeholders placeholders){

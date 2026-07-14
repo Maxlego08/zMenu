@@ -6,9 +6,11 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.LodestoneTrackerComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableLodestoneLocation;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -27,26 +29,38 @@ public class SpigotLodestoneTrackerItemComponentLoader extends ItemComponentLoad
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        if(componentSection == null) return null;
-        boolean lodestoneTracked = componentSection.getBoolean("tracked", true);
-        ConfigurationSection targetSection = componentSection.getConfigurationSection("target");
-        Location targetLocation = null;
-        if (targetSection != null){
-            List<Integer> postIntArray = targetSection.getIntegerList("post");
-            if (postIntArray.size() == 3){
-                double x = postIntArray.get(0);
-                double y = postIntArray.get(1);
-                double z = postIntArray.get(2);
-                String worldName = targetSection.getString("dimension");
-                if (worldName != null){
-                    try {
-                        World world = Bukkit.getWorld(worldName);
-                        targetLocation = new Location(world, x, y, z);
-                    } catch (Exception e) { // Invalid world name
-                    }
-                }
-            }
-        }
-        return new LodestoneTrackerComponent(lodestoneTracked, targetLocation);
+        if (componentSection == null) return null;
+
+        ResolvableBoolean lodestoneTracked = this.asResolvableBoolean(componentSection, "tracked", true);
+        ResolvableLodestoneLocation lodestoneLocation = this.parseTarget(componentSection.getConfigurationSection("target"));
+
+        return new LodestoneTrackerComponent(lodestoneTracked, lodestoneLocation);
+    }
+
+    private @Nullable ResolvableLodestoneLocation parseTarget(@Nullable ConfigurationSection targetSection) {
+        if (targetSection == null) return null;
+
+        List<?> postList = targetSection.getList("post");
+        if (postList == null || postList.size() < 3) return null;
+
+        ResolvableInt x = toResolvableInt(postList.get(0), 0);
+        ResolvableInt y = toResolvableInt(postList.get(1), 0);
+        ResolvableInt z = toResolvableInt(postList.get(2), 0);
+
+        Resolvable<String> world = toResolvableString(targetSection, "dimension", "world");
+
+        return new ResolvableLodestoneLocation(x, y, z, world);
+    }
+
+    private static @NotNull ResolvableInt toResolvableInt(@Nullable Object value, int defaultValue) {
+        if (value instanceof Number number) return ResolvableInt.of(number.intValue());
+        if (value instanceof String expr) return ResolvableInt.of(expr);
+        return ResolvableInt.of(defaultValue);
+    }
+
+    private static @NotNull Resolvable<String> toResolvableString(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String defaultValue) {
+        String value = section.getString(key);
+        if (value == null || value.isEmpty()) return ResolvableString.of(defaultValue);
+        return value.contains("%") ? ResolvableString.ofExpression(value) : ResolvableString.of(value);
     }
 }

@@ -36,7 +36,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
         this.temporary = temporary;
         PlayerInventory playerInventory = player.getInventory();
         ItemStack[] content = playerInventory.getContents();
-        for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
+        for (int slot = 0; slot != this.MAX_INVENTORY_SIZE; slot++) {
             this.clear(slot, playerInventory, content, player, true, clearInvType);
         }
         if (!NMSUtils.isOneHand()) {
@@ -50,7 +50,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
         var removeItem = clearInvType.getRemoveItem();
 
         PlayerInventory playerInventory = player.getInventory();
-        for (int slot = 0; slot != MAX_INVENTORY_SIZE; slot++) {
+        for (int slot = 0; slot != this.MAX_INVENTORY_SIZE; slot++) {
             removeItem.accept(player, slot, playerInventory);
         }
         if (!NMSUtils.isOneHand()) {

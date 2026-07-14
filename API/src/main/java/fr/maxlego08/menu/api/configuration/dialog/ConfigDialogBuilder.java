@@ -1,18 +1,31 @@
 package fr.maxlego08.menu.api.configuration.dialog;
 
+import net.kyori.adventure.text.event.ClickCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.temporal.TemporalAmount;
 
 @SuppressWarnings("unused")
 public class ConfigDialogBuilder {
     private final String name;
     private final String externalTitle;
+    private final boolean canCloseWithEscape = false;
+    private final boolean pauseOnOpen = true;
+
     private String yesText = "<green>Confirm";
     private String yesTooltip = "";
     private int yesWidth = 150;
+    private final int yesUsageLimit = ClickCallback.UNLIMITED_USES;
+    private final TemporalAmount yesCooldown = null;
+
     private String noText = "<red>Cancel";
     private String noTooltip = "";
     private int noWidth  = 150;
+    private final int noUsageLimit = ClickCallback.UNLIMITED_USES;
+    private final TemporalAmount noCooldown = null;
+
+
     private String booleanConfirmText = "<white>%key% :</white> %value% <gray>|</gray> %text%";
     private String numberRangeConfirmText= "<white>%key% :</white> %value%";
     private String textConfirmText="<white>%key% : <gray>%text%";
@@ -147,5 +160,29 @@ public class ConfigDialogBuilder {
     @NotNull
     public String getTextConfirmText() {
         return this.textConfirmText;
+    }
+
+    public boolean canCloseWithEscape() {
+        return this.canCloseWithEscape;
+    }
+
+    public boolean isPauseOnOpen() {
+        return this.pauseOnOpen;
+    }
+
+    public int getYesUsageLimit() {
+        return this.yesUsageLimit;
+    }
+
+    public int getNoUsageLimit() {
+        return this.noUsageLimit;
+    }
+
+    public TemporalAmount getYesCooldown() {
+        return this.yesCooldown;
+    }
+
+    public TemporalAmount getNoCooldown() {
+        return this.noCooldown;
     }
 }

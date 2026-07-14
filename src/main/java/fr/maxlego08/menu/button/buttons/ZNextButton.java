@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.button.buttons;
 
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.NextButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,8 +22,9 @@ public class ZNextButton extends NextButton {
     public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventory, int slot, @NonNull Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
         if (inventory.getPage() != inventory.getMaxPage()) {
-            Inventory toInventory = inventory.getMenuInventory();
-            this.inventoryManager.openInventory(player, toInventory, event.isLeftClick() ? inventory.getPage() + 1 : inventory.getMaxPage(), inventory.getOldInventories());
+            if (inventory.getMenuInventory() instanceof ContainerInventory containerInventory) {
+                this.inventoryManager.openInventory(player, containerInventory, event.isLeftClick() ? inventory.getPage() + 1 : inventory.getMaxPage(), inventory.getOldInventories());
+            }
         }
     }
 

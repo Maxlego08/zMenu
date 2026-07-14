@@ -18,6 +18,6 @@ public class ZAnvilInventory extends ZInventory implements AnvilInventorySetter 
 
     @Override
     public @NotNull List<Requirement> getRenameRequirements() {
-        return renameRequirements;
+        return this.renameRequirements;
     }
 }

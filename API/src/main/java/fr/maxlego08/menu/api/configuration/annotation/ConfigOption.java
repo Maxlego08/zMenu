@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.configuration.annotation;
 
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigOption {
-    @NotNull
+    @Nullable
     String key() default "";
     @NotNull
     DialogInputType type() default DialogInputType.TEXT;
@@ -21,7 +22,7 @@ public @interface ConfigOption {
     boolean labelVisible() default true;
 
     // For text type
-    int maxLength() default 32;
+    int maxLength() default -1;
     int multilineMaxLines() default 0;
     int multilineHeight() default 0;
 
@@ -36,4 +37,5 @@ public @interface ConfigOption {
     float endRange() default 100;
     float stepRange() default 1;
 
+    String labelFormat() default "options.generic_value";
 }

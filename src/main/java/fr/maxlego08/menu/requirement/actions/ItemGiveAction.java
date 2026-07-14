@@ -25,9 +25,7 @@ public class ItemGiveAction extends ActionHelper {
 
         Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
         if (!leftovers.isEmpty()) {
-            leftovers.values().forEach(leftover -> {
-                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
-            });
+            leftovers.values().forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
         }
 
         player.updateInventory();

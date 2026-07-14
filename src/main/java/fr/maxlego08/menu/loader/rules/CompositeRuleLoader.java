@@ -26,7 +26,7 @@ public abstract class CompositeRuleLoader implements RuleLoader {
 
         if (rules.isEmpty()) return null;
         if (rules.size() == 1) return rules.getFirst();
-        return createRule(rules);
+        return this.createRule(rules);
     }
 
     protected abstract Rule createRule(@NotNull List<@NotNull Rule> rules);

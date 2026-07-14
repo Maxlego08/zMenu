@@ -2,26 +2,27 @@ package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.enums.Addons;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandAddons extends VCommand {
+public class CommandAddons extends SubCommand<ZMenuPlugin> {
+
     public CommandAddons(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("addons");
-        this.setPermission(Permission.ZMENU_ADDONS);
-        this.setDescription(Message.DESCRIPTION_ADDONS);
+        super(plugin, "addons");
+        this.setPermission(Permission.ZMENU_ADDONS.getPermission());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-        this.message(plugin, this.sender, Message.ADDONS_INFORMATION);
-        String messageType = plugin.isSpigot() ? "§f - §e%pluginName%§f: made by §c%authorName% §a%url%§f (%price%)" : "<white> - <yellow>%pluginName%<white>: made by <red>%authorName% <click:open_url:'%url%'><green>%url%</green></click><white> (%price%)";
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.ADDONS_INFORMATION);
         for (Addons addon : Addons.values()) {
-            this.message(plugin, this.sender, messageType, "%pluginName%", addon.getPluginName(), "%authorName%", addon.getAuthorName(), "%url%", addon.getUrl(), "%price%", addon.getPrice());
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), "<white> - <yellow>%pluginName%<white>: made by <red>%authorName% <click:open_url:'%url%'><green>%url%</green></click><white> (%price%)", "%pluginName%", addon.getPluginName(), "%authorName%", addon.getAuthorName(), "%url%", addon.getUrl(), "%price%", addon.getPrice());
         }
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
 }

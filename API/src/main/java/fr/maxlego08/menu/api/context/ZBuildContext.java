@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ZBuildContext implements BuildContext {
+    public final static ZBuildContext EMPTY = new ZBuildContext.Builder().build();
+
     private final ItemStack baseItemStack;
 
     private final Player player;

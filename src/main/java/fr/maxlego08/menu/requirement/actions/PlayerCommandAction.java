@@ -23,13 +23,14 @@ public class PlayerCommandAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
-        scheduler.runAtEntity(player, w -> this.papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
-            command = command.replace("%player%", player.getName());
-            if (this.inChat) {
-                player.chat("/" + command);
-            } else {
-                Bukkit.dispatchCommand(player, command);
-            }
-        }));
+        scheduler.runAtEntity(player, w-> {
+           this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player).forEach(command -> {
+               if (this.inChat) {
+                   player.chat("/" + command);
+               } else {
+                   Bukkit.dispatchCommand(player, command);
+               }
+           });
+        });
     }
 }

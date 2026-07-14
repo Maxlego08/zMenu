@@ -1,111 +1,165 @@
 package fr.maxlego08.menu.command.commands;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
+import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
-public class CommandMenuOpen extends VCommand {
+public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
+    private final InventoryManager inventoryManager;
 
     public CommandMenuOpen(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("open", "o");
+        super(plugin, "open", "o");
+        this.setPermission(Permission.ZMENU_OPEN.getPermission());
+        this.inventoryManager = plugin.getInventoryManager();
 
-        InventoryManager inventoryManager = plugin.getInventoryManager();
-        this.addRequireArg("inventory name", (a, b) -> {
-            List<String> inventories = new ArrayList<>();
-            for (Inventory inventory : inventoryManager.getInventories()) {
-                inventories.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
-            }
-            return inventories;
-        });
+        this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
+            this.inventoryManager.getInventoryNames().stream().filter(entry ->
+                            entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase())
+                    )
+                    .forEach(builder::suggest);
+            return builder.buildFuture();
+        }));
 
-        this.addOptionalArg("player");
-        this.addOptionalArg("display message", (a, b) -> Arrays.asList("false", "true"));
-        this.addOptionalArg("args");
-        this.setExtendedArgs(true);
+        this.addOptionalArgument(Commands.argument("player", ArgumentTypes.player()));
+        this.addOptionalArgument(Commands.argument("display-message", BoolArgumentType.bool()));
+        this.addOptionalArgument(Commands.argument("args", StringArgumentType.greedyString()));
 
-        this.setDescription(Message.DESCRIPTION_OPEN);
-        this.setPermission(Permission.ZMENU_OPEN);
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        String inventoryName = commandDispatch.getArgument("inventory-name", String.class);
 
-        InventoryManager inventoryManager = plugin.getInventoryManager();
+        Player player;
+        Optional<PlayerSelectorArgumentResolver> optionalPlayerSelector = commandDispatch.getOptionalArgument("player", PlayerSelectorArgumentResolver.class);
+        if (optionalPlayerSelector.isPresent()) {
+            PlayerSelectorArgumentResolver playerSelector = optionalPlayerSelector.get();
+            try {
+                player = playerSelector.resolve(commandDispatch.getSource()).getFirst();
+            } catch (Exception e) {
+                if (Configuration.enableDebug) {
+                    Logger.info("Error while resolving player selector: " + e.getMessage());
+                }
+                return CommandResultType.SUCCESS;
+            }
+        } else {
+            player = commandDispatch.getPlayer();
+        }
 
-        String inventoryName = this.argAsString(0);
-        Player player = this.argAsPlayer(1, this.player);
-        boolean displayMessage = this.argAsBoolean(2, Configuration.enableOpenMessage);
         if (player == null) {
-            this.message(plugin, this.sender, this.sender instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
-            return CommandType.DEFAULT;
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), commandDispatch.getSender() instanceof ConsoleCommandSender ? Message.INVENTORY_OPEN_ERROR_CONSOLE : Message.INVENTORY_OPEN_ERROR_PLAYER);
+            return CommandResultType.SUCCESS;
         }
 
-        Optional<Inventory> optional = this.findInventory(inventoryName, inventoryManager);
-
-        if (optional.isEmpty()) {
-            this.message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
-            return CommandType.DEFAULT;
+        Optional<ContainerInventory> optionalInventory = this.inventoryManager.findInventory(inventoryName);
+        if (optionalInventory.isEmpty()) {
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+            return CommandResultType.SUCCESS;
         }
-
+        Boolean displayMessage = commandDispatch.getArgument("display-message", Boolean.class, Configuration.enableOpenMessage);
         if (displayMessage) {
-            if (this.sender == player) {
-                this.message(plugin, this.sender, Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
+            if (commandDispatch.getSender() == player) {
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_SUCCESS, "%name%", inventoryName);
             } else {
-                this.message(plugin, this.sender, Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_OTHER, "%name%", inventoryName, "%player%", player.getName());
             }
         }
 
         int page = 1;
 
-        if (this.args.length >= 5) {
-            CommandManager commandManager = plugin.getCommandManager();
+        Optional<String> remaining = commandDispatch.getOptionalArgument("args", String.class);
 
-            for (int i = 4; i < this.args.length; i++) {
-                String name = String.valueOf(i - 4);
-                StringBuilder value = new StringBuilder(this.args[i]);
-                if (value.toString().contains(":")) {
-                    String[] values = value.toString().split(":", 2);
-                    name = values[0];
-                    value = new StringBuilder(values[1]);
-                    if (value.toString().startsWith("\"")) {
-                        value = new StringBuilder(value.substring(value.indexOf("\"") + 1));
-                        i++;
-                        while (i < this.args.length && !this.args[i].endsWith("\"")) {
-                            value.append(" ").append(this.args[i]);
-                            i++;
-                        }
-                        if (i < this.args.length) {
-                            value.append(" ").append(this.args[i], 0, this.args[i].lastIndexOf("\""));
-                        }
-                    }
+        if (remaining.isPresent()) {
+            CommandManager commandManager = this.plugin.getCommandManager();
+
+            List<String> args = splitArguments(remaining.get());
+
+            int i = 0;
+            for (String arg : args) {
+
+                String name;
+                String value;
+
+                int index = arg.indexOf(':');
+
+                if (index == -1) {
+                    name = String.valueOf(i);
+                    value = arg;
+                } else {
+                    name = arg.substring(0, index);
+                    value = arg.substring(index + 1);
                 }
 
                 if (name.equalsIgnoreCase("page")) {
                     try {
-                        page = Integer.parseInt(value.toString());
-                    } catch (Exception ignored) {
+                        page = Integer.parseInt(value);
+                    } catch (NumberFormatException ignored) {
                     }
                 }
 
-                commandManager.setPlayerArgument(player, name, value.toString());
+                i++;
+                commandManager.setPlayerArgument(player, name, value);
             }
         }
 
-        Inventory inventory = optional.get();
-        inventoryManager.openInventory(player, inventory, page);
+        this.inventoryManager.openInventory(player, optionalInventory.get(), page);
 
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
 
+    private static List<String> splitArguments(String input) {
+
+        List<String> result = new ArrayList<>();
+
+        StringBuilder current = new StringBuilder();
+        boolean quoted = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (c == '"') {
+                quoted = !quoted;
+                continue;
+            }
+
+            if (c == ' ' && !quoted) {
+                if (!current.isEmpty()) {
+                    result.add(current.toString());
+                    current.setLength(0);
+                }
+                continue;
+            }
+
+            current.append(c);
+        }
+
+        if (!current.isEmpty()) {
+            result.add(current.toString());
+        }
+
+        return result;
+    }
 }

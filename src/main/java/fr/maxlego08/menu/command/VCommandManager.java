@@ -65,7 +65,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                 if (!type.equals(CommandType.CONTINUE)) return true;
             }
         }
-        this.message(this.plugin, sender, Message.COMMAND_NO_ARG);
+        message(this.plugin, sender, Message.COMMAND_NO_ARG);
         return true;
     }
 
@@ -92,21 +92,21 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     private CommandType processRequirements(VCommand command, CommandSender sender, String[] strings) {
 
         if (!(sender instanceof Player) && !command.isConsoleCanUse()) {
-            this.message(this.plugin, sender, Message.COMMAND_NO_CONSOLE);
+            message(this.plugin, sender, Message.COMMAND_NO_CONSOLE);
             return CommandType.DEFAULT;
         }
         if (command.getPermission() == null || this.hasPermission(sender, command.getPermission())) {
 
             CommandType returnType = command.prePerform(this.plugin, sender, strings);
             if (returnType == CommandType.SYNTAX_ERROR)
-                this.message(this.plugin, sender, Message.COMMAND_SYNTAX_ERROR, "%syntax%", command.getSyntax());
+                message(this.plugin, sender, Message.COMMAND_SYNTAX_ERROR, "%syntax%", command.getSyntax());
             return returnType;
         }
 
         if (command.getDenyMessage() != null) {
             this.messageWO(this.plugin, sender, command.getDenyMessage());
         } else {
-            this.message(this.plugin, sender, Message.COMMAND_NO_PERMISSION);
+            message(this.plugin, sender, Message.COMMAND_NO_PERMISSION);
         }
         return CommandType.DEFAULT;
     }
@@ -128,7 +128,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
     public void sendHelp(String commandString, CommandSender sender) {
         this.commands.forEach(command -> {
             if (this.isValid(command, commandString) && (command.getPermission() == null || this.hasPermission(sender, command.getPermission()))) {
-                this.message(this.plugin, sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%", command.getDescription());
+                message(this.plugin, sender, Message.COMMAND_SYNTAX_HELP, "%syntax%", command.getSyntax(), "%description%", command.getDescription());
             }
         });
     }

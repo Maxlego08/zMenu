@@ -3,6 +3,7 @@ package fr.maxlego08.menu;
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.annotations.AutoFontImage;
 import fr.maxlego08.menu.api.annotations.AutoListener;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
@@ -30,7 +31,6 @@ import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
-import fr.maxlego08.menu.common.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.config.ConfigManager;
@@ -41,18 +41,17 @@ import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
-import fr.maxlego08.menu.hooks.OraxenFont;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.itemsadder.ItemsAdderFont;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.inventory.VInventoryManager;
-import fr.maxlego08.menu.inventory.inventories.AnvilInventoryDefault;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
+import fr.maxlego08.menu.nms.v1_21_R1.inventory.inventories.AnvilInventoryDefault;
+import fr.maxlego08.menu.nms.v1_21_R1.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
 import fr.maxlego08.menu.placeholder.MenuPlaceholders;
@@ -73,6 +72,8 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import fr.maxlego08.menu.zcore.utils.toast.ToastManager;
+import fr.robie.paperdispatch.cache.OfflinePlayerCache;
+import fr.robie.paperdispatch.manager.ICommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -98,38 +99,68 @@ import java.util.*;
  *
  * @author Maxlego08
  */
-public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
-
+public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPlugin {
     private static ZMenuPlugin instance;
-    private final StorageManager storageManager = new ZStorageManager(this);
-    private final ButtonManager buttonManager = new ZButtonManager(this);
-    private final InventoryManager inventoryManager = new ZInventoryManager(this);
-    private final TitleAnimationManager titleAnimationManager = new ZTitleAnimationManager();
-    private final CommandManager commandManager = new ZCommandManager(this);
-    private final MessageLoader messageLoader = new MessageLoader(this);
-    private final DataManager dataManager = new ZDataManager(this);
-    private final InventoriesPlayer inventoriesPlayer = new ZInventoriesPlayer(this);
-    private final PatternManager patternManager = new ZPatternManager(this);
-    private final Enchantments enchantments = new ZEnchantments();
-    private final ItemManager itemManager = new ZItemManager(this);
-    private final FoliaLib foliaLib = new FoliaLib(this);
-    private final ComponentsManager componentsManager = new ZComponentsManager();
+
+    private final boolean isMockBukkitServer;
+
+    private final ICommandManager<ZMenuPlugin> commandManagerLib;
+    private final StorageManager storageManager;
+    private final ButtonManager buttonManager;
+    private final InventoryManager inventoryManager;
+    private final TitleAnimationManager titleAnimationManager;
+    private final CommandManager commandManager;
+    private final MessageLoader messageLoader;
+    private final DataManager dataManager;
+    private final InventoriesPlayer inventoriesPlayer;
+    private final PatternManager patternManager;
+    private final Enchantments enchantments;
+    private final ItemManager itemManager;
+    private final FoliaLib foliaLib;
+    private final ComponentsManager componentsManager;
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
-    private final ToastHelper toastHelper = new ToastManager(this);
-    private final AttributApplier attributApplier = new ApplySpigotAttribute();
-    private final File configFile = new File(this.getDataFolder(), "config.yml");
-    private final PlatformScheduler scheduler = this.foliaLib.getScheduler();
-    private WebsiteManager websiteManager;
+    private final ToastHelper toastHelper;
+    private final AttributApplier attributApplier;
+    private final File configFile;
+    private final PlatformScheduler scheduler;
+    private ZWebsiteManager websiteManager;
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
-    private MetaUpdater metaUpdater = new ClassicMeta();
+    private MetaUpdater metaUpdater;
     private PacketManager packetManager;
 
     public ZMenuPlugin() {
+        this(false);
+    }
+
+    public ZMenuPlugin(Boolean isMockBukkitServer) {
+        this.isMockBukkitServer = isMockBukkitServer != null && isMockBukkitServer;
+
         new BukkitLogger(this.getDescription().getFullName());
+
+        this.metaUpdater = new ClassicMeta();
+
+        this.commandManagerLib = new fr.robie.paperdispatch.manager.CommandManager<>(this);
+        this.storageManager = new ZStorageManager(this);
+        this.buttonManager = new ZButtonManager(this);
+        this.inventoryManager = new ZInventoryManager(this);
+        this.titleAnimationManager = new ZTitleAnimationManager();
+        this.commandManager = new ZCommandManager(this);
+        this.messageLoader = new MessageLoader(this);
+        this.dataManager = new ZDataManager(this);
+        this.inventoriesPlayer = new ZInventoriesPlayer(this);
+        this.patternManager = new ZPatternManager(this);
+        this.enchantments = new ZEnchantments();
+        this.itemManager = new ZItemManager(this);
+        this.foliaLib = new FoliaLib(this);
+        this.componentsManager = new ZComponentsManager();
+        this.toastHelper = new ToastManager(this);
+        this.attributApplier = new ApplySpigotAttribute();
+        this.configFile = new File(this.getDataFolder(), "config.yml");
+        this.scheduler = this.foliaLib.getScheduler();
     }
 
     public static ZMenuPlugin getInstance() {
@@ -149,13 +180,20 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
     @Override
     public void onEnable() {
 
-        NMSMenuPacketListener.init(this);
+        if (!this.isMockBukkitServer) {
+            NMSMenuPacketListener.init(this);
+        }
 
         instance = this;
 
+        this.loadMeta();
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
+
+        Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
+        Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
+        OfflinePlayerCache.install(this);
 
         if (this.packetManager != null) {
             this.packetManager.onEnable();
@@ -169,7 +207,6 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         this.storageManager.loadDatabase();
         this.addListener(this.storageManager);
 
-        this.loadMeta();
 
         ZRuleLoaderRegistry.getInstance().registerDefaultLoaders(this);
         this.componentsManager.initializeDefaultComponents(this);
@@ -204,7 +241,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
+        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction")) {
             if (Configuration.enableMiniMessageFormat) {
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
@@ -225,8 +262,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
-        this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
-        this.registerCommand("zmenu", this.commandMenu = new CommandMenu(this), "zm");
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21")) && !this.isMockBukkitServer) {
+            this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
+        }
+        this.commandManagerLib.registerCommand(this.commandMenu = new CommandMenu(this));
+        this.commandManagerLib.registerCommands();
 
         /* Add Listener */
         this.registerAutoListeners();
@@ -261,7 +301,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) tokenFile.delete(); // Delete old token file
 
-        if (getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
+        if (this.getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
             this.websiteManager.onEnable();
         }
 
@@ -298,6 +338,15 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         if (Configuration.enableInformationMessage) Logger.info("Registered " + count + " auto listener(s).");
     }
 
+    private boolean hasClass(String className) {
+        try {
+            Class.forName(className.replace("{}", "."));
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     /**
      * Registers all the hooks for the plugins that are present.
      * This method is called at the end of {@link #onEnable()} and it will
@@ -305,23 +354,19 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
-        if (this.isActive(Plugins.ORAXEN)) {
-            this.fontImage = new OraxenFont();
-        }
-
         if (this.isActive(Plugins.NEXO)) {
             if (this.metaUpdater instanceof ComponentMeta componentMeta) {
                 new NexoTagResolverLoader(this, componentMeta);
             }
         }
 
-        if (this.isActive(Plugins.ITEMSADDER)) {
-            this.fontImage = new ItemsAdderFont();
-        }
-
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
         }
+
+        ClassRegistry<FontImage, MenuPlugin> registry = ClassRegistry.<FontImage, MenuPlugin>of(FontImage.class, fontImage1 -> this.fontImage = fontImage1).tryNoArgsConstructor().errorLogger(Logger::error);
+
+        VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoFontImage.class, registry);
     }
 
     private void registerMaterialLoaders() {
@@ -358,6 +403,7 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
             files.add("dialogs/server_link-dialog.yml");
+            files.add("dialogs/dynamic-dialog-example.yml");
         }
 
         if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)) {
@@ -388,6 +434,13 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         YamlFileCache.clearCache();
 
         this.websiteManager.onDisable();
+        
+        if (!this.isMockBukkitServer) {
+            NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
+            if (nmsMenuPacketListener != null) {
+                nmsMenuPacketListener.shutdown();
+            }
+        }
 
         this.itemManager.unloadListeners();
 
@@ -580,6 +633,11 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
         return this.globalPlaceholders;
     }
 
+    @Override
+    public boolean isMockBukkitServer() {
+        return this.isMockBukkitServer;
+    }
+
     public void loadGlobalPlaceholders() {
 
         this.globalPlaceholders.clear();
@@ -604,22 +662,26 @@ public class ZMenuPlugin extends ZPlugin implements MenuPlugin {
 
     @Override
     public String parse(Player player, String string) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, string);
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, string).replace("\uF000", "%");
     }
 
     @Override
     public String parse(OfflinePlayer offlinePlayer, String string) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, string);
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, string).replace("\uF000", "%");
     }
 
     @Override
     public List<String> parse(Player player, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings);
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings).stream()
+                .map(s -> s.replace("\uF000", "%"))
+                .toList();
     }
 
     @Override
     public List<String> parse(OfflinePlayer offlinePlayer, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings);
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream()
+                .map(s -> s.replace("\uF000", "%"))
+                .toList();
     }
 
     private void loadMeta() {

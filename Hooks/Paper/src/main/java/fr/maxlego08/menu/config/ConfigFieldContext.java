@@ -1,76 +1,51 @@
 package fr.maxlego08.menu.config;
 
-import fr.maxlego08.menu.api.button.dialogs.InputButton;
+import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
+import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 
-import java.util.*;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * Context class that holds all the processed data from config fields
- */
 public class ConfigFieldContext {
-    private final List<InputButton> inputButtons = new ArrayList<>();
-    private final Map<String, Consumer<Boolean>> booleanConsumers = new HashMap<>();
-    private final Map<String, Consumer<Float>> floatConsumers = new HashMap<>();
-    private final Map<String, Consumer<Integer>> integerConsumers = new HashMap<>();
-    private final Map<String, Consumer<String>> stringConsumers = new HashMap<>();
-    private final Map<String, Consumer<Long>> longConsumers = new HashMap<>();
+
+    private final Map<String, ConfigFieldEntry> entries = new LinkedHashMap<>();
+    private final Map<String, Consumer<Object>> consumers = new LinkedHashMap<>();
     private Consumer<Boolean> updateConsumer;
 
-    public void addInputButton(InputButton inputButton) {
-        this.inputButtons.add(inputButton);
+    public record ConfigFieldEntry(Field field, ConfigOption configOption, DialogInputType resolvedType, fr.maxlego08.menu.api.configuration.ConfigFieldProcessor processor) {
     }
 
-    public void addBooleanConsumer(String key, Consumer<Boolean> consumer) {
-        this.booleanConsumers.put(key, consumer);
+    public void register(String key, Field field, ConfigOption configOption, DialogInputType resolvedType, fr.maxlego08.menu.api.configuration.ConfigFieldProcessor processor) {
+        if (this.entries.containsKey(key)) {
+            throw new IllegalArgumentException("Duplicate config key: '" + key + "' in field " + field.getName());
+        }
+        this.entries.put(key, new ConfigFieldEntry(field, configOption, resolvedType, processor));
     }
 
-    public void addFloatConsumer(String key, Consumer<Float> consumer) {
-        this.floatConsumers.put(key, consumer);
+    public void registerConsumer(String key, Consumer<Object> consumer) {
+        if (this.consumers.containsKey(key)) {
+            throw new IllegalArgumentException("Duplicate consumer key: '" + key + "'");
+        }
+        this.consumers.put(key, consumer);
     }
 
-    public void addIntegerConsumer(String key, Consumer<Integer> consumer) {
-        this.integerConsumers.put(key, consumer);
+    public ConfigFieldEntry getEntry(String key) {
+        return this.entries.get(key);
     }
 
-    public void addStringConsumer(String key, Consumer<String> consumer) {
-        this.stringConsumers.put(key, consumer);
+    public Consumer<Object> getConsumer(String key) {
+        return this.consumers.get(key);
     }
 
-    public void addLongConsumer(String key, Consumer<Long> consumer) {
-        this.longConsumers.put(key, consumer);
+    public Map<String, ConfigFieldEntry> getEntries() {
+        return Collections.unmodifiableMap(this.entries);
     }
 
-    public List<InputButton> getInputButtons() {
-        return Collections.unmodifiableList(this.inputButtons);
-    }
-
-    public Map<String, Consumer<Boolean>> getBooleanConsumers() {
-        return Collections.unmodifiableMap(this.booleanConsumers);
-    }
-
-    public Map<String, Consumer<Float>> getFloatConsumers() {
-        return Collections.unmodifiableMap(this.floatConsumers);
-    }
-
-    public Map<String, Consumer<Integer>> getIntegerConsumers() {
-        return Collections.unmodifiableMap(this.integerConsumers);
-    }
-
-    public Map<String, Consumer<String>> getStringConsumers() {
-        return Collections.unmodifiableMap(this.stringConsumers);
-    }
-
-    public Map<String, Consumer<Long>> getLongConsumers() {
-        return Collections.unmodifiableMap(this.longConsumers);
-    }
-
-    public boolean isEmpty() {
-        return this.inputButtons.isEmpty();
-    }
-
-    public int size() {
-        return this.inputButtons.size();
+    public Map<String, Consumer<Object>> getConsumers() {
+        return Collections.unmodifiableMap(this.consumers);
     }
 
     public Consumer<Boolean> getUpdateConsumer() {
@@ -79,5 +54,13 @@ public class ConfigFieldContext {
 
     public void setUpdateConsumer(Consumer<Boolean> updateConsumer) {
         this.updateConsumer = updateConsumer;
+    }
+
+    public boolean isEmpty() {
+        return this.entries.isEmpty();
+    }
+
+    public int size() {
+        return this.entries.size();
     }
 }

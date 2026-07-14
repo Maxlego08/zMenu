@@ -52,6 +52,11 @@
 
 ## Improvements
 
+- **Unique permissions for every command**: refactored all commands to use distinct permission nodes — no two commands share the same permission anymore.
+  - Added `zmenu.open.main.menu` for `/zmenu openMainMenu` (was sharing `zmenu.open`).
+  - Added `zmenu.dialog` for `/zmenu dialogs`, and `zmenu.open.dialog.config` for `/zmenu dialogs config`.
+  - Split `zmenu.players` into 9 granular permissions: `zmenu.players.add`, `zmenu.players.clear.all`, `zmenu.players.clear.player`, `zmenu.players.convert`, `zmenu.players.get`, `zmenu.players.keys`, `zmenu.players.remove`, `zmenu.players.remove.all`, `zmenu.players.subtract`.
+
 - `/zmenu login <token>` still works as before (legacy token paste); running `/zmenu login` with no argument
   now links the server for live sync.
 - Live sync now sends a stable, persistent `server_id` (stored in `live-sync.json`, kept across re-links) at
@@ -89,6 +94,10 @@
   inventories by bare name): the synced inventory is now resolved by its actual file path. Concurrent
   syncs of same-named inventories also no longer share a temp file.
 - Fixed dialog config permission : https://github.com/Maxlego08/zMenu/issues/252
+
+**Internal Changes**:
+
+- Rework the Dialog and Bedrock system to allow custom button.
 
 # 1.1.1.5
 

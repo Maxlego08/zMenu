@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BaseColorComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.SimpleResolvable;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,14 +27,23 @@ public class SpigotBaseColorItemComponentLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+        path = this.normalizePath(path);
+        String string = configuration.getString(path);
+        if (string == null) return null;
+        Resolvable<DyeColor> dyeColorResolvable;
         try {
-            path = this.normalizePath(path);
-            String string = configuration.getString(path);
-            if (string == null) return null;
             DyeColor baseColor = DyeColor.valueOf(string.toUpperCase(Locale.ROOT));
-            return new BaseColorComponent(baseColor);
+            dyeColorResolvable = SimpleResolvable.of(baseColor, DyeColor::valueOf);
         } catch (IllegalArgumentException e) {
-            return null;
+            dyeColorResolvable = SimpleResolvable.ofExpression(string, s -> {
+                String normalized = s.trim()
+                        .replace(" ", "_")
+                        .replace("-", "_")
+                        .toUpperCase(Locale.ROOT);
+                return Enum.valueOf(DyeColor.class, normalized);
+            });
         }
+
+        return new BaseColorComponent(dyeColorResolvable);
     }
 }

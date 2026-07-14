@@ -29,3 +29,10 @@ file("Hooks").listFiles()?.forEach { file ->
         include(":Hooks:${file.name}")
     }
 }
+
+file("Test").listFiles()?.forEach { file ->
+    if (file.isDirectory && !file.name.equals("build") && !file.name.startsWith(".")) {
+        println("Include Test:${file.name}")
+        include(":Test:${file.name}")
+    }
+}

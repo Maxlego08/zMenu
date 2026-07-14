@@ -2,7 +2,11 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.Color;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -12,31 +16,31 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CustomModelDataComponent extends ItemComponent {
-    private final @NotNull List<@NotNull Color> colors;
-    private final @NotNull List<@NotNull Boolean> flags;
-    private final @NotNull List<@NotNull Float> floats;
-    private final @NotNull List<@NotNull String> strings;
+    private final @NotNull List<@NotNull ResolvableColor> colors;
+    private final @NotNull List<@NotNull ResolvableBoolean> flags;
+    private final @NotNull List<@NotNull ResolvableFloat> floats;
+    private final @NotNull List<@NotNull ResolvableString> strings;
 
-    public CustomModelDataComponent(@NotNull List<@NotNull Color> colors, @NotNull List<@NotNull Boolean> flags, @NotNull List<@NotNull Float> floats, @NotNull List<@NotNull String> strings) {
+    public CustomModelDataComponent(@NotNull List<@NotNull ResolvableColor> colors, @NotNull List<@NotNull ResolvableBoolean> flags, @NotNull List<@NotNull ResolvableFloat> floats, @NotNull List<@NotNull ResolvableString> strings) {
         this.colors = colors;
         this.flags = flags;
         this.floats = floats;
         this.strings = strings;
     }
 
-    public @NotNull List<@NotNull Color> getColors() {
+    public @NotNull List<@NotNull ResolvableColor> getColors() {
         return this.colors;
     }
 
-    public @NotNull List<@NotNull Boolean> getFlags() {
+    public @NotNull List<@NotNull ResolvableBoolean> getFlags() {
         return this.flags;
     }
 
-    public @NotNull List<@NotNull Float> getFloats() {
+    public @NotNull List<@NotNull ResolvableFloat> getFloats() {
         return this.floats;
     }
 
-    public @NotNull List<@NotNull String> getStrings() {
+    public @NotNull List<@NotNull ResolvableString> getStrings() {
         return this.strings;
     }
 
@@ -46,18 +50,13 @@ public class CustomModelDataComponent extends ItemComponent {
         if (itemMeta != null) {
             org.bukkit.inventory.meta.components.CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
 
-            if (!this.colors.isEmpty()) {
-                customModelDataComponent.setColors(this.colors);
-            }
-            if (!this.flags.isEmpty()) {
-                customModelDataComponent.setFlags(this.flags);
-            }
-            if (!this.floats.isEmpty()) {
-                customModelDataComponent.setFloats(this.floats);
-            }
-            if (!this.strings.isEmpty()) {
-                customModelDataComponent.setStrings(this.strings);
-            }
+            Resolvable.applyResolvable(context, this.colors, customModelDataComponent::setColors);
+
+            Resolvable.applyResolvable(context, this.flags, customModelDataComponent::setFlags);
+
+            Resolvable.applyResolvable(context, this.floats, customModelDataComponent::setFloats);
+
+            Resolvable.applyResolvable(context, this.strings, customModelDataComponent::setStrings);
 
             itemStack.setItemMeta(itemMeta);
         }

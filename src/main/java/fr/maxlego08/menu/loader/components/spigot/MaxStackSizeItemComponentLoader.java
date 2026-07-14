@@ -5,9 +5,9 @@ import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.itemstack.components.MaxStackSizeComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.itemstack.components.paper.PaperMaxStackSizeComponent;
-import fr.maxlego08.menu.itemstack.components.spigot.SpigotMaxStackSizeComponent;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -28,9 +28,9 @@ public class MaxStackSizeItemComponentLoader extends ItemComponentLoader {
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        int maxStackSize = configuration.getInt(path);
-        if (maxStackSize > 0) {
-            return this.plugin.isPaperOrFolia() ? new PaperMaxStackSizeComponent(maxStackSize) : new SpigotMaxStackSizeComponent(maxStackSize);
+        ResolvableInt maxStackSize = this.asResolvableInt(configuration, path);
+        if (maxStackSize != null) {
+            return new MaxStackSizeComponent(maxStackSize);
         }
         return null;
     }

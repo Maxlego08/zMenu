@@ -38,7 +38,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
     private final Map<Integer, TimerTask> timers = new ConcurrentHashMap<>();
     private PerformanceDebug perfDebug;
-    private Inventory inventory;
+    private ContainerInventory inventory;
     private List<Inventory> oldInventories = new ArrayList<>();
     private List<Button> buttons = Collections.emptyList();
     private int maxPage = 1;
@@ -49,7 +49,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     @Override
     public InventoryResult openInventory(MenuPlugin main, Player player, int page, Object... args) throws InventoryOpenException {
 
-        this.inventory = (Inventory) args[0];
+        this.inventory = (ContainerInventory) args[0];
         this.perfDebug = PerformanceDebug.create("inventory:" + this.inventory.getFileName());
 
         this.perfDebug.start("openInventory.permissionCheck");
@@ -59,10 +59,8 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return result;
         }
 
-        if (this.inventory instanceof ContainerInventory containerInventory) {
-            super.setClearInvType(containerInventory.getClearInvType());
-            super.setClickLimiterEnabled(containerInventory.isClickLimiterEnabled());
-        }
+        super.setClearInvType(inventory.getClearInvType());
+        super.setClickLimiterEnabled(inventory.isClickLimiterEnabled());
 
         this.oldInventories = this.extractOldInventories(args);
 
@@ -102,6 +100,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         var scheduler = this.plugin.getScheduler();
         Consumer<WrappedTask> runnable = w -> {
             Placeholders placeholders = new Placeholders();
+
+            placeholders.register("page", String.valueOf(page));
+            placeholders.register("maxPage", String.valueOf(this.maxPage));
+            placeholders.register("max-page", String.valueOf(this.maxPage));
+
             this.perfDebug.start("openInventory.onInventoryOpen");
             for (Button button : this.buttons) {
                 button.onInventoryOpen(player, this, placeholders);
@@ -109,7 +112,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             this.perfDebug.end();
 
             this.perfDebug.start("openInventory.resolveInventoryName");
-            String inventoryName = this.plugin.getFontImage().replace(this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage));
+            String inventoryName = this.plugin.getFontImage().replace(this.inventory.getName(player, this, placeholders));
             Player targetPlayer = this.getTargetPlayer();
             this.perfDebug.end();
 
@@ -117,32 +120,30 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             String parsedName = super.papi(placeholders.parse(inventoryName), targetPlayer, false);
             this.perfDebug.end();
 
-            if (this.inventory instanceof ContainerInventory containerInventory) {
-                this.perfDebug.start("openInventory.createMetaInventory");
-                if (containerInventory.getType() == InventoryType.CHEST && containerInventory instanceof ChestInventory chestInventory) {
-                    super.createMetaInventory(parsedName, chestInventory.size());
-                } else {
-                    super.createMetaInventory(parsedName, containerInventory.getType());
-                }
-                this.perfDebug.end();
+            this.perfDebug.start("openInventory.createMetaInventory");
+            if (this.inventory.getType() == InventoryType.CHEST && this.inventory instanceof ChestInventory chestInventory) {
+                super.createMetaInventory(parsedName, chestInventory.size());
+            } else {
+                super.createMetaInventory(parsedName, this.inventory.getType());
+            }
+            this.perfDebug.end();
 
 
-                super.setTitleAnimation(containerInventory.getTitleAnimation());
+            super.setTitleAnimation(this.inventory.getTitleAnimation());
 
-                // Display fill items
-                this.perfDebug.start("openInventory.fillItems");
-                MenuItemStack fillItemStack = containerInventory.getFillItemStack();
-                if (fillItemStack != null) {
-                    ItemStack builtItem = fillItemStack.build(player);
-                    if (builtItem != null) {
-                        ItemStack[] contents = super.getSpigotInventory().getContents();
-                        for (int slot = 0; slot < contents.length; slot++) {
-                            this.addItem(slot, builtItem.clone());
-                        }
+            // Display fill items
+            this.perfDebug.start("openInventory.fillItems");
+            MenuItemStack fillItemStack = this.inventory.getFillItemStack();
+            if (fillItemStack != null) {
+                ItemStack builtItem = fillItemStack.build(player);
+                if (builtItem != null) {
+                    ItemStack[] contents = super.getSpigotInventory().getContents();
+                    for (int slot = 0; slot < contents.length; slot++) {
+                        this.addItem(slot, builtItem.clone());
                     }
                 }
-                this.perfDebug.end();
             }
+            this.perfDebug.end();
 
 
             // Display buttons
@@ -428,7 +429,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     @Override
-    public Inventory getMenuInventory() {
+    public ContainerInventory getMenuInventory() {
         return this.inventory;
     }
 

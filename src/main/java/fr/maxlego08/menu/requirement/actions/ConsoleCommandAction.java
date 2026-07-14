@@ -23,7 +23,7 @@ public class ConsoleCommandAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
-        List<String> parsedCommands = this.papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player);
+        List<String> parsedCommands = this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player);
 
         Consumer<WrappedTask> runnable = w -> parsedCommands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
 

@@ -1,26 +1,23 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuEditor extends VCommand {
+public class CommandMenuEditor extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuEditor(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("editor");
-        this.setDescription(Message.DESCRIPTION_EDITOR);
-        this.setPermission(Permission.ZMENU_EDITOR);
+        super(plugin, "editor");
+        this.setPermission(Permission.ZMENU_EDITOR.getPermission());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-
-        this.message(plugin, this.sender, "§fhttps://minecraft-inventory-builder.com/builder/");
-
-        return CommandType.SUCCESS;
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), "§fhttps://minecraft-inventory-builder.com/builder/");
+        return CommandResultType.SUCCESS;
     }
-
 }

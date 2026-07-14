@@ -2,8 +2,7 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.placeholder.Placeholder;
-import org.bukkit.NamespacedKey;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -12,13 +11,17 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class ItemModelComponent extends ItemComponent {
-    private final @NotNull String itemModel;
+    private final @NotNull ResolvableNamespacedKey itemModel;
 
     public ItemModelComponent(@NotNull String itemModel) {
+        this.itemModel = ResolvableNamespacedKey.of(itemModel);
+    }
+
+    public ItemModelComponent(@NotNull ResolvableNamespacedKey itemModel) {
         this.itemModel = itemModel;
     }
 
-    public @NotNull String getItemModel() {
+    public @NotNull ResolvableNamespacedKey getItemModel() {
         return this.itemModel;
     }
 
@@ -27,21 +30,7 @@ public class ItemModelComponent extends ItemComponent {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
 
-            String s = Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.itemModel));
-            NamespacedKey finalItemModel = null;
-            try {
-                String[] split = s.split(":", 2);
-                if (split.length == 2) {
-                    finalItemModel = new NamespacedKey(split[0], split[1]);
-                } else {
-                    finalItemModel = NamespacedKey.minecraft(s);
-                }
-            } catch (Exception _) {
-            }
-
-            if (finalItemModel != null) {
-                itemMeta.setItemModel(finalItemModel);
-            }
+            this.applyResolvable(context, itemMeta::setItemModel, this.itemModel);
 
             itemStack.setItemMeta(itemMeta);
         }

@@ -4,34 +4,33 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuReloadConfig extends VCommand {
+public class CommandMenuReloadConfig extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuReloadConfig(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("config");
-        this.setPermission(Permission.ZMENU_RELOAD);
+        super(plugin, "config", "cfg");
+        this.setPermission(Permission.ZMENU_RELOAD_CONFIG.getPermission());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-
-        plugin.getMessageLoader().load();
-        plugin.reloadConfig();
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        this.plugin.getMessageLoader().load();
+        this.plugin.reloadConfig();
         Configuration config = Configuration.getInstance();
-        config.save(plugin.getConfig(),plugin.getConfigFile());
-        config.load(plugin.getConfig());
+        config.save(this.plugin.getConfig(), this.plugin.getConfigFile());
+        config.load(this.plugin.getConfig());
 
-        PatternManager patternManager = plugin.getPatternManager();
+        PatternManager patternManager = this.plugin.getPatternManager();
         patternManager.loadActionsPatterns();
         patternManager.loadPatterns();
 
-        this.message(plugin, this.sender, Message.RELOAD_FILES);
-
-        return CommandType.SUCCESS;
+        MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD_FILES);
+        return CommandResultType.SUCCESS;
     }
-
 }

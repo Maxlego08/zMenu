@@ -4,7 +4,7 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
-public class ComponentLogger extends Logger {
+public class ComponentLogger extends fr.maxlego08.menu.zcore.logger.Logger {
     private final ComponentMeta componentMeta;
 
     public ComponentLogger(@NotNull String prefix,@NotNull ComponentMeta componentMeta) {
@@ -16,6 +16,12 @@ public class ComponentLogger extends Logger {
 
     @Override
     public void log(@NotNull String message, @NotNull LogType type, Object... args) {
-        Bukkit.getConsoleSender().sendMessage(this.componentMeta.getComponent("<dark_gray>[<yellow>" + this.prefix + "</yellow>] </dark_gray><yellow>" + type.getColor() + this.getColoredMessage(String.format(message, args))));
+        String formattedString;
+        try {
+            formattedString = String.format(message, args);
+        } catch (Exception e) {
+            formattedString = message + " " + java.util.Arrays.toString(args);
+        }
+        Bukkit.getConsoleSender().sendMessage(this.componentMeta.getComponent("<dark_gray>[<yellow>" + this.prefix + "</yellow>] </dark_gray><yellow>" + type.getColor() + this.getColoredMessage(formattedString)));
     }
 }

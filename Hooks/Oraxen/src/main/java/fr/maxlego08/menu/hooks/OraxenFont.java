@@ -1,12 +1,17 @@
 package fr.maxlego08.menu.hooks;
 
+import fr.maxlego08.menu.api.annotations.AutoFontImage;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.font.FontImage;
+import fr.maxlego08.menu.api.utils.Comparison;
 import io.th0rgal.oraxen.OraxenPlugin;
 import org.jspecify.annotations.NonNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@AutoFontImage
+@RequiresPlugin(value = "Oraxen", version = "1.217", type = Comparison.GREATER_THAN_OR_EQUAL_TO)
 public class OraxenFont implements FontImage {
 
     private final Pattern pattern = Pattern.compile("<glyph_(\\w+)>");

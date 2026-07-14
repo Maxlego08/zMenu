@@ -1,11 +1,10 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.ResolvableContainerSlot;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.api.utils.itemstack.ZContainerSlot;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
@@ -19,13 +18,13 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class ContainerComponent extends ItemComponent {
-    private final List<@NotNull ZContainerSlot> contents;
+    private final List<@NotNull ResolvableContainerSlot> contents;
 
-    public ContainerComponent(List<@NotNull ZContainerSlot> contents) {
+    public ContainerComponent(List<@NotNull ResolvableContainerSlot> contents) {
         this.contents = contents;
     }
 
-    public List<@NotNull ZContainerSlot> getContents() {
+    public List<@NotNull ResolvableContainerSlot> getContents() {
         return this.contents;
     }
 
@@ -35,11 +34,8 @@ public class ContainerComponent extends ItemComponent {
             if (blockStateMeta.getBlockState() instanceof Container container) {
                 Inventory inventory = container.getInventory();
 
-                for (ZContainerSlot containerSlot : this.contents) {
-                    MenuItemStack menuItemStack = containerSlot.itemStack();
-                    int slot = containerSlot.slot();
-                    ItemStack builtItemStack = menuItemStack.build(player);
-                    inventory.setItem(slot, builtItemStack);
+                for (ResolvableContainerSlot slot : this.contents) {
+                    slot.applyTo(inventory, context);
                 }
 
                 container.update();

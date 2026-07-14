@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BlockStateComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +39,7 @@ public class SpigotBlockStateItemComponentLoader extends ItemComponentLoader {
     }
 
     @NotNull
-    private String getFinalBlockState(@NotNull String blockState){
+    private ResolvableString getFinalBlockState(@NotNull String blockState){
         StringBuilder finalState = new StringBuilder();
         if (!blockState.startsWith("[")){
             finalState.append("[");
@@ -47,6 +48,6 @@ public class SpigotBlockStateItemComponentLoader extends ItemComponentLoader {
         if (!blockState.endsWith("]")) {
             finalState.append("]");
         }
-        return finalState.toString();
+        return ResolvableString.auto(finalState.toString());
     }
 }

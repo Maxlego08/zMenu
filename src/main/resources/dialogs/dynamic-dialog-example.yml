@@ -1,0 +1,54 @@
+name: "&6Dynamic Dialog Example"
+type: notice
+can-close-with-escape: true
+pause: false
+after_action: CLOSE
+
+body:
+  dynamic_message:
+    type: dialog-dynamic-body-button
+    start: 1
+    end: 5
+    body:
+      type: dialog_plain_message
+      messages:
+        - "&eThis is body section #%index%"
+      width: 300
+
+  dynamic_item:
+    type: dialog-dynamic-body-button
+    start: 1
+    end: 3
+    body:
+      type: dialog_item
+      item:
+        material: PLAYER_HEAD
+        name: "&bPlayer #%index%"
+      show-decoration: true
+      show-tooltip: true
+      width: 100
+      height: 100
+
+inputs:
+  # %<button-name>_<index>% will be replaced with the value of the input
+  # For example, if the user enters "Hello" in the first input, then %my_input_1% will be replaced with "Hello"
+  my_input:
+    type: dialog-dynamic-input-button
+    start: 1
+    end: 3
+    input:
+      type: dialog_text
+      label: "&6Enter value #%index%:"
+      width: 300
+      max-length: 50
+
+  my_bool:
+    type: dialog-dynamic-input-button
+    start: 1
+    end: 2
+    input:
+      type: dialog_boolean
+      label: "&eOption #%index%"
+      initial-value: true
+      text-true: "&aYes"
+      text-false: "&cNo"

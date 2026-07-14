@@ -2,7 +2,7 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.placeholder.Placeholder;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,13 +11,13 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class ItemNameComponent extends ItemComponent {
-    private final @Nullable String itemName;
+    private final @NotNull ResolvableString itemName;
 
-    public ItemNameComponent(@Nullable String itemName) {
+    public ItemNameComponent(@NotNull ResolvableString itemName) {
         this.itemName = itemName;
     }
 
-    public @Nullable String getItemName() {
+    public @NotNull ResolvableString getItemName() {
         return this.itemName;
     }
 
@@ -26,7 +26,7 @@ public class ItemNameComponent extends ItemComponent {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null) {
 
-            itemMeta.setItemName(this.itemName == null ? null : Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, context.getPlaceholders().parse(this.itemName)));
+            this.applyResolvable(context, itemMeta::setItemName, this.itemName);
 
             itemStack.setItemMeta(itemMeta);
         }

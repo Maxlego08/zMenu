@@ -21,7 +21,7 @@ public interface ContainerInventory extends Inventory {
     boolean cleanInventory();
 
     default boolean clearInventory() {
-        return cleanInventory();
+        return this.cleanInventory();
     }
 
 

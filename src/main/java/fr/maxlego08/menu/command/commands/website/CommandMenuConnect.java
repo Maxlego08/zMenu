@@ -1,26 +1,24 @@
 package fr.maxlego08.menu.command.commands.website;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuConnect extends VCommand {
+public class CommandMenuConnect extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuConnect(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setDescription(Message.DESCRIPTION_CONNECT);
-        this.addSubCommand("connect", "sync");
-        this.setPermission(Permission.ZMENU_CONNECT);
+        super(plugin, "connect", "sync");
+        this.setPermission(Permission.ZMENU_CONNECT.getPermission());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
 
-        plugin.getWebsiteManager().connect(this.sender);
+        this.plugin.getWebsiteManager().connect(commandDispatch.getSender());
 
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
-
 }

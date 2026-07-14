@@ -11,7 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 @AutoListener
-@RequiresPlugin("MythicMobs")
+@RequiresPlugin(value = "MythicMobs", checkMode = RequiresPlugin.CheckMode.EXISTS_AND_ENABLED)
 public class MythicManager implements Listener {
     private final StorageManager storageManager;
     private final DataManager dataManager;

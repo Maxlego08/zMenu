@@ -47,7 +47,7 @@ public abstract class ZUtils extends MessageUtils {
     private static Material[] byId;
 
     static {
-        if (!MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
+        if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
             byId = new Material[0];
             for (Material material : Material.values()) {
                 if (byId.length <= material.getId()) {
@@ -138,7 +138,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param player Target player
      * @return true if the player's inventory is full
      */
-    protected boolean hasInventoryFull(Player player) {
+    public static boolean hasInventoryFull(Player player) {
         int slot = 0;
         PlayerInventory inventory = player.getInventory();
         for (int a = 0; a != 36; a++) {
@@ -148,8 +148,8 @@ public abstract class ZUtils extends MessageUtils {
         return slot == 0;
     }
 
-    protected void give(Player player, ItemStack item) {
-        if (this.hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
+    public static void give(Player player, ItemStack item) {
+        if (hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
         else player.getInventory().addItem(item);
     }
 
@@ -400,7 +400,7 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    protected String toList(List<String> list, String color, String color2) {
+    public static String toList(List<String> list, String color, String color2) {
         if (list == null || list.isEmpty()) return null;
         if (list.size() == 1) return list.getFirst();
         String str = "";

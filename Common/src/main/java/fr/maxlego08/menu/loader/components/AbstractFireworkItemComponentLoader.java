@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.components;
 
+import fr.maxlego08.menu.api.utils.ColorUtils;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +29,14 @@ public abstract class AbstractFireworkItemComponentLoader extends AbstractColorI
         }
         Object colorsObj = data.get("colors");
         if (colorsObj != null) {
-            Color color = this.parseColor(colorsObj);
+            Color color = ColorUtils.parse(colorsObj);
             if (color != null) {
                 builder.withColor(color);
             }
         }
         Object fadeColorsObj = data.get("fade_colors");
         if (fadeColorsObj != null) {
-            Color fadeColor = this.parseColor(fadeColorsObj);
+            Color fadeColor = ColorUtils.parse(fadeColorsObj);
             if (fadeColor != null) {
                 builder.withFade(fadeColor);
             }

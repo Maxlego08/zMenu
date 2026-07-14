@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.EnchantmentGlintOverrideComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -24,8 +25,10 @@ public class SpigotEnchantmentGlintOverrideItemComponentLoader extends ItemCompo
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         path = this.normalizePath(path);
-        Object obj = configuration.get(path);
-        if (obj == null) return null;
-        return obj instanceof Boolean hasGlint ? new EnchantmentGlintOverrideComponent(hasGlint) : null;
+        ResolvableBoolean hasGlint = this.asResolvableBoolean(configuration, path);
+        if (hasGlint != null) {
+            return new EnchantmentGlintOverrideComponent(hasGlint);
+        }
+        return null;
     }
 }

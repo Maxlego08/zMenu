@@ -2,6 +2,7 @@ package fr.maxlego08.menu.button.loader;
 
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.command.CommandManager;
@@ -12,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
+@AutoButtonLoader
 public class InventoryLoader extends ButtonLoader {
 
     private final InventoryManager manager;

@@ -1,77 +1,64 @@
 package fr.maxlego08.menu.command.commands.reload;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import io.papermc.paper.command.brigadier.Commands;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
-public class CommandMenuReloadInventory extends VCommand {
+public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuReloadInventory(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("inventory");
-        this.setPermission(Permission.ZMENU_RELOAD);
-        this.addOptionalArg("menu", (a, b) -> {
-            List<String> menus = new ArrayList<>();
-            for (Inventory inventory : plugin.getInventoryManager().getInventories()) {
-                menus.add((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
-            }
-            return menus;
-        });
+        super(plugin, "inventory", "inv");
+        this.setPermission(Permission.ZMENU_RELOAD_INVENTORY.getPermission());
+
+        this.addOptionalArgument(Commands.argument("menu", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
+            plugin.getInventoryManager().getInventoryNames().stream()
+                    .filter(entry -> entry.startsWith(builder.getRemainingLowerCase()))
+                    .forEach(builder::suggest);
+            return builder.buildFuture();
+        }));
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        Optional<String> optionalArgument = commandDispatch.getOptionalArgument("menu", String.class);
+        InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
-        String inventoryName = this.argAsString(0, null);
-        InventoryManager inventoryManager = plugin.getInventoryManager();
-
-        if (inventoryName != null) {
-            Optional<Inventory> optional;
-            if (inventoryName.contains(":")) {
-                String[] values = inventoryName.split(":");
-                if (values.length == 2) {
-                    optional = inventoryManager.getInventory(values[0], values[1]);
-                } else {
-                    optional = inventoryManager.getInventory(inventoryName);
-                }
-            } else {
-                optional = inventoryManager.getInventory(inventoryName);
-            }
+        if (optionalArgument.isPresent()) {
+            String inventoryName = optionalArgument.get();
+            Optional<ContainerInventory> optional = inventoryManager.findInventory(inventoryName);
 
             if (optional.isEmpty()) {
-                this.message(plugin, this.sender, Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
-                return CommandType.DEFAULT;
+                MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
+                return CommandResultType.SUCCESS;
             }
 
-            Inventory inventory = optional.get();
-            plugin.getVInventoryManager().close(v -> {
+            ContainerInventory inventory = optional.get();
+            this.plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
                 return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().equals(inventory);
             });
             inventoryManager.reloadInventory(inventory);
-            this.message(plugin, this.sender, Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
+            MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD_INVENTORY_FILE, "%name%", inventoryName);
 
-            return CommandType.SUCCESS;
+            return CommandResultType.SUCCESS;
         }
 
-        plugin.getVInventoryManager().close();
-
-        inventoryManager.deleteInventories(plugin);
+        this.plugin.getVInventoryManager().close();
+        inventoryManager.deleteInventories(this.plugin);
         inventoryManager.loadInventories();
-
-        this.message(plugin, this.sender, Message.RELOAD_INVENTORY, "%inventories%", inventoryManager.getInventories(plugin).size());
-
-        return CommandType.SUCCESS;
+        MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD_INVENTORY, "%inventories%", inventoryManager.getInventories(this.plugin).size());
+        return CommandResultType.SUCCESS;
     }
-
 }

@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.TooltipStyleComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.NamespacedKey;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +27,6 @@ public class SpigotTooltipStyleItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
-        return new TooltipStyleComponent(NamespacedKey.fromString(value));
+        return new TooltipStyleComponent(ResolvableNamespacedKey.auto(value));
     }
 }
