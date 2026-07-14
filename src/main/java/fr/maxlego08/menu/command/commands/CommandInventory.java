@@ -1,12 +1,12 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
@@ -56,7 +56,7 @@ public class CommandInventory extends VCommand {
         command.subCommands().forEach(subCommand -> this.addSubCommand(new CommandInventory(plugin, subCommand, true)));
     }
 
-    private Optional<ContainerInventory> getInventoryByName(String inventoryName) {
+    private Optional<Inventory> getInventoryByName(String inventoryName) {
         if (inventoryName == null) return Optional.empty();
 
         InventoryManager manager = this.plugin.getInventoryManager();
@@ -71,7 +71,7 @@ public class CommandInventory extends VCommand {
 
         String inventoryName = this.command.inventory();
         InventoryManager manager = plugin.getInventoryManager();
-        Optional<ContainerInventory> optional = this.getInventoryByName(inventoryName);
+        Optional<Inventory> optional = this.getInventoryByName(inventoryName);
         CommandArgument lastArgument = null;
         Placeholders placeholders = new Placeholders();
         Map<String, String> playerArguments = new HashMap<>();

@@ -3,10 +3,10 @@ package fr.maxlego08.menu.website.sync;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
@@ -785,9 +785,9 @@ public class LiveSyncManager extends ZUtils {
                 // zMenu's registry is keyed by bare file name (no path), so resolve by the actual TARGET
                 // file - a bare-name lookup could return a same-named inventory from another folder and
                 // reload the wrong file.
-                Optional<ContainerInventory> existing = this.findInventoryByFile(inventoryManager, target);
+                Optional<Inventory> existing = this.findInventoryByFile(inventoryManager, target);
                 if (existing.isPresent()) {
-                    ContainerInventory inventory = existing.get();
+                    Inventory inventory = existing.get();
                     this.plugin.getVInventoryManager().close(v -> {
                         InventoryDefault inventoryDefault = (InventoryDefault) v;
                         return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().equals(inventory);
@@ -821,9 +821,9 @@ public class LiveSyncManager extends ZUtils {
      * Find the loaded inventory whose backing file is exactly {@code target} (canonical comparison),
      * regardless of its name - zMenu indexes by bare file name, which is ambiguous across subfolders.
      */
-    private Optional<ContainerInventory> findInventoryByFile(InventoryManager inventoryManager, File target) {
+    private Optional<Inventory> findInventoryByFile(InventoryManager inventoryManager, File target) {
         File canonicalTarget = this.canonical(target);
-        for (ContainerInventory inventory : inventoryManager.getInventories()) {
+        for (Inventory inventory : inventoryManager.getInventories()) {
             File file = inventory.getFile();
             if (file != null && this.canonical(file).equals(canonicalTarget)) {
                 return Optional.of(inventory);
@@ -846,7 +846,7 @@ public class LiveSyncManager extends ZUtils {
             }
             Files.copy(backup.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
             YamlFileCache.invalidateCache(target.toPath());
-            Optional<ContainerInventory> old = this.findInventoryByFile(inventoryManager, target);
+            Optional<Inventory> old = this.findInventoryByFile(inventoryManager, target);
             if (old.isPresent()) {
                 inventoryManager.reloadInventory(old.get());
             } else {

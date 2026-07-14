@@ -37,7 +37,7 @@ public class ZBackButton extends BackButton {
 
         inventory.getButtons().forEach(button -> button.onBackClick(player, event, inventory, oldInventories, toInventory, slot));
 
-        this.inventoryManager.openInventory(player, toInventory, oldInventories);
+        this.inventoryManager.openInventory(player, toInventory, 1, oldInventories);
     }
 
     @Override

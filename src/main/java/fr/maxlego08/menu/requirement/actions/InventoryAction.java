@@ -5,7 +5,6 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
@@ -46,7 +45,7 @@ public class InventoryAction extends ActionHelper {
             List<Inventory> oldInventories = inventory.getOldInventories();
 
             String inventoryName = this.papi(placeholders.parse(this.inventory), player);
-            Optional<ContainerInventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
+            Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
             if (optional.isPresent()) {
 
                 int page = this.stringPage == null ? this.intPage : this.getInt(this.papi(placeholders.parse(this.stringPage), player));
