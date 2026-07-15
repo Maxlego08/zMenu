@@ -12,22 +12,22 @@ public abstract class Registry<T, R> {
     protected final Map<T, R> registry = new HashMap<>();
 
     public void register(@Nullable T key, @NotNull R value) {
-        registry.put(key, value);
+        this.registry.put(key, value);
     }
 
     public boolean contains(T key) {
-        return registry.containsKey(key);
+        return this.registry.containsKey(key);
     }
 
     public void unregister(T key) {
-        registry.remove(key);
+        this.registry.remove(key);
     }
 
     public Optional<R> get(T key) {
-        return Optional.ofNullable(registry.get(key));
+        return Optional.ofNullable(this.registry.get(key));
     }
 
     public Set<T> getAllKeys() {
-        return registry.keySet();
+        return this.registry.keySet();
     }
 }

@@ -99,7 +99,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 try {
                     buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
-                    Logger.info(exception.getMessage(), Logger.LogType.ERROR);
+                    if (Configuration.enableDebug) {
+                        Logger.info("Error while loading button " + buttonPath + " in " + file.getAbsolutePath() + ": " + exception.getMessage(), Logger.LogType.ERROR);
+                    }
                 }
             }
         } else {
@@ -173,12 +175,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         this.loadOpenRequirement(configuration, inventory, file);
         this.loadOpenAndCloseActions(configuration, inventory, file);
 
-        /*Map<String, String> translatedDisplayName = new HashMap<>();
-        MenuItemStackLoader.getTranslatedName(configuration, path, translatedDisplayName);
-        String loadString;
-        inventory.setTranslatedNames(translatedDisplayName);*/
+        inventory.setTranslatedNames(MenuItemStackLoader.getTranslatedName(configuration, path));
 
-        List<InventoryOption> inventoryOptions = new ArrayList<>();
+        List<fr.maxlego08.menu.api.InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
             for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
                 InventoryOption instance = this.createInstance(entry.getKey(), optionClass);

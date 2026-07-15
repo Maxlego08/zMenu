@@ -2,12 +2,12 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
-import fr.maxlego08.menu.api.annotations.AutoActionLoader;
-import fr.maxlego08.menu.api.annotations.AutoPermissibleLoader;
+import fr.maxlego08.menu.api.annotations.*;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
+import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.event.FastEvent;
@@ -23,20 +23,16 @@ import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
-import fr.maxlego08.menu.button.loader.*;
-import fr.maxlego08.menu.command.validators.*;
+import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
 import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
-import fr.maxlego08.menu.hooks.bedrock.button.loader.*;
-import fr.maxlego08.menu.hooks.dialogs.button.loader.*;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
-import fr.maxlego08.menu.itemstack.*;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.BedrockLoader;
@@ -78,6 +74,7 @@ import java.util.stream.Stream;
 public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final PaginationManager paginationManager = new ZPaginationManager();
 
+    private final Set<String> inventoryNames = new HashSet<>();
     private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
@@ -220,6 +217,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
         this.inventoryByName.put(inventory.getFileName().toLowerCase(Locale.ROOT), inventory);
+        this.inventoryNames.add((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
@@ -287,12 +285,29 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public Optional<Inventory> findInventory(@NotNull String inventoryName) {
+        Optional<Inventory> optional;
+        if (inventoryName.contains(":")) {
+            String[] parts = inventoryName.split(":", 2);
+            if (parts.length == 2) {
+                optional = this.getInventory(parts[0], parts[1]);
+            } else {
+                optional = this.getInventory(inventoryName);
+            }
+        } else {
+            optional = this.getInventory(inventoryName);
+        }
+        return optional;
+    }
+
+    @Override
     public void deleteInventory(Inventory inventory) {
         String pluginName = inventory.getPlugin().getName();
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
         this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
+        this.inventoryNames.remove((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -309,8 +324,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void deleteInventories(Plugin plugin) {
         List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
-            removed.forEach(inv -> this.inventoryByName.remove(inv.getFileName().toLowerCase(Locale.ROOT)));
+            for (Inventory inventory : removed) {
+                this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
+                this.inventoryNames.remove(
+                        (inventory.getPlugin().getName() + ":" + inventory.getFileName())
+                                .toLowerCase(Locale.ROOT)
+                );
+            }
         }
+    }
+
+    @Override
+    public Set<String> getInventoryNames() {
+        return Collections.unmodifiableSet(this.inventoryNames);
     }
 
     @Override
@@ -407,69 +433,52 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             Logger.info("Registered " + actionCount + " auto action loader(s).");
         }
 
-        // Loading ButtonLoader
-        // The first step will be to load the buttons in the plugin, so each
-        // inventory will have the same list of buttons
-
+        // NoneLoader
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
         buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
-        buttonManager.register(new fr.maxlego08.menu.button.loader.InventoryLoader(this.plugin));
-        buttonManager.register(new BackLoader(this.plugin));
-        buttonManager.register(new HomeLoader(this.plugin));
-        buttonManager.register(new NextLoader(this.plugin));
-        buttonManager.register(new PreviousLoader(this.plugin));
-        buttonManager.register(new MainMenuLoader(this.plugin));
-        buttonManager.register(new JumpLoader(this.plugin));
-        buttonManager.register(new SwitchLoader(this.plugin));
-        buttonManager.register(new PaginationNextButtonLoader(this.plugin));
-        buttonManager.register(new PaginationPreviousButtonLoader(this.plugin));
-        buttonManager.register(new ItemDragLoader(this.plugin));
 
-        // Loading Button Dialog
-        // Register Button Dialog Body
-        buttonManager.register(new DialogItemBodyLoader(this.plugin));
-        buttonManager.register(new DialogPlainMessageBodyLoader(this.plugin));
-        // Register Button Dialog Input
-        buttonManager.register(new DialogTextInputLoader(this.plugin));
-        buttonManager.register(new DialogBooleanInputLoader(this.plugin));
-        buttonManager.register(new DialogNumberRangeInputLoader(this.plugin));
-        buttonManager.register(new DialogSingleOptionInputLoader(this.plugin));
+        ClassRegistry<ButtonLoader, MenuPlugin> buttonRegistry = ClassRegistry.
+                <ButtonLoader, MenuPlugin>of(ButtonLoader.class, buttonManager::register)
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryConstructor(((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin)))
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
 
-        // Register Button Bedrock
-        buttonManager.register(new BedrockButtonLoader(this.plugin));
-        buttonManager.register(new BedrockModalButtonLoader(this.plugin));
-        buttonManager.register(new BedrockLabelLoader(this.plugin));
-        buttonManager.register(new BedrockTextInputLoader(this.plugin));
-        buttonManager.register(new BedrockToggleInputLoader(this.plugin));
-        buttonManager.register(new BedrockSliderInputLoader(this.plugin));
-        buttonManager.register(new BedrockDropDownInputLoader(this.plugin));
+        int buttonCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoButtonLoader.class, buttonRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + buttonCount + " auto button loader(s).");
+        }
 
-        // Register ItemStackSimilar
-        this.registerItemStackVerification(new FullSimilar());
-        this.registerItemStackVerification(new LoreSimilar());
-        this.registerItemStackVerification(new MaterialSimilar());
-        this.registerItemStackVerification(new ModelIdSimilar());
-        this.registerItemStackVerification(new NameSimilar());
-        this.registerItemStackVerification(new ItemModelSimilar()); // 1.21.4+
+        ClassRegistry<ItemStackSimilar, MenuPlugin> itemStackRegistry = ClassRegistry.
+                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, this::registerItemStackVerification)
+                .tryNoArgsConstructor()
+                .errorLogger(Logger::error);
+
+        int itemStackCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoItemStackSimilar.class, itemStackRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + itemStackCount + " auto item stack similar(s).");
+        }
 
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
-        this.plugin.getWebsiteManager().loadButtons(buttonManager);
-
         var commandManager = this.plugin.getCommandManager();
-        commandManager.registerArgumentValidator(new IntArgumentValidator());
-        commandManager.registerArgumentValidator(new DoubleArgumentValidator());
-        commandManager.registerArgumentValidator(new BedrockPlayerArgumentValidator(this.plugin.getBedrockManager()));
-        commandManager.registerArgumentValidator(new BooleanArgumentValidator());
-        commandManager.registerArgumentValidator(new EntityTypeArgumentValidator());
+        // MaterialArgumentValidator
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
         commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
-        commandManager.registerArgumentValidator(new OnlinePlayerArgumentValidator(this.plugin));
-        commandManager.registerArgumentValidator(new PlayerArgumentValidator(this.plugin));
-        commandManager.registerArgumentValidator(new LocationArgumentValidator(this.plugin));
-        commandManager.registerArgumentValidator(new WorldArgumentValidator(this.plugin));
+
+        ClassRegistry<CommandArgumentValidator, MenuPlugin> validatorRegistry = ClassRegistry.
+                <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, commandManager::registerArgumentValidator)
+                .tryNoArgsConstructor()
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin))
+                .errorLogger(Logger::error);
+
+        int validatorCount = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoCommandArgumentValidator.class, validatorRegistry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + validatorCount + " auto command argument validator(s).");
+        }
     }
 
     @Override
@@ -478,6 +487,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.playerMaxPages.clear();
         this.playerPages.clear();
         this.inventoryByName.clear();
+        this.inventoryNames.clear();
 
         File folder = new File(this.plugin.getDataFolder(), "inventories");
         if (!folder.exists()) {
@@ -519,8 +529,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         }
-
-        this.plugin.getWebsiteManager().loadInventories(this);
     }
 
     @Override
@@ -557,7 +565,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
             return;
         }
 
@@ -575,7 +583,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
             return;
         }
 
@@ -589,7 +597,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (optional.isEmpty()) {
             player.closeInventory();
-            this.message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
             return;
         }
 
@@ -673,7 +681,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void sendInventories(CommandSender sender) {
 
         if (this.inventories.isEmpty()) {
-            this.message(this.plugin, sender, Message.LIST_EMPTY);
+            message(this.plugin, sender, Message.LIST_EMPTY);
             return;
         }
 
@@ -682,8 +690,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             for (Inventory inventory : inventories) {
                 fileNames.add(inventory.getFileName());
             }
-            String inventoriesAsString = this.toList(fileNames, "§8", "§7");
-            this.messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
+            String inventoriesAsString = ZUtils.toList(fileNames, "§8", "§7");
+            messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);
         });
     }
 
@@ -693,13 +701,13 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         fileName = fileName.replace(".yml", "");
         File file = new File(this.plugin.getDataFolder(), "inventories/" + fileName + ".yml");
         if (file.exists()) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_ALREADY, "%name%", fileName);
             return;
         }
         try {
             file.createNewFile();
         } catch (IOException exception) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -711,15 +719,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         try {
             configuration.save(file);
         } catch (IOException exception) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
-        this.message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
+        message(this.plugin, sender, Message.INVENTORY_CREATE_SUCCESS, "%name%", fileName);
 
         try {
             this.loadInventory(this.plugin, file);
         } catch (InventoryException exception) {
-            this.message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
+            message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
     }
 
@@ -773,7 +781,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (configurationSection != null) {
             Set<String> names = configurationSection.getKeys(false);
             if (names.contains(name)) {
-                this.message(this.plugin, sender, Message.SAVE_ERROR_NAME);
+                message(this.plugin, sender, Message.SAVE_ERROR_NAME);
                 return;
             }
         }
@@ -793,11 +801,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
 
         } else {
-            this.message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
+            message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
             return;
         }
 
-        this.message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
+        message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
 
     }
 
@@ -998,7 +1006,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        return this.postProcessSkullItemStack(itemStack, button, player, new Placeholders());
+        return this.postProcessSkullItemStack(itemStack, button, player, new fr.maxlego08.menu.api.utils.Placeholders());
     }
 
     @Override
@@ -1033,6 +1041,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void sendMessage(CommandSender sender, Message message, Object... args) {
-        this.message(this.plugin, sender, message, args);
+        message(this.plugin, sender, message, args);
     }
 }

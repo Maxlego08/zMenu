@@ -7,65 +7,64 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class CommandMenuReload extends VCommand {
+public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuReload(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("reload", "rl");
-        this.setDescription(Message.DESCRIPTION_RELOAD);
-        this.setPermission(Permission.ZMENU_RELOAD);
+        super(plugin, "reload", "rl");
+        this.setPermission(Permission.ZMENU_RELOAD.getPermission());
         this.addSubCommand(new CommandMenuReloadCommand(plugin));
         this.addSubCommand(new CommandMenuReloadInventory(plugin));
         this.addSubCommand(new CommandMenuReloadConfig(plugin));
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-
-        InventoryManager inventoryManager = plugin.getInventoryManager();
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
         YamlFileCache.clearCache();
 
-        plugin.loadGlobalPlaceholders();
-        plugin.getMessageLoader().load();
-        plugin.reloadConfig();
+        this.plugin.loadGlobalPlaceholders();
+        this.plugin.getMessageLoader().load();
+        this.plugin.reloadConfig();
         Configuration config = Configuration.getInstance();
-        config.save(plugin.getConfig(),plugin.getConfigFile());
-        config.load(plugin.getConfig());
+        config.save(this.plugin.getConfig(), this.plugin.getConfigFile());
+        config.load(this.plugin.getConfig());
 
-        plugin.getVInventoryManager().close();
-        PatternManager patternManager = plugin.getPatternManager();
+        this.plugin.getVInventoryManager().close();
+        PatternManager patternManager = this.plugin.getPatternManager();
         patternManager.loadActionsPatterns();
         patternManager.loadPatterns();
 
-        inventoryManager.deleteInventories(plugin);
+        inventoryManager.deleteInventories(this.plugin);
         inventoryManager.loadInventories();
 
-        CommandManager commandManager = plugin.getCommandManager();
+        CommandManager commandManager = this.plugin.getCommandManager();
         commandManager.loadCommands();
 
-        ItemManager itemManager = plugin.getItemManager();
+        ItemManager itemManager = this.plugin.getItemManager();
         itemManager.reloadCustomItems();
-        Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
-        plugin.getScheduler().runAsync(w->{
+        Collection<? extends Player> onlinePlayers = this.plugin.getServer().getOnlinePlayers();
+        this.plugin.getScheduler().runAsync(w->{
             for (Player player : onlinePlayers) {
                 itemManager.executeCheckInventoryItems(player);
             }
         });
 
-        plugin.getDataManager().loadDefaultValues();
+        this.plugin.getDataManager().loadDefaultValues();
 
-        this.message(plugin, this.sender, Message.RELOAD, "%inventories%", inventoryManager.getInventories(plugin).size());
+        MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD, "%inventories%", inventoryManager.getInventories(this.plugin).size());
 
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
-
 }

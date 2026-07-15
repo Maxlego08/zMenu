@@ -6,11 +6,12 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.TrimComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableArmorTrim;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistry;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableRegistryEntry;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ import java.io.File;
 @SinceVersion("1.20.5")
 public class SpigotTrimItemComponentLoader extends ItemComponentLoader {
 
-    public SpigotTrimItemComponentLoader(){
+    public SpigotTrimItemComponentLoader() {
         super("trim");
     }
 
@@ -31,16 +32,9 @@ public class SpigotTrimItemComponentLoader extends ItemComponentLoader {
         if (componentSection == null) return null;
         String materialString = componentSection.getString("material");
         String patternString = componentSection.getString("pattern");
-        if (materialString == null || patternString == null) return null;
-        NamespacedKey materialKey = NamespacedKey.fromString(materialString);
-        NamespacedKey patternKey = NamespacedKey.fromString(patternString);
-        if (materialKey == null || patternKey == null) return null;
-        try {
-            TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.getOrThrow(materialKey);
-            TrimPattern trimPattern = Registry.TRIM_PATTERN.getOrThrow(patternKey);
-            return new TrimComponent(new ArmorTrim(trimMaterial, trimPattern));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        ResolvableRegistryEntry<TrimMaterial> trimMaterialRegistryEntry = ResolvableRegistry.autoOrNull(materialString, RegistryKey.TRIM_MATERIAL);
+        ResolvableRegistryEntry<TrimPattern> trimPatternRegistryEntry = ResolvableRegistry.autoOrNull(patternString, RegistryKey.TRIM_PATTERN);
+        if (trimMaterialRegistryEntry == null || trimPatternRegistryEntry == null) return null;
+        return new TrimComponent(new ResolvableArmorTrim(trimMaterialRegistryEntry, trimPatternRegistryEntry));
     }
 }

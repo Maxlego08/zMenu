@@ -62,9 +62,9 @@ public final class PluginVersion implements Comparable<PluginVersion> {
         return 0;
     }
 
-    public boolean isNewerThan(@NotNull PluginVersion other) { return compareTo(other) > 0; }
-    public boolean isOlderThan(@NotNull PluginVersion other) { return compareTo(other) < 0; }
-    public boolean isSameAs(@NotNull PluginVersion other) { return compareTo(other) == 0; }
+    public boolean isNewerThan(@NotNull PluginVersion other) { return this.compareTo(other) > 0; }
+    public boolean isOlderThan(@NotNull PluginVersion other) { return this.compareTo(other) < 0; }
+    public boolean isSameAs(@NotNull PluginVersion other) { return this.compareTo(other) == 0; }
 
     @Override
     public boolean equals(Object obj) {
@@ -75,15 +75,15 @@ public final class PluginVersion implements Comparable<PluginVersion> {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(segments);
+        return Arrays.hashCode(this.segments);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < segments.length; i++) {
+        for (int i = 0; i < this.segments.length; i++) {
             if (i > 0) builder.append('.');
-            builder.append(segments[i]);
+            builder.append(this.segments[i]);
         }
         return builder.toString();
     }

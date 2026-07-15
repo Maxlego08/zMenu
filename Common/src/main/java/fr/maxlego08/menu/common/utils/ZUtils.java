@@ -30,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -45,7 +47,7 @@ public abstract class ZUtils extends MessageUtils {
     private static Material[] byId;
 
     static {
-        if (!MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
+        if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
             byId = new Material[0];
             for (Material material : Material.values()) {
                 if (byId.length <= material.getId()) {
@@ -136,7 +138,7 @@ public abstract class ZUtils extends MessageUtils {
      * @param player Target player
      * @return true if the player's inventory is full
      */
-    protected boolean hasInventoryFull(Player player) {
+    public static boolean hasInventoryFull(Player player) {
         int slot = 0;
         PlayerInventory inventory = player.getInventory();
         for (int a = 0; a != 36; a++) {
@@ -146,8 +148,8 @@ public abstract class ZUtils extends MessageUtils {
         return slot == 0;
     }
 
-    protected void give(Player player, ItemStack item) {
-        if (this.hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
+    public static void give(Player player, ItemStack item) {
+        if (hasInventoryFull(player)) player.getWorld().dropItem(player.getLocation(), item);
         else player.getInventory().addItem(item);
     }
 
@@ -398,7 +400,7 @@ public abstract class ZUtils extends MessageUtils {
         return component;
     }
 
-    protected String toList(List<String> list, String color, String color2) {
+    public static String toList(List<String> list, String color, String color2) {
         if (list == null || list.isEmpty()) return null;
         if (list.size() == 1) return list.getFirst();
         String str = "";
@@ -499,4 +501,73 @@ public abstract class ZUtils extends MessageUtils {
             }
         }
     }
+
+    // Live sync
+
+    protected File canonical(File file) {
+        try {
+            return file.getCanonicalFile();
+        } catch (Exception exception) {
+            return file.getAbsoluteFile();
+        }
+    }
+
+    protected int asInt(Object value, int fallback) {
+        return value instanceof Number ? ((Number) value).intValue() : fallback;
+    }
+
+    protected void deleteQuietly(File file) {
+        if (file != null && file.exists()) {
+            file.delete();
+        }
+    }
+
+    protected String sha256(File file) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(Files.readAllBytes(file.toPath()));
+            StringBuilder builder = new StringBuilder(hashBytes.length * 2);
+            for (byte b : hashBytes) {
+                builder.append(Character.forDigit((b >> 4) & 0xF, 16));
+                builder.append(Character.forDigit(b & 0xF, 16));
+            }
+            return builder.toString();
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    protected String sanitizeRelativePath(String path) {
+
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+
+        if (path.contains("\\") || path.startsWith("/")) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (String rawPart : path.split("/")) {
+            String part = rawPart.trim();
+
+            if (part.isEmpty()) {
+                continue;
+            }
+
+            if (part.equals(".") || part.equals("..") || !part.matches("[A-Za-z0-9_\\- ]{1,64}")) {
+                return null;
+            }
+
+            if (!builder.isEmpty()) {
+                builder.append('/');
+            }
+
+
+            builder.append(part);
+        }
+        return builder.toString();
+    }
+
+    // End live sync
 }

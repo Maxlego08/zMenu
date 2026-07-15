@@ -30,16 +30,16 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public ItemStack setString(ItemStack itemStack, String key, String value) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
-        CompoundTag tag = getTag(nmsItem);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
+        CompoundTag tag = this.getTag(nmsItem);
         tag.putString(key, value);
-        setTag(nmsItem, tag);
-        return asBukkit(nmsItem);
+        this.setTag(nmsItem, tag);
+        return this.asBukkit(nmsItem);
     }
 
     @Override
     public String getString(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
         CompoundTag tag = customData.copyTag();
@@ -48,16 +48,16 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public ItemStack setInt(ItemStack itemStack, String key, int value) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
-        CompoundTag tag = getTag(nmsItem);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
+        CompoundTag tag = this.getTag(nmsItem);
         tag.putInt(key, value);
-        setTag(nmsItem, tag);
-        return asBukkit(nmsItem);
+        this.setTag(nmsItem, tag);
+        return this.asBukkit(nmsItem);
     }
 
     @Override
     public int getInt(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return 0;
         CompoundTag tag = customData.copyTag();
@@ -66,16 +66,16 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public ItemStack setDouble(ItemStack itemStack, String key, double value) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
-        CompoundTag tag = getTag(nmsItem);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
+        CompoundTag tag = this.getTag(nmsItem);
         tag.putDouble(key, value);
-        setTag(nmsItem, tag);
-        return asBukkit(nmsItem);
+        this.setTag(nmsItem, tag);
+        return this.asBukkit(nmsItem);
     }
 
     @Override
     public double getDouble(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return 0;
         CompoundTag tag = customData.copyTag();
@@ -84,16 +84,16 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public ItemStack setLong(ItemStack itemStack, String key, long value) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
-        CompoundTag tag = getTag(nmsItem);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
+        CompoundTag tag = this.getTag(nmsItem);
         tag.putLong(key, value);
-        setTag(nmsItem, tag);
-        return asBukkit(nmsItem);
+        this.setTag(nmsItem, tag);
+        return this.asBukkit(nmsItem);
     }
 
     @Override
     public long getLong(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return 0;
         CompoundTag tag = customData.copyTag();
@@ -102,16 +102,16 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public ItemStack setFloat(ItemStack itemStack, String key, float value) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
-        CompoundTag tag = getTag(nmsItem);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
+        CompoundTag tag = this.getTag(nmsItem);
         tag.putFloat(key, value);
-        setTag(nmsItem, tag);
-        return asBukkit(nmsItem);
+        this.setTag(nmsItem, tag);
+        return this.asBukkit(nmsItem);
     }
 
     @Override
     public float getFloat(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return 0;
         CompoundTag tag = customData.copyTag();
@@ -120,16 +120,16 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public ItemStack setBoolean(ItemStack itemStack, String key, boolean value) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
-        CompoundTag tag = getTag(nmsItem);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
+        CompoundTag tag = this.getTag(nmsItem);
         tag.putBoolean(key, value);
-        setTag(nmsItem, tag);
-        return asBukkit(nmsItem);
+        this.setTag(nmsItem, tag);
+        return this.asBukkit(nmsItem);
     }
 
     @Override
     public boolean getBoolean(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return false;
         CompoundTag tag = customData.copyTag();
@@ -138,7 +138,7 @@ public class NMSHandlerImpl implements NMSHandler {
 
     @Override
     public boolean hasKey(ItemStack itemStack, String key) {
-        net.minecraft.world.item.ItemStack nmsItem = asNMS(itemStack);
+        net.minecraft.world.item.ItemStack nmsItem = this.asNMS(itemStack);
         CustomData customData = nmsItem.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return false;
         CompoundTag tag = customData.copyTag();

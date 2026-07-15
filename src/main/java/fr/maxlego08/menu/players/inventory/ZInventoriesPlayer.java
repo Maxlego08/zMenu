@@ -58,7 +58,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         if (playerInventory.isPresent()) {
             playerInventory.get().clearInventory(player);
         } else {
-            storeInventoryTemporary(player);
+            this.storeInventoryTemporary(player);
         }
     }
 

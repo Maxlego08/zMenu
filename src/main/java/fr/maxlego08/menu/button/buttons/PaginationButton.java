@@ -41,7 +41,7 @@ public abstract class PaginationButton extends Button {
             }
             paginateButton.onRender(player, inventory);
         } else {
-            refreshInventory(player);
+            this.refreshInventory(player);
         }
     }
 

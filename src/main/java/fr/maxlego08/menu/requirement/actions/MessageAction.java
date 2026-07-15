@@ -21,12 +21,13 @@ public class MessageAction extends ActionHelper {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        this.papi(placeholders.parse(this.parseAndFlattenCommands(this.messages, player)), player).forEach(message -> {
+        this.parseAndFlattenCommands(this.papi(placeholders.parse(this.messages), player), player).forEach(message -> {
             if (this.miniMessage) {
                 inventory.getPlugin().getMetaUpdater().sendMessage(player, message);
             } else {
                 player.sendMessage(message);
             }
         });
+
     }
 }

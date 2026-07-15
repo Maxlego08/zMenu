@@ -23,12 +23,12 @@ public abstract class DyeColorVariantLoader extends ItemComponentLoader {
 
     @Override
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
-        path = normalizePath(path);
+        path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
         try {
             DyeColor dyeColor = DyeColor.valueOf(value.toUpperCase(Locale.ROOT));
-            return componentFactory.apply(dyeColor);
+            return this.componentFactory.apply(dyeColor);
         } catch (IllegalArgumentException e) {
             return null;
         }

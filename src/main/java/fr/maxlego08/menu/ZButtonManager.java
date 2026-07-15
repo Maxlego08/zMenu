@@ -120,6 +120,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public @NotNull Optional<ButtonLoader> getLoader(String name) {
+        Set<String> seenNames = new HashSet<>();
         for (ButtonLoader loader : this.getLoaders()) {
             if (loader.getName().equalsIgnoreCase(name)) {
                 return Optional.of(loader);
@@ -129,7 +130,10 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
                     return Optional.of(loader);
                 }
             }
+            seenNames.add(loader.getName());
+            seenNames.addAll(loader.getAliases());
         }
+        Logger.info("Button " + name + " not found. Available buttons: " + String.join(", ", seenNames), Logger.LogType.ERROR);
         return Optional.empty();
     }
 

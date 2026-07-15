@@ -10,16 +10,17 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface BedrockManager {
 
-    BedrockInventory loadBedrockInventory(Plugin plugin, String fileName) throws DialogException;
+    BedrockInventory<?,?,?> loadBedrockInventory(Plugin plugin, String fileName) throws DialogException;
 
-    Optional<BedrockInventory> getBedrockInventory(String name);
+    Optional<BedrockInventory<?,?,?>> getBedrockInventory(String name);
 
-    Optional<BedrockInventory> getBedrockInventory(String pluginName, String fileName);
+    Optional<BedrockInventory<?,?,?>> getBedrockInventory(String pluginName, String fileName);
 
-    Optional<BedrockInventory> getBedrockInventory(Plugin plugin, String fileName);
+    Optional<BedrockInventory<?,?,?>> getBedrockInventory(Plugin plugin, String fileName);
 
     void deleteBedrockInventory(String name);
 
@@ -27,19 +28,21 @@ public interface BedrockManager {
 
     void loadBedrockInventory();
 
-    BedrockInventory loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException;
+    BedrockInventory<?,?,?> loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException;
 
-    BedrockInventory loadInventory(Plugin plugin, File file) throws DialogException, InventoryException;
+    BedrockInventory<?,?,?> loadInventory(Plugin plugin, File file) throws DialogException, InventoryException;
 
-    BedrockInventory loadInventory(Plugin plugin, String fileName, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException;
+    BedrockInventory<?,?,?> loadInventory(Plugin plugin, String fileName, Class<? extends BedrockInventory<?,?,?>> dialogClass) throws DialogException, InventoryException;
 
-    BedrockInventory loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory> dialogClass) throws DialogException, InventoryException;
+    BedrockInventory<?,?,?> loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory<?,?,?>> dialogClass) throws DialogException, InventoryException;
 
-    void openBedrockInventory(Player player, BedrockInventory bedrockInventory);
+    void openBedrockInventory(Player player, BedrockInventory<?,?,?> bedrockInventory);
 
-    void openBedrockInventory(Player player, BedrockInventory bedrockInventory, List<Inventory> oldInventories);
+    void openBedrockInventory(Player player, BedrockInventory<?,?,?> bedrockInventory, List<Inventory> oldInventories);
 
-    Collection<BedrockInventory> getBedrockInventory();
+    Collection<BedrockInventory<?,?,?>> getBedrockInventory();
+
+    Set<String> getBedrockInventoryNames();
 
     void reloadBedrockInventory();
 

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.button.loader;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -13,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 
+@AutoButtonLoader
 public class SwitchLoader extends ButtonLoader {
 
     private final MenuPlugin plugin;

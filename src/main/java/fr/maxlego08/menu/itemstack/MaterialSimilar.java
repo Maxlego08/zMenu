@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.itemstack;
 
+import fr.maxlego08.menu.api.annotations.AutoItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 
+@AutoItemStackSimilar
 public class MaterialSimilar implements ItemStackSimilar {
     @Override
     public @NonNull String getName() {

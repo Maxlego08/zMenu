@@ -33,7 +33,7 @@ public class ReflectionsCache {
         ClassLoader classLoader = plugin.getClass().getClassLoader();
         CacheKey key = new CacheKey(packageName, classLoader);
 
-        return cache.computeIfAbsent(key, k -> createReflections(classLoader, packageName));
+        return this.cache.computeIfAbsent(key, k -> this.createReflections(classLoader, packageName));
     }
 
     private Reflections createReflections(ClassLoader classLoader, String packageName) {

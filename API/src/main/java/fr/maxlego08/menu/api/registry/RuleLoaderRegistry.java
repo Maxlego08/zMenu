@@ -17,7 +17,7 @@ public abstract class RuleLoaderRegistry extends Registry<String, RuleLoader>{
     }
 
     public void register(@NonNull RuleLoader value) {
-        register(null, value);
+        this.register(null, value);
     }
 
     @Override

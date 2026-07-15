@@ -40,14 +40,14 @@ public abstract class AbstractPluginItemRule implements Rule {
         ItemStack itemStack = context.getItemStack();
         if (itemStack == null) return false;
 
-        String resolvedId = resolveId(itemStack);
+        String resolvedId = this.resolveId(itemStack);
         if (resolvedId == null) return false;
 
-        String id = ignoreCase ? resolvedId.toLowerCase(Locale.ROOT) : resolvedId;
+        String id = this.ignoreCase ? resolvedId.toLowerCase(Locale.ROOT) : resolvedId;
 
-        if (itemIds.contains(id)) return true;
+        if (this.itemIds.contains(id)) return true;
 
-        for (Pattern pattern : patterns) {
+        for (Pattern pattern : this.patterns) {
             if (pattern.matcher(id).matches()) return true;
         }
 

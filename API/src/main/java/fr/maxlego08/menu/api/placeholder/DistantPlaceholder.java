@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DistantPlaceholder extends PlaceholderExpansion {
 
-    private final LocalPlaceholder placeholder;
+    private final fr.maxlego08.menu.api.placeholder.LocalPlaceholder placeholder;
 
     public DistantPlaceholder(LocalPlaceholder placeholder) {
         super();

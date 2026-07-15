@@ -23,7 +23,7 @@ public final class TagRegistry extends Registry<String, Tag<Material>> {
                         //noinspection unchecked
                         registerTag(field.getName(), (Tag<Material>) field.get(null));
                     }
-                } catch (Exception _) {
+                } catch (Exception ignored) {
                 }
             }
         }

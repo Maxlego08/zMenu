@@ -3,32 +3,34 @@ package fr.maxlego08.menu.command.commands.players;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
-import org.bukkit.OfflinePlayer;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
+import fr.robie.paperdispatch.cache.OfflinePlayerCache;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuPlayersClearPlayer extends VCommand {
+import java.util.UUID;
+
+public class CommandMenuPlayersClearPlayer extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuPlayersClearPlayer(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_PLAYERS);
-        this.setDescription(Message.DESCRIPTION_PLAYERS_CLEAR_PLAYER);
-        this.addSubCommand("clear");
-        this.addRequireArg("player");
+        super(plugin, "clear");
+        this.setPermission(Permission.ZMENU_PLAYERS_CLEAR_PLAYER.getPermission());
+        this.addRequiredArgument("player", new OfflinePlayerArgument());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        DataManager dataManager = commandDispatch.getPlugin().getDataManager();
 
-        DataManager dataManager = plugin.getDataManager();
-        OfflinePlayer offlinePlayer = this.argAsOfflinePlayer(0);
+        UUID playerUUID = commandDispatch.getArgument("player", UUID.class);
 
-        dataManager.clearPlayer(offlinePlayer.getUniqueId());
+        dataManager.clearPlayer(playerUUID);
 
-        this.message(plugin, this.sender, Message.PLAYERS_DATA_CLEAR_PLAYER, "%player%", offlinePlayer.getName());
-
-        return CommandType.SUCCESS;
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_CLEAR_PLAYER, "%player%", OfflinePlayerCache.getGlobalInstance().getName(playerUUID));
+        return CommandResultType.SUCCESS;
     }
-
 }

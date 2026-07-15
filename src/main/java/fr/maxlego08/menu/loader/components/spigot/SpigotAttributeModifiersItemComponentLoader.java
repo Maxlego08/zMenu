@@ -4,17 +4,12 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoComponentLoader;
 import fr.maxlego08.menu.api.annotations.SinceVersion;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
-import fr.maxlego08.menu.api.attribute.AttributeWrapper;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.AttributeModifiersComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
-import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableAttributeWrapper;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @AutoComponentLoader
@@ -40,39 +34,17 @@ public class SpigotAttributeModifiersItemComponentLoader extends ItemComponentLo
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
         String mergeStrategyStr = componentSection.getString("attribute-merge-strategy", "");
-        AttributeMergeStrategy mergeStrategy;
-        try {
-            mergeStrategy = AttributeMergeStrategy.valueOf(mergeStrategyStr.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            mergeStrategy = AttributeMergeStrategy.ADD;
-        }
+        ResolvableEnum<AttributeMergeStrategy> attributeMergeStrategyResolvable = ResolvableEnum.autoOrNull(AttributeMergeStrategy.class, mergeStrategyStr);
         List<Map<?, ?>> mapList = componentSection.getMapList("modifiers");
-        List<AttributeWrapper> modifiersWrapper = new ArrayList<>();
+        List<ResolvableAttributeWrapper> resolvableWrappers = new ArrayList<>();
         for (Map<?, ?> rawMap : mapList) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) rawMap;
-            String type = (String) map.get("type");
-            if (type == null) continue;
-            Attribute attribute;
-            try {
-                NamespacedKey key = NamespacedKey.fromString(type.toLowerCase(Locale.ROOT));
-                if (key == null) continue;
-                attribute = Registry.ATTRIBUTE.get(key);
-            } catch (IllegalArgumentException e) {
-                continue;
-            }
-            if (attribute == null) continue;
-            try {
-                AttributeModifier deserialize = AttributeModifier.deserialize(map);
-                modifiersWrapper.add(new AttributeWrapper(attribute, deserialize.getOperation(), deserialize.getAmount(), deserialize.getSlotGroup(), deserialize.getKey()));
-            } catch (IllegalArgumentException e) {
-                if (Configuration.enableDebug){
-                    Logger.info("Error deserializing attribute modifier for attribute " + attribute.name() + ": " + e.getMessage());
-                    e.printStackTrace();
-                }
-
+            ResolvableAttributeWrapper wrapper = ResolvableAttributeWrapper.fromMap(map);
+            if (wrapper != null) {
+                resolvableWrappers.add(wrapper);
             }
         }
-        return modifiersWrapper.isEmpty() ? null : new AttributeModifiersComponent(this.plugin,modifiersWrapper, mergeStrategy);
+        return resolvableWrappers.isEmpty() ? null : new AttributeModifiersComponent(this.plugin, resolvableWrappers, attributeMergeStrategyResolvable);
     }
 }

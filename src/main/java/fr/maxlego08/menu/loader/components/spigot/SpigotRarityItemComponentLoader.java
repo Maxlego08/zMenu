@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.RarityComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemRarity;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Locale;
 
 @AutoComponentLoader
 @SinceVersion("1.20.5")
@@ -28,11 +28,7 @@ public class SpigotRarityItemComponentLoader extends ItemComponentLoader {
         path = this.normalizePath(path);
         String value = configuration.getString(path);
         if (value == null) return null;
-        ItemRarity rarity = ItemRarity.COMMON;
-        try {
-            rarity = ItemRarity.valueOf(value.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException ignored) {
-        }
-        return new RarityComponent(rarity);
+        ResolvableEnum<ItemRarity> rarityResolvable = ResolvableEnum.auto(ItemRarity.class, value);
+        return new RarityComponent(rarityResolvable);
     }
 }

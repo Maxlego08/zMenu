@@ -1,30 +1,20 @@
 package fr.maxlego08.menu.config;
 
+import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.configuration.ConfigFieldProcessor;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigOption;
 import fr.maxlego08.menu.api.configuration.annotation.ConfigUpdate;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
-import fr.maxlego08.menu.api.enums.dialog.DialogType;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
-import fr.maxlego08.menu.config.processors.ConfigFieldProcessor;
-import fr.maxlego08.menu.config.processors.ConfigFieldProcessorFactory;
-import fr.maxlego08.menu.config.processors.ConfigFieldProcessorRegistry;
+import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogInventoryDeveloper;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
+import fr.maxlego08.menu.hooks.dialogs.action.ZConfigManagerCustomDialogAction;
+import fr.maxlego08.menu.hooks.dialogs.action.ZCustomClickDialogAction;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import io.papermc.paper.dialog.Dialog;
-import io.papermc.paper.registry.data.dialog.ActionButton;
-import io.papermc.paper.registry.data.dialog.DialogBase;
-import io.papermc.paper.registry.data.dialog.action.DialogAction;
-import io.papermc.paper.registry.data.dialog.input.BooleanDialogInput;
-import io.papermc.paper.registry.data.dialog.input.DialogInput;
-import io.papermc.paper.registry.data.dialog.input.NumberRangeDialogInput;
-import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
-import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -37,108 +27,139 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ConfigManager extends DialogBuilderManager implements ConfigManagerInt {
+public class ConfigManager implements ConfigManagerInt {
+
     private final MenuPlugin menuPlugin;
     private final Map<String, ZDialogInventoryDeveloper> zDialogInventoryDev = new HashMap<>();
     private final ComponentMeta paperComponent;
-    private final ConfigFieldProcessorRegistry processorRegistry;
+    private final List<ConfigFieldProcessor> processors = new ArrayList<>();
 
     public ConfigManager(MenuPlugin menuPlugin) {
-        super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.paperComponent = (ComponentMeta) menuPlugin.getMetaUpdater();
-        this.processorRegistry = new ConfigFieldProcessorRegistry();
-        this.initializeDefaultProcessors();
-    }
-
-    private void initializeDefaultProcessors() {
-        ConfigFieldProcessorFactory factory = new ConfigFieldProcessorFactory();
-        this.processorRegistry.registerProcessor(DialogInputType.BOOLEAN, factory.createBooleanProcessor());
-        this.processorRegistry.registerProcessor(DialogInputType.NUMBER_RANGE, factory.createNumberRangeProcessor());
-        this.processorRegistry.registerProcessor(DialogInputType.TEXT, factory.createTextProcessor());
+        this.processors.add(new DefaultBooleanProcessor());
+        this.processors.add(new DefaultNumberProcessor());
+        this.processors.add(new DefaultEnumProcessor());
+        this.processors.add(new DefaultListProcessor());
+        this.processors.add(new DefaultTextProcessor());
     }
 
     @Override
     public <T> void registerConfig(@NotNull ConfigDialogBuilder configDialogBuilder, @NotNull Class<T> configClass, @NotNull Plugin plugin) {
-        String configName = plugin.getName() + ":" + configClass.getSimpleName();
         ConfigFieldContext context = this.processConfigFields(configClass);
+        String configName = plugin.getName() + ":" + configClass.getSimpleName();
 
-        ZDialogInventoryDeveloper dialogInventory = this.createDialogInventory(configDialogBuilder, configName, context.getUpdateConsumer());
+        Map<String, ZConfigManagerCustomDialogAction.FieldEntry> fieldEntries = new HashMap<>();
+        for (Map.Entry<String, ConfigFieldContext.ConfigFieldEntry> entry : context.getEntries().entrySet()) {
+            String key = entry.getKey();
+            Consumer<Object> consumer = context.getConsumer(key);
+            if (consumer != null) {
+                fieldEntries.put(key, new ZConfigManagerCustomDialogAction.FieldEntry(entry.getValue().resolvedType(), consumer));
+            }
+        }
 
-        this.applyContextToDialog(dialogInventory, context);
-        this.zDialogInventoryDev.put(plugin.getName(), dialogInventory);
-    }
-
-    private ZDialogInventoryDeveloper createDialogInventory(ConfigDialogBuilder configDialog, String configName, Consumer<Boolean> updateConsumer) {
-        ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(
-                this.menuPlugin,
-                configDialog.getName(),
-                configName,
-                configDialog.getExternalTitle(),
-                updateConsumer
+        ActionButtonRecord yesActionRecord = new ActionButtonRecord(
+                configDialogBuilder.getYesText(),
+                configDialogBuilder.getYesTooltip(),
+                configDialogBuilder.getYesWidth(),
+                new ZConfigManagerCustomDialogAction(
+                        fieldEntries,
+                        context.getUpdateConsumer(),
+                        this.paperComponent,
+                        configDialogBuilder.getBooleanConfirmText(),
+                        configDialogBuilder.getNumberRangeConfirmText(),
+                        configDialogBuilder.getTextConfirmText(),
+                        configDialogBuilder.getYesUsageLimit(),
+                        configDialogBuilder.getYesCooldown()
+                )
         );
 
-        dialogInventory.setDialogType(DialogType.CONFIRMATION);
-        dialogInventory.setBooleanConfirmText(configDialog.getBooleanConfirmText());
-        dialogInventory.setNumberRangeConfirmText(configDialog.getNumberRangeConfirmText());
-        dialogInventory.setStringConfirmText(configDialog.getTextConfirmText());
-        dialogInventory.setYesText(configDialog.getYesText());
-        dialogInventory.setYesWidth(configDialog.getYesWidth());
-        dialogInventory.setYesTooltip(configDialog.getYesTooltip());
-        dialogInventory.setNoText(configDialog.getNoText());
-        dialogInventory.setNoWidth(configDialog.getNoWidth());
-        dialogInventory.setNoTooltip(configDialog.getNoTooltip());
-        dialogInventory.setPause(true);
-        dialogInventory.setCanCloseWithEscape(false);
+        ActionButtonRecord noActionRecord = new ActionButtonRecord(
+                configDialogBuilder.getNoText(),
+                configDialogBuilder.getNoTooltip(),
+                configDialogBuilder.getNoWidth(),
+                new ZCustomClickDialogAction(List.of(), configDialogBuilder.getNoUsageLimit(), configDialogBuilder.getNoCooldown(), Map.of())
+        );
 
-        return dialogInventory;
+        ZDialogInventoryDeveloper dialogInventory = new ZDialogInventoryDeveloper(
+                this.menuPlugin,
+                configDialogBuilder.getName(),
+                configName,
+                configDialogBuilder.getExternalTitle(),
+                context,
+                yesActionRecord,
+                noActionRecord
+        );
+        dialogInventory.setPause(configDialogBuilder.isPauseOnOpen());
+        dialogInventory.setCanCloseWithEscape(configDialogBuilder.canCloseWithEscape());
+
+        this.zDialogInventoryDev.put(plugin.getName(), dialogInventory);
     }
 
     private <T> ConfigFieldContext processConfigFields(Class<T> configClass) {
         ConfigFieldContext context = new ConfigFieldContext();
-
         for (Field field : configClass.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ConfigOption.class)) {
-                this.processField(field, context);
-            } else if (field.isAnnotationPresent(ConfigUpdate.class)){
+            ConfigOption configOption = field.getAnnotation(ConfigOption.class);
+            if (configOption != null) {
+                this.processField(field, configOption, context);
+            } else if (field.isAnnotationPresent(ConfigUpdate.class)) {
                 field.setAccessible(true);
-                context.setUpdateConsumer(value-> {
+                context.setUpdateConsumer(value -> {
                     try {
-                        field.setBoolean(null, value );
+                        field.setBoolean(null, value);
                     } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Failed to update @ConfigUpdate field: " + field.getName(), e);
                     }
                 });
             }
         }
         if (context.getUpdateConsumer() == null) {
-            Logger.info("No update consumer found for field " + configClass.getSimpleName()+", this may be safe if you don't need to handle updates.", Logger.LogType.WARNING);
-            context.setUpdateConsumer(value -> {});
+            Logger.info("No @ConfigUpdate field found in " + configClass.getSimpleName() + ", changes won't trigger save.", Logger.LogType.WARNING);
+            context.setUpdateConsumer(value -> {
+            });
         }
-
         return context;
     }
 
-    private void processField(Field field, ConfigFieldContext context) {
-        ConfigOption configOption = field.getAnnotation(ConfigOption.class);
+    private void processField(Field field, ConfigOption configOption, ConfigFieldContext context) {
         field.setAccessible(true);
-
-        DialogInputType inputType = configOption.type();
-        ConfigFieldProcessor processor = this.processorRegistry.getProcessor(inputType);
-
-        if (processor != null) {
-            processor.processField(field, configOption, context);
-        } else {
-            Logger.info("No processor found for input type: " + inputType, Logger.LogType.WARNING);
+        DialogInputType resolvedType = this.resolveInputType(field, configOption);
+        String key = configOption.key();
+        if (key == null || key.isEmpty()) {
+            key = field.getName();
         }
+
+        ConfigFieldProcessor matchedProcessor = null;
+        for (ConfigFieldProcessor processor : this.processors) {
+            if (processor.canProcess(field, configOption)) {
+                matchedProcessor = processor;
+                break;
+            }
+        }
+
+        context.register(key, field, configOption, resolvedType, matchedProcessor);
+
+        final ConfigFieldProcessor finalProcessor = matchedProcessor;
+        Consumer<Object> consumer = value -> {
+            try {
+                if (finalProcessor != null) {
+                    finalProcessor.setFieldValue(field, value);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to set field: " + field.getName(), e);
+            }
+        };
+
+        context.registerConsumer(key, consumer);
     }
 
-    private void applyContextToDialog(ZDialogInventoryDeveloper dialogInventory, ConfigFieldContext context) {
-        dialogInventory.setConsumerMap(context.getBooleanConsumers());
-        dialogInventory.setFloatConsumerMap(context.getFloatConsumers());
-        dialogInventory.setIntegerConsumerMap(context.getIntegerConsumers());
-        dialogInventory.setStringConsumerMap(context.getStringConsumers());
-        dialogInventory.setInputButtons(context.getInputButtons());
+    private DialogInputType resolveInputType(Field field, ConfigOption configOption) {
+        for (ConfigFieldProcessor processor : this.processors) {
+            if (processor.canProcess(field, configOption)) {
+                return processor.resolveInputType(field, configOption);
+            }
+        }
+        return DialogInputType.TEXT;
     }
 
     @Override
@@ -152,139 +173,34 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
             ZDialogInventoryDeveloper zDialog = this.zDialogInventoryDev.get(pluginName);
             if (zDialog == null) {
                 if (Configuration.enableDebug) {
-                    Logger.info("No dialog found for plugin: " + pluginName);
+                    Logger.info("No dialog inventory found for plugin: " + pluginName);
                 }
                 return;
             }
 
-            ZDialogInventoryBuild dialogBuild = zDialog.getBuild(player);
-            List<DialogInput> inputs = this.getDialogInputs(player, zDialog.getDialogInputs(player));
-            DialogBase.Builder dialogBase = this.createDialogBase(
-                    dialogBuild.name(),
-                    dialogBuild.externalTitle(),
-                    dialogBuild.canCloseWithEscape(),
-                    zDialog.isPause(),
-                    zDialog.getAfterAction()
+            ConfigFieldContext context = zDialog.getContext();
+            if (context == null || context.isEmpty()) {
+                if (Configuration.enableDebug) {
+                    Logger.info("No config fields registered for plugin: " + pluginName);
+                }
+                return;
+            }
+
+            var dialog = zDialog.buildDialog(
+                    player,
+                    this.paperComponent,
+                    this.menuPlugin.getInventoryManager().getFakeInventory(),
+                    new fr.maxlego08.menu.api.utils.Placeholders()
             );
 
-            Dialog dialog = Dialog.create(builder -> builder.empty()
-                    .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
-                            ActionButton.create(
-                                    this.paperComponent.getComponent(zDialog.getYesText(player)),
-                                    this.paperComponent.getComponent(zDialog.getYesTooltip(player)),
-                                    zDialog.getYesWidth(),
-                                    this.createAction(inputs, zDialog.getConsumerMap(), zDialog.getBooleanConfirmText(),
-                                            zDialog.getFloatConsumerMap(), zDialog.getIntegerConsumerMap(),
-                                            zDialog.getNumberRangeConfirmText(), zDialog.getStringConsumerMap(),
-                                            zDialog.getStringConfirmText(), zDialog.getUpdateConsumer())
-                            ),
-                            ActionButton.create(
-                                    this.paperComponent.getComponent(zDialog.getNoText(player)),
-                                    this.paperComponent.getComponent(zDialog.getNoTooltip(player)),
-                                    zDialog.getNoWidth(),
-                                    this.createAction(new ArrayList<>(), new HashMap<>(), "", new HashMap<>(),
-                                            new HashMap<>(), "", new HashMap<>(), "", null)
-                            )
-                    ))
-                    .base(dialogBase.inputs(inputs).build())
-            );
-
-            player.showDialog(dialog);
+            if (dialog != null) {
+                player.showDialog(dialog);
+            }
         } catch (Exception e) {
             if (Configuration.enableDebug) {
-                Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error :" + e.getMessage(), Logger.LogType.ERROR);
+                Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error: " + e.getMessage(), Logger.LogType.ERROR);
                 e.printStackTrace();
             }
-        }
-    }
-
-    private DialogAction createAction(List<DialogInput> inputs, Map<String, Consumer<Boolean>> consumerMap,
-                                      String booleanText, Map<String, Consumer<Float>> floatMap,
-                                      Map<String, Consumer<Integer>> consumerMapInt, String numberRangeText,
-                                      Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
-        return DialogAction.customClick((view, audience) -> {
-            if (inputs.isEmpty()) return;
-
-            StringBuilder sb = new StringBuilder("Config Input Results:\n");
-
-            for (DialogInput input : inputs) {
-                String key = input.key();
-                this.processInputResult(input, key, view, sb, consumerMap, booleanText, floatMap,
-                        consumerMapInt, numberRangeText, stringMap, stringText, updateConsumer );
-            }
-
-            this.getPaperComponent().sendMessage((Player) audience, sb.toString());
-        }, ClickCallback.Options.builder().uses(-1).build());
-    }
-
-    private void processInputResult(DialogInput input, String key,
-                                    io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
-                                    Map<String, Consumer<Boolean>> consumerMap, String booleanText,
-                                    Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt,
-                                    String numberRangeText, Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
-        switch (input) {
-            case NumberRangeDialogInput numberRangeDialogInput -> this.processNumberRangeInput(key, view, sb, floatMap, consumerMapInt, numberRangeText, updateConsumer);
-            case TextDialogInput textDialogInput -> this.processTextInput(key, view, sb, stringMap, stringText, updateConsumer);
-            case BooleanDialogInput booleanDialogInput -> this.processBooleanInput(key, view, sb, consumerMap, booleanText, booleanDialogInput, updateConsumer);
-            default -> {
-            }
-        }
-    }
-
-    private void processNumberRangeInput(String key, io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
-                                         Map<String, Consumer<Float>> floatMap, Map<String, Consumer<Integer>> consumerMapInt,
-                                         String numberRangeText, Consumer<Boolean> updateConsumer) {
-        if (consumerMapInt.containsKey(key)) {
-            int intValue = view.getFloat(key) == null ? 0 : (int) view.getFloat(key).floatValue();
-            consumerMapInt.get(key).accept(intValue);
-            this.executeUpdateConsumer(updateConsumer);
-        } else if (floatMap.containsKey(key)) {
-            float floatValue = view.getFloat(key);
-            floatMap.get(key).accept(floatValue);
-            this.executeUpdateConsumer(updateConsumer);
-        }
-        String line = numberRangeText.replace("%key%", key)
-                .replace("%value%", String.valueOf(view.getFloat(key)));
-        sb.append(line).append("\n");
-    }
-
-    private void processTextInput(String key, io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
-                                  Map<String, Consumer<String>> stringMap, String stringText, Consumer<Boolean> updateConsumer) {
-        String stringValue = view.getText(key);
-        if (stringMap.containsKey(key)) {
-            stringMap.get(key).accept(stringValue);
-            this.executeUpdateConsumer(updateConsumer);
-        }
-        if (stringValue != null) {
-            String line = stringText.replace("%key%", key).replace("%text%", stringValue);
-            sb.append(line).append("\n");
-        }
-    }
-
-    private void processBooleanInput(String key, io.papermc.paper.dialog.DialogResponseView view, StringBuilder sb,
-                                     Map<String, Consumer<Boolean>> consumerMap, String booleanText,
-                                     BooleanDialogInput booleanDialogInput, Consumer<Boolean> updateConsumer) {
-        Boolean booleanValue = view.getBoolean(key);
-        if (booleanValue != null && consumerMap.containsKey(key)) {
-            consumerMap.get(key).accept(booleanValue);
-            this.executeUpdateConsumer(updateConsumer);
-        }
-
-        if (booleanValue != null) {
-            String valueIcon = booleanValue
-                    ? "<green>✔<gray> |<red> ❌"
-                    : "<red>✔<gray> |<green> ❌";
-            String text = booleanValue ? booleanDialogInput.onTrue() : booleanDialogInput.onFalse();
-            String line = booleanText
-                    .replace("%key%", key)
-                    .replace("%text%", text)
-                    .replace("%value%", valueIcon);
-            sb.append(line).append("\n");
-        }
-    }
-    private void executeUpdateConsumer(Consumer<Boolean> updateConsumer) {
-        if (updateConsumer != null) {
-            updateConsumer.accept(true);
         }
     }
 
@@ -293,7 +209,229 @@ public class ConfigManager extends DialogBuilderManager implements ConfigManager
         return new ArrayList<>(this.zDialogInventoryDev.keySet());
     }
 
-    public ConfigFieldProcessorRegistry getProcessorRegistry() {
-        return this.processorRegistry;
+    @Override
+    public void registerProcessor(@NotNull ConfigFieldProcessor processor) {
+        Preconditions.checkNotNull(processor, "Processor cannot be null");
+        this.processors.add(processor);
+    }
+
+    private static class DefaultBooleanProcessor implements ConfigFieldProcessor {
+        @Override
+        public boolean canProcess(@NotNull Field field, @NotNull ConfigOption configOption) {
+            DialogInputType declared = configOption.type();
+            if (declared == DialogInputType.BOOLEAN) {
+                return true;
+            }
+            if (declared == DialogInputType.TEXT) {
+                Class<?> type = field.getType();
+                return type == boolean.class || type == Boolean.class;
+            }
+            return false;
+        }
+
+        @Override
+        public @NotNull DialogInputType resolveInputType(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return DialogInputType.BOOLEAN;
+        }
+
+        @Override
+        public void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException {
+            if (field.getType() == boolean.class) {
+                field.setBoolean(null, (Boolean) value);
+            } else {
+                field.set(null, value);
+            }
+        }
+    }
+
+    private static class DefaultNumberProcessor implements ConfigFieldProcessor {
+        @Override
+        public boolean canProcess(@NotNull Field field, @NotNull ConfigOption configOption) {
+            DialogInputType declared = configOption.type();
+            if (declared == DialogInputType.NUMBER_RANGE) {
+                return true;
+            }
+            if (declared == DialogInputType.TEXT) {
+                Class<?> type = field.getType();
+                return type == int.class || type == Integer.class || type == long.class || type == Long.class || type == float.class || type == Float.class || type == double.class || type == Double.class;
+            }
+            return false;
+        }
+
+        @Override
+        public @NotNull DialogInputType resolveInputType(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return DialogInputType.NUMBER_RANGE;
+        }
+
+        @Override
+        public void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException {
+            Number number = (Number) value;
+            Class<?> type = field.getType();
+            if (type == int.class) {
+                field.setInt(null, number.intValue());
+            } else if (type == Integer.class) {
+                field.set(null, number.intValue());
+            } else if (type == long.class) {
+                field.setLong(null, number.longValue());
+            } else if (type == Long.class) {
+                field.set(null, number.longValue());
+            } else if (type == float.class) {
+                field.setFloat(null, number.floatValue());
+            } else if (type == Float.class) {
+                field.set(null, number.floatValue());
+            } else if (type == double.class) {
+                field.setDouble(null, number.doubleValue());
+            } else if (type == Double.class) {
+                field.set(null, number.doubleValue());
+            }
+        }
+    }
+
+    private static class DefaultEnumProcessor implements ConfigFieldProcessor {
+        @Override
+        public boolean canProcess(@NotNull Field field, @NotNull ConfigOption configOption) {
+            DialogInputType declared = configOption.type();
+            if (declared == DialogInputType.SINGLE_OPTION) {
+                return true;
+            }
+            if (declared == DialogInputType.TEXT) {
+                return field.getType().isEnum();
+            }
+            return false;
+        }
+
+        @Override
+        public @NotNull DialogInputType resolveInputType(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return DialogInputType.SINGLE_OPTION;
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        @Override
+        public void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException {
+            Class<?> type = field.getType();
+            if (type.isEnum()) {
+                String strValue = (String) value;
+                Object[] constants = type.getEnumConstants();
+                if (constants != null) {
+                    for (Object constant : constants) {
+                        if (((Enum) constant).name().equalsIgnoreCase(strValue)) {
+                            field.set(null, constant);
+                            return;
+                        }
+                    }
+                }
+                Logger.info("No enum constant found for value '" + strValue + "' in " + type.getSimpleName(), Logger.LogType.WARNING);
+            }
+        }
+    }
+
+    private static class DefaultListProcessor implements ConfigFieldProcessor {
+        @Override
+        public boolean canProcess(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return field.getType() == List.class;
+        }
+
+        @Override
+        public @NotNull DialogInputType resolveInputType(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return DialogInputType.TEXT;
+        }
+
+        @Override
+        public Object getDisplayValue(@NotNull Field field) throws IllegalAccessException {
+            List<?> list = (List<?>) field.get(null);
+            if (list == null || list.isEmpty()) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < list.size(); i++) {
+                if (i > 0) {
+                    sb.append(", ");
+                }
+                Object item = list.get(i);
+                if (item instanceof Enum<?> e) {
+                    sb.append(e.name());
+                } else if (item != null) {
+                    sb.append(item);
+                }
+            }
+            return sb.toString();
+        }
+
+        @Override
+        public void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException {
+            if (!(value instanceof String str)) {
+                return;
+            }
+            Class<?> genericType = String.class; // default
+            if (field.getGenericType() instanceof java.lang.reflect.ParameterizedType pt) {
+                java.lang.reflect.Type[] actualTypeArguments = pt.getActualTypeArguments();
+                if (actualTypeArguments.length > 0 && actualTypeArguments[0] instanceof Class<?> c) {
+                    genericType = c;
+                }
+            }
+
+            String[] split = str.split(",");
+            List<Object> parsedList = new ArrayList<>();
+            for (String part : split) {
+                part = part.trim();
+                if (part.isEmpty()) {
+                    continue;
+                }
+                try {
+                    if (genericType == String.class) {
+                        parsedList.add(part);
+                    } else if (genericType == Integer.class || genericType == int.class) {
+                        parsedList.add(Integer.parseInt(part));
+                    } else if (genericType == Long.class || genericType == long.class) {
+                        parsedList.add(Long.parseLong(part));
+                    } else if (genericType == Double.class || genericType == double.class) {
+                        parsedList.add(Double.parseDouble(part));
+                    } else if (genericType == Float.class || genericType == float.class) {
+                        parsedList.add(Float.parseFloat(part));
+                    } else if (genericType == Boolean.class || genericType == boolean.class) {
+                        parsedList.add(Boolean.parseBoolean(part));
+                    } else if (genericType.isEnum()) {
+                        Object matchedConstant = null;
+                        for (Object constant : genericType.getEnumConstants()) {
+                            if (((Enum<?>) constant).name().equalsIgnoreCase(part)) {
+                                matchedConstant = constant;
+                                break;
+                            }
+                        }
+                        if (matchedConstant != null) {
+                            parsedList.add(matchedConstant);
+                        } else {
+                            Logger.info("No enum constant found for value '" + part + "' in " + genericType.getSimpleName(), Logger.LogType.WARNING);
+                        }
+                    } else {
+                        parsedList.add(part);
+                    }
+                } catch (Exception e) {
+                    Logger.info("Failed to parse list element '" + part + "' as " + genericType.getSimpleName(), Logger.LogType.WARNING);
+                }
+            }
+            field.set(null, parsedList);
+        }
+    }
+
+    private static class DefaultTextProcessor implements ConfigFieldProcessor {
+        @Override
+        public boolean canProcess(@NotNull Field field, @NotNull ConfigOption configOption) {
+            return true;
+        }
+
+        @Override
+        public @NotNull DialogInputType resolveInputType(@NotNull Field field, @NotNull ConfigOption configOption) {
+            Class<?> type = field.getType();
+            if (type != String.class && configOption.type() == DialogInputType.TEXT) {
+                Logger.info("Unrecognized field type " + type.getSimpleName() + " for field " + field.getName() + ", falling back to TEXT.", Logger.LogType.WARNING);
+            }
+            return DialogInputType.TEXT;
+        }
+
+        @Override
+        public void setFieldValue(@NotNull Field field, @NotNull Object value) throws IllegalAccessException {
+            field.set(null, value);
+        }
     }
 }

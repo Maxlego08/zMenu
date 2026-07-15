@@ -1,12 +1,16 @@
 package fr.maxlego08.menu.hooks.itemsadder;
 
 import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
+import fr.maxlego08.menu.api.annotations.AutoFontImage;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.font.FontImage;
 import org.jspecify.annotations.NonNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@AutoFontImage
+@RequiresPlugin("ItemsAdder")
 public class ItemsAdderFont implements FontImage {
 
     private final Pattern pattern = Pattern.compile(":(\\w+):");

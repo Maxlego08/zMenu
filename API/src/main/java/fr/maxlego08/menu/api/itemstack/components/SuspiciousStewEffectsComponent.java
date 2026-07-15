@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,21 +18,26 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class SuspiciousStewEffectsComponent extends ItemComponent {
 
-    private final @NotNull List<PotionEffect> effects;
+    private final @NotNull List<ResolvablePotionEffect> effects;
 
-    public SuspiciousStewEffectsComponent(@NotNull List<PotionEffect> effects) {
+    public SuspiciousStewEffectsComponent(@NotNull List<ResolvablePotionEffect> effects) {
         this.effects = effects;
     }
 
-    public @NotNull List<PotionEffect> getEffects() {
+    public @NotNull List<ResolvablePotionEffect> getEffects() {
         return this.effects;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         boolean apply = ItemUtil.editMeta(itemStack, SuspiciousStewMeta.class, suspiciousStewMeta -> {
-            for (PotionEffect effect : this.effects) {
-                suspiciousStewMeta.addCustomEffect(effect, true);
+            for (ResolvablePotionEffect effect : this.effects) {
+                if (effect != null) {
+                    PotionEffect resolvedEffect = effect.resolve(context);
+                    if (resolvedEffect != null) {
+                        suspiciousStewMeta.addCustomEffect(resolvedEffect, true);
+                    }
+                }
             }
         });
         if (!apply && Configuration.enableDebug)

@@ -5,5 +5,4 @@ public enum DialogInputType {
     SINGLE_OPTION,
     TEXT,
     NUMBER_RANGE,
-    BEDROCK_LABEL,
 }

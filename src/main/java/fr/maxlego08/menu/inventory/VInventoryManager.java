@@ -15,9 +15,9 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
-import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -88,7 +88,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         Optional<VInventory> optional = this.getInventoryOrDefault(id, containerInventory.getType());
 
         if (optional.isEmpty()) {
-            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -101,7 +101,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         VInventory clonedInventory = inventory.clone();
 
         if (clonedInventory == null) {
-            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             return;
         }
 
@@ -113,24 +113,26 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
             InventoryResult result = clonedInventory.preOpenInventory(this.plugin, player, page, objects);
             if (result == InventoryResult.SUCCESS) {
 
-                clonedInventory.postOpen(this.plugin, player, page, objects);
+                this.plugin.getScheduler().runAtEntity(player, wrappedTask -> {
+                    clonedInventory.postOpen(this.plugin, player, page, objects);
 
-                Inventory spigotInventory = clonedInventory.getSpigotInventory();
-                player.openInventory(spigotInventory);
+                    Inventory spigotInventory = clonedInventory.getSpigotInventory();
+                    player.openInventory(spigotInventory);
 
-                clonedInventory.onPostOpen(player, this.plugin, page, objects);
+                    clonedInventory.onPostOpen(player, this.plugin, page, objects);
 
-                this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPostOpen(player, clonedInventory));
+                    this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onInventoryPostOpen(player, clonedInventory));
+                });
 
             } else if (result == InventoryResult.SUCCESS_ASYNC) {
 
                 clonedInventory.postOpen(this.plugin, player, page, objects);
             } else if (result == InventoryResult.ERROR) {
 
-                this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+                message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             }
         } catch (InventoryOpenException exception) {
-            this.message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
+            message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
             exception.printStackTrace();
         }
     }
@@ -166,7 +168,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
         if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
-            this.message(this.plugin, player, Message.CLICK_COOLDOWN);
+            message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
 
@@ -313,7 +315,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     protected void onConnect(PlayerJoinEvent event, Player player) {
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
-            this.plugin.getScheduler().runAtEntityLater(player, w -> this.message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
+            this.plugin.getScheduler().runAtEntityLater(player, w -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
         }
     }
 

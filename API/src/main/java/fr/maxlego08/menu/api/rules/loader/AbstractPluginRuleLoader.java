@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractPluginRuleLoader implements RuleLoader {
+public abstract class AbstractPluginRuleLoader implements fr.maxlego08.menu.api.rules.loader.RuleLoader {
 
     /**
      * Creates the plugin-specific rule instance.
@@ -27,6 +27,6 @@ public abstract class AbstractPluginRuleLoader implements RuleLoader {
         if (items.isEmpty()) return null;
 
         boolean ignoreCase = RuleConfigHelper.getBoolean(configuration, "ignore-case", true);
-        return createRule(items, ignoreCase);
+        return this.createRule(items, ignoreCase);
     }
 }

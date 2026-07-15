@@ -39,11 +39,11 @@ public class TakeItemAction extends Action {
         ItemStack targetItem = this.menuItemStack.build(player, this.useCache, placeholders);
 
         if (targetItem == null) {
-            debugLog("Build failed — target item is null | player=%s", player.getName());
+            this.debugLog("Build failed - target item is null | player=%s", player.getName());
             return;
         }
 
-        debugLog("Built target item | player=%s item=%s", player.getName(), targetItem);
+        this.debugLog("Built target item | player=%s item=%s", player.getName(), targetItem);
 
         int remaining = this.amount;
         PlayerInventory inventory = player.getInventory();
@@ -52,8 +52,8 @@ public class TakeItemAction extends Action {
             ItemStack current = inventory.getItem(slot);
             if (current == null) continue;
 
-            boolean matches = matches(current, targetItem);
-            debugLog("Slot %02d | item=%-30s match=%s", slot, current, matches);
+            boolean matches = this.matches(current, targetItem);
+            this.debugLog("Slot %02d | item=%-30s match=%s", slot, current, matches);
             if (!matches) continue;
 
             int toRemove = Math.min(remaining, current.getAmount());
@@ -61,12 +61,12 @@ public class TakeItemAction extends Action {
             remaining -= toRemove;
 
             if (current.getAmount() <= 0) {
-                debugLog("Slot %02d cleared | player=%s", slot, player.getName());
+                this.debugLog("Slot %02d cleared | player=%s", slot, player.getName());
                 inventory.setItem(slot, null);
             }
         }
 
-        logResult(player, remaining);
+        this.logResult(player, remaining);
     }
 
     private void logResult(@NotNull Player player, int remaining) {

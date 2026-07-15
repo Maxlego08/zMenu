@@ -2,8 +2,10 @@ package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractAttackRangeItemComponentLoader extends ItemComponentLoader {
 
@@ -11,63 +13,94 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
         super("attack-range");
     }
 
-    protected float getMinReach(ConfigurationSection section, String path) {
-        double minReach = section.getDouble("min-reach", 0f);
-        if (minReach > 64f || minReach < 0f) {
-            if (Configuration.enableDebug)
-                Logger.info("Invalid min-reach value in attack-range component at path: " + path + ". Value: " + minReach + ". It must be between 0 and 64. Using default value 0f.");
-            minReach = 0f;
+    @NotNull
+    protected ResolvableFloat getMinReachResolvable(ConfigurationSection section, String path) {
+        ResolvableFloat resolvable = this.asResolvableFloat(section, "min-reach");
+        if (resolvable == null) return ResolvableFloat.of(0f);
+
+        if (!resolvable.isDynamic()) {
+            float value = resolvable.getResolvedValue();
+            if (value > 64f || value < 0f) {
+                if (Configuration.enableDebug)
+                    Logger.info("Invalid min-reach value in attack-range component at path: " + path + ". Value: " + value + ". It must be between 0 and 64. Using default value 0f.");
+                return ResolvableFloat.of(0f);
+            }
         }
-        return (float) minReach;
+        return resolvable;
     }
 
-    protected float getMaxReach(ConfigurationSection section, String path) {
-        double maxReach = section.getDouble("max-reach", 3f);
-        if (maxReach > 64f || maxReach < 0f) {
-            if (Configuration.enableDebug)
-                Logger.info("Invalid max-reach value in attack-range component at path: " + path + ". Value: " + maxReach + ". It must be between 0 and 64. Using default value 3f.");
-            maxReach = 3f;
+    protected @NotNull ResolvableFloat getMaxReachResolvable(ConfigurationSection section, String path) {
+        ResolvableFloat resolvable = this.asResolvableFloat(section, "max-reach");
+        if (resolvable == null) return ResolvableFloat.of(3f);
+
+        if (!resolvable.isDynamic()) {
+            float value = resolvable.getResolvedValue();
+            if (value > 64f || value < 0f) {
+                if (Configuration.enableDebug)
+                    Logger.info("Invalid max-reach value in attack-range component at path: " + path + ". Value: " + value + ". It must be between 0 and 64. Using default value 3f.");
+                return ResolvableFloat.of(3f);
+            }
         }
-        return (float) maxReach;
+        return resolvable;
     }
 
-    protected float getMinCreativeReach(ConfigurationSection section, String path) {
-        double minCreativeReach = section.getDouble("min-creative-reach", 0f);
-        if (minCreativeReach > 64f || minCreativeReach < 0f) {
-            if (Configuration.enableDebug)
-                Logger.info("Invalid min-creative-reach value in attack-range component at path: " + path + ". Value: " + minCreativeReach + ". It must be between 0 and 64. Using default value 0f.");
-            minCreativeReach = 0f;
+    protected @NotNull ResolvableFloat getMinCreativeReachResolvable(ConfigurationSection section, String path) {
+        ResolvableFloat resolvable = this.asResolvableFloat(section, "min-creative-reach");
+        if (resolvable == null) return ResolvableFloat.of(0f);
+
+        if (!resolvable.isDynamic()) {
+            float value = resolvable.getResolvedValue();
+            if (value > 64f || value < 0f) {
+                if (Configuration.enableDebug)
+                    Logger.info("Invalid min-creative-reach value in attack-range component at path: " + path + ". Value: " + value + ". It must be between 0 and 64. Using default value 0f.");
+                return ResolvableFloat.of(0f);
+            }
         }
-        return (float) minCreativeReach;
+        return resolvable;
     }
 
-    protected float getMaxCreativeReach(ConfigurationSection section, String path) {
-        double maxCreativeReach = section.getDouble("max-creative-reach", 5f);
-        if (maxCreativeReach > 64f || maxCreativeReach < 0f) {
-            if (Configuration.enableDebug)
-                Logger.info("Invalid max-creative-reach value in attack-range component at path: " + path + ". Value: " + maxCreativeReach + ". It must be between 0 and 64. Using default value 5f.");
-            maxCreativeReach = 5f;
+    protected @NotNull ResolvableFloat getMaxCreativeReachResolvable(ConfigurationSection section, String path) {
+        ResolvableFloat resolvable = this.asResolvableFloat(section, "max-creative-reach");
+        if (resolvable == null) return ResolvableFloat.of(5f);
+
+        if (!resolvable.isDynamic()) {
+            float value = resolvable.getResolvedValue();
+            if (value > 64f || value < 0f) {
+                if (Configuration.enableDebug)
+                    Logger.info("Invalid max-creative-reach value in attack-range component at path: " + path + ". Value: " + value + ". It must be between 0 and 64. Using default value 5f.");
+                return ResolvableFloat.of(5f);
+            }
         }
-        return (float) maxCreativeReach;
+        return resolvable;
     }
 
-    protected float getHitboxMargin(ConfigurationSection section, String path) {
-        double hitboxMargin = section.getDouble("hitbox-margin", 0.3f);
-        if (hitboxMargin < 0f || hitboxMargin > 1f) {
-            if (Configuration.enableDebug)
-                Logger.info("Invalid hitbox-margin value in attack-range component at path: " + path + ". Value: " + hitboxMargin + ". It must be between 0 and 1. Using default value 0.3f.");
-            hitboxMargin = 0.3f;
+    protected @NotNull ResolvableFloat getHitboxMarginResolvable(ConfigurationSection section, String path) {
+        ResolvableFloat resolvable = this.asResolvableFloat(section, "hitbox-margin");
+        if (resolvable == null) return ResolvableFloat.of(0.3f);
+
+        if (!resolvable.isDynamic()) {
+            float value = resolvable.getResolvedValue();
+            if (value < 0f || value > 1f) {
+                if (Configuration.enableDebug)
+                    Logger.info("Invalid hitbox-margin value in attack-range component at path: " + path + ". Value: " + value + ". It must be between 0 and 1. Using default value 0.3f.");
+                return ResolvableFloat.of(0.3f);
+            }
         }
-        return (float) hitboxMargin;
+        return resolvable;
     }
 
-    protected float getMobFactor(ConfigurationSection section, String path) {
-        double mobFactor = section.getDouble("mob-factor", 1f);
-        if (mobFactor < 0f || mobFactor > 2f) {
-            if (Configuration.enableDebug)
-                Logger.info("Invalid mob-factor value in attack-range component at path: " + path + ". Value: " + mobFactor + ". It must be between 0 and 2. Using default value 1f.");
-            mobFactor = 1f;
+    protected @NotNull ResolvableFloat getMobFactorResolvable(ConfigurationSection section, String path) {
+        ResolvableFloat resolvable = this.asResolvableFloat(section, "mob-factor");
+        if (resolvable == null) return ResolvableFloat.of(1f);
+
+        if (!resolvable.isDynamic()) {
+            float value = resolvable.getResolvedValue();
+            if (value < 0f || value > 2f) {
+                if (Configuration.enableDebug)
+                    Logger.info("Invalid mob-factor value in attack-range component at path: " + path + ". Value: " + value + ". It must be between 0 and 2. Using default value 1f.");
+                return ResolvableFloat.of(1f);
+            }
         }
-        return (float) mobFactor;
+        return resolvable;
     }
 }

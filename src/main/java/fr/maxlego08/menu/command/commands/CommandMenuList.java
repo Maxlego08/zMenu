@@ -1,24 +1,22 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuList extends VCommand {
+public class CommandMenuList extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuList(ZMenuPlugin plugin) {
-        super(plugin);
-        this.setPermission(Permission.ZMENU_LIST);
-        this.setDescription(Message.DESCRIPTION_LIST);
-        this.addSubCommand("list", "l");
+        super(plugin, "list", "l");
+        this.setPermission(Permission.ZMENU_LIST.getPermission());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
-        plugin.getInventoryManager().sendInventories(this.sender);
-        return CommandType.SUCCESS;
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        this.plugin.getInventoryManager().sendInventories(commandDispatch.getSender());
+        return CommandResultType.SUCCESS;
     }
-
 }

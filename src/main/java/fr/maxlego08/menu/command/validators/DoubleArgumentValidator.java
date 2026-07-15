@@ -1,8 +1,10 @@
 package fr.maxlego08.menu.command.validators;
 
+import fr.maxlego08.menu.api.annotations.AutoCommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.utils.Message;
 
+@AutoCommandArgumentValidator
 public class DoubleArgumentValidator implements CommandArgumentValidator {
     @Override
     public boolean isValid(String value) {

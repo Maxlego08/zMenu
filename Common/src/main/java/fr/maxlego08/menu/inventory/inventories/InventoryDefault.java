@@ -102,6 +102,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         var scheduler = this.plugin.getScheduler();
         Consumer<WrappedTask> runnable = w -> {
             Placeholders placeholders = new Placeholders();
+
+            placeholders.register("page", String.valueOf(page));
+            placeholders.register("maxPage", String.valueOf(this.maxPage));
+            placeholders.register("max-page", String.valueOf(this.maxPage));
+
             this.perfDebug.start("openInventory.onInventoryOpen");
             for (Button button : this.buttons) {
                 button.onInventoryOpen(player, this, placeholders);
@@ -109,7 +114,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             this.perfDebug.end();
 
             this.perfDebug.start("openInventory.resolveInventoryName");
-            String inventoryName = this.plugin.getFontImage().replace(this.getMessage(this.inventory.getName(player, this, placeholders), "%page%", page, "%maxPage%", this.maxPage, "%max-page%", this.maxPage));
+            String inventoryName = this.plugin.getFontImage().replace(this.inventory.getName(player, this, placeholders));
             Player targetPlayer = this.getTargetPlayer();
             this.perfDebug.end();
 

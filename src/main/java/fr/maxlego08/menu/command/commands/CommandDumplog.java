@@ -3,10 +3,14 @@ package fr.maxlego08.menu.command.commands;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.command.VCommand;
 import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.commands.CommandType;
+import fr.robie.paperdispatch.command.CommandDispatch;
+import fr.robie.paperdispatch.command.CommandResultType;
+import fr.robie.paperdispatch.command.SubCommand;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,36 +22,36 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CommandDumplog extends VCommand {
+public class CommandDumplog extends SubCommand<ZMenuPlugin> {
+
     public CommandDumplog(ZMenuPlugin plugin) {
-        super(plugin);
-        this.addSubCommand("dumplog");
-        this.setDescription(Message.DESCRIPTION_DUMPLOG);
-        this.setPermission(Permission.ZMENU_DUMPLOG);
+        super(plugin, "dumplog");
+        this.setPermission(Permission.ZMENU_DUMPLOG.getPermission());
     }
 
     @Override
-    protected CommandType perform(ZMenuPlugin plugin) {
+    protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
+        CommandSender sender = commandDispatch.getSender();
         Path logPath = Path.of("logs/latest.log");
         if (!Files.exists(logPath)) {
-            this.message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", "Log file not found.");
-            return CommandType.SUCCESS;
+            MessageUtils.message(this.plugin, sender, Message.DUMPLOG_ERROR, "%error%", "Log file not found.");
+            return CommandResultType.SUCCESS;
         }
-        plugin.getScheduler().runAsync(var -> {
+        this.plugin.getScheduler().runAsync(var -> {
             try {
                 String url = this.uploadLog(logPath).replace("\\","");
-                this.message(plugin, this.sender, Message.DUMPLOG_SUCCESS, "%url%", plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>");
+                MessageUtils.message(this.plugin, sender, Message.DUMPLOG_SUCCESS, "%url%", this.plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>");
                 if (Configuration.enableInformationMessage) {
                     Logger.info("Log uploaded: " + url);
                 }
             } catch (IOException e) {
-                this.message(plugin, this.sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage());
+                MessageUtils.message(this.plugin, sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage());
                 if (Configuration.enableInformationMessage) {
                     Logger.info("Error uploading log: " + e.getMessage());
                 }
             }
         });
-        return CommandType.SUCCESS;
+        return CommandResultType.SUCCESS;
     }
 
     public String uploadLog(Path logPath) throws IOException {

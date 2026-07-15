@@ -27,11 +27,11 @@ public class BedrockReplacementListener implements Listener {
         if (this.bedrockManager.isBedrockPlayer(event.getPlayer())) {
             InventoryReplacement inventoryReplacement = inventory.getInventoryReplacement();
             if (inventoryReplacement != null) {
-                Optional<BedrockInventory> optionalBedrockInventory = this.bedrockManager.getBedrockInventory(inventoryReplacement.plugin(), inventoryReplacement.inventoryName());
+                Optional<? extends BedrockInventory<?, ?, ?>> optionalBedrockInventory = this.bedrockManager.getBedrockInventory(inventoryReplacement.plugin(), inventoryReplacement.inventoryName());
                 if (optionalBedrockInventory.isEmpty()) {
                     return;
                 }
-                BedrockInventory bedrockInventory = optionalBedrockInventory.get();
+                BedrockInventory<?, ?, ?> bedrockInventory = optionalBedrockInventory.get();
                 if (inventoryReplacement.shouldTrigger(bedrockInventory, event.getPage())) {
                     event.setCancelled(true);
                     this.bedrockManager.openBedrockInventory(event.getPlayer(), bedrockInventory);

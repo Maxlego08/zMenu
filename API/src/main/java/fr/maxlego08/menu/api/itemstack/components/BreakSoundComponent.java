@@ -2,31 +2,23 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import org.bukkit.Sound;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
+import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("unused")
-public class BreakSoundComponent extends ItemComponent {
-    private final Sound breakSound;
+public final class BreakSoundComponent extends ItemComponent {
+    private final ResolvableNamespacedKey breakSound;
 
-    public BreakSoundComponent(@NotNull Sound breakSound) {
+    public BreakSoundComponent(ResolvableNamespacedKey breakSound) {
         this.breakSound = breakSound;
-    }
-
-    public @NotNull Sound getBreakSound() {
-        return this.breakSound;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            itemMeta.setBreakSound(this.breakSound);
-            itemStack.setItemMeta(itemMeta);
-        }
+        Resolvable.applyResolvable(context, this.breakSound, (key) -> itemStack.setData(DataComponentTypes.BREAK_SOUND, key));
     }
 }

@@ -22,10 +22,6 @@ public class PlayerCommandAsOPAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
-        scheduler.runAtEntity(player, w -> this.papi(placeholders.parse(this.parseAndFlattenCommands(this.commands, player)), player).forEach(command -> {
-            command = command.replace("%player%", player.getName());
-            String finalCommand = command;
-           Configuration.opGrantMethod.execute(player, inventory.getPlugin(), () -> Bukkit.dispatchCommand(player, finalCommand));
-        }));
+        scheduler.runAtEntity(player, w -> this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player).forEach(command -> Configuration.opGrantMethod.execute(player, inventory.getPlugin(), () -> Bukkit.dispatchCommand(player, command))));
     }
 }

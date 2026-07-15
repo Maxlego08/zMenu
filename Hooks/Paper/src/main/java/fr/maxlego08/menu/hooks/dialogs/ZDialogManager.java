@@ -2,14 +2,10 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
-import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
@@ -18,21 +14,11 @@ import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.api.utils.dialogs.record.ActionButtonRecord;
-import fr.maxlego08.menu.api.utils.dialogs.record.ZDialogInventoryBuild;
 import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderBody;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderClass;
-import fr.maxlego08.menu.hooks.dialogs.loader.builder.DialogBuilderManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
-import io.papermc.paper.registry.data.dialog.ActionButton;
-import io.papermc.paper.registry.data.dialog.DialogBase;
-import io.papermc.paper.registry.data.dialog.action.DialogAction;
-import io.papermc.paper.registry.data.dialog.body.DialogBody;
-import io.papermc.paper.registry.data.dialog.input.*;
-import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -47,23 +33,20 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ZDialogManager extends DialogBuilderManager implements DialogManager {
+public class ZDialogManager implements DialogManager {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
-    private static InventoryManager inventoryManager;
-    private final Map<String, List<DialogInventory>> dialogs = new HashMap<>();
+
+    private final Set<String> dialogNames = new HashSet<>();
+    private final Map<String, List<AbstractDialogInventory>> dialogs = new HashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
-    private final DialogBuilderClass dialogBuilders;
 
     private final ComponentMeta paperComponent;
 
     public ZDialogManager(final MenuPlugin menuPlugin, final ConfigManagerInt configManager) {
-        super(menuPlugin);
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
-        this.dialogBuilders = new DialogBuilderClass(this, this.menuPlugin);
-        inventoryManager = menuPlugin.getInventoryManager();
     }
 
     @Override
@@ -87,8 +70,8 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         return dialogs;
     }
     public Optional<DialogInventory> getDialogOptional(String name) {
-        for (List<DialogInventory> dialogList : this.dialogs.values()) {
-            for (DialogInventory dialog : dialogList) {
+        for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
+            for (AbstractDialogInventory dialog : dialogList) {
                 if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
                     return Optional.of(dialog);
                 }
@@ -98,36 +81,40 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     }
     @Override
     public Optional<DialogInventory> getDialog(String pluginName, String fileName) {
-        List<DialogInventory> pluginDialogs = this.dialogs.get(pluginName);
+        List<AbstractDialogInventory> pluginDialogs = this.dialogs.get(pluginName);
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
                 .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName().equals(fileName))
+                .map(dialog -> (DialogInventory) dialog)
                 .findFirst();
     }
 
     @Override
     public Optional<DialogInventory> getDialog(Plugin plugin, String fileName) {
-        List<DialogInventory> pluginDialogs = this.dialogs.get(plugin.getName());
+        List<AbstractDialogInventory> pluginDialogs = this.dialogs.get(plugin.getName());
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
                 .filter(dialog -> dialog.getFileName().equals(fileName))
+                .map(dialog -> (DialogInventory) dialog)
                 .findFirst();
     }
 
     @Override
     public void deleteDialog(String name) {
-        for (List<DialogInventory> dialogList : this.dialogs.values()) {
+        for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             dialogList.removeIf(dialog ->
                     dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
         }
+        this.dialogNames.removeIf(dname -> dname.equals(dname.toLowerCase(Locale.ROOT)));
     }
 
     @Override
     public void deleteDialog(Plugin plugin) {
         this.dialogs.remove(plugin.getName());
+        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName().toLowerCase(Locale.ROOT) + ":"));
     }
 
     @Override
@@ -158,12 +145,12 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
 
     @Override
     public DialogInventory loadInventory(Plugin plugin, String fileName) throws DialogException, InventoryException {
-        return this.loadInventory(plugin, fileName, ZDialogInventory.class);
+        return this.loadInventory(plugin, fileName, AbstractDialogInventory.class);
     }
 
     @Override
     public DialogInventory loadInventory(Plugin plugin, File file) throws DialogException, InventoryException {
-        return this.loadInventory(plugin, file, ZDialogInventory.class);
+        return this.loadInventory(plugin, file, AbstractDialogInventory.class);
     }
 
     @Override
@@ -182,11 +169,12 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
             throws DialogException, InventoryException {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        Loader<DialogInventory> loader = new DialogLoader(this.menuPlugin, this);
-        DialogInventory dialog = loader.load(configuration, "", file, dialogClass, plugin);
+        Loader<AbstractDialogInventory> loader = new DialogLoader(this.menuPlugin, this);
+        AbstractDialogInventory dialog = loader.load(configuration, "", file, dialogClass, plugin);
 
-        List<DialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
+        List<AbstractDialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
+        this.dialogNames.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()).toLowerCase(Locale.ROOT));
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
@@ -195,14 +183,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         return dialog;
     }
 
-    public void registerBuilder(DialogBuilderBody builder) {
-        this.dialogBuilders.registerBuilder(builder);
-    }
-
     @Override
     public void reloadDialogs() {
         this.dialogs.clear();
         this.activeDialogs.clear();
+        this.dialogNames.clear();
 
         this.loadDialogs();
 
@@ -237,12 +222,11 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                 return;
             }
 
-            ZDialogInventoryBuild dialogBuild = dialogInventory.getBuild(targetPlayer);
-            List<DialogBody> bodies = this.getDialogBodies(targetPlayer, dialogInventory.getDialogBodies(targetPlayer));
-            List<DialogInput> inputs = this.getDialogInputs(targetPlayer, dialogInventory.getDialogInputs(targetPlayer));
+            InventoryEngine fakeInventory = this.menuPlugin.getInventoryManager().getFakeInventory();
+            Placeholders placeholders = new Placeholders();
+            placeholders.register("player", player.getName());
 
-            DialogBase.Builder dialogBase = this.createDialogBase(dialogBuild.name(), dialogBuild.externalTitle(), dialogBuild.canCloseWithEscape(), dialogInventory.isPause(), dialogInventory.getAfterAction());
-            Dialog dialog = this.createDialogByType(dialogInventory.getDialogType(), dialogBase, bodies, inputs, dialogInventory, player);
+            Dialog dialog = dialogInventory.buildDialog(targetPlayer, this.paperComponent, fakeInventory, placeholders);
 
             player.showDialog(dialog);
 
@@ -252,94 +236,12 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
                 if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-    /**
-     * Creates a dialog based on the dialog type
-     */
-    private Dialog createDialogByType(DialogType dialogType, DialogBase.Builder dialogBase, List<DialogBody> bodies, List<DialogInput> inputs, DialogInventory zDialog,@NotNull Player player) {
-        return switch (dialogType) {
-            case NOTICE ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(ActionButton.create(this.paperComponent.getComponent(zDialog.getLabel(player)), this.paperComponent.getComponent(zDialog.getLabelTooltip(player)), zDialog.getLabelWidth(), this.createAction(inputs,zDialog.getActions())))).base(dialogBase.body(bodies).inputs(inputs).build())
-                    );
-
-            case CONFIRMATION ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(ActionButton.create(this.paperComponent.getComponent(zDialog.getYesText(player)), this.paperComponent.getComponent(zDialog.getYesTooltip(player)),zDialog.getYesWidth(), this.createAction(inputs, zDialog.getYesActions())), ActionButton.create(this.paperComponent.getComponent(zDialog.getNoText(player)), this.paperComponent.getComponent(zDialog.getNoTooltip(player)),zDialog.getNoWidth(), this.createAction(inputs,zDialog.getNoActions())))).base(dialogBase.body(bodies).inputs(inputs).build())
-                    );
-
-            case MULTI_ACTION ->
-                    Dialog.create(builder ->
-                                    builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(this.createActionButtons(zDialog,inputs,zDialog.getActionButtons(player))).columns(zDialog.getNumberOfColumns()).exitAction(this.createActionButton(zDialog.getExitActionButton(player),inputs)).build()).base(dialogBase.body(bodies).inputs(inputs).build()));
-
-            case SERVER_LINKS ->
-                    Dialog.create(builder -> builder.empty().type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(this.createActionButton(zDialog.getExitActionButton(player),inputs), zDialog.getNumberOfColumns(), 100)).base(dialogBase.body(bodies).inputs(inputs).build())
-                    );
-        };
-    }
-    private List<ActionButton> createActionButtons(DialogInventory dialogInventory, List<DialogInput> inputs, List<ActionButtonRecord> actionButtonRecords) {
-        if (dialogInventory == null) {
-            return Collections.emptyList();
-        }
-        List<ActionButton> actionButtons = new ArrayList<>();
-        for (ActionButtonRecord actionButtonRecord : actionButtonRecords) {
-            actionButtons.add(this.createActionButton(actionButtonRecord, inputs));
-        }
-        return actionButtons;
-    }
-
-    private ActionButton createActionButton(ActionButtonRecord actionButtonRecord, List<DialogInput> inputs) {
-        if (actionButtonRecord == null) {
-            return null;
-        }
-        return ActionButton.create(this.paperComponent.getComponent(actionButtonRecord.label()), this.paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), this.createAction(inputs,actionButtonRecord.actions()));
-    }
-
-    public DialogAction createAction(List<DialogInput> inputs, List<Requirement> requirements) {
-        return DialogAction.customClick((view,audience)-> {
-            Placeholders placeholders = new Placeholders();
-            for (DialogInput input : inputs) {
-                String key = input.key();
-                String value = null;
-
-                Object rawValue;
-
-                switch (input) {
-                    case NumberRangeDialogInput numberRangeDialogInput -> {
-                        rawValue = view.getFloat(key);
-                        value = String.valueOf(rawValue);
-                    }
-                    case TextDialogInput textDialogInput -> {
-                        rawValue = view.getText(key);
-                        value = (String) rawValue;
-                    }
-                    case BooleanDialogInput booleanDialogInput -> {
-                        rawValue = view.getBoolean(key);
-                        value = String.valueOf(rawValue);
-                        placeholders.register(key+"_text", (Boolean) rawValue ? booleanDialogInput.onTrue() : booleanDialogInput.onFalse());
-                    }
-                    case SingleOptionDialogInput singleOptionDialogInput -> {
-                        rawValue = view.getText(key);
-                        value = (String) rawValue;
-                    }
-                    default -> {
-                    }
-                }
-                if (value == null) {
-                    continue;
-                }
-
-                placeholders.register(key, value);
-            }
-
-            for (Requirement requirement : requirements) {
-                requirement.execute((Player) audience, null, inventoryManager.getFakeInventory(), placeholders);
-            }
-
-        }, ClickCallback.Options.builder().uses(-1).build());
-    }
     /**
      * Gets the active dialog for a player
      */
@@ -365,7 +267,7 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
     @Override
     public Collection<DialogInventory> getDialogs() {
         List<DialogInventory> allDialogs = new ArrayList<>();
-        for (List<DialogInventory> dialogList : this.dialogs.values()) {
+        for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             allDialogs.addAll(dialogList);
         }
         return Collections.unmodifiableCollection(allDialogs);
@@ -376,18 +278,9 @@ public class ZDialogManager extends DialogBuilderManager implements DialogManage
         return this.configManager;
     }
 
-    public Optional<DialogBuilderBody> getDialogBuilder(DialogBodyType type) {
-        return DialogBuilderClass.getDialogBuilder(type);
-    }
-
-    protected List<DialogBody> getDialogBodies(Player player, List<BodyButton> bodyButtons) {
-        return this.buildDialogs(
-                player,
-                bodyButtons,
-                BodyButton::getBodyType,
-                DialogBuilderClass::getDialogBuilder,
-                (builder, button) -> builder.build(player, button)
-        );
+    @Override
+    public Set<String> getDialogNames() {
+        return Set.of();
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {
