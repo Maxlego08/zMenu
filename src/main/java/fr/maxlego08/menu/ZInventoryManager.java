@@ -17,9 +17,6 @@ import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
-import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
-import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.*;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
@@ -64,7 +61,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,19 +75,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final PaginationManager paginationManager = new ZPaginationManager();
 
     private final Set<String> inventoryNames = new HashSet<>();
-    private final Map<String, List<ContainerInventory>> inventories = new HashMap<>();
+    private final Map<String, List<Inventory>> inventories = new HashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
     private final List<InventoryListener> inventoryListeners = new ArrayList<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final ZMenuPlugin plugin;
-    private final Map<UUID, ContainerInventory> currentInventories = new HashMap<>();
+    private final Map<UUID, Inventory> currentInventories = new HashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new HashMap<>();
     private final Map<String, ItemStackSimilar> itemStackSimilarMap = new HashMap<>();
 
     private final Map<UUID, Integer> playerPages = new HashMap<>();
     private final Map<UUID, Integer> playerMaxPages = new HashMap<>();
-    private final Map<String, ContainerInventory> inventoryByName = new HashMap<>();
+    private final Map<String, Inventory> inventoryByName = new HashMap<>();
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
@@ -153,28 +149,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void openInventory(@NonNull Player player, @NonNull Inventory inventory, List<Inventory> oldInventories) {
-        if (inventory instanceof ContainerInventory containerInventory) {
-            this.openInventory(player, containerInventory, 1, oldInventories);
-        } else if (inventory instanceof DialogInventory dialogInventory && this.plugin.getDialogManager() != null) {
-            this.plugin.getDialogManager().openDialog(player, dialogInventory, oldInventories);
-        } else if (inventory instanceof BedrockInventory<?, ?, ?> bedrockInventory && this.plugin.getBedrockManager() != null) {
-            this.plugin.getBedrockManager().openBedrockInventory(player, bedrockInventory, oldInventories);
-        }
-    }
-
-    @Override
-    public ContainerInventory loadInventory(Plugin plugin, File file) throws InventoryException {
+    public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
         return this.loadInventory(plugin, file, ZInventory.class);
     }
 
     @Override
-    public ContainerInventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
+    public Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException {
         return this.loadInventory(plugin, fileName, ZInventory.class);
     }
 
     @Override
-    public ContainerInventory loadInventory(Plugin plugin, String fileName, Class<? extends ContainerInventory> classz) throws InventoryException {
+    public Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException {
 
         File file = new File(plugin.getDataFolder(), fileName);
         if (!file.exists()) {
@@ -185,7 +170,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public ContainerInventory loadInventory(Plugin plugin, File file, Class<? extends ContainerInventory> classz) throws InventoryException {
+    public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
         Optional<YamlFileCacheEntry> yamlFileEntry = YamlFileCache.getYamlFileEntry(file.toPath());
 
@@ -225,10 +210,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         boolean isDeluxeMenu = configuration.contains("menu_title");
 
-        Loader<ContainerInventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);
-        ContainerInventory inventory = loader.load(configuration, "", file, classz, plugin);
+        Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);
+        Inventory inventory = loader.load(configuration, "", file, classz, plugin);
 
-        List<ContainerInventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
+        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
         this.inventoryByName.put(inventory.getFileName().toLowerCase(Locale.ROOT), inventory);
@@ -259,7 +244,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Optional<ContainerInventory> getInventory(String name) {
+    public Optional<Inventory> getInventory(String name) {
         if (name == null) {
             return Optional.empty();
         }
@@ -267,11 +252,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Optional<ContainerInventory> getInventory(Plugin plugin, String name) {
+    public Optional<Inventory> getInventory(Plugin plugin, String name) {
         if (name == null) {
             return Optional.empty();
         }
-        for (ContainerInventory inventory : this.getInventories(plugin)) {
+        for (Inventory inventory : this.getInventories(plugin)) {
             if (inventory.getFileName().equalsIgnoreCase(name)) {
                 return Optional.of(inventory);
             }
@@ -280,28 +265,28 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Optional<ContainerInventory> getInventory(String pluginName, String name) {
+    public Optional<Inventory> getInventory(String pluginName, String name) {
         Optional<Plugin> optional = this.getPluginIgnoreCase(pluginName);
         return optional.isEmpty() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
     }
 
     @Override
-    public Collection<ContainerInventory> getInventories() {
-        List<ContainerInventory> allInventories = new ArrayList<>();
-        for (List<ContainerInventory> inventoryList : this.inventories.values()) {
+    public Collection<Inventory> getInventories() {
+        List<Inventory> allInventories = new ArrayList<>();
+        for (List<Inventory> inventoryList : this.inventories.values()) {
             allInventories.addAll(inventoryList);
         }
         return allInventories;
     }
 
     @Override
-    public Collection<ContainerInventory> getInventories(Plugin plugin) {
+    public Collection<Inventory> getInventories(Plugin plugin) {
         return plugin == null ? new ArrayList<>() : this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
     }
 
     @Override
-    public Optional<ContainerInventory> findInventory(@NotNull String inventoryName) {
-        Optional<ContainerInventory> optional;
+    public Optional<Inventory> findInventory(@NotNull String inventoryName) {
+        Optional<Inventory> optional;
         if (inventoryName.contains(":")) {
             String[] parts = inventoryName.split(":", 2);
             if (parts.length == 2) {
@@ -316,9 +301,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void deleteInventory(ContainerInventory inventory) {
+    public void deleteInventory(Inventory inventory) {
         String pluginName = inventory.getPlugin().getName();
-        List<ContainerInventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
+        List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
         this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
@@ -327,19 +312,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public boolean deleteInventory(String name) {
-        Optional<ContainerInventory> optional = this.getInventory(name);
+        Optional<Inventory> optional = this.getInventory(name);
         if (optional.isPresent()) {
             this.deleteInventory(optional.get());
-            return true;
+            return false;
         }
         return false;
     }
 
     @Override
     public void deleteInventories(Plugin plugin) {
-        List<ContainerInventory> removed = this.inventories.remove(plugin.getName());
+        List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
-            for (ContainerInventory inventory : removed) {
+            for (Inventory inventory : removed) {
                 this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
                 this.inventoryNames.remove(
                         (inventory.getPlugin().getName() + ":" + inventory.getFileName())
@@ -355,24 +340,24 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void openInventory(Player player, ContainerInventory inventory) {
+    public void openInventory(Player player, Inventory inventory) {
         this.openInventory(player, inventory, 1, new ArrayList<>());
     }
 
     @Override
-    public void openInventory(Player player, ContainerInventory inventory, int page) {
+    public void openInventory(Player player, Inventory inventory, int page) {
         this.openInventory(player, inventory, page, new ArrayList<>());
     }
 
     @Override
-    public void openInventoryWithOldInventories(Player player, ContainerInventory inventory, int page) {
+    public void openInventoryWithOldInventories(Player player, Inventory inventory, int page) {
 
         List<Inventory> oldInventories = new ArrayList<>();
 
 
         var topInventory = CompatibilityUtil.getTopInventory(player);
         if (topInventory != null && topInventory.getHolder() instanceof InventoryDefault inventoryDefault) {
-            ContainerInventory fromInventory = inventoryDefault.getMenuInventory();
+            Inventory fromInventory = inventoryDefault.getMenuInventory();
             oldInventories = inventoryDefault.getOldInventories();
             oldInventories.add(fromInventory);
         }
@@ -381,7 +366,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void openInventory(Player player, ContainerInventory inventory, int page, List<Inventory> oldInventories) {
+    public void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories) {
 
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, inventory, page, oldInventories);
         if (Configuration.enableFastEvent) {
@@ -398,7 +383,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void openInventory(Player player, ContainerInventory inventory, int page, Inventory... inventories) {
+    public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
         List<Inventory> oldInventories = new ArrayList<>();
         Collections.addAll(oldInventories, inventories);
         this.openInventory(player, inventory, page, oldInventories);
@@ -576,7 +561,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void openInventory(Player player, Plugin plugin, String inventoryName) {
 
-        Optional<ContainerInventory> optional = this.getInventory(plugin, inventoryName);
+        Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
 
         if (optional.isEmpty()) {
             player.closeInventory();
@@ -594,7 +579,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void openInventory(Player player, String pluginName, String inventoryName, int page) {
-        Optional<ContainerInventory> optional = this.getInventory(pluginName, inventoryName);
+        Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
 
         if (optional.isEmpty()) {
             player.closeInventory();
@@ -608,7 +593,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void openInventory(Player player, String inventoryName, int page) {
 
-        Optional<ContainerInventory> optional = this.getInventory(inventoryName);
+        Optional<Inventory> optional = this.getInventory(inventoryName);
 
         if (optional.isEmpty()) {
             player.closeInventory();
@@ -625,7 +610,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void reloadInventory(ContainerInventory inventory) {
+    public void reloadInventory(Inventory inventory) {
 
         this.deleteInventory(inventory);
 
@@ -650,7 +635,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public ContainerInventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException {
+    public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName) throws InventoryException {
 
         File file = new File(plugin.getDataFolder(), resourceName);
         if (!file.exists()) {
@@ -661,7 +646,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public ContainerInventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends ContainerInventory> classz) throws InventoryException {
+    public Inventory loadInventoryOrSaveResource(Plugin plugin, String resourceName, Class<? extends Inventory> classz) throws InventoryException {
 
         File file = new File(plugin.getDataFolder(), resourceName);
         if (!file.exists()) {
@@ -673,7 +658,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public Optional<ContainerInventory> getCurrentPlayerInventory(Player player) {
+    public Optional<Inventory> getCurrentPlayerInventory(Player player) {
         return Optional.ofNullable(this.currentInventories.getOrDefault(player.getUniqueId(), null));
     }
 
@@ -831,7 +816,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        for (ContainerInventory inventory : this.getInventories()) {
+        for (Inventory inventory : this.getInventories()) {
             OpenWithItem openWithItem = inventory.getOpenWithItem();
             if (openWithItem != null && openWithItem.shouldTrigger(event)) {
                 this.openInventory(event.getPlayer(), inventory);

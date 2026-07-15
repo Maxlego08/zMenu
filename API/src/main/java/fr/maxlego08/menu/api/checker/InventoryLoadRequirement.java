@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.api.checker;
 
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
+import fr.maxlego08.menu.api.Inventory;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
@@ -13,11 +13,11 @@ public class InventoryLoadRequirement {
 
     private final Plugin plugin;
     private final YamlConfiguration configuration;
-    private final Class<? extends ContainerInventory> classz;
+    private final Class<? extends Inventory> classz;
     private final File file;
     private final Map<InventoryRequirementType, List<String>> requirements = new HashMap<>();
 
-    public InventoryLoadRequirement(Plugin plugin, YamlConfiguration configuration, Class<? extends ContainerInventory> classz, File file) {
+    public InventoryLoadRequirement(Plugin plugin, YamlConfiguration configuration, Class<? extends Inventory> classz, File file) {
         this.plugin = plugin;
         this.configuration = configuration;
         this.classz = classz;
@@ -47,7 +47,7 @@ public class InventoryLoadRequirement {
 
     @Contract(pure = true)
     @NotNull
-    public Class<? extends ContainerInventory> getClassz() {
+    public Class<? extends Inventory> getClassz() {
         return this.classz;
     }
 

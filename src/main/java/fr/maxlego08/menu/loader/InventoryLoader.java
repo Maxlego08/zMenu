@@ -1,10 +1,7 @@
 package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.InventoryOption;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.TitleAnimationManager;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import fr.maxlego08.menu.api.button.Button;
@@ -40,7 +37,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-public class InventoryLoader extends ZUtils implements Loader<ContainerInventory> {
+public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
     private final ZMenuPlugin plugin;
 
@@ -50,7 +47,7 @@ public class InventoryLoader extends ZUtils implements Loader<ContainerInventory
     }
 
     @Override
-    public ContainerInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         var nameObject = configuration.get("name", configuration.get("title"));
@@ -344,14 +341,14 @@ public class InventoryLoader extends ZUtils implements Loader<ContainerInventory
     }
 
     @Override
-    public void save(ContainerInventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
         MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
         configuration.set("name", inventory.getName());
         configuration.set("size", inventory.size());
 
-        if (inventory.getFillItemStack() != null) {
-            itemStackLoader.save(inventory.getFillItemStack(), configuration, "fill-item.", file);
+        if (inventory instanceof ContainerInventory containerInventory && containerInventory.getFillItemStack() != null) {
+            itemStackLoader.save(containerInventory.getFillItemStack(), configuration, "fill-item.", file);
         }
 
         // TODO: FINISH THE SAVE METHOD
