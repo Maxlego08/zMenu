@@ -9,7 +9,6 @@ import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
 import fr.maxlego08.menu.item.CustomItemData;
 import fr.maxlego08.menu.mechanics.itemjoin.ItemJoinMechanicFactory;
-import fr.maxlego08.menu.mechanics.onclick.OnClickMechanicFactory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -51,7 +50,6 @@ public class ZItemManager implements ItemManager {
 
     private void loadMechanics(){
         this.registerMechanicFactory(new ItemJoinMechanicFactory(this.menuPlugin));
-        this.registerMechanicFactory(new OnClickMechanicFactory(this.menuPlugin));
     }
 
     @Override
@@ -99,12 +97,8 @@ public class ZItemManager implements ItemManager {
                     for (String mechanicId : mechanicSection.getKeys(false)) {
                         MechanicFactory<?> factory = this.mechanicFactories.get(mechanicId);
                         if (factory != null) {
-                            try {
-                                factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
-                                mechanicIds.add(mechanicId);
-                            } catch (Exception e) {
-                                Logger.info("Error while loading mechanic " + mechanicId + " for item " + itemId + ": " + e.getMessage(), Logger.LogType.ERROR);
-                            }
+                            factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
+                            mechanicIds.add(mechanicId);
                         } else {
                             Logger.info("No MechanicFactory found for mechanicId " + mechanicId + " in item " + itemId, Logger.LogType.WARNING);
                         }

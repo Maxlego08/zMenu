@@ -3,9 +3,9 @@ package fr.maxlego08.menu.requirement.actions;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.engine.InventoryEngine;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -28,7 +28,7 @@ public class BackAction extends Action {
             oldInventories.remove(currentInventory);
 
             inventory.getButtons().forEach(btn -> btn.onBackClick(player, null, inventory, oldInventories, currentInventory, 0));
-            this.inventoryManager.openInventory(player, currentInventory, oldInventories);
+            this.inventoryManager.openInventory(player, currentInventory, 1, oldInventories);
         }
     }
 

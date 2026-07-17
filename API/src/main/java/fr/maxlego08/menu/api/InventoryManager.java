@@ -11,7 +11,6 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
@@ -27,7 +26,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.*;
@@ -50,10 +48,10 @@ public interface InventoryManager extends Listener {
      *
      * @param plugin   The plugin loading the inventory.
      * @param fileName Name of the file where the inventory is located.
-     * @return New {@link ContainerInventory}. Null if the loading of the inventory has been disabled in the config.
+     * @return New {@link Inventory}. Null if the loading of the inventory has been disabled in the config.
      * @throws InventoryException Error loading inventory.
      */
-    ContainerInventory loadInventoryOrSaveResource(Plugin plugin, String fileName) throws InventoryException;
+    Inventory loadInventoryOrSaveResource(Plugin plugin, String fileName) throws InventoryException;
 
     /**
      * Loads an inventory. The plugin will retrieve the resource of
@@ -63,10 +61,10 @@ public interface InventoryManager extends Listener {
      * @param plugin   The plugin loading the inventory.
      * @param fileName Name of the file where the inventory is located.
      * @param classz   Class that will be used for the inventory; by default, it will be ZInventory.
-     * @return New {@link ContainerInventory}. Null if the loading of the inventory has been disabled in the config.
+     * @return New {@link Inventory}. Null if the loading of the inventory has been disabled in the config.
      * @throws InventoryException Error loading inventory.
      */
-    ContainerInventory loadInventoryOrSaveResource(Plugin plugin, String fileName, Class<? extends ContainerInventory> classz) throws InventoryException;
+    Inventory loadInventoryOrSaveResource(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
      * Loads an inventory from a file. You must add the class of
@@ -75,10 +73,10 @@ public interface InventoryManager extends Listener {
      * @param plugin   The plugin loading the inventory.
      * @param fileName Name of the file where the inventory is located.
      * @param classz   Class that will be used for the inventory; by default, it will be ZInventory.
-     * @return New {@link ContainerInventory}.
+     * @return New {@link Inventory}.
      * @throws InventoryException Error loading inventory.
      */
-    ContainerInventory loadInventory(Plugin plugin, String fileName, Class<? extends ContainerInventory> classz) throws InventoryException;
+    Inventory loadInventory(Plugin plugin, String fileName, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
      * Loads an inventory from a file. You must add the class of
@@ -87,10 +85,10 @@ public interface InventoryManager extends Listener {
      * @param plugin The plugin loading the inventory.
      * @param file   File where the inventory is located.
      * @param classz Class that will be used for the inventory; by default, it will be ZInventory.
-     * @return New {@link ContainerInventory}.
+     * @return New {@link Inventory}.
      * @throws InventoryException Error loading inventory.
      */
-    ContainerInventory loadInventory(Plugin plugin, File file, Class<? extends ContainerInventory> classz) throws InventoryException;
+    Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException;
 
     /**
      * Loads an inventory from a file. You must add the class of
@@ -98,10 +96,10 @@ public interface InventoryManager extends Listener {
      *
      * @param plugin   The plugin loading the inventory.
      * @param fileName Name of the file where the inventory is located.
-     * @return New {@link ContainerInventory}.
+     * @return New {@link Inventory}.
      * @throws InventoryException Error loading inventory.
      */
-    ContainerInventory loadInventory(Plugin plugin, String fileName) throws InventoryException;
+    Inventory loadInventory(Plugin plugin, String fileName) throws InventoryException;
 
     /**
      * Loads an inventory from a file. You must add the class of
@@ -109,43 +107,43 @@ public interface InventoryManager extends Listener {
      *
      * @param plugin The plugin loading the inventory.
      * @param file   File where the inventory is located.
-     * @return New {@link ContainerInventory}.
+     * @return New {@link Inventory}.
      * @throws InventoryException Error loading inventory.
      */
-    ContainerInventory loadInventory(Plugin plugin, File file) throws InventoryException;
+    Inventory loadInventory(Plugin plugin, File file) throws InventoryException;
 
     /**
-     * Returns an optional of {@link ContainerInventory} based on its name.
+     * Returns an optional of {@link Inventory} based on its name.
      *
      * @param name Inventory name.
-     * @return Optional of {@link ContainerInventory}.
+     * @return Optional of {@link Inventory}.
      */
-    Optional<ContainerInventory> getInventory(String name);
+    Optional<Inventory> getInventory(String name);
 
     /**
-     * Returns an optional of {@link ContainerInventory} based on its name and the plugin.
+     * Returns an optional of {@link Inventory} based on its name and the plugin.
      *
      * @param plugin The plugin where the inventory comes from.
      * @param name   Inventory name.
-     * @return Optional of {@link ContainerInventory}.
+     * @return Optional of {@link Inventory}.
      */
-    Optional<ContainerInventory> getInventory(Plugin plugin, String name);
+    Optional<Inventory> getInventory(Plugin plugin, String name);
 
     /**
-     * Returns an optional of {@link ContainerInventory} based on its name and the plugin name.
+     * Returns an optional of {@link Inventory} based on its name and the plugin name.
      *
      * @param pluginName The plugin name where the inventory comes from.
      * @param name       Inventory name.
-     * @return Optional of {@link ContainerInventory}.
+     * @return Optional of {@link Inventory}.
      */
-    Optional<ContainerInventory> getInventory(String pluginName, String name);
+    Optional<Inventory> getInventory(String pluginName, String name);
 
     /**
      * Returns a collection of all loaded inventories.
      *
-     * @return Collection of {@link ContainerInventory}.
+     * @return Collection of {@link Inventory}.
      */
-    Collection<ContainerInventory> getInventories();
+    Collection<Inventory> getInventories();
 
     /**
      * Returns a collection of inventories loaded from a specific plugin.
@@ -153,16 +151,16 @@ public interface InventoryManager extends Listener {
      * @param plugin The plugin.
      * @return Inventories.
      */
-    Collection<ContainerInventory> getInventories(Plugin plugin);
+    Collection<Inventory> getInventories(Plugin plugin);
 
-    Optional<ContainerInventory> findInventory(@NotNull String inventoryName);
+    Optional<Inventory> findInventory(@NotNull String inventoryName);
 
     /**
      * Deletes an inventory.
      *
-     * @param inventory {@link ContainerInventory} to be deleted.
+     * @param inventory {@link Inventory} to be deleted.
      */
-    void deleteInventory(ContainerInventory inventory);
+    void deleteInventory(Inventory inventory);
 
     /**
      * Deletes an inventory based on its name.
@@ -187,7 +185,7 @@ public interface InventoryManager extends Listener {
      * @param player    Player to whom the inventory must be opened.
      * @param inventory The inventory to be opened.
      */
-    void openInventory(Player player, ContainerInventory inventory);
+    void openInventory(Player player, Inventory inventory);
 
     /**
      * Opens an inventory for a player on a specific page.
@@ -196,7 +194,7 @@ public interface InventoryManager extends Listener {
      * @param inventory The inventory to be opened.
      * @param page      Inventory page.
      */
-    void openInventory(Player player, ContainerInventory inventory, int page);
+    void openInventory(Player player, Inventory inventory, int page);
 
     /**
      * Opens an inventory for a player on a specific page with old inventories.
@@ -206,7 +204,7 @@ public interface InventoryManager extends Listener {
      * @param page           Inventory page.
      * @param oldInventories List of old inventories.
      */
-    void openInventory(Player player, ContainerInventory inventory, int page, List<Inventory> oldInventories);
+    void openInventory(Player player, Inventory inventory, int page, List<Inventory> oldInventories);
 
     /**
      * Opens an inventory for a player on a specific page with its old inventories.
@@ -215,7 +213,7 @@ public interface InventoryManager extends Listener {
      * @param inventory The inventory to be opened.
      * @param page      Inventory page.
      */
-    void openInventoryWithOldInventories(Player player, ContainerInventory inventory, int page);
+    void openInventoryWithOldInventories(Player player, Inventory inventory, int page);
 
     /**
      * Opens an inventory for a player on a specific page with old inventories.
@@ -225,7 +223,7 @@ public interface InventoryManager extends Listener {
      * @param page        Inventory page.
      * @param inventories List of old inventories.
      */
-    void openInventory(Player player, ContainerInventory inventory, int page, Inventory... inventories);
+    void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
 
     /**
      * Loads buttons. The {@link ButtonLoaderRegisterEvent} event will be
@@ -323,7 +321,7 @@ public interface InventoryManager extends Listener {
      *
      * @param inventory The inventory that needs to be reloaded.
      */
-    void reloadInventory(ContainerInventory inventory);
+    void reloadInventory(Inventory inventory);
 
     /**
      * Sets item name and item meta using Spigot or Adventure API.
@@ -338,7 +336,7 @@ public interface InventoryManager extends Listener {
      * @param player Player whose inventory is checked.
      * @return Optional of inventory.
      */
-    Optional<ContainerInventory> getCurrentPlayerInventory(Player player);
+    Optional<Inventory> getCurrentPlayerInventory(Player player);
 
     /**
      * Unregisters a FastEvent listener.
@@ -627,12 +625,4 @@ public interface InventoryManager extends Listener {
      */
     PaginationManager getPaginationManager();
 
-    /**
-     * Opens an inventory for a player, providing the current inventory and a list of previously opened inventories.
-     * This method is useful for managing inventory navigation, allowing players to return to previous inventories or maintain a history of opened inventories.
-     * @param player
-     * @param inventory can be a {@link ContainerInventory} or a {@link fr.maxlego08.menu.api.inventory.dialog.DialogInventory} or a {@link fr.maxlego08.menu.api.inventory.dialog.DialogInventory} or a {@link fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory}
-     * @param oldInventories List of previously opened inventories, allowing for navigation back to them.
-     */
-    void openInventory(@NonNull Player player, @NonNull Inventory inventory, List<Inventory> oldInventories);
 }

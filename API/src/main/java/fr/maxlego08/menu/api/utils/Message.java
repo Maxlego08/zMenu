@@ -109,6 +109,7 @@ public enum Message implements IMessage {
     DESCRIPTION_INVENTORIES("Open inventories builder"),
     DESCRIPTION_DIALOGS("Open dialogs builder"),
     DESCRIPTION_DIALOGS_OPEN("Allows you to open a dialog"),
+    DESCRIPTION_DIALOGS_CONFIG("Config a dialog"),
     DESCRIPTION_DIALOGS_RELOAD("Allows you to reload dialogs files configuration"),
     DESCRIPTION_BEDROCK("Open bedrock inventory builder"),
     DESCRIPTION_BEDROCK_OPEN("Allows you to open a bedrock inventory"),

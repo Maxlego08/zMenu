@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.1.5"
+version = "1.1.1.6"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))

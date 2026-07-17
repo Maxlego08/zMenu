@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
@@ -64,14 +64,14 @@ public class CommandMenuGiveOpenItem extends SubCommand<ZMenuPlugin> {
         }
 
         InventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
-        Optional<ContainerInventory> optional = this.inventoryManager.findInventory(inventoryName);
+        Optional<Inventory> optional = this.inventoryManager.findInventory(inventoryName);
 
         if (optional.isEmpty()) {
             MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
             return CommandResultType.SUCCESS;
         }
 
-        ContainerInventory inventory = optional.get();
+        Inventory inventory = optional.get();
         if (inventory.getOpenWithItem() == null) {
             MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ITEM_ERROR, "%name%", inventoryName);
             return CommandResultType.SUCCESS;

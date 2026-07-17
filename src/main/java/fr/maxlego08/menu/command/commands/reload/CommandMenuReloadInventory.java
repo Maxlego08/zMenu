@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.command.commands.reload;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
@@ -37,14 +37,14 @@ public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
 
         if (optionalArgument.isPresent()) {
             String inventoryName = optionalArgument.get();
-            Optional<ContainerInventory> optional = inventoryManager.findInventory(inventoryName);
+            Optional<Inventory> optional = inventoryManager.findInventory(inventoryName);
 
             if (optional.isEmpty()) {
                 MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", inventoryName);
                 return CommandResultType.SUCCESS;
             }
 
-            ContainerInventory inventory = optional.get();
+            Inventory inventory = optional.get();
             this.plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
                 return !inventoryDefault.isClose() && inventoryDefault.getMenuInventory().equals(inventory);
