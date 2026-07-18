@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,14 +20,17 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class ItemJoinMechanicListener extends MechanicListener {
     private final ItemJoinMechanicFactory itemJoinMechanicFactory;
     private final ItemManager itemManager;
+    private final MenuPlugin plugin;
 
     public ItemJoinMechanicListener(ItemJoinMechanicFactory itemJoinMechanicFactory, MenuPlugin plugin) {
         this.itemJoinMechanicFactory = itemJoinMechanicFactory;
         this.itemManager = plugin.getItemManager();
+        this.plugin = plugin;
     }
 
     /**
@@ -61,6 +65,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
     @EventHandler
     public void onConnect(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+
         if (!player.hasPlayedBefore()) {
             for (Map.Entry<String, ItemJoinMechanic> entry : this.itemJoinMechanicFactory.getAllMechanics()) {
                 ItemJoinMechanic mechanic = entry.getValue();
@@ -68,6 +73,27 @@ public class ItemJoinMechanicListener extends MechanicListener {
                     this.itemManager.giveItem(player, entry.getKey());
                 }
             }
+        }
+
+        this.grantFirstWorldJoinItems(player, player.getWorld().getName());
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event) {
+        this.grantFirstWorldJoinItems(event.getPlayer(), event.getPlayer().getWorld().getName());
+    }
+
+    private void grantFirstWorldJoinItems(Player player, String worldName) {
+        Set<String> visitedWorlds = this.plugin.getStorageManager().getVisitedWorlds(player.getUniqueId());
+
+        for (Map.Entry<String, ItemJoinMechanic> entry : this.itemJoinMechanicFactory.getAllMechanics()) {
+            ItemJoinMechanic mechanic = entry.getValue();
+            if (!mechanic.hasFirstWorldJoinWorlds()) continue;
+            if (!mechanic.getFirstWorldJoinWorlds().contains(worldName)) continue;
+            if (visitedWorlds.contains(worldName)) continue;
+
+            this.itemManager.giveItem(player, entry.getKey());
+            this.plugin.getStorageManager().markWorldVisited(player.getUniqueId(), worldName);
         }
     }
 
