@@ -11,7 +11,46 @@ loader: fr.maxlego08.menu.ZMenuPluginLoader
 folia-supported: true
 dependencies:
   server:
+    CraftEngine:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    Denizen:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    Shopkeepers:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    zItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
     Oraxen:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    eco:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    Nexo:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    NextGens:
+      required: false
+      join-classpath: true
+
+    Nova:
       load: BEFORE
       required: false
       join-classpath: true

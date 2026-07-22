@@ -22,6 +22,6 @@ public class CraftEngineLoader extends MaterialLoader {
     public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
         BukkitItemDefinition custom = CraftEngineItems.byId(materialString);
         if (custom == null) return null;
-        return custom.buildBukkitItem();
+        return custom.buildBukkitItem(player);
     }
 }
