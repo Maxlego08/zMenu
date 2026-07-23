@@ -35,6 +35,7 @@ public class PacketUtils implements InventoryListener, PacketManager {
 
     private PacketAnimationListener packetAnimationListener;
     private PacketTitleListener packetTitleListener;
+    private PacketEventClickLimiterListener packetEventClickLimiterListener;
 
     public static final Map<UUID, FakeInventory> fakeContents = new HashMap<>();
     private final MenuPlugin plugin;
@@ -57,7 +58,15 @@ public class PacketUtils implements InventoryListener, PacketManager {
         eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
         eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW);
         if (Configuration.enablePacketEventClickLimiter){
-            eventManager.registerListener(new PacketEventClickLimiterListener(), PacketListenerPriority.HIGH);
+            this.packetEventClickLimiterListener = new PacketEventClickLimiterListener();
+            eventManager.registerListener(this.packetEventClickLimiterListener, PacketListenerPriority.HIGH);
+        }
+    }
+
+    @Override
+    public void onPostEnable() {
+        if (this.packetEventClickLimiterListener != null) {
+            this.plugin.getInventoryManager().registerInventoryListener(this.packetEventClickLimiterListener);
         }
     }
 

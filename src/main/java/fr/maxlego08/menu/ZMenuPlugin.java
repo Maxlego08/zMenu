@@ -327,6 +327,10 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
         if (this.isActive(Plugins.PACKETEVENTS)) this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
 
+        if (this.packetManager != null) {
+            this.packetManager.onPostEnable();
+        }
+
         this.postEnable();
     }
 

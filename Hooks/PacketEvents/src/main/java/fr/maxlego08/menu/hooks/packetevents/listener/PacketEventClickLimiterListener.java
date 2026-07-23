@@ -4,18 +4,22 @@ import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.BaseInventory;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class PacketEventClickLimiterListener implements PacketListener {
-    private final Map<UUID, Long> lastClickTimes = new HashMap<>();
+public class PacketEventClickLimiterListener implements PacketListener, InventoryListener {
+    private final Map<UUID, Long> lastClickTimes = new ConcurrentHashMap<>();
+    private final Set<UUID> clickLimitedPlayers = ConcurrentHashMap.newKeySet();
+
+    public PacketEventClickLimiterListener() {
+    }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
@@ -24,20 +28,16 @@ public class PacketEventClickLimiterListener implements PacketListener {
         if (packetType == PacketType.Play.Client.CLICK_WINDOW) {
             Player player = event.getPlayer();
             if (player == null) return;
-            Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-            try {
-                if (topInventory != null && topInventory.getHolder() instanceof BaseInventory baseInventory && baseInventory.isClickLimiterEnabled()) {
-                    UUID playerUniqueId = player.getUniqueId();
+            UUID playerUniqueId = player.getUniqueId();
 
-                    long currentTime = System.currentTimeMillis();
-                    Long lastClickTime = this.lastClickTimes.get(playerUniqueId);
-                    if (lastClickTime != null && (currentTime - lastClickTime) < Configuration.packetEventClickLimiterMilliseconds) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                    this.lastClickTimes.put(playerUniqueId, currentTime);
+            if (this.clickLimitedPlayers.contains(playerUniqueId)) {
+                long currentTime = System.currentTimeMillis();
+                Long lastClickTime = this.lastClickTimes.get(playerUniqueId);
+                if (lastClickTime != null && (currentTime - lastClickTime) < Configuration.packetEventClickLimiterMilliseconds) {
+                    event.setCancelled(true);
+                    return;
                 }
-            } catch (Exception ignored) {
+                this.lastClickTimes.put(playerUniqueId, currentTime);
             }
 
         } else if (packetType == PacketType.Play.Client.CLOSE_WINDOW) {
@@ -45,5 +45,17 @@ public class PacketEventClickLimiterListener implements PacketListener {
             UUID playerUniqueId = player.getUniqueId();
             this.lastClickTimes.remove(playerUniqueId);
         }
+    }
+
+    @Override
+    public void onInventoryPostOpen(Player player, BaseInventory inventory) {
+        if (inventory.isClickLimiterEnabled()) {
+            this.clickLimitedPlayers.add(player.getUniqueId());
+        }
+    }
+
+    @Override
+    public void onInventoryClose(Player player, BaseInventory inventory) {
+        this.clickLimitedPlayers.remove(player.getUniqueId());
     }
 }
