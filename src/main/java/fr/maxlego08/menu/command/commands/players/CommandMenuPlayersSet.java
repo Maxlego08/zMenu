@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
 import fr.maxlego08.menu.players.ZData;
 import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
 import fr.robie.paperdispatch.cache.OfflinePlayerCache;
@@ -26,7 +27,7 @@ public class CommandMenuPlayersSet extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_PLAYERS_SET.getPermission());
 
         this.addRequiredArgument(Commands.argument("player", new OfflinePlayerArgument()));
-        this.addRequiredArgument(Commands.argument("key", StringArgumentType.string()).suggests((ctx, builder) -> {
+        this.addRequiredArgument(Commands.argument("key", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
             UUID targetId = ctx.getArgument("player", UUID.class);
             this.plugin.getDataManager().getKeys(targetId).stream().filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);
