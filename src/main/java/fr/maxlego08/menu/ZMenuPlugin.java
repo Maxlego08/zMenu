@@ -446,6 +446,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
             }
         }
 
+        OfflinePlayerCache.uninstall(this);
+
         this.itemManager.unloadListeners();
 
         this.getServer().getServicesManager().unregisterAll(this);
