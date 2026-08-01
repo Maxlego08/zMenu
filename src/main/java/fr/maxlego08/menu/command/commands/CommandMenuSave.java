@@ -38,7 +38,7 @@ public class CommandMenuSave extends SubCommand<ZMenuPlugin> {
 
         InventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
         String name = commandDispatch.getArgument("item-name", String.class);
-        SaveType type = commandDispatch.getArgument("type", SaveType.class);
+        SaveType type = commandDispatch.getArgument("type", SaveType.class, SaveType.BASE64);
 
         ItemStack itemStack = commandDispatch.getSenderAsPlayer().getItemInHand();
         if (itemStack.getType() == Material.AIR) {
