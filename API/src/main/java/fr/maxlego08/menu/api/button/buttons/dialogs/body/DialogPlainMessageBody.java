@@ -11,16 +11,21 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class DialogPlainMessageBody extends VanillaDialogBody {
     private final List<String> messages;
+    private final Map<String, List<String>> localizedMessages;
 
-    public DialogPlainMessageBody(List<String> messages, int width) {
+    public DialogPlainMessageBody(List<String> messages, int width, @Nullable Map<String, List<String>> localizedMessages) {
         super(DialogBodyType.PLAIN_MESSAGE, width);
         this.messages = messages;
+        this.localizedMessages = localizedMessages != null ? localizedMessages : Map.of();
     }
 
     @Override
@@ -30,11 +35,10 @@ public class DialogPlainMessageBody extends VanillaDialogBody {
         PaperMetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin plugin = context.getPlugin();
 
-        if (this.messages.isEmpty()) {
-            return null;
-        }
+        List<String> localizedMessageList = this.localizedMessages.getOrDefault(player.getLocale(), this.messages);
+
         List<Component> components = new ArrayList<>();
-        for (String message : this.messages) {
+        for (String message : localizedMessageList) {
             String parsedMessage = plugin.parse(player, placeholders.parse(message));
             components.add(metaUpdater.getComponent(parsedMessage));
         }
