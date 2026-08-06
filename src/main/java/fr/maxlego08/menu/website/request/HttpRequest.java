@@ -10,7 +10,10 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -130,20 +133,20 @@ public class HttpRequest {
             lastCode = result.code;
 
             if (result.success) {
-                return new DownloadResult(true, result.code);
+                return new DownloadResult(true, result.code, result.headers);
             }
             if (!isRetryable(result.code) || attempt == MAX_DOWNLOAD_ATTEMPTS) {
-                return new DownloadResult(false, result.code);
+                return new DownloadResult(false, result.code, result.headers);
             }
 
             try {
                 Thread.sleep(backoffMillis(attempt, result.retryAfterMs));
             } catch (InterruptedException interrupted) {
                 Thread.currentThread().interrupt();
-                return new DownloadResult(false, result.code);
+                return new DownloadResult(false, result.code, result.headers);
             }
         }
-        return new DownloadResult(false, lastCode);
+        return new DownloadResult(false, lastCode, Collections.emptyMap());
     }
 
     /**
@@ -177,8 +180,13 @@ public class HttpRequest {
             if (code < 200 || code >= 300) {
                 long retryAfterMs = parseRetryAfterMs(connection);
                 drainQuietly(connection.getErrorStream());
-                return new Attempt(false, code, retryAfterMs);
+                return new Attempt(false, code, retryAfterMs, Collections.emptyMap());
             }
+
+            // Read the headers BEFORE disconnect(): the website ships out-of-band instructions there
+            // (e.g. X-Zmenu-Open-For), which must travel on this authenticated channel rather than
+            // through the untrusted relay.
+            Map<String, String> headers = collectHeaders(connection);
 
             try (InputStream inputStream = connection.getInputStream(); FileOutputStream fileOutputStream = new FileOutputStream(fileOut)) {
                 byte[] buffer = new byte[4096];
@@ -188,14 +196,14 @@ public class HttpRequest {
                 }
             }
             // FileOutputStream is now closed (try-with-resources) - safe for the caller's atomic move.
-            return new Attempt(true, code, 0L);
+            return new Attempt(true, code, 0L, headers);
 
         } catch (Exception exception) {
             if (Configuration.enableDebug) {
                 exception.printStackTrace();
             }
             // Connect/read timeout, connection reset, DNS failure, etc. - a retryable transport error.
-            return new Attempt(false, -1, 0L);
+            return new Attempt(false, -1, 0L, Collections.emptyMap());
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -227,6 +235,24 @@ public class HttpRequest {
         }
     }
 
+    /**
+     * Snapshot of the response headers, keyed lower-case (HTTP header names are case-insensitive, and a
+     * proxy is free to re-case them). Only the first value of each header is kept - none of the headers
+     * we read are repeatable. The status line (whose key is null) is skipped.
+     */
+    private static Map<String, String> collectHeaders(HttpURLConnection connection) {
+        Map<String, String> headers = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
+            String key = entry.getKey();
+            List<String> values = entry.getValue();
+            if (key == null || values == null || values.isEmpty()) {
+                continue;
+            }
+            headers.put(key.toLowerCase(Locale.ROOT), values.get(0));
+        }
+        return headers;
+    }
+
     private static void drainQuietly(InputStream stream) {
         if (stream == null) {
             return;
@@ -241,13 +267,21 @@ public class HttpRequest {
     }
 
     /**
-         * Final outcome of a download: whether it succeeded and the last HTTP status code seen
-         * (or -1 for a transport-level error such as a timeout or connection reset).
+     * Final outcome of a download: whether it succeeded, the last HTTP status code seen (or -1 for a
+     * transport-level error such as a timeout or connection reset), and the response headers of that
+     * last attempt (lower-cased keys; empty on a transport error).
+     */
+    public record DownloadResult(boolean success, int code, Map<String, String> headers) {
+
+        /**
+         * A response header, case-insensitively, or null when absent.
          */
-        public record DownloadResult(boolean success, int code) {
+        public String header(String name) {
+            return this.headers == null || name == null ? null : this.headers.get(name.toLowerCase(Locale.ROOT));
+        }
     }
 
-    private record Attempt(boolean success, int code, long retryAfterMs) {
+    private record Attempt(boolean success, int code, long retryAfterMs, Map<String, String> headers) {
     }
 
 }

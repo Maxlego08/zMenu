@@ -50,6 +50,10 @@
   (no argument starts a secure device-authorization flow - approve the shown code on the website), open the
   live link with `/zmenu connect`, and close it with `/zmenu disconnect`. Once connected, clicking
   "Sync to Server" on the web builder reloads the inventory on your server live, with no restart.
+    - **Open the menu in game after a sync**: when the option is enabled on the website, the server opens
+      the freshly reloaded inventory for the configured player (nothing happens if they are offline - the
+      console says so). The player name is read from the authenticated download response
+      (`X-Zmenu-Open-For`), never from the relay notification, which only carries an `open` flag.
 - Added permissions `zmenu.connect` and `zmenu.disconnect`.
 - **Custom item `on-click` mechanic**: custom items (defined in `items/*.yml`) can now run zMenu actions when their holder left/right-clicks. Configure it under `mechanics.on-click` with `cooldown` (seconds), `cancel-event`, `click-target` (`air` / `block` / `both`), `click-types` (`LEFT`, `RIGHT`, `SHIFT_LEFT`, `SHIFT_RIGHT`), `click-requirements` and `actions`.
 - **Dynamic dialog buttons**: two new dialog button types repeat a body or input element over a numeric range — `dialog-dynamic-body-button` (inside `body:`) and `dialog-dynamic-input-button` (inside `inputs:`), each with placeholder-aware `start` / `end` bounds. The `%index%` placeholder resolves to the current iteration, and each generated input value is available as `%<button-name>_<index>%` (e.g. `%my_input_1%`). See `dialogs/dynamic-dialog-example.yml`.

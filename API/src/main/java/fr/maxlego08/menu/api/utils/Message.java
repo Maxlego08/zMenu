@@ -191,6 +191,8 @@ public enum Message implements IMessage {
     WEBSITE_SYNC_NOT_CONNECTED("&cThe live sync is not active."),
     WEBSITE_SYNC_APPLIED("&aInventory &f%name%&a was synced and reloaded from the website."),
     WEBSITE_SYNC_APPLY_ERROR("&cFailed to apply the synced inventory &f%name%&c (rolled back)."),
+    WEBSITE_SYNC_OPENED("&aInventory &f%name%&a was opened for &f%player%&a."),
+    WEBSITE_SYNC_OPEN_OFFLINE("&e%player%&e is not online, the synced inventory &f%name%&e was not opened."),
     WEBSITE_DOWNLOAD_ERROR_TYPE("&cThe link is not a yml file."),
     WEBSITE_DOWNLOAD_ERROR_NAME("&cCannot find file name."),
     WEBSITE_DOWNLOAD_ERROR_CONSOLE("&cAn error has occurred, look at the console."),

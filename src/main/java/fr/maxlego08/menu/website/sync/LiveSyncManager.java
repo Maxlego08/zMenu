@@ -15,6 +15,7 @@ import fr.maxlego08.menu.website.request.HttpRequest;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -29,10 +30,15 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 public class LiveSyncManager extends ZUtils {
 
     private static final String EVENT_SYNC = "inventory.sync";
+    /** Carries the player an inventory must be opened for, on the AUTHENTICATED download (never the relay). */
+    private static final String OPEN_FOR_HEADER = "X-Zmenu-Open-For";
+    /** Same set the website validates: Java names, plus the '.' prefix / spaces a Bedrock name can carry. */
+    private static final Pattern OPEN_TARGET_PATTERN = Pattern.compile("[A-Za-z0-9_ .\\-]{1,32}");
     private static final long MAX_YAML_BYTES = 512L * 1024L;
     private static final long DEFAULT_PAIR_TTL_SECONDS = 600L;
     private static final int CONNECTION_LOST_TIMEOUT_SECONDS = 30;
@@ -622,6 +628,11 @@ public class LiveSyncManager extends ZUtils {
         String fileName = data.get("file_name").getAsString();
         String hash = data.get("hash").getAsString();
 
+        // "Open the menu in game once reloaded". The relay only ever carries the FLAG - the player it
+        // opens for is read from the authenticated download response (X-Zmenu-Open-For), so the relay
+        // never sees a player name and cannot choose the target itself.
+        boolean open = this.asBoolean(data, "open");
+
         // Defence in depth: never let a remote file_name escape the inventories directory.
         if (fileName == null || !fileName.matches("[A-Za-z0-9_\\- ]{1,64}")) {
             this.warning("Ignored a sync notification: invalid file name '" + fileName + "'.");
@@ -640,13 +651,28 @@ public class LiveSyncManager extends ZUtils {
         this.log("Received sync notification for inventory '" + displayName + "' (id " + inventoryId + ").");
 
         // Idempotency key includes the path so the same name in two folders is tracked separately.
+        // Skipped when the sync must also OPEN the menu: re-clicking "Sync" with nothing changed is
+        // exactly how you ask for the menu to be (re)opened, and the target player only travels on the
+        // download response - so that download has to happen.
         String hashKey = (subPath + "/" + fileName).toLowerCase(Locale.ROOT);
-        if (hash != null && hash.equalsIgnoreCase(this.lastAppliedHash.get(hashKey))) {
+        if (!open && hash != null && hash.equalsIgnoreCase(this.lastAppliedHash.get(hashKey))) {
             this.log("Inventory '" + displayName + "' is already up to date, nothing to do.");
             return;
         }
 
-        this.downloadAndApply(inventoryId, fileName, subPath, hash);
+        this.downloadAndApply(inventoryId, fileName, subPath, hash, open);
+    }
+
+    /**
+     * Read a boolean member defensively: a relay is untrusted input, and Gson throws on a member that is
+     * not the expected primitive.
+     */
+    private boolean asBoolean(JsonObject data, String key) {
+        try {
+            return data.has(key) && !data.get(key).isJsonNull() && data.get(key).getAsBoolean();
+        } catch (Exception exception) {
+            return false;
+        }
     }
 
     /**
@@ -656,8 +682,10 @@ public class LiveSyncManager extends ZUtils {
      * @param fileName    The name of the inventory file.
      * @param subPath     The sub-path of the inventory file.
      * @param hash        The hash of the inventory file.
+     * @param open        Whether the website asked for the reloaded menu to be opened in game; the player
+     *                    it opens for comes from the download's {@code X-Zmenu-Open-For} header.
      */
-    private void downloadAndApply(int inventoryId, String fileName, String subPath, String hash) {
+    private void downloadAndApply(int inventoryId, String fileName, String subPath, String hash, boolean open) {
         File tmpDir = new File(this.plugin.getDataFolder(), "live-sync");
         if (!tmpDir.exists()) {
             tmpDir.mkdirs();
@@ -731,8 +759,32 @@ public class LiveSyncManager extends ZUtils {
                 return;
             }
 
-            this.reloadOnMainThread(fileName, subPath, target, backup, hash);
+            // Read only when the notification asked for it: the header is present on every download of a
+            // user who enabled the option (folder syncs included), and only the flag makes it actionable.
+            String openFor = open ? this.readOpenTarget(result) : null;
+
+            this.reloadOnMainThread(fileName, subPath, target, backup, hash, openFor);
         });
+    }
+
+    /**
+     * The player a freshly synced inventory must be opened for, taken from the authenticated download
+     * response. Re-validated here (defence in depth) with the same character set the website enforces, so
+     * a rogue intermediary cannot smuggle anything odd into a player lookup.
+     */
+    private String readOpenTarget(HttpRequest.DownloadResult result) {
+        String value = result.header(OPEN_FOR_HEADER);
+        if (value == null) {
+            this.warning("The sync asked to open the menu in game, but the website sent no player name (" + OPEN_FOR_HEADER + " missing).");
+            return null;
+        }
+
+        String name = value.trim();
+        if (!OPEN_TARGET_PATTERN.matcher(name).matches()) {
+            this.warning("Ignored the open-after-sync request: invalid player name '" + name + "'.");
+            return null;
+        }
+        return name;
     }
 
     // ------------------------------------------------------------------ //
@@ -773,8 +825,9 @@ public class LiveSyncManager extends ZUtils {
      * @param target   The target file.
      * @param backup   The backup file.
      * @param hash     The hash of the inventory file.
+     * @param openFor  The player the reloaded inventory must be opened for, or null.
      */
-    private void reloadOnMainThread(String fileName, String subPath, File target, File backup, String hash) {
+    private void reloadOnMainThread(String fileName, String subPath, File target, File backup, String hash, String openFor) {
         String label = subPath.isEmpty() ? fileName : subPath + "/" + fileName;
         this.plugin.getScheduler().runNextTick(w -> {
             InventoryManager inventoryManager = this.plugin.getInventoryManager();
@@ -809,10 +862,58 @@ public class LiveSyncManager extends ZUtils {
                 this.lastAppliedHash.put((subPath + "/" + fileName).toLowerCase(Locale.ROOT), hash);
                 this.success("Inventory '" + label + "' synced and reloaded.");
                 message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLIED, "%name%", label);
+
+                // Only after a successful reload: opening the previous version would be misleading, and
+                // opening a rolled-back one plainly wrong.
+                if (openFor != null) {
+                    this.openForPlayer(inventoryManager, target, label, openFor);
+                }
             } else {
                 this.rollback(inventoryManager, target, backup);
                 this.warning("Rolled back '" + label + "' to the previous version.");
                 message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", label);
+            }
+        });
+    }
+
+    /**
+     * Force the freshly reloaded inventory open for a player, the way {@code /zmenu open <menu> <player>}
+     * would. Nothing is reported back to the website (the relay is one-way), so an offline player is only
+     * a console warning.
+     *
+     * @param inventoryManager The inventory manager.
+     * @param target           The file that was just written - the inventory is resolved from it, not from
+     *                         its bare name, which is ambiguous across subfolders.
+     * @param label            The human-readable path/name, for logging.
+     * @param playerName       The exact name of the player to open it for.
+     */
+    private void openForPlayer(InventoryManager inventoryManager, File target, String label, String playerName) {
+        Player player = Bukkit.getPlayerExact(playerName);
+        if (player == null || !player.isOnline()) {
+            this.warning("Could not open '" + label + "': " + playerName + " is not online.");
+            message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_OPEN_OFFLINE, "%name%", label, "%player%", playerName);
+            return;
+        }
+
+        Optional<Inventory> optional = this.findInventoryByFile(inventoryManager, target);
+        if (optional.isEmpty()) {
+            this.warning("Could not open '" + label + "' for " + player.getName() + ": the inventory is not loaded.");
+            return;
+        }
+
+        Inventory inventory = optional.get();
+        // Folia: anything touching a player must run on that player's region thread (the reload itself
+        // runs on the global one).
+        this.plugin.getScheduler().runAtEntity(player, w -> {
+            try {
+                inventoryManager.openInventory(player, inventory);
+                this.success("Inventory '" + label + "' opened for " + player.getName() + ".");
+                message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_OPENED, "%name%", label, "%player%", player.getName());
+            } catch (Exception exception) {
+                this.severe("Failed to open '" + label + "' for " + player.getName() + ": " + exception.getMessage() + ".");
+                if (Configuration.enableDebug) {
+                    exception.printStackTrace();
+                }
             }
         });
     }
