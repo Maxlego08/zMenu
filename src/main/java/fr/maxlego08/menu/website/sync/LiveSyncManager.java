@@ -45,6 +45,12 @@ public class LiveSyncManager extends ZUtils {
     private static final int MAX_RECONNECT_ATTEMPTS = 10;
     private static final long RECONNECT_BASE_SECONDS = 5L;
     private static final long MAX_RECONNECT_DELAY_SECONDS = 60L;
+    /**
+     * Delay before the link is reopened by itself at startup. Long enough for the server to finish
+     * booting (and for {@link #validateStoredLink()} to have cleared a revoked token), short enough that
+     * "restart the server, then sync from the website" just works.
+     */
+    private static final long AUTO_CONNECT_DELAY_SECONDS = 10L;
 
     private final ZMenuPlugin plugin;
     private final String apiUrl;
@@ -101,6 +107,48 @@ public class LiveSyncManager extends ZUtils {
         // On startup, make sure a stored link is still valid server-side; a revoked/expired token
         // forces a local unlink so we never keep a dead link around.
         this.validateStoredLink();
+
+        // ...then reopen the live link by itself. A linked server that has to be told /zmenu website
+        // connect after every restart is just a broken feature: the website reports "server not
+        // connected" until someone logs in and types it.
+        this.scheduleAutoConnect();
+    }
+
+    /**
+     * Reopen the live link shortly after startup when this server is already linked.
+     *
+     * Scheduled independently of {@link #validateStoredLink()} rather than chained onto its callback, so
+     * the timing never depends on how fast (or whether) the website answers. The delayed task re-reads
+     * {@link #isLinked()}: if the validation meanwhile cleared a revoked token, nothing happens; and if
+     * the validation is still in flight with a token that turns out to be dead, the relay answers
+     * `unauthorized` and {@link #handleRelayError} unlinks — the same outcome, one round-trip later.
+     *
+     * No {@code /connection} call here: the validation above already refreshed the relay url and
+     * connection id, and the token is authenticated by the relay's own introspection anyway.
+     */
+    private void scheduleAutoConnect() {
+        if (!this.isLinked()) {
+            return;
+        }
+
+        if (!Configuration.enableWebsiteAutoConnect) {
+            this.log("Live sync auto-connect is disabled (enable-website-auto-connect), run /zmenu website connect to open the link.");
+            return;
+        }
+
+        this.log("Live sync link found, connecting in " + AUTO_CONNECT_DELAY_SECONDS + "s...");
+
+        this.plugin.getScheduler().runLater(() -> {
+            if (!this.isLinked() || this.connected || this.connecting) {
+                return;
+            }
+            this.shouldStayConnected = true;
+            this.reconnectAttempts = 0;
+            this.connecting = true;
+            // Off-thread like every other openSocket() call site: the socket handshake must not run on
+            // the server thread.
+            this.plugin.getScheduler().runAsync(w -> this.openSocket(Bukkit.getConsoleSender()));
+        }, AUTO_CONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     /**

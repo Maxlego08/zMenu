@@ -50,6 +50,9 @@
   (no argument starts a secure device-authorization flow - approve the shown code on the website), open the
   live link with `/zmenu connect`, and close it with `/zmenu disconnect`. Once connected, clicking
   "Sync to Server" on the web builder reloads the inventory on your server live, with no restart.
+    - **Auto-connect at startup**: a server that is already linked reopens its live channel by itself
+      10 seconds after the plugin enables - `/zmenu website connect` is no longer needed after a restart.
+      Set `enable-website-auto-connect: false` in `config.yml` to keep opening it by hand.
     - **Open the menu in game after a sync**: when the option is enabled on the website, the server opens
       the freshly reloaded inventory for the configured player (nothing happens if they are offline - the
       console says so). The player name is read from the authenticated download response

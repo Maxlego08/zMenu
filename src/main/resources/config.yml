@@ -207,6 +207,11 @@ cache-offline-player: 300
 # Dont enable that, for now its only for development purposes
 DEV-ONLY-DONT-ENABLE-THIS: false
 
+# Reopen the website live-sync link automatically at startup (a few seconds after the plugin enables),
+# when this server is already linked to an account.
+# Set to false if you prefer to open it by hand with /zmenu website connect after every restart.
+enable-website-auto-connect: true
+
 # API URL for inventory builder
 # Do not change this value, leave the default URL; otherwise the link with the site will not work
 api-url: "https://minecraft-inventory-builder.com/api/v2/"
