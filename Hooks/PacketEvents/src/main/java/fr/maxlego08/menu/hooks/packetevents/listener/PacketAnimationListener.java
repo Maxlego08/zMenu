@@ -13,19 +13,18 @@ import fr.maxlego08.menu.api.engine.BaseInventory;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.hooks.packetevents.animation.PacketPlayerTitleAnimation;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketAnimationListener implements PacketListener {
-    private final Map<UUID, PlayerAnimationData> playerAnimationData = new HashMap<>();
+    private final Map<UUID, PlayerAnimationData> playerAnimationData = new ConcurrentHashMap<>();
     private final MenuPlugin plugin;
 
     public PacketAnimationListener(MenuPlugin plugin) {
@@ -57,7 +56,7 @@ public class PacketAnimationListener implements PacketListener {
         }
     }
 
-    private void runInventoryTask(@NotNull Player player,@NotNull Inventory inventory,@NotNull Runnable task) {
+    private void runInventoryTask(@NotNull Player player, @NotNull Runnable task) {
         if (Bukkit.isPrimaryThread()) {
             task.run();
             return;
@@ -67,24 +66,7 @@ public class PacketAnimationListener implements PacketListener {
             return;
         }
 
-        Location location = this.resolveSafeLocation(inventory);
-
-        if (location != null) {
-            this.plugin.getScheduler().runAtLocation(location, w -> task.run());
-        } else {
-            this.plugin.getScheduler().runAtEntity(player, w -> task.run());
-        }
-    }
-
-    private Location resolveSafeLocation(@NotNull Inventory inventory) {
-        try {
-            Location location = inventory.getLocation();
-            if (location != null && location.getWorld() != null) {
-                return location;
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
+        this.plugin.getScheduler().runAtEntity(player, w -> task.run());
     }
 
     @Override
@@ -102,12 +84,10 @@ public class PacketAnimationListener implements PacketListener {
                 if (data != null && data.getContainerId() == containerId) {
                     return;
                 }
-                Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-                if (topInventory == null) {
-                    return;
-                }
 
                 Runnable task = () -> {
+                    Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+                    if (topInventory == null) return;
                     InventoryHolder holder = topInventory.getHolder();
                     if (holder instanceof BaseInventory baseInventory) {
                         TitleAnimation titleAnimation = baseInventory.getTitleAnimation();
@@ -124,17 +104,15 @@ public class PacketAnimationListener implements PacketListener {
                     }
                 };
 
-                this.runInventoryTask(player, topInventory, task);
+                this.runInventoryTask(player, task);
             }
             case PacketType.Play.Server.CLOSE_WINDOW -> {
                 Player player = event.getPlayer();
                 if (player == null) return;
-                Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-                if (topInventory == null) {
-                    return;
-                }
 
                 Runnable task = () -> {
+                    Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+                    if (topInventory == null) return;
                     InventoryHolder holder = topInventory.getHolder();
                     if (holder instanceof BaseInventory) {
                         UUID playerUniqueId = player.getUniqueId();
@@ -142,7 +120,7 @@ public class PacketAnimationListener implements PacketListener {
                     }
                 };
 
-                this.runInventoryTask(player, topInventory, task);
+                this.runInventoryTask(player, task);
             }
             case PacketType.Play.Server.WINDOW_ITEMS -> {
                 WrapperPlayServerWindowItems wrapper = new WrapperPlayServerWindowItems(event);
@@ -152,23 +130,15 @@ public class PacketAnimationListener implements PacketListener {
 
                 int windowId = wrapper.getWindowId();
 
-                PlayerAnimationData data = this.playerAnimationData.get(playerUniqueId);
-                if (data != null && data.getWindowId() == windowId) {
+                PlayerAnimationData data = this.playerAnimationData.computeIfAbsent(playerUniqueId, k -> new PlayerAnimationData(0));
+                if (data.getWindowId() == windowId) {
                     return;
-                }
-
-                if (data == null) {
-                    data = new PlayerAnimationData(0);
-                    this.playerAnimationData.put(playerUniqueId, data);
                 }
                 data.setWindowId(windowId);
 
-                Inventory topInventory = CompatibilityUtil.getTopInventory(player);
-                if (topInventory == null) {
-                    return;
-                }
-
                 Runnable task = () -> {
+                    Inventory topInventory = CompatibilityUtil.getTopInventory(player);
+                    if (topInventory == null) return;
                     InventoryHolder holder = topInventory.getHolder();
                     if (holder instanceof BaseInventory baseInventory && baseInventory.getPlayerTitleAnimation() instanceof PacketPlayerTitleAnimation playerTitleAnimation) {
                         playerTitleAnimation.setWrapperPlayServerWindowItems(wrapper);
@@ -178,7 +148,7 @@ public class PacketAnimationListener implements PacketListener {
                     }
                 };
 
-                this.runInventoryTask(player, topInventory, task);
+                this.runInventoryTask(player, task);
             }
             default -> {
             }

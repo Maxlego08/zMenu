@@ -10,6 +10,8 @@ public interface PacketManager {
 
     void onEnable();
 
+    void onPostEnable();
+
     void onDisable();
 
     void editInventoryTitleName(@NotNull Player player, @NotNull Component title);

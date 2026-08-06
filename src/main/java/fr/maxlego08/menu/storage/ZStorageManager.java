@@ -9,7 +9,9 @@ import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import fr.maxlego08.menu.api.storage.dto.FirstWorldJoinDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
+import fr.maxlego08.menu.storage.migrations.FirstWorldJoinMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
@@ -25,10 +27,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class ZStorageManager implements StorageManager {
@@ -55,6 +54,7 @@ public class ZStorageManager implements StorageManager {
         MigrationManager.registerMigration(new PlayerOpenInventoryMigration());
         MigrationManager.registerMigration(new PlayerDataMigration());
         MigrationManager.registerMigration(new PlayerInventoriesMigration());
+        MigrationManager.registerMigration(new FirstWorldJoinMigration());
 
         GlobalDatabaseConfiguration globalDatabaseConfiguration = new GlobalDatabaseConfiguration(this.plugin.getConfig());
         String user = globalDatabaseConfiguration.getUser();
@@ -233,6 +233,26 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) return;
 
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
+    }
+
+    @Override
+    public @NonNull Set<String> getVisitedWorlds(@NonNull UUID playerId) {
+        if (!this.isEnable()) return Set.of();
+
+        return new HashSet<>(this.requestHelper.select(Tables.FIRST_WORLD_JOIN, FirstWorldJoinDTO.class, table -> table.where("player_id", playerId))
+                .stream()
+                .map(FirstWorldJoinDTO::worldName)
+                .toList());
+    }
+
+    @Override
+    public void markWorldVisited(@NonNull UUID playerId, @NonNull String worldName) {
+        if (!this.isEnable()) return;
+
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.FIRST_WORLD_JOIN, table -> {
+            table.uuid("player_id", playerId).primary();
+            table.string("world_name", worldName).primary();
+        }));
     }
 
     @Override
