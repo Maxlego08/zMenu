@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
 import fr.maxlego08.menu.item.CustomItemData;
 import fr.maxlego08.menu.mechanics.itemjoin.ItemJoinMechanicFactory;
+import fr.maxlego08.menu.mechanics.onclick.OnClickMechanicFactory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,6 +51,7 @@ public class ZItemManager implements ItemManager {
 
     private void loadMechanics(){
         this.registerMechanicFactory(new ItemJoinMechanicFactory(this.menuPlugin));
+        this.registerMechanicFactory(new OnClickMechanicFactory(this.menuPlugin));
     }
 
     @Override
