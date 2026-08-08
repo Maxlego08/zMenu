@@ -102,7 +102,7 @@ public class ZItemManager implements ItemManager {
                             factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
                             mechanicIds.add(mechanicId);
                         } else {
-                            Logger.info("No MechanicFactory found for mechanicId " + mechanicId + " in item " + itemId, Logger.LogType.WARNING);
+                            Logger.info("No MechanicFactory found for mechanicId " + mechanicId + " in item " + itemId + " from file " + file.getName() + "(available factories: " + this.mechanicFactories.keySet() + ")", Logger.LogType.WARNING);
                         }
                     }
                 }
