@@ -3,7 +3,9 @@ package fr.maxlego08.menu.hooks;
 import com.willfp.eco.core.items.Items;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.annotations.RequiresPlugin;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +25,10 @@ public class EcoLoader extends MaterialLoader {
             //eco item lookup system:
             // https://plugins.auxilor.io/all-plugins/the-item-lookup-system
             return Items.lookup(materialString).getItem();
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            if (Configuration.enableDebug) {
+                Logger.info("Failed to load eco item: " + materialString + " for player: " + player.getName() + ", reason: " + exception.getMessage()+".");
+            }
             return null;
         }
     }

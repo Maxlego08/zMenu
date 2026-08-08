@@ -145,3 +145,52 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
+
+    # -- Economy plugins
+    Vault:
+      required: false
+      join-classpath: true
+
+    BeastTokens:
+      required: false
+      join-classpath: true
+
+    PlayerPoints:
+      required: false
+      join-classpath: true
+
+    ElementalTokens:
+      required: false
+      join-classpath: true
+
+    ElementalGems:
+      required: false
+      join-classpath: true
+
+    zEssentials:
+      required: false
+      join-classpath: true
+
+    EcoBits:
+      required: false
+      join-classpath: true
+
+    CoinsEngine:
+      required: false
+      join-classpath: true
+
+    ExcellentEconomy:
+      required: false
+      join-classpath: true
+
+    VotingPlugin:
+      required: false
+      join-classpath: true
+
+    RedisEconomy:
+      required: false
+      join-classpath: true
+
+    RoyaleEconomy:
+      required: false
+      join-classpath: true
