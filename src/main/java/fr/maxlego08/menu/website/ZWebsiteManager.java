@@ -108,7 +108,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
             String finalUrl = this.followRedirection(baseUrl);
 
             String fileName;
-            URL url = new URL(finalUrl);
+            URL url = new URI(finalUrl).toURL();
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setInstanceFollowRedirects(false);
             try {

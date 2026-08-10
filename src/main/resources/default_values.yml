@@ -1,3 +1,9 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
 # This file creates default values for placeholders for PlayerData
 values:
   # %zmenu_player_value_playtime_level% will return 0 even if the player_level key does not exist for the player.

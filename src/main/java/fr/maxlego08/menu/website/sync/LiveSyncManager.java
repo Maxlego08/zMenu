@@ -193,7 +193,7 @@ public class LiveSyncManager extends ZUtils {
      */
     public void startDeviceFlow(CommandSender sender) {
         if (this.isLinked()) {
-            this.warning("Pairing requested but this server is already linked (use /zmenu connect).");
+            this.warning("Pairing requested but this server is already linked (use /zmenu website connect).");
             message(this.plugin, sender, Message.WEBSITE_SYNC_ALREADY_LINKED);
             return;
         }
@@ -239,7 +239,7 @@ public class LiveSyncManager extends ZUtils {
             this.pairing = true;
             this.pairDeadline = System.currentTimeMillis() + (ttl * 1000L);
 
-            this.success("Pairing started - code " + userCode + ", verification url " + url + ".");
+            this.success("Pairing started; code " + userCode + ", verification url " + url + ".");
             message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_CODE, "%code%", userCode, "%url%", url == null ? "" : url);
             this.scheduleNextPoll(sender);
         });
@@ -266,7 +266,7 @@ public class LiveSyncManager extends ZUtils {
         if (System.currentTimeMillis() > this.pairDeadline) {
             this.pairing = false;
             this.deviceCode = null;
-            this.warning("Pairing expired - no approval within the time limit.");
+            this.warning("Pairing expired: no approval within the time limit.");
             message(this.plugin, sender, Message.WEBSITE_SYNC_PAIR_EXPIRED);
             return;
         }
@@ -342,7 +342,7 @@ public class LiveSyncManager extends ZUtils {
     public void connect(CommandSender sender) {
 
         if (!this.isLinked()) {
-            this.warning("Connect requested but the server is not linked yet. Run /zmenu login first.");
+            this.warning("Connect requested but the server is not linked yet. Run /zmenu website login first.");
             message(this.plugin, sender, Message.WEBSITE_SYNC_NOT_LINKED);
             return;
         }
@@ -418,7 +418,7 @@ public class LiveSyncManager extends ZUtils {
             // request with 403, and wiping a valid link on every restart would be worse than a stale one.
             // The interactive /zmenu connect path (refreshConnectionInfo) still treats 403 as revocation.
             if (code == 401) {
-                this.warning("The website reports this link is no longer valid (revoked/expired); clearing it. Run /zmenu login to re-link.");
+                this.warning("The website reports this link is no longer valid (revoked/expired); clearing it. Run /zmenu website login to re-link.");
                 this.unlink();
                 return;
             }
@@ -493,7 +493,7 @@ public class LiveSyncManager extends ZUtils {
             WebSocketClient socket = new WebSocketClient(uri) {
                 @Override
                 public void onOpen(ServerHandshake handshake) {
-                    LiveSyncManager.this.log("Socket open - authenticating...");
+                    LiveSyncManager.this.log("Socket open: authenticating...");
                     JsonObject hello = new JsonObject();
                     hello.addProperty("type", "hello");
                     hello.addProperty("token", LiveSyncManager.this.config.token);
@@ -572,7 +572,7 @@ public class LiveSyncManager extends ZUtils {
                 this.connected = true;
                 this.connecting = false;
                 this.reconnectAttempts = 0;
-                this.success("Live sync connected - ready to receive syncs.");
+                this.success("Live sync connected; ready to receive syncs.");
                 message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECTED);
                 break;
             case "error":
@@ -654,7 +654,7 @@ public class LiveSyncManager extends ZUtils {
         this.reconnectAttempts++;
         if (this.reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
             this.shouldStayConnected = false;
-            this.severe("Could not reconnect after " + MAX_RECONNECT_ATTEMPTS + " attempts - giving up. Run /zmenu connect to retry.");
+            this.severe("Could not reconnect after " + MAX_RECONNECT_ATTEMPTS + " attempts, giving up. Run /zmenu website connect to retry.");
             return;
         }
         long delay = Math.min(MAX_RECONNECT_DELAY_SECONDS, RECONNECT_BASE_SECONDS * this.reconnectAttempts);
@@ -1045,13 +1045,13 @@ public class LiveSyncManager extends ZUtils {
      */
     private String describeDownloadFailure(int code) {
         if (code == 429) {
-            return "rate-limited by the website even after retries (HTTP 429) - too many inventories synced at once";
+            return "rate-limited by the website even after retries (HTTP 429). Too many inventories synced at once";
         }
         if (code == 401 || code == 403) {
-            return "unauthorized (HTTP " + code + ") - the link token was revoked/expired, or this inventory isn't owned by the linked account";
+            return "unauthorized (HTTP " + code + "). The link token was revoked/expired, or this inventory isn't owned by the linked account";
         }
         if (code == 404) {
-            return "not found (HTTP 404) - the inventory no longer exists on the website";
+            return "not found (HTTP 404). The inventory no longer exists on the website";
         }
         if (code == -1) {
             return "could not reach the website after retries (timeout / connection error)";
