@@ -8,17 +8,17 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOp
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketTitleListener implements PacketListener {
-    private final Map<UUID, PlayerPacketInformation> playerPacketInformation = new HashMap<>();
+    private final Map<UUID, PlayerPacketInformation> playerPacketInformation = new ConcurrentHashMap<>();
 
     public static class PlayerPacketInformation {
-        private WrapperPlayServerWindowItems wrapperPlayServerWindowItems;
-        private WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow;
+        private volatile WrapperPlayServerWindowItems wrapperPlayServerWindowItems;
+        private volatile WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow;
 
         public WrapperPlayServerWindowItems getWrapperPlayServerWindowItems() {
             return this.wrapperPlayServerWindowItems;

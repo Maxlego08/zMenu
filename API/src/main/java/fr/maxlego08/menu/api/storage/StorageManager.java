@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface StorageManager extends Listener {
@@ -35,4 +36,9 @@ public interface StorageManager extends Listener {
     void storeInventory(@NotNull UUID uuid,@NotNull InventoryPlayer inventoryPlayer);
 
     void removeInventory(@NotNull UUID uuid);
+
+    @NotNull
+    Set<String> getVisitedWorlds(@NotNull UUID playerId);
+
+    void markWorldVisited(@NotNull UUID playerId, @NotNull String worldName);
 }

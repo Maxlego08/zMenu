@@ -324,6 +324,16 @@ public class Configuration {
     )
     public static List<String> allowedDownloadableWebsite = new ArrayList<>(List.of("minecraft-inventory-builder.com"));
 
+    // Reopen the website live-sync link automatically a few seconds after startup, when this server is
+    // already linked. Off means the operator must run /zmenu website connect after every restart.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable website auto connect"
+    )
+    public static boolean enableWebsiteAutoConnect = true;
+
     @ConfigOption(
             type = DialogInputType.SINGLE_OPTION,
             label = "Performance debug filter mode"
@@ -444,6 +454,10 @@ public class Configuration {
             performanceFilterMode = PerformanceFilterMode.DISABLED;
         }
 
+        // Two-arg form on purpose: a config.yml written before this option existed has no such key, and
+        // the one-arg getBoolean would silently turn the feature OFF on every already-installed server.
+        enableWebsiteAutoConnect = fileConfiguration.getBoolean(ConfigPath.ENABLE_WEBSITE_AUTO_CONNECT.getPath(), true);
+
         List<String> loadedHosts = fileConfiguration.getStringList(ConfigPath.ALLOWED_DOWNLOADABLE_WEBSITE.getPath());
         if (!loadedHosts.isEmpty()) {
             allowedDownloadableWebsite = loadedHosts;
@@ -504,6 +518,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath(), performanceFilterOperations);
         fileConfiguration.set(ConfigPath.ALLOWED_DOWNLOADABLE_WEBSITE.getPath(), allowedDownloadableWebsite);
+        fileConfiguration.set(ConfigPath.ENABLE_WEBSITE_AUTO_CONNECT.getPath(), enableWebsiteAutoConnect);
         updated = false;
         try {
             fileConfiguration.save(file);
@@ -564,7 +579,8 @@ public class Configuration {
         PERFORMANCE_DEBUG_FILTER_MODE("performance-debug.filter.mode"),
         PERFORMANCE_DEBUG_FILTER_OPERATIONS("performance-debug.filter.operations"),
 
-        ALLOWED_DOWNLOADABLE_WEBSITE("allowed-downloadable-website");
+        ALLOWED_DOWNLOADABLE_WEBSITE("allowed-downloadable-website"),
+        ENABLE_WEBSITE_AUTO_CONNECT("enable-website-auto-connect");
 
         private final String path;
 

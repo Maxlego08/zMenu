@@ -1,24 +1,8 @@
-####################################################
 #
-# A basic zMenu configuration for beginners
-# This configuration includes simple elements to help you take control of the configuration elements of the plugin.
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
 #
-# The configuration for the command to open this inventory is in the file commands/basic_command.yml
-#
-#  ███████╗███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗
-#  ╚════██║████╗░████║██╔════╝████╗░██║██║░░░██║
-#  ░░███╔═╝██╔████╔██║█████╗░░██╔██╗██║██║░░░██║
-#  ██╔══╝░░██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║
-#  ███████╗██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝
-#  ╚══════╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░
-#
-#   Documentation: https://docs.zmenu.dev
-#   Discord: https://discord.groupez.dev
-#   Plugin page: https://groupez.dev/resources/zmenu.253
-#   Marketplace: https://minecraft-inventory-builder.com
-#   Sponsor: https://serveur-minecraft-vote.fr/
-#
-####################################################
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
 
 # Size (https://docs.zmenu.dev/configurations/inventories#size)
 #

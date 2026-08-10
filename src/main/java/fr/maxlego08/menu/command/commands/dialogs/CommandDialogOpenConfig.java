@@ -9,6 +9,7 @@ import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,12 +24,13 @@ public class CommandDialogOpenConfig extends SubCommand<ZMenuPlugin> {
             this.configManager.getRegisteredConfigs().stream().filter(configName -> configName.toLowerCase().startsWith(builder.getRemaining().toLowerCase())).forEach(builder::suggest);
             return builder.buildFuture();
         }));
+        this.addOptionalArgument("player", ArgumentTypes.player());
     }
 
     @Override
     protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
         String pluginName = commandDispatch.getArgument("plugin-name", String.class);
-        Player targetPlayer = commandDispatch.getOptionalArgument("player", Player.class).orElse(commandDispatch.getPlayer());
+        Player targetPlayer = commandDispatch.resolvePlayer("player").orElse(commandDispatch.getSenderAsPlayer());
         if (targetPlayer == null) {
             MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), "§cYou must be a player to open a config gui.");
             return CommandResultType.FAILURE;

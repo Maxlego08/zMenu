@@ -1,3 +1,9 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
 name: "&6&lServer Information Dialog"
 external_title: "Welcome to our server!"
 type: server_links # Available: notice, confirmation, multi_action, server_links

@@ -35,10 +35,7 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
         this.addSubCommand(new CommandDumplog(plugin));
         this.addSubCommand(new CommandContributors(plugin));
         this.addSubCommand(new CommandMenuGiveItem(plugin));
-
-        if (plugin.getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
-            this.addSubCommand(new CommandMenuWebsite(plugin));
-        }
+        this.addSubCommand(new CommandMenuWebsite(plugin));
 
         if (plugin.getDialogManager() != null) {
             this.addSubCommand(new CommandDialog(plugin));
@@ -52,7 +49,8 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
     @Override
     protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
         CommandSender sender = commandDispatch.getSender();
-        MessageUtils.message(commandDispatch.getPlugin(), sender, "\"<white>Inventory Builder/Marketplace§8: <click:open_url:'https://minecraft-inventory-builder.com/'><green>https://minecraft-inventory-builder.com/</click>\"");
+        MessageUtils.messageWO(commandDispatch.getPlugin(), sender, "<white>Inventory Builder/Marketplace§8: <click:open_url:'https://minecraft-inventory-builder.com/'><green>https://minecraft-inventory-builder.com/</click>");
+        MessageUtils.messageWO(commandDispatch.getPlugin(), sender, "Get <yellow>23.5%</yellow> off at MineStrator with: <gray><click:open_url:'https://cashback.groupez.dev/'>https://cashback.groupez.dev/</click></gray>");
         return CommandResultType.SUCCESS;
     }
 }

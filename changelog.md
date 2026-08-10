@@ -42,6 +42,59 @@
 
 # Unreleased
 
+# 1.1.1.7
+
+## New Features
+
+- **Live sync for button patterns**: the website can now push button patterns as well as inventories. A new
+  `pattern.sync` event installs a pattern sent from the Pattern Studio, and an inventory that depends on
+  patterns now downloads and installs **all of its patterns first** (sequentially, so the inventory never
+  reloads on a half-updated set) before being reloaded. Patterns are written into `patterns/` (or into
+  another plugin's `patterns/` folder when the website sends a `plugin_name`), with the same guarantees as
+  inventories: SHA-256 verification, size limit, path sanitisation, `BUTTON` type validation, atomic write
+  with a `.bak` backup and rollback on a load failure.
+- **New requirement `item-rule`**: check the item a player is holding or wearing against a zMenu rule.
+  Configure it with `rule` (any rule supported by the rule engine), `item-source` (`HAND`, `OFF_HAND`,
+  `HELMET`, `CHESTPLATE`, `LEGGINGS`, `BOOTS` or `INVENTORY`), `amount` (minimum quantity, counted across
+  the whole inventory when `item-source: INVENTORY`) and the usual `deny` / `success` actions.
+- **Give an item on the first join of a world**: custom items can use `give-first-world-join` in their
+  `mechanics.itemjoin` section (a single world name or a list). The item is given the first time the player enters
+  that world - on join or on a world change - and the visited worlds are stored in database (new
+  `first_world_join` table, created automatically), so the item is never given twice.
+- **Localized dialog messages**: `dialog-plain-message-body` now accepts a `localized-messages` section
+  with one message list per locale, used when the client's language matches.
+
+## Improvements
+
+- Updated [CurrenciesAPI](https://github.com/GroupeZ-dev/CurrenciesAPI) to version 1.0.14 (fixed the `ExcellentEconomy` enum name, old usage deprecated)
+- **All economy and item plugins are now declared in `paper-plugin.yml`** as optional dependencies (Vault,
+  PlayerPoints, BeastTokens, CoinsEngine, EcoBits, ElementalTokens, ElementalGems, ExcellentEconomy,
+  RedisEconomy, RoyaleEconomy, VotingPlugin, zEssentials, plus CraftEngine, Denizen, Shopkeepers, zItems,
+  eco, Nexo, NextGens, Nova), so their classes are always visible to zMenu when they are installed - and
+  none of them is required to start.
+- **Commands accept a target player again in a uniform way**: player arguments no longer use a raw string
+  argument (a name with a space could break the parsing) and every command resolves its target through the
+  same helper - selector, online player or offline player - falling back to the command sender.
+  `/zmenu players convert` can now be run from the console / on another player.
+- `/zmenu save <name> [type]`: the `type` argument is now a real enum argument (`YML` / `BASE64`) with
+  proper completion, and it is **optional** - it defaults to `BASE64`.
+- **CraftEngine items are now built with the player context**, so per-player CraftEngine items resolve
+  correctly inside menus.
+- **PacketEvents listeners are thread-safe**: animation and click-limiter data now use `ConcurrentHashMap`,
+  and inventory tasks are scheduled on the player's region instead of resolving a container location
+  (safer on Folia).
+- **More logs to debug items**: eco item lookup failures are logged in debug mode, and an unknown mechanic
+  now reports the file it comes from and the list of available mechanics.
+
+## Fixes
+
+- Fixed the on-click mechanic never running: `OnClickMechanicFactory` was not registered in the item manager.
+- Fixed `clearInventory: true` leaving the player inventory untouched: the saved items are now actually
+  removed after being cloned, and only the 36 storage slots are processed (armor and off-hand are left alone).
+- Fixed color values not being clamped in `ColorUtils` (and a potential `NullPointerException`).
+- Fixed the offline player cache never being uninstalled on disable.
+- Cooldowns now clean up their expired entries and drop empty maps instead of growing forever.
+
 # 1.1.1.6
 
 ## New Features
@@ -50,6 +103,13 @@
   (no argument starts a secure device-authorization flow - approve the shown code on the website), open the
   live link with `/zmenu connect`, and close it with `/zmenu disconnect`. Once connected, clicking
   "Sync to Server" on the web builder reloads the inventory on your server live, with no restart.
+    - **Auto-connect at startup**: a server that is already linked reopens its live channel by itself
+      10 seconds after the plugin enables - `/zmenu website connect` is no longer needed after a restart.
+      Set `enable-website-auto-connect: false` in `config.yml` to keep opening it by hand.
+    - **Open the menu in game after a sync**: when the option is enabled on the website, the server opens
+      the freshly reloaded inventory for the configured player (nothing happens if they are offline - the
+      console says so). The player name is read from the authenticated download response
+      (`X-Zmenu-Open-For`), never from the relay notification, which only carries an `open` flag.
 - Added permissions `zmenu.connect` and `zmenu.disconnect`.
 - **Custom item `on-click` mechanic**: custom items (defined in `items/*.yml`) can now run zMenu actions when their holder left/right-clicks. Configure it under `mechanics.on-click` with `cooldown` (seconds), `cancel-event`, `click-target` (`air` / `block` / `both`), `click-types` (`LEFT`, `RIGHT`, `SHIFT_LEFT`, `SHIFT_RIGHT`), `click-requirements` and `actions`.
 - **Dynamic dialog buttons**: two new dialog button types repeat a body or input element over a numeric range — `dialog-dynamic-body-button` (inside `body:`) and `dialog-dynamic-input-button` (inside `inputs:`), each with placeholder-aware `start` / `end` bounds. The `%index%` placeholder resolves to the current iteration, and each generated input value is available as `%<button-name>_<index>%` (e.g. `%my_input_1%`). See `dialogs/dynamic-dialog-example.yml`.

@@ -279,11 +279,13 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
 
         List<ItemStack> sessionItems = new ArrayList<>();
         var playerInventory = player.getInventory();
-        for (int slot = 0; slot < playerInventory.getSize(); slot++) {
+        int storageSize = Math.min(playerInventory.getSize(), 36);
+        for (int slot = 0; slot < storageSize; slot++) {
             if (buttonSlots.contains(slot)) continue;
             ItemStack item = playerInventory.getItem(slot);
             if (item != null && !item.getType().isAir()) {
                 sessionItems.add(item.clone());
+                playerInventory.setItem(slot, null);
             }
         }
         return sessionItems;
