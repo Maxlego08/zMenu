@@ -29,7 +29,11 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     public static void messageWO(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
+        if (!message.getMessages().isEmpty()) {
+            message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, getMessage(msg, args)));
+        } else {
+            plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
+        }
     }
 
     /**
@@ -38,12 +42,11 @@ public abstract class MessageUtils extends LocationUtils {
      * @param sender  User who sent the command
      * @param message The message - Using the Message enum for simplified message
      *                management
-     * @param args    The arguments - The arguments work in pairs, you must put for
-     *                example %test% and then the value
+     * @param args    The arguments - The arguments work in pairs; you must put, for
+     *                example, %test% and then the value
      */
-    protected void messageWO(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        String result = getMessage(message, args);
-        plugin.getMetaUpdater().sendMessage(sender, sender instanceof Player ? this.papi(result, (Player) sender, false) : result);
+    public static void messageWO(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
+        plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
     }
 
     /**
@@ -119,6 +122,40 @@ public abstract class MessageUtils extends LocationUtils {
         return message;
     }
 
+    protected static String getCenteredMessage(String message) {
+        if (message == null || message.isEmpty()) return "";
+        message = ChatColor.translateAlternateColorCodes('&', message);
+
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
+                previousCode = true;
+            } else if (previousCode) {
+                previousCode = false;
+                isBold = c == 'l' || c == 'L';
+            } else {
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int CENTER_PX = 154;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while (compensated < toCompensate) {
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return sb + message;
+    }
+
     protected final Class<?> getNMSClass(String name) {
         try {
             return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
@@ -159,40 +196,6 @@ public abstract class MessageUtils extends LocationUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    protected static String getCenteredMessage(String message) {
-        if (message == null || message.isEmpty()) return "";
-        message = ChatColor.translateAlternateColorCodes('&', message);
-
-        int messagePxSize = 0;
-        boolean previousCode = false;
-        boolean isBold = false;
-
-        for (char c : message.toCharArray()) {
-            if (c == '§') {
-                previousCode = true;
-            } else if (previousCode) {
-                previousCode = false;
-                isBold = c == 'l' || c == 'L';
-            } else {
-                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
-                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
-                messagePxSize++;
-            }
-        }
-
-        int halvedMessageSize = messagePxSize / 2;
-        int CENTER_PX = 154;
-        int toCompensate = CENTER_PX - halvedMessageSize;
-        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
-        int compensated = 0;
-        StringBuilder sb = new StringBuilder();
-        while (compensated < toCompensate) {
-            sb.append(" ");
-            compensated += spaceLength;
-        }
-        return sb + message;
     }
 
 }

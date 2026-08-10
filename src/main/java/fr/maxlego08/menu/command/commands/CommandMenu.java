@@ -49,7 +49,8 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
     @Override
     protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
         CommandSender sender = commandDispatch.getSender();
-        MessageUtils.message(commandDispatch.getPlugin(), sender, "\"<white>Inventory Builder/Marketplace§8: <click:open_url:'https://minecraft-inventory-builder.com/'><green>https://minecraft-inventory-builder.com/</click>\"");
+        MessageUtils.messageWO(commandDispatch.getPlugin(), sender, "<white>Inventory Builder/Marketplace§8: <click:open_url:'https://minecraft-inventory-builder.com/'><green>https://minecraft-inventory-builder.com/</click>");
+        MessageUtils.messageWO(commandDispatch.getPlugin(), sender, "Get <yellow>23.5%</yellow> off at MineStrator with: <gray><click:open_url:'https://cashback.groupez.dev/'>https://cashback.groupez.dev/</click></gray>");
         return CommandResultType.SUCCESS;
     }
 }

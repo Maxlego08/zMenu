@@ -1,7 +1,10 @@
 package fr.maxlego08.menu.command.commands.website;
 
+import com.sun.nio.sctp.MessageInfo;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
 import fr.robie.paperdispatch.command.SubCommand;
@@ -21,6 +24,9 @@ public class CommandMenuWebsite extends SubCommand<ZMenuPlugin> {
 
     @Override
     protected @NotNull CommandResultType perform(@NotNull CommandDispatch<ZMenuPlugin> commandDispatch) {
-        return CommandResultType.FAILURE;
+
+        MessageUtils.messageWO(plugin, commandDispatch.getSender(), Message.WEBSITE_COMMANDS);
+
+        return CommandResultType.SUCCESS;
     }
 }
