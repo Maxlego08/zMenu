@@ -38,9 +38,13 @@ public class LiveSyncManager extends ZUtils {
 
     private static final String EVENT_SYNC = "inventory.sync";
     private static final String EVENT_PATTERN_SYNC = "pattern.sync";
-    /** Carries the player an inventory must be opened for, on the AUTHENTICATED download (never the relay). */
+    /**
+     * Carries the player an inventory must be opened for, on the AUTHENTICATED download (never the relay).
+     */
     private static final String OPEN_FOR_HEADER = "X-Zmenu-Open-For";
-    /** Same set the website validates: Java names, plus the '.' prefix / spaces a Bedrock name can carry. */
+    /**
+     * Same set the website validates: Java names, plus the '.' prefix / spaces a Bedrock name can carry.
+     */
     private static final Pattern OPEN_TARGET_PATTERN = Pattern.compile("[A-Za-z0-9_ .\\-]{1,32}");
     private static final long MAX_YAML_BYTES = 512L * 1024L;
     private static final long DEFAULT_PAIR_TTL_SECONDS = 600L;
@@ -119,13 +123,13 @@ public class LiveSyncManager extends ZUtils {
 
     /**
      * Reopen the live link shortly after startup when this server is already linked.
-     *
+     * <p>
      * Scheduled independently of {@link #validateStoredLink()} rather than chained onto its callback, so
      * the timing never depends on how fast (or whether) the website answers. The delayed task re-reads
      * {@link #isLinked()}: if the validation meanwhile cleared a revoked token, nothing happens; and if
      * the validation is still in flight with a token that turns out to be dead, the relay answers
      * `unauthorized` and {@link #handleRelayError} unlinks — the same outcome, one round-trip later.
-     *
+     * <p>
      * No {@code /connection} call here: the validation above already refreshed the relay url and
      * connection id, and the token is authenticated by the relay's own introspection anyway.
      */
@@ -176,14 +180,26 @@ public class LiveSyncManager extends ZUtils {
      * unlink/relink so the website always recognises the same server and never duplicates its connection.
      */
     private String ensureServerId() {
-        if (this.config == null) {
-            this.config = new LiveSyncConfig();
+        File configFile = new File(this.plugin.getDataFolder().getParentFile().getParentFile(), "config/zmenu-uuid.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        String serverId = config.getString("server_uuid");
+
+        if (serverId == null || serverId.isEmpty()) {
+            serverId = UUID.randomUUID().toString();
+            config.set("server_uuid", serverId);
+            try {
+                String header = "It is not recommended to delete this file, as it is used to identify the server on https://minecraft-inventory-builder.com/.";
+                config.options().header(header);
+                config.options().copyHeader(true);
+                config.save(configFile);
+                this.log("Generated new server UUID in " + configFile.getPath());
+            } catch (Exception exception) {
+                this.severe("Could not save server UUID to " + configFile.getPath() + ": " + exception.getMessage());
+            }
         }
-        if (this.config.serverId == null || this.config.serverId.isEmpty()) {
-            this.config.serverId = UUID.randomUUID().toString();
-            this.config.save(this.plugin.getPersist());
-        }
-        return this.config.serverId;
+
+        if (this.config == null) this.config = new LiveSyncConfig();
+        return serverId;
     }
 
     /**
