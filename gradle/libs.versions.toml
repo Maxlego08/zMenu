@@ -18,7 +18,7 @@ item-nbt-api = "2.15.0"
 
 # Utilities / Libraries
 sarah = "1.22"
-currenciesapi = "1.0.13"
+currenciesapi = "1.0.14"
 folialib = "0.5.1"
 xseries = "13.3.0"
 exp4j = "0.4.8"
