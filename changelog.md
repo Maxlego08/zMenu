@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.7
+
 ## New Features
 
 - **Live sync for button patterns**: the website can now push button patterns as well as inventories. A new
