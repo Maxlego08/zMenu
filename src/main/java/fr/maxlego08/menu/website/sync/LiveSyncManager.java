@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.website.sync;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
@@ -29,12 +30,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class LiveSyncManager extends ZUtils {
 
     private static final String EVENT_SYNC = "inventory.sync";
+    private static final String EVENT_PATTERN_SYNC = "pattern.sync";
     /** Carries the player an inventory must be opened for, on the AUTHENTICATED download (never the relay). */
     private static final String OPEN_FOR_HEADER = "X-Zmenu-Open-For";
     /** Same set the website validates: Java names, plus the '.' prefix / spaces a Bedrock name can carry. */
@@ -578,6 +581,9 @@ public class LiveSyncManager extends ZUtils {
             case EVENT_SYNC:
                 this.applySync(obj);
                 break;
+            case EVENT_PATTERN_SYNC:
+                this.applyPatternSync(obj);
+                break;
             case "pong":
             default:
                 break;
@@ -708,7 +714,198 @@ public class LiveSyncManager extends ZUtils {
             return;
         }
 
+        if (data.has("patterns") && data.get("patterns").isJsonArray() && !data.getAsJsonArray("patterns").isEmpty()) {
+            this.applyPatternDependencies(data.getAsJsonArray("patterns"), 0, success -> {
+                if (success) {
+                    this.downloadAndApply(inventoryId, fileName, subPath, hash, open);
+                } else {
+                    this.severe("Inventory '" + displayName + "' was not synced because one of its button patterns could not be applied.");
+                    message(this.plugin, Bukkit.getConsoleSender(), Message.WEBSITE_SYNC_APPLY_ERROR, "%name%", displayName);
+                }
+            });
+            return;
+        }
+
         this.downloadAndApply(inventoryId, fileName, subPath, hash, open);
+    }
+
+    /**
+     * Apply a standalone button-pattern notification sent from the Pattern Studio.
+     */
+    private void applyPatternSync(JsonObject data) {
+        this.downloadAndApplyPattern(data, success -> {
+            if (!success) {
+                this.warning("The button pattern received from the website could not be applied.");
+            }
+        });
+    }
+
+    /**
+     * Install every dependency before reloading its inventory. Pattern loading is intentionally
+     * sequential so an inventory never races the async downloads and sees a partially updated set.
+     */
+    private void applyPatternDependencies(JsonArray patterns, int index, Consumer<Boolean> completion) {
+        if (index >= patterns.size()) {
+            completion.accept(true);
+            return;
+        }
+        if (!patterns.get(index).isJsonObject()) {
+            completion.accept(false);
+            return;
+        }
+
+        this.downloadAndApplyPattern(patterns.get(index).getAsJsonObject(), success -> {
+            if (!success) {
+                completion.accept(false);
+                return;
+            }
+            this.applyPatternDependencies(patterns, index + 1, completion);
+        });
+    }
+
+    /**
+     * Download, verify, write and hot-load a managed button pattern.
+     */
+    private void downloadAndApplyPattern(JsonObject data, Consumer<Boolean> completion) {
+        if (!data.has("id") || !data.has("file_name") || !data.has("hash")) {
+            this.warning("Ignored a pattern sync notification: missing id/file_name/hash.");
+            completion.accept(false);
+            return;
+        }
+
+        int patternId;
+        String rawFileName;
+        String hash;
+        String pluginName;
+        try {
+            patternId = data.get("id").getAsInt();
+            rawFileName = data.get("file_name").getAsString();
+            hash = data.get("hash").getAsString();
+            pluginName = data.has("plugin_name") && !data.get("plugin_name").isJsonNull()
+                    ? data.get("plugin_name").getAsString() : this.plugin.getName();
+        } catch (Exception exception) {
+            this.warning("Ignored a pattern sync notification: invalid field types.");
+            completion.accept(false);
+            return;
+        }
+
+        if (rawFileName == null || !rawFileName.matches("[A-Za-z0-9_\\-/]{1,180}") || pluginName == null
+                || !pluginName.matches("[A-Za-z0-9_.-]{1,64}")) {
+            this.warning("Ignored a pattern sync notification: invalid pattern or plugin path.");
+            completion.accept(false);
+            return;
+        }
+
+        int separator = rawFileName.lastIndexOf('/');
+        String fileName = separator < 0 ? rawFileName : rawFileName.substring(separator + 1);
+        String rawSubPath = separator < 0 ? "" : rawFileName.substring(0, separator);
+        String subPath = this.sanitizeRelativePath(rawSubPath);
+        if (fileName.isEmpty() || subPath == null) {
+            this.warning("Ignored a pattern sync notification: invalid pattern path '" + rawFileName + "'.");
+            completion.accept(false);
+            return;
+        }
+
+        String hashKey = ("pattern:" + pluginName + ":" + rawFileName).toLowerCase(Locale.ROOT);
+        if (hash != null && hash.equalsIgnoreCase(this.lastAppliedHash.get(hashKey))) {
+            this.log("Button pattern '" + rawFileName + "' is already up to date.");
+            completion.accept(true);
+            return;
+        }
+
+        File tmpDir = new File(this.plugin.getDataFolder(), "live-sync");
+        if (!tmpDir.exists()) {
+            tmpDir.mkdirs();
+        }
+        File tempFile = new File(tmpDir, "pattern_" + patternId + "_" + fileName + ".tmp");
+        this.log("Downloading button pattern '" + rawFileName + "' (id " + patternId + ")...");
+
+        HttpRequest request = new HttpRequest(this.apiUrl + "zmenu/pattern/" + patternId + "/download", new JsonObject());
+        request.setBearer(this.config.token);
+        request.setMethod("GET");
+        request.submitForFileDownloadDetailed(this.plugin, tempFile, result -> {
+            if (!result.success()) {
+                this.deleteQuietly(tempFile);
+                this.severe("Download failed for button pattern '" + rawFileName + "': " + this.describeDownloadFailure(result.code()) + ".");
+                completion.accept(false);
+                return;
+            }
+            if (tempFile.length() <= 0 || tempFile.length() > MAX_YAML_BYTES) {
+                this.severe("Rejected button pattern '" + rawFileName + "': downloaded size out of bounds.");
+                this.deleteQuietly(tempFile);
+                completion.accept(false);
+                return;
+            }
+
+            String actual = this.sha256(tempFile);
+            if (actual == null || hash == null || !actual.equalsIgnoreCase(hash)) {
+                this.severe("Rejected button pattern '" + rawFileName + "': hash mismatch.");
+                this.deleteQuietly(tempFile);
+                completion.accept(false);
+                return;
+            }
+
+            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(tempFile);
+            if (yaml.getKeys(false).isEmpty() || !"BUTTON".equalsIgnoreCase(yaml.getString("type", ""))
+                    || !yaml.isConfigurationSection("button")) {
+                this.severe("Rejected button pattern '" + rawFileName + "': expected a BUTTON pattern with a button section.");
+                this.deleteQuietly(tempFile);
+                completion.accept(false);
+                return;
+            }
+
+            File pluginsDirectory = this.plugin.getDataFolder().getParentFile();
+            File pluginDirectory = pluginName.equalsIgnoreCase(this.plugin.getName())
+                    ? this.plugin.getDataFolder() : new File(pluginsDirectory, pluginName);
+            File patternDirectory = new File(pluginDirectory, "patterns");
+            if (!subPath.isEmpty()) {
+                patternDirectory = new File(patternDirectory, subPath);
+            }
+            if (!patternDirectory.exists()) {
+                patternDirectory.mkdirs();
+            }
+
+            File target = new File(patternDirectory, fileName + ".yml");
+            File backup = new File(patternDirectory, fileName + ".yml.bak");
+            try {
+                if (target.exists()) {
+                    Files.copy(target.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                try {
+                    Files.move(tempFile.toPath(), target.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (Exception atomicFailure) {
+                    Files.move(tempFile.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (Exception exception) {
+                this.severe("Failed to write button pattern '" + rawFileName + "': " + exception.getMessage() + ".");
+                this.deleteQuietly(tempFile);
+                completion.accept(false);
+                return;
+            }
+
+            File finalTarget = target;
+            this.plugin.getScheduler().runNextTick(w -> {
+                try {
+                    YamlFileCache.invalidateCache(finalTarget.toPath());
+                    this.plugin.getPatternManager().loadPattern(finalTarget);
+                    this.lastAppliedHash.put(hashKey, hash);
+                    this.success("Button pattern '" + rawFileName + "' synced and reloaded.");
+                    completion.accept(true);
+                } catch (InventoryException exception) {
+                    this.severe("zMenu failed to load button pattern '" + rawFileName + "': " + exception.getMessage() + ".");
+                    try {
+                        if (backup.exists()) {
+                            Files.copy(backup.toPath(), finalTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            YamlFileCache.invalidateCache(finalTarget.toPath());
+                            this.plugin.getPatternManager().loadPattern(finalTarget);
+                        }
+                    } catch (Exception rollbackFailure) {
+                        this.severe("Rollback of button pattern '" + rawFileName + "' failed: " + rollbackFailure.getMessage() + ".");
+                    }
+                    completion.accept(false);
+                }
+            });
+        });
     }
 
     /**
