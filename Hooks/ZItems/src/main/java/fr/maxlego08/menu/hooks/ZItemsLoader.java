@@ -1,36 +1,37 @@
 package fr.maxlego08.menu.hooks;
 
-import fr.maxlego08.items.api.Item;
-import fr.maxlego08.items.api.ItemManager;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.traqueur.items.api.items.Item;
+import fr.traqueur.items.api.registries.ItemsRegistry;
+import fr.traqueur.items.api.registries.Registry;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jspecify.annotations.NonNull;
-
-import java.util.Optional;
 
 @AutoMaterialLoader
 @RequiresPlugin("zItems")
 public class ZItemsLoader extends MaterialLoader {
 
-    private final Plugin plugin;
-
-    public ZItemsLoader(Plugin plugin) {
+    public ZItemsLoader() {
         super("zitems");
-        this.plugin = plugin;
     }
 
     @Override
     public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
-        RegisteredServiceProvider<ItemManager> itemManagerRegisteredServiceProvider = this.plugin.getServer().getServicesManager().getRegistration(ItemManager.class);
-        if (itemManagerRegisteredServiceProvider == null) return null;
-        ItemManager itemManager = itemManagerRegisteredServiceProvider.getProvider();
-        Optional<Item> optional = itemManager.getItem(materialString);
-        return optional.map(item -> item.build(player, 1)).orElse(null);
+        try {
+            ItemsRegistry registry = Registry.get(ItemsRegistry.class);
+            if (registry == null) return null;
+
+            Item item = registry.getById(materialString);
+            return item == null ? null : item.build(player, 1);
+        } catch (LinkageError error) {
+            // @RequiresPlugin only matches on the plugin name, and the older zItems by
+            // Maxlego08 shares it while exposing a completely different API. Degrade to
+            // "unknown material" instead of breaking the whole inventory.
+            return null;
+        }
     }
 }

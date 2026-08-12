@@ -2,9 +2,10 @@ group = "Hooks:ZItems"
 
 repositories {
     maven("https://repo.xenondevs.xyz/releases")
+    maven("https://repo.groupez.dev/snapshots")
 }
 
 dependencies {
     compileOnly(projects.common)
-    compileOnly(files("libs/zItems-1.0.0.jar"))
+    compileOnly("fr.traqueur:zitems-api:c5830d0")
 }
