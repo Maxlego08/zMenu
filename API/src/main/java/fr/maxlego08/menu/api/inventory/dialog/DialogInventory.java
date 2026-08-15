@@ -77,13 +77,16 @@ public interface DialogInventory extends Inventory {
      * @return the configured fallback, or null if none was configured
      */
     @Nullable
-    DialogFallback getFallbackInventory();
+    default DialogFallback getFallbackInventory() {
+        return null;
+    }
 
     /**
      * @param fallbackInventory the fallback inventory, may be null
      * @see #getFallbackInventory()
      */
-    void setFallbackInventory(@Nullable DialogFallback fallbackInventory);
+    default void setFallbackInventory(@Nullable DialogFallback fallbackInventory) {
+    }
 
     /**
      * @deprecated Use {@link ServerLinksDialogInventory#setExitActionButton(ActionButtonRecord)}
