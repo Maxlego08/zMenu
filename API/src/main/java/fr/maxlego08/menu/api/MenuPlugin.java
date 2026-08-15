@@ -269,7 +269,9 @@ public interface MenuPlugin extends Plugin {
      *
      * @return the client version manager
      */
-    ClientVersionManager getClientVersionManager();
+    default ClientVersionManager getClientVersionManager() {
+        return ClientVersionManager.SERVER_VERSION_ONLY;
+    }
 
     ItemManager getItemManager();
 

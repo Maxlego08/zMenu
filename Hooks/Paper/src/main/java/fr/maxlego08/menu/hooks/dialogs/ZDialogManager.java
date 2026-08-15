@@ -111,7 +111,8 @@ public class ZDialogManager implements DialogManager {
                     dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
         }
-        this.dialogNames.removeIf(dname -> dname.equals(dname.toLowerCase(Locale.ROOT)));
+        String suffix = ":" + name.toLowerCase(Locale.ROOT);
+        this.dialogNames.removeIf(dialogName -> dialogName.endsWith(suffix));
     }
 
     @Override
@@ -207,6 +208,12 @@ public class ZDialogManager implements DialogManager {
 
     @Override
     public void openDialog(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
+        if (!this.menuPlugin.getClientVersionManager().supportsDialogs(player)) {
+            if (!this.checkRequirement(dialogInventory.getOpenRequirement(), player)) return;
+            this.openFallbackInventory(player, dialogInventory, oldInventories);
+            return;
+        }
+
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, dialogInventory, 1, oldInventories);
         if (Configuration.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
@@ -222,11 +229,6 @@ public class ZDialogManager implements DialogManager {
         try {
             boolean canOpen = this.checkRequirement(dialogInventory.getOpenRequirement(), player);
             if (!canOpen){
-                return;
-            }
-
-            if (!this.menuPlugin.getClientVersionManager().supportsDialogs(player)) {
-                this.openFallbackInventory(player, dialogInventory, oldInventories);
                 return;
             }
 
@@ -269,7 +271,12 @@ public class ZDialogManager implements DialogManager {
             return;
         }
 
-        this.menuPlugin.getInventoryManager().openInventory(player, optional.get(), fallback.page(), oldInventories);
+        try {
+            this.menuPlugin.getInventoryManager().openInventory(player, optional.get(), fallback.page(), oldInventories);
+        } catch (Exception exception) {
+            Logger.info("Failed to open the fallback inventory " + fallback.inventoryName() + " of the dialog " + dialogInventory.getFileName() + " for " + player.getName() + ": " + exception.getMessage(), Logger.LogType.ERROR);
+            if (Configuration.enableDebug) exception.printStackTrace();
+        }
     }
 
     /**
@@ -310,7 +317,7 @@ public class ZDialogManager implements DialogManager {
 
     @Override
     public Set<String> getDialogNames() {
-        return Set.of();
+        return Collections.unmodifiableSet(this.dialogNames);
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {

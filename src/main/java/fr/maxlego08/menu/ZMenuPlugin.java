@@ -197,7 +197,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         Configuration.getInstance().load(this.getConfig());
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
-        Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
+        Configuration.HAS_DIALOG_SUPPORT = this.isDialogCapableServer() && Configuration.enableMiniMessageFormat;
         Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
         OfflinePlayerCache.install(this);
 
@@ -264,7 +264,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.addListener(this.clientVersionManager);
         servicesManager.register(ClientVersionManager.class, this.clientVersionManager, this, ServicePriority.Highest);
 
-        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction")) {
+        if (this.isDialogCapableServer()) {
             if (Configuration.enableMiniMessageFormat) {
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
@@ -425,7 +425,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
+        if (this.isDialogCapableServer()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -460,7 +460,9 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         YamlFileCache.clearCache();
 
-        this.websiteManager.onDisable();
+        // Assigned partway through onEnable: if enable failed before that, disabling must not
+        // throw an NPE that buries the original error.
+        if (this.websiteManager != null) this.websiteManager.onDisable();
         
         if (!this.isMockBukkitServer) {
             NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
@@ -476,6 +478,29 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.getServer().getServicesManager().unregisterAll(this);
 
         this.postDisable();
+    }
+
+    /**
+     * The oldest server version zMenu loads its dialog support on.
+     * <p>
+     * Note this is <b>not</b> the same threshold as
+     * {@link fr.maxlego08.menu.api.utils.version.ClientVersionManager#DIALOG_MINIMUM_VERSION}
+     * (1.21.6), which is the oldest <i>client</i> able to render a dialog. The server gate is
+     * deliberately one patch higher; the consequence is that on a 1.21.6 server dialogs are
+     * not loaded at all, so neither dialogs nor their fallbacks exist there.
+     */
+    private static final MinecraftVersion DIALOG_MINIMUM_SERVER_VERSION = MinecraftVersion.parse("1.21.7");
+
+    /**
+     * Whether this server can run the Paper Dialog API at all: right platform, new enough,
+     * and the Paper dialog classes actually present.
+     *
+     * @return true if dialog support can be loaded
+     */
+    private boolean isDialogCapableServer() {
+        return this.isPaperOrFolia()
+                && MinecraftVersion.getCurrentVersion().isAtLeast(DIALOG_MINIMUM_SERVER_VERSION)
+                && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
     }
 
     /**

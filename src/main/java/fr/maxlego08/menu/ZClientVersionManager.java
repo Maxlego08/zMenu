@@ -43,11 +43,6 @@ public class ZClientVersionManager implements ClientVersionManager, Listener {
         return this.cache.computeIfAbsent(player.getUniqueId(), uuid -> this.resolve(player));
     }
 
-    @Override
-    public void invalidate(@NotNull Player player) {
-        this.cache.remove(player.getUniqueId());
-    }
-
     /**
      * Asks each provider in turn. When none can answer, we assume the client matches the
      * server, which keeps servers without any protocol translation plugin unaffected.

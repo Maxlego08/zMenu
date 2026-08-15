@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Resolves the Minecraft version of a player's client through the registered
@@ -53,9 +54,26 @@ public interface ClientVersionManager {
     }
 
     /**
-     * Drops the cached version of a player.
-     *
-     * @param player the player to forget
+     * A manager with no provider, reporting the server version for every player. Used as the
+     * default for {@link fr.maxlego08.menu.api.MenuPlugin#getClientVersionManager()} so an
+     * implementation predating this interface keeps working.
      */
-    void invalidate(@NotNull Player player);
+    ClientVersionManager SERVER_VERSION_ONLY = new ClientVersionManager() {
+
+        @Override
+        public void registerProvider(@NotNull ClientVersionProvider provider) {
+        }
+
+        @Override
+        @NotNull
+        public Collection<ClientVersionProvider> getProviders() {
+            return List.of();
+        }
+
+        @Override
+        @NotNull
+        public MinecraftVersion getClientVersion(@NotNull Player player) {
+            return MinecraftVersion.getCurrentVersion();
+        }
+    };
 }
