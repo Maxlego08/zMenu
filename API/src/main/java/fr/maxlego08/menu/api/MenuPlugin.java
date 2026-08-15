@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
+import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -260,6 +261,15 @@ public interface MenuPlugin extends Plugin {
     ToastHelper getToastHelper();
 
     DialogManager getDialogManager();
+
+    /**
+     * Returns the client version manager, used to know which Minecraft version a player's
+     * client is running. Never null, but may have no provider registered, in which case it
+     * reports the server version for every player.
+     *
+     * @return the client version manager
+     */
+    ClientVersionManager getClientVersionManager();
 
     ItemManager getItemManager();
 

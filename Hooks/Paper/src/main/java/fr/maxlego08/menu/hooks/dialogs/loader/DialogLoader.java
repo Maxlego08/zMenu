@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
@@ -81,6 +82,17 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
             List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
             InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
             dialogInventory.setInventoryReplacement(inventoryReplacement);
+        }
+        if (configuration.isConfigurationSection("fallback-inventory")) {
+            String fallbackName = configuration.getString("fallback-inventory.name", "");
+            String fallbackPlugin = configuration.getString("fallback-inventory.plugin", "zMenu");
+            int fallbackPage = configuration.getInt("fallback-inventory.page", 1);
+            DialogFallback dialogFallback = new DialogFallback(fallbackName, fallbackPlugin, fallbackPage);
+            if (!dialogFallback.isValid()) {
+                Logger.info("The fallback-inventory of the dialog " + file.getName() + " has no name, it will be ignored.", Logger.LogType.WARNING);
+            } else {
+                dialogInventory.setFallbackInventory(dialogFallback);
+            }
         }
 
         List<BodyButton> bodyButtons = this.loadButtons(configuration, file, "body", BodyButton.class, null);

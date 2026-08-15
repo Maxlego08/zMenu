@@ -12,8 +12,11 @@ import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
@@ -222,6 +225,11 @@ public class ZDialogManager implements DialogManager {
                 return;
             }
 
+            if (!this.menuPlugin.getClientVersionManager().supportsDialogs(player)) {
+                this.openFallbackInventory(player, dialogInventory, oldInventories);
+                return;
+            }
+
             InventoryEngine fakeInventory = this.menuPlugin.getInventoryManager().getFakeInventory();
             Placeholders placeholders = new Placeholders();
             placeholders.register("player", player.getName());
@@ -240,6 +248,28 @@ public class ZDialogManager implements DialogManager {
                 }
             }
         }
+    }
+
+    /**
+     * Opens the inventory configured under {@code fallback-inventory} for a player whose
+     * client cannot render dialogs. Sends a message when no usable fallback exists, so the
+     * player is never left with nothing happening.
+     */
+    private void openFallbackInventory(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
+        DialogFallback fallback = dialogInventory.getFallbackInventory();
+
+        if (fallback == null || !fallback.isValid()) {
+            this.menuPlugin.getInventoryManager().sendMessage(player, Message.DIALOG_NOT_SUPPORTED, "%version%", ClientVersionManager.DIALOG_MINIMUM_VERSION.toString(), "%name%", dialogInventory.getFileName());
+            return;
+        }
+
+        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(fallback.plugin(), fallback.inventoryName());
+        if (optional.isEmpty()) {
+            this.menuPlugin.getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", dialogInventory.getFileName(), "%toName%", fallback.inventoryName(), "%plugin%", fallback.plugin());
+            return;
+        }
+
+        this.menuPlugin.getInventoryManager().openInventory(player, optional.get(), fallback.page(), oldInventories);
     }
 
     /**

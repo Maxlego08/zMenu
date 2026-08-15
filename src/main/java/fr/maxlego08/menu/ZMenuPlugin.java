@@ -26,6 +26,7 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
+import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.api.website.WebsiteManager;
@@ -43,6 +44,9 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
+import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
+import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvider;
+import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
@@ -109,6 +113,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final ButtonManager buttonManager;
     private final InventoryManager inventoryManager;
     private final TitleAnimationManager titleAnimationManager;
+    private final ZClientVersionManager clientVersionManager;
     private final CommandManager commandManager;
     private final MessageLoader messageLoader;
     private final DataManager dataManager;
@@ -148,6 +153,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.buttonManager = new ZButtonManager(this);
         this.inventoryManager = new ZInventoryManager(this);
         this.titleAnimationManager = new ZTitleAnimationManager();
+        this.clientVersionManager = new ZClientVersionManager();
         this.commandManager = new ZCommandManager(this);
         this.messageLoader = new MessageLoader(this);
         this.dataManager = new ZDataManager(this);
@@ -240,6 +246,23 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         servicesManager.register(DupeManager.class, this.dupeManager, this, ServicePriority.Highest);
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
+
+        // Order matters: translation plugins are asked first because they rewrite the
+        // handshake protocol number Paper reads, which would otherwise report the server
+        // version for every translated client.
+        if (this.isActive(Plugins.VIAVERSION)) {
+            Logger.info("ViaVersion detected, loading client version detection");
+            this.clientVersionManager.registerProvider(new ViaVersionClientVersionProvider());
+        }
+        if (this.isActive(Plugins.PROTOCOLSUPPORT)) {
+            Logger.info("ProtocolSupport detected, loading client version detection");
+            this.clientVersionManager.registerProvider(new ProtocolSupportClientVersionProvider());
+        }
+        if (this.isPaperOrFolia()) {
+            this.clientVersionManager.registerProvider(new PaperProtocolClientVersionProvider());
+        }
+        this.addListener(this.clientVersionManager);
+        servicesManager.register(ClientVersionManager.class, this.clientVersionManager, this, ServicePriority.Highest);
 
         if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction")) {
             if (Configuration.enableMiniMessageFormat) {
@@ -529,6 +552,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public BedrockManager getBedrockManager() {
         return this.bedrockManager;
+    }
+
+    @Override
+    public ClientVersionManager getClientVersionManager() {
+        return this.clientVersionManager;
     }
 
     @Override

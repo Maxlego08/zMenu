@@ -69,6 +69,7 @@ public enum Message implements IMessage {
     DIALOG_OPEN_SUCCESS_OTHER("&aYou have just opened the dialog &f%name%&a to the &3%player%&a."),
     DIALOG_OPEN_ERROR_NOT_FOUND("&cImpossible to find the dialog &f%name%&c."),
     DIALOG_OPEN_ERROR_CONSOLE("&cOnly one player can open a dialog."),
+    DIALOG_NOT_SUPPORTED("&cYour Minecraft version does not support this menu, you need at least &f%version%&c."),
 
     BEDROCK_OPEN_SUCCESS("&aYou have just opened the bedrock inventory &f%name%&a."),
     BEDROCK_OPEN_SUCCESS_OTHER("&aYou have just opened the bedrock inventory &f%name%&a to the &3%player%&a."),
