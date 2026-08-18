@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.players;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -63,7 +65,7 @@ public class ActionBar {
             Method packetMethod = packet.getClass().getDeclaredMethod("sendPacket", packetClass);
             packetMethod.invoke(packet, packetContent);
         } catch (Exception error) {
-            error.printStackTrace();
+            Logger.error(error);
         }
     }
 }

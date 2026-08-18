@@ -221,7 +221,7 @@ public abstract class ZPlugin extends JavaPlugin {
                     }
                 } catch (IOException var10) {
                     Logger.info("Could not save " + outFile.getName() + " to " + outFile, LogType.ERROR);
-                    var10.printStackTrace();
+                    Logger.error(var10);
                 }
 
             }

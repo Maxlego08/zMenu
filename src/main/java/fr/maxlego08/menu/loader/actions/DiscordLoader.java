@@ -67,7 +67,7 @@ public class DiscordLoader extends ActionLoader {
             webhookUrlCache.put(webhookUrl, responseCode == 200);
             return responseCode == 200;
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
             webhookUrlCache.put(webhookUrl, false);
             return false;
         }

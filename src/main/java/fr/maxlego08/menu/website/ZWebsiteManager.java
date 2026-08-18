@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.website;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -136,10 +138,10 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
 
             return DownloadResult.SUCCESS;
         } catch (DisallowedHostException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
             return DownloadResult.ERROR_HOST_NOT_ALLOWED;
         } catch (IOException | URISyntaxException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
             return DownloadResult.ERROR_IO;
         }
     }

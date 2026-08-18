@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils.yaml;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
@@ -34,7 +36,7 @@ public class YamlParser {
             return parsedConfig;
         } catch (Exception e) {
             if (Configuration.enableDebug)
-                e.printStackTrace();
+                Logger.error(e);
             return configuration;
         }
     }
@@ -56,7 +58,7 @@ public class YamlParser {
             return parseConfiguration(yamlConfiguration.get(), placeholders);
         } catch (Exception exception) {
             if (Configuration.enableDebug)
-                exception.printStackTrace();
+                Logger.error(exception);
             return new YamlConfiguration();
         }
     }

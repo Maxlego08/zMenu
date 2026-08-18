@@ -47,12 +47,14 @@ public final class MinecraftVersion implements Comparable<MinecraftVersion> {
             for (String part : parts) {
                 if (index >= 3) break;
                 if (!NUMERIC.matcher(part).matches()) {
-                    continue;
+                    break;
                 }
                 try {
-                    numbers[index++] = Integer.parseInt(part);
+                    numbers[index] = Integer.parseInt(part);
+                    index++;
                 } catch (NumberFormatException e) {
                     Logger.info("Could not parse numeric segment '" + part + "' in Minecraft value '" + raw + "'. (" + e.getMessage() + ")", Logger.LogType.WARNING);
+                    break;
                 }
             }
 

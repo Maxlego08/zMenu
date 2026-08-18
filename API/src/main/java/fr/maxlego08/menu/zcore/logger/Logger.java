@@ -37,6 +37,48 @@ public abstract class Logger {
         getLogger().log(message, LogType.ERROR);
     }
 
+    /**
+     * Logs a throwable and its stack trace through the plugin logger, so the failure carries
+     * the plugin prefix and honours the configured formatting instead of going straight to
+     * {@code System.err} the way {@link Throwable#printStackTrace()} does.
+     *
+     * @param message   context describing what was being attempted
+     * @param throwable the failure, may be null
+     */
+    public static void error(String message, Throwable throwable) {
+        Logger current = getLogger();
+        if (current == null) {
+            System.err.println(message);
+            if (throwable != null) throwable.printStackTrace();
+            return;
+        }
+
+        current.log(message, LogType.ERROR);
+        if (throwable == null) return;
+
+        current.log(throwable + "", LogType.ERROR);
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            current.log("    at " + element, LogType.ERROR);
+        }
+
+        Throwable cause = throwable.getCause();
+        while (cause != null) {
+            current.log("Caused by: " + cause, LogType.ERROR);
+            for (StackTraceElement element : cause.getStackTrace()) {
+                current.log("    at " + element, LogType.ERROR);
+            }
+            cause = cause.getCause();
+        }
+    }
+
+    /**
+     * @param throwable the failure to log, may be null
+     * @see #error(String, Throwable)
+     */
+    public static void error(Throwable throwable) {
+        error("An error occurred: " + (throwable == null ? "unknown" : throwable.getMessage()), throwable);
+    }
+
     public void log(String message) {
         this.log(message, LogType.INFO);
     }

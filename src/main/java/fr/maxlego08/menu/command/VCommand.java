@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.command;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -410,7 +412,7 @@ public abstract class VCommand extends Arguments {
             return this.perform(plugin);
         } catch (Exception e) {
             if (Configuration.enableDebug)
-                e.printStackTrace();
+                Logger.error(e);
             return CommandType.SYNTAX_ERROR;
         }
     }

@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.zcore.utils.storage;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -82,7 +84,7 @@ public class DiscUtils {
             fos.getChannel().transferFrom(rbc, 0, 1 << 24);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e);
             return false;
         }
     }

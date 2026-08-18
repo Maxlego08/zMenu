@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils.nms;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 
 import fr.maxlego08.menu.common.utils.Base64;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +27,7 @@ public class Base64ItemStack {
             objectOutputStream.close();
             return Base64.encode(byteArrayOutputStream.toByteArray());
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
             return null;
         }
     }
@@ -39,7 +41,7 @@ public class Base64ItemStack {
             objectInputStream.close();
             return item;
         } catch (IOException | ClassNotFoundException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
             return null;
         }
     }

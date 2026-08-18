@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.loader;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,7 +31,7 @@ public class NoneLoader extends ButtonLoader {
             }
             return this.clazz.getDeclaredConstructor().newInstance();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
     }

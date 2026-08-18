@@ -477,7 +477,7 @@ public abstract class ZUtils extends MessageUtils {
                 knownCommands.remove(plugin.getDescription().getName() + ":" + alias);
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 

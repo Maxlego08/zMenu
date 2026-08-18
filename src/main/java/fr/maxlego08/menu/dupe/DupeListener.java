@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.dupe;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.dupe.DupeItem;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import org.bukkit.Material;
@@ -128,7 +130,7 @@ public class DupeListener implements Listener {
                 try {
                     discordWebhook.execute(dupeItem);
                 } catch (IOException exception) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             });
         }*/

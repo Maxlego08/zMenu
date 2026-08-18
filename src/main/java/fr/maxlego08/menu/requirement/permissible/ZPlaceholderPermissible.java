@@ -115,7 +115,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
 
             } catch (Exception exception) {
                 if (Configuration.enableDebug) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
                 return false;
             }

@@ -25,6 +25,9 @@ import io.papermc.paper.dialog.Dialog;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,15 +37,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-public class ZDialogManager implements DialogManager {
+public class ZDialogManager implements DialogManager, Listener {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
 
-    private final Set<String> dialogNames = new HashSet<>();
-    private final Map<String, List<AbstractDialogInventory>> dialogs = new HashMap<>();
-    private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
+    private final Set<String> dialogNames = ConcurrentHashMap.newKeySet();
+    private final Map<String, List<AbstractDialogInventory>> dialogs = new ConcurrentHashMap<>();
+    private final Map<UUID, DialogInventory> activeDialogs = new ConcurrentHashMap<>();
 
     private final ComponentMeta paperComponent;
 
@@ -246,7 +250,7 @@ public class ZDialogManager implements DialogManager {
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
                 if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
-                    e.printStackTrace();
+                    Logger.error(e);
                 }
             }
         }
@@ -275,7 +279,7 @@ public class ZDialogManager implements DialogManager {
             this.menuPlugin.getInventoryManager().openInventory(player, optional.get(), fallback.page(), oldInventories);
         } catch (Exception exception) {
             Logger.info("Failed to open the fallback inventory " + fallback.inventoryName() + " of the dialog " + dialogInventory.getFileName() + " for " + player.getName() + ": " + exception.getMessage(), Logger.LogType.ERROR);
-            if (Configuration.enableDebug) exception.printStackTrace();
+            if (Configuration.enableDebug) Logger.error(exception);
         }
     }
 
@@ -291,6 +295,16 @@ public class ZDialogManager implements DialogManager {
      */
     public void removeActiveDialog(@NotNull Player player) {
         this.activeDialogs.remove(player.getUniqueId());
+    }
+
+    /**
+     * Drops the active dialog of a leaving player. Without this the map keeps one entry per
+     * player who ever opened a dialog, and a reconnecting player inherits the dialog they
+     * had open in a previous session.
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        this.activeDialogs.remove(event.getPlayer().getUniqueId());
     }
 
     public boolean openDialogByName(@NotNull Player player, String dialogName) {
