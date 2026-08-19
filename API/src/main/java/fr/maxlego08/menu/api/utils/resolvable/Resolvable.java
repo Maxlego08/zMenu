@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.utils.resolvable;
 
+import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.context.BuildContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,6 +77,20 @@ public interface Resolvable<T> {
             return null;
         }
         return resolvable.resolve(context);
+    }
+
+    static <X> @NotNull X resolveOrDefault(
+            @NotNull BuildContext context,
+            @Nullable Resolvable<X> resolvable,
+            @NotNull X defaultValue
+    ) {
+        Preconditions.checkNotNull(defaultValue, "Default value cannot be null");
+        if (resolvable == null) {
+            return defaultValue;
+        }
+
+        X value = resolvable.resolve(context);
+        return value != null ? value : defaultValue;
     }
 
     static <X> @NotNull List<X> resolveList(
