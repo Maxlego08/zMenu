@@ -26,8 +26,12 @@ dependencies:
       required: false
       join-classpath: true
 
+    # `AFTER`, not `BEFORE`: zItems hard-depends on zMenu, so forcing it before us
+    # would create a dependency cycle and it would end up enabled before our services
+    # are registered. ZItemsLoader resolves ItemManager lazily through the
+    # ServicesManager anyway, so we never need zItems loaded first.
     zItems:
-      load: BEFORE
+      load: AFTER
       required: false
       join-classpath: true
 
@@ -142,6 +146,16 @@ dependencies:
       join-classpath: true
 
     Geyser-Spigot:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ViaVersion:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ProtocolSupport:
       load: BEFORE
       required: false
       join-classpath: true

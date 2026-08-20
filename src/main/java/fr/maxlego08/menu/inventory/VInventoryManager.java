@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.inventory;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -133,7 +135,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
             }
         } catch (InventoryOpenException exception) {
             message(this.plugin, player, Message.VINVENTORY_ERROR, "%id%", id);
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 

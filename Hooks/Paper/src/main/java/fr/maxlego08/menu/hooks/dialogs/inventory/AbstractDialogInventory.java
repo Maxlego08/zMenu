@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
+import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -36,6 +37,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     private final String fileName;
     private File file;
     private InventoryReplacement inventoryReplacement;
+    private DialogFallback fallbackInventory;
 
     private final String name;
     private final String externalTitle;
@@ -240,6 +242,16 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     @Override
     public void setInventoryReplacement(InventoryReplacement inventoryReplacement) {
         this.inventoryReplacement = inventoryReplacement;
+    }
+
+    @Override
+    public @Nullable DialogFallback getFallbackInventory() {
+        return this.fallbackInventory;
+    }
+
+    @Override
+    public void setFallbackInventory(@Nullable DialogFallback fallbackInventory) {
+        this.fallbackInventory = fallbackInventory;
     }
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {

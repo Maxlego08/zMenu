@@ -140,7 +140,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                         } catch (Exception e) {
                             if (Configuration.enableDebug) {
                                 Logger.info("An error occurred while loading the item component " + componentKey + " for file " + file.getAbsolutePath() + " with path " + path, Logger.LogType.WARNING);
-                                e.printStackTrace();
+                                Logger.error(e);
                             }
                         }
                     }
@@ -287,7 +287,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
                 enchantments.put(optional.get().enchantment(), level);
 
             } catch (ItemEnchantException e) {
-                e.printStackTrace();
+                Logger.error(e);
             }
         }
         menuItemStack.setEnchantments(enchantments);
@@ -742,7 +742,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         try {
             configuration.save(file);
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 

@@ -42,6 +42,43 @@
 
 # Unreleased
 
+## New Features
+
+- **Fallback inventories for dialogs on older clients**: dialogs can now define a `fallback-inventory`
+  (`name`, optional `plugin`, and optional `page`). When a player's client is below Minecraft 1.21.6 and
+  cannot render dialogs, zMenu opens the configured chest inventory instead, or sends a dedicated message
+  when no fallback is available. Client versions are detected through ViaVersion, ProtocolSupport, or
+  Paper's handshake protocol.
+- **Client version API**: added `ClientVersionManager`, `ClientVersionProvider`, and protocol-to-Minecraft
+  version mapping to the public API, allowing integrations to query a player's real client version and
+  register additional providers.
+- **Placeholder-aware `take_item` amounts**: the `amount` field of the `take_item` / `take-item` action now
+  accepts placeholders and is resolved for the player when the action runs. It still defaults to `1`.
+- **UUID targets in placeholder requirements**: `target-player` can now resolve to either a player name or a
+  UUID when evaluating a placeholder requirement for another player.
+
+## Improvements
+
+- **Updated zItems support**: migrated the material loader to the latest zItems registry API. zItems is now
+  loaded after zMenu to avoid Paper dependency cycles, while older incompatible zItems APIs fail gracefully
+  instead of breaking inventory loading.
+- **Dialog management hardening**: dialog registries and active-dialog tracking are now thread-safe, the API
+  returns the actual loaded dialog names, and dialog names are removed correctly during reloads.
+- **Error reporting**: exceptions are now routed through the zMenu logger with the plugin prefix and complete
+  cause chain instead of being printed directly to standard error.
+
+## Fixes
+
+- Fixed active dialog data not being cleared when a player disconnects, which could leak entries and restore
+  a stale dialog after reconnecting.
+- Fixed plugin shutdown throwing an additional `NullPointerException` when startup failed before the website
+  manager was initialized.
+- Fixed Minecraft version parsing accepting later numeric fragments after a non-numeric version segment.
+
+## Internal Changes
+
+- Added anonymous usage metrics through FastStats, with proper startup and shutdown lifecycle handling.
+
 # 1.1.1.7
 
 ## New Features

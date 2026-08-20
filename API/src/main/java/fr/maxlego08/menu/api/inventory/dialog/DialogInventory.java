@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -18,6 +19,7 @@ import io.papermc.paper.dialog.Dialog;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,6 +69,24 @@ public interface DialogInventory extends Inventory {
     List<InputButton> getDialogInputs(Player player);
 
     ZDialogInventoryBuild getBuild(Player player);
+
+    /**
+     * The inventory opened instead of this dialog when the player's client is below
+     * Minecraft 1.21.6 and therefore cannot render dialogs.
+     *
+     * @return the configured fallback, or null if none was configured
+     */
+    @Nullable
+    default DialogFallback getFallbackInventory() {
+        return null;
+    }
+
+    /**
+     * @param fallbackInventory the fallback inventory, may be null
+     * @see #getFallbackInventory()
+     */
+    default void setFallbackInventory(@Nullable DialogFallback fallbackInventory) {
+    }
 
     /**
      * @deprecated Use {@link ServerLinksDialogInventory#setExitActionButton(ActionButtonRecord)}

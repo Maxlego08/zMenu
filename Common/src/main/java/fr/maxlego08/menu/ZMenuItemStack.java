@@ -169,7 +169,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 } catch (Exception e) {
                     if (Configuration.enableDebug) {
                         Logger.info("Error while applying ItemComponent '" + metadata.getParentLoader().getComponentName() + "' for item " + this.path + " in file " + this.filePath + " (" + player + ")", Logger.LogType.ERROR);
-                        e.printStackTrace();
+                        Logger.error(e);
                     }
                 }
             }
@@ -403,7 +403,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                     itemName = fontImage.replace(this.papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
                 Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
-                exception.printStackTrace();
+                Logger.error(exception);
             }
         }
 
@@ -1015,7 +1015,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 enchantments.put(enchantment, level);
 
             } catch (ItemEnchantException e) {
-                e.printStackTrace();
+                Logger.error(e);
             }
         }
 

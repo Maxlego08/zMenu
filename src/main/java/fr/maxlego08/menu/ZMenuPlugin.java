@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import dev.faststats.bukkit.BukkitContext;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoFontImage;
 import fr.maxlego08.menu.api.annotations.AutoListener;
@@ -26,6 +27,7 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
+import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.api.website.WebsiteManager;
@@ -43,6 +45,9 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
+import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
+import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvider;
+import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
@@ -109,6 +114,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final ButtonManager buttonManager;
     private final InventoryManager inventoryManager;
     private final TitleAnimationManager titleAnimationManager;
+    private final ZClientVersionManager clientVersionManager;
     private final CommandManager commandManager;
     private final MessageLoader messageLoader;
     private final DataManager dataManager;
@@ -123,6 +129,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final AttributApplier attributApplier;
     private final File configFile;
     private final PlatformScheduler scheduler;
+    private final BukkitContext context = new BukkitContext.Factory(this, "df00d7dc59087d9e248fe7723489b87b").metrics(dev.faststats.Metrics.Factory::create).create();
     private ZWebsiteManager websiteManager;
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
@@ -148,6 +155,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.buttonManager = new ZButtonManager(this);
         this.inventoryManager = new ZInventoryManager(this);
         this.titleAnimationManager = new ZTitleAnimationManager();
+        this.clientVersionManager = new ZClientVersionManager();
         this.commandManager = new ZCommandManager(this);
         this.messageLoader = new MessageLoader(this);
         this.dataManager = new ZDataManager(this);
@@ -191,7 +199,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         Configuration.getInstance().load(this.getConfig());
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
-        Configuration.HAS_DIALOG_SUPPORT = this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && Configuration.enableMiniMessageFormat && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
+        Configuration.HAS_DIALOG_SUPPORT = this.isDialogCapableServer() && Configuration.enableMiniMessageFormat;
         Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
         OfflinePlayerCache.install(this);
 
@@ -241,11 +249,29 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         servicesManager.register(Enchantments.class, this.enchantments, this, ServicePriority.Highest);
         servicesManager.register(TitleAnimationManager.class, this.titleAnimationManager, this, ServicePriority.Highest);
 
-        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7")) && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction")) {
+        // Order matters: translation plugins are asked first because they rewrite the
+        // handshake protocol number Paper reads, which would otherwise report the server
+        // version for every translated client.
+        if (this.isActive(Plugins.VIAVERSION)) {
+            Logger.info("ViaVersion detected, loading client version detection");
+            this.clientVersionManager.registerProvider(new ViaVersionClientVersionProvider());
+        }
+        if (this.isActive(Plugins.PROTOCOLSUPPORT)) {
+            Logger.info("ProtocolSupport detected, loading client version detection");
+            this.clientVersionManager.registerProvider(new ProtocolSupportClientVersionProvider());
+        }
+        if (this.isPaperOrFolia()) {
+            this.clientVersionManager.registerProvider(new PaperProtocolClientVersionProvider());
+        }
+        this.addListener(this.clientVersionManager);
+        servicesManager.register(ClientVersionManager.class, this.clientVersionManager, this, ServicePriority.Highest);
+
+        if (this.isDialogCapableServer()) {
             if (Configuration.enableMiniMessageFormat) {
                 Logger.info("Paper server detected, loading Dialogs support");
                 ConfigManager configManager = new ConfigManager(this);
                 this.dialogManager = new ZDialogManager(this, configManager);
+                this.addListener((ZDialogManager) this.dialogManager);
                 servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                 ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
                 configManager.registerConfig(configDialogBuilder, Configuration.class, this);
@@ -307,6 +333,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
 
         new VersionChecker(this, 253).useLastVersion();
+        context.ready();
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -402,7 +429,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         files.add("actions_patterns/default-actions.yml");
 
-        if (this.isPaperOrFolia() && MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21.7"))) {
+        if (this.isDialogCapableServer()) {
             files.add("dialogs/confirmation-dialog.yml");
             files.add("dialogs/default-dialog.yml");
             files.add("dialogs/multi_action-dialog.yml");
@@ -424,6 +451,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public void onDisable() {
 
+        context.shutdown();
+
         if (this.packetManager != null) {
             this.packetManager.onDisable();
         }
@@ -437,7 +466,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         YamlFileCache.clearCache();
 
-        this.websiteManager.onDisable();
+        if (this.websiteManager != null) this.websiteManager.onDisable();
         
         if (!this.isMockBukkitServer) {
             NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
@@ -453,6 +482,29 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.getServer().getServicesManager().unregisterAll(this);
 
         this.postDisable();
+    }
+
+    /**
+     * The oldest server version zMenu loads its dialog support on.
+     * <p>
+     * Note this is <b>not</b> the same threshold as
+     * {@link fr.maxlego08.menu.api.utils.version.ClientVersionManager#DIALOG_MINIMUM_VERSION}
+     * (1.21.6), which is the oldest <i>client</i> able to render a dialog. The server gate is
+     * deliberately one patch higher; the consequence is that on a 1.21.6 server dialogs are
+     * not loaded at all, so neither dialogs nor their fallbacks exist there.
+     */
+    private static final MinecraftVersion DIALOG_MINIMUM_SERVER_VERSION = MinecraftVersion.parse("1.21.7");
+
+    /**
+     * Whether this server can run the Paper Dialog API at all: right platform, new enough,
+     * and the Paper dialog classes actually present.
+     *
+     * @return true if dialog support can be loaded
+     */
+    private boolean isDialogCapableServer() {
+        return this.isPaperOrFolia()
+                && MinecraftVersion.getCurrentVersion().isAtLeast(DIALOG_MINIMUM_SERVER_VERSION)
+                && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
     }
 
     /**
@@ -529,6 +581,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public BedrockManager getBedrockManager() {
         return this.bedrockManager;
+    }
+
+    @Override
+    public ClientVersionManager getClientVersionManager() {
+        return this.clientVersionManager;
     }
 
     @Override
@@ -678,16 +735,12 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     @Override
     public List<String> parse(Player player, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings).stream()
-                .map(s -> s.replace("\uF000", "%"))
-                .toList();
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
     }
 
     @Override
     public List<String> parse(OfflinePlayer offlinePlayer, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream()
-                .map(s -> s.replace("\uF000", "%"))
-                .toList();
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
     }
 
     private void loadMeta() {

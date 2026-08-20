@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.utils.SimpleCache;
 import org.bukkit.Bukkit;
 import org.bukkit.profile.PlayerProfile;
@@ -33,7 +35,7 @@ public class PlayerUtil {
                 try {
                     urlObject = SkinUrlDecoder.extractSkinUrl(url).toURL(); // The URL to the skin, for example: https://textures.minecraft.net/texture/18813764b2abc94ec3c3bc67b9147c21be850cdf996679703157f4555997ea63a
                 } catch (URISyntaxException | MalformedURLException exception) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                     return null;
                 }
                 textures.setSkin(urlObject); // Set the skin of the player profile to the URL

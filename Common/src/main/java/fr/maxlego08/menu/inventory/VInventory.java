@@ -252,7 +252,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         try {
             return this.getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            Logger.error(e);
         }
         return null;
     }

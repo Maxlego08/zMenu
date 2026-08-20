@@ -126,7 +126,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                     } else meta.addEnchant(enchantment, level, true);
 
                 } catch (ItemEnchantException e) {
-                    e.printStackTrace();
+                    Logger.error(e);
                 }
 
             }
@@ -149,7 +149,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                     meta.addItemFlags(flag);
 
                 } catch (ItemFlagException e) {
-                    e.printStackTrace();
+                    Logger.error(e);
                 }
 
             }

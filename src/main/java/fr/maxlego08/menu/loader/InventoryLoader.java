@@ -132,7 +132,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                     constructor.setAccessible(true);
                     inventory = constructor.newInstance(pluginOwner, name, fileName, size, buttons);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Logger.error(e);
                     inventory = InventoryTypeRegistry.getInstance().get(inventoryType).orElseGet(EmptyContainerInventoryTypeLoader::new).load(this.plugin, pluginOwner, name, fileName, size, buttons, configuration, path, file);
                 }
             } else {

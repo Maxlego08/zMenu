@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils.nms;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.nms.NMSHandler;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils.EnumReflectionItemStack;
@@ -87,7 +89,7 @@ public class ItemStackCompound {
             compoundObject.getClass().getMethod(this.reflection.getMethodSetString(), String.class, String.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 
@@ -108,7 +110,7 @@ public class ItemStackCompound {
             if (compoundObject == null) return null;
             return (String) compoundObject.getClass().getMethod(this.reflection.getMethodGetString(), String.class).invoke(compoundObject, new Object[]{key});
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 
@@ -130,7 +132,7 @@ public class ItemStackCompound {
             if (compoundObject == null) return 0;
             return (double) compoundObject.getClass().getMethod(this.reflection.getMethodGetDouble(), String.class).invoke(compoundObject, new Object[]{key});
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return 0;
 
@@ -151,7 +153,7 @@ public class ItemStackCompound {
             if (compoundObject == null) return 0;
             return (long) compoundObject.getClass().getMethod(this.reflection.getMethodGetLong(), String.class).invoke(compoundObject, new Object[]{key});
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return 0;
     }
@@ -171,7 +173,7 @@ public class ItemStackCompound {
             if (compoundObject == null) return 0;
             return (int) compoundObject.getClass().getMethod(this.reflection.getMethodGetInt(), String.class).invoke(compoundObject, new Object[]{key});
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return 0;
 
@@ -191,7 +193,7 @@ public class ItemStackCompound {
             Object compoundObject = this.getCompound(itemStack);
             return (float) compoundObject.getClass().getMethod(this.reflection.getMethodGetFloat(), String.class).invoke(compoundObject, new Object[]{key});
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return 0;
 
@@ -211,7 +213,7 @@ public class ItemStackCompound {
             Object compoundObject = this.getCompound(itemStack);
             return (boolean) compoundObject.getClass().getMethod(this.reflection.getMethodGetBoolean(), String.class).invoke(compoundObject, new Object[]{key});
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return false;
 
@@ -233,7 +235,7 @@ public class ItemStackCompound {
             compoundObject.getClass().getMethod(this.reflection.getMethodSetInt(), String.class, int.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 
@@ -255,7 +257,7 @@ public class ItemStackCompound {
             compoundObject.getClass().getMethod(this.reflection.getMethodSetLong(), String.class, long.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 
@@ -277,7 +279,7 @@ public class ItemStackCompound {
             compoundObject.getClass().getMethod(this.reflection.getMethodSetFloat(), String.class, float.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 
@@ -300,7 +302,7 @@ public class ItemStackCompound {
             compoundObject.getClass().getMethod(this.reflection.getMethodSetBoolean(), String.class, boolean.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 
@@ -322,7 +324,7 @@ public class ItemStackCompound {
             compoundObject.getClass().getMethod(this.reflection.getMethodSetDouble(), String.class, double.class).invoke(compoundObject, key, value);
             return this.applyCompound(itemStack, compoundObject);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         return null;
 

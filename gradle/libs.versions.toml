@@ -24,6 +24,7 @@ xseries = "13.3.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
 paper-dispatch = "1.0.3"
+faststats = "0.29.4"
 
 # Integration Hooks
 placeholderapi = "2.11.6"
@@ -45,6 +46,7 @@ score = "5.25.6.9"
 craft-engine = "26.7.3"
 eco = "6.53.0"
 floodgate = "2.2.4-SNAPSHOT"
+viaversion = "5.11.0"
 breweryx = "3.6.0"
 denizen = "1.3.1-SNAPSHOT"
 
@@ -71,6 +73,7 @@ folialib = { group = "com.tcoded", name = "FoliaLib", version.ref = "folialib" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 exp4j = { group = "net.objecthunter", name = "exp4j", version.ref = "exp4j" }
 java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
+fastStatsBukkit = { group = "dev.faststats.metrics", name = "bukkit", version.ref = "faststats" }
 
 # Integration Hooks
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
@@ -93,6 +96,7 @@ craft-engine-core = { group = "net.momirealms", name = "craft-engine-core", vers
 craft-engine-bukkit = { group = "net.momirealms", name = "craft-engine-bukkit", version.ref = "craft-engine" }
 eco = { group = "com.willfp", name = "eco", version.ref = "eco" }
 floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
+viaversion = { group = "com.viaversion", name = "viaversion-api", version.ref = "viaversion" }
 breweryx = { group = "com.dre.brewery", name = "BreweryX", version.ref = "breweryx" }
 denizen = { group= "com.denizenscript", name = "denizen", version.ref = "denizen" }
 paperdispatch = { group = "com.github.1robie.paper-dispatch", name = "paper-dispatch", version.ref = "paper-dispatch" }

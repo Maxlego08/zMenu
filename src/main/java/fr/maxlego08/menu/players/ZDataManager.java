@@ -227,7 +227,7 @@ public class ZDataManager implements DataManager {
             datas.forEach((uuid, playerData) -> playerData.forEach(data -> manager.upsertData(uuid, data)));
             Logger.info("Loaded " + datas.size() + " players.", Logger.LogType.SUCCESS);
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 }

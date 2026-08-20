@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.button.loader;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.annotations.AutoButtonLoader;
 import fr.maxlego08.menu.api.button.Button;
@@ -39,7 +41,7 @@ public class SwitchLoader extends ButtonLoader {
                     var button = loader.load(configuration, path + "buttons." + key + ".", key, defaultButtonValue);
                     switchCaseButtons.add(new SwitchCaseButton(key, button));
                 } catch (InventoryException exception) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             }
         }

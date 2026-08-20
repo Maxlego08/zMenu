@@ -130,7 +130,7 @@ public class Persist extends ZUtils {
 
         } catch (Exception e) {
             Logger.info("cannot save file " + file.getAbsolutePath(), LogType.ERROR);
-            e.printStackTrace();
+            Logger.error(e);
 
             return false;
         }

@@ -13,6 +13,13 @@ can-close-with-escape: true  # Allow players to close with ESC key
 pause: false                 # Pause the game while dialog is open
 after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
 
+# Inventory opened instead of this dialog when the player's client is below Minecraft 1.21.6
+# and therefore cannot render dialogs.
+# fallback-inventory:
+#   name: my_menu   # inventory file name, without .yml
+#   plugin: zMenu   # optional, defaults to zMenu
+#   page: 1         # optional, defaults to 1
+
 # Dialog body content - can contain multiple sections
 body:
   plain_message:

@@ -68,26 +68,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final PaginationManager paginationManager = new ZPaginationManager();
 
-    private final Set<String> inventoryNames = new HashSet<>();
-    private final Map<String, List<Inventory>> inventories = new HashMap<>();
-    private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new HashMap<>();
-    private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new HashMap<>();
+    private final Set<String> inventoryNames = ConcurrentHashMap.newKeySet();
+    private final Map<String, List<Inventory>> inventories = new ConcurrentHashMap<>();
+    private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new ConcurrentHashMap<>();
+    private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new ConcurrentHashMap<>();
     private final List<InventoryListener> inventoryListeners = new ArrayList<>();
     private final List<MaterialLoader> loaders = new ArrayList<>();
     private final ZMenuPlugin plugin;
-    private final Map<UUID, Inventory> currentInventories = new HashMap<>();
-    private final Map<Plugin, FastEvent> fastEventMap = new HashMap<>();
-    private final Map<String, ItemStackSimilar> itemStackSimilarMap = new HashMap<>();
+    private final Map<UUID, Inventory> currentInventories = new ConcurrentHashMap<>();
+    private final Map<Plugin, FastEvent> fastEventMap = new ConcurrentHashMap<>();
+    private final Map<String, ItemStackSimilar> itemStackSimilarMap = new ConcurrentHashMap<>();
 
-    private final Map<UUID, Integer> playerPages = new HashMap<>();
-    private final Map<UUID, Integer> playerMaxPages = new HashMap<>();
-    private final Map<String, Inventory> inventoryByName = new HashMap<>();
+    private final Map<UUID, Integer> playerPages = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> playerMaxPages = new ConcurrentHashMap<>();
+    private final Map<String, Inventory> inventoryByName = new ConcurrentHashMap<>();
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
@@ -507,12 +508,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                     try {
                         this.loadInventory(this.plugin, file);
                     } catch (InventoryException exception) {
-                        exception.printStackTrace();
+                        Logger.error(exception);
                     }
                 }
             }
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
 
         // Load specifies path inventories
@@ -524,7 +525,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                     try {
                         this.loadInventory(this.plugin, file);
                     } catch (Exception exception) {
-                        exception.printStackTrace();
+                        Logger.error(exception);
                     }
                 }
             }
@@ -624,7 +625,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         try {
             this.loadInventory(inventory.getPlugin(), inventory.getFile());
         } catch (InventoryException e) {
-            e.printStackTrace();
+            Logger.error(e);
         }
 
     }
@@ -771,7 +772,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             try {
                 file.createNewFile();
             } catch (IOException exception) {
-                exception.printStackTrace();
+                Logger.error(exception);
             }
         }
 
@@ -797,7 +798,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             try {
                 configuration.save(file);
             } catch (IOException exception) {
-                exception.printStackTrace();
+                Logger.error(exception);
             }
 
         } else {
@@ -811,7 +812,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @EventHandler
     public void onQuid(PlayerQuitEvent event) {
-        this.currentInventories.remove(event.getPlayer().getUniqueId());
+        UUID uniqueId = event.getPlayer().getUniqueId();
+        this.currentInventories.remove(uniqueId);
+        // Cleared here too: otherwise they only reset on reload, and a returning player
+        // inherits the page they were on in a previous session.
+        this.playerPages.remove(uniqueId);
+        this.playerMaxPages.remove(uniqueId);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -951,7 +957,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 try {
                     this.loadInventory(inventoryLoadRequirement.getPlugin(), inventoryLoadRequirement.getFile(), inventoryLoadRequirement.getClassz());
                 } catch (InventoryException exception) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 } finally {
                     iterator.remove();
                 }

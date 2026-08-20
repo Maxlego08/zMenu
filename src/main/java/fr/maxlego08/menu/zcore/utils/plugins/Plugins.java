@@ -31,6 +31,8 @@ public enum Plugins {
     PACKETEVENTS("packetevents"),
     GEYSER("Geyser-Spigot"),
     FLOODGATE("floodgate"),
+    VIAVERSION("ViaVersion"),
+    PROTOCOLSUPPORT("ProtocolSupport"),
     MMOITEMS("MMOItems");
 	private final String name;
 

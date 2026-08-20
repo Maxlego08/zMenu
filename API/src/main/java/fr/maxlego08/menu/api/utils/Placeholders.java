@@ -116,7 +116,7 @@ public record Placeholders(Map<String, String> placeholders) {
                 }
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
             Logger.info("Error with placeholder key " + key + " !", Logger.LogType.ERROR);
         }
         return string;

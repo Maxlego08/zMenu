@@ -86,7 +86,7 @@ public class VersionFilter {
             } catch (Exception e) {
                 if (Configuration.enableDebug) {
                     Logger.error("Failed to load class " + clazz.getName() + " for plugin " + plugin.getName() + " with annotation " + annotation.getSimpleName() + " due to: " + e.getMessage() + ". Please check reporte this error to the plugin developer (" + plugin.getDescription().getAuthors() + ")");
-                    e.printStackTrace();
+                    Logger.error(e);
                 }
             }
         }
