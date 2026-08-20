@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.1.8
+
 ## New Features
 
 - **Fallback inventories for dialogs on older clients**: dialogs can now define a `fallback-inventory`
