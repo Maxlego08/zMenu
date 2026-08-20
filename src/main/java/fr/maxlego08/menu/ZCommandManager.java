@@ -120,7 +120,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
                     .filter(e -> e.getName().endsWith(".yml"))
                     .forEach(file -> this.loadCommand(this.plugin, file));
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error(e);
         }
 
 
@@ -156,7 +156,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
                 Command command = loader.load(configuration, "commands." + key + ".", file);
                 this.registerCommand(command);
             } catch (InventoryException e) {
-                e.printStackTrace();
+                Logger.error(e);
             }
         }
     }

@@ -150,6 +150,16 @@ dependencies:
       required: false
       join-classpath: true
 
+    ViaVersion:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ProtocolSupport:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
     # -- Economy plugins
     Vault:
       required: false

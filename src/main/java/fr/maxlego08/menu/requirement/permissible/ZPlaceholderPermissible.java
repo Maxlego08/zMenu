@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Implementation of the {@link PlaceholderPermissible} interface that checks player permissions
@@ -65,8 +66,18 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
             valueAsString = plugin.parse(player, placeholders.parse(this.placeholder));
             resultAsString = plugin.parse(player, placeholders.parse(this.value));
         } else {
+            String parsedTargetPlayer = plugin.parse(player, placeholders.parse(this.targetPlayer));
 
-            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(plugin.parse(player, placeholders.parse(this.targetPlayer)));
+            java.util.UUID uuid;
+            try {
+                uuid = java.util.UUID.fromString(parsedTargetPlayer);
+            } catch (IllegalArgumentException e) {
+                uuid = null;
+            }
+
+            OfflinePlayer offlinePlayer = uuid != null
+                    ? Objects.requireNonNull(fr.robie.paperdispatch.cache.OfflinePlayerCache.getGlobalInstance()).get(uuid)
+                    : OfflinePlayerCache.get(parsedTargetPlayer);
             valueAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.placeholder));
             resultAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.value));
         }
@@ -115,7 +126,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
 
             } catch (Exception exception) {
                 if (Configuration.enableDebug) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
                 return false;
             }

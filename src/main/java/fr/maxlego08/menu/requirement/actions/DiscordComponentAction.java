@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.requirement.actions;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -29,7 +31,7 @@ public class DiscordComponentAction extends ActionHelper {
                 discordWebhook.execute();
             } catch (Exception exception) {
                 if (Configuration.enableDebug) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             }
         });

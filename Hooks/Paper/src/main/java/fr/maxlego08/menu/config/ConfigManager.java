@@ -199,7 +199,7 @@ public class ConfigManager implements ConfigManagerInt {
         } catch (Exception e) {
             if (Configuration.enableDebug) {
                 Logger.info("Failed to open configuration dialog for player: " + player.getName() + " error: " + e.getMessage(), Logger.LogType.ERROR);
-                e.printStackTrace();
+                Logger.error(e);
             }
         }
     }

@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.website.sync;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -540,7 +542,7 @@ public class LiveSyncManager extends ZUtils {
                     LiveSyncManager.this.connecting = false;
                     LiveSyncManager.this.severe("Live connection error: " + ex.getMessage() + ".");
                     if (Configuration.enableDebug) {
-                        ex.printStackTrace();
+                        Logger.error(ex);
                     }
                 }
             };
@@ -558,7 +560,7 @@ public class LiveSyncManager extends ZUtils {
             this.severe("Failed to open the live connection: " + throwable.getMessage() + ".");
             message(this.plugin, sender, Message.WEBSITE_SYNC_CONNECT_ERROR);
             if (Configuration.enableDebug) {
-                throwable.printStackTrace();
+                Logger.error(throwable);
             }
         }
     }
@@ -1115,7 +1117,7 @@ public class LiveSyncManager extends ZUtils {
                 applied = false;
                 this.severe("zMenu failed to load the synced inventory '" + label + "': " + exception.getMessage() + ".");
                 if (Configuration.enableDebug) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             }
 
@@ -1173,7 +1175,7 @@ public class LiveSyncManager extends ZUtils {
             } catch (Exception exception) {
                 this.severe("Failed to open '" + label + "' for " + player.getName() + ": " + exception.getMessage() + ".");
                 if (Configuration.enableDebug) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             }
         });

@@ -180,7 +180,7 @@ public abstract class PerformButton extends SlotButton {
             } catch (Exception exception) {
                 if (Configuration.enableDebug){
                     Logger.info("An error occurred while executing command: " + command);
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             }
         });

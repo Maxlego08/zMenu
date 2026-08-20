@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.save;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.enums.MessageType;
 import fr.maxlego08.menu.api.utils.Message;
@@ -32,7 +34,7 @@ public class MessageLoader {
             try {
                 file.createNewFile();
             } catch (IOException exception) {
-                exception.printStackTrace();
+                Logger.error(exception);
             }
         }
 
@@ -68,7 +70,7 @@ public class MessageLoader {
         try {
             configuration.save(file);
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
 
         this.loadMessages(configuration);

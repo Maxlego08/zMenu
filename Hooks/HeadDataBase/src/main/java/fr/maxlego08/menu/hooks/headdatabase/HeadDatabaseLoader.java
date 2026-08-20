@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.hooks.headdatabase;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
@@ -26,7 +28,7 @@ public class HeadDatabaseLoader extends MaterialLoader {
             return api.getItemHead(materialString);
 
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
 
         return null;

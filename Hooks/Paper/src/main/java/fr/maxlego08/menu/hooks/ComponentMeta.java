@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.hooks;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.LoreType;
@@ -107,7 +109,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
         try {
             this.nameMethod.invoke(itemMeta, component);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 
@@ -160,14 +162,14 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
                 }
 
             } catch (Exception exception) {
-                exception.printStackTrace();
+                Logger.error(exception);
             }
         }
 
         try {
             this.setLoreMethod.invoke(itemMeta, components);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 
@@ -180,7 +182,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
                 return (Inventory) this.inventoryTypeMethod.invoke(null, inventoryHolder, inventoryType, component);
             }
         } catch (IllegalAccessException | InvocationTargetException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
         if (inventoryTypeOrSize instanceof Integer) {
             return Bukkit.createInventory(inventoryHolder, (int) inventoryTypeOrSize, inventoryName);

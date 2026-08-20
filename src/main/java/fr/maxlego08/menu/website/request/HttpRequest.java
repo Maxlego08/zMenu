@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.website.request;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import fr.maxlego08.menu.ZMenuPlugin;
@@ -93,7 +95,7 @@ public class HttpRequest {
 
             } catch (Exception exception) {
                 if (Configuration.enableDebug) {
-                    exception.printStackTrace();
+                    Logger.error(exception);
                 }
             }
 
@@ -200,7 +202,7 @@ public class HttpRequest {
 
         } catch (Exception exception) {
             if (Configuration.enableDebug) {
-                exception.printStackTrace();
+                Logger.error(exception);
             }
             // Connect/read timeout, connection reset, DNS failure, etc. - a retryable transport error.
             return new Attempt(false, -1, 0L, Collections.emptyMap());

@@ -145,11 +145,11 @@ public class ZPatternManager implements PatternManager {
                     try {
                         loader.load(file);
                     } catch (InventoryException e) {
-                        e.printStackTrace();
+                        Logger.error(e);
                     }
                 });
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 }

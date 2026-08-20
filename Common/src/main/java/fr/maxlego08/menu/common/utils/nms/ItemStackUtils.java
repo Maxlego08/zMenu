@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils.nms;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.Base64;
@@ -55,7 +57,7 @@ public class ItemStackUtils {
                     .invoke(null, localObject1, localByteArrayOutputStream);
         } catch (Exception localException) {
             if (Configuration.enableDebug) {
-                localException.printStackTrace();
+                Logger.error(localException);
             }
         }
         String string = Base64.encode(localByteArrayOutputStream.toByteArray());
@@ -112,7 +114,7 @@ public class ItemStackUtils {
             localItemStack = (ItemStack) EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
                     .getMethod("asBukkitCopy", new Class[]{localClass2}).invoke(null, new Object[]{localObject2});
         } catch (Exception localException) {
-            // localException.printStackTrace();
+            // Logger.error(localException);
         }
         if (localItemStack != null && !itemStackSerialized.containsKey(localItemStack))
             itemStackSerialized.put(localItemStack, paramString);
@@ -187,7 +189,7 @@ public class ItemStackUtils {
             try {
                 localClass = Class.forName(var3);
             } catch (ClassNotFoundException localClassNotFoundException) {
-                localClassNotFoundException.printStackTrace();
+                Logger.error(localClassNotFoundException);
             }
             return localClass;
         }

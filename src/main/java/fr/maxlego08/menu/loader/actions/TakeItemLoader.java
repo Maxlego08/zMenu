@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.enums.ItemVerification;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.requirement.actions.TakeItemAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,7 @@ public class TakeItemLoader extends ActionLoader {
         }
 
         boolean useCache = accessor.getBoolean("use-cache", false);
-        int amount = accessor.getInt("amount", 1);
+        ResolvableInt amount = ResolvableInt.autoOrNull(accessor.getString("amount", "1"));
         ItemVerification itemVerification = ItemVerification.valueOf(accessor.getString("verification", ItemVerification.SIMILAR.name()));
         return new TakeItemAction(menuItemStack, useCache, amount, itemVerification);
     }

@@ -12,8 +12,11 @@ import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
@@ -22,6 +25,9 @@ import io.papermc.paper.dialog.Dialog;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,15 +37,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-public class ZDialogManager implements DialogManager {
+public class ZDialogManager implements DialogManager, Listener {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
 
-    private final Set<String> dialogNames = new HashSet<>();
-    private final Map<String, List<AbstractDialogInventory>> dialogs = new HashMap<>();
-    private final Map<UUID, DialogInventory> activeDialogs = new HashMap<>();
+    private final Set<String> dialogNames = ConcurrentHashMap.newKeySet();
+    private final Map<String, List<AbstractDialogInventory>> dialogs = new ConcurrentHashMap<>();
+    private final Map<UUID, DialogInventory> activeDialogs = new ConcurrentHashMap<>();
 
     private final ComponentMeta paperComponent;
 
@@ -108,7 +115,8 @@ public class ZDialogManager implements DialogManager {
                     dialog.getFileName().equals(name) || dialog.getName().equals(name)
             );
         }
-        this.dialogNames.removeIf(dname -> dname.equals(dname.toLowerCase(Locale.ROOT)));
+        String suffix = ":" + name.toLowerCase(Locale.ROOT);
+        this.dialogNames.removeIf(dialogName -> dialogName.endsWith(suffix));
     }
 
     @Override
@@ -204,6 +212,12 @@ public class ZDialogManager implements DialogManager {
 
     @Override
     public void openDialog(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
+        if (!this.menuPlugin.getClientVersionManager().supportsDialogs(player)) {
+            if (!this.checkRequirement(dialogInventory.getOpenRequirement(), player)) return;
+            this.openFallbackInventory(player, dialogInventory, oldInventories);
+            return;
+        }
+
         PlayerOpenInventoryEvent playerOpenInventoryEvent = new PlayerOpenInventoryEvent(player, dialogInventory, 1, oldInventories);
         if (Configuration.enableFastEvent) {
             this.menuPlugin.getInventoryManager().getFastEvents().forEach(event -> event.onPlayerOpenInventory(playerOpenInventoryEvent));
@@ -236,9 +250,36 @@ public class ZDialogManager implements DialogManager {
                 Logger.info("Failed to open dialog for player: " + player.getName()+" error :"+ e.getMessage(), Logger.LogType.ERROR);
                 if (Configuration.enableDebug){
                     Logger.info("Error details: "+e, Logger.LogType.ERROR);
-                    e.printStackTrace();
+                    Logger.error(e);
                 }
             }
+        }
+    }
+
+    /**
+     * Opens the inventory configured under {@code fallback-inventory} for a player whose
+     * client cannot render dialogs. Sends a message when no usable fallback exists, so the
+     * player is never left with nothing happening.
+     */
+    private void openFallbackInventory(Player player, DialogInventory dialogInventory, List<Inventory> oldInventories) {
+        DialogFallback fallback = dialogInventory.getFallbackInventory();
+
+        if (fallback == null || !fallback.isValid()) {
+            this.menuPlugin.getInventoryManager().sendMessage(player, Message.DIALOG_NOT_SUPPORTED, "%version%", ClientVersionManager.DIALOG_MINIMUM_VERSION.toString(), "%name%", dialogInventory.getFileName());
+            return;
+        }
+
+        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(fallback.plugin(), fallback.inventoryName());
+        if (optional.isEmpty()) {
+            this.menuPlugin.getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", dialogInventory.getFileName(), "%toName%", fallback.inventoryName(), "%plugin%", fallback.plugin());
+            return;
+        }
+
+        try {
+            this.menuPlugin.getInventoryManager().openInventory(player, optional.get(), fallback.page(), oldInventories);
+        } catch (Exception exception) {
+            Logger.info("Failed to open the fallback inventory " + fallback.inventoryName() + " of the dialog " + dialogInventory.getFileName() + " for " + player.getName() + ": " + exception.getMessage(), Logger.LogType.ERROR);
+            if (Configuration.enableDebug) Logger.error(exception);
         }
     }
 
@@ -254,6 +295,16 @@ public class ZDialogManager implements DialogManager {
      */
     public void removeActiveDialog(@NotNull Player player) {
         this.activeDialogs.remove(player.getUniqueId());
+    }
+
+    /**
+     * Drops the active dialog of a leaving player. Without this the map keeps one entry per
+     * player who ever opened a dialog, and a reconnecting player inherits the dialog they
+     * had open in a previous session.
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        this.activeDialogs.remove(event.getPlayer().getUniqueId());
     }
 
     public boolean openDialogByName(@NotNull Player player, String dialogName) {
@@ -280,7 +331,7 @@ public class ZDialogManager implements DialogManager {
 
     @Override
     public Set<String> getDialogNames() {
-        return Set.of();
+        return Collections.unmodifiableSet(this.dialogNames);
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {

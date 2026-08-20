@@ -209,7 +209,7 @@ public class VCommandManager extends ZUtils implements CommandExecutor, TabCompl
                 Logger.info("Unable to add the command " + vCommand.getSyntax(), LogType.ERROR);
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Logger.error(exception);
         }
     }
 

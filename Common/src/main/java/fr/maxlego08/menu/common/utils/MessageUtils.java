@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.common.utils;
 
+import fr.maxlego08.menu.zcore.logger.Logger;
+
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.api.utils.Message;
@@ -160,7 +162,7 @@ public abstract class MessageUtils extends LocationUtils {
         try {
             return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Logger.error(e);
         }
         return null;
     }
@@ -184,7 +186,7 @@ public abstract class MessageUtils extends LocationUtils {
             this.sendPacket(player, packet);
             this.sendPacket(player, timingPacket);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e);
         }
     }
 
@@ -194,7 +196,7 @@ public abstract class MessageUtils extends LocationUtils {
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
             playerConnection.getClass().getMethod("sendPacket", this.getNMSClass("Packet")).invoke(playerConnection, packet);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error(e);
         }
     }
 
