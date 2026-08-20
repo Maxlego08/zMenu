@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import dev.faststats.bukkit.BukkitContext;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoFontImage;
 import fr.maxlego08.menu.api.annotations.AutoListener;
@@ -123,6 +124,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final AttributApplier attributApplier;
     private final File configFile;
     private final PlatformScheduler scheduler;
+    private final BukkitContext context = new BukkitContext.Factory(this, "df00d7dc59087d9e248fe7723489b87b").metrics(dev.faststats.Metrics.Factory::create).create();
     private ZWebsiteManager websiteManager;
     private DialogManager dialogManager;
     private BedrockManager bedrockManager;
@@ -307,6 +309,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
 
         new VersionChecker(this, 253).useLastVersion();
+        context.ready();
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -424,6 +427,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public void onDisable() {
 
+        context.shutdown();
+
         if (this.packetManager != null) {
             this.packetManager.onDisable();
         }
@@ -438,7 +443,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         YamlFileCache.clearCache();
 
         this.websiteManager.onDisable();
-        
+
         if (!this.isMockBukkitServer) {
             NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
             if (nmsMenuPacketListener != null) {
@@ -678,16 +683,12 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     @Override
     public List<String> parse(Player player, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings).stream()
-                .map(s -> s.replace("\uF000", "%"))
-                .toList();
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
     }
 
     @Override
     public List<String> parse(OfflinePlayer offlinePlayer, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream()
-                .map(s -> s.replace("\uF000", "%"))
-                .toList();
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
     }
 
     private void loadMeta() {
