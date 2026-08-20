@@ -47,6 +47,10 @@ allprojects {
                 excludeGroup("org.spigotmc")
             }
         }
+        maven {
+            name = "faststatsReleases"
+            url = uri("https://repo.faststats.dev/releases")
+        }
     }
 
     java {
@@ -120,11 +124,13 @@ allprojects {
         implementation(rootLibs.paperdispatch)
 
         implementation(rootLibs.xseries)
+        implementation(rootLibs.fastStatsBukkit)
         implementation(rootLibs.exp4j)
 
         testImplementation(platform(rootLibs.junit.bom))
         testImplementation(rootLibs.junit.jupiter)
         testRuntimeOnly(rootLibs.junit.platform.launcher)
+
     }
 
     afterEvaluate {
@@ -183,6 +189,7 @@ tasks {
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")
         relocate("org.java_websocket", "fr.maxlego08.menu.hooks.java_websocket")
         relocate("fr.robie.paperdispatch", "fr.maxlego08.menu.hooks.paperdispatch")
+        relocate("dev.faststats", "fr.maxlego08.menu.hooks.faststats")
 
         rootProject.extra.properties["sha"]?.let { sha ->
             archiveClassifier.set("${rootProject.extra.properties["classifier"]}-${sha}")

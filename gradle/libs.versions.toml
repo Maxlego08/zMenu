@@ -24,6 +24,7 @@ xseries = "13.3.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
 paper-dispatch = "1.0.3"
+faststats = "0.29.4"
 
 # Integration Hooks
 placeholderapi = "2.11.6"
@@ -72,6 +73,7 @@ folialib = { group = "com.tcoded", name = "FoliaLib", version.ref = "folialib" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 exp4j = { group = "net.objecthunter", name = "exp4j", version.ref = "exp4j" }
 java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
+fastStatsBukkit = { group = "dev.faststats.metrics", name = "bukkit", version.ref = "faststats" }
 
 # Integration Hooks
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
