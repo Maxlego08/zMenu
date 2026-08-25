@@ -1,15 +1,13 @@
 package fr.maxlego08.menu.common.utils;
 
-import fr.maxlego08.menu.zcore.logger.Logger;
-
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -74,16 +72,7 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     public static void message(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
-
-        if (sender instanceof ConsoleCommandSender) {
-            if (!message.getMessages().isEmpty()) {
-                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
-            } else {
-                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
-            }
-        } else {
-
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
             switch (message.getType()) {
                 case CENTER:
                     if (!message.getMessages().isEmpty()) {
@@ -105,6 +94,12 @@ public abstract class MessageUtils extends LocationUtils {
                     break;
                 default:
                     break;
+            }
+        } else {
+            if (!message.getMessages().isEmpty()) {
+                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+            } else {
+                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
             }
         }
     }
