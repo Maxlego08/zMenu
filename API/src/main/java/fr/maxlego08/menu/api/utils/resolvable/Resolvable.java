@@ -14,7 +14,8 @@ public interface Resolvable<T> {
     @Nullable T resolve(@NotNull BuildContext context);
 
     static boolean isExpression(@NotNull String toResolve) {
-        return toResolve.contains("%");
+        int first = toResolve.indexOf('%');
+        return first != -1 && toResolve.indexOf('%', first + 1) != -1;
     }
 
     static <X> void applyResolvable(@NotNull BuildContext context, @Nullable Resolvable<X> resolvable, @NotNull Consumer<X> consumer) {
