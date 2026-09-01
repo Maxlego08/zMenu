@@ -7,8 +7,9 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import fr.maxlego08.menu.players.ZData;
 import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.players.ZData;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -70,8 +71,34 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
         }
         long expiredAt = seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
         String result = placeholders.parse(this.papi(this.value.toString(), player, false));
-        String dataValue = this.enableMathExpression ? String.valueOf((int) new ExpressionBuilder(result).build().evaluate()) : result;
+        String dataValue = result;
+        if (this.enableMathExpression) {
+            Integer evaluated = this.evaluate(result);
+            if (evaluated != null) dataValue = String.valueOf(evaluated.intValue());
+        }
         return new ZData(this.papi(this.key, player, false), dataValue, expiredAt);
+    }
+
+    /**
+     * Resolves the value to add or subtract.
+     * <p>
+     * The value goes through placeholders, so at runtime it can be an unresolved
+     * {@code %placeholder%}, an empty string or a decimal. Neither the expression engine nor
+     * {@link Integer#parseInt(String)} may throw here: the action runs on a click, and an
+     * exception would silently skip every action queued after it.
+     *
+     * @return the resolved amount, or {@code null} when the value is not usable.
+     */
+    private Integer evaluate(String result) {
+        try {
+            return this.enableMathExpression
+                    ? (int) new ExpressionBuilder(result).build().evaluate()
+                    : (int) Double.parseDouble(result.trim().replace(",", "."));
+        } catch (Exception exception) {
+            Logger.info("Unable to use " + result + " as a number for the player data " + this.key + ": "
+                    + exception.getMessage(), Logger.LogType.ERROR);
+            return null;
+        }
     }
 
     /* (non-Javadoc)
@@ -99,7 +126,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             if (optional.isPresent()) {
                 Data data = optional.get();
                 String result = placeholders.parse(this.papi(this.value.toString(), player, false));
-                data.add(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
+                Integer amount = this.evaluate(result);
+                if (amount == null) return;
+                data.add(amount);
                 this.storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 dataManager.addData(player.getUniqueId(), this.toData(player,placeholders));
@@ -110,7 +139,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             if (optional.isPresent()) {
                 Data data = optional.get();
                 String result = placeholders.parse(this.papi(this.value.toString(), player, false));
-                data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
+                Integer amount = this.evaluate(result);
+                if (amount == null) return;
+                data.remove(amount);
                 this.storageManager.upsertData(player.getUniqueId(), data);
             } else {
                 var data = this.toData(player,placeholders);
