@@ -23,19 +23,21 @@ public class DiscUtils {
     public static byte[] readBytes(File file) throws IOException {
         int length = (int) file.length();
         byte[] output = new byte[length];
-        InputStream in = new FileInputStream(file);
-        int offset = 0;
-        while (offset < length) {
-            offset += in.read(output, offset, (length - offset));
+        try (InputStream in = new FileInputStream(file)) {
+            int offset = 0;
+            while (offset < length) {
+                int read = in.read(output, offset, (length - offset));
+                if (read == -1) break;
+                offset += read;
+            }
         }
-        in.close();
         return output;
     }
 
     public static void writeBytes(File file, byte[] bytes) throws IOException {
-        FileOutputStream out = new FileOutputStream(file);
-        out.write(bytes);
-        out.close();
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            out.write(bytes);
+        }
     }
 
     // -------------------------------------------- //
@@ -78,10 +80,10 @@ public class DiscUtils {
     public static boolean downloadUrl(String urlstring, File file) {
         try {
             URL url = new URL(urlstring);
-            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-            @SuppressWarnings("resource")
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+            try (ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+                 FileOutputStream fos = new FileOutputStream(file)) {
+                fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+            }
             return true;
         } catch (Exception e) {
             Logger.error(e);
