@@ -37,7 +37,7 @@ public abstract class PaginationButton extends Button {
         if (this.onlyRefreshButton) {
             org.bukkit.inventory.ItemStack air = new org.bukkit.inventory.ItemStack(org.bukkit.Material.AIR);
             for (int i : paginateButton.getSlots()) {
-                inventory.addItem(i, air, paginateButton.isPlayerInventory());
+                inventory.addItem(paginateButton.isPlayerInventory(), i, air);
             }
             paginateButton.onRender(player, inventory);
         } else {
