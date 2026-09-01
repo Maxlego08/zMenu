@@ -7,6 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Objects;
+
 @AutoItemStackSimilar
 @SinceVersion("1.21.4")
 public class ItemModelSimilar implements ItemStackSimilar {
@@ -19,6 +21,10 @@ public class ItemModelSimilar implements ItemStackSimilar {
     public boolean isSimilar(@NonNull ItemStack itemStackA, @NonNull ItemStack itemStackB) {
         ItemMeta itemMetaA = itemStackA.getItemMeta();
         ItemMeta itemMetaB = itemStackB.getItemMeta();
-        return itemMetaA.hasItemModel() == itemMetaB.hasItemModel() && itemMetaA.getItemModel() == itemMetaB.getItemModel();
+
+        if (itemMetaA == null || itemMetaB == null) return itemMetaA == itemMetaB;
+        if (itemMetaA.hasItemModel() != itemMetaB.hasItemModel()) return false;
+
+        return Objects.equals(itemMetaA.getItemModel(), itemMetaB.getItemModel());
     }
 }
