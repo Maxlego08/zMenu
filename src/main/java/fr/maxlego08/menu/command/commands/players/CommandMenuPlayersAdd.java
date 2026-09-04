@@ -5,6 +5,7 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.ZSubCommand;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
@@ -13,14 +14,13 @@ import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
 import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
-import fr.robie.paperdispatch.command.SubCommand;
 import io.papermc.paper.command.brigadier.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class CommandMenuPlayersAdd extends SubCommand<ZMenuPlugin> {
+public class CommandMenuPlayersAdd extends ZSubCommand<ZMenuPlugin> {
 
     public CommandMenuPlayersAdd(ZMenuPlugin plugin) {
         super(plugin, "add");
