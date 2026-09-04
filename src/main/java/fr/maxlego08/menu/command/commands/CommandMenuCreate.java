@@ -4,15 +4,15 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.ZSubCommand;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.robie.paperdispatch.command.CommandDispatch;
 import fr.robie.paperdispatch.command.CommandResultType;
-import fr.robie.paperdispatch.command.SubCommand;
 import io.papermc.paper.command.brigadier.Commands;
 import org.jetbrains.annotations.NotNull;
 
-public class CommandMenuCreate extends SubCommand<ZMenuPlugin> {
+public class CommandMenuCreate extends ZSubCommand<ZMenuPlugin> {
 
     public CommandMenuCreate(ZMenuPlugin plugin) {
         super(plugin, "create");
