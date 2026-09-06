@@ -59,14 +59,16 @@ public abstract class ButtonLoader {
                 if (line.contains("-")) {
                     try {
                         String[] values = line.split("-");
-                        int from = Integer.parseInt(values[0]);
-                        int to = Integer.parseInt(values[1]) + 1;
-                        slots.addAll(IntStream.range(Math.min(from, to), Math.max(from, to)).boxed().toList());
+                        int from = Integer.parseInt(values[0].trim());
+                        int to = Integer.parseInt(values[1].trim());
+                        int first = Math.min(from, to);
+                        int last = Math.max(from, to);
+                        slots.addAll(IntStream.rangeClosed(first, last).boxed().toList());
                     } catch (Exception ignored) {
                     }
                 } else {
                     try {
-                        slots.add(Integer.parseInt(line));
+                        slots.add(Integer.parseInt(line.trim()));
                     } catch (NumberFormatException ignored) {
                     }
                 }
