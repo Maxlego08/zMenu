@@ -59,6 +59,20 @@
       and `close-on-damage` (default `true`).
     - `ListenerAdapter` gained `onInventoryOpen`, `onMove`, `onTeleport` and `onDamage` hooks.
 
+- **Anti-dupe bypass on items without ItemMeta (ZM-02)**: `PDCDupeManager` skipped both tagging and
+  detection whenever `ItemStack.hasItemMeta()` returned `false`. That is the case for any item built from
+  a material alone, with no custom name, lore or enchantment, so raw showcase items such as
+  `NETHERITE_INGOT`, `NETHER_STAR`, `TOTEM_OF_UNDYING` or `ENCHANTED_GOLDEN_APPLE` were never marked and
+  survived extraction as fully functional vanilla items.
+    - `protectItem` no longer checks `hasItemMeta()`. It builds the meta through `getItemMeta()`, falling
+      back to `Bukkit.getItemFactory().getItemMeta(Material)`, and writes the persistent data tag on every
+      non-air item.
+    - `isDupeItem` no longer checks `hasItemMeta()` either, so protected raw materials are now correctly
+      detected and removed by `DupeListener`.
+    - Air stacks are short-circuited in `isDupeItem` to avoid building meta for empty slots, which are the
+      most frequent case on the inventory click path.
+    - `NMSDupeManager` (used on servers below 1.14) was already writing raw NBT and is unaffected.
+
 # 1.1.1.8
 
 ## New Features
