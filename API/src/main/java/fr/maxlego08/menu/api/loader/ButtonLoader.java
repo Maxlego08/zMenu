@@ -63,7 +63,7 @@ public abstract class ButtonLoader {
                         int to = Integer.parseInt(values[1].trim());
                         int first = Math.min(from, to);
                         int last = Math.max(from, to);
-                        slots.addAll(IntStream.rangeClosed(first, last).boxed().toList());
+                        slots.addAll(IntStream.range(first, last).boxed().toList());
                     } catch (Exception ignored) {
                     }
                 } else {
