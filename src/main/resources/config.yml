@@ -219,3 +219,16 @@ enable-website-auto-connect: true
 # API URL for inventory builder
 # Do not change this value, leave the default URL; otherwise the link with the site will not work
 api-url: "https://minecraft-inventory-builder.com/api/v2/"
+# Close the menu when the player moves away from where it was opened.
+# Protects against "ghost GUI" abuse: a modified client can hide the inventory screen locally
+# without sending a close packet, then keep clicking the still-open container while running,
+# fighting or teleporting. Set to false only if you rely on menus staying open while walking.
+close-on-move: true
+
+# Maximum distance (in blocks) a player may move from the opening location before the menu is closed.
+# Only used when close-on-move is true.
+max-move-distance: 2.0
+
+# Close the menu as soon as the player takes or deals damage.
+# Prevents using menus (kits, shops, heals) during combat through a ghost GUI.
+close-on-damage: true

@@ -288,6 +288,34 @@ public class Configuration {
     )
     public static long packetEventClickLimiterMilliseconds = 50L;
 
+    // Security: close the menu when the player moves away from the location where it was opened.
+    // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
+    // then keeps clicking the still-valid container from anywhere on the map.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Close inventory on move"
+    )
+    public static boolean closeInventoryOnMove = true;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Max move distance",
+            endRange = 64,
+            stepRange = 1
+    )
+    public static double maxMoveDistance = 2.0;
+
+    // Security: close the menu as soon as the player takes or deals damage.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Close inventory on damage"
+    )
+    public static boolean closeInventoryOnDamage = true;
+
     @ConfigOption(
             type = DialogInputType.SINGLE_OPTION,
             label = "OP grant method"
@@ -443,6 +471,10 @@ public class Configuration {
         enablePacketEventClickLimiter = fileConfiguration.getBoolean(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath());
         packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 50L);
 
+        closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
+        maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
+        closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
+
         enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
         performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
         performanceFilterOperations = fileConfiguration.getStringList(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath());
@@ -513,6 +545,9 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath(), skipCloseActionsOnInventorySwitch);
         fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
         fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
+        fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
+        fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
+        fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
         fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
@@ -573,6 +608,10 @@ public class Configuration {
 
         ENABLE_PACKET_EVENT_CLICK_LIMITER("enable-packet-event-click-limiter"),
         PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds"),
+
+        CLOSE_INVENTORY_ON_MOVE("close-on-move"),
+        MAX_MOVE_DISTANCE("max-move-distance"),
+        CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),
 
         ENABLE_PERFORMANCE_DEBUG("enable-performance-debug"),
         PERFORMANCE_DEBUG_THRESHOLD_MS("performance-debug.threshold-ms"),

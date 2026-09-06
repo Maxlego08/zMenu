@@ -42,6 +42,23 @@
 
 # Unreleased
 
+## Security
+
+- **Ghost GUI / session desynchronization (ZM-01)**: a modified client could hide the inventory screen
+  locally without sending a close packet, leaving the container valid on the server, and then keep clicking
+  it from anywhere on the map, in combat or across dimensions. zMenu now invalidates such sessions:
+    - `VInventory` stores the location of the player when the session is opened (captured on
+      `InventoryOpenEvent`, so every open path is covered). Because an inventory is cloned per opening,
+      the location lives and dies with the session, no external tracking is needed.
+    - New `PlayerMoveEvent` and `PlayerTeleportEvent` handlers close the menu when the player gets further
+      than `max-move-distance` from that location, or changes world.
+    - New `EntityDamageEvent` handler closes the menu when the player takes **or deals** damage.
+    - `VInventoryManager.handleClick` re-checks the distance before dispatching a click, and cancels the
+      event if it fails, so a click that arrives between two move events is still rejected.
+    - New configuration options: `close-on-move` (default `true`), `max-move-distance` (default `2.0`)
+      and `close-on-damage` (default `true`).
+    - `ListenerAdapter` gained `onInventoryOpen`, `onMove`, `onTeleport` and `onDamage` hooks.
+
 # 1.1.1.8
 
 ## New Features
