@@ -199,6 +199,45 @@
       defeated the `` escape: the first pass turns an escaped marker into a literal `%`,
       which the second pass then resolved as a real placeholder.
 
+- **Buffered player data lost on shutdown, and two data losing races in the write buffer (ZM-06)**:
+    - **The reported disconnect duplication does not reproduce, and the report's explanation of it
+      is wrong.** `ZDataManager` keeps player data in an in-memory map, `loadPlayers` fills it once
+      at startup for every player rather than per join, and nothing removes a player from it when
+      they disconnect (`clearPlayer` has a single caller, the `/zm players clearplayer` command).
+      A player who claims a reward and then kills their connection still has that claim in memory,
+      so it is still blocked when they come back. Disconnecting cannot roll your own data back.
+    - **What was actually broken: there was no flush on shutdown.** `onDisable` closed inventories,
+      restored player inventories, saved the config and cleared caches, but never asked the storage
+      manager to write anything, so stopping or crashing the server within the `batch-task` window
+      discarded up to that many seconds of every player's data. After a restart the old state was
+      loaded back and a one-time reward could be claimed again. `StorageManager.flush` was added as
+      a default no-op and is now called synchronously from `onDisable`, after the inventories are
+      closed so that close-actions writing data are included, and synchronously because the
+      scheduler is being torn down at that point and an async write would never run.
+    - New `flush-storage-on-quit` option, default `true`, writes buffered data when a player
+      disconnects instead of waiting for the next batch. This is not needed to prevent the rollback
+      above, it narrows what an outright crash can lose. Several players leaving at once are
+      coalesced into a single write. Set it to `false` if the extra write per quit is too much for
+      your database, the shutdown flush still runs either way.
+    - **Fixed the batch task destroying data on every cycle.** It drained both caches and then
+      called `clearAll()` on the whole map. Both types were already drained, so the only thing that
+      call could still remove was whatever the main thread had added in between, and those rows were
+      discarded without ever being written. That was a silent data loss window every `batch-task`
+      seconds on a running server, with no restart involved.
+    - **Fixed two races in `TypeSafeCache`.** It was a concurrent map of plain `ArrayList`s, written
+      from the main thread and drained by the async batch task, which left the lists themselves
+      unguarded: draining one while the main thread appended could throw
+      `ConcurrentModificationException`. More seriously, a writer that had already looked its list
+      up could append to it after the drain had taken it out of the map, and that row was then never
+      written at all. Every operation is now guarded by one lock, `drain` removes and returns
+      atomically, `get` returns a snapshot, and `replaceMatching` supersedes a pending row in a
+      single operation instead of a read-modify-write that a drain could split in half. Measured
+      with a concurrency harness: the old code lost roughly 3% of rows under a writer racing a
+      drainer, the new code loses none across 50000 writes.
+    - The `batch-task` default stays at `10`. With a shutdown flush and an optional quit flush in
+      place the interval only matters for an outright crash, and halving it would double the write
+      frequency on every server for a case those flushes already cover.
+
 # 1.1.1.8
 
 ## New Features

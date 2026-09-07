@@ -327,6 +327,17 @@ public class Configuration {
     )
     public static boolean fixComponentCacheKeyCollisions = true;
 
+    // Write buffered player data to the database when a player disconnects, instead of waiting for
+    // the next batch-task cycle. Shrinks what a server crash can lose. Set to false if the extra
+    // write on every quit is a problem, the shutdown flush still runs either way.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Flush storage on quit"
+    )
+    public static boolean flushStorageOnQuit = true;
+
     // Security: close the menu when the player moves away from the location where it was opened.
     // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
     // then keeps clicking the still-valid container from anywhere on the map.
@@ -516,6 +527,7 @@ public class Configuration {
         componentCacheMaxSize = fileConfiguration.getInt(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), 10000);
         componentCacheExpireMinutes = fileConfiguration.getLong(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), 10L);
         fixComponentCacheKeyCollisions = fileConfiguration.getBoolean(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), true);
+        flushStorageOnQuit = fileConfiguration.getBoolean(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), true);
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
         closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
@@ -594,6 +606,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), componentCacheMaxSize);
         fileConfiguration.set(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
         fileConfiguration.set(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
+        fileConfiguration.set(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), flushStorageOnQuit);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
         fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
@@ -662,6 +675,7 @@ public class Configuration {
         COMPONENT_CACHE_MAX_SIZE("component-cache.max-size"),
         COMPONENT_CACHE_EXPIRE_MINUTES("component-cache.expire-minutes"),
         FIX_COMPONENT_CACHE_KEY_COLLISIONS("component-cache.fix-key-collisions"),
+        FLUSH_STORAGE_ON_QUIT("flush-storage-on-quit"),
         CLOSE_INVENTORY_ON_MOVE("close-on-move"),
         MAX_MOVE_DISTANCE("max-move-distance"),
         CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),

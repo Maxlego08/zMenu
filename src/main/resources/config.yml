@@ -68,6 +68,15 @@ database-configuration:
 # Instead of making an SQL query for each update, a single query will be executed every 10 seconds
 batch-task: 10
 
+# Write buffered player data to the database as soon as a player disconnects, instead of waiting
+# for the next batch-task cycle.
+# Buffered data is always written when the server stops, so this is only about how much an outright
+# crash can lose: with this enabled a crash loses only what arrived since the last disconnect,
+# instead of up to a full batch-task interval for every player.
+# Set to false if the extra write on each quit is too much for your database. Several players
+# leaving at the same time are already grouped into a single write.
+flush-storage-on-quit: true
+
 # Allows saving it in the database the inventories opened by the players.
 enable-player-open-inventory-logs: true
 

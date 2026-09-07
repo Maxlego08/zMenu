@@ -462,6 +462,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (this.vinventoryManager != null) this.vinventoryManager.close();
         this.inventoriesPlayer.restoreAllInventories();
 
+        if (this.storageManager != null) this.storageManager.flush();
+
         Configuration.getInstance().save(this.getConfig(), this.configFile);
 
         YamlFileCache.clearCache();
