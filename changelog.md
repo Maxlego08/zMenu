@@ -73,6 +73,61 @@
       most frequent case on the inventory click path.
     - `NMSDupeManager` (used on servers below 1.14) was already writing raw NBT and is unaffected.
 
+- **Click rate limiter bypass (ZM-03)**: several holes let automated clients push far more clicks through
+  a menu than the configured throttle allows.
+    - `VInventoryManager.handleClick` now calls `event.setCancelled(true)` when a click is rejected by the
+      cooldown. It previously only sent a message and returned, so on an inventory with
+      `disable-click: false` the throttled click still performed its vanilla item move.
+    - `PacketEventClickLimiterListener` no longer clears the player's click record when it receives a
+      `CLOSE_WINDOW` packet. That packet is attacker controlled and was never validated against the open
+      window, so interleaving close and click packets reset the limiter on every single click. The record
+      is now cleared in `onInventoryClose`, which only runs on a genuine server side close. This also
+      removes a possible `NullPointerException` on that path.
+    - `enable-cooldown-click` and `cooldown-click-milliseconds` are now read with an explicit default.
+      The single argument getters return `false` and `0` for a missing key, which silently disabled the
+      click throttle entirely on any config file that predated those options.
+    - Default `cooldown-click-milliseconds` raised from `100` to `250`, and default
+      `packet-event-click-limiter-milliseconds` from `50` to `150`. Existing configuration files keep
+      their current values, only newly generated ones use the new defaults.
+    - `enable-packet-event-click-limiter` is deliberately still `false` by default because it requires the
+      PacketEvents plugin and would do nothing without it. Its documentation in `config.yml` now states
+      that enabling it is strongly recommended on public servers, since it is the only limit applied
+      before a click reaches the server tick.
+    - **Known limitation, not fixed by this change**: raising the cooldown reduces the click rate but does
+      not make a purchase atomic. When an economy plugin commits its withdrawal asynchronously, a client
+      clicking slower than the cooldown can still have several requirement checks evaluate against a
+      balance that has not been debited yet. Closing that hole requires fund reservation in the economy
+      plugin or a dedicated transactional requirement type, and is tracked in the ToDo list.
+
+- **Button click-requirement bypass (ZM-04)**: a button whose `click-requirement` failed still handed
+  out everything it was configured to give.
+    - `Button.handleClickCommon` now runs the button `actions` only when every click-requirement
+      passed. They previously ran unconditionally, right after the requirement loop.
+    - `Button.onClick` now runs the button `commands`, `console-commands` and
+      `console-permission-commands` only when every click-requirement passed. Both the mouse click
+      and the Bedrock click paths are covered.
+    - Multiple click-requirements are now combined with a logical AND. Each requirement used to
+      overwrite the result of the previous one, so with several configured, only the last one to
+      run decided the outcome and a passing requirement could mask an earlier failure. The
+      combination is deliberately non short circuiting: every requirement still runs, so its own
+      `deny` and `success` actions fire exactly as before.
+    - `PerformButton.execute` now runs `console-left-commands` and `console-right-commands` as the
+      console instead of as the player. They were passing the player as the command sender, so a
+      console command bound to a left or right click ran with the player's own permissions and
+      either failed silently or executed as the player. The root `console-commands` were already
+      correct.
+    - `ConsoleCommandAction` now inspects the result of each `Bukkit.dispatchCommand` instead of
+      discarding it, and supports a new `stop-on-failure` option. With it enabled, the first
+      command that reports a failure stops the ones after it, so a chain such as "take the money"
+      followed by "grant the rank" can no longer grant the rank when the charge failed. It is
+      opt-in and defaults to `false` on purpose: Bukkit returns `false` both for a command that
+      does not exist and for a command whose executor returned `false`, which many plugins do just
+      to print their usage, so enabling it blindly could stop a chain that was working.
+    - Note: `close-inventory`, `data` updates, `messages` and `sound` still run regardless of the
+      requirement outcome, as they always have. Buttons already have `deny` actions for the failure
+      path, and changing this would alter the behaviour of existing menus that rely on the message
+      or sound firing on a refused click.
+
 # 1.1.1.8
 
 ## New Features

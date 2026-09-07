@@ -240,7 +240,10 @@ public abstract class Button extends PlaceholderButton {
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         AtomicBoolean isSuccess = this.handleClickCommon(player, inventory, event.getClick(), placeholders, true);
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
-        this.execute(this.plugin, event.getClick(), placeholders, player);
+
+        if (isSuccess.get()) {
+            this.execute(this.plugin, event.getClick(), placeholders, player);
+        }
     }
 
     /**
@@ -252,8 +255,11 @@ public abstract class Button extends PlaceholderButton {
      */
     public void onClick(@NotNull Player player, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         ClickType clickType = ClickType.LEFT; // Default to left click for this method
-        this.handleClickCommon(player, inventory, clickType, placeholders, false);
-        this.execute(this.plugin, clickType, placeholders, player);
+        AtomicBoolean isSuccess = this.handleClickCommon(player, inventory, clickType, placeholders, false);
+
+        if (isSuccess.get()) {
+            this.execute(this.plugin, clickType, placeholders, player);
+        }
     }
 
     private AtomicBoolean handleClickCommon(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull ClickType clickType, @NotNull Placeholders placeholders, boolean clickRequirementsCheck) {
@@ -285,17 +291,18 @@ public abstract class Button extends PlaceholderButton {
         if (clickRequirementsCheck) {
             this.clickRequirements.forEach(requirement -> {
                 if (requirement.getClickTypes().contains(clickType)) {
-                    isSuccess.set(requirement.execute(player, this, inventory, placeholders));
+                    isSuccess.set(isSuccess.get() & requirement.execute(player, this, inventory, placeholders));
                 }
             });
         } else {
             this.clickRequirements.forEach(requirement -> {
-                isSuccess.set(requirement.execute(player, this, inventory, placeholders));
+                isSuccess.set(isSuccess.get() & requirement.execute(player, this, inventory, placeholders));
             });
         }
 
-
-        this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
+        if (isSuccess.get()) {
+            this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
+        }
 
         return isSuccess;
     }

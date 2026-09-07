@@ -181,15 +181,20 @@ enable-cache-item-stack: true
 enable-cooldown-click: true
 
 # Cooldown duration in milliseconds between clicks.
-cooldown-click-milliseconds: 100
+# Also acts as a rate limit against automated click macros. Values below ~150 make it realistic for a
+# scripted client to fire several purchases before an asynchronous economy has committed the first one.
+cooldown-click-milliseconds: 250
 
 # Enable packet event click limiter. Limits all click packets received from players (only for zMenu inventories).
-# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits. (Requires PacketEvent plugin)
+# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits.
+# STRONGLY RECOMMENDED on public servers: this is the only limit that applies before the click reaches
+# the server tick, and it is the layer that stops packet injection clients from bursting clicks.
+# Requires the PacketEvents plugin to be installed, it does nothing without it.
 enable-packet-event-click-limiter: false
 
 # Packet event click limiter duration in milliseconds.
 # Minimum time required between packet-level click events. Lower values are more permissive.
-packet-event-click-limiter-milliseconds: 50
+packet-event-click-limiter-milliseconds: 150
 
 # PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
 # Defines how often placeholders should be refreshed.

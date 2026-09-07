@@ -188,6 +188,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         }
 
         if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
+            event.setCancelled(true);
             message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }

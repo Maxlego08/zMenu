@@ -39,11 +39,6 @@ public class PacketEventClickLimiterListener implements PacketListener, Inventor
                 }
                 this.lastClickTimes.put(playerUniqueId, currentTime);
             }
-
-        } else if (packetType == PacketType.Play.Client.CLOSE_WINDOW) {
-            Player player = event.getPlayer();
-            UUID playerUniqueId = player.getUniqueId();
-            this.lastClickTimes.remove(playerUniqueId);
         }
     }
 
@@ -56,6 +51,8 @@ public class PacketEventClickLimiterListener implements PacketListener, Inventor
 
     @Override
     public void onInventoryClose(Player player, BaseInventory inventory) {
-        this.clickLimitedPlayers.remove(player.getUniqueId());
+        UUID playerUniqueId = player.getUniqueId();
+        this.clickLimitedPlayers.remove(playerUniqueId);
+        this.lastClickTimes.remove(playerUniqueId);
     }
 }

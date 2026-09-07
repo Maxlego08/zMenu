@@ -233,7 +233,7 @@ public class Configuration {
             stepRange = 10
     )
 
-    public static long cooldownClickMilliseconds = 100;
+    public static long cooldownClickMilliseconds = 250;
     @ConfigOption(
             type = DialogInputType.NUMBER_RANGE,
             label = "Cache PlaceholderAPI",
@@ -286,7 +286,7 @@ public class Configuration {
             endRange = 1000,
             stepRange = 10
     )
-    public static long packetEventClickLimiterMilliseconds = 50L;
+    public static long packetEventClickLimiterMilliseconds = 150L;
 
     // Security: close the menu when the player moves away from the location where it was opened.
     // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
@@ -450,8 +450,10 @@ public class Configuration {
         allClicksType = clickTypes;
 
         enableCacheItemStack = fileConfiguration.getBoolean(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath());
-        enableCooldownClick = fileConfiguration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath());
-        cooldownClickMilliseconds = fileConfiguration.getLong(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath());
+        // Both read with an explicit default: the one-arg getters return false / 0 for a missing key,
+        // which would silently disable the click throttle on a config that predates these options.
+        enableCooldownClick = fileConfiguration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), true);
+        cooldownClickMilliseconds = fileConfiguration.getLong(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath(), 250L);
 
         cachePlaceholderAPI = fileConfiguration.getLong(ConfigPath.CACHE_PLACEHOLDER_API.getPath());
         enableCachePlaceholderAPI = fileConfiguration.getBoolean(ConfigPath.ENABLE_CACHE_PLACEHOLDER_API.getPath());
@@ -469,7 +471,7 @@ public class Configuration {
         enableToast = fileConfiguration.getBoolean(ConfigPath.ENABLE_TOAST.getPath(), true);
 
         enablePacketEventClickLimiter = fileConfiguration.getBoolean(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath());
-        packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 50L);
+        packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 150L);
 
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
