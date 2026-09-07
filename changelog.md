@@ -128,6 +128,38 @@
       path, and changing this would alter the behaviour of existing menus that rely on the message
       or sound firing on a refused click.
 
+- **Click type requirement bypass, drop key and forged middle click (ZM-07)**: any player could run
+  a button's actions and commands while skipping every one of its click-requirements, with a
+  completely vanilla client, simply by pressing the drop key while hovering the button.
+    - The cause: `all-clicks-type` is documented as the list of click types a menu reacts to, but it
+      was only ever used as the default list for a requirement that does not name its own click
+      types. It was never enforced when dispatching a click. Since that default list contains only
+      `MIDDLE`, `RIGHT`, `LEFT`, `SHIFT_RIGHT` and `SHIFT_LEFT`, a `DROP` click matched no
+      requirement at all, every requirement was skipped as "not for this click type", and the
+      button then granted everything it was configured to give. `CONTROL_DROP` (ctrl + Q) and
+      `NUMBER_KEY` (the hotbar keys) had exactly the same effect.
+    - `InventoryDefault` now only dispatches a click when its type is listed in `all-clicks-type`,
+      or when one of that button's own click-requirements names it explicitly. The second case keeps
+      a requirement written with `click_type: [DROP]` working, since the admin asked for that click
+      type and the button has a requirement covering it.
+    - New `enforce-click-types` option, default `true`, to turn that check off if it breaks a menu
+      that cannot be changed. Leaving it off restores the bypass, and `config.yml` says so.
+    - `ItemButton.setMiddleClick` no longer also binds `ClickType.DROP`. Binding both meant the drop
+      key ran the middle click handler, which menu designers reasonably assume only Creative players
+      can reach. A new `setDropClick` is available when a drop handler is actually wanted.
+    - `ItemButton.onClick` now rejects a middle click from a player who is not in Creative. A vanilla
+      client only sends the clone action in Creative, so a middle click from any other game mode is a
+      forged packet. The whole click is dropped, not just the middle click handler.
+    - Known behaviour change: pressing the drop key or a number key while hovering an item inside a
+      draggable button slot no longer moves that item. Nothing is lost, a normal left click still
+      picks it up and anything left in the slot is still returned when the inventory closes. The
+      slot was deliberately not exempted from the check, because a draggable button that also has
+      actions would otherwise keep the bypass.
+    - Note on a related report finding: a requirement scoped to one click type still does not gate a
+      different click type, and that is intentional. A menu offering "left click to buy, right click
+      to preview for free" relies on it. The fix belongs in the click type allow list above, not in
+      the requirement check.
+
 # 1.1.1.8
 
 ## New Features

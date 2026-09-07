@@ -163,8 +163,18 @@ anti-dupe-discord-webhook-url: "https://discord.com/api/webhooks/<your discord w
 # Placeholders: %player%, %amount%, %itemname%.
 anti-dupe-message: "**%player%** used %amount% %itemname% from zMenu. It has been removed!"
 
+# Only run a button for a click type listed in all-clicks-type below, or one that a
+# click-requirement of that button explicitly asks for.
+# Keep this enabled. When it is off, exotic click types reach the button while every requirement
+# scoped to a normal click type is skipped, so pressing the drop key (Q), ctrl + Q or a number key
+# on a button runs its actions and commands without checking any requirement at all.
+# Only disable this if enforcing it breaks a menu you cannot change.
+enforce-click-types: true
+
 # List of click types supported.
-# You can customize which click types are allowed or handled in your menus.
+# Any click type not listed here is ignored, unless a click-requirement of the button names it
+# explicitly. Requires enforce-click-types to be true.
+# This is also the default list of click types used by a requirement that does not specify one.
 all-clicks-type:
   - MIDDLE
   - RIGHT

@@ -288,6 +288,14 @@ public class Configuration {
     )
     public static long packetEventClickLimiterMilliseconds = 150L;
 
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enforce click types"
+    )
+    public static boolean enforceClickTypes = true;
+
     // Security: close the menu when the player moves away from the location where it was opened.
     // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
     // then keeps clicking the still-valid container from anywhere on the map.
@@ -473,6 +481,7 @@ public class Configuration {
         enablePacketEventClickLimiter = fileConfiguration.getBoolean(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath());
         packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 150L);
 
+        enforceClickTypes = fileConfiguration.getBoolean(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), true);
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
         closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
@@ -547,6 +556,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath(), skipCloseActionsOnInventorySwitch);
         fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
         fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
+        fileConfiguration.set(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), enforceClickTypes);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
         fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
@@ -611,6 +621,7 @@ public class Configuration {
         ENABLE_PACKET_EVENT_CLICK_LIMITER("enable-packet-event-click-limiter"),
         PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds"),
 
+        ENFORCE_CLICK_TYPES("enforce-click-types"),
         CLOSE_INVENTORY_ON_MOVE("close-on-move"),
         MAX_MOVE_DISTANCE("max-move-distance"),
         CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),
