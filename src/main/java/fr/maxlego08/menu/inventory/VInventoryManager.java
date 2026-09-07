@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.inventory;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.maxlego08.menu.zcore.logger.Logger;
 
 import fr.maxlego08.menu.ZMenuPlugin;
@@ -48,6 +50,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     private final Map<Integer, Map<InventoryType, VInventory>> inventories = new HashMap<>();
     private final ZMenuPlugin plugin;
     private final Map<UUID, Long> cooldownClick = new HashMap<>();
+    private static final int OUTSIDE_RAW_SLOT = -999;
+    private final Cache<String, Long> clickErrorLastLog = CacheBuilder.newBuilder().maximumSize(500).build();
 
 
     public VInventoryManager(ZMenuPlugin plugin) {
@@ -158,6 +162,15 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
             return;
         }
 
+        // Belt and braces. A raw slot outside the view already resolves to no clicked inventory,
+        // so the check above rejects it, and the slot is only ever used as a map key below, never
+        // as an array index. This makes the invariant explicit so a later change to the null check
+        // above cannot quietly widen what reaches a button.
+        if (!isRawSlotValid(event)) {
+            event.setCancelled(true);
+            return;
+        }
+
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
 
         if (holder instanceof VInventory inventory) {
@@ -200,8 +213,56 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
             this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onButtonClick(player, button));
 
-            button.onClick(event);
+            try {
+                button.onClick(event);
+            } catch (Exception exception) {
+                // Contain the failure here. Letting it escape into the Bukkit event dispatch meant
+                // a full stack trace per click, so a player clicking a button whose actions throw
+                // could fill the console and the log file as fast as they could click.
+                event.setCancelled(true);
+                this.logClickError(player, inventory, event.getSlot(), exception);
+            }
         }
+    }
+
+    /**
+     * Checks that the raw slot of a click is one this view can actually contain.
+     *
+     * @param event The click.
+     * @return True when the raw slot is usable, or is the "clicked outside" marker.
+     */
+    private static boolean isRawSlotValid(InventoryClickEvent event) {
+        int rawSlot = event.getRawSlot();
+        if (rawSlot == OUTSIDE_RAW_SLOT) return true;
+        return rawSlot >= 0 && rawSlot < event.getView().countSlots();
+    }
+
+    /**
+     * Logs a button failure, at most once per cooldown per button.
+     *
+     * <p>The first failure for a given button is logged with its stack trace, later ones inside the
+     * cooldown window are dropped, so a repeated failure cannot flood the console or the disk.</p>
+     */
+    private void logClickError(Player player, VInventory inventory, int slot, Exception exception) {
+
+        String key = inventory.getClass().getName() + '#' + inventory.getId() + '@' + slot;
+        long now = System.currentTimeMillis();
+        long cooldown = Configuration.clickErrorLogCooldownSeconds * 1000L;
+
+        if (cooldown > 0) {
+            Long lastLog = this.clickErrorLastLog.getIfPresent(key);
+            if (lastLog != null && now - lastLog < cooldown) {
+                return;
+            }
+        }
+        this.clickErrorLastLog.put(key, now);
+
+        Logger.info("Error while handling a click of " + player.getName() + " on slot " + slot
+                + " of inventory " + inventory.getClass().getSimpleName()
+                + (Configuration.clickErrorLogCooldownSeconds > 0
+                ? " (further errors on this button are muted for " + Configuration.clickErrorLogCooldownSeconds + "s)"
+                : ""), Logger.LogType.ERROR);
+        Logger.error(exception);
     }
 
     @Override

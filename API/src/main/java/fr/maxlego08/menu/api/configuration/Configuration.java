@@ -338,6 +338,17 @@ public class Configuration {
     )
     public static boolean flushStorageOnQuit = true;
 
+    // How long to wait before logging the same failing button again. A button whose actions throw
+    // used to print a full stack trace on every single click, so a player holding the mouse down on
+    // a broken button filled the console and the log file. Set to 0 to log every occurrence.
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Click error log cooldown seconds",
+            endRange = 600,
+            stepRange = 5
+    )
+    public static long clickErrorLogCooldownSeconds = 30L;
+
     // Security: close the menu when the player moves away from the location where it was opened.
     // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
     // then keeps clicking the still-valid container from anywhere on the map.
@@ -528,6 +539,7 @@ public class Configuration {
         componentCacheExpireMinutes = fileConfiguration.getLong(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), 10L);
         fixComponentCacheKeyCollisions = fileConfiguration.getBoolean(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), true);
         flushStorageOnQuit = fileConfiguration.getBoolean(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), true);
+        clickErrorLogCooldownSeconds = fileConfiguration.getLong(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), 30L);
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
         closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
@@ -607,6 +619,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
         fileConfiguration.set(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
         fileConfiguration.set(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), flushStorageOnQuit);
+        fileConfiguration.set(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), clickErrorLogCooldownSeconds);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
         fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
@@ -676,6 +689,7 @@ public class Configuration {
         COMPONENT_CACHE_EXPIRE_MINUTES("component-cache.expire-minutes"),
         FIX_COMPONENT_CACHE_KEY_COLLISIONS("component-cache.fix-key-collisions"),
         FLUSH_STORAGE_ON_QUIT("flush-storage-on-quit"),
+        CLICK_ERROR_LOG_COOLDOWN_SECONDS("click-error-log-cooldown-seconds"),
         CLOSE_INVENTORY_ON_MOVE("close-on-move"),
         MAX_MOVE_DISTANCE("max-move-distance"),
         CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),

@@ -238,6 +238,34 @@
       place the interval only matters for an outright crash, and halving it would double the write
       frequency on every server for a case those flushes already cover.
 
+- **Console and disk flooding from a failing button (ZM-08)**:
+    - **The `IndexOutOfBoundsException` described in the original report is not reachable from
+      zMenu, and its explanation of the cause is wrong.** `onInventoryClick` already returns
+      immediately when `getClickedInventory()` is null, and a raw slot outside the view resolves to
+      no inventory, so an out of range slot never reaches a button. The slot is then only ever used
+      as a `HashMap` key, never as an array or list index, so no bounds error is possible from
+      zMenu's slot handling at all. The stack trace quoted in the report comes from
+      `AbstractContainerMenu.clicked` inside the server's own packet handler, which runs before the
+      Bukkit event is even created, so zMenu is not on that call stack and cannot intervene.
+    - No slot sanitisation was added to `NMSMenuPacketListener`. That class exists only in the
+      1.21 NMS module, so putting security logic there would make the 1.20 modules behave
+      differently, and it has no inventory awareness to sanitise with.
+    - An explicit raw slot range check was added to `onInventoryClick` anyway, as defence in depth.
+      It costs two comparisons, makes the invariant explicit, and means a future change to the null
+      check above cannot quietly widen what reaches a button.
+    - **What was actually fixed: the log flooding the report describes is real, through a different
+      route.** `button.onClick` was dispatched with no exception handling, and neither
+      `handleClick` nor `AdapterListener` caught anything, so any error thrown by a button's actions
+      escaped into the Bukkit event dispatch and printed a full stack trace on every click. A player
+      holding the mouse down on a button with a broken action, a failing placeholder or a throwing
+      addon could fill the console and the log file as fast as they could click. Button dispatch is
+      now wrapped: the click is cancelled, the first failure for that button is logged with its
+      stack trace, and further failures on the same button are muted for
+      `click-error-log-cooldown-seconds` (default `30`, set to `0` to log every occurrence).
+    - Behaviour change worth knowing: an exception used to abort the whole listener adapter loop for
+      that click, so later adapters were skipped. They now run, meaning one broken button no longer
+      silently disables other parts of the plugin for that click.
+
 # 1.1.1.8
 
 ## New Features

@@ -217,6 +217,13 @@ enable-cache-item-stack: true
 # Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.
 enable-cooldown-click: true
 
+# How long, in seconds, to wait before logging the same failing button again.
+# When a button's actions throw an error, zMenu logs it once with the full stack trace and then
+# stays quiet about that same button for this long. Without it a player clicking a broken button
+# produced one full stack trace per click, which filled the console and the log file and slowed the
+# server down. Set to 0 to log every single occurrence.
+click-error-log-cooldown-seconds: 30
+
 # Cooldown duration in milliseconds between clicks.
 # Also acts as a rate limit against automated click macros. Values below ~150 make it realistic for a
 # scripted client to fire several purchases before an asynchronous economy has committed the first one.
