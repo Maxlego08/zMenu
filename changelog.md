@@ -160,6 +160,45 @@
       to preview for free" relies on it. The fix belongs in the click type allow list above, not in
       the requirement check.
 
+- **Unbounded component cache, and wrong formatting from cache collisions (ZM-05)**:
+    - `SimpleCache` was a raw `ConcurrentHashMap` with no size limit, no expiry and no eviction. It
+      is keyed by text whose placeholders have already been resolved, so a single lore line
+      containing something like a player name or a balance produced one entry per player and kept
+      it forever. `ComponentMeta.clearCache` was only ever called from the Nexo hook, so on a server
+      without Nexo the cache was never emptied at all, not even by `/zm reload`, and the heap grew
+      for the whole uptime.
+    - `SimpleCache` is now backed by a bounded Guava cache, the same approach already used by
+      `YamlFileCache`, with a maximum size and an idle expiry. New `component-cache` section in
+      `config.yml`: `max-size` (default `10000`) and `expire-minutes` (default `10`). Setting both
+      to `0` restores the previous unbounded behaviour exactly. The expiry matters more than the
+      size limit, because a component built from a player placeholder is usually used once.
+    - The component cache is now also emptied on `/zm reload`. Besides giving the cache a reset
+      point, this fixes names and lore continuing to render from the previous parse after a config
+      file was edited. `MetaUpdater.clearCache` was added as a default no-op so implementations
+      without a cache are unaffected.
+    - **Fixed wrong item formatting caused by cache key collisions.** Item names and lore are cached
+      with a leading formatting reset and an explicit italic state, while plain messages, inventory
+      titles, action bars, titles and book pages are cached without it. Both were stored under the
+      raw text, so an item named the same as a message shared a single entry and whichever was
+      parsed first decided what the other one rendered as. The most visible symptom was an item name
+      that appeared italic, which is the issue the code comments referencing GitHub issue #62
+      claimed was already fixed. Cache keys are now namespaced per shape. Controlled by
+      `component-cache.fix-key-collisions`, default `true`; set it to `false` to restore the old
+      colliding behaviour.
+    - `PlayerUtil.Profile` was a second unbounded, static cache that nothing ever cleared, keyed by
+      skin URL, so a menu using a placeholder in a head URL grew one entry per player. It is now
+      bounded by the same settings.
+    - **Fixed menus showing the wrong head.** `PlayerUtil.Profile` mutated one shared static
+      `PlayerProfile` and then cloned it. Loaders for different URLs can run concurrently, so two
+      lookups could interleave and each walk away with the other one's skin. A fresh profile is now
+      built per lookup.
+    - Removed the redundant second placeholder parse of book pages in `ComponentMeta.openBook`.
+      `OpenBookAction` already resolves the lines before calling it. Contrary to the original report
+      this did **not** create extra cache entries, since the operation is idempotent and produced
+      the same key. What it did cost was a wasted PlaceholderAPI pass per line per open, and it
+      defeated the `` escape: the first pass turns an escaped marker into a literal `%`,
+      which the second pass then resolved as a real placeholder.
+
 # 1.1.1.8
 
 ## New Features

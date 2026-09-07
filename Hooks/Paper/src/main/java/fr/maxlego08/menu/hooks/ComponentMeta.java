@@ -4,6 +4,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 
 import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
@@ -91,17 +92,34 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
         this.cache.clear();
     }
 
+    /**
+     * Namespaces a cache key.
+     *
+     * <p>Item names and lore are cached with a leading formatting reset and an explicit italic
+     * state, plain text such as a message or an inventory title is not. Both used to be stored
+     * under the raw text, so an item named the same as a message shared one entry and whichever
+     * was parsed first decided what the other one rendered as. The most visible symptom was an
+     * item name that came out italic.</p>
+     *
+     * @param namespace The shape of the cached component.
+     * @param text      The text being parsed.
+     * @return The cache key to use.
+     */
+    private String cacheKey(String namespace, String text) {
+        return Configuration.fixComponentCacheKeyCollisions ? namespace + text : text;
+    }
+
     private TextDecoration.State getState(String text) {
         return text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>") ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
     }
 
     @Override
     public @NonNull Component getComponent(String text) {
-        return this.cache.get(text, ()->this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)));
+        return this.cache.get(this.cacheKey("raw:", text), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)));
     }
 
     private void updateDisplayName(ItemMeta itemMeta, String text) {
-        Component component = this.cache.get(text, () -> {
+        Component component = this.cache.get(this.cacheKey("item:", text), () -> {
             // Fixed text becomes italic automatically
             // From GitHub issue #62
             return this.RESET.append(this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)).decoration(TextDecoration.ITALIC, this.getState(text)));
@@ -138,7 +156,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
     public void updateLore(@NonNull ItemMeta itemMeta, @NonNull List<String> lore, @NonNull LoreType loreType) {
         List<Component> components = new ArrayList<>(lore.size());
         for (String text : lore) {
-            Component component = this.cache.get(text, () -> {
+            Component component = this.cache.get(this.cacheKey("item:", text), () -> {
                 // Fixed text becomes italic automatically
                 // From GitHub issue #62
                 return this.RESET.append(this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)).decoration(TextDecoration.ITALIC, this.getState(text)));
@@ -174,7 +192,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
     }
 
     private Inventory createInventoryInternal(String inventoryName, InventoryHolder inventoryHolder, Object inventoryTypeOrSize) {
-        Component component = this.cache.get(inventoryName, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(inventoryName)));
+        Component component = this.cache.get(this.cacheKey("raw:", inventoryName), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(inventoryName)));
         try {
             if (inventoryTypeOrSize instanceof Integer integer) {
                 return (Inventory) this.inventoryMethod.invoke(null, inventoryHolder, integer, component);
@@ -203,33 +221,32 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
 
     @Override
     public void sendMessage(@NonNull CommandSender sender, @NonNull String message) {
-        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(message)));
+        Component component = this.cache.get(this.cacheKey("raw:", message), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(message)));
         sender.sendMessage(component);
     }
 
     @Override
     public void sendAction(@NonNull Player player, @NonNull String message) {
-        Component component = this.cache.get(message, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(message)));
+        Component component = this.cache.get(this.cacheKey("raw:", message), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(message)));
         player.sendActionBar(component);
     }
 
     @Override
     public void sendTitle(@NonNull Player player, String title, @NonNull String subtitle, long start, long duration, long end) {
         Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
-        Component componentTitle = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(title)));
-        Component componentSubTitle = this.cache.get(subtitle, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(subtitle)));
+        Component componentTitle = this.cache.get(this.cacheKey("raw:", title), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(title)));
+        Component componentSubTitle = this.cache.get(this.cacheKey("raw:", subtitle), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(subtitle)));
         player.showTitle(Title.title(componentTitle, componentSubTitle, times));
     }
 
     @Override
     public void openBook(@NonNull Player player, @NonNull String title, @NonNull String author, @NonNull List<String> lines) {
 
-        Component titleComponent = this.cache.get(title, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(title)));
-        Component authorComponent = this.cache.get(author, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(author)));
+        Component titleComponent = this.cache.get(this.cacheKey("raw:", title), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(title)));
+        Component authorComponent = this.cache.get(this.cacheKey("raw:", author), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(author)));
         List<Component> linesComponent = new ArrayList<>(lines.size());
         for (String text : lines) {
-            String result = this.plugin.parse(player, text);
-            Component component = this.cache.get(result, () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(result)));
+            Component component = this.cache.get(this.cacheKey("raw:", text), () -> this.MINI_MESSAGE.deserialize(this.colorMiniMessage(text)));
             linesComponent.add(component);
         }
 

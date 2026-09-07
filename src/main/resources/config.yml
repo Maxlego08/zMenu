@@ -182,6 +182,24 @@ all-clicks-type:
   - SHIFT_RIGHT
   - SHIFT_LEFT
 
+# Cache used for parsed MiniMessage components (item names, lore, inventory titles, messages).
+# This cache used to be unbounded: once a player placeholder was resolved into a name or a lore
+# line, every distinct result stayed in memory for the whole uptime, which on a busy server grew
+# until the JVM ran out of heap.
+component-cache:
+  # Maximum number of parsed components kept in memory. Set to 0 for no limit (old behaviour).
+  max-size: 10000
+  # Drop an entry that has not been used for this many minutes. Set to 0 to never expire
+  # (old behaviour). This matters more than the size limit, because a component built from a
+  # player placeholder is usually used once and never again.
+  expire-minutes: 10
+  # Keep item names, lore and plain messages in separate cache namespaces.
+  # Item names and lore are cached with a formatting reset in front of them, plain messages are
+  # not, so when an item name and a message shared the same text they also shared one cache entry:
+  # whichever was parsed first won and the other one rendered wrong, most visibly as an item name
+  # that appeared italic. Set to false to restore that old, colliding behaviour.
+  fix-key-collisions: true
+
 # Enable caching of ItemStacks.
 # Caching helps improve performance by reducing object creation.
 enable-cache-item-stack: true

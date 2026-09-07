@@ -296,6 +296,37 @@ public class Configuration {
     )
     public static boolean enforceClickTypes = true;
 
+    // Component cache bounds. The MiniMessage component cache used to be an unbounded map, which
+    // grew forever once player placeholders were resolved into item names, lore or messages.
+    // Set both of these to 0 to restore that old unbounded behaviour.
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Component cache max size",
+            endRange = 100000,
+            stepRange = 1000
+    )
+    public static int componentCacheMaxSize = 10000;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Component cache expire minutes",
+            endRange = 1440,
+            stepRange = 5
+    )
+    public static long componentCacheExpireMinutes = 10L;
+
+    // Namespace the component cache keys so an item name and a message with the same text stop
+    // sharing one entry. They cache differently shaped components, so whichever was parsed first
+    // used to win and the other rendered wrong, most visibly as an italic item name.
+    // Set to false to restore the previous, colliding behaviour.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Fix component cache key collisions"
+    )
+    public static boolean fixComponentCacheKeyCollisions = true;
+
     // Security: close the menu when the player moves away from the location where it was opened.
     // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
     // then keeps clicking the still-valid container from anywhere on the map.
@@ -482,6 +513,9 @@ public class Configuration {
         packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 150L);
 
         enforceClickTypes = fileConfiguration.getBoolean(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), true);
+        componentCacheMaxSize = fileConfiguration.getInt(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), 10000);
+        componentCacheExpireMinutes = fileConfiguration.getLong(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), 10L);
+        fixComponentCacheKeyCollisions = fileConfiguration.getBoolean(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), true);
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
         closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
@@ -557,6 +591,9 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
         fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
         fileConfiguration.set(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), enforceClickTypes);
+        fileConfiguration.set(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), componentCacheMaxSize);
+        fileConfiguration.set(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
+        fileConfiguration.set(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
         fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
@@ -622,6 +659,9 @@ public class Configuration {
         PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds"),
 
         ENFORCE_CLICK_TYPES("enforce-click-types"),
+        COMPONENT_CACHE_MAX_SIZE("component-cache.max-size"),
+        COMPONENT_CACHE_EXPIRE_MINUTES("component-cache.expire-minutes"),
+        FIX_COMPONENT_CACHE_KEY_COLLISIONS("component-cache.fix-key-collisions"),
         CLOSE_INVENTORY_ON_MOVE("close-on-move"),
         MAX_MOVE_DISTANCE("max-move-distance"),
         CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),
