@@ -134,7 +134,4 @@ manager.openInventory(player, "zmenu:example");
 
 - [Serveur Minecraft Vote](https://serveur-minecraft-vote.fr/)
 - [MineStrator](https://minestrator.com/a/GROUPEZ)
-
-## License
-
-This project is licensed under the MIT License.
+- [CashBack Minestrator](https://cashback.groupez.dev/)
