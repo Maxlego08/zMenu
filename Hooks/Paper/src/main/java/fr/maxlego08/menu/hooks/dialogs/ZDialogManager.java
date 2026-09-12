@@ -79,7 +79,7 @@ public class ZDialogManager implements DialogManager, Listener {
     public Optional<DialogInventory> getDialogOptional(String name) {
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             for (AbstractDialogInventory dialog : dialogList) {
-                if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
+                if (dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -92,7 +92,7 @@ public class ZDialogManager implements DialogManager, Listener {
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName().equals(fileName))
+                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
                 .map(dialog -> (DialogInventory) dialog)
                 .findFirst();
     }
@@ -103,7 +103,7 @@ public class ZDialogManager implements DialogManager, Listener {
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName))
+                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
                 .map(dialog -> (DialogInventory) dialog)
                 .findFirst();
     }
@@ -112,17 +112,17 @@ public class ZDialogManager implements DialogManager, Listener {
     public void deleteDialog(String name) {
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equals(name) || dialog.getName().equals(name)
+                    dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
             );
         }
-        String suffix = ":" + name.toLowerCase(Locale.ROOT);
-        this.dialogNames.removeIf(dialogName -> dialogName.endsWith(suffix));
+        String suffix = (":" + name).toLowerCase(Locale.ROOT);
+        this.dialogNames.removeIf(dialogName -> dialogName.toLowerCase(Locale.ROOT).endsWith(suffix));
     }
 
     @Override
     public void deleteDialog(Plugin plugin) {
         this.dialogs.remove(plugin.getName());
-        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName().toLowerCase(Locale.ROOT) + ":"));
+        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName() + ":"));
     }
 
     @Override
@@ -182,7 +182,7 @@ public class ZDialogManager implements DialogManager, Listener {
 
         List<AbstractDialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
-        this.dialogNames.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()).toLowerCase(Locale.ROOT));
+        this.dialogNames.add(dialog.getPlugin().getName() + ":" + dialog.getFileName());
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
