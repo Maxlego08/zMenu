@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
@@ -243,7 +245,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
 
             FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
 
-            bedrockInventory.getOpenActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
+            Placeholders openPlaceholders = new Placeholders();
+            for (Action action : bedrockInventory.getOpenActions()) {
+                if (action.preExecuteChain(player, null, fakeInventory, openPlaceholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
 
             this.activeBedrockInventory.put(player.getUniqueId(), bedrockInventory);
         } catch (Exception e) {
@@ -261,7 +268,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
             this.activeBedrockInventory.remove(player.getUniqueId());
 
             InventoryEngine fakeInventory = this.inventoryManager.getFakeInventory();
-            inventory.getCloseActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
+            Placeholders closePlaceholders = new Placeholders();
+            for (Action action : inventory.getCloseActions()) {
+                if (action.preExecuteChain(player, null, fakeInventory, closePlaceholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
         });
         return builder.build();
     }

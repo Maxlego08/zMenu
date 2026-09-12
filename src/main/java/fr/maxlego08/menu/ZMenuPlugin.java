@@ -207,6 +207,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
             this.packetManager.onEnable();
         }
 
+        fr.traqueur.currencies.CurrenciesAPI.init(this);
+
         this.dupeManager = MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) ? new PDCDupeManager(this) : new NMSDupeManager();
         this.enchantments.register();
 

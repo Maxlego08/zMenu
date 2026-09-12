@@ -266,6 +266,44 @@
       that click, so later adapters were skipped. They now run, meaning one broken button no longer
       silently disables other parts of the plugin for that click.
 
+- **Menus could hand out a reward when the payment failed (residual part of ZM-03)**: a shop button
+  is configured as a `money` requirement that checks the balance, then a `withdraw` action that
+  takes it, then an action that gives the reward. Two things were wrong with that chain.
+    - `CurrencyWithdrawAction` called the plain `withdraw`, which does not check whether the player
+      can afford the amount. Most economy plugins either drive the balance negative or silently
+      clamp it to zero, and the return value told the caller nothing. It now calls
+      `withdrawIfSufficient`, which checks the balance and applies the debit as one operation and
+      reports the outcome. Requires CurrenciesAPI 1.0.15 or later.
+    - **Nothing in zMenu could stop a list of actions part way through**, so the action giving the
+      reward ran whether or not the money had actually been taken. Actions can now report that what
+      follows them must not run:
+        - New `ActionResult` enum, and `Action.preExecuteChain` / `Action.executeChain` alongside the
+          existing methods. `execute` stays an abstract void and `preExecute` still works, so every
+          existing action and every third party addon compiles and behaves exactly as before.
+        - Every place that runs a list of actions now stops on `ActionResult.STOP`: button actions,
+          requirement and permissible deny and success actions, inventory open and close actions,
+          the Bedrock open and close actions, command actions, mechanic actions, and an action's own
+          deny-chance actions.
+        - An action with a `delay` always reports `CONTINUE`, because it has not run yet when the
+          list continues. Do not put a delay on an action whose outcome is meant to gate the ones
+          after it.
+    - A failed payment now stops the rest of the action list and tells the player. Two new messages:
+      `CURRENCY_NOT_ENOUGH` and `CURRENCY_ERROR`. An `UNSUPPORTED` result, meaning the economy
+      cannot report whether the player could afford it, is treated as a failure and logged, because
+      the alternative is giving the reward away for free.
+    - A misconfigured, non numeric `amount` also stops the chain instead of being treated as zero.
+    - `ZCurrencyPermissible` is deliberately unchanged. It is evaluated when a button is rendered,
+      through `view_requirement`, so it must only ever read the balance and never debit it.
+    - `CurrenciesAPI.init(this)` is called on enable so the library can schedule work back onto the
+      main thread for currencies that are not thread safe, such as `ITEM`, `LEVEL` and `EXPERIENCE`.
+    - **Still only as safe as the backend.** Vault, PlayerPoints, zEssentials, RedisEconomy,
+      ExcellentEconomy and VotingPlugin can refuse a withdrawal themselves, so the check and the
+      debit are genuinely indivisible, and RedisEconomy and ExcellentEconomy hold that guarantee
+      across every server sharing the economy. For CoinsEngine, EcoBits, BeastTokens, RoyaleEconomy
+      and the Elemental currencies the library has to emulate it, which protects one server against
+      racing itself but cannot protect a network sharing one database. `TransactionResult.isAtomic`
+      and `Currencies.supportsAtomicWithdraw` report which case a currency falls into.
+
 # 1.1.1.8
 
 ## New Features

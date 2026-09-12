@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.Pagination;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
@@ -301,7 +302,11 @@ public abstract class Button extends PlaceholderButton {
         }
 
         if (isSuccess.get()) {
-            this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
+            for (Action action : this.actions) {
+                if (action.preExecuteChain(player, this, inventory, placeholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
         }
 
         return isSuccess;

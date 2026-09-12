@@ -7,6 +7,8 @@ import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgument;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.command.VCommand;
@@ -156,12 +158,20 @@ public class CommandInventory extends VCommand {
         inventoryDefault.setPlugin(plugin);
 
         if (lastArgument != null) {
-            lastArgument.getActions().forEach(action -> action.preExecute(finalTargetPlayer, null, inventoryDefault, placeholders));
+            for (Action action : lastArgument.getActions()) {
+                if (action.preExecuteChain(finalTargetPlayer, null, inventoryDefault, placeholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
         }
 
         if (performMainActions) {
             this.command.actions_requirements().forEach(requirement -> requirement.execute(finalTargetPlayer, null, inventoryDefault, placeholders));
-            this.command.actions().forEach(action -> action.preExecute(finalTargetPlayer, null, inventoryDefault, placeholders));
+            for (Action action : this.command.actions()) {
+                if (action.preExecuteChain(finalTargetPlayer, null, inventoryDefault, placeholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
             optional.ifPresent(inventory -> manager.openInventory(finalTargetPlayer, inventory));
         }
 

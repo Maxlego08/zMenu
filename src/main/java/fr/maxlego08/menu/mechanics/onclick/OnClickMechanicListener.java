@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.mechanics.onclick.OnClickMechanic.ClickTarget;
@@ -62,7 +63,9 @@ public class OnClickMechanicListener extends MechanicListener {
         }
 
         for (Action action : mechanic.getActions()) {
-            action.preExecute(player, null, inventory, placeholders);
+            if (action.preExecuteChain(player, null, inventory, placeholders) == ActionResult.STOP) {
+                break;
+            }
         }
 
         if (mechanic.shouldCancelEvent()) {
