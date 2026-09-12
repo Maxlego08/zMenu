@@ -25,10 +25,12 @@ import fr.maxlego08.sarah.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ZStorageManager implements StorageManager {
 
@@ -36,6 +38,7 @@ public class ZStorageManager implements StorageManager {
     private final TypeSafeCache cache = new TypeSafeCache();
     private RequestHelper requestHelper;
     private boolean isEnable = true;
+    private final AtomicBoolean flushing = new AtomicBoolean(false);
 
     public ZStorageManager(MenuPlugin plugin) {
         this.plugin = plugin;
@@ -105,7 +108,6 @@ public class ZStorageManager implements StorageManager {
         this.plugin.getScheduler().runTimerAsync(() -> {
             this.storeOpenInventories();
             this.storePlayerData();
-            this.cache.clearAll();
         }, seconds, seconds, TimeUnit.SECONDS);
     }
 
@@ -113,8 +115,8 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
-        List<DataDTO> dataList = this.cache.get(DataDTO.class);
-        this.cache.clear(DataDTO.class);
+        List<DataDTO> dataList = this.cache.drain(DataDTO.class);
+        if (dataList.isEmpty()) return;
 
         List<Schema> schemas = new ArrayList<>();
         for (DataDTO dto : dataList) {
@@ -133,8 +135,8 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
-        List<PlayerOpenInventoryEvent> events = this.cache.get(PlayerOpenInventoryEvent.class);
-        this.cache.clear(PlayerOpenInventoryEvent.class);
+        List<PlayerOpenInventoryEvent> events = this.cache.drain(PlayerOpenInventoryEvent.class);
+        if (events.isEmpty()) return;
 
         List<Schema> schemas = new ArrayList<>();
         for (PlayerOpenInventoryEvent event : events) {
@@ -160,6 +162,47 @@ public class ZStorageManager implements StorageManager {
         this.requestHelper.insertMultiple(schemas);
     }
 
+    /**
+     * Writes everything still buffered, on the calling thread.
+     *
+     * <p>Deliberately synchronous. This is called from {@code onDisable}, where the plugin
+     * scheduler is being torn down, so anything handed to {@code runAsync} there would never run.</p>
+     */
+    @Override
+    public void flush() {
+
+        if (!this.isEnable()) return;
+
+        this.storeOpenInventories();
+        this.storePlayerData();
+    }
+
+    /**
+     * Persists buffered records when a player leaves.
+     *
+     * <p>Not needed to stop a player rolling their own data back, the data manager keeps it in
+     * memory for the whole uptime, but it shrinks what an outright crash can lose from up to one
+     * full batch interval of everybody's data down to whatever arrived since the last disconnect.</p>
+     *
+     * <p>Several players leaving at once coalesce into a single flush rather than one database
+     * round trip each.</p>
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+
+        if (!this.isEnable() || !Configuration.flushStorageOnQuit) return;
+
+        if (!this.flushing.compareAndSet(false, true)) return;
+
+        this.plugin.getScheduler().runAsync(w -> {
+            try {
+                this.flush();
+            } finally {
+                this.flushing.set(false);
+            }
+        });
+    }
+
     @Override
     public boolean isEnable() {
         return this.isEnable;
@@ -169,8 +212,8 @@ public class ZStorageManager implements StorageManager {
     public void upsertData(@NonNull UUID uuid, @NonNull Data data) {
         if (!this.isEnable()) return;
 
-        this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()));
-        this.cache.add(new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt())));
+        DataDTO dto = new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt()));
+        this.cache.replaceMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()), dto);
     }
 
     @Override
@@ -186,7 +229,7 @@ public class ZStorageManager implements StorageManager {
     public void clearData(@NonNull UUID uniqueId) {
         if (!this.isEnable()) return;
 
-        this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uniqueId));
+        this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uniqueId));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
     }
 
@@ -194,7 +237,7 @@ public class ZStorageManager implements StorageManager {
     public void clearData(@NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.cache.get(DataDTO.class).removeIf(e -> e.key().equals(key));
+        this.cache.removeMatching(DataDTO.class, e -> e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
     }
 
@@ -202,7 +245,7 @@ public class ZStorageManager implements StorageManager {
     public void removeData(@NonNull UUID uuid, @NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.cache.get(DataDTO.class).removeIf(e -> e.player_id().equals(uuid) && e.key().equals(key));
+        this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(key));
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
             table.where("player_id", uuid);
             table.where("key", key);

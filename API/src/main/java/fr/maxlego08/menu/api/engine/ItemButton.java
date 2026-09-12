@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.engine;
 
+import org.bukkit.GameMode;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -45,11 +46,34 @@ public class ItemButton {
         return this;
     }
 
+    /**
+     * Registers a handler for the middle click.
+     *
+     * <p>This no longer also binds {@link ClickType#DROP}. Binding both meant that pressing the
+     * drop key on a button ran the middle click handler, which menu designers reasonably assume
+     * only Creative players can reach. Use {@link #setDropClick(Consumer)} when a drop handler is
+     * actually wanted.</p>
+     *
+     * @param onMiddleClick The handler.
+     * @return This item button.
+     */
     @Contract("_-> this")
     @NotNull
     public ItemButton setMiddleClick(@NotNull Consumer<InventoryClickEvent> onMiddleClick) {
         this.onClickType.put(ClickType.MIDDLE, onMiddleClick);
-        this.onClickType.put(ClickType.DROP, onMiddleClick);
+        return this;
+    }
+
+    /**
+     * Registers a handler for the drop key.
+     *
+     * @param onDropClick The handler.
+     * @return This item button.
+     */
+    @Contract("_-> this")
+    @NotNull
+    public ItemButton setDropClick(@NotNull Consumer<InventoryClickEvent> onDropClick) {
+        this.onClickType.put(ClickType.DROP, onDropClick);
         return this;
     }
 
@@ -108,6 +132,11 @@ public class ItemButton {
     }
 
     public void onClick(@NotNull InventoryClickEvent event) {
+        if (event.getClick() == ClickType.MIDDLE && event.getWhoClicked().getGameMode() != GameMode.CREATIVE) {
+            event.setCancelled(true);
+            return;
+        }
+
         if (this.onClick != null) {
             this.onClick.accept(event);
         }

@@ -2,6 +2,7 @@ package fr.maxlego08.menu.command.commands.bedrock;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.utils.Message;
@@ -17,7 +18,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
 import java.util.Optional;
 
 public class CommandBedrockOpen extends SubCommand<ZMenuPlugin> {
@@ -29,8 +29,7 @@ public class CommandBedrockOpen extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_OPEN_BEDROCK.getPermission());
 
         this.addRequiredArgument(Commands.argument("bedrock-name", new NonSpaceStringArgumentType()).suggests(((context, builder) -> {
-            this.bedrockManager.getBedrockInventoryNames().stream().filter(entry -> entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
-                    .forEach(builder::suggest);
+            NameSuggestions.suggest(builder, this.bedrockManager.getBedrockInventoryNames());
             return builder.buildFuture();
         })));
         this.addOptionalArgument("player", ArgumentTypes.player());

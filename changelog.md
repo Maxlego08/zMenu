@@ -42,6 +42,268 @@
 
 # Unreleased
 
+## Security
+
+- **Ghost GUI / session desynchronization (ZM-01)**: a modified client could hide the inventory screen
+  locally without sending a close packet, leaving the container valid on the server, and then keep clicking
+  it from anywhere on the map, in combat or across dimensions. zMenu now invalidates such sessions:
+    - `VInventory` stores the location of the player when the session is opened (captured on
+      `InventoryOpenEvent`, so every open path is covered). Because an inventory is cloned per opening,
+      the location lives and dies with the session, no external tracking is needed.
+    - New `PlayerMoveEvent` and `PlayerTeleportEvent` handlers close the menu when the player gets further
+      than `max-move-distance` from that location, or changes world.
+    - New `EntityDamageEvent` handler closes the menu when the player takes **or deals** damage.
+    - `VInventoryManager.handleClick` re-checks the distance before dispatching a click, and cancels the
+      event if it fails, so a click that arrives between two move events is still rejected.
+    - New configuration options: `close-on-move` (default `true`), `max-move-distance` (default `2.0`)
+      and `close-on-damage` (default `true`).
+    - `ListenerAdapter` gained `onInventoryOpen`, `onMove`, `onTeleport` and `onDamage` hooks.
+
+- **Anti-dupe bypass on items without ItemMeta (ZM-02)**: `PDCDupeManager` skipped both tagging and
+  detection whenever `ItemStack.hasItemMeta()` returned `false`. That is the case for any item built from
+  a material alone, with no custom name, lore or enchantment, so raw showcase items such as
+  `NETHERITE_INGOT`, `NETHER_STAR`, `TOTEM_OF_UNDYING` or `ENCHANTED_GOLDEN_APPLE` were never marked and
+  survived extraction as fully functional vanilla items.
+    - `protectItem` no longer checks `hasItemMeta()`. It builds the meta through `getItemMeta()`, falling
+      back to `Bukkit.getItemFactory().getItemMeta(Material)`, and writes the persistent data tag on every
+      non-air item.
+    - `isDupeItem` no longer checks `hasItemMeta()` either, so protected raw materials are now correctly
+      detected and removed by `DupeListener`.
+    - Air stacks are short-circuited in `isDupeItem` to avoid building meta for empty slots, which are the
+      most frequent case on the inventory click path.
+    - `NMSDupeManager` (used on servers below 1.14) was already writing raw NBT and is unaffected.
+
+- **Click rate limiter bypass (ZM-03)**: several holes let automated clients push far more clicks through
+  a menu than the configured throttle allows.
+    - `VInventoryManager.handleClick` now calls `event.setCancelled(true)` when a click is rejected by the
+      cooldown. It previously only sent a message and returned, so on an inventory with
+      `disable-click: false` the throttled click still performed its vanilla item move.
+    - `PacketEventClickLimiterListener` no longer clears the player's click record when it receives a
+      `CLOSE_WINDOW` packet. That packet is attacker controlled and was never validated against the open
+      window, so interleaving close and click packets reset the limiter on every single click. The record
+      is now cleared in `onInventoryClose`, which only runs on a genuine server side close. This also
+      removes a possible `NullPointerException` on that path.
+    - `enable-cooldown-click` and `cooldown-click-milliseconds` are now read with an explicit default.
+      The single argument getters return `false` and `0` for a missing key, which silently disabled the
+      click throttle entirely on any config file that predated those options.
+    - Default `cooldown-click-milliseconds` raised from `100` to `250`, and default
+      `packet-event-click-limiter-milliseconds` from `50` to `150`. Existing configuration files keep
+      their current values, only newly generated ones use the new defaults.
+    - `enable-packet-event-click-limiter` is deliberately still `false` by default because it requires the
+      PacketEvents plugin and would do nothing without it. Its documentation in `config.yml` now states
+      that enabling it is strongly recommended on public servers, since it is the only limit applied
+      before a click reaches the server tick.
+    - **Known limitation, not fixed by this change**: raising the cooldown reduces the click rate but does
+      not make a purchase atomic. When an economy plugin commits its withdrawal asynchronously, a client
+      clicking slower than the cooldown can still have several requirement checks evaluate against a
+      balance that has not been debited yet. Closing that hole requires fund reservation in the economy
+      plugin or a dedicated transactional requirement type, and is tracked in the ToDo list.
+
+- **Button click-requirement bypass (ZM-04)**: a button whose `click-requirement` failed still handed
+  out everything it was configured to give.
+    - `Button.handleClickCommon` now runs the button `actions` only when every click-requirement
+      passed. They previously ran unconditionally, right after the requirement loop.
+    - `Button.onClick` now runs the button `commands`, `console-commands` and
+      `console-permission-commands` only when every click-requirement passed. Both the mouse click
+      and the Bedrock click paths are covered.
+    - Multiple click-requirements are now combined with a logical AND. Each requirement used to
+      overwrite the result of the previous one, so with several configured, only the last one to
+      run decided the outcome and a passing requirement could mask an earlier failure. The
+      combination is deliberately non short circuiting: every requirement still runs, so its own
+      `deny` and `success` actions fire exactly as before.
+    - `PerformButton.execute` now runs `console-left-commands` and `console-right-commands` as the
+      console instead of as the player. They were passing the player as the command sender, so a
+      console command bound to a left or right click ran with the player's own permissions and
+      either failed silently or executed as the player. The root `console-commands` were already
+      correct.
+    - `ConsoleCommandAction` now inspects the result of each `Bukkit.dispatchCommand` instead of
+      discarding it, and supports a new `stop-on-failure` option. With it enabled, the first
+      command that reports a failure stops the ones after it, so a chain such as "take the money"
+      followed by "grant the rank" can no longer grant the rank when the charge failed. It is
+      opt-in and defaults to `false` on purpose: Bukkit returns `false` both for a command that
+      does not exist and for a command whose executor returned `false`, which many plugins do just
+      to print their usage, so enabling it blindly could stop a chain that was working.
+    - Note: `close-inventory`, `data` updates, `messages` and `sound` still run regardless of the
+      requirement outcome, as they always have. Buttons already have `deny` actions for the failure
+      path, and changing this would alter the behaviour of existing menus that rely on the message
+      or sound firing on a refused click.
+
+- **Click type requirement bypass, drop key and forged middle click (ZM-07)**: any player could run
+  a button's actions and commands while skipping every one of its click-requirements, with a
+  completely vanilla client, simply by pressing the drop key while hovering the button.
+    - The cause: `all-clicks-type` is documented as the list of click types a menu reacts to, but it
+      was only ever used as the default list for a requirement that does not name its own click
+      types. It was never enforced when dispatching a click. Since that default list contains only
+      `MIDDLE`, `RIGHT`, `LEFT`, `SHIFT_RIGHT` and `SHIFT_LEFT`, a `DROP` click matched no
+      requirement at all, every requirement was skipped as "not for this click type", and the
+      button then granted everything it was configured to give. `CONTROL_DROP` (ctrl + Q) and
+      `NUMBER_KEY` (the hotbar keys) had exactly the same effect.
+    - `InventoryDefault` now only dispatches a click when its type is listed in `all-clicks-type`,
+      or when one of that button's own click-requirements names it explicitly. The second case keeps
+      a requirement written with `click_type: [DROP]` working, since the admin asked for that click
+      type and the button has a requirement covering it.
+    - New `enforce-click-types` option, default `true`, to turn that check off if it breaks a menu
+      that cannot be changed. Leaving it off restores the bypass, and `config.yml` says so.
+    - `ItemButton.setMiddleClick` no longer also binds `ClickType.DROP`. Binding both meant the drop
+      key ran the middle click handler, which menu designers reasonably assume only Creative players
+      can reach. A new `setDropClick` is available when a drop handler is actually wanted.
+    - `ItemButton.onClick` now rejects a middle click from a player who is not in Creative. A vanilla
+      client only sends the clone action in Creative, so a middle click from any other game mode is a
+      forged packet. The whole click is dropped, not just the middle click handler.
+    - Known behaviour change: pressing the drop key or a number key while hovering an item inside a
+      draggable button slot no longer moves that item. Nothing is lost, a normal left click still
+      picks it up and anything left in the slot is still returned when the inventory closes. The
+      slot was deliberately not exempted from the check, because a draggable button that also has
+      actions would otherwise keep the bypass.
+    - Note on a related report finding: a requirement scoped to one click type still does not gate a
+      different click type, and that is intentional. A menu offering "left click to buy, right click
+      to preview for free" relies on it. The fix belongs in the click type allow list above, not in
+      the requirement check.
+
+- **Unbounded component cache, and wrong formatting from cache collisions (ZM-05)**:
+    - `SimpleCache` was a raw `ConcurrentHashMap` with no size limit, no expiry and no eviction. It
+      is keyed by text whose placeholders have already been resolved, so a single lore line
+      containing something like a player name or a balance produced one entry per player and kept
+      it forever. `ComponentMeta.clearCache` was only ever called from the Nexo hook, so on a server
+      without Nexo the cache was never emptied at all, not even by `/zm reload`, and the heap grew
+      for the whole uptime.
+    - `SimpleCache` is now backed by a bounded Guava cache, the same approach already used by
+      `YamlFileCache`, with a maximum size and an idle expiry. New `component-cache` section in
+      `config.yml`: `max-size` (default `10000`) and `expire-minutes` (default `10`). Setting both
+      to `0` restores the previous unbounded behaviour exactly. The expiry matters more than the
+      size limit, because a component built from a player placeholder is usually used once.
+    - The component cache is now also emptied on `/zm reload`. Besides giving the cache a reset
+      point, this fixes names and lore continuing to render from the previous parse after a config
+      file was edited. `MetaUpdater.clearCache` was added as a default no-op so implementations
+      without a cache are unaffected.
+    - **Fixed wrong item formatting caused by cache key collisions.** Item names and lore are cached
+      with a leading formatting reset and an explicit italic state, while plain messages, inventory
+      titles, action bars, titles and book pages are cached without it. Both were stored under the
+      raw text, so an item named the same as a message shared a single entry and whichever was
+      parsed first decided what the other one rendered as. The most visible symptom was an item name
+      that appeared italic, which is the issue the code comments referencing GitHub issue #62
+      claimed was already fixed. Cache keys are now namespaced per shape. Controlled by
+      `component-cache.fix-key-collisions`, default `true`; set it to `false` to restore the old
+      colliding behaviour.
+    - `PlayerUtil.Profile` was a second unbounded, static cache that nothing ever cleared, keyed by
+      skin URL, so a menu using a placeholder in a head URL grew one entry per player. It is now
+      bounded by the same settings.
+    - **Fixed menus showing the wrong head.** `PlayerUtil.Profile` mutated one shared static
+      `PlayerProfile` and then cloned it. Loaders for different URLs can run concurrently, so two
+      lookups could interleave and each walk away with the other one's skin. A fresh profile is now
+      built per lookup.
+    - Removed the redundant second placeholder parse of book pages in `ComponentMeta.openBook`.
+      `OpenBookAction` already resolves the lines before calling it. Contrary to the original report
+      this did **not** create extra cache entries, since the operation is idempotent and produced
+      the same key. What it did cost was a wasted PlaceholderAPI pass per line per open, and it
+      defeated the `` escape: the first pass turns an escaped marker into a literal `%`,
+      which the second pass then resolved as a real placeholder.
+
+- **Buffered player data lost on shutdown, and two data losing races in the write buffer (ZM-06)**:
+    - **The reported disconnect duplication does not reproduce, and the report's explanation of it
+      is wrong.** `ZDataManager` keeps player data in an in-memory map, `loadPlayers` fills it once
+      at startup for every player rather than per join, and nothing removes a player from it when
+      they disconnect (`clearPlayer` has a single caller, the `/zm players clearplayer` command).
+      A player who claims a reward and then kills their connection still has that claim in memory,
+      so it is still blocked when they come back. Disconnecting cannot roll your own data back.
+    - **What was actually broken: there was no flush on shutdown.** `onDisable` closed inventories,
+      restored player inventories, saved the config and cleared caches, but never asked the storage
+      manager to write anything, so stopping or crashing the server within the `batch-task` window
+      discarded up to that many seconds of every player's data. After a restart the old state was
+      loaded back and a one-time reward could be claimed again. `StorageManager.flush` was added as
+      a default no-op and is now called synchronously from `onDisable`, after the inventories are
+      closed so that close-actions writing data are included, and synchronously because the
+      scheduler is being torn down at that point and an async write would never run.
+    - New `flush-storage-on-quit` option, default `true`, writes buffered data when a player
+      disconnects instead of waiting for the next batch. This is not needed to prevent the rollback
+      above, it narrows what an outright crash can lose. Several players leaving at once are
+      coalesced into a single write. Set it to `false` if the extra write per quit is too much for
+      your database, the shutdown flush still runs either way.
+    - **Fixed the batch task destroying data on every cycle.** It drained both caches and then
+      called `clearAll()` on the whole map. Both types were already drained, so the only thing that
+      call could still remove was whatever the main thread had added in between, and those rows were
+      discarded without ever being written. That was a silent data loss window every `batch-task`
+      seconds on a running server, with no restart involved.
+    - **Fixed two races in `TypeSafeCache`.** It was a concurrent map of plain `ArrayList`s, written
+      from the main thread and drained by the async batch task, which left the lists themselves
+      unguarded: draining one while the main thread appended could throw
+      `ConcurrentModificationException`. More seriously, a writer that had already looked its list
+      up could append to it after the drain had taken it out of the map, and that row was then never
+      written at all. Every operation is now guarded by one lock, `drain` removes and returns
+      atomically, `get` returns a snapshot, and `replaceMatching` supersedes a pending row in a
+      single operation instead of a read-modify-write that a drain could split in half. Measured
+      with a concurrency harness: the old code lost roughly 3% of rows under a writer racing a
+      drainer, the new code loses none across 50000 writes.
+    - The `batch-task` default stays at `10`. With a shutdown flush and an optional quit flush in
+      place the interval only matters for an outright crash, and halving it would double the write
+      frequency on every server for a case those flushes already cover.
+
+- **Console and disk flooding from a failing button (ZM-08)**:
+    - **The `IndexOutOfBoundsException` described in the original report is not reachable from
+      zMenu, and its explanation of the cause is wrong.** `onInventoryClick` already returns
+      immediately when `getClickedInventory()` is null, and a raw slot outside the view resolves to
+      no inventory, so an out of range slot never reaches a button. The slot is then only ever used
+      as a `HashMap` key, never as an array or list index, so no bounds error is possible from
+      zMenu's slot handling at all. The stack trace quoted in the report comes from
+      `AbstractContainerMenu.clicked` inside the server's own packet handler, which runs before the
+      Bukkit event is even created, so zMenu is not on that call stack and cannot intervene.
+    - No slot sanitisation was added to `NMSMenuPacketListener`. That class exists only in the
+      1.21 NMS module, so putting security logic there would make the 1.20 modules behave
+      differently, and it has no inventory awareness to sanitise with.
+    - An explicit raw slot range check was added to `onInventoryClick` anyway, as defence in depth.
+      It costs two comparisons, makes the invariant explicit, and means a future change to the null
+      check above cannot quietly widen what reaches a button.
+    - **What was actually fixed: the log flooding the report describes is real, through a different
+      route.** `button.onClick` was dispatched with no exception handling, and neither
+      `handleClick` nor `AdapterListener` caught anything, so any error thrown by a button's actions
+      escaped into the Bukkit event dispatch and printed a full stack trace on every click. A player
+      holding the mouse down on a button with a broken action, a failing placeholder or a throwing
+      addon could fill the console and the log file as fast as they could click. Button dispatch is
+      now wrapped: the click is cancelled, the first failure for that button is logged with its
+      stack trace, and further failures on the same button are muted for
+      `click-error-log-cooldown-seconds` (default `30`, set to `0` to log every occurrence).
+    - Behaviour change worth knowing: an exception used to abort the whole listener adapter loop for
+      that click, so later adapters were skipped. They now run, meaning one broken button no longer
+      silently disables other parts of the plugin for that click.
+
+- **Menus could hand out a reward when the payment failed (residual part of ZM-03)**: a shop button
+  is configured as a `money` requirement that checks the balance, then a `withdraw` action that
+  takes it, then an action that gives the reward. Two things were wrong with that chain.
+    - `CurrencyWithdrawAction` called the plain `withdraw`, which does not check whether the player
+      can afford the amount. Most economy plugins either drive the balance negative or silently
+      clamp it to zero, and the return value told the caller nothing. It now calls
+      `withdrawIfSufficient`, which checks the balance and applies the debit as one operation and
+      reports the outcome. Requires CurrenciesAPI 1.0.15 or later.
+    - **Nothing in zMenu could stop a list of actions part way through**, so the action giving the
+      reward ran whether or not the money had actually been taken. Actions can now report that what
+      follows them must not run:
+        - New `ActionResult` enum, and `Action.preExecuteChain` / `Action.executeChain` alongside the
+          existing methods. `execute` stays an abstract void and `preExecute` still works, so every
+          existing action and every third party addon compiles and behaves exactly as before.
+        - Every place that runs a list of actions now stops on `ActionResult.STOP`: button actions,
+          requirement and permissible deny and success actions, inventory open and close actions,
+          the Bedrock open and close actions, command actions, mechanic actions, and an action's own
+          deny-chance actions.
+        - An action with a `delay` always reports `CONTINUE`, because it has not run yet when the
+          list continues. Do not put a delay on an action whose outcome is meant to gate the ones
+          after it.
+    - A failed payment now stops the rest of the action list and tells the player. Two new messages:
+      `CURRENCY_NOT_ENOUGH` and `CURRENCY_ERROR`. An `UNSUPPORTED` result, meaning the economy
+      cannot report whether the player could afford it, is treated as a failure and logged, because
+      the alternative is giving the reward away for free.
+    - A misconfigured, non numeric `amount` also stops the chain instead of being treated as zero.
+    - `ZCurrencyPermissible` is deliberately unchanged. It is evaluated when a button is rendered,
+      through `view_requirement`, so it must only ever read the balance and never debit it.
+    - `CurrenciesAPI.init(this)` is called on enable so the library can schedule work back onto the
+      main thread for currencies that are not thread safe, such as `ITEM`, `LEVEL` and `EXPERIENCE`.
+    - **Still only as safe as the backend.** Vault, PlayerPoints, zEssentials, RedisEconomy,
+      ExcellentEconomy and VotingPlugin can refuse a withdrawal themselves, so the check and the
+      debit are genuinely indivisible, and RedisEconomy and ExcellentEconomy hold that guarantee
+      across every server sharing the economy. For CoinsEngine, EcoBits, BeastTokens, RoyaleEconomy
+      and the Elemental currencies the library has to emulate it, which protects one server against
+      racing itself but cannot protect a network sharing one database. `TransactionResult.isAtomic`
+      and `Currencies.supportsAtomicWithdraw` report which case a currency falls into.
+
 # 1.1.1.8
 
 ## New Features

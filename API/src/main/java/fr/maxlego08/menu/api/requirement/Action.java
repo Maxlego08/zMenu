@@ -42,18 +42,62 @@ public abstract class Action {
      */
     protected abstract void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders);
 
+    /**
+     * Runs the action, ignoring whether the ones after it should still run.
+     *
+     * <p>Kept so that existing callers and existing subclasses keep working unchanged. Anything
+     * iterating a list of actions should prefer {@link #preExecuteChain} so that an action which
+     * failed a precondition can stop the rest of the list.</p>
+     */
     public void preExecute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
+        this.preExecuteChain(player, button, inventoryEngine, placeholders);
+    }
+
+    /**
+     * Runs the action and reports whether the actions after it should still run.
+     *
+     * <p>An action with a delay always reports {@link ActionResult#CONTINUE}: it has not run yet
+     * when this returns, so it has nothing to report. Do not put a delay on an action whose outcome
+     * is meant to gate the ones after it.</p>
+     *
+     * @param player          The player who triggers the action.
+     * @param button          The button associated with the action.
+     * @param inventoryEngine The inventory engine managing the inventory.
+     * @param placeholders    Placeholders
+     * @return Whether the remaining actions of the list should run.
+     */
+    public ActionResult preExecuteChain(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         placeholders.register("player", player.getName());
         if (this.chance < 100 && Math.random() > (this.chance / 100.0f)) {
             for (Action denyChanceAction : this.denyChanceActions) {
-                denyChanceAction.preExecute(player, button, inventoryEngine, placeholders);
+                if (denyChanceAction.preExecuteChain(player, button, inventoryEngine, placeholders) == ActionResult.STOP) {
+                    return ActionResult.STOP;
+                }
             }
-            return;
+            return ActionResult.CONTINUE;
         }
-        if (this.delay == 0) this.execute(player, button, inventoryEngine, placeholders);
-        else {
-            inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> this.execute(player, button, inventoryEngine, placeholders), this.delay);
-        }
+        if (this.delay == 0) return this.executeChain(player, button, inventoryEngine, placeholders);
+
+        inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> this.executeChain(player, button, inventoryEngine, placeholders), this.delay);
+        return ActionResult.CONTINUE;
+    }
+
+    /**
+     * Performs the action and reports whether the actions after it should still run.
+     *
+     * <p>The default simply runs {@link #execute} and lets the list carry on, so a subclass that
+     * only implements {@code execute} behaves exactly as before. Override this instead when the
+     * action can fail in a way that must stop whatever follows it.</p>
+     *
+     * @param player          The player who triggers the action.
+     * @param button          The button associated with the action.
+     * @param inventoryEngine The inventory engine managing the inventory.
+     * @param placeholders    Placeholders
+     * @return Whether the remaining actions of the list should run.
+     */
+    protected ActionResult executeChain(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
+        this.execute(player, button, inventoryEngine, placeholders);
+        return ActionResult.CONTINUE;
     }
 
     @Contract(pure= true)

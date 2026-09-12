@@ -3,6 +3,7 @@ package fr.maxlego08.menu.command.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
@@ -22,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
@@ -34,10 +34,7 @@ public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
         this.inventoryManager = plugin.getInventoryManager();
 
         this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            this.inventoryManager.getInventoryNames().stream().filter(entry ->
-                            entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase())
-                    )
-                    .forEach(builder::suggest);
+            NameSuggestions.suggest(builder, this.inventoryManager.getInventoryNames());
             return builder.buildFuture();
         }));
 
