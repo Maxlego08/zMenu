@@ -88,13 +88,8 @@ public class ZDialogManager implements DialogManager, Listener {
     }
     @Override
     public Optional<DialogInventory> getDialog(String pluginName, String fileName) {
-        List<AbstractDialogInventory> pluginDialogs = this.dialogs.get(pluginName);
-        if (pluginDialogs == null) return Optional.empty();
-
-        return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
-                .map(dialog -> (DialogInventory) dialog)
-                .findFirst();
+        Optional<Plugin> plugin = this.menuPlugin.getInventoryManager().getPluginIgnoreCase(pluginName);
+        return plugin.isEmpty() || fileName == null ? Optional.empty() : this.getDialog(plugin.get(), fileName);
     }
 
     @Override
@@ -115,14 +110,14 @@ public class ZDialogManager implements DialogManager, Listener {
                     dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
             );
         }
-        String suffix = (":" + name).toLowerCase(Locale.ROOT);
-        this.dialogNames.removeIf(dialogName -> dialogName.toLowerCase(Locale.ROOT).endsWith(suffix));
+        String suffix = ":" + name.toLowerCase(Locale.ROOT);
+        this.dialogNames.removeIf(dialogName -> dialogName.endsWith(suffix));
     }
 
     @Override
     public void deleteDialog(Plugin plugin) {
         this.dialogs.remove(plugin.getName());
-        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName() + ":"));
+        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName().toLowerCase(Locale.ROOT) + ":"));
     }
 
     @Override

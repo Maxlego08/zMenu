@@ -76,7 +76,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public Optional<BedrockInventory<?,?,?>> getBedrockInventoryOptional(String name) {
         for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             for (BedrockInventory<?,?,?> dialog : dialogList) {
-                if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
+                if (dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -85,12 +85,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
     @Override
     public Optional<BedrockInventory<?,?,?>> getBedrockInventory(String pluginName, String fileName) {
-        List<BedrockInventory<?,?,?>> pluginDialogs = this.bedrockInventory.get(pluginName);
-        if (pluginDialogs == null) return Optional.empty();
-
-        return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName().equals(fileName))
-                .findFirst();
+        Optional<Plugin> plugin = this.menuPlugin.getInventoryManager().getPluginIgnoreCase(pluginName);
+        return plugin.isEmpty() || fileName == null ? Optional.empty() : this.getBedrockInventory(plugin.get(), fileName);
     }
 
     @Override
@@ -99,7 +95,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName))
+                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
                 .findFirst();
     }
 
@@ -107,7 +103,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public void deleteBedrockInventory(String name) {
         for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equals(name) || dialog.getName().equals(name)
+                    dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
             );
         }
         this.rebuildInventoryNames();
