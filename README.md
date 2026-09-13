@@ -1,15 +1,18 @@
 # zMenu
 
 [![Modrinth](https://img.shields.io/modrinth/dt/zmenu?logo=modrinth&label=Modrinth&color=00AF5C)](https://modrinth.com/plugin/zmenu)
-[![Discord](https://img.shields.io/discord/music?logo=discord&label=Discord&color=5865F2)](https://discord.gg/daTBzuk)
+[![Servers](https://img.shields.io/endpoint?url=https://faststats.dev/api/shields/zmenu?metric=servers)](https://faststats.dev/project/zmenu/minecraft-plugin)
+[![Discord](https://img.shields.io/discord/511516467615760405?logo=discord&label=Discord&color=5865F2)](https://discord.gg/daTBzuk)
 [![Java](https://img.shields.io/badge/Java-21+-orange?logo=openjdk)](https://www.oracle.com/java/)
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.19--26.1+-green)](https://www.minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.19--26.2+-green)](https://www.minecraft.net/)
 
-zMenu is a powerful Minecraft plugin for creating custom inventory GUIs through YAML configuration files. No coding required for server admins, while developers get a complete API for integration.
+zMenu is a powerful Minecraft **[Paper](https://github.com/PaperMC/Paper)** plugin for creating custom inventory GUIs through YAML configuration files. No coding is required for server administrators, while developers get a complete API for integration.
 
 ![showcase](https://img.groupez.dev/zmenu/basic_inventory.gif)![punish](https://img.groupez.dev/zmenu/punishv2.gif)
 ![optionnal arg](https://img.groupez.dev/zmenu/ao.gif)![shop](https://img.groupez.dev/zmenu/shop.gif)
 ![title animation](https://img.groupez.dev/zmenu/title-inventories.gif)
+
+[![Servers and players](https://faststats.dev/embed/default:f3dc1a5c-c48b-4187-bf05-5406120bb86d:servers-and-players?w=800&h=300)](https://faststats.dev/project/zmenu/minecraft-plugin)
 
 ## Features
 
@@ -19,9 +22,17 @@ zMenu is a powerful Minecraft plugin for creating custom inventory GUIs through 
 - **Pattern System** - Reusable layouts and button templates
 - **Actions & Requirements** - 40+ actions, conditional logic, click handlers
 - **PlaceholderAPI** - Full placeholder support with local overrides
-- **Multi-platform** - Spigot, Paper, and Folia support
-- **22+ Plugin Hooks** - ItemsAdder, Oraxen, LuckPerms, Vault, MythicMobs, and more
-- **Bedrock** - Bedrock support
+- **Paper & Folia** - Supports Paper, compatible Paper forks, and Folia; Spigot is not supported
+- **26 Optional Hooks** - Integrations for plugins such as ItemsAdder, Oraxen, LuckPerms, MythicMobs, and more
+- **Bedrock** - Bedrock support through Geyser/Floodgate
+
+## Requirements
+
+- Java 21 or newer
+- Paper 1.19 or newer, a compatible Paper fork, or Folia
+- Java 25 for Paper 26.1 and newer
+
+Since version 1.1.1.6, zMenu is Paper-only and no longer supports Spigot servers.
 
 ## Links
 
@@ -100,33 +111,37 @@ InventoryManager manager = plugin.getServer().getServicesManager()
 manager.openInventory(player, "zmenu:example");
 ```
 
-## Supported Plugins
+## Optional Hooks (26)
 
 <details>
 <summary>Click to expand</summary>
 
-- ItemsAdder
-- Oraxen
-- Nexo
-- Nova
-- SlimeFun
+- Geyser/Floodgate
+- BreweryX
+- CraftEngine
+- Denizen
+- Eco
 - ExecutableItems
 - ExecutableBlocks
 - HeadDatabase
+- HMCCosmetics
+- ItemsAdder
+- Jobs
+- LuckPerms
+- MagicCosmetics
+- MMOItems
+- MythicMobs
+- Nexo
+- NextGens
+- Nova
+- Oraxen
+- PacketEvents
+- ProtocolSupport
+- Shopkeepers
+- SlimeFun
+- ViaVersion
 - zHead
 - zItems
-- MythicMobs
-- LuckPerms
-- Vault
-- PlaceholderAPI
-- PacketEvents
-- Jobs
-- Shopkeepers
-- MagicCosmetics
-- HMCCosmetics
-- BreweryX
-- CraftEngine
-- Eco
 
 </details>
 
