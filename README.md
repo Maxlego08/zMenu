@@ -1,6 +1,6 @@
 # zMenu
 
-[![Modrinth](https://img.shields.io/modrinth/dt/zmenu?logo=modrinth&label=Modrinth&color=00AF5C)](https://modrinth.com/plugin/zmenu)
+[![Modrinth](https://img.shields.io/modrinth/dt/zmenu?logo=modrinth&label=Modrinth&color=00AF5C)](https://modrinth.com/project/XPQ42u1g)
 [![Servers](https://img.shields.io/endpoint?url=https://faststats.dev/api/shields/zmenu?metric=servers)](https://faststats.dev/project/zmenu/minecraft-plugin)
 [![Discord](https://img.shields.io/discord/511516467615760405?logo=discord&label=Discord&color=5865F2)](https://discord.gg/daTBzuk)
 [![Java](https://img.shields.io/badge/Java-21+-orange?logo=openjdk)](https://www.oracle.com/java/)
@@ -38,7 +38,7 @@ Since version 1.1.1.6, zMenu is Paper-only and no longer supports Spigot servers
 
 | Resource | Link |
 |----------|------|
-| Download | [Modrinth](https://modrinth.com/plugin/zmenu) |
+| Download | [Modrinth](https://modrinth.com/project/XPQ42u1g) |
 | Documentation | [docs.groupez.dev](https://docs.groupez.dev/zmenu/getting-started) |
 | JavaDocs | [API Reference](https://repo.groupez.dev/javadoc/releases/fr/maxlego08/menu/zmenu-api/1.1.0.8) |
 | Discord | [discord.groupez.dev](https://discord.groupez.dev/) |
@@ -46,7 +46,7 @@ Since version 1.1.1.6, zMenu is Paper-only and no longer supports Spigot servers
 
 ## Quick Start
 
-1. Download zMenu from [Modrinth](https://modrinth.com/plugin/zmenu)
+1. Download zMenu from [Modrinth](https://modrinth.com/project/XPQ42u1g)
 2. Place the JAR in your `plugins/` folder
 3. Restart your server
 4. Edit files in `plugins/zMenu/inventories/`
@@ -79,17 +79,23 @@ items:
 
 **Maven**
 ```xml
-<repository>
-    <id>groupez</id>
-    <url>https://repo.groupez.dev/releases</url>
-</repository>
+<project>
+    <repositories>
+        <repository>
+            <id>groupez</id>
+            <url>https://repo.groupez.dev/releases</url>
+        </repository>
+    </repositories>
 
-<dependency>
-    <groupId>fr.maxlego08.menu</groupId>
-    <artifactId>zmenu-api</artifactId>
-    <version>1.1.1.8</version>
-    <scope>provided</scope>
-</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>fr.maxlego08.menu</groupId>
+            <artifactId>zmenu-api</artifactId>
+            <version>1.1.1.8</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
 ```
 
 **Gradle**
@@ -105,16 +111,17 @@ dependencies {
 
 **Opening an inventory**
 ```java
-InventoryManager manager = plugin.getServer().getServicesManager()
-    .getRegistration(InventoryManager.class).getProvider();
+class Example {
+    void openExample(Plugin plugin, Player player) {
+        InventoryManager manager = plugin.getServer().getServicesManager()
+            .getRegistration(InventoryManager.class).getProvider();
 
-manager.openInventory(player, "zmenu:example");
+        manager.openInventory(player, "zmenu:example");
+    }
+}
 ```
 
-## Optional Hooks (26)
-
-<details>
-<summary>Click to expand</summary>
+## 26 Optional Hooks
 
 - Geyser/Floodgate
 - BreweryX
@@ -142,8 +149,6 @@ manager.openInventory(player, "zmenu:example");
 - ViaVersion
 - zHead
 - zItems
-
-</details>
 
 ## Sponsors
 
