@@ -13,7 +13,9 @@ import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.inventory.ChestInventory;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.pattern.Pattern;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
+import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -359,6 +361,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                     if (event.getClick() == ClickType.DOUBLE_CLICK) return;
 
+                    if (!this.isClickTypeAllowed(button, event.getClick())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     event.setCancelled(true);
                     button.onClick(this.player, event, this, slot, new Placeholders());
 
@@ -538,5 +545,32 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
         Player targetPlayer = Bukkit.getPlayer(targetName);
         return targetPlayer != null ? targetPlayer : this.player;
+    }
+
+    /**
+     * Whether a button should react to a given click type.
+     *
+     * <p>A click type is allowed when it is listed in {@code all-clicks-type}, or when one of the
+     * button's own click-requirements names it explicitly. The second case matters so that a
+     * requirement written with {@code click_type: [DROP]} keeps working: the admin asked for that
+     * click type, so the button has a requirement covering it.</p>
+     *
+     * @param button    The button being clicked.
+     * @param clickType The click type received.
+     * @return True when the click should be dispatched to the button.
+     */
+    private boolean isClickTypeAllowed(Button button, ClickType clickType) {
+        if (!Configuration.enforceClickTypes) return true;
+
+        if (Configuration.allClicksType.contains(clickType)) return true;
+
+        List<Requirement> requirements = button.getClickRequirements();
+        if (requirements != null) {
+            for (Requirement requirement : requirements) {
+                if (requirement.getClickTypes().contains(clickType)) return true;
+            }
+        }
+
+        return false;
     }
 }

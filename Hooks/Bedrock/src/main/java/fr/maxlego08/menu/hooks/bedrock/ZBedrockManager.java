@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
@@ -74,7 +76,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public Optional<BedrockInventory<?,?,?>> getBedrockInventoryOptional(String name) {
         for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             for (BedrockInventory<?,?,?> dialog : dialogList) {
-                if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
+                if (dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -83,12 +85,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
     @Override
     public Optional<BedrockInventory<?,?,?>> getBedrockInventory(String pluginName, String fileName) {
-        List<BedrockInventory<?,?,?>> pluginDialogs = this.bedrockInventory.get(pluginName);
-        if (pluginDialogs == null) return Optional.empty();
-
-        return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName().equals(fileName))
-                .findFirst();
+        Optional<Plugin> plugin = this.menuPlugin.getInventoryManager().getPluginIgnoreCase(pluginName);
+        return plugin.isEmpty() || fileName == null ? Optional.empty() : this.getBedrockInventory(plugin.get(), fileName);
     }
 
     @Override
@@ -97,7 +95,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName))
+                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
                 .findFirst();
     }
 
@@ -105,7 +103,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public void deleteBedrockInventory(String name) {
         for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equals(name) || dialog.getName().equals(name)
+                    dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
             );
         }
         this.rebuildInventoryNames();
@@ -243,7 +241,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
 
             FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
 
-            bedrockInventory.getOpenActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
+            Placeholders openPlaceholders = new Placeholders();
+            for (Action action : bedrockInventory.getOpenActions()) {
+                if (action.preExecuteChain(player, null, fakeInventory, openPlaceholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
 
             this.activeBedrockInventory.put(player.getUniqueId(), bedrockInventory);
         } catch (Exception e) {
@@ -261,7 +264,12 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
             this.activeBedrockInventory.remove(player.getUniqueId());
 
             InventoryEngine fakeInventory = this.inventoryManager.getFakeInventory();
-            inventory.getCloseActions().forEach(action -> action.preExecute(player, null, fakeInventory, new Placeholders()));
+            Placeholders closePlaceholders = new Placeholders();
+            for (Action action : inventory.getCloseActions()) {
+                if (action.preExecuteChain(player, null, fakeInventory, closePlaceholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
         });
         return builder.build();
     }

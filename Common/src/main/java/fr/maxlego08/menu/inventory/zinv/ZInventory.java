@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.*;
@@ -252,7 +253,11 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         }
 
         var placeholders = new Placeholders();
-        this.openActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+        for (Action action : this.openActions) {
+            if (action.preExecuteChain(player, null, inventoryDefault, placeholders) == ActionResult.STOP) {
+                break;
+            }
+        }
 
         return InventoryResult.SUCCESS;
     }
@@ -325,11 +330,17 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
             if (isInNewzMenuInventory) {
                 for (Action action : this.closeActions) {
                     if (!Configuration.skipCloseActionsOnInventorySwitch.contains(action.getType())) {
-                        action.preExecute(player, null, inventoryDefault, placeholders);
+                        if (action.preExecuteChain(player, null, inventoryDefault, placeholders) == ActionResult.STOP) {
+                            break;
+                        }
                     }
                 }
             } else {
-                this.closeActions.forEach(action -> action.preExecute(player, null, inventoryDefault, placeholders));
+                for (Action action : this.closeActions) {
+                    if (action.preExecuteChain(player, null, inventoryDefault, placeholders) == ActionResult.STOP) {
+                        break;
+                    }
+                }
             }
         }, 1);
 

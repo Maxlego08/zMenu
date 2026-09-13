@@ -73,9 +73,12 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setData(configuration.getString(path + "data", "0"));
         menuItemStack.setDurability(configuration.getString(path + "durability", null));
         menuItemStack.setAmount(configuration.getString(path + "amount", "1"));
+        String amountTypeString = configuration.getString(path + "amount-type", "SET").toUpperCase(Locale.ROOT);
         try {
-            menuItemStack.setAmountType(AmountType.valueOf(configuration.getString(path + "amount-type", "SET").toUpperCase(Locale.ROOT)));
-        } catch (Exception ignored) {
+            menuItemStack.setAmountType(AmountType.valueOf(amountTypeString));
+        } catch (IllegalArgumentException exception) {
+            Logger.info("Amount type " + amountTypeString + " is not valid at " + path + "amount-type in " + file.getAbsolutePath()
+                    + ", expected one of " + Arrays.toString(AmountType.values()), Logger.LogType.ERROR);
         }
         menuItemStack.setTargetPlayer(configuration.getString(path + "target", null));
 
@@ -91,13 +94,16 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setDisplayName(configuration.getString(path + "name", configuration.getString(path + "display_name", configuration.getString(path + "display-name", null))));
         menuItemStack.setCenterName(configuration.getBoolean(path + "center-name", false));
         menuItemStack.setCenterLore(configuration.getBoolean(path + "center-lore", false));
+        String loreTypeString = configuration.getString(path + "lore-type", LoreType.REPLACE.name()).toUpperCase(Locale.ROOT);
         try {
-            menuItemStack.setLoreType(LoreType.valueOf(configuration.getString(path + "lore-type", LoreType.REPLACE.name()).toUpperCase(Locale.ROOT)));
-        } catch (Exception ignored) {
+            menuItemStack.setLoreType(LoreType.valueOf(loreTypeString));
+        } catch (IllegalArgumentException exception) {
+            Logger.info("Lore type " + loreTypeString + " is not valid at " + path + "lore-type in " + file.getAbsolutePath()
+                    + ", expected one of " + Arrays.toString(LoreType.values()), Logger.LogType.ERROR);
         }
 
         menuItemStack.setGlowing(configuration.getBoolean(path + "glow"));
-        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString("model_data", configuration.getString("custom-model-id", configuration.getString("custom-model-data", configuration.getString("model-data", "0"))))))))));
+        menuItemStack.setModelID(configuration.getString(path + "modelID", configuration.getString(path + "model-id", configuration.getString(path + "modelId", configuration.getString(path + "customModelId", configuration.getString(path + "customModelData", configuration.getString(path + "model_data", configuration.getString(path + "custom-model-id", configuration.getString(path + "custom-model-data", configuration.getString(path + "model-data", "0"))))))))));
 
         this.loadTranslation(menuItemStack, configuration, path);
         this.loadEnchantements(menuItemStack, configuration, path, file);
@@ -199,16 +205,26 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @param path          The path in the configuration where the material and color are specified.
      */
     private void loadLeather(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path) {
+        Material material;
         try {
-            Material material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase(Locale.ROOT));
-            String materialName = material.toString();
-            if (materialName.startsWith("LEATHER_")) {
-                Color armorColor = this.getColor(configuration, path + "color", Color.fromRGB(160, 101, 64));
-                String type = materialName.replace("LEATHER_", "");
-                menuItemStack.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
-            }
-        } catch (Exception ignored) {
+            material = Material.valueOf(configuration.getString(path + "material", "").toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            return;
         }
+
+        String materialName = material.toString();
+        if (!materialName.startsWith("LEATHER_")) return;
+
+        LeatherArmor.ArmorType armorType;
+        try {
+            armorType = LeatherArmor.ArmorType.valueOf(materialName.replace("LEATHER_", ""));
+        } catch (IllegalArgumentException exception) {
+            Logger.info("Leather material " + materialName + " has no armor type at " + path
+                    + ", its color will be ignored.", Logger.LogType.WARNING);
+            return;
+        }
+
+        menuItemStack.setLeatherArmor(new LeatherArmor(armorType, this.getColor(configuration, path + "color", Color.fromRGB(160, 101, 64))));
     }
 
     /**
@@ -509,9 +525,14 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         menuItemStack.setEnchantmentShowInTooltip(this.getOrNull(configuration.get(path + "enchantment-show-in-tooltip", null)));
         menuItemStack.setAttributeShowInTooltip(this.getOrNull(configuration.get(path + "attribute-show-in-tooltip", null)));
 
-        String rarityString = configuration.getString("item-rarity", null);
+        String rarityString = configuration.getString(path + "item-rarity", null);
         if (rarityString != null) {
-            menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase(Locale.ROOT)));
+            try {
+                menuItemStack.setItemRarity(MenuItemRarity.valueOf(rarityString.toUpperCase(Locale.ROOT)));
+            } catch (IllegalArgumentException exception) {
+                Logger.info("Item rarity " + rarityString + " is not valid at " + path + "item-rarity in " + file.getAbsolutePath()
+                        + ", expected one of " + Arrays.toString(MenuItemRarity.values()), Logger.LogType.ERROR);
+            }
         }
         String tooltypestyleString = configuration.getString(path + "tooltip-style", null);
         if (tooltypestyleString != null) {
@@ -585,15 +606,18 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * @return the parsed color, or the default value if the color cannot be parsed
      */
     private Color getColor(YamlConfiguration configuration, String key, Color def) {
-        String[] split = configuration.getString(key, "").split(",");
+        String value = configuration.getString(key, "");
+        String[] split = value.split(",");
         try {
             if (split.length == 3) {
-                return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                return Color.fromRGB(Integer.parseInt(split[0].trim()), Integer.parseInt(split[1].trim()), Integer.parseInt(split[2].trim()));
             }
             if (split.length == 4) {
-                return Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+                return Color.fromARGB(Integer.parseInt(split[0].trim()), Integer.parseInt(split[1].trim()), Integer.parseInt(split[2].trim()), Integer.parseInt(split[3].trim()));
             }
-        } catch (NumberFormatException ignored) {
+        } catch (IllegalArgumentException exception) {
+            // Color.fromRGB itself rejects anything outside 0-255, not only a bad number.
+            Logger.info("Color " + value + " is not valid at " + key + ", expected numbers between 0 and 255.", Logger.LogType.ERROR);
         }
         return def;
     }

@@ -33,6 +33,7 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
         YamlFileCache.clearCache();
+        this.plugin.getMetaUpdater().clearCache();
 
         this.plugin.loadGlobalPlaceholders();
         this.plugin.getMessageLoader().load();

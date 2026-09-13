@@ -137,12 +137,12 @@ public abstract class PerformButton extends SlotButton {
 
         if (type.isRightClick()) {
             this.execute(plugin, player, this.rightCommands, scheduler, placeholders, player);
-            this.execute(plugin, player, this.consoleRightCommands, scheduler, placeholders, player);
+            this.execute(plugin, player, this.consoleRightCommands, scheduler, placeholders, Bukkit.getConsoleSender());
         }
 
         if (type.isLeftClick()) {
             this.execute(plugin, player, this.leftCommands, scheduler, placeholders, player);
-            this.execute(plugin, player, this.consoleLeftCommands, scheduler, placeholders, player);
+            this.execute(plugin, player, this.consoleLeftCommands, scheduler, placeholders, Bukkit.getConsoleSender());
         }
 
         this.execute(plugin, player, this.commands, scheduler, placeholders, player);

@@ -14,7 +14,10 @@ public class PlayerDataLoader {
     public static Map<UUID, List<Data>> loadPlayerData(String path) throws IOException {
         Map<UUID, List<Data>> result = new HashMap<>();
 
-        JsonObject root = JsonParser.parseReader(new FileReader(path)).getAsJsonObject();
+        JsonObject root;
+        try (FileReader reader = new FileReader(path)) {
+            root = JsonParser.parseReader(reader).getAsJsonObject();
+        }
         JsonObject players = root.getAsJsonObject("players");
 
         for (Map.Entry<String, JsonElement> entry : players.entrySet()) {

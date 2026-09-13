@@ -20,6 +20,7 @@ public class ConsoleCommandLoader extends ActionLoader {
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         List<String> commands = accessor.getStringList("commands");
-        return new ConsoleCommandAction(commands);
+        boolean stopOnFailure = accessor.getBoolean("stop-on-failure", accessor.getBoolean("stop_on_failure", false));
+        return new ConsoleCommandAction(commands, stopOnFailure);
     }
 }

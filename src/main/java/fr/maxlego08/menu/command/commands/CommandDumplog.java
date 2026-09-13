@@ -40,12 +40,12 @@ public class CommandDumplog extends SubCommand<ZMenuPlugin> {
         this.plugin.getScheduler().runAsync(var -> {
             try {
                 String url = this.uploadLog(logPath).replace("\\","");
-                MessageUtils.message(this.plugin, sender, Message.DUMPLOG_SUCCESS, "%url%", this.plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>");
+                this.plugin.getScheduler().runNextTick(task -> MessageUtils.message(this.plugin, sender, Message.DUMPLOG_SUCCESS, "%url%", this.plugin.isSpigot() ? url : "<click:open_url:'" + url + "'><green>" + url + "</green></click>"));
                 if (Configuration.enableInformationMessage) {
                     Logger.info("Log uploaded: " + url);
                 }
             } catch (IOException e) {
-                MessageUtils.message(this.plugin, sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage());
+                this.plugin.getScheduler().runNextTick(task -> MessageUtils.message(this.plugin, sender, Message.DUMPLOG_ERROR, "%error%", e.getMessage()));
                 if (Configuration.enableInformationMessage) {
                     Logger.info("Error uploading log: " + e.getMessage());
                 }

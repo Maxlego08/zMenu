@@ -233,7 +233,7 @@ public class Configuration {
             stepRange = 10
     )
 
-    public static long cooldownClickMilliseconds = 100;
+    public static long cooldownClickMilliseconds = 250;
     @ConfigOption(
             type = DialogInputType.NUMBER_RANGE,
             label = "Cache PlaceholderAPI",
@@ -286,7 +286,96 @@ public class Configuration {
             endRange = 1000,
             stepRange = 10
     )
-    public static long packetEventClickLimiterMilliseconds = 50L;
+    public static long packetEventClickLimiterMilliseconds = 150L;
+
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enforce click types"
+    )
+    public static boolean enforceClickTypes = true;
+
+    // Component cache bounds. The MiniMessage component cache used to be an unbounded map, which
+    // grew forever once player placeholders were resolved into item names, lore or messages.
+    // Set both of these to 0 to restore that old unbounded behaviour.
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Component cache max size",
+            endRange = 100000,
+            stepRange = 1000
+    )
+    public static int componentCacheMaxSize = 10000;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Component cache expire minutes",
+            endRange = 1440,
+            stepRange = 5
+    )
+    public static long componentCacheExpireMinutes = 10L;
+
+    // Namespace the component cache keys so an item name and a message with the same text stop
+    // sharing one entry. They cache differently shaped components, so whichever was parsed first
+    // used to win and the other rendered wrong, most visibly as an italic item name.
+    // Set to false to restore the previous, colliding behaviour.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Fix component cache key collisions"
+    )
+    public static boolean fixComponentCacheKeyCollisions = true;
+
+    // Write buffered player data to the database when a player disconnects, instead of waiting for
+    // the next batch-task cycle. Shrinks what a server crash can lose. Set to false if the extra
+    // write on every quit is a problem, the shutdown flush still runs either way.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Flush storage on quit"
+    )
+    public static boolean flushStorageOnQuit = true;
+
+    // How long to wait before logging the same failing button again. A button whose actions throw
+    // used to print a full stack trace on every single click, so a player holding the mouse down on
+    // a broken button filled the console and the log file. Set to 0 to log every occurrence.
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Click error log cooldown seconds",
+            endRange = 600,
+            stepRange = 5
+    )
+    public static long clickErrorLogCooldownSeconds = 30L;
+
+    // Security: close the menu when the player moves away from the location where it was opened.
+    // Prevents "ghost GUI" abuse where a client drops the screen locally without sending a close packet,
+    // then keeps clicking the still-valid container from anywhere on the map.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Close inventory on move"
+    )
+    public static boolean closeInventoryOnMove = true;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Max move distance",
+            endRange = 64,
+            stepRange = 1
+    )
+    public static double maxMoveDistance = 2.0;
+
+    // Security: close the menu as soon as the player takes or deals damage.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Close inventory on damage"
+    )
+    public static boolean closeInventoryOnDamage = true;
 
     @ConfigOption(
             type = DialogInputType.SINGLE_OPTION,
@@ -422,8 +511,10 @@ public class Configuration {
         allClicksType = clickTypes;
 
         enableCacheItemStack = fileConfiguration.getBoolean(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath());
-        enableCooldownClick = fileConfiguration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath());
-        cooldownClickMilliseconds = fileConfiguration.getLong(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath());
+        // Both read with an explicit default: the one-arg getters return false / 0 for a missing key,
+        // which would silently disable the click throttle on a config that predates these options.
+        enableCooldownClick = fileConfiguration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), true);
+        cooldownClickMilliseconds = fileConfiguration.getLong(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath(), 250L);
 
         cachePlaceholderAPI = fileConfiguration.getLong(ConfigPath.CACHE_PLACEHOLDER_API.getPath());
         enableCachePlaceholderAPI = fileConfiguration.getBoolean(ConfigPath.ENABLE_CACHE_PLACEHOLDER_API.getPath());
@@ -441,7 +532,17 @@ public class Configuration {
         enableToast = fileConfiguration.getBoolean(ConfigPath.ENABLE_TOAST.getPath(), true);
 
         enablePacketEventClickLimiter = fileConfiguration.getBoolean(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath());
-        packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 50L);
+        packetEventClickLimiterMilliseconds = fileConfiguration.getLong(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), 150L);
+
+        enforceClickTypes = fileConfiguration.getBoolean(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), true);
+        componentCacheMaxSize = fileConfiguration.getInt(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), 10000);
+        componentCacheExpireMinutes = fileConfiguration.getLong(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), 10L);
+        fixComponentCacheKeyCollisions = fileConfiguration.getBoolean(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), true);
+        flushStorageOnQuit = fileConfiguration.getBoolean(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), true);
+        clickErrorLogCooldownSeconds = fileConfiguration.getLong(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), 30L);
+        closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
+        maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
+        closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
 
         enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
         performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
@@ -513,6 +614,15 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath(), skipCloseActionsOnInventorySwitch);
         fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
         fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
+        fileConfiguration.set(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), enforceClickTypes);
+        fileConfiguration.set(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), componentCacheMaxSize);
+        fileConfiguration.set(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
+        fileConfiguration.set(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
+        fileConfiguration.set(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), flushStorageOnQuit);
+        fileConfiguration.set(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), clickErrorLogCooldownSeconds);
+        fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
+        fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
+        fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
         fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
@@ -573,6 +683,16 @@ public class Configuration {
 
         ENABLE_PACKET_EVENT_CLICK_LIMITER("enable-packet-event-click-limiter"),
         PACKET_EVENT_CLICK_LIMITER_MILLISECONDS("packet-event-click-limiter-milliseconds"),
+
+        ENFORCE_CLICK_TYPES("enforce-click-types"),
+        COMPONENT_CACHE_MAX_SIZE("component-cache.max-size"),
+        COMPONENT_CACHE_EXPIRE_MINUTES("component-cache.expire-minutes"),
+        FIX_COMPONENT_CACHE_KEY_COLLISIONS("component-cache.fix-key-collisions"),
+        FLUSH_STORAGE_ON_QUIT("flush-storage-on-quit"),
+        CLICK_ERROR_LOG_COOLDOWN_SECONDS("click-error-log-cooldown-seconds"),
+        CLOSE_INVENTORY_ON_MOVE("close-on-move"),
+        MAX_MOVE_DISTANCE("max-move-distance"),
+        CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),
 
         ENABLE_PERFORMANCE_DEBUG("enable-performance-debug"),
         PERFORMANCE_DEBUG_THRESHOLD_MS("performance-debug.threshold-ms"),

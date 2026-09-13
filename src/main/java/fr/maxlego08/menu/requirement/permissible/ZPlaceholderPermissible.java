@@ -85,7 +85,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
 
             try {
-                return Boolean.valueOf(valueAsString) == Boolean.valueOf(resultAsString);
+                return Boolean.parseBoolean(valueAsString) == Boolean.parseBoolean(resultAsString);
             } catch (Exception exception) {
                 return false;
             }
