@@ -12,8 +12,6 @@ zMenu is a powerful Minecraft **[Paper](https://github.com/PaperMC/Paper)** plug
 ![optionnal arg](https://img.groupez.dev/zmenu/ao.gif)![shop](https://img.groupez.dev/zmenu/shop.gif)
 ![title animation](https://img.groupez.dev/zmenu/title-inventories.gif)
 
-[![Servers and players](https://faststats.dev/embed/default:f3dc1a5c-c48b-4187-bf05-5406120bb86d:servers-and-players?w=800&h=300)](https://faststats.dev/project/zmenu/minecraft-plugin)
-
 ## Features
 
 - **YAML Configuration** - Create menus without coding
@@ -32,7 +30,8 @@ zMenu is a powerful Minecraft **[Paper](https://github.com/PaperMC/Paper)** plug
 - Paper 1.19 or newer, a compatible Paper fork, or Folia
 - Java 25 for Paper 26.1 and newer
 
-Since version 1.1.1.6, zMenu is Paper-only and no longer supports Spigot servers.
+> [!WARNING]
+> Since version 1.1.1.6, zMenu is Paper-only and no longer supports Spigot servers.
 
 ## Links
 
@@ -155,3 +154,7 @@ class Example {
 - [Serveur Minecraft Vote](https://serveur-minecraft-vote.fr/)
 - [MineStrator](https://minestrator.com/a/GROUPEZ)
 - [CashBack Minestrator](https://cashback.groupez.dev/)
+
+## Anonymous Statistics
+
+[![Servers and players](https://faststats.dev/embed/default:f3dc1a5c-c48b-4187-bf05-5406120bb86d:servers-and-players?w=800&h=300)](https://faststats.dev/project/zmenu/minecraft-plugin)
