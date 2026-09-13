@@ -1,67 +1,71 @@
 [versions]
 # Build / Plugins
-shadow = "9.0.0"
+shadow = "9.6.1"
 groupez = "1.0.0"
-paperweight = "2.0.0-beta.21"
+paperweight = "2.0.0-beta.23"
 
 # Platforms (Paper / Spigot / NMS)
-spigot = "26.1-R0.1-SNAPSHOT"
 paper-api = "1.21.11-R0.1-SNAPSHOT"
-paper-api-latest = "26.1.2.build.+"
+paper-api-latest = "26.2.build.+"
+paperApi2612 = "26.1.2.build.+"
 paperDevBundle120R3 = "1.20.4-R0.1-SNAPSHOT"
 paperDevBundle120R4 = "1.20.6-R0.1-SNAPSHOT"
 paperDevBundle121R1 = "1.21.1-R0.1-SNAPSHOT"
 paperDevBundle2612 = "26.1.2.build.+"
-adventure-api = "4.25.0"
-adventure-text-minimessage = "4.21.0"
-item-nbt-api = "2.15.0"
+paperDevBundle262 = "26.2.build.+"
+adventure-api = "4.26.1"
+adventure-text-minimessage = "4.26.1"
+item-nbt-api = "2.16.0"
 
 # Utilities / Libraries
-sarah = "1.22"
-currenciesapi = "1.0.14"
+sarah = "1.25"
+currenciesapi = "1.0.15"
 folialib = "0.5.1"
-xseries = "13.3.0"
+xseries = "13.8.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
 paper-dispatch = "1.0.3"
-faststats = "0.29.4"
+faststats = "0.30.1"
 
 # Integration Hooks
-placeholderapi = "2.11.6"
+placeholderapi = "2.12.3"
 reflections = "0.10.2"
-slimefun4 = "RC-34"
-oraxen = "1.217.0"
-packetevents = "2.12.1"
-nova-api = "0.18"
-nexo = "1.21.0"
-mythicmobs = "5.6.1"
-mmoitems = "6.9.5-SNAPSHOT"
+slimefun4 = "RC-36"
+oraxen = "1.218.0"
+packetevents = "2.13.0"
+nova-api = "0.22.3"
+nexo = "1.28.0"
+mythicmobs = "5.13.0"
+mmoitems = "6.10.1-SNAPSHOT"
 mythiclib = "1.7.1-SNAPSHOT"
-luckperms = "5.4"
-magiccosmetics = "2.2.8"
+luckperms = "5.5"
+magiccosmetics = "2.2.9"
 itemsadder = "3.6.1"
-hmccosmetics = "2.7.7"
+hmccosmetics = "2.9.2"
 headdatabase = "1.3.2"
-score = "5.25.6.9"
-craft-engine = "26.7.3"
-eco = "6.53.0"
-floodgate = "2.2.4-SNAPSHOT"
+score = "5.26.9.9"
+craft-engine = "26.8.2"
+eco = "2026.37"
+floodgate = "2.2.5-SNAPSHOT"
 viaversion = "5.11.0"
-breweryx = "3.6.0"
-denizen = "1.3.1-SNAPSHOT"
+breweryx = "3.7.0"
+denizen = "1.3.3-SNAPSHOT"
 
 # Testing
-junit-bom = "5.10.0"
-mockbukkit = "4.114.0"
+junit-bom = "6.1.3"
+mockbukkit2612 = "4.114.0"
+mockbukkit262 = "4.116.1"
 
 [libraries]
 # Platforms (Paper / NMS)
 paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
 paper-api-latest = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api-latest" }
+paperApi2612 = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi2612" }
 paperDevBundle120R3 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R3" }
 paperDevBundle120R4 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R4" }
 paperDevBundle121R1 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle121R1" }
 paperDevBundle2612 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle2612" }
+paperDevBundle262 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle262" }
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure-api" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure-text-minimessage" }
 item-nbt-api = { group = "de.tr7zw", name = "item-nbt-api", version.ref = "item-nbt-api" }
@@ -105,7 +109,8 @@ paperdispatch = { group = "com.github.1robie.paper-dispatch", name = "paper-disp
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit-bom" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
-mockbukkit = { group = "org.mockbukkit.mockbukkit", name = "mockbukkit-v26.1.2", version.ref = "mockbukkit" }
+mockbukkit2612 = { group = "org.mockbukkit.mockbukkit", name = "mockbukkit-v26.1.2", version.ref = "mockbukkit2612" }
+mockbukkit262 = { group = "org.mockbukkit.mockbukkit", name = "mockbukkit-v26.2", version.ref = "mockbukkit262" }
 
 [plugins]
 # Build Tools
