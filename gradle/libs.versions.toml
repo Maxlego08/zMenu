@@ -1,6 +1,6 @@
 [versions]
 # Build / Plugins
-shadow = "9.0.0"
+shadow = "9.6.1"
 groupez = "1.0.0"
 paperweight = "2.0.0-beta.21"
 
@@ -51,7 +51,7 @@ breweryx = "3.6.0"
 denizen = "1.3.1-SNAPSHOT"
 
 # Testing
-junit-bom = "5.10.0"
+junit-bom = "6.1.3"
 mockbukkit = "4.114.0"
 
 [libraries]
