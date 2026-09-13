@@ -6,10 +6,10 @@ dependencies {
     testImplementation(project(":Test:Base"))
     testImplementation(project(":"))
     testImplementation(project(":Hooks:Paper-26"))
-    testImplementation(libs.paperApi2612)
-    testImplementation(libs.mockbukkit2612)
+    testImplementation(libs.paper.api.latest)
+    testImplementation(libs.mockbukkit262)
     testRuntimeOnly(libs.reflections)
-    paperweightDevelopmentBundle(libs.paperDevBundle2612)
+    paperweightDevelopmentBundle(libs.paperDevBundle262)
 }
 
 java {
