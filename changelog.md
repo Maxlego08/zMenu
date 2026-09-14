@@ -42,6 +42,65 @@
 
 # Unreleased
 
+# 1.1.1.9
+
+## New Features
+
+- **New `broadcast_title` action**: sends a title and a subtitle to every online player at once. Until now only
+  the per-player `title` action existed. The type is written `broadcast_title` or `broadcast title`, matching
+  the naming of the existing `broadcast_sound`, and it accepts the same five keys as `title`: `title`,
+  `subtitle`, `start` (fade in), `duration` (time on screen) and `end` (fade out). They are passed unchanged to
+  the same `MessageSender.sendTitle` the `title` action uses, so timings that already work for `title` on your
+  server work here too. Inventory placeholders and PlaceholderAPI are resolved once, for the player who
+  clicked, so `%player_name%` refers to the clicker and not to each recipient, which is what an announcement
+  wants.
+    - The three timing keys default to `0` when omitted. `title` and `subtitle` have no default: leaving one
+      out sends the literal text `null`, exactly like the existing `title` action, so always write both.
+
+- **New `broadcast_message` action**: sends a list of chat lines to every online player. The type is written
+  `broadcast_message` or `broadcast message`. Keys: `messages` (the lines to send) and `minimessage` /
+  `mini-message` (default `true`; set it to `false` to send each line as it is, through Bukkit's plain
+  `Player#sendMessage`, instead of parsing it as MiniMessage). In every line `%sender%` is replaced by the name
+  of the player who clicked and `%receiver%` by the name of each player receiving it.
+    - It is not interchangeable with the existing `broadcast` action: `broadcast` resolves placeholders again
+      for each recipient and supports a `requirements` list to filter who receives the message, while
+      `broadcast_message` resolves them once for the clicking player and sends that same result to everyone,
+      with only `%receiver%` varying. Use `broadcast` when the text must differ per recipient or be filtered,
+      `broadcast_message` for a plain announcement about the player who clicked.
+    - `messages` must be written as a YAML list. Unlike the `message` action, the singular `message` key and a
+      single inline string are not accepted, and `%player%` substitution and `\n` line splitting are not
+      applied. The existing `broadcast` action behaves the same way on all three points.
+
+## Improvements
+
+- Updated [CurrenciesAPI](https://github.com/GroupeZ-dev/CurrenciesAPI) to version 1.0.15 (required by the
+  currency withdrawal fix documented under Security). The library is shaded and relocated into
+  `fr.maxlego08.menu.hooks.currencies`, so there is nothing to install or update on the server.
+- **Menu name completion now suggests the short name**: `/zmenu open`, `/zmenu giveopenitem`,
+  `/zmenu reload inventory`, `/zmenu dialog open` and `/zmenu bedrock open` only ever completed the fully
+  qualified `plugin:name` form, making you type more than necessary for a name only one plugin provides. A
+  new shared `NameSuggestions` helper now suggests the bare file name when a single plugin provides it, and
+  keeps the qualified form for a name several plugins provide, or as soon as the typed text contains a `:`.
+  The five commands share one implementation instead of five slightly different copies of the same filter.
+- **Clear errors for invalid item option values**: an unrecognised `amount-type` or `lore-type` used to be
+  swallowed with no message at all, so the item silently kept its default (`SET` and `REPLACE`) with nothing
+  in the console to explain why. zMenu now logs an error naming the bad value, the exact key, the file it
+  came from and the list of accepted values, and does the same for an unknown `item-rarity`. An unparsable
+  `color` is reported the same way, and a `LEATHER_` material with no matching armour type now logs a
+  warning saying its `color` is ignored instead of being skipped silently.
+- **A Discord action without a usable webhook now says where it is**: a `discord` or `discord_component`
+  action whose `webhook` is present but empty is skipped with an error naming both the configuration path
+  and the full path of the file it was declared in, instead of the previous
+  `Impossible to load discord action, webhook does not exists: null` line, which said nothing about where
+  the faulty action was. An action with no `webhook` key at all is no longer dropped at load time -
+  `TypedMapAccessor.getString` hands the loader the literal string `null`, which gets past that emptiness
+  check - so it is the background check that now reports it, as a warning naming the file. The `discord`
+  action also stops printing the stack trace of the malformed URL alongside that message.
+- **`/zmenu dumplog` now replies from a server thread**: the upload of `logs/latest.log` to `mclo.gs` still
+  runs asynchronously, but the `DUMPLOG_SUCCESS` and `DUMPLOG_ERROR` replies are now dispatched through
+  `runNextTick` instead of being sent from the upload thread (safer on Folia). The command is otherwise
+  unchanged: it still returns immediately and the log is still uploaded off the main thread.
+
 ## Security
 
 - **Ghost GUI / session desynchronization (ZM-01)**: a modified client could hide the inventory screen
@@ -303,6 +362,162 @@
       and the Elemental currencies the library has to emulate it, which protects one server against
       racing itself but cannot protect a network sharing one database. `TransactionResult.isAtomic`
       and `Currencies.supportsAtomicWithdraw` report which case a currency falls into.
+
+## Fixes
+
+- **A `SWITCH` button comparison could stop the whole menu from opening**: the `>=`, `<=`, `>` and `<`
+  cases of a `SWITCH` button parsed both sides with `Integer.parseInt`, and the `NumberFormatException`
+  it throws escaped `ZSwitchButton.getDisplayButton` into the button loop of `InventoryDefault`. Nothing
+  catches it there (`VInventoryManager` only catches `InventoryOpenException`), so the remaining buttons
+  were never placed, `player.openInventory` was never reached, and the console printed a stack trace while
+  the player was left with no menu. Anything that is not a whole number triggered it: a `key` placeholder
+  returning a decimal balance such as `1000.5` or an empty string, the raw `%placeholder%` coming back
+  unresolved because the plugin providing it is not installed, or a case simply written `">= 10"` with a
+  space after the operator.
+    - Both sides are now compared as decimals, spaces are trimmed and a comma is accepted as the decimal
+      separator, so `">= 10"`, `">=10.5"` and `">=10,5"` all work, and a placeholder returning `1000.5` is
+      compared correctly instead of throwing. This matches how placeholder requirements already read their
+      numbers. A value that uses `,` as a thousands separator is read as a decimal point, so `1,000` counts
+      as `1`: compare against a raw, unformatted placeholder.
+    - A side that is still not a number no longer throws, it simply never matches. The switch moves on to
+      the next case and falls back to the button's own `item` when none of them match, so a missing
+      placeholder plugin now costs you the default icon rather than the whole inventory.
+    - Cases without a comparison operator are unchanged and are still an exact string comparison.
+- Fixed a menu failing to open when an item used `material: armor:<slot>` with a slot name that does not
+  exist, such as `armor:HELMET` or `armor:BOOTS`: `ArmorLoader` passed the value straight to
+  `EquipmentSlot.valueOf`, and the resulting `IllegalArgumentException` was never caught, so the menu was
+  abandoned mid-render with only a stack trace that named neither the file nor the item. The slot is now
+  validated: an invalid value is logged as an error with the configuration path and the list of accepted
+  slots, and the item falls back to `AIR` so the rest of the menu still opens. The value is also upper-cased
+  and trimmed, so `armor:head` now behaves like `armor:HEAD`.
+- **A mistyped `datas` type no longer silently removes a button**: the `type` of a button `datas` entry
+  (`SET`, `ADD`, `SUBTRACT`, `REMOVE`) was resolved with a strict `valueOf`. A typo, or simply a lowercase
+  `type: add`, threw while the button was being built, and the button was then dropped from the inventory
+  with no message at all unless `enable-debug: true` was set. In a `patterns/` file, where button loading is
+  not wrapped in a try/catch, the same error aborted the pattern folder, so every pattern after the faulty
+  one stopped loading.
+    - The value is now uppercased before being resolved, so `type: add` and `type: ADD` are equivalent.
+    - An unknown value logs an error naming the exact configuration path and listing the accepted types, and
+      falls back to `SET` so the button still loads.
+- **A non-numeric player data value no longer cancels the whole click**: an `add` or `subtract` entry in a
+  button `datas` section, or a `data` action, whose `value` did not resolve to a whole number - an unresolved
+  `%placeholder%`, an empty string, or a decimal such as `1.0` - threw out of `ZActionPlayerData`. Any entry
+  using `math: true` threw the same way when its expression could not be evaluated. `datas` entries run
+  at the very top of a button click, before the messages, the sound, the click-requirements, the actions
+  and the commands, so the rest of the click was lost along with the write. The same failure inside a
+  `data` action aborted the actions queued after it.
+    - The value now goes through a guarded conversion: an unusable value logs a single error line naming the
+      value and the data key, that one entry is skipped, and the rest of the click runs normally.
+    - Without `math`, `add` and `subtract` now also accept a decimal value, a comma as the decimal separator
+      and surrounding spaces (`1.0`, `1,5`, ` 2 `), which placeholders commonly return. The amount is
+      truncated to a whole number, since `Data.add` and `Data.remove` work on whole numbers.
+    - With `math: true`, an expression that cannot be evaluated is logged and the raw value is stored as is,
+      instead of the click being aborted.
+- **`item-rarity` and four custom model data aliases were read from the wrong place in the file**:
+  `MenuItemStackLoader` looked those keys up at the root of the YAML file instead of under the item's own
+  path. `item-rarity` written on an item was therefore silently ignored (on 1.21+, the only versions where
+  it is applied), and the `model_data`, `custom-model-id`, `custom-model-data` and `model-data` spellings of
+  the custom model data option never reached the item either — only `modelID`, `model-id`, `modelId`,
+  `customModelId` and `customModelData` worked. Conversely, a file that happened to declare one of those
+  keys at its root applied it to every item it contained. All of them are now read from the item's path.
+- **An out-of-range colour or an unknown `item-rarity` no longer breaks the item that uses it**:
+  `Color.fromRGB` and `Color.fromARGB` reject any channel outside `0-255` and `MenuItemRarity.valueOf`
+  rejects an unknown value, and neither rejection was caught. A potion item written with `color: 300,0,0`
+  threw out of the item loader: inside an inventory the whole button was dropped, with nothing in the
+  console unless `enable-debug: true`, and inside a `patterns/` or `items/` file the exception escaped the
+  folder walk and aborted everything still to be loaded. Both are now caught and logged with the offending
+  value, the key and the file, and the item keeps its default.
+- **Colours written with spaces after the commas now work**: `color: 160, 101, 64` failed to parse and
+  silently fell back to the default — the brown leather tint, or no tint at all on a potion. Each channel is
+  now trimmed before being parsed, so the spacing no longer matters.
+- Fixed the `itemModel` item comparison never matching: `ItemModelSimilar` compared the two item model keys
+  with `==` instead of `equals`. `NamespacedKey` is a regular object and zMenu builds a fresh one every time
+  it renders an item, so two items carrying the same `item-model` were never seen as similar, while any two
+  items carrying **no** item model were seen as identical. Every `type: itemModel` check was affected, on the
+  Minecraft 1.21.4+ servers where that strategy is registered: an inventory `open-with-item`, a
+  `check-inventory` requirement and the `check-item` of an `item_drag` button. The keys are now compared
+  with `Objects.equals`, and an item with no `ItemMeta`, such as an `AIR` stack coming from a misconfigured
+  item, is handled instead of throwing a `NullPointerException`.
+- **Two plugins shipping a menu with the same file name no longer hide each other**: `ZInventoryManager`
+  kept a single inventory per short name, so the last file loaded silently replaced the other one, and
+  which of the two `/zmenu open <name>`, an `inventory` action or an `inventory` button opened depended on
+  the load order. Deleting or reloading either one then removed the shared entry, leaving the survivor
+  unreachable by its short name until its own plugin registered it again.
+    - Every inventory claiming a name is now kept. A name used on its own resolves deterministically:
+      zMenu's own inventory wins, otherwise the one from the alphabetically first plugin name. The
+      `plugin:name` form still selects exactly one.
+    - A warning is now logged when a name is claimed by several plugins, listing every owner, naming the
+      one the short form will open and pointing at the `plugin:name` form to reach the others.
+    - `deleteInventory` and `deleteInventories` now only drop their own entries. Reloading a single menu
+      with `/zmenu reload inventory <name>`, or a plugin unregistering its menus through the API, no longer
+      takes another plugin's menu of the same name down with it.
+- **Dialogs and Bedrock menus are now found whatever the case of their name**: `ZDialogManager` and
+  `ZBedrockManager` compared names with `equals`, so a name that did not match the file name or the menu's
+  configured `name` character for character was reported as missing.
+    - `/zmenu dialog open <name>` and `/zmenu bedrock open <name>`, and the `dialog` and `bedrock` actions,
+      now compare with `equalsIgnoreCase`, so `MyDialog` finds the dialog declared in `mydialog.yml`.
+    - **The `plugin:name` form offered by tab completion could not be opened.** The suggested entries were
+      lowercased (`zmenu:example`), while `getDialog(String, String)` and `getBedrockInventory(String,
+      String)` looked the plugin up by its exact name (`zMenu`) as a map key, so the command answered "not
+      found" for a name it had just suggested. Both now resolve the plugin part through
+      `getPluginIgnoreCase`, as inventories already did. A `dialog` or `bedrock` action written with
+      `plugin: zmenu` was failing the same way.
+    - `getDialog(Plugin, name)` and `getBedrockInventory(Plugin, name)` now also accept the menu's
+      configured `name` and not only its file name, so both lookup forms behave the same way.
+- **Discord webhook checks no longer freeze the server or silently disable the action**: the `discord` and
+  `discord_component` actions verified their `webhook` with a blocking HTTP request while the action was
+  loaded, so every menu, command or item using an unreachable or slow webhook stalled the loading thread -
+  the main thread on startup and on `/zm reload` - for up to 10 seconds per distinct URL (5 second connect
+  and 5 second read timeouts). On top of that, a webhook that did not answer with `200` made the loader drop
+  the action entirely, and the failure was cached for the whole lifetime of the server, so a webhook that was
+  unreachable once - Discord down, or the network not ready yet while the server was booting - stayed dead
+  until a full restart, `/zm reload` did not retry it.
+    - The action is now built whatever the check says, and the webhook is verified in the background by the
+      new `DiscordWebhookChecker`. A webhook that does not answer only logs a warning naming the file it was
+      declared in, instead of removing the action from the menu.
+    - Only successful checks are remembered, so a webhook that failed once is checked again on the next
+      reload, and the same URL is never checked twice at the same time.
+    - The HTTP connection is now closed after the check, and the shared result cache is thread-safe.
+- Fixed a `ClassCastException` when a zMenu message was sent to a sender that is neither a player nor the
+  console: `MessageUtils.message` cast every non-console sender to `Player`, so command blocks and the RCON
+  console crashed instead of receiving the message. With the default `enable-open-message: true`,
+  `/zmenu open <inventory> <player>` run from a command block failed on the confirmation message and never
+  opened the menu. Non-player senders now receive the same prefixed chat output the console already got.
+- Fixed a single literal `%` marking a value as a placeholder expression. `Resolvable.isExpression` returned
+  `true` as soon as the text contained one `%`, so a component value such as `50% off` was classified as
+  dynamic and pushed through the local placeholders and PlaceholderAPI again on every render for every
+  player. A matching pair is now required, so the value is kept as a constant and resolved once when the
+  item is loaded. It covers every value read through `ResolvableString` or `ResolvableComponent`: `lore`,
+  `custom-name`, the two book content components, the `custom-name` of `potion-contents` and a `string`
+  persistent-data entry. Real placeholders are unaffected, and the `item-name` component keeps the old
+  behaviour because it does not go through `isExpression`.
+- Fixed `only-refresh-button` pagination clearing slots in the wrong container. `PaginationButton` called
+  `addItem(slot, air, isPlayerInventory())`, which binds to the overload whose last argument is the
+  anti-dupe flag, not the container, so the slots were always cleared in the menu and never in the player
+  inventory. A paginate button placed in the player's inventory (reachable only through the API, via
+  `Button.setPlayerInventory(true)`) therefore kept the previous page's items in every slot the new page
+  did not fill, and blanked the same-numbered menu slots instead, dropping their click handler until the
+  next full refresh. Ordinary in-menu pagination was unaffected: there the misplaced argument only skipped
+  anti-dupe tagging on an `AIR` stack, which is ignored anyway.
+- Fixed slot ranges written with spaces around the hyphen being silently ignored: a `slots` entry such as
+  `0 - 8` failed to parse and added no slot at all, so the button fell back to the single `slot` value of
+  its definition (default `0`) instead of covering the range. `ButtonLoader.loadSlot` now trims both bounds
+  of a range, and single slot values, before parsing them.
+    - A range written backwards now behaves like the same range written the right way round: `8-0` covers
+      slots `0` to `8`, where it used to drop both of its bounds and cover only `1` to `7`. A range written
+      normally is unaffected, and still covers both of its bounds.
+
+## Internal Changes
+
+- **File handles in the JSON storage layer**: `DiscUtils` and `PlayerDataLoader` now open their streams
+  with try-with-resources, so a failed read or write no longer leaves the file open. This affects
+  `live-sync.json`, saved through `Persist`, and `players.json`, read by `/zmenu players convert`.
+- `DiscUtils.readBytes` now stops at the end of the stream instead of moving its read offset backwards,
+  which could throw an `IndexOutOfBoundsException` when a file shrank between its size being measured and
+  being read.
+- The anti-dupe inventory click handler now verifies that the clicker is a player before casting instead of
+  casting blind, so a non-player clicker is ignored rather than throwing a `ClassCastException` out of
+  `DupeListener.onInventoryClick`.
 
 # 1.1.1.8
 
