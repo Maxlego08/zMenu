@@ -2,6 +2,7 @@ package fr.maxlego08.menu.dupe;
 
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,11 +28,10 @@ public class PDCDupeManager implements DupeManager {
                 return itemStack;
             }
 
-            if (!itemStack.hasItemMeta()) {
-                return itemStack;
-            }
-
             ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta == null) {
+                itemMeta = Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+            }
             if (itemMeta == null) return itemStack;
             PersistentDataContainer persistentDataContainer = itemMeta.getPersistentDataContainer();
             persistentDataContainer.set(this.namespacedKey, PersistentDataType.INTEGER, 1);
@@ -46,7 +46,7 @@ public class PDCDupeManager implements DupeManager {
 
     @Override
     public boolean isDupeItem(@NonNull ItemStack itemStack) {
-        if (!itemStack.hasItemMeta()) {
+        if (itemStack.getType().isAir()) {
             return false;
         }
 

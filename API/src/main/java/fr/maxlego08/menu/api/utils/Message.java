@@ -178,6 +178,8 @@ public enum Message implements IMessage {
     SAVE_ERROR_TYPE("&cCannot find save type."),
     SAVE_SUCCESS("&aYou just saved the item &f%name%&a."),
     CLICK_COOLDOWN(MessageType.ACTION, "&cPlease wait a little between two clicks."),
+    CURRENCY_NOT_ENOUGH("&cYou cannot afford this."),
+    CURRENCY_ERROR("&cThe transaction could not be completed, nothing was taken."),
 
     COMMAND_ARGUMENT_INTEGER("&cThe argument &f%argument%&c must be an integer."),
     COMMAND_ARGUMENT_STRING("&cThe argument &f%argument%&c must be a string."),

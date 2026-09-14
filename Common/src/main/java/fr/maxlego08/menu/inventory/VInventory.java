@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -35,6 +36,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected final Map<Integer, ItemButton> playerInventoryItems = new HashMap<>();
     protected Player player;
     protected int page;
+    protected Location openLocation;
     protected Object[] args;
     protected Inventory inventory;
     protected String guiName;
@@ -188,6 +190,18 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     @Override
     public Player getPlayer() {
         return this.player;
+    }
+
+    /**
+     * @return the location of the player when this inventory was opened, or null if it was never captured
+     */
+    @Nullable
+    public Location getOpenLocation() {
+        return this.openLocation;
+    }
+
+    public void setOpenLocation(@Nullable Location openLocation) {
+        this.openLocation = openLocation;
     }
 
     @Override

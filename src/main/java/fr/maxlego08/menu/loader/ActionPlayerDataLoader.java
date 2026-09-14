@@ -6,11 +6,14 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.requirement.ZActionPlayerData;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Locale;
 
 public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
 
@@ -24,7 +27,14 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
     public ActionPlayerData load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects)
             throws InventoryException {
 
-        ActionPlayerDataType type = ActionPlayerDataType.valueOf(configuration.getString(path + "type", "SET"));
+        String typeString = configuration.getString(path + "type", "SET").toUpperCase(Locale.ROOT);
+        ActionPlayerDataType type;
+        try {
+            type = ActionPlayerDataType.valueOf(typeString);
+        } catch (IllegalArgumentException exception) {
+            Logger.info("Data type " + typeString + " is not valid at " + path + "type, expected one of " + Arrays.toString(ActionPlayerDataType.values()), Logger.LogType.ERROR);
+            type = ActionPlayerDataType.SET;
+        }
         String key = configuration.getString(path + "key");
         Object object = configuration.get(path + "value", true);
         String seconds = configuration.getString(path + "seconds", null);

@@ -68,6 +68,15 @@ database-configuration:
 # Instead of making an SQL query for each update, a single query will be executed every 10 seconds
 batch-task: 10
 
+# Write buffered player data to the database as soon as a player disconnects, instead of waiting
+# for the next batch-task cycle.
+# Buffered data is always written when the server stops, so this is only about how much an outright
+# crash can lose: with this enabled a crash loses only what arrived since the last disconnect,
+# instead of up to a full batch-task interval for every player.
+# Set to false if the extra write on each quit is too much for your database. Several players
+# leaving at the same time are already grouped into a single write.
+flush-storage-on-quit: true
+
 # Allows saving it in the database the inventories opened by the players.
 enable-player-open-inventory-logs: true
 
@@ -163,14 +172,42 @@ anti-dupe-discord-webhook-url: "https://discord.com/api/webhooks/<your discord w
 # Placeholders: %player%, %amount%, %itemname%.
 anti-dupe-message: "**%player%** used %amount% %itemname% from zMenu. It has been removed!"
 
+# Only run a button for a click type listed in all-clicks-type below, or one that a
+# click-requirement of that button explicitly asks for.
+# Keep this enabled. When it is off, exotic click types reach the button while every requirement
+# scoped to a normal click type is skipped, so pressing the drop key (Q), ctrl + Q or a number key
+# on a button runs its actions and commands without checking any requirement at all.
+# Only disable this if enforcing it breaks a menu you cannot change.
+enforce-click-types: true
+
 # List of click types supported.
-# You can customize which click types are allowed or handled in your menus.
+# Any click type not listed here is ignored, unless a click-requirement of the button names it
+# explicitly. Requires enforce-click-types to be true.
+# This is also the default list of click types used by a requirement that does not specify one.
 all-clicks-type:
   - MIDDLE
   - RIGHT
   - LEFT
   - SHIFT_RIGHT
   - SHIFT_LEFT
+
+# Cache used for parsed MiniMessage components (item names, lore, inventory titles, messages).
+# This cache used to be unbounded: once a player placeholder was resolved into a name or a lore
+# line, every distinct result stayed in memory for the whole uptime, which on a busy server grew
+# until the JVM ran out of heap.
+component-cache:
+  # Maximum number of parsed components kept in memory. Set to 0 for no limit (old behaviour).
+  max-size: 10000
+  # Drop an entry that has not been used for this many minutes. Set to 0 to never expire
+  # (old behaviour). This matters more than the size limit, because a component built from a
+  # player placeholder is usually used once and never again.
+  expire-minutes: 10
+  # Keep item names, lore and plain messages in separate cache namespaces.
+  # Item names and lore are cached with a formatting reset in front of them, plain messages are
+  # not, so when an item name and a message shared the same text they also shared one cache entry:
+  # whichever was parsed first won and the other one rendered wrong, most visibly as an item name
+  # that appeared italic. Set to false to restore that old, colliding behaviour.
+  fix-key-collisions: true
 
 # Enable caching of ItemStacks.
 # Caching helps improve performance by reducing object creation.
@@ -180,16 +217,28 @@ enable-cache-item-stack: true
 # Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.
 enable-cooldown-click: true
 
+# How long, in seconds, to wait before logging the same failing button again.
+# When a button's actions throw an error, zMenu logs it once with the full stack trace and then
+# stays quiet about that same button for this long. Without it a player clicking a broken button
+# produced one full stack trace per click, which filled the console and the log file and slowed the
+# server down. Set to 0 to log every single occurrence.
+click-error-log-cooldown-seconds: 30
+
 # Cooldown duration in milliseconds between clicks.
-cooldown-click-milliseconds: 100
+# Also acts as a rate limit against automated click macros. Values below ~150 make it realistic for a
+# scripted client to fire several purchases before an asynchronous economy has committed the first one.
+cooldown-click-milliseconds: 250
 
 # Enable packet event click limiter. Limits all click packets received from players (only for zMenu inventories).
-# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits. (Requires PacketEvent plugin)
+# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits.
+# STRONGLY RECOMMENDED on public servers: this is the only limit that applies before the click reaches
+# the server tick, and it is the layer that stops packet injection clients from bursting clicks.
+# Requires the PacketEvents plugin to be installed, it does nothing without it.
 enable-packet-event-click-limiter: false
 
 # Packet event click limiter duration in milliseconds.
 # Minimum time required between packet-level click events. Lower values are more permissive.
-packet-event-click-limiter-milliseconds: 50
+packet-event-click-limiter-milliseconds: 150
 
 # PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
 # Defines how often placeholders should be refreshed.
@@ -219,3 +268,16 @@ enable-website-auto-connect: true
 # API URL for inventory builder
 # Do not change this value, leave the default URL; otherwise the link with the site will not work
 api-url: "https://minecraft-inventory-builder.com/api/v2/"
+# Close the menu when the player moves away from where it was opened.
+# Protects against "ghost GUI" abuse: a modified client can hide the inventory screen locally
+# without sending a close packet, then keep clicking the still-open container while running,
+# fighting or teleporting. Set to false only if you rely on menus staying open while walking.
+close-on-move: true
+
+# Maximum distance (in blocks) a player may move from the opening location before the menu is closed.
+# Only used when close-on-move is true.
+max-move-distance: 2.0
+
+# Close the menu as soon as the player takes or deals damage.
+# Prevents using menus (kits, shops, heals) during combat through a ghost GUI.
+close-on-damage: true

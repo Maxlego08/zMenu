@@ -69,6 +69,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -88,7 +89,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     private final Map<UUID, Integer> playerPages = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> playerMaxPages = new ConcurrentHashMap<>();
-    private final Map<String, Inventory> inventoryByName = new ConcurrentHashMap<>();
+    private final Map<String, List<Inventory>> inventoryByName = new ConcurrentHashMap<>();
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
@@ -217,7 +218,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
         inventories.add(inventory);
         this.inventories.put(plugin.getName(), inventories);
-        this.inventoryByName.put(inventory.getFileName().toLowerCase(Locale.ROOT), inventory);
+        this.registerShortName(inventory);
         this.inventoryNames.add((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
 
         if (Configuration.enableInformationMessage) {
@@ -244,12 +245,58 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         return Optional.empty();
     }
 
+    private void registerShortName(Inventory inventory) {
+        String shortName = inventory.getFileName().toLowerCase(Locale.ROOT);
+        List<Inventory> matches = this.inventoryByName.computeIfAbsent(shortName, key -> new CopyOnWriteArrayList<>());
+
+        matches.removeIf(existing -> existing.getPlugin().equals(inventory.getPlugin())
+                && existing.getFileName().equalsIgnoreCase(inventory.getFileName()));
+        matches.add(inventory);
+
+        if (matches.size() > 1) {
+            StringBuilder owners = new StringBuilder();
+            for (Inventory match : matches) {
+                if (!owners.isEmpty()) owners.append(", ");
+                owners.append(match.getPlugin().getName()).append(':').append(match.getFileName());
+            }
+            String winner = this.getInventory(shortName).map(found -> found.getPlugin().getName()).orElse("?");
+            Logger.info("The inventory name \"" + inventory.getFileName() + "\" is provided by several plugins ("
+                    + owners + "). Using that name on its own will always open the one from " + winner
+                    + ", use the plugin:name form to pick another.", LogType.WARNING);
+        }
+    }
+
+    private void unregisterShortName(Inventory inventory) {
+        String shortName = inventory.getFileName().toLowerCase(Locale.ROOT);
+        List<Inventory> matches = this.inventoryByName.get(shortName);
+        if (matches == null) {
+            return;
+        }
+        matches.remove(inventory);
+        if (matches.isEmpty()) {
+            this.inventoryByName.remove(shortName);
+        }
+    }
+
     @Override
     public Optional<Inventory> getInventory(String name) {
         if (name == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(this.inventoryByName.get(name.toLowerCase(Locale.ROOT)));
+
+        List<Inventory> matches = this.inventoryByName.get(name.toLowerCase(Locale.ROOT));
+        if (matches == null || matches.isEmpty()) {
+            return Optional.empty();
+        }
+        if (matches.size() == 1) {
+            return Optional.of(matches.getFirst());
+        }
+
+        return matches.stream()
+                .filter(inventory -> inventory.getPlugin().equals(this.plugin))
+                .findFirst()
+                .or(() -> matches.stream()
+                        .min(Comparator.comparing(inventory -> inventory.getPlugin().getName(), String.CASE_INSENSITIVE_ORDER)));
     }
 
     @Override
@@ -307,7 +354,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
-        this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
+        this.unregisterShortName(inventory);
         this.inventoryNames.remove((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
     }
 
@@ -326,7 +373,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
             for (Inventory inventory : removed) {
-                this.inventoryByName.remove(inventory.getFileName().toLowerCase(Locale.ROOT));
+                this.unregisterShortName(inventory);
                 this.inventoryNames.remove(
                         (inventory.getPlugin().getName() + ":" + inventory.getFileName())
                                 .toLowerCase(Locale.ROOT)

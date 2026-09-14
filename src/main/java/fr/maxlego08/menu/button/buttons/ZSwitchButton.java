@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.utils.SwitchCaseButton;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.function.IntPredicate;
 
 public class ZSwitchButton extends SwitchButton {
 
@@ -43,27 +44,45 @@ public class ZSwitchButton extends SwitchButton {
 
             if (value.startsWith(">=")) {
 
-                String newValue = value.substring(2);
-                if (Integer.parseInt(result) >= Integer.parseInt(newValue)) return button.button();
+                if (matches(result, value.substring(2), comparison -> comparison >= 0)) return button.button();
 
             } else if (value.startsWith("<=")) {
 
-                String newValue = value.substring(2);
-                if (Integer.parseInt(result) <= Integer.parseInt(newValue)) return button.button();
+                if (matches(result, value.substring(2), comparison -> comparison <= 0)) return button.button();
 
             } else if (value.startsWith(">")) {
 
-                String newValue = value.substring(1);
-                if (Integer.parseInt(result) > Integer.parseInt(newValue)) return button.button();
+                if (matches(result, value.substring(1), comparison -> comparison > 0)) return button.button();
 
             } else if (value.startsWith("<")) {
 
-                String newValue = value.substring(1);
-                if (Integer.parseInt(result) < Integer.parseInt(newValue)) return button.button();
+                if (matches(result, value.substring(1), comparison -> comparison < 0)) return button.button();
 
             } else if (value.equals(result)) return button.button();
         }
 
         return super.getDisplayButton(inventoryEngine, player);
+    }
+
+    /**
+     * Tests the parsed placeholder against a case value.
+     * <p>
+     * The placeholder can be anything at runtime: an unresolved {@code %placeholder%} when the
+     * providing plugin is missing, an empty string, or a decimal such as a money balance. None of
+     * those may throw, otherwise the whole inventory fails to render, so a side that is not a
+     * number simply never matches.
+     */
+    private static boolean matches(String result, String value, IntPredicate predicate) {
+        Double left = parseOrNull(result);
+        Double right = parseOrNull(value);
+        return left != null && right != null && predicate.test(Double.compare(left, right));
+    }
+
+    private static Double parseOrNull(String value) {
+        try {
+            return Double.parseDouble(value.trim().replace(",", "."));
+        } catch (NumberFormatException exception) {
+            return null;
+        }
     }
 }
