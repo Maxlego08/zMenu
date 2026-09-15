@@ -42,6 +42,21 @@
 
 # Unreleased
 
+## Improvements
+
+- **zMenu now loads on Spigot, and explains why it cannot run there**: zMenu is a Paper plugin and only
+  declared itself through `paper-plugin.yml`, a file Spigot does not read. Spigot therefore refused the jar
+  outright with "does not contain plugin.yml", which reads like a corrupted download rather than a platform
+  requirement. The jar now also ships a `plugin.yml`, so Spigot loads the plugin, enables it, and prints a
+  warning in the console explaining that Paper - or a fork such as Purpur or Folia - is required, with the
+  download link. The same warning is sent on join to players holding the new `zmenu.paper.warning`
+  permission, which defaults to operators.
+    - Nothing changes on Paper. When a jar contains both descriptors Paper reads `paper-plugin.yml` and never
+      looks at `plugin.yml`, so the real plugin keeps loading exactly as before, bootstrapper and plugin
+      loader included.
+    - No zMenu feature works in this mode: no menu, no command, no API. It exists so the reason is visible
+      instead of the plugin appearing broken.
+
 # 1.1.1.9
 
 ## New Features
