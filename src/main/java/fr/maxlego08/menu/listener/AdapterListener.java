@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -106,7 +107,7 @@ public class AdapterListener extends ZUtils implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
         Location from = event.getFrom();
         Location to = event.getTo();
@@ -119,7 +120,7 @@ public class AdapterListener extends ZUtils implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
         for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {
             adapter.onTeleport(event, event.getPlayer());
@@ -129,8 +130,10 @@ public class AdapterListener extends ZUtils implements Listener {
     /**
      * Handles both damage taken and damage dealt. EntityDamageByEntityEvent extends EntityDamageEvent,
      * so registering this single handler covers both, the damager is resolved below.
+     * Runs at MONITOR and ignores cancelled events: a hit cancelled by a protection plugin
+     * (WorldGuard region, combat plugin...) never happened and must not close the menu.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
             for (ListenerAdapter adapter : this.plugin.getListenerAdapters()) {

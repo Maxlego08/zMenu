@@ -57,6 +57,14 @@
     - No zMenu feature works in this mode: no menu, no command, no API. It exists so the reason is visible
       instead of the plugin appearing broken.
 
+## Fixes
+
+- **Menus closed by cancelled hits**: since the ghost GUI protection (ZM-01), a menu was closed whenever its
+  viewer was hit or hit someone, even when the hit was cancelled by another plugin. In a WorldGuard region
+  with PvP disabled, any player could close another player's menu just by punching them. The damage, move
+  and teleport handlers now run at `MONITOR` priority and ignore cancelled events: only a hit that actually
+  happens closes the menu, and a teleport or move cancelled by another plugin no longer does either.
+
 # 1.1.1.9
 
 ## New Features
