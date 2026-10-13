@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class DialogAction extends ActionHelper {
@@ -47,5 +48,14 @@ public class DialogAction extends ActionHelper {
                 inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.dialog, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "dialog");
+        map.put("dialog", this.dialog);
+        if (this.plugin != null) map.put("plugin", this.plugin);
+        List<String> arguments = this.inventoryArgument.getArguments();
+        if (arguments != null && !arguments.isEmpty()) map.put("arguments", arguments);
     }
 }

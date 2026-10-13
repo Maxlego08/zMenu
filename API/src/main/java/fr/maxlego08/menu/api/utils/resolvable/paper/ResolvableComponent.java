@@ -38,4 +38,9 @@ public final class ResolvableComponent extends ParsableResolvable<Component> {
     protected @Nullable Component parse(@NotNull String value) {
         return this.paperMetaUpdater.getComponent(value);
     }
+
+    @Override
+    protected @NotNull Object serializeValue(@NotNull Component value) {
+        return this.paperMetaUpdater.getMiniMessage(value);
+    }
 }

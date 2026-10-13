@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.TropicalFish;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public final class TropicalFishPatternComponentLoader extends EnumVariantLoader<TropicalFish.Pattern> {
 
     public TropicalFishPatternComponentLoader() {

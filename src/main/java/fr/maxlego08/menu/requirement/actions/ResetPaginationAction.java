@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class ResetPaginationAction extends Action {
     public enum ResetType {
@@ -32,6 +34,13 @@ public class ResetPaginationAction extends Action {
         this.paginationManager = paginationManager;
         this.resetType = resetType;
         this.contextIds = contextIds != null ? new ArrayList<>(contextIds) : new ArrayList<>();
+    }
+
+    @Override
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        map.put("type", "reset-pagination");
+        if (this.resetType != ResetType.CONTEXT) map.put("reset-type", this.resetType.name().toLowerCase(Locale.ROOT));
+        if (!this.contextIds.isEmpty()) map.put("context-ids", this.contextIds);
     }
 
     @Override

@@ -2,22 +2,16 @@ package fr.maxlego08.menu.loader.deluxemenu;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
-import fr.maxlego08.menu.api.exceptions.InventorySizeException;
-import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
-import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
-import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.container.EmptyContainerInventoryTypeLoader;
 import fr.maxlego08.menu.registry.InventoryTypeRegistry;
-import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,7 +28,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     private final ZMenuPlugin plugin;
 
     public InventoryDeluxeMenuLoader(ZMenuPlugin plugin) {
-        super();
+        super(new ArrayList<>());
         this.plugin = plugin;
     }
 
@@ -42,34 +36,23 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
-        String name = configuration.getString("name", configuration.getString("menu_title", configuration.getString("title")));
-        name = name == null ? "" : name;
+        String name = this.loadTitle(configuration);
 
         InventoryType inventoryType;
-        int size;
         String nameType = configuration.getString("inventory_type", "CHEST").toUpperCase(Locale.ROOT);
         try {
             inventoryType = InventoryType.valueOf(nameType);
-            if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) {
-                throw new InventoryTypeException("Type Inventory " + nameType + " can't use for the moment for inventory " + file.getAbsolutePath());
-            }
-            size = inventoryType.getDefaultSize();
         } catch (IllegalArgumentException exception) {
-            throw new InventoryTypeException("Type Inventory " + nameType + " is not valid for inventory " + file.getAbsolutePath());
+            inventoryType = InventoryType.CHEST;
         }
+        if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) inventoryType = InventoryType.CHEST;
+        if (!inventoryType.name().equals(nameType)) this.warn(file, "the inventory type " + nameType + " is not valid, a chest is used");
 
-        if (inventoryType == InventoryType.CHEST) {
-            size = configuration.getInt("size", 54);
-            if (size % 9 != 0) {
-                int closestMultiple = (size / 9) * 9;
-                int nextMultiple = closestMultiple + 9;
-                int closest = (size - closestMultiple < nextMultiple - size) ? closestMultiple : nextMultiple;
-                throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath() + " because it's not a multiple of 9. The closest valid size would be " + closest);
-            }
-        }
+        int size = inventoryType.getDefaultSize();
+        if (inventoryType == InventoryType.CHEST) size = this.loadChestSize(configuration, file);
 
         List<Button> buttons = new ArrayList<>();
-        Loader<Button> loader = new ButtonDeluxeMenuLoader(this.plugin, file, size);
+        Loader<Button> loader = new ButtonDeluxeMenuLoader(this.plugin, file, size, this.warnings);
 
         ConfigurationSection section = configuration.getConfigurationSection("items.");
 
@@ -110,6 +93,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
             while (!queue.isEmpty()) {
                 Button currentButton = queue.poll();
                 currentButton.setElseButton(lastButton);
+                lastButton.setParentButton(currentButton);
                 lastButton = currentButton;
             }
 
@@ -148,28 +132,25 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
 
 
 
-        inventory.setUpdateInterval(configuration.getInt(path + "update_interval", 1) * 1000);
+        int updateInterval = configuration.getInt(path + "update_interval", 10);
+        inventory.setUpdateInterval((updateInterval <= 0 ? 10 : updateInterval) * 1000);
         inventory.setClearInventory(false);
         inventory.setFile(file);
         inventory.setTargetPlayerNamePlaceholder("%player_name%");
 
-        // Open requirement
-        List<Action> actions = new ArrayList<>();
-        List<Permissible> permissibles = new ArrayList<>();
+        InventoryManager inventoryManager = this.plugin.getInventoryManager();
+        CommandManager commandManager = this.plugin.getCommandManager();
+        inventory.setOpenActions(this.loadActions(inventoryManager, commandManager, this.plugin, configuration.getStringList("open_commands"), file));
+        inventory.setCloseActions(this.loadActions(inventoryManager, commandManager, this.plugin, configuration.getStringList("close_commands"), file));
 
-        if (configuration.contains("open_commands")) {
-            actions = this.loadActions(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configuration.getStringList("open_commands"));
+        ConfigurationSection openRequirementSection = configuration.getConfigurationSection("open_requirement");
+        if (openRequirementSection != null) {
+            inventory.setOpenRequirement(this.loadRequirement(inventoryManager, commandManager, this.plugin, new ArrayList<>(), openRequirementSection, Configuration.allClicksType, file));
         }
 
-        if (configuration.contains("open_requirement") && configuration.isConfigurationSection("open_requirement")) {
-            ConfigurationSection configurationSection = configuration.getConfigurationSection("open_requirement.requirements");
-            if (configurationSection != null) {
-                permissibles = this.loadPermissibles(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configurationSection);
-            }
-        }
-
-        Requirement requirement = new ZRequirement(configuration.getInt("open_requirement.minimum_requirements", permissibles.size()), permissibles, new ArrayList<>(), actions, new ArrayList<>());
-        inventory.setOpenRequirement(requirement);
+        if (configuration.getBoolean("refresh", false)) this.warn(file, "refresh is not converted, only the items with update: true are refreshed");
+        if (configuration.contains("args")) this.warn(file, "the menu arguments (args) are not converted");
+        if (configuration.getBoolean("enable_open_requirements_bypass_permissions", false)) this.warn(file, "enable_open_requirements_bypass_permissions is not converted");
 
         if (Configuration.enableDebug) {
             Logger.info("The inventory " + file.getPath() + " is a DeluxeMenus configuration! It is advisable to redo your configuration with zMenu!", Logger.LogType.WARNING);
@@ -178,17 +159,27 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         return inventory;
     }
 
-    @Override
-    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-        MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
-
-        configuration.set("name", inventory.getName());
-        configuration.set("size", inventory.size());
-
-        if (inventory instanceof ContainerInventory containerInventory && containerInventory.getFillItemStack() != null) {
-            itemStackLoader.save(containerInventory.getFillItemStack(), configuration, "fillItem.", file);
+    private String loadTitle(YamlConfiguration configuration) {
+        String key = configuration.contains("menu_title") ? "menu_title" : configuration.contains("name") ? "name" : "title";
+        if (configuration.isList(key)) {
+            List<String> lines = configuration.getStringList(key);
+            return lines.isEmpty() ? "" : lines.getFirst();
         }
+        String title = configuration.getString(key);
+        return title == null ? "" : title;
+    }
 
-        // TODO: FINISH THE SAVE METHOD
+
+    private int loadChestSize(YamlConfiguration configuration, File file) {
+        if (!configuration.contains("size")) return 54;
+        int configuredSize = configuration.getInt("size");
+        int size = configuredSize;
+        if ((size + 1) % 9 == 0) size++;
+        if ((size - 1) % 9 == 0) size--;
+        if (size < 9) size = 9;
+        if (size > 54) size = 54;
+        if (size % 9 != 0) size = 54;
+        if (size != configuredSize) this.warn(file, "the size " + configuredSize + " is not valid, " + size + " is used");
+        return size;
     }
 }

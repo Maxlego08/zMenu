@@ -8,6 +8,8 @@ import fr.maxlego08.menu.zcore.utils.players.ActionBar;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class ActionBarAction extends ActionHelper {
 
     private final String message;
@@ -26,5 +28,12 @@ public class ActionBarAction extends ActionHelper {
         } else {
             ActionBar.sendActionBar(player, finalMessage);
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "actionbar");
+        map.put("message", this.message);
+        if (!this.miniMessage) map.put("minimessage", false);
     }
 }

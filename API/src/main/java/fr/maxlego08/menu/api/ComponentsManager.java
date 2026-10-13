@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface ComponentsManager {
@@ -24,4 +25,10 @@ public interface ComponentsManager {
      **/
     @NotNull
     Optional<ItemComponentLoader> getLoader(@NotNull String name);
+
+    /**
+     * @return Every registered loader, once each even when it has several names.
+     */
+    @NotNull
+    Collection<ItemComponentLoader> getLoaders();
 }

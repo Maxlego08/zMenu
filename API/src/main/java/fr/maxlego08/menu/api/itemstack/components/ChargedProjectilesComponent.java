@@ -1,18 +1,18 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ChargedProjectiles;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.CrossbowMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ChargedProjectilesComponent extends ItemComponent {
@@ -28,13 +28,19 @@ public class ChargedProjectilesComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, CrossbowMeta.class, crossbowMeta -> {
-            for (MenuItemStack menuItemStack : this.projectiles) {
-                crossbowMeta.addChargedProjectile(menuItemStack.build(player));
-            }
-        });
-        if (!apply && Configuration.enableDebug) {
-            Logger.info("Failed to apply ChargedProjectilesComponent to itemStack: " + itemStack.getType().name()+". This item is probably not a crossbow.");
+        ChargedProjectiles.Builder chargedProjectiles = ChargedProjectiles.chargedProjectiles();
+        for (MenuItemStack menuItemStack : this.projectiles) {
+            chargedProjectiles.add(menuItemStack.build(player));
         }
+        itemStack.setData(DataComponentTypes.CHARGED_PROJECTILES, chargedProjectiles.build());
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        List<Map<String, Object>> items = new ArrayList<>(this.projectiles.size());
+        for (MenuItemStack menuItemStack : this.projectiles) {
+            items.add(menuItemStack.serializeToMap());
+        }
+        return items;
     }
 }

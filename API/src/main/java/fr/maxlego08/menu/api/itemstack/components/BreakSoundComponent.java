@@ -21,4 +21,9 @@ public final class BreakSoundComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.breakSound, (key) -> itemStack.setData(DataComponentTypes.BREAK_SOUND, key));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.breakSound.serialize();
+    }
 }

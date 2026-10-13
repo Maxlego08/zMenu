@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an action that can be executed based on certain conditions.
@@ -183,5 +185,42 @@ public abstract class Action {
     @NotNull
     public String getType() {
         return this.type;
+    }
+
+    /**
+     * Writes this action in the zMenu format, as one entry of an actions list.
+     * <p>
+     * The fields shared by every action ({@code delay}, {@code chance}, {@code debug} and
+     * {@code deny-chance-actions}) are written here; subclasses write their own fields in
+     * {@link #serializeProperties}. Values equal to their default are left out.
+     *
+     * @return The action as a map, ready to be put in a YAML list.
+     * @throws UnsupportedOperationException If this action type cannot be serialized.
+     */
+    @NotNull
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        this.serializeProperties(map);
+        if (this.delay != 0) map.put("delay", this.delay);
+        if (this.chance < 100) map.put("chance", this.chance);
+        if (this.debug) map.put("debug", true);
+        if (!this.denyChanceActions.isEmpty()) {
+            List<Map<String, Object>> denyChanceActions = new ArrayList<>();
+            for (Action denyChanceAction : this.denyChanceActions) {
+                denyChanceActions.add(denyChanceAction.serialize());
+            }
+            map.put("deny-chance-actions", denyChanceActions);
+        }
+        return map;
+    }
+
+    /**
+     * Writes the fields specific to this action, starting with its {@code type} key.
+     *
+     * @param map The map to write into.
+     * @throws UnsupportedOperationException If this action type cannot be serialized.
+     */
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        throw new UnsupportedOperationException("The action " + this.getClass().getName() + " cannot be serialized");
     }
 }

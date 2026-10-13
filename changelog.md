@@ -42,6 +42,76 @@
 
 # Unreleased
 
+# 1.1.2.0
+
+## New Features
+
+* Added DeluxeMenus conversion support with `/zm convert deluxemenus [menu]` (also available as `dm`), allowing DeluxeMenus configurations to be converted into zMenu inventories and reporting unsupported or partially converted features.
+* Added ItemStack-to-zMenu conversion support, including conversion of supported Minecraft item components.
+* Added serialization support for inventories, menu items, buttons, actions, requirements, item components, commands and related API objects, allowing these objects to be written back in the format understood by zMenu.
+* Added parent/child placeholder scopes and placeholder modifiers, while improving placeholder processing performance.
+* Added inventory replacement modes with support for `CUMULUS` and `CHEST` (bedrock player).
+* Added support for using Bukkit dye color names when parsing colors, including `minecraft:<color>` names.
+* Added the `dialog_list` dialog type, the last vanilla dialog type zMenu did not support. It shows one button per dialog listed under `dialogs:`, labelled with that dialog's `external-title`. Entries are zMenu dialog names (`name` or `plugin:name`) or vanilla/datapack dialogs (`registry-key: minecraft:server_links`). Options: `number-of-columns`, `button-width`, an optional `exit-button`, and a `back-button` that is added to listed dialogs without an exit button so players can return to the list. Listed dialogs whose `open-requirement` the player does not meet are hidden. How many lists can be nested inside each other is set by `dialog-list-max-depth` in `config.yml` (default 4). See `dialogs/dialog_list-dialog.yml`.
+
+## Improvements
+
+* Dialogs now read `external_title` as well as `external-title`. The shipped example dialogs used `external_title`, which was ignored. An empty external title is no longer sent, so the client falls back to the dialog name.
+* `server_links` dialogs without a `server-links` button no longer show a blank exit button.
+* Improved hook loading so failures caused by third-party plugins, missing classes, invalid versions or broken APIs no longer abort the entire hook registration process.
+* Improved PacketEvents integration with API availability and readiness checks. Packet-based features are now safely disabled when PacketEvents is unavailable instead of causing zMenu to fail.
+* Improved plugin shutdown handling so partially initialized managers are still safely disabled and cleaned up after an initialization failure.
+* Added serialization coverage tests for registered actions, requirements and item components to ensure they can be serialized and loaded without losing their configuration.
+* Updated the minimum supported (documentation) Minecraft version to 1.20.6.
+
+## Improvements
+
+- **Inventory hot reload**: new `hot-reload` section in `config.yml`, disabled by default. When enabled,
+  zMenu watches the `inventories/` folder and its subfolders and applies changes without any command: a
+  modified file reloads its inventory, a new file loads it and a deleted file (or folder) unloads it.
+    - Changes are debounced with `hot-reload.delay-milliseconds` (500 by default), so an editor saving a
+      file in several steps only triggers one reload.
+    - A file that cannot be loaded (YAML syntax error, unknown button type, invalid size...) is not applied:
+      the previous version stays loaded and the error is logged until the file is fixed.
+    - Players viewing a reloaded inventory see the new version open over it, on the same page and with the
+      same previous inventories (a back button opens the new version too). An unloaded inventory is closed.
+    - Toggling the option takes effect on `/zm reload` or `/zm reload config`, or within two seconds when
+      changed from the in-game configuration dialog. Files listed in `specify-path-menus` are not watched.
+    - If the `inventories/` folder is deleted and recreated (backup restore, git checkout...), it is watched
+      again automatically. On Windows the whole tree is watched with a single handle, so subfolders can still
+      be renamed or deleted while the server runs.
+    - The folder is also scanned every two seconds, so changes are detected even where the file system sends
+      no event (Docker or WSL mounts, network shares, files uploaded over SFTP).
+    - A file is reloaded when its content or modification date changes; saving it again without any change
+      still reloads it, but the same version is never reloaded twice.
+    - Every detection, reload, unload and error is logged in the console with a `[HotReload]` prefix
+      (folder events and skipped files are also logged when `enable-debug` is on).
+- **Fixed**: unloading an inventory no longer removes its name from `/zm open` and `/zm reload inventory`
+  tab completion when another inventory with the same file name is still loaded from another folder.
+- **Fixed**: an inventory waiting for a load requirement no longer queues a second load each time it is
+  loaded again.
+
+- **zMenu now loads on Spigot, and explains why it cannot run there**: zMenu is a Paper plugin and only
+  declared itself through `paper-plugin.yml`, a file Spigot does not read. Spigot therefore refused the jar
+  outright with "does not contain plugin.yml", which reads like a corrupted download rather than a platform
+  requirement. The jar now also ships a `plugin.yml`, so Spigot loads the plugin, enables it, and prints a
+  warning in the console explaining that Paper - or a fork such as Purpur or Folia - is required, with the
+  download link. The same warning is sent on join to players holding the new `zmenu.paper.warning`
+  permission, which defaults to operators.
+    - Nothing changes on Paper. When a jar contains both descriptors Paper reads `paper-plugin.yml` and never
+      looks at `plugin.yml`, so the real plugin keeps loading exactly as before, bootstrapper and plugin
+      loader included.
+    - No zMenu feature works in this mode: no menu, no command, no API. It exists so the reason is visible
+      instead of the plugin appearing broken.
+
+## Fixes
+
+- **Menus closed by cancelled hits**: since the ghost GUI protection (ZM-01), a menu was closed whenever its
+  viewer was hit or hit someone, even when the hit was cancelled by another plugin. In a WorldGuard region
+  with PvP disabled, any player could close another player's menu just by punching them. The damage, move
+  and teleport handlers now run at `MONITOR` priority and ignore cancelled events: only a hit that actually
+  happens closes the menu, and a teleport or move cancelled by another plugin no longer does either.
+
 # 1.1.1.9
 
 ## New Features

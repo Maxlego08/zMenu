@@ -18,4 +18,9 @@ public class NexoRule extends AbstractPluginItemRule {
     protected @Nullable String resolveId(@NotNull ItemStack itemStack) {
         return NexoItems.idFromItem(itemStack);
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "nexo";
+    }
 }

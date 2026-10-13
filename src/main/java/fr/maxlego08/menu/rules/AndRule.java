@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AndRule implements Rule {
     private final List<Rule> children;
@@ -25,5 +27,13 @@ public class AndRule implements Rule {
     public boolean isValid() {
         if (this.children.isEmpty()) return false;
         return this.children.stream().allMatch(Rule::isValid);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("type", "and");
+        map.put("rules", this.children.stream().map(Rule::serialize).toList());
+        return map;
     }
 }

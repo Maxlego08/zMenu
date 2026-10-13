@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,12 @@ public class ZPlayerNamePermissible extends PlayerNamePermissible {
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         String name = inventory.getPlugin().parse(player, this.playerName.replace("%player%", player.getName()));
         return this.isMinecraftName(name);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "playername");
+        if (this.playerName != null) map.put("player-name", this.playerName);
     }
 
     @Override

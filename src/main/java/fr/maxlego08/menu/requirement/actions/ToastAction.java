@@ -8,9 +8,11 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.toast.ToastType;
+import fr.maxlego08.menu.loader.actions.ToastLoader;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class ToastAction extends Action {
@@ -73,5 +75,15 @@ public class ToastAction extends Action {
         if (Configuration.enableToast) {
             this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.getMetaUpdater().getLegacyMessage(this.plugin.parse(player, placeholders.parse(this.message))), this.toastType, finalModel, this.glowing, player);
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "toast");
+        if (!ToastLoader.DEFAULT_MESSAGE.equals(this.message)) map.put("message", this.message);
+        if (!ToastLoader.DEFAULT_MATERIAL.equals(this.material)) map.put("material", this.material);
+        if (!ToastLoader.DEFAULT_MODEL_ID.equals(this.modelId)) map.put("model-id", this.modelId);
+        if (this.toastType != ToastType.CHALLENGE) map.put("toast-type", this.toastType.name());
+        if (this.glowing) map.put("glowing", true);
     }
 }

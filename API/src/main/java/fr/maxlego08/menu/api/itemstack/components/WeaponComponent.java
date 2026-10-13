@@ -12,6 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 @SuppressWarnings("unused")
 public class WeaponComponent extends ItemComponent {
     private final ResolvableInt itemDamagePerAttack;
@@ -33,6 +37,14 @@ public class WeaponComponent extends ItemComponent {
 
     public ResolvableFloat getDisableBlockingForSeconds() {
         return this.disableBlockingForSeconds;
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (!Objects.equals(this.itemDamagePerAttack.serialize(), 1)) map.put("item-damage-per-attack", this.itemDamagePerAttack.serialize());
+        if (!Objects.equals(this.disableBlockingForSeconds.serialize(), 0f)) map.put("disable-blocking-for-seconds", this.disableBlockingForSeconds.serialize());
+        return map;
     }
 
     @Override

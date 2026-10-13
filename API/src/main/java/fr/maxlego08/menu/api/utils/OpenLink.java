@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.utils;
 
 import net.md_5.bungee.api.chat.ClickEvent.Action;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ import java.util.List;
  * <p>Sends a message and opens a link.</p>
  * <p>For servers that are in 1.17+ it is advisable to use the <a href="https://docs.advntr.dev/minimessage/index.html">MiniMessage</a> format</p>
  */
-public interface OpenLink {
+public interface OpenLink extends SectionSerializable {
 
     /**
      * Returns the action that will be performed on the click
@@ -65,5 +66,20 @@ public interface OpenLink {
      * @return boolean
      */
     boolean isValid();
+
+    /**
+     * Writes this link in the format the link loader reads.
+     *
+     * @param section The section to write into.
+     */
+    @Override
+    default void serialize(@NotNull ConfigurationSection section) {
+        Action action = this.getAction();
+        section.set("action", action == null ? Action.OPEN_URL.name() : action.name());
+        section.set("link", this.getLink());
+        section.set("message", this.getMessage());
+        section.set("replace", this.getReplace());
+        section.set("hover", this.getHover());
+    }
 
 }

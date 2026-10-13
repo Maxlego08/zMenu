@@ -45,13 +45,14 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
-import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
-import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvider;
-import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
+import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
+import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvider;
+import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
+import fr.maxlego08.menu.inventory.InventoryHotReload;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
@@ -90,6 +91,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 import java.util.*;
 
 /**
@@ -138,6 +140,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater;
     private PacketManager packetManager;
+    private InventoryHotReload inventoryHotReload;
 
     public ZMenuPlugin() {
         this(false);
@@ -178,10 +181,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public void onLoad() {
         if (this.isActive(Plugins.PACKETEVENTS)) {
-            this.packetManager = new PacketUtils(this);
-        }
-        if (this.packetManager != null) {
-            this.packetManager.onLoad();
+            this.safeHook("packetevents", () -> {
+                PacketManager manager = new PacketUtils(this);
+                manager.onLoad();
+                this.packetManager = manager;
+            });
         }
     }
 
@@ -200,11 +204,14 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
         Configuration.HAS_DIALOG_SUPPORT = this.isDialogCapableServer() && Configuration.enableMiniMessageFormat;
-        Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE);
+        Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = this.hasBedrockSupport();
         OfflinePlayerCache.install(this);
 
         if (this.packetManager != null) {
-            this.packetManager.onEnable();
+            boolean enabled = this.safeHook("packetevents", () -> this.packetManager.onEnable());
+            if (!enabled || !this.packetManager.isReady()) {
+                this.packetManager = null;
+            }
         }
 
         fr.traqueur.currencies.CurrenciesAPI.init(this);
@@ -254,57 +261,73 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         // Order matters: translation plugins are asked first because they rewrite the
         // handshake protocol number Paper reads, which would otherwise report the server
         // version for every translated client.
-        if (this.isActive(Plugins.VIAVERSION)) {
-            Logger.info("ViaVersion detected, loading client version detection");
-            this.clientVersionManager.registerProvider(new ViaVersionClientVersionProvider());
+        if (this.isEnable(Plugins.VIAVERSION)) {
+            this.safeHook("ViaVersion", () -> {
+                Logger.info("ViaVersion detected, loading client version detection");
+                this.clientVersionManager.registerProvider(new ViaVersionClientVersionProvider());
+            });
         }
-        if (this.isActive(Plugins.PROTOCOLSUPPORT)) {
-            Logger.info("ProtocolSupport detected, loading client version detection");
-            this.clientVersionManager.registerProvider(new ProtocolSupportClientVersionProvider());
+        if (this.isEnable(Plugins.PROTOCOLSUPPORT)) {
+            this.safeHook("ProtocolSupport", () -> {
+                Logger.info("ProtocolSupport detected, loading client version detection");
+                this.clientVersionManager.registerProvider(new ProtocolSupportClientVersionProvider());
+            });
         }
         if (this.isPaperOrFolia()) {
-            this.clientVersionManager.registerProvider(new PaperProtocolClientVersionProvider());
+            this.safeHook("Paper client version", () -> this.clientVersionManager.registerProvider(new PaperProtocolClientVersionProvider()));
         }
         this.addListener(this.clientVersionManager);
         servicesManager.register(ClientVersionManager.class, this.clientVersionManager, this, ServicePriority.Highest);
 
         if (this.isDialogCapableServer()) {
             if (Configuration.enableMiniMessageFormat) {
-                Logger.info("Paper server detected, loading Dialogs support");
-                ConfigManager configManager = new ConfigManager(this);
-                this.dialogManager = new ZDialogManager(this, configManager);
-                this.addListener((ZDialogManager) this.dialogManager);
-                servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
-                ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
-                configManager.registerConfig(configDialogBuilder, Configuration.class, this);
+                boolean loaded = this.safeHook("Dialogs", () -> {
+                    Logger.info("Paper server detected, loading Dialogs support");
+                    ConfigManager configManager = new ConfigManager(this);
+                    this.dialogManager = new ZDialogManager(this, configManager);
+                    this.addListener((ZDialogManager) this.dialogManager);
+                    servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
+                    ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
+                    configManager.registerConfig(configDialogBuilder, Configuration.class, this);
+                });
+                if (!loaded) {
+                    this.dialogManager = null;
+                    Configuration.HAS_DIALOG_SUPPORT = false;
+                }
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
             }
         }
 
-        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)) {
-            Logger.info("Geyser or Floodgate detected, loading Bedrock Inventory support");
-            this.bedrockManager = new ZBedrockManager(this);
-            this.addListener(new BedrockReplacementListener(this.bedrockManager));
-            servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
+        if (this.hasBedrockSupport()) {
+            boolean loaded = this.safeHook("Bedrock", () -> {
+                Logger.info("Geyser or Floodgate detected, loading Bedrock Inventory support");
+                this.bedrockManager = new ZBedrockManager(this);
+                this.addListener(new BedrockReplacementListener(this.bedrockManager, this.inventoryManager));
+                servicesManager.register(BedrockManager.class, this.bedrockManager, this, ServicePriority.Highest);
+            });
+            if (!loaded) {
+                this.bedrockManager = null;
+                Configuration.HAS_BEDROCK_INVENTORY_SUPPORT = false;
+            }
         }
 
         this.registerInventory(EnumInventory.INVENTORY_DEFAULT, new InventoryDefault());
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.21")) && !this.isMockBukkitServer) {
             this.vinventoryManager.registerInventory(EnumInventory.INVENTORY_DEFAULT.getId(), InventoryType.ANVIL, new AnvilInventoryDefault());
         }
-        this.commandManagerLib.registerCommand(this.commandMenu = new CommandMenu(this));
-        this.commandManagerLib.registerCommands();
+        this.commandManagerLib.trackCommand(this.commandMenu = new CommandMenu(this));
+        this.commandManagerLib.flushRegistrations();
 
         /* Add Listener */
-        this.registerAutoListeners();
+        this.safeHook("auto listeners", this::registerAutoListeners);
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
         this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addListener(this.inventoryManager);
 
-        this.registerMaterialLoaders();
-        this.registerHooks();
+        this.safeHook("material loaders", this::registerMaterialLoaders);
+        this.safeHook("plugin hooks", this::registerHooks);
 
         this.inventoryManager.load();
         this.commandManager.loadCommands();
@@ -312,6 +335,13 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.inventoriesPlayer.loadInventories();
         this.dataManager.loadPlayers();
         this.itemManager.loadAll();
+
+        this.inventoryHotReload = new InventoryHotReload(this);
+        if (!this.isMockBukkitServer) {
+            this.inventoryHotReload.update();
+            // Applies a change of hot-reload.enable made with the configuration dialog
+            this.scheduler.runTimer(this.inventoryHotReload::update, 2, 2, TimeUnit.SECONDS);
+        }
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
@@ -335,7 +365,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
 
         new VersionChecker(this, 253).useLastVersion();
-        context.ready();
+        this.context.ready();
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -354,13 +384,34 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.dataManager.loadDefaultValues();
 
 //         this.inventoryManager.registerInventoryListener(this.packetUtils);
-        if (this.isActive(Plugins.PACKETEVENTS)) this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
-
         if (this.packetManager != null) {
-            this.packetManager.onPostEnable();
+            this.safeHook("packetevents", () -> {
+                this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
+                this.packetManager.onPostEnable();
+            });
         }
 
+        this.logFailedHooks();
+
         this.postEnable();
+    }
+
+    private void logFailedHooks() {
+        List<String> failedHooks = this.getFailedHooks();
+        if (failedHooks.isEmpty()) return;
+
+        Logger.info("The following hooks failed and are disabled for this session: " + String.join(", ", failedHooks), Logger.LogType.WARNING);
+        Logger.info("zMenu is running normally, but the features provided by those plugins are unavailable.", Logger.LogType.WARNING);
+        Logger.info("If you need help, please contact the zMenu support team.", Logger.LogType.WARNING);
+
+        this.clearFailedHooks();
+    }
+
+    /**
+     * @return true when a Bedrock bridge is installed <i>and</i> healthy
+     */
+    private boolean hasBedrockSupport() {
+        return this.isEnable(Plugins.GEYSER) || this.isEnable(Plugins.FLOODGATE);
     }
 
     private void registerAutoListeners() {
@@ -387,14 +438,16 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
      * This method will be called only once, after the plugin has been enabled.
      */
     private void registerHooks() {
-        if (this.isActive(Plugins.NEXO)) {
-            if (this.metaUpdater instanceof ComponentMeta componentMeta) {
-                new NexoTagResolverLoader(this, componentMeta);
-            }
+        if (this.isEnable(Plugins.NEXO)) {
+            this.safeHook("Nexo", () -> {
+                if (this.metaUpdater instanceof ComponentMeta componentMeta) {
+                    new NexoTagResolverLoader(this, componentMeta);
+                }
+            });
         }
 
-        if (this.isActive(Plugins.PACKETEVENTS)) {
-            this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader());
+        if (this.packetManager != null) {
+            this.safeHook("packetevents animations", () -> this.titleAnimationManager.registerLoader("packet-events", new PacketEventTitleAnimationLoader()));
         }
 
         ClassRegistry<FontImage, MenuPlugin> registry = ClassRegistry.<FontImage, MenuPlugin>of(FontImage.class, fontImage1 -> this.fontImage = fontImage1).tryNoArgsConstructor().errorLogger(Logger::error);
@@ -437,9 +490,10 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
             files.add("dialogs/multi_action-dialog.yml");
             files.add("dialogs/server_link-dialog.yml");
             files.add("dialogs/dynamic-dialog-example.yml");
+            files.add("dialogs/dialog_list-dialog.yml");
         }
 
-        if (this.isActive(Plugins.GEYSER) || this.isActive(Plugins.FLOODGATE)) {
+        if (this.hasBedrockSupport()) {
             files.add("bedrock/custom-form.yml");
             files.add("bedrock/modal-form.yml");
             files.add("bedrock/simple-form.yml");
@@ -453,37 +507,42 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public void onDisable() {
 
-        context.shutdown();
+
+        this.safeDisable("metrics", this.context::shutdown);
 
         if (this.packetManager != null) {
-            this.packetManager.onDisable();
+            this.safeDisable("packetevents", () -> this.packetManager.onDisable());
         }
 
         this.preDisable();
 
-        if (this.vinventoryManager != null) this.vinventoryManager.close();
-        this.inventoriesPlayer.restoreAllInventories();
+        if (this.vinventoryManager != null) this.safeDisable("inventories", this.vinventoryManager::close);
+        this.safeDisable("player inventories", this.inventoriesPlayer::restoreAllInventories);
+      
+        if (this.inventoryHotReload != null) this.inventoryHotReload.stop();
 
-        if (this.storageManager != null) this.storageManager.flush();
+        if (this.storageManager != null) this.safeDisable("storage", this.storageManager::flush);
 
-        Configuration.getInstance().save(this.getConfig(), this.configFile);
+        this.safeDisable("configuration", () -> Configuration.getInstance().save(this.getConfig(), this.configFile));
 
-        YamlFileCache.clearCache();
+        this.safeDisable("file cache", YamlFileCache::clearCache);
 
-        if (this.websiteManager != null) this.websiteManager.onDisable();
-        
+        if (this.websiteManager != null) this.safeDisable("website manager", this.websiteManager::onDisable);
+
         if (!this.isMockBukkitServer) {
-            NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
-            if (nmsMenuPacketListener != null) {
-                nmsMenuPacketListener.shutdown();
-            }
+            this.safeDisable("packet listener", () -> {
+                NMSMenuPacketListener nmsMenuPacketListener = NMSMenuPacketListener.get();
+                if (nmsMenuPacketListener != null) {
+                    nmsMenuPacketListener.shutdown();
+                }
+            });
         }
 
-        OfflinePlayerCache.uninstall(this);
+        this.safeDisable("offline player cache", () -> OfflinePlayerCache.uninstall(this));
 
-        this.itemManager.unloadListeners();
+        this.safeDisable("item manager", this.itemManager::unloadListeners);
 
-        this.getServer().getServicesManager().unregisterAll(this);
+        this.safeDisable("services", () -> this.getServer().getServicesManager().unregisterAll(this));
 
         this.postDisable();
     }
@@ -634,7 +693,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     @Override
     public Optional<PacketManager> getPacketManager() {
-        return Optional.ofNullable(this.packetManager);
+        if (this.packetManager == null || !this.packetManager.isReady()) return Optional.empty();
+        return Optional.of(this.packetManager);
     }
 
     /**
@@ -644,6 +704,15 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
      */
     public WebsiteManager getWebsiteManager() {
         return this.websiteManager;
+    }
+
+    /**
+     * Returns the class that watches the inventories folder to reload modified inventories
+     *
+     * @return the inventoryHotReload
+     */
+    public InventoryHotReload getInventoryHotReload() {
+        return this.inventoryHotReload;
     }
 
     /**

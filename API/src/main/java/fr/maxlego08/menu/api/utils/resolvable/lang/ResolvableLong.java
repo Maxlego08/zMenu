@@ -35,8 +35,8 @@ public final class ResolvableLong extends ParsableResolvable<Long> {
     @Contract("_, _, !null -> !null")
     public static ResolvableLong of(@NotNull Map<String, Object> map, @NotNull String key, @Nullable Long defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Long longValue) {
-            return new ResolvableLong(longValue, null);
+        if (value instanceof Number number) {
+            return new ResolvableLong(number.longValue(), null);
         } else if (value instanceof String strValue) {
             return new ResolvableLong(null, strValue);
         } else {

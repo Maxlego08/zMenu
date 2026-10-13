@@ -19,4 +19,9 @@ public class OraxenRule extends AbstractPluginItemRule {
     protected String resolveId(@NotNull ItemStack itemStack) {
         return OraxenItems.getIdByItem(itemStack);
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "oraxen";
+    }
 }

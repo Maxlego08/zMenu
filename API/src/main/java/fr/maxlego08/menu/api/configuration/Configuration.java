@@ -157,6 +157,25 @@ public class Configuration {
     )
     public static List<String> specifyPathMenus = new ArrayList<>();
 
+    // Hot reload, automatically reload an inventory when its file is modified, added or deleted in the inventories folder.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable inventory hot reload"
+    )
+    public static boolean enableHotReload = false;
+
+    // Time in milliseconds to wait after the last change of a file before reloading it.
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Hot reload delay milliseconds",
+            startRange = 0,
+            endRange = 5000,
+            stepRange = 50
+    )
+    public static long hotReloadDelayMilliseconds = 500;
+
     // Generate default configuration
     @ConfigOption(
             type = DialogInputType.BOOLEAN,
@@ -378,6 +397,15 @@ public class Configuration {
     public static boolean closeInventoryOnDamage = true;
 
     @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Dialog list max depth",
+            startRange = 1,
+            endRange = 16,
+            stepRange = 1
+    )
+    public static int dialogListMaxDepth = 4;
+
+    @ConfigOption(
             type = DialogInputType.SINGLE_OPTION,
             label = "OP grant method"
     )
@@ -492,6 +520,8 @@ public class Configuration {
 
         specifyPathMenus = fileConfiguration.getStringList(ConfigPath.SPECIFY_PATH_MENUS.getPath());
         generateDefaultFile = fileConfiguration.getBoolean(ConfigPath.GENERATE_DEFAULT_FILE.getPath());
+        enableHotReload = fileConfiguration.getBoolean(ConfigPath.ENABLE_HOT_RELOAD.getPath(), false);
+        hotReloadDelayMilliseconds = fileConfiguration.getLong(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), 500L);
         disableDoubleClickEvent = fileConfiguration.getBoolean(ConfigPath.DISABLE_DOUBLE_CLICK_EVENT.getPath());
 
         enableAntiDupe = fileConfiguration.getBoolean(ConfigPath.ENABLE_ANTI_DUPE.getPath());
@@ -543,6 +573,7 @@ public class Configuration {
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
         closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
+        dialogListMaxDepth = Math.max(1, fileConfiguration.getInt(ConfigPath.DIALOG_LIST_MAX_DEPTH.getPath(), 4));
 
         enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
         performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
@@ -588,6 +619,8 @@ public class Configuration {
 
         fileConfiguration.set(ConfigPath.SPECIFY_PATH_MENUS.getPath(), specifyPathMenus);
         fileConfiguration.set(ConfigPath.GENERATE_DEFAULT_FILE.getPath(), generateDefaultFile);
+        fileConfiguration.set(ConfigPath.ENABLE_HOT_RELOAD.getPath(), enableHotReload);
+        fileConfiguration.set(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), hotReloadDelayMilliseconds);
         fileConfiguration.set(ConfigPath.DISABLE_DOUBLE_CLICK_EVENT.getPath(), disableDoubleClickEvent);
 
         fileConfiguration.set(ConfigPath.ENABLE_ANTI_DUPE.getPath(), enableAntiDupe);
@@ -623,6 +656,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
         fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
+        fileConfiguration.set(ConfigPath.DIALOG_LIST_MAX_DEPTH.getPath(), dialogListMaxDepth);
         fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
@@ -657,6 +691,8 @@ public class Configuration {
 
         SPECIFY_PATH_MENUS("specify-path-menus"),
         GENERATE_DEFAULT_FILE("generate-default-file"),
+        ENABLE_HOT_RELOAD("hot-reload.enable"),
+        HOT_RELOAD_DELAY_MILLISECONDS("hot-reload.delay-milliseconds"),
         DISABLE_DOUBLE_CLICK_EVENT("disable-double-click-event"),
 
         ENABLE_ANTI_DUPE("enable-anti-dupe"),
@@ -693,6 +729,7 @@ public class Configuration {
         CLOSE_INVENTORY_ON_MOVE("close-on-move"),
         MAX_MOVE_DISTANCE("max-move-distance"),
         CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),
+        DIALOG_LIST_MAX_DEPTH("dialog-list-max-depth"),
 
         ENABLE_PERFORMANCE_DEBUG("enable-performance-debug"),
         PERFORMANCE_DEBUG_THRESHOLD_MS("performance-debug.threshold-ms"),

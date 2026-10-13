@@ -4,8 +4,10 @@ import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public abstract class LoreRule implements Rule {
     protected final List<String> values;
@@ -35,5 +37,21 @@ public abstract class LoreRule implements Rule {
         return !this.values.isEmpty();
     }
 
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("type", "lore");
+        String matchType = this.getMatchType();
+        if (!matchType.equals("contains")) map.put("match-type", matchType);
+        map.put("values", this.values);
+        if (!this.ignoreCase) map.put("ignore-case", false);
+        return map;
+    }
+
     protected abstract boolean matchesLine(@NotNull String line, @NotNull String value);
+
+    /**
+     * @return the {@code match-type} the lore rule loader reads to build this rule
+     */
+    protected abstract @NotNull String getMatchType();
 }

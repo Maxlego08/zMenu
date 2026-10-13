@@ -13,11 +13,7 @@ import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.ClearInvType;
-import fr.maxlego08.menu.api.utils.DialogFallback;
-import fr.maxlego08.menu.api.utils.InventoryReplacement;
-import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
-import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.record.dialogs.ZDialogInventoryBuild;
 import io.papermc.paper.registry.data.dialog.DialogBase;
@@ -312,7 +308,9 @@ public abstract class AbstractDialogInventory implements DialogInventory {
 
     protected DialogBase createDialogBase(@NotNull PaperMetaUpdater paperComponent, @NotNull Player player, @NotNull List<DialogBody> dialogBodies, @NotNull List<DialogInput> dialogInputs) {
         DialogBase.Builder builder = DialogBase.builder(paperComponent.getComponent(this.menuPlugin.parse(player, this.name)));
-        builder.externalTitle(paperComponent.getComponent(this.menuPlugin.parse(player, this.externalTitle)));
+        if (!this.externalTitle.isEmpty()) {
+            builder.externalTitle(paperComponent.getComponent(this.menuPlugin.parse(player, this.externalTitle)));
+        }
         builder.canCloseWithEscape(this.canCloseWithEscape);
         builder.pause(this.pause);
         try {

@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,5 +33,10 @@ public abstract class DyeColorVariantLoader extends ItemComponentLoader {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    @Override
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        return this.getNamedData(itemStack) instanceof DyeColor dyeColor ? this.componentFactory.apply(dyeColor) : null;
     }
 }

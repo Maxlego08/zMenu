@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class PlayerChatAction extends ActionHelper {
 
@@ -20,5 +21,11 @@ public class PlayerChatAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player).forEach(player::chat);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "chat");
+        map.put("messages", this.commands);
     }
 }

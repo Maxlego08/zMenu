@@ -7,6 +7,8 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class RefreshAction extends Action {
 
     @Override
@@ -15,5 +17,10 @@ public class RefreshAction extends Action {
             inventory.buildButton(button.getMasterParentButton(), placeholders);
             inventory.cancel(button.getSlot());
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "refresh");
     }
 }

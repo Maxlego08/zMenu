@@ -15,6 +15,14 @@ public final class ResolvableContainerSlot {
         this.slot = slot;
     }
 
+    public @NotNull MenuItemStack getItemStack() {
+        return this.itemStack;
+    }
+
+    public @NotNull ResolvableInt getSlot() {
+        return this.slot;
+    }
+
     public void applyTo(@NotNull Inventory inventory, @NotNull BuildContext context) {
         Integer resolvedSlot = this.slot.resolve(context);
         if (resolvedSlot != null) {

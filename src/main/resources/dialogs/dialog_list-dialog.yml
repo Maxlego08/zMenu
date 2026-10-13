@@ -1,0 +1,63 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
+# A dialog list shows one button per dialog. Each button is labelled with the
+# external-title of its dialog (or its name when it has none) and opens that dialog.
+#
+# Dialogs whose open-requirement the player does not meet are hidden from the list.
+# The requirement is checked when the list is opened, because the client opens the
+# listed dialogs on its own, without asking the server.
+
+name: "&6&lServer Hub"
+external-title: "&6Server hub"
+type: dialog_list # Available: notice, confirmation, multi_action, server_links, dialog_list
+
+can-close-with-escape: true
+pause: false
+after-action: CLOSE
+
+number-of-columns: 2 # Number of buttons in a row
+button-width: 150    # Width of each button (1-1024)
+
+dialogs:
+  # A zMenu dialog, by file name or name. Use "plugin:name" for a dialog of another plugin.
+  - "default-dialog"
+  - "multi_action-dialog"
+  - "server_link-dialog"
+  - dialog: "confirmation-dialog"
+  # A vanilla or datapack dialog, by its namespaced key
+  - registry-key: "minecraft:server_links"
+
+# Added to the listed dialogs that have no exit button of their own (multi_action,
+# server_links and dialog_list), so players can come back to this list. Without it,
+# closing a listed dialog closes everything, as the client does not return to the list.
+# notice and confirmation dialogs have no exit slot and are left unchanged.
+# To write your own back button instead, give the dialog an exit-button with the "dialog"
+# action, as in dialogs/multi_action-dialog.yml.
+back-button:
+  enabled: true
+  label: "&7« Back"
+  tooltip: "&7Return to the server hub"
+  width: 150
+
+# Optional button at the bottom of the list, also triggered by the Escape key
+exit-button:
+  label: "&cClose"
+  tooltip: "&7Close the server hub"
+  width: 150
+  actions:
+    1:
+      success:
+        - type: message
+          messages:
+            - "&7See you soon!"
+
+body:
+  welcome:
+    type: dialog_plain_message
+    messages:
+      - "&7Welcome &f%player_name%&7, pick a section below."
+    width: 300

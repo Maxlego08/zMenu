@@ -152,6 +152,20 @@ specify-path-menus: [ ]
 # When enabled, the plugin will create default configuration files if they don't exist.
 generate-default-file: true
 
+# Hot reload of inventories.
+# When enabled, zMenu watches the inventories folder (and its subfolders) and automatically reloads an
+# inventory when its file is modified, loads it when a file is added and unloads it when the file is deleted.
+# Players viewing a reloaded inventory see the new version reopened on the same page, an unloaded inventory is closed. A file that cannot be loaded (YAML error, invalid
+# button, etc.) is not applied, the previous version stays loaded until the error is fixed.
+# Files listed in specify-path-menus are not watched.
+# The folder is also scanned every 2 seconds, for file systems that do not send change events (Docker, WSL, network shares).
+# Changes are logged in the console with a [HotReload] prefix, enable-debug shows more details.
+hot-reload:
+  enable: false
+  # Time in milliseconds to wait after the last change of a file before reloading it.
+  # Text editors often write a file in several steps, this avoids reloading it several times.
+  delay-milliseconds: 500
+
 # Disable double-click detection.
 # Prevents interactions from being triggered by double-clicking.
 disable-double-click-event: true
@@ -281,3 +295,9 @@ max-move-distance: 2.0
 # Close the menu as soon as the player takes or deals damage.
 # Prevents using menus (kits, shops, heals) during combat through a ghost GUI.
 close-on-damage: true
+
+# How many dialog_list dialogs can be nested inside each other (a list inside a list inside a list...).
+# This does not limit how many dialogs a list contains. A list sends every dialog it contains,
+# including the content of nested lists, in the packet that opens it, so deep nesting makes that
+# packet bigger and can disconnect the player. Lists nested deeper than this are left out.
+dialog-list-max-depth: 4

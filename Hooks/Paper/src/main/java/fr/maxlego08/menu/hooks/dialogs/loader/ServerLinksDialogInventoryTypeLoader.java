@@ -12,7 +12,9 @@ import java.io.File;
 public class ServerLinksDialogInventoryTypeLoader implements DialogInventoryTypeLoader<ZServerLinksDialogInventory> {
     @Override
     public @Nullable ZServerLinksDialogInventory load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String name, @NotNull String externalTitle) {
-        ActionButtonRecord record = this.loadActionButtonRecord(menuPlugin, configuration, "server-links", file);
+        ActionButtonRecord record = configuration.isConfigurationSection("server-links") || configuration.contains("server-links-text")
+                ? this.loadActionButtonRecord(menuPlugin, configuration, "server-links", file)
+                : null;
         int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);
         return new ZServerLinksDialogInventory(menuPlugin, name, file.getName(), externalTitle, record, numberOfColumns);
     }

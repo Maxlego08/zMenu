@@ -2,11 +2,10 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +22,12 @@ public class TooltipStyleComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return this.tooltipStyle == null ? null : this.tooltipStyle.serialize();
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-
-            Resolvable.applyResolvable(context, this.tooltipStyle, itemMeta::setTooltipStyle);
-
-            itemStack.setItemMeta(itemMeta);
-        }
+        this.applyResolvable(context, tooltipStyle -> itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, tooltipStyle), this.tooltipStyle);
     }
 }

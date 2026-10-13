@@ -8,7 +8,7 @@ import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.entity.Cat;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public class CatVariantLoader extends RegistryVariantLoader<Cat.Type> {
     public CatVariantLoader() {
         super("cat/variant", RegistryKey.CAT_VARIANT, CatVariantComponent::new);

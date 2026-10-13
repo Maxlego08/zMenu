@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.loader;
 
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -37,6 +38,9 @@ public class ClassRegistry<T, P extends Plugin> {
     }
 
     public boolean load(P plugin, Class<?> clazz) {
+
+        Throwable failure = null;
+
         for (ConstructorStrategy<P> strategy : this.strategies) {
             try {
                 Object instance = strategy.instantiate(clazz, plugin);
@@ -44,20 +48,28 @@ public class ClassRegistry<T, P extends Plugin> {
                     this.registrar.accept(this.expectedType.cast(instance));
                     return true;
                 }
-            } catch (Exception ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (InvocationTargetException exception) {
+                if (failure == null) failure = exception.getCause() == null ? exception : exception.getCause();
+            } catch (Throwable throwable) {
+                if (failure == null) failure = throwable;
             }
         }
 
         if (this.errorLogger != null) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Could not find a valid constructor for ").append(clazz.getName()).append(". Available constructors: ");
-            for (int i = 0; i < clazz.getDeclaredConstructors().length; i++) {
-                stringBuilder.append(clazz.getDeclaredConstructors()[i]);
-                if (i < clazz.getDeclaredConstructors().length - 1) {
-                    stringBuilder.append(", ");
+            if (failure != null) {
+                this.errorLogger.accept("Could not load " + clazz.getName() + ", its constructor threw " + failure + ". This usually means the plugin it hooks into is missing or failed to start.");
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Could not find a valid constructor for ").append(clazz.getName()).append(". Available constructors: ");
+                for (int i = 0; i < clazz.getDeclaredConstructors().length; i++) {
+                    stringBuilder.append(clazz.getDeclaredConstructors()[i]);
+                    if (i < clazz.getDeclaredConstructors().length - 1) {
+                        stringBuilder.append(", ");
+                    }
                 }
+                this.errorLogger.accept(stringBuilder.toString());
             }
-            this.errorLogger.accept(stringBuilder.toString());
         }
 
         return false;

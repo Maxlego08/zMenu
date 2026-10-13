@@ -8,7 +8,7 @@ import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.entity.Villager;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public class VillagerVariantLoader extends RegistryVariantLoader<Villager.Type> {
     public VillagerVariantLoader() {
         super("villager/variant", RegistryKey.VILLAGER_TYPE, VillagerVariantComponent::new);

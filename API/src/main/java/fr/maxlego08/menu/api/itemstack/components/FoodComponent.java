@@ -5,11 +5,15 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.FoodProperties;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class FoodComponent extends ItemComponent {
@@ -44,18 +48,24 @@ public class FoodComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            org.bukkit.inventory.meta.components.FoodComponent food = itemMeta.getFood();
+        FoodProperties.Builder food = FoodProperties.food();
 
-            this.applyResolvable(context, food::setNutrition, this.nutrition);
+        this.applyResolvable(context, food::nutrition, this.nutrition);
+        this.applyResolvable(context, food::saturation, this.saturation);
+        this.applyResolvable(context, food::canAlwaysEat, this.canAlwaysEat);
 
-            this.applyResolvable(context, food::setSaturation, this.saturation);
+        itemStack.setData(DataComponentTypes.FOOD, food.build());
+    }
 
-            this.applyResolvable(context, food::setCanAlwaysEat, this.canAlwaysEat);
-            
-            itemStack.setItemMeta(itemMeta);
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("nutrition", this.nutrition.serialize());
+        map.put("saturation", this.saturation.serialize());
+        if (this.canAlwaysEat != null && (this.canAlwaysEat.isDynamic() || !Boolean.FALSE.equals(this.canAlwaysEat.getResolvedValue()))) {
+            map.put("can-always-eat", this.canAlwaysEat.serialize());
         }
+        return map;
     }
 
 }

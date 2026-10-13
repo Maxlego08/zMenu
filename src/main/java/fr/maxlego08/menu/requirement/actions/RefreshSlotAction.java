@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 public class RefreshSlotAction extends ActionHelper {
 
@@ -18,6 +19,13 @@ public class RefreshSlotAction extends ActionHelper {
     public RefreshSlotAction(List<Integer> slots, boolean inPlayerInventory) {
         this.slots = slots;
         this.isInPlayerInventory = inPlayerInventory;
+    }
+
+    @Override
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        map.put("type", "refresh-slot");
+        if (!this.slots.isEmpty()) map.put("slots", this.slots);
+        if (this.isInPlayerInventory) map.put("in-player-inventory", true);
     }
 
     @Override

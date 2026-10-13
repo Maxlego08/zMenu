@@ -5,11 +5,14 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.CuboidPermissible;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.cuboid.Cuboid;
 import fr.maxlego08.menu.api.utils.cuboid.Region;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ZCuboidPermissible extends CuboidPermissible {
 
@@ -28,6 +31,18 @@ public class ZCuboidPermissible extends CuboidPermissible {
     @Override
     public boolean isValid() {
         return this.region != null;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "cuboid");
+        if (this.region == null || this.region.cuboids().isEmpty()) return;
+        List<String> cuboids = new ArrayList<>(this.region.cuboids().size());
+        for (Cuboid cuboid : this.region.cuboids()) {
+            cuboids.add(cuboid.getWorldName() + "," + cuboid.getX1() + "," + cuboid.getY1() + "," + cuboid.getZ1()
+                    + "," + cuboid.getX2() + "," + cuboid.getY2() + "," + cuboid.getZ2());
+        }
+        map.put("cuboids", cuboids);
     }
 
     @Override

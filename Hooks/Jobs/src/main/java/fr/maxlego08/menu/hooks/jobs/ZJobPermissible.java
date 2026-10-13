@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class ZJobPermissible extends JobPermissible {
 
@@ -33,6 +34,12 @@ public class ZJobPermissible extends JobPermissible {
             return true;
         }
         return Jobs.getPlayerManager().getJobsPlayer(player.getUniqueId()).isInJob(job);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "job");
+        if (this.jobName != null) map.put("job", this.jobName);
     }
 
     @Override

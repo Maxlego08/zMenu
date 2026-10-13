@@ -23,4 +23,9 @@ public class CraftEngineRule extends AbstractPluginItemRule {
         }
         return null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "craftengine";
+    }
 }

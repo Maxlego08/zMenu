@@ -44,4 +44,9 @@ public final class TagKeyResolvable<T extends Keyed> extends ParsableResolvable<
         if (key == null) return null;
         return this.registryKey.tagKey(key);
     }
+
+    @Override
+    protected @NotNull Object serializeValue(@NotNull TagKey<T> value) {
+        return value.key().asString();
+    }
 }

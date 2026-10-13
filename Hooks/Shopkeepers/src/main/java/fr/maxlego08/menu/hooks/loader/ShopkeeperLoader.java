@@ -1,0 +1,31 @@
+package fr.maxlego08.menu.hooks.loader;
+
+import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.annotations.AutoActionLoader;
+import fr.maxlego08.menu.api.annotations.RequiresPlugin;
+import fr.maxlego08.menu.api.loader.ActionLoader;
+import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.hooks.ShopkeeperAction;
+import org.jspecify.annotations.NonNull;
+
+import java.io.File;
+
+@AutoActionLoader
+@RequiresPlugin("Shopkeepers")
+public class ShopkeeperLoader extends ActionLoader {
+    public static final String DEFAULT_NAME = "error_name";
+
+    private final MenuPlugin plugin;
+
+    public ShopkeeperLoader(MenuPlugin plugin) {
+        super("shopkeeper");
+        this.plugin = plugin;
+    }
+
+    @Override
+    public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
+        String name = accessor.getString("name", DEFAULT_NAME);
+        return new ShopkeeperAction(this.plugin, name);
+    }
+}

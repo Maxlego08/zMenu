@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.inventory.zinv;
 
+import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
@@ -11,14 +13,13 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.ActionResult;
-import fr.maxlego08.menu.api.requirement.ConditionalName;
-import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.*;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
@@ -508,5 +509,62 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     @Override
     public void setClearInvType(ClearInvType clearInvType) {
         this.clearInvType = clearInvType;
+    }
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("name", this.name);
+        if (this.translatedNames != null && !this.translatedNames.isEmpty()) {
+            List<Map<String, Object>> names = new ArrayList<>(this.translatedNames.size());
+            this.translatedNames.forEach((locale, name) -> {
+                Map<String, Object> entry = new LinkedHashMap<>();
+                entry.put("locale", locale);
+                entry.put("name", name);
+                names.add(entry);
+            });
+            section.set("translated-name", names);
+        }
+        if (this.type != InventoryType.CHEST) section.set("type", this.type.name());
+        else section.set("size", this.size);
+
+        if (this.updateInterval != 1000) section.set("update-interval", this.updateInterval);
+        if (this.clearInventory) section.set("clear-inventory", true);
+        if (this.clearInvType != ClearInvType.DEFAULT) section.set("clear-inventory-type", this.clearInvType.name());
+        if (this.shouldCancelItemPickup()) section.set("cancel-item-pickup", true);
+        if (!"%player_name%".equals(this.targetPlayerNamePlaceholder)) {
+            section.set("target-player-name-placeholder", this.targetPlayerNamePlaceholder);
+        }
+        if (!this.isClickLimiterEnabled) section.set("click-limiter-enabled", false);
+
+        if (!this.getPatterns().isEmpty()) {
+            List<String> patternNames = new ArrayList<>(this.getPatterns().size());
+            this.getPatterns().forEach(pattern -> patternNames.add(pattern.name()));
+            section.set("patterns", patternNames);
+        }
+
+        if (this.fillItemStack != null) this.fillItemStack.serialize(section.createSection("fill-item"));
+        if (this.openWithItem != null) this.openWithItem.serialize(section.createSection("open-with-item"));
+        if (this.titleAnimation != null) this.titleAnimation.serialize(section.createSection("title-animation"));
+        if (this.inventoryReplacement != null) this.inventoryReplacement.serialize(section.createSection("inventory-replacement"));
+        if (this.openRequirement != null) this.openRequirement.serialize(section.createSection("open-requirement"));
+        if (!this.getOpenActions().isEmpty()) section.set("open-actions", Permissible.serializeActions(this.getOpenActions()));
+        if (!this.getCloseActions().isEmpty()) section.set("close-actions", Permissible.serializeActions(this.getCloseActions()));
+
+        ConfigurationSection itemsSection = section.createSection("items");
+        int index = 0;
+        for (Button button : this.buttons) {
+            String key = button.getName() == null || itemsSection.contains(button.getName()) ? "button-" + index : button.getName();
+            button.serialize(itemsSection.createSection(key), this.size);
+            index++;
+        }
+
+        InventoryManager inventoryManager = Bukkit.getServicesManager().load(InventoryManager.class);
+        if (inventoryManager == null) return;
+        for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : inventoryManager.getInventoryOptions().entrySet()) {
+            for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
+                InventoryOption option = InventoryOption.create(entry.getKey(), optionClass);
+                if (option != null) option.serialize(this, section);
+            }
+        }
     }
 }

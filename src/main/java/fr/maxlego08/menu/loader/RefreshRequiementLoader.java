@@ -38,9 +38,4 @@ public class RefreshRequiementLoader implements Loader<RefreshRequirement> {
 
         return new ZRefreshRequirement(enablePermissibles, permissibles, task, refreshLore, refreshName, refreshButton, updateInterval);
     }
-
-    @Override
-    public void save(RefreshRequirement object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-    }
 }

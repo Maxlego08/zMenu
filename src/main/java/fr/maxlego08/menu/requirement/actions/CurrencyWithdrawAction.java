@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
+import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.traqueur.currencies.Currencies;
 import fr.traqueur.currencies.TransactionResult;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 public class CurrencyWithdrawAction extends ActionHelper {
 
@@ -69,6 +71,15 @@ public class CurrencyWithdrawAction extends ActionHelper {
                 this.send(inventory, player, Message.CURRENCY_ERROR);
                 return ActionResult.STOP;
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "withdraw");
+        map.put("amount", this.amount);
+        if (this.currencies != Currencies.VAULT) map.put("currency", this.currencies.name());
+        if (this.economyName != null) map.put("economy", this.economyName);
+        if (!CurrencyWithdrawLoader.DEFAULT_REASON.equals(this.reason)) map.put("reason", this.reason);
     }
 
     private void send(InventoryEngine inventory, Player player, Message message) {

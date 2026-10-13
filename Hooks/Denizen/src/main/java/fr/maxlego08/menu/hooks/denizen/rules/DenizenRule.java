@@ -18,4 +18,9 @@ public class DenizenRule extends AbstractPluginItemRule {
     protected @Nullable String resolveId(@NotNull ItemStack itemStack) {
         return new ItemTag(itemStack).getScriptName();
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "denizen";
+    }
 }

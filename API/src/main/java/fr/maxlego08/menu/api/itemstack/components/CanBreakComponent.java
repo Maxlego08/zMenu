@@ -11,7 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CanBreakComponent extends ItemComponent {
     private final List<ResolvableBlockPredicate> blockPredicates;
@@ -27,5 +29,12 @@ public class CanBreakComponent extends ItemComponent {
         Resolvable.applyResolvable(context, this.blockPredicates, builder::addPredicates);
 
         itemStack.setData(DataComponentTypes.CAN_BREAK, builder.build());
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("blocks", Resolvable.serializeList(this.blockPredicates));
+        return map;
     }
 }

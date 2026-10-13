@@ -50,4 +50,19 @@ public final class ResolvableColor extends ParsableResolvable<Color> {
     protected @Nullable Color parse(@NotNull String value) {
         return ColorUtils.parse(value);
     }
+
+    /**
+     * Writes the color as {@code #RRGGBB}, or {@code #AARRGGBB} when it is not opaque, the hex forms {@link ColorUtils#parse} reads.
+     */
+    @Override
+    protected @NotNull Object serializeValue(@NotNull Color value) {
+        return toHex(value);
+    }
+
+    static @NotNull String toHex(@NotNull Color color) {
+        if (color.getAlpha() == 0xFF) {
+            return String.format("#%06X", color.asRGB());
+        }
+        return String.format("#%08X", color.asARGB());
+    }
 }

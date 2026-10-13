@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.loader.deluxemenu;
 
+import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -12,29 +13,61 @@ import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import fr.maxlego08.menu.requirement.ZRequirement;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
+import fr.maxlego08.menu.sound.ZSoundOption;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.inventory.ClickType;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Button> {
+    private static final Map<String, ClickType> CLICKS = new LinkedHashMap<>();
+
+    private static final Map<String, String> MATERIAL_PREFIXES = new LinkedHashMap<>();
+
+    private static final Map<String, String> EQUIPMENT_MATERIALS = Map.of(
+            "main_hand", "armor:HAND", "off_hand", "armor:OFF_HAND", "armor_helmet", "armor:HEAD",
+            "armor_chestplate", "armor:CHEST", "armor_leggings", "armor:LEGS", "armor_boots", "armor:FEET");
+
+    private static final Map<String, String> ITEM_KEY_ALIASES = Map.of(
+            "item_flags", "flags", "hide_tooltip", "hide-tooltip", "enchantment_glint_override", "enchantment-glint",
+            "rarity", "item-rarity", "tooltip_style", "tooltip-style", "item_model", "item-model");
+
+    private static final List<String> UNSUPPORTED_ITEM_KEYS = List.of(
+            "rgb", "banner_meta", "base_color", "potion_effects", "trim_material", "trim_pattern", "model_data_component", "light_level", "lore_append_mode");
+
+    static {
+        CLICKS.put("left", ClickType.LEFT);
+        CLICKS.put("right", ClickType.RIGHT);
+        CLICKS.put("shift_left", ClickType.SHIFT_LEFT);
+        CLICKS.put("shift_right", ClickType.SHIFT_RIGHT);
+        CLICKS.put("middle", ClickType.MIDDLE);
+
+        MATERIAL_PREFIXES.put("hdb-", "hdb:");
+        MATERIAL_PREFIXES.put("headdb-", "hdb:");
+        MATERIAL_PREFIXES.put("itemsadder-", "itemsadder:");
+        MATERIAL_PREFIXES.put("oraxen-", "oraxen:");
+        MATERIAL_PREFIXES.put("nexo-", "nexo:");
+        MATERIAL_PREFIXES.put("mmoitems-", "mmoitems:");
+        MATERIAL_PREFIXES.put("craftengine-", "craftengine:");
+        MATERIAL_PREFIXES.put("executableitems-", "ei:");
+        MATERIAL_PREFIXES.put("executableblocks-", "eb:");
+    }
 
     private final ZMenuPlugin plugin;
     private final File file;
     private final int inventorySize;
 
-    public ButtonDeluxeMenuLoader(ZMenuPlugin plugin, File file, int inventorySize) {
-        super();
+    public ButtonDeluxeMenuLoader(ZMenuPlugin plugin, File file, int inventorySize, List<String> warnings) {
+        super(warnings);
         this.plugin = plugin;
         this.file = file;
         this.inventorySize = inventorySize;
@@ -96,77 +129,23 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setSlots(slots);
         button.setPage(page);
 
-        InventoryManager inventoryManager = this.plugin.getInventoryManager();
-        MenuItemStack itemStack = itemStackLoader.load(configuration, path + ".", this.file);
+        String playerHead = this.translateItem(configuration, path, buttonName);
+        MenuItemStack itemStack = itemStackLoader.load(configuration, path, this.file);
         button.setItemStack(itemStack);
         button.setButtonName(buttonName);
+        if (playerHead != null) button.setPlayerHead(playerHead);
 
-        // Click requirement
-        List<String> clickCommands = configuration.getStringList(path + "click_commands");
-        List<String> leftClickCommands = configuration.getStringList(path + "left_click_commands");
-        List<String> rightClickCommands = configuration.getStringList(path + "right_click_commands");
-        List<String> middleClickCommands = configuration.getStringList(path + "middle_click_commands");
-        List<String> shiftLeftClickCommands = configuration.getStringList(path + "shift_left_click_commands");
-        List<String> shiftRightClickCommands = configuration.getStringList(path + "shift_right_click_commands");
+        InventoryManager inventoryManager = this.plugin.getInventoryManager();
+        button.setClickRequirements(this.loadClickRequirements(configuration, path, inventoryManager));
 
-        List<Action> actions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, clickCommands);
-        List<Action> leftActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, leftClickCommands);
-        List<Action> rightActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, rightClickCommands);
-        List<Action> middleActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, middleClickCommands);
-        List<Action> shiftLeftActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, shiftLeftClickCommands);
-        List<Action> shiftRightActions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, shiftRightClickCommands);
-
-        List<Requirement> requirements = new ArrayList<>();
-
-        ConfigurationSection leftClickRequirementSection = configuration.getConfigurationSection(path + "left_click_requirement");
-        if (leftClickRequirementSection != null) {
-            Requirement requirement = this.loadRequirement(leftActions.isEmpty() ? actions : leftActions, leftClickRequirementSection, ClickType.LEFT);
-            requirements.add(requirement);
-        }
-
-        ConfigurationSection rightClickRequirementSection = configuration.getConfigurationSection(path + "right_click_requirement");
-        if (rightClickRequirementSection != null) {
-            Requirement requirement = this.loadRequirement(rightActions.isEmpty() ? actions : rightActions, rightClickRequirementSection, ClickType.RIGHT);
-            requirements.add(requirement);
-        }
-
-        ConfigurationSection shiftLeftClickRequirement = configuration.getConfigurationSection(path + "shift_left_click_requirement");
-        if (shiftLeftClickRequirement != null) {
-            Requirement requirement = this.loadRequirement(shiftLeftActions, shiftLeftClickRequirement, ClickType.SHIFT_LEFT);
-            requirements.add(requirement);
-        }
-
-        ConfigurationSection shiftRightClickRequirement = configuration.getConfigurationSection(path + "shift_right_click_requirement");
-        if (shiftRightClickRequirement != null) {
-            Requirement requirement = this.loadRequirement(shiftRightActions, shiftRightClickRequirement, ClickType.SHIFT_RIGHT);
-            requirements.add(requirement);
-        }
-
-        ConfigurationSection middleClickRequirement = configuration.getConfigurationSection(path + "middle_click_requirement");
-        if (middleClickRequirement != null) {
-            Requirement requirement = this.loadRequirement(middleActions, middleClickRequirement, ClickType.SHIFT_RIGHT);
-            requirements.add(requirement);
-        }
-
-        if (requirements.isEmpty()) {
-            List<Action> globalActions = leftActions.isEmpty() ? rightActions.isEmpty() ? actions : rightActions : leftActions;
-            if (!globalActions.isEmpty()) {
-                Requirement requirement = new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), globalActions,Configuration.allClicksType);
-                requirements.add(requirement);
-            }
-        }
-
-        button.setClickRequirements(requirements);
-
-        // View Requirements
         ConfigurationSection viewRequirementSection = configuration.getConfigurationSection(path + "view_requirement");
         if (viewRequirementSection != null) {
-            Requirement requirement = this.loadRequirement(new ArrayList<>(), viewRequirementSection);
-            button.setViewRequirement(requirement);
+            button.setViewRequirement(this.loadRequirement(inventoryManager, this.plugin.getCommandManager(), this.plugin, new ArrayList<>(), viewRequirementSection, Configuration.allClicksType, this.file));
         }
 
         button.setUpdated(configuration.getBoolean(path + "update", defaultButtonValue.isUpdate()));
-        button.setPriority(configuration.getInt(path + "priority", -1));
+        button.setPriority(configuration.getInt(path + "priority", 1));
+        button.setSoundOption(new ZSoundOption(null, XSound.Category.MASTER.name(), null, 1f, 1f, true));
 
         List<String> permissions = configuration.getStringList(path + "permission");
         permissions = permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions;
@@ -197,21 +176,85 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         return button;
     }
 
-    private Requirement loadRequirement(List<Action> actions, ConfigurationSection configurationSection, ClickType... clickTypes) {
-        List<Permissible> permissibles = new ArrayList<>();
-        ConfigurationSection configurationSectionRequirements = configurationSection.getConfigurationSection("requirements");
-        if (configurationSectionRequirements != null) {
-            permissibles = this.loadPermissibles(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configurationSectionRequirements);
+    private List<Requirement> loadClickRequirements(YamlConfiguration configuration, String path, InventoryManager inventoryManager) {
+        List<Requirement> requirements = new ArrayList<>();
+
+        List<String> clickCommands = configuration.getStringList(path + "click_commands");
+        if (!clickCommands.isEmpty()) {
+            List<Action> actions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, clickCommands, this.file);
+            ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement");
+            requirements.add(this.loadRequirement(inventoryManager, this.plugin.getCommandManager(), this.plugin, actions, section, Configuration.allClicksType, this.file));
+            return requirements;
         }
 
-        List<Action> denyActions = this.loadActions(this.plugin.getInventoryManager(), this.plugin.getCommandManager(), this.plugin, configurationSection.getStringList("deny_commands"));
+        for (Map.Entry<String, ClickType> click : CLICKS.entrySet()) {
+            List<String> commands = configuration.getStringList(path + click.getKey() + "_click_commands");
+            if (commands.isEmpty()) continue;
 
-        return new ZRequirement(configurationSection.getInt("minimum_requirements", permissibles.size()), permissibles, denyActions, actions, Arrays.asList(clickTypes));
+            List<Action> actions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, commands, this.file);
+            ConfigurationSection section = configuration.getConfigurationSection(path + click.getKey() + "_click_requirement");
+            requirements.add(this.loadRequirement(inventoryManager, this.plugin.getCommandManager(), this.plugin, actions, section, List.of(click.getValue()), this.file));
+        }
+        return requirements;
     }
 
-    @Override
-    public void save(Button object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-        // TODO: FINISH THE SAVE METHOD
-    }
+    private String translateItem(YamlConfiguration configuration, String path, String buttonName) {
+        String playerHead = null;
+        String material = configuration.getString(path + "material");
 
+        if (material != null) {
+            String lowerMaterial = material.toLowerCase(Locale.ROOT);
+            if (lowerMaterial.startsWith("head-")) {
+                playerHead = material.substring("head-".length());
+                configuration.set(path + "material", "PLAYER_HEAD");
+            } else if (lowerMaterial.startsWith("texture-")) {
+                String texture = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + material.substring("texture-".length()) + "\"}}}";
+                configuration.set(path + "material", "basehead-" + Base64.getEncoder().encodeToString(texture.getBytes(StandardCharsets.UTF_8)));
+            } else if (lowerMaterial.startsWith("placeholder-")) {
+                configuration.set(path + "material", material.substring("placeholder-".length()));
+            } else if (EQUIPMENT_MATERIALS.containsKey(lowerMaterial)) {
+                configuration.set(path + "material", EQUIPMENT_MATERIALS.get(lowerMaterial));
+            } else if (lowerMaterial.equals("water_bottle")) {
+                configuration.set(path + "material", "POTION");
+                configuration.set(path + "potion", "WATER");
+            } else if (lowerMaterial.startsWith("stack-") || lowerMaterial.startsWith("simpleitemgenerator-")) {
+                this.warn(this.file, "the material \"" + material + "\" of the item " + buttonName + " is not supported");
+            } else {
+                for (Map.Entry<String, String> prefix : MATERIAL_PREFIXES.entrySet()) {
+                    if (lowerMaterial.startsWith(prefix.getKey())) {
+                        configuration.set(path + "material", prefix.getValue() + material.substring(prefix.getKey().length()));
+                        break;
+                    }
+                }
+            }
+        }
+
+        List<String> enchantments = configuration.getStringList(path + "enchantments");
+        if (!enchantments.isEmpty()) {
+            configuration.set(path + "enchantments", enchantments.stream().map(enchantment -> enchantment.replace(';', ',')).toList());
+        }
+
+        if (configuration.contains(path + "dynamic_amount")) {
+            configuration.set(path + "amount", configuration.getString(path + "dynamic_amount"));
+        }
+
+        if (configuration.contains(path + "data") && !configuration.contains(path + "damage")) {
+            configuration.set(path + "damage", configuration.get(path + "data"));
+            configuration.set(path + "data", null);
+        }
+
+        ITEM_KEY_ALIASES.forEach((deluxeMenusKey, zMenuKey) -> {
+            if (configuration.contains(path + deluxeMenusKey) && !configuration.contains(path + zMenuKey)) {
+                configuration.set(path + zMenuKey, configuration.get(path + deluxeMenusKey));
+            }
+        });
+
+        for (String key : UNSUPPORTED_ITEM_KEYS) {
+            if (configuration.contains(path + key)) {
+                this.warn(this.file, "the option " + key + " of the item " + buttonName + " is not converted");
+            }
+        }
+
+        return playerHead;
+    }
 }

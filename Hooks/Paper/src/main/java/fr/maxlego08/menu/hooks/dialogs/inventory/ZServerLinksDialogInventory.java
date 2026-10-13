@@ -12,6 +12,7 @@ import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class ZServerLinksDialogInventory extends AbstractButtonUtilsInventory im
     private final int numberOfColumns;
     private final int buttonWidth = 100;
 
-    public ZServerLinksDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, @NotNull ActionButtonRecord actionButton, int numberOfColumns) {
+    public ZServerLinksDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, @Nullable ActionButtonRecord actionButton, int numberOfColumns) {
         super(plugin, name, fileName, externalTitle, DialogType.SERVER_LINKS);
         this.actionButton = actionButton;
         this.numberOfColumns = numberOfColumns;
@@ -49,7 +50,7 @@ public class ZServerLinksDialogInventory extends AbstractButtonUtilsInventory im
         return Dialog.create(builder -> {
             builder.empty()
                     .type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(
-                            this.createActionButton(this.actionButton.parse(player), dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null),
+                            this.exitOrBackButton(this.actionButton != null ? this.createActionButton(this.actionButton.parse(player), dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null),
                             this.numberOfColumns,
                             this.buttonWidth
                     ))

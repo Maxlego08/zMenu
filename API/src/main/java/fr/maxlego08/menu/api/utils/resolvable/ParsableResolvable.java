@@ -2,10 +2,13 @@ package fr.maxlego08.menu.api.utils.resolvable;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.placeholder.Placeholder;
+import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -60,6 +63,34 @@ public abstract class ParsableResolvable<T> implements Resolvable<T> {
     }
 
     protected abstract @Nullable T parse(@NotNull String value);
+
+    /**
+     * Writes the placeholder expression as written, or the resolved value through {@link #serializeValue}.
+     */
+    @Override
+    public @Nullable Object serialize() {
+        if (this.expression != null) return this.expression;
+        return this.serializeValue(Objects.requireNonNull(this.resolvedValue));
+    }
+
+    /**
+     * Writes a resolved value the way {@link #parse} reads it back. Numbers, booleans and strings
+     * are written as they are, enums by name, registry entries and keys by their key; other types
+     * must override this.
+     *
+     * @param value The resolved value.
+     * @return A plain value, a list or a map, ready to be written in YAML.
+     * @throws UnsupportedOperationException If the value has no configuration form.
+     */
+    protected @Nullable Object serializeValue(@NotNull T value) {
+        if (value instanceof Number || value instanceof Boolean || value instanceof String) return value;
+        return switch (value) {
+            case Enum<?> enumValue -> enumValue.name();
+            case NamespacedKey key -> key.toString();
+            case Keyed keyed -> keyed.getKey().toString();
+            default -> throw new UnsupportedOperationException(this.getClass().getName() + " cannot serialize the value " + value);
+        };
+    }
 
     protected static <T, R extends ParsableResolvable<T>> @NotNull R auto(
             @NotNull String value,

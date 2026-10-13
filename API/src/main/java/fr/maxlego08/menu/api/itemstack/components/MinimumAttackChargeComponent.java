@@ -23,6 +23,11 @@ public class MinimumAttackChargeComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return this.minimumAttackCharge.serialize();
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Float resolvedMinimumAttackCharge = Resolvable.resolve(context, this.minimumAttackCharge);
         if (resolvedMinimumAttackCharge != null) {

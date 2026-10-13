@@ -20,4 +20,9 @@ public class NovaRule extends AbstractPluginItemRule {
         NovaItem novaItem = Nova.getNova().getItemRegistry().getOrNull(itemStack);
         return novaItem != null ? novaItem.getId().toString() : null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "nova";
+    }
 }

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class PlayerCommandAsOPAction extends ActionHelper {
 
@@ -23,5 +24,11 @@ public class PlayerCommandAsOPAction extends ActionHelper {
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
         scheduler.runAtEntity(player, w -> this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player).forEach(command -> Configuration.opGrantMethod.execute(player, inventory.getPlugin(), () -> Bukkit.dispatchCommand(player, command))));
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "player-command-as-op");
+        map.put("commands", this.commands);
     }
 }

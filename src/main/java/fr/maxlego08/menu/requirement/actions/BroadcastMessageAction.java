@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class BroadcastMessageAction extends ActionHelper {
 
@@ -31,6 +32,13 @@ public class BroadcastMessageAction extends ActionHelper {
                 target.sendMessage(finalMessage);
             }
         }));
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "broadcast message");
+        map.put("messages", this.messages);
+        if (!this.miniMessage) map.put("minimessage", false);
     }
 
 }

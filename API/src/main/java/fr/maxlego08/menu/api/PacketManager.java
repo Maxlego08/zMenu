@@ -10,6 +10,10 @@ public interface PacketManager {
 
     void onEnable();
 
+    default boolean isReady() {
+        return true;
+    }
+
     void onPostEnable();
 
     void onDisable();

@@ -36,9 +36,15 @@ public class VersionFilter {
 
             String requiredVersionStr = requiresPlugin.version();
             if (!requiredVersionStr.isEmpty()) {
-                PluginVersion pluginVersion = PluginVersion.parse(plugin.getDescription().getVersion());
-                PluginVersion requiredVersion = PluginVersion.parse(requiredVersionStr);
-                if (!requiresPlugin.type().compare(pluginVersion.compareTo(requiredVersion))) {
+                try {
+                    PluginVersion pluginVersion = PluginVersion.parse(plugin.getDescription().getVersion());
+                    PluginVersion requiredVersion = PluginVersion.parse(requiredVersionStr);
+                    if (!requiresPlugin.type().compare(pluginVersion.compareTo(requiredVersion))) {
+                        return false;
+                    }
+                } catch (Throwable throwable) {
+                    // An unparsable version from a third-party plugin must not abort the whole scan.
+                    Logger.info("Could not compare the version of " + requiresPlugin.value() + " for " + clazz.getName() + ", skipping it: " + throwable.getMessage(), Logger.LogType.WARNING);
                     return false;
                 }
             }
@@ -79,15 +85,16 @@ public class VersionFilter {
         int count = 0;
 
         for (Class<?> clazz : reflection.getTypesAnnotatedWith(annotation)) {
-            if (!registry.getExpectedType().isAssignableFrom(clazz)) continue;
-            if (!passes(clazz)) continue;
             try {
+                if (!registry.getExpectedType().isAssignableFrom(clazz)) continue;
+                if (!passes(clazz)) continue;
                 if (registry.load(plugin, clazz)) count++;
-            } catch (Exception e) {
-                if (Configuration.enableDebug) {
-                    Logger.error("Failed to load class " + clazz.getName() + " for plugin " + plugin.getName() + " with annotation " + annotation.getSimpleName() + " due to: " + e.getMessage() + ". Please check reporte this error to the plugin developer (" + plugin.getDescription().getAuthors() + ")");
-                    Logger.error(e);
-                }
+            } catch (Throwable throwable) {
+                // Throwable, not Exception: a hook whose plugin is missing or broken fails with
+                // NoClassDefFoundError or ExceptionInInitializerError, and one of those must not
+                // stop the remaining classes from being registered.
+                Logger.error("Failed to load class " + clazz.getName() + " for plugin " + plugin.getName() + " with annotation " + annotation.getSimpleName() + " due to: " + throwable + ". The rest of zMenu is unaffected, please report this to the plugin developer (" + plugin.getDescription().getAuthors() + ")");
+                if (Configuration.enableDebug) Logger.error(throwable);
             }
         }
 

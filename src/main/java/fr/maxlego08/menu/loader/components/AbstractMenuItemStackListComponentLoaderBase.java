@@ -2,9 +2,12 @@ package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +47,52 @@ public abstract class AbstractMenuItemStackListComponentLoaderBase extends ItemC
         YamlConfiguration yamlConfiguration = new YamlConfiguration();
         yamlConfiguration.createSection("item", itemMap);
         return menuItemStackLoader.load(yamlConfiguration, "item.", file);
+    }
+
+    /**
+     * @return The menu item of a nested item, or null when it cannot be written without {@code base64:}.
+     */
+    @Nullable
+    protected MenuItemStack convertItemStack(@NotNull ItemStack itemStack) {
+        MenuItemStackConversion conversion = MenuItemStackFromItemStack.convert(this.plugin.getInventoryManager(), itemStack);
+        return conversion.isReadable() ? conversion.menuItemStack() : null;
+    }
+
+    /**
+     * @return The menu items of nested items, or null when one of them cannot be written without {@code base64:}.
+     */
+    @Nullable
+    protected List<@NotNull MenuItemStack> convertItemStackList(@NotNull List<ItemStack> itemStacks) {
+        List<MenuItemStack> menuItemStacks = new ArrayList<>(itemStacks.size());
+        for (ItemStack itemStack : itemStacks) {
+            MenuItemStack menuItemStack = this.convertItemStack(itemStack);
+            if (menuItemStack == null) return null;
+            menuItemStacks.add(menuItemStack);
+        }
+        return menuItemStacks;
+    }
+
+    /**
+     * Same as {@link #convertItemStack(ItemStack)}, reading the nested item through its {@link org.bukkit.inventory.meta.ItemMeta}.
+     */
+    @Nullable
+    protected MenuItemStack convertItemStackFromItemMeta(@NotNull ItemStack itemStack) {
+        MenuItemStackConversion conversion = MenuItemStackFromItemStack.convert(this.plugin.getInventoryManager(), itemStack, false);
+        return conversion.isReadable() ? conversion.menuItemStack() : null;
+    }
+
+    /**
+     * Same as {@link #convertItemStackList(List)}, reading the nested items through their {@link org.bukkit.inventory.meta.ItemMeta}.
+     */
+    @Nullable
+    protected List<@NotNull MenuItemStack> convertItemStackListFromItemMeta(@NotNull List<ItemStack> itemStacks) {
+        List<MenuItemStack> menuItemStacks = new ArrayList<>(itemStacks.size());
+        for (ItemStack itemStack : itemStacks) {
+            MenuItemStack menuItemStack = this.convertItemStackFromItemMeta(itemStack);
+            if (menuItemStack == null) return null;
+            menuItemStacks.add(menuItemStack);
+        }
+        return menuItemStacks;
     }
 
 }

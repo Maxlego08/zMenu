@@ -22,4 +22,9 @@ public final class WolfSoundVariantComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.soundVariant, resolvedSoundVariant -> itemStack.setData(DataComponentTypes.WOLF_SOUND_VARIANT, resolvedSoundVariant));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.soundVariant.serialize();
+    }
 }

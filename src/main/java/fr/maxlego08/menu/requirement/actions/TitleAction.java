@@ -7,6 +7,8 @@ import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class TitleAction extends ActionHelper {
 
     private final String title;
@@ -26,6 +28,16 @@ public class TitleAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         inventory.getPlugin().getMetaUpdater().sendTitle(player, this.papi(placeholders.parse(this.title), player), this.papi(placeholders.parse(this.subtitle), player), this.start, this.duration, this.end);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "title");
+        map.put("title", this.title);
+        map.put("subtitle", this.subtitle);
+        if (this.start != 0) map.put("start", this.start);
+        if (this.duration != 0) map.put("duration", this.duration);
+        if (this.end != 0) map.put("end", this.end);
     }
 
 }

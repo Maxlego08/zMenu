@@ -1,18 +1,17 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.KnowledgeBookMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -28,13 +27,12 @@ public class RecipesComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return Resolvable.serializeList(this.recipes);
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, KnowledgeBookMeta.class, knowledgeBookMeta -> {
-
-            Resolvable.applyResolvable(context, this.recipes, knowledgeBookMeta::setRecipes);
-
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("Could not apply RecipesComponent to item: " + itemStack.getType().name());
+        Resolvable.applyResolvable(context, this.recipes, recipes -> itemStack.setData(DataComponentTypes.RECIPES, new ArrayList<Key>(recipes)));
     }
 }

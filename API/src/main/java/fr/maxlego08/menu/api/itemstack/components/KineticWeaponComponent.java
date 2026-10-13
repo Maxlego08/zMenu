@@ -14,6 +14,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class KineticWeaponComponent extends ItemComponent {
     private final ResolvableInt contactCooldownTicks;
     private final ResolvableInt delayTicks;
@@ -54,5 +57,20 @@ public final class KineticWeaponComponent extends ItemComponent {
 
         itemStack.setData(DataComponentTypes.KINETIC_WEAPON, builder.build());
 
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.delayTicks != null) map.put("delay-ticks", this.delayTicks.serialize());
+        if (this.contactCooldownTicks != null) map.put("contact-cooldown-ticks", this.contactCooldownTicks.serialize());
+        if (this.dismountConditions != null) map.put("dismount-conditions", this.dismountConditions.serialize());
+        if (this.knockbackConditions != null) map.put("knockback-conditions", this.knockbackConditions.serialize());
+        if (this.damageConditions != null) map.put("damage-conditions", this.damageConditions.serialize());
+        if (this.forwardMovement != null) map.put("forward-movement", this.forwardMovement.serialize());
+        if (this.damageMultiplier != null) map.put("damage-multiplier", this.damageMultiplier.serialize());
+        if (this.sound != null) map.put("sound", this.sound.serialize());
+        if (this.hitSound != null) map.put("hit-sound", this.hitSound.serialize());
+        return map;
     }
 }

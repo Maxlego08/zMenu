@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Loader;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -64,5 +65,15 @@ public interface ButtonOption {
      * @param isSuccess Indicates whether the action associated with the button was successful.
      */
     void onClick(Button button, Player player, InventoryClickEvent event, InventoryEngine inventoryEngine, int slot, boolean isSuccess);
+
+    /**
+     * Writes the keys this option reads in {@link #loadButton}. Every button holds every registered
+     * option, used or not, so the default writes nothing instead of refusing to serialize.
+     *
+     * @param button  The button being serialized.
+     * @param section The section of the button.
+     */
+    default void serialize(Button button, ConfigurationSection section) {
+    }
 }
 

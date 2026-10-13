@@ -16,7 +16,6 @@ import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,24 +101,6 @@ public class CommandLoader implements Loader<Command> {
         }
 
         return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, requirements, denyMessage, path, file);
-    }
-
-    @Override
-    public void save(Command object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-        configuration.set(path + "command", object.command());
-        configuration.set(path + "permission", object.permission());
-        configuration.set(path + "inventory", object.inventory());
-        configuration.set(path + "aliases", object.aliases());
-        configuration.set(path + "arguments", object.arguments());
-        configuration.set(path + "deny-message", object.denyMessage());
-
-        try {
-            configuration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     private boolean isListOfMap(List<?> list) {

@@ -29,6 +29,15 @@ public class SetItemAction extends ActionHelper {
         this.dupeProtection = dupeProtection;
     }
 
+    @Override
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        map.put("type", "set-item");
+        map.put("slots", this.slots);
+        if (this.inPlayerInventory) map.put("in-player-inventory", true);
+        map.put("item", this.menuItemStack.serializeToMap());
+        if (!this.dupeProtection) map.put("dupe-protection", false);
+    }
+
 
     @Override
     protected void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {

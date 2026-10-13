@@ -7,8 +7,8 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -18,8 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionType;
 import org.jspecify.annotations.NonNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -160,21 +158,14 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         return item;
     }
 
-    /**
-     *
-     */
-    public void save(ItemStack item, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
+    @Override
+    public void serialize(@NonNull ItemStack item, @NonNull ConfigurationSection section, Object... objects) {
 
-        if (item == null) {
-            Logger.info("Impossible de sauvegarder l'item car il est null ! Le path: " + path, LogType.ERROR);
-            return;
-        }
-
-        configuration.set(path + "material", item.getType().name());
-        if (item.getAmount() != 1) configuration.set(path + "amount", item.getAmount());
+        section.set("material", item.getType().name());
+        if (item.getAmount() != 1) section.set("amount", item.getAmount());
         if (MinecraftVersion.getCurrentVersion().isBefore(MinecraftVersion.parse("1.13"))) {
-            if (item.getData().getData() != 0) configuration.set(path + "data", item.getData().getData());
-            if (item.getDurability() != 0) configuration.set(path + "durability", item.getDurability());
+            if (item.getData().getData() != 0) section.set("data", item.getData().getData());
+            if (item.getDurability() != 0) section.set("durability", item.getDurability());
         }
 
         ItemMeta meta = item.getItemMeta();
@@ -182,11 +173,11 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
         if (meta != null) {
 
             if (meta.hasDisplayName()) {
-                configuration.set(path + "name", this.colorReverse(meta.getDisplayName()));
+                section.set("name", this.colorReverse(meta.getDisplayName()));
             }
 
             if (meta.hasLore()) {
-                configuration.set(path + "lore", this.colorReverse(Objects.requireNonNull(meta.getLore())));
+                section.set("lore", this.colorReverse(Objects.requireNonNull(meta.getLore())));
             }
 
             if (!meta.getItemFlags().isEmpty()) {
@@ -194,33 +185,26 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
                 for (ItemFlag flag : meta.getItemFlags()) {
                     flags.add(flag.name());
                 }
-                configuration.set(path + "flags", flags);
+                section.set("flags", flags);
             }
 
             if (meta.hasEnchants()) {
                 List<String> enchantList = new ArrayList<>();
                 meta.getEnchants().forEach((enchant, level) -> enchantList.add(enchant.getName() + "," + level));
-                configuration.set(path + "enchants", enchantList);
+                section.set("enchants", enchantList);
             }
 
             if (meta instanceof EnchantmentStorageMeta && ((EnchantmentStorageMeta) meta).hasStoredEnchants()) {
                 List<String> enchantList = new ArrayList<>();
                 ((EnchantmentStorageMeta) meta).getStoredEnchants().forEach((enchant, level) -> enchantList.add(enchant.getName() + "," + level));
 
-                configuration.set(path + "enchants", enchantList);
+                section.set("enchants", enchantList);
             }
 
             if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) && meta.hasCustomModelData()) {
-                configuration.set(path + "model-id", meta.getCustomModelData());
+                section.set("model-id", meta.getCustomModelData());
             }
         }
-
-        try {
-            configuration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
 }

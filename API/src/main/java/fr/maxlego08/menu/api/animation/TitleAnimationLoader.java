@@ -4,7 +4,6 @@ import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,9 +37,5 @@ public abstract class TitleAnimationLoader implements Loader<TitleAnimation> {
             this.timeUnit = TimeUnit.SECONDS;
         }
         return new TitleAnimationSettings(this.titles, this.cycles, this.initialDelay, this.interval, this.timeUnit, this.showItemsAfterAnimation, this.itemUpdateInterval);
-    }
-
-    @Override
-    public void save(TitleAnimation object, @NotNull YamlConfiguration configuration, @NotNull String path, File file, Object... objects) {
     }
 }

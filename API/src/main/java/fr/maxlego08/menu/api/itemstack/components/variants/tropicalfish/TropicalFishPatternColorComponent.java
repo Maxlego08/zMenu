@@ -21,4 +21,9 @@ public final class TropicalFishPatternColorComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.patternColor, resolvedPatternColor -> itemStack.setData(DataComponentTypes.TROPICAL_FISH_PATTERN_COLOR, resolvedPatternColor));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.patternColor.serialize();
+    }
 }

@@ -17,7 +17,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlockAttacksComponent extends ItemComponent {
     private final ResolvableFloat blockDelaySeconds;
@@ -55,5 +57,18 @@ public class BlockAttacksComponent extends ItemComponent {
         Resolvable.applyResolvable(context, this.damageReductions, builder::damageReductions);
 
         itemStack.setData(DataComponentTypes.BLOCKS_ATTACKS, builder.build());
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.blockDelaySeconds != null) map.put("block-delay-seconds", this.blockDelaySeconds.serialize());
+        if (this.disableCooldownScale != null) map.put("disable-cooldown-scale", this.disableCooldownScale.serialize());
+        if (this.blockSound != null) map.put("block-sound", this.blockSound.serialize());
+        if (this.disableSound != null) map.put("disable-sound", this.disableSound.serialize());
+        if (this.bypassedBy != null) map.put("bypassed-by", this.bypassedBy.serialize());
+        if (this.itemDamageFunction != null) map.put("item-damage", this.itemDamageFunction.serialize());
+        if (this.damageReductions != null && !this.damageReductions.isEmpty()) map.put("damage-reductions", Resolvable.serializeList(this.damageReductions));
+        return map;
     }
 }

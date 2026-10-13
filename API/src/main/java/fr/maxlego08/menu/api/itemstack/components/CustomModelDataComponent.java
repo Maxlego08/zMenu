@@ -7,58 +7,66 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomModelDataComponent extends ItemComponent {
-    private final @NotNull List<@NotNull ResolvableColor> colors;
-    private final @NotNull List<@NotNull ResolvableBoolean> flags;
-    private final @NotNull List<@NotNull ResolvableFloat> floats;
-    private final @NotNull List<@NotNull ResolvableString> strings;
+    private final List<ResolvableFloat> floats;
+    private final List<ResolvableBoolean> booleans;
+    private final List<ResolvableString> strings;
+    private final List<ResolvableColor> colorList;
 
-    public CustomModelDataComponent(@NotNull List<@NotNull ResolvableColor> colors, @NotNull List<@NotNull ResolvableBoolean> flags, @NotNull List<@NotNull ResolvableFloat> floats, @NotNull List<@NotNull ResolvableString> strings) {
-        this.colors = colors;
-        this.flags = flags;
+    public CustomModelDataComponent(List<ResolvableFloat> floats, List<ResolvableBoolean> booleans, List<ResolvableString> strings, List<ResolvableColor> colorList) {
         this.floats = floats;
+        this.booleans = booleans;
         this.strings = strings;
+        this.colorList = colorList;
     }
 
-    public @NotNull List<@NotNull ResolvableColor> getColors() {
-        return this.colors;
-    }
-
-    public @NotNull List<@NotNull ResolvableBoolean> getFlags() {
-        return this.flags;
-    }
-
-    public @NotNull List<@NotNull ResolvableFloat> getFloats() {
+    public List<ResolvableFloat> getFloats() {
         return this.floats;
     }
 
-    public @NotNull List<@NotNull ResolvableString> getStrings() {
+    public List<ResolvableBoolean> getFlags() {
+        return this.booleans;
+    }
+
+    public List<ResolvableString> getStrings() {
         return this.strings;
+    }
+
+    public List<ResolvableColor> getColors() {
+        return this.colorList;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            org.bukkit.inventory.meta.components.CustomModelDataComponent customModelDataComponent = itemMeta.getCustomModelDataComponent();
 
-            Resolvable.applyResolvable(context, this.colors, customModelDataComponent::setColors);
+        CustomModelData.Builder builder = CustomModelData.customModelData();
 
-            Resolvable.applyResolvable(context, this.flags, customModelDataComponent::setFlags);
+        Resolvable.applyResolvable(context, this.floats, builder::addFloats);
+        Resolvable.applyResolvable(context, this.booleans, builder::addFlags);
+        Resolvable.applyResolvable(context, this.strings, builder::addStrings);
+        Resolvable.applyResolvable(context, this.colorList, builder::addColors);
 
-            Resolvable.applyResolvable(context, this.floats, customModelDataComponent::setFloats);
+        itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, builder.build());
+    }
 
-            Resolvable.applyResolvable(context, this.strings, customModelDataComponent::setStrings);
-
-            itemStack.setItemMeta(itemMeta);
-        }
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (!this.floats.isEmpty()) map.put("floats", Resolvable.serializeList(this.floats));
+        if (!this.booleans.isEmpty()) map.put("flags", Resolvable.serializeList(this.booleans));
+        if (!this.strings.isEmpty()) map.put("strings", Resolvable.serializeList(this.strings));
+        if (!this.colorList.isEmpty()) map.put("colors", Resolvable.serializeList(this.colorList));
+        return map;
     }
 }

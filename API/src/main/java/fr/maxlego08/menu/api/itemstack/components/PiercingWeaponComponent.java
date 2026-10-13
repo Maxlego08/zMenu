@@ -11,6 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class PiercingWeaponComponent extends ItemComponent {
     private final @NotNull ResolvableBoolean dealsKnockback;
@@ -39,6 +42,16 @@ public class PiercingWeaponComponent extends ItemComponent {
 
     public @Nullable ResolvableNamespacedKey getHitSound() {
         return this.hitSound;
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (!Boolean.TRUE.equals(this.dealsKnockback.serialize())) map.put("deals-knockback", this.dealsKnockback.serialize());
+        if (!Boolean.FALSE.equals(this.dismounts.serialize())) map.put("dismounts", this.dismounts.serialize());
+        if (this.sound != null) map.put("sound", this.sound.serialize());
+        if (this.hitSound != null) map.put("hit-sound", this.hitSound.serialize());
+        return map;
     }
 
     @Override

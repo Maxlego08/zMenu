@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class PlayerCommandAction extends ActionHelper {
 
@@ -32,5 +33,12 @@ public class PlayerCommandAction extends ActionHelper {
                }
            });
         });
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "player-command");
+        map.put("commands", this.commands);
+        if (this.inChat) map.put("command-in-chat", true);
     }
 }

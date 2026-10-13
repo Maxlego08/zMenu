@@ -93,11 +93,6 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
         }
     }
 
-    @Override
-    public void save(AbstractBedrockInventory<?,?,?> object, YamlConfiguration configuration, String path, File file, Object... objects) {
-        //TODO: Implement save logic if needed
-    }
-
     protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
         return this.menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }

@@ -26,4 +26,9 @@ public class BaseColorComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.baseColorResolvable, color -> itemStack.setData(DataComponentTypes.BASE_COLOR, color));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.baseColorResolvable.serialize();
+    }
 }

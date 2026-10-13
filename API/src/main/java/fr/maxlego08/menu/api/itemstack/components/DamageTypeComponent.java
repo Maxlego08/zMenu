@@ -11,6 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class DamageTypeComponent extends ItemComponent {
 
@@ -30,6 +33,13 @@ public class DamageTypeComponent extends ItemComponent {
         if (resolvedDamageType != null) {
             itemStack.setData(DataComponentTypes.DAMAGE_TYPE, resolvedDamageType);
         }
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("types", this.damageType.serialize());
+        return map;
     }
 
 }

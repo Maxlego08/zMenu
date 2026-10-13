@@ -10,8 +10,6 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -45,21 +43,6 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
         boolean mathExpression = configuration.getBoolean(path + "math", false);
 
         return new ZActionPlayerData(this.storageManager, key, type, object, seconds, mathExpression);
-    }
-
-    @Override
-    public void save(ActionPlayerData object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-        configuration.set(path + "type", "SET");
-        configuration.set(path + "key", object.getKey());
-        configuration.set(path + "value", object.getValue());
-        configuration.set(path + "seconds", object.getSeconds());
-
-        try {
-            configuration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

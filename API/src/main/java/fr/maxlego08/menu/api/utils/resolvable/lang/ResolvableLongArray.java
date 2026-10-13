@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.StringJoiner;
+
 public final class ResolvableLongArray extends ParsableResolvable<long[]> {
 
     private ResolvableLongArray(@Nullable long[] resolvedValue, @Nullable String expression) {
@@ -36,6 +38,18 @@ public final class ResolvableLongArray extends ParsableResolvable<long[]> {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * Writes the longs comma separated ({@code 1,2,3}), the form {@link #auto(String)} reads.
+     */
+    @Override
+    protected @NotNull Object serializeValue(long @NotNull [] value) {
+        StringJoiner joiner = new StringJoiner(",");
+        for (long l : value) {
+            joiner.add(String.valueOf(l));
+        }
+        return joiner.toString();
     }
 
     private static long @Nullable [] parseArray(@NotNull String value) {

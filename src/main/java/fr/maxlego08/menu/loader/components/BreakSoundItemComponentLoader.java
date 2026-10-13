@@ -7,8 +7,12 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.BreakSoundComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import net.kyori.adventure.key.Key;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,5 +32,13 @@ public final class BreakSoundItemComponentLoader extends ItemComponentLoader {
         ResolvableNamespacedKey resolvableNamespacedKey = ResolvableNamespacedKey.autoOrNull(configuration.getString(path));
         if (resolvableNamespacedKey == null) return null;
         return new BreakSoundComponent(resolvableNamespacedKey);
+    }
+
+    @Override
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        Key breakSound = itemStack.getData(DataComponentTypes.BREAK_SOUND);
+        if (breakSound == null) return null;
+        NamespacedKey key = NamespacedKey.fromString(breakSound.asString());
+        return key == null ? null : new BreakSoundComponent(ResolvableNamespacedKey.of(key));
     }
 }

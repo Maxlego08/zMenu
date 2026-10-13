@@ -3,9 +3,10 @@ package fr.maxlego08.menu.api.itemstack.components;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,12 +24,11 @@ public class ItemNameComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
+        this.applyResolvable(context, itemName -> itemStack.setData(DataComponentTypes.ITEM_NAME, LegacyComponentSerializer.legacySection().deserialize(itemName)), this.itemName);
+    }
 
-            this.applyResolvable(context, itemMeta::setItemName, this.itemName);
-
-            itemStack.setItemMeta(itemMeta);
-        }
+    @Override
+    public @Nullable Object serialize() {
+        return this.itemName.serialize();
     }
 }

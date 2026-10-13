@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class InventoryAction extends ActionHelper {
@@ -34,6 +35,17 @@ public class InventoryAction extends ActionHelper {
             this.intPage = this.getInt(page);
         }
         this.inventoryArgument = new InventoryArgument(commandManager, arguments);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "inventory");
+        map.put("inventory", this.inventory);
+        if (this.plugin != null) map.put("plugin", this.plugin);
+        if (this.stringPage != null) map.put("page", this.stringPage);
+        else if (this.intPage != 1) map.put("page", this.intPage);
+        List<String> arguments = this.inventoryArgument.getArguments();
+        if (arguments != null && !arguments.isEmpty()) map.put("arguments", arguments);
     }
 
     @Override
