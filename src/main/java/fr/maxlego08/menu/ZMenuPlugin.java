@@ -52,6 +52,7 @@ import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
+import fr.maxlego08.menu.inventory.InventoryHotReload;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
@@ -90,6 +91,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 import java.util.*;
 
 /**
@@ -138,6 +140,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private FontImage fontImage = new EmptyFont();
     private MetaUpdater metaUpdater;
     private PacketManager packetManager;
+    private InventoryHotReload inventoryHotReload;
 
     public ZMenuPlugin() {
         this(false);
@@ -313,6 +316,13 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.dataManager.loadPlayers();
         this.itemManager.loadAll();
 
+        this.inventoryHotReload = new InventoryHotReload(this);
+        if (!this.isMockBukkitServer) {
+            this.inventoryHotReload.update();
+            // Applies a change of hot-reload.enable made with the configuration dialog
+            this.scheduler.runTimer(this.inventoryHotReload::update, 2, 2, TimeUnit.SECONDS);
+        }
+
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
         localPlaceholder.register("argument_", (offlinePlayer, value) -> {
             Optional<String> optional = this.commandManager.getPlayerArgument(offlinePlayer.getUniqueId(), value);
@@ -460,6 +470,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         }
 
         this.preDisable();
+
+        if (this.inventoryHotReload != null) this.inventoryHotReload.stop();
 
         if (this.vinventoryManager != null) this.vinventoryManager.close();
         this.inventoriesPlayer.restoreAllInventories();
@@ -644,6 +656,15 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
      */
     public WebsiteManager getWebsiteManager() {
         return this.websiteManager;
+    }
+
+    /**
+     * Returns the class that watches the inventories folder to reload modified inventories
+     *
+     * @return the inventoryHotReload
+     */
+    public InventoryHotReload getInventoryHotReload() {
+        return this.inventoryHotReload;
     }
 
     /**

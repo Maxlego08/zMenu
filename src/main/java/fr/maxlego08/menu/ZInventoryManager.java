@@ -71,6 +71,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
@@ -205,6 +206,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 Logger.info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError(), LogType.WARNING);
             }
 
+            // Only one pending load per file, the file may be loaded several times (hot reload)
+            this.removeInventoryLoadRequirement(file);
             this.inventoryLoadRequirements.add(optional.get());
 
             return null;
@@ -355,7 +358,35 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
         this.unregisterShortName(inventory);
-        this.inventoryNames.remove((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
+        // Another inventory with the same name may still be loaded from another folder, it keeps the name
+        Optional<Inventory> sameName = inventories.stream().filter(other -> other.getFileName().equalsIgnoreCase(inventory.getFileName())).reduce((first, second) -> second);
+        if (sameName.isPresent()) {
+            List<Inventory> matches = this.inventoryByName.get(inventory.getFileName().toLowerCase(Locale.ROOT));
+            if (matches == null || matches.stream().noneMatch(match -> match.getPlugin().equals(inventory.getPlugin()))) {
+                this.registerShortName(sameName.get());
+            }
+        } else {
+            this.inventoryNames.remove((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
+        }
+    }
+
+    /**
+     * Remove the pending load of this file, if it is waiting for a load requirement.
+     *
+     * @param file the inventory file
+     */
+    public void removeInventoryLoadRequirement(File file) {
+        File absoluteFile = file.getAbsoluteFile();
+        this.removeInventoryLoadRequirements(requirementFile -> requirementFile.getAbsoluteFile().equals(absoluteFile));
+    }
+
+    /**
+     * Remove the pending loads whose file matches the predicate.
+     *
+     * @param predicate the file predicate
+     */
+    public void removeInventoryLoadRequirements(Predicate<File> predicate) {
+        this.inventoryLoadRequirements.removeIf(requirement -> predicate.test(requirement.getFile()));
     }
 
     @Override

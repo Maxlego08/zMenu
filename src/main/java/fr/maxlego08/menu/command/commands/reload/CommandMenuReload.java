@@ -41,6 +41,7 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
         Configuration config = Configuration.getInstance();
         config.save(this.plugin.getConfig(), this.plugin.getConfigFile());
         config.load(this.plugin.getConfig());
+        if (this.plugin.getInventoryHotReload() != null) this.plugin.getInventoryHotReload().update();
 
         this.plugin.getVInventoryManager().close();
         PatternManager patternManager = this.plugin.getPatternManager();
