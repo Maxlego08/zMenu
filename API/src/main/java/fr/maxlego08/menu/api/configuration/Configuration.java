@@ -157,6 +157,25 @@ public class Configuration {
     )
     public static List<String> specifyPathMenus = new ArrayList<>();
 
+    // Hot reload, automatically reload an inventory when its file is modified, added or deleted in the inventories folder.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable inventory hot reload"
+    )
+    public static boolean enableHotReload = false;
+
+    // Time in milliseconds to wait after the last change of a file before reloading it.
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Hot reload delay milliseconds",
+            startRange = 0,
+            endRange = 5000,
+            stepRange = 50
+    )
+    public static long hotReloadDelayMilliseconds = 500;
+
     // Generate default configuration
     @ConfigOption(
             type = DialogInputType.BOOLEAN,
@@ -501,6 +520,8 @@ public class Configuration {
 
         specifyPathMenus = fileConfiguration.getStringList(ConfigPath.SPECIFY_PATH_MENUS.getPath());
         generateDefaultFile = fileConfiguration.getBoolean(ConfigPath.GENERATE_DEFAULT_FILE.getPath());
+        enableHotReload = fileConfiguration.getBoolean(ConfigPath.ENABLE_HOT_RELOAD.getPath(), false);
+        hotReloadDelayMilliseconds = fileConfiguration.getLong(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), 500L);
         disableDoubleClickEvent = fileConfiguration.getBoolean(ConfigPath.DISABLE_DOUBLE_CLICK_EVENT.getPath());
 
         enableAntiDupe = fileConfiguration.getBoolean(ConfigPath.ENABLE_ANTI_DUPE.getPath());
@@ -598,6 +619,8 @@ public class Configuration {
 
         fileConfiguration.set(ConfigPath.SPECIFY_PATH_MENUS.getPath(), specifyPathMenus);
         fileConfiguration.set(ConfigPath.GENERATE_DEFAULT_FILE.getPath(), generateDefaultFile);
+        fileConfiguration.set(ConfigPath.ENABLE_HOT_RELOAD.getPath(), enableHotReload);
+        fileConfiguration.set(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), hotReloadDelayMilliseconds);
         fileConfiguration.set(ConfigPath.DISABLE_DOUBLE_CLICK_EVENT.getPath(), disableDoubleClickEvent);
 
         fileConfiguration.set(ConfigPath.ENABLE_ANTI_DUPE.getPath(), enableAntiDupe);
@@ -668,6 +691,8 @@ public class Configuration {
 
         SPECIFY_PATH_MENUS("specify-path-menus"),
         GENERATE_DEFAULT_FILE("generate-default-file"),
+        ENABLE_HOT_RELOAD("hot-reload.enable"),
+        HOT_RELOAD_DELAY_MILLISECONDS("hot-reload.delay-milliseconds"),
         DISABLE_DOUBLE_CLICK_EVENT("disable-double-click-event"),
 
         ENABLE_ANTI_DUPE("enable-anti-dupe"),

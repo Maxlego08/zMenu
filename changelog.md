@@ -64,6 +64,31 @@
 
 ## Improvements
 
+- **Inventory hot reload**: new `hot-reload` section in `config.yml`, disabled by default. When enabled,
+  zMenu watches the `inventories/` folder and its subfolders and applies changes without any command: a
+  modified file reloads its inventory, a new file loads it and a deleted file (or folder) unloads it.
+    - Changes are debounced with `hot-reload.delay-milliseconds` (500 by default), so an editor saving a
+      file in several steps only triggers one reload.
+    - A file that cannot be loaded (YAML syntax error, unknown button type, invalid size...) is not applied:
+      the previous version stays loaded and the error is logged until the file is fixed.
+    - Players viewing a reloaded inventory see the new version open over it, on the same page and with the
+      same previous inventories (a back button opens the new version too). An unloaded inventory is closed.
+    - Toggling the option takes effect on `/zm reload` or `/zm reload config`, or within two seconds when
+      changed from the in-game configuration dialog. Files listed in `specify-path-menus` are not watched.
+    - If the `inventories/` folder is deleted and recreated (backup restore, git checkout...), it is watched
+      again automatically. On Windows the whole tree is watched with a single handle, so subfolders can still
+      be renamed or deleted while the server runs.
+    - The folder is also scanned every two seconds, so changes are detected even where the file system sends
+      no event (Docker or WSL mounts, network shares, files uploaded over SFTP).
+    - A file is reloaded when its content or modification date changes; saving it again without any change
+      still reloads it, but the same version is never reloaded twice.
+    - Every detection, reload, unload and error is logged in the console with a `[HotReload]` prefix
+      (folder events and skipped files are also logged when `enable-debug` is on).
+- **Fixed**: unloading an inventory no longer removes its name from `/zm open` and `/zm reload inventory`
+  tab completion when another inventory with the same file name is still loaded from another folder.
+- **Fixed**: an inventory waiting for a load requirement no longer queues a second load each time it is
+  loaded again.
+
 - **zMenu now loads on Spigot, and explains why it cannot run there**: zMenu is a Paper plugin and only
   declared itself through `paper-plugin.yml`, a file Spigot does not read. Spigot therefore refused the jar
   outright with "does not contain plugin.yml", which reads like a corrupted download rather than a platform
@@ -76,6 +101,14 @@
       loader included.
     - No zMenu feature works in this mode: no menu, no command, no API. It exists so the reason is visible
       instead of the plugin appearing broken.
+
+## Fixes
+
+- **Menus closed by cancelled hits**: since the ghost GUI protection (ZM-01), a menu was closed whenever its
+  viewer was hit or hit someone, even when the hit was cancelled by another plugin. In a WorldGuard region
+  with PvP disabled, any player could close another player's menu just by punching them. The damage, move
+  and teleport handlers now run at `MONITOR` priority and ignore cancelled events: only a hit that actually
+  happens closes the menu, and a teleport or move cancelled by another plugin no longer does either.
 
 # 1.1.1.9
 
