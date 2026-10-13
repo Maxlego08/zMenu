@@ -23,7 +23,7 @@ public class DiscordComponentV2Loader extends ActionLoader {
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         String webhookUrl = accessor.getString("webhook");
-        String avatarUrl = accessor.getString("avatar_url", null);
+        String avatarUrl = accessor.getString("avatar-url", accessor.getString("avatar_url", null));
         String username = accessor.getString("username", null);
         List<?> json = accessor.getList("component");
         if (webhookUrl == null || webhookUrl.isBlank()) {

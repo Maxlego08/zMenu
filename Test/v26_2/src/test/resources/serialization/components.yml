@@ -1,0 +1,754 @@
+# One item per item component, loaded, serialized and loaded again by ItemComponentSerializationTest.
+# A registered component without an item here fails the test: add one when adding a component.
+# Items suffixed -dynamic put a placeholder in a numeric field, to prove expressions round-trip.
+items:
+
+  # --- Plain values ---
+
+  max-stack-size:
+    material: DIAMOND
+    components:
+      max-stack-size: 16
+  max-damage:
+    material: DIAMOND_SWORD
+    components:
+      max-damage: 500
+  damage:
+    material: DIAMOND_SWORD
+    components:
+      damage: 25
+  repair-cost:
+    material: DIAMOND_SWORD
+    components:
+      repair-cost: 7
+  map-id:
+    material: FILLED_MAP
+    components:
+      map-id: 42
+  ominous-bottle-amplifier:
+    material: OMINOUS_BOTTLE
+    components:
+      ominous-bottle-amplifier: 3
+  potion-duration-scale:
+    material: POTION
+    components:
+      potion-duration-scale: 0.5
+  minimum-attack-charge:
+    material: IRON_SPEAR
+    components:
+      minimum-attack-charge: 0.5
+  enchantment-glint-override:
+    material: DIAMOND
+    components:
+      enchantment-glint-override: true
+  glider:
+    material: PAPER
+    components:
+      glider: false
+  unbreakable:
+    material: DIAMOND_PICKAXE
+    components:
+      unbreakable: false
+  intangible-projectile:
+    material: ARROW
+    components:
+      intangible-projectile: true
+  rarity:
+    material: STICK
+    components:
+      rarity: EPIC
+  item-name:
+    material: STICK
+    components:
+      item-name: "<gold>Named item"
+  custom-name:
+    material: STICK
+    components:
+      custom-name: "<red>Custom name"
+  item-model:
+    material: STICK
+    components:
+      item-model: "minecraft:diamond"
+  tooltip-style:
+    material: STICK
+    components:
+      tooltip-style: "zmenu:custom_tooltip"
+  jukebox-playable:
+    material: MUSIC_DISC_CAT
+    components:
+      jukebox-playable: "minecraft:pigstep"
+  break-sound:
+    material: DIAMOND_SWORD
+    components:
+      break-sound: "minecraft:block.glass.break"
+  note-block-sound:
+    material: PLAYER_HEAD
+    components:
+      note-block-sound: "minecraft:entity.zombie.ambient"
+  provides-banner-patterns:
+    material: GLOBE_BANNER_PATTERN
+    components:
+      provides-banner-patterns: "minecraft:pattern_item/globe"
+  provides-trim-material:
+    material: EMERALD
+    components:
+      provides-trim-material: "minecraft:gold"
+  dye:
+    material: WHITE_DYE
+    components:
+      dye: PURPLE
+  base-color:
+    material: SHIELD
+    components:
+      base-color: RED
+  dyed-color:
+    material: LEATHER_CHESTPLATE
+    components:
+      dyed-color: "#FF8000"
+  dyed-color-dye-name:
+    material: LEATHER_HELMET
+    components:
+      dyed-color: "minecraft:light_blue"
+  map-color:
+    material: FILLED_MAP
+    components:
+      map-color: "51,102,204"
+  lore:
+    material: STICK
+    components:
+      lore:
+        - "<gray>First line"
+        - "<gray>Second line"
+  recipes:
+    material: KNOWLEDGE_BOOK
+    components:
+      recipes:
+        - "minecraft:diamond_sword"
+        - "minecraft:crafting_table"
+  pot-decorations:
+    material: DECORATED_POT
+    components:
+      pot-decorations:
+        - "minecraft:angler_pottery_sherd"
+        - "minecraft:heart_pottery_sherd"
+        - "minecraft:brick"
+        - "minecraft:skull_pottery_sherd"
+  profile-simple:
+    material: PLAYER_HEAD
+    components:
+      profile: "Notch"
+  instrument-simple:
+    material: GOAT_HORN
+    components:
+      instrument: "minecraft:ponder_goat_horn"
+
+  # --- Sections ---
+
+  food:
+    material: APPLE
+    components:
+      food:
+        nutrition: 4
+        saturation: 2.5
+        can-always-eat: true
+  enchantable:
+    material: IRON_SWORD
+    components:
+      enchantable:
+        value: 15
+  enchantments:
+    material: DIAMOND_SWORD
+    components:
+      enchantments:
+        "minecraft:sharpness": 5
+        "minecraft:looting": 3
+  stored-enchantments:
+    material: ENCHANTED_BOOK
+    components:
+      stored-enchantments:
+        "minecraft:mending": 1
+        "minecraft:unbreaking": 3
+  attribute-modifiers:
+    material: DIAMOND_SWORD
+    components:
+      attribute-modifiers:
+        attribute-merge-strategy: KEEP_HIGHEST
+        modifiers:
+          - type: "minecraft:attack_damage"
+            operation: ADD_NUMBER
+            amount: 8.0
+            slot: mainhand
+            name: "zmenu:bonus_damage"
+          - type: "minecraft:movement_speed"
+            operation: ADD_SCALAR
+            amount: 0.1
+            slot: any
+  banner-patterns:
+    material: WHITE_BANNER
+    components:
+      banner-patterns:
+        - color: RED
+          pattern: "minecraft:stripe_top"
+        - color: BLUE
+          pattern: "minecraft:creeper"
+  block-state:
+    material: BARREL
+    components:
+      block-state:
+        facing: up
+        open: true
+  custom-data:
+    material: PAPER
+    components:
+      custom-data:
+        "zmenu:shop_id": "diamond_shop"
+        "zmenu:price": 150
+        "zmenu:ratio": 2.5
+        "zmenu:enabled": true
+        "zmenu:stock": "64@long"
+  custom-model-data:
+    material: STICK
+    components:
+      custom-model-data:
+        floats:
+          - 1.5
+          - 2.0
+        flags:
+          - true
+          - false
+        strings:
+          - "zmenu_custom"
+        colors:
+          - "#FF0000"
+          - "0,255,0"
+  container-loot:
+    material: CHEST
+    components:
+      container-loot:
+        loot-table: SIMPLE_DUNGEON
+        seed: 12345
+  damage-resistant:
+    material: NETHERITE_INGOT
+    components:
+      damage-resistant:
+        types: "minecraft:is_fire"
+  damage-type:
+    material: IRON_SPEAR
+    components:
+      damage-type:
+        types: "minecraft:magic"
+  equippable:
+    material: DIAMOND_HELMET
+    components:
+      equippable:
+        slot: HEAD
+        equip-sound: "minecraft:item.armor.equip_diamond"
+        asset-id: "minecraft:diamond"
+        dispensable: false
+        swappable: false
+        damage-on-hurt: false
+        equip-on-interact: true
+        camera-overlay: "minecraft:misc/pumpkinblur"
+        can-be-sheared: true
+        shearing-sound: "minecraft:item.shears.snip"
+        allowed-entities:
+          - "minecraft:player"
+          - "minecraft:zombie"
+  firework-explosion:
+    material: FIREWORK_STAR
+    components:
+      firework-explosion:
+        shape: STAR
+        colors: "#FF0000"
+        fade-colors: "#0000FF"
+        has-trail: true
+        has-twinkle: true
+  fireworks:
+    material: FIREWORK_ROCKET
+    components:
+      fireworks:
+        flight-duration: 3
+        explosions:
+          - shape: BALL_LARGE
+            colors: "#00FF00"
+            fade-colors: "#FFFF00"
+            has-trail: false
+            has-twinkle: true
+          - shape: CREEPER
+            colors: "255,0,255"
+  instrument:
+    material: GOAT_HORN
+    components:
+      instrument:
+        description: "<gold>Battle horn"
+        use-duration: 5.0
+        range: 64.0
+        sound-event: "minecraft:item.goat_horn.sound.1"
+  lodestone-tracker:
+    material: COMPASS
+    components:
+      lodestone-tracker:
+        tracked: false
+        target:
+          pos:
+            - 10
+            - 64
+            - -20
+          dimension: world
+  map-decorations:
+    material: FILLED_MAP
+    components:
+      map-decorations:
+        marker:
+          type: "minecraft:red_x"
+          x: 10
+          z: -5
+          rotation: 90.0
+  potion-contents:
+    material: POTION
+    components:
+      potion-contents:
+        potion: "minecraft:strong_swiftness"
+        custom-color: "#3366CC"
+        custom-name: "zmenu_potion"
+        custom-effects:
+          - id: "minecraft:speed"
+            duration: 600
+            amplified: true
+            ambient: true
+            show-particles: false
+            show-icon: false
+  suspicious-stew-effects:
+    material: SUSPICIOUS_STEW
+    components:
+      suspicious-stew-effects:
+        - id: "minecraft:night_vision"
+          duration: 200
+          amplified: true
+          ambient: true
+          show-particles: false
+          show-icon: false
+  profile:
+    material: PLAYER_HEAD
+    components:
+      profile:
+        name: "Notch"
+        id: "069a79f4-44e9-4726-a5be-fca90e38aaf5"
+        properties:
+          - name: "textures"
+            value: "eyJ0ZXh0dXJlcyI6e319"
+            signature: "c2lnbmF0dXJl"
+        texture: "minecraft:entity/player/slim/alex"
+        cape: "minecraft:capes/migrator"
+        elytra: "minecraft:elytra/migrator"
+        model: SLIM
+  tool:
+    material: DIAMOND_PICKAXE
+    components:
+      tool:
+        default-mining-speed: 2.0
+        damage-per-block: 2
+        can-destroy-blocks-in-creative: false
+        # Checked in order: the first matching rule wins
+        rules:
+          - blocks: "#minecraft:mineable/pickaxe"
+            speed: 8.0
+            correct-for-drops: true
+          - blocks: "minecraft:obsidian"
+            speed: 2.5
+          - blocks:
+              - "minecraft:dirt"
+              - "minecraft:gravel"
+            correct-for-drops: false
+          - blocks: "minecraft:stone"
+            speed: "%zmenu_player_value_mining_speed%"
+  trim:
+    material: DIAMOND_CHESTPLATE
+    components:
+      trim:
+        material: "minecraft:gold"
+        pattern: "minecraft:coast"
+  use-cooldown:
+    material: ENDER_PEARL
+    components:
+      use-cooldown:
+        seconds: 2.5
+        cooldown-group: "zmenu:pearls"
+  use-effects:
+    material: BOW
+    components:
+      use-effects:
+        can-sprint: true
+        speed-multiplier: 0.8
+        interact-vibrations: false
+  weapon:
+    material: DIAMOND_SWORD
+    components:
+      weapon:
+        item-damage-per-attack: 2
+        disable-blocking-for-seconds: 5.0
+  piercing-weapon:
+    material: IRON_SPEAR
+    components:
+      piercing-weapon:
+        deals-knockback: false
+        dismounts: true
+        sound: "minecraft:item.trident.throw"
+        hit-sound: "minecraft:item.trident.hit"
+  swing-animation:
+    material: IRON_SPEAR
+    components:
+      swing-animation:
+        type: STAB
+        duration: 10
+  kinetic-weapon:
+    material: IRON_SPEAR
+    components:
+      kinetic-weapon:
+        delay-ticks: 10
+        contact-cooldown-ticks: 5
+        dismount-conditions:
+          max-duration-ticks: 40
+          min-speed: 0.5
+          min-relative-speed: 0.25
+        knockback-conditions:
+          max-duration-ticks: 60
+          min-speed: 0.75
+          min-relative-speed: 0.5
+        damage-conditions:
+          max-duration-ticks: 80
+          min-speed: 1.0
+          min-relative-speed: 0.75
+        forward-movement: 0.4
+        damage-multiplier: 1.5
+        sound: "minecraft:item.trident.throw"
+        hit-sound: "minecraft:item.trident.hit"
+  attack-range:
+    material: IRON_SPEAR
+    components:
+      attack-range:
+        min-reach: 1.5
+        max-reach: 4.5
+        min-creative-reach: 0.5
+        max-creative-reach: 6.0
+        hitbox-margin: 0.5
+        mob-factor: 1.5
+  blocks-attacks:
+    material: SHIELD
+    components:
+      blocks-attacks:
+        block-delay-seconds: 0.5
+        disable-cooldown-scale: 2.0
+        block-sound: "minecraft:item.shield.block"
+        disable-sound: "minecraft:item.shield.break"
+        bypassed-by: "minecraft:bypasses_shield"
+        item-damage:
+          threshold: 2.0
+          base: 1.0
+          factor: 0.5
+        damage-reductions:
+          - type: "minecraft:arrow"
+            horizontal-blocking-angle: 60.0
+            base: 1.0
+            factor: 0.5
+          - type:
+              - "minecraft:magic"
+              - "minecraft:trident"
+            horizontal-blocking-angle: 90.0
+            base: 0.5
+            factor: 0.25
+  can-break:
+    material: DIAMOND_PICKAXE
+    components:
+      can-break:
+        blocks:
+          - "minecraft:stone"
+          - "minecraft:dirt"
+  can-place-on:
+    material: STONE
+    components:
+      can-place-on:
+        blocks:
+          - "minecraft:stone"
+          - "minecraft:dirt"
+  repairable:
+    material: DIAMOND_SWORD
+    components:
+      repairable:
+        items:
+          - "minecraft:diamond"
+          - "minecraft:iron_ingot"
+  tooltip-display:
+    material: DIAMOND_SWORD
+    components:
+      tooltip-display:
+        hide-tooltip: true
+        hidden-components:
+          - "minecraft:enchantments"
+          - "minecraft:attribute_modifiers"
+  consumable:
+    material: APPLE
+    components:
+      consumable:
+        consume-seconds: 3.2
+        animation: DRINK
+        consume-sound: "minecraft:entity.generic.drink"
+        has-consume-particles: false
+        on-consume-effects:
+          - type: apply_effects
+            probability: 0.5
+            potion-effects:
+              - id: "minecraft:speed"
+                duration: 200
+                amplified: true
+                ambient: true
+                show-particles: false
+                show-icon: false
+          - type: remove_effects
+            effects:
+              - "minecraft:poison"
+          - type: clear_all_effects
+          - type: teleport_randomly
+            diameter: 8.0
+          - type: play_sound
+            sound: "minecraft:entity.player.levelup"
+  death-protection:
+    material: TOTEM_OF_UNDYING
+    components:
+      death-protection:
+        death-effects:
+          - type: clear_all_effects
+          - type: apply_effects
+            probability: 1.0
+            potion-effects:
+              - id: "minecraft:regeneration"
+                duration: 900
+                amplified: true
+  writable-book-content:
+    material: WRITABLE_BOOK
+    components:
+      writable-book-content:
+        pages:
+          - title: "Draft"
+            raw: "First page"
+          - raw: "Second page"
+  written-book-content:
+    material: WRITTEN_BOOK
+    components:
+      written-book-content:
+        title: "zMenu guide"
+        author: "Maxlego08"
+        generation: COPY_OF_ORIGINAL
+        pages:
+          - raw: "Page one"
+          - raw: "Page two"
+
+  # --- Nested items ---
+
+  bundle-contents:
+    material: BUNDLE
+    components:
+      bundle-contents:
+        - material: DIAMOND
+          name: "<aqua>Gem"
+        - material: EMERALD
+          name: "<green>Emerald"
+  container:
+    material: CHEST
+    components:
+      container:
+        - material: DIAMOND
+          name: "<aqua>Gem"
+          slot: 4
+        - material: GOLD_INGOT
+          name: "<yellow>Gold"
+          slot: 13
+  charged-projectiles:
+    material: CROSSBOW
+    components:
+      charged-projectiles:
+        - material: ARROW
+          name: "<red>Bolt"
+  use-remainder:
+    material: MUSHROOM_STEW
+    components:
+      use-remainder:
+        material: BOWL
+        name: "<gray>Empty bowl"
+  sulfur-cube-content:
+    material: SULFUR_CUBE_BUCKET
+    components:
+      sulfur-cube-content:
+        material: SULFUR
+        name: "<yellow>Sulfur"
+
+  # --- Entity variants ---
+
+  axolotl-variant:
+    material: AXOLOTL_BUCKET
+    components:
+      axolotl/variant: BLUE
+  cat-variant:
+    material: CAT_SPAWN_EGG
+    components:
+      cat/variant: "minecraft:calico"
+  cat-collar:
+    material: CAT_SPAWN_EGG
+    components:
+      cat/collar: "RED"
+  chicken-variant:
+    material: CHICKEN_SPAWN_EGG
+    components:
+      chicken/variant: "minecraft:warm"
+  cow-variant:
+    material: COW_SPAWN_EGG
+    components:
+      cow/variant: "minecraft:cold"
+  cow-sound-variant:
+    material: COW_SPAWN_EGG
+    components:
+      cow/sound-variant: "minecraft:moody"
+  cat-sound-variant:
+    material: CAT_SPAWN_EGG
+    components:
+      cat/sound-variant: "minecraft:royal"
+  chicken-sound-variant:
+    material: CHICKEN_SPAWN_EGG
+    components:
+      chicken/sound-variant: "minecraft:picky"
+  pig-sound-variant:
+    material: PIG_SPAWN_EGG
+    components:
+      pig/sound-variant: "minecraft:mini"
+  zombie-nautilus-variant:
+    material: ZOMBIE_NAUTILUS_SPAWN_EGG
+    components:
+      zombie-nautilus/variant: "minecraft:warm"
+  fox-variant:
+    material: FOX_SPAWN_EGG
+    components:
+      fox/variant: SNOW
+  frog-variant:
+    material: FROG_SPAWN_EGG
+    components:
+      frog/variant: "minecraft:warm"
+  horse-variant:
+    material: HORSE_SPAWN_EGG
+    components:
+      horse/variant: CHESTNUT
+  llama-variant:
+    material: LLAMA_SPAWN_EGG
+    components:
+      llama/variant: GRAY
+  mooshroom-variant:
+    material: MOOSHROOM_SPAWN_EGG
+    components:
+      mooshroom/variant: BROWN
+  painting-variant:
+    material: PAINTING
+    components:
+      painting/variant: "minecraft:wanderer"
+  parrot-variant:
+    material: PARROT_SPAWN_EGG
+    components:
+      parrot/variant: CYAN
+  pig-variant:
+    material: PIG_SPAWN_EGG
+    components:
+      pig/variant: "minecraft:cold"
+  rabbit-variant:
+    material: RABBIT_SPAWN_EGG
+    components:
+      rabbit/variant: SALT_AND_PEPPER
+  salmon-size:
+    material: SALMON_BUCKET
+    components:
+      salmon/size: LARGE
+  sheep-color:
+    material: SHEEP_SPAWN_EGG
+    components:
+      sheep/color: "PINK"
+  shulker-color:
+    material: SHULKER_SPAWN_EGG
+    components:
+      shulker/color: "PURPLE"
+  tropical-fish-base-color:
+    material: TROPICAL_FISH_BUCKET
+    components:
+      tropical-fish/base-color: "LIGHT_BLUE"
+  tropical-fish-pattern-color:
+    material: TROPICAL_FISH_BUCKET
+    components:
+      tropical-fish/pattern-color: "YELLOW"
+  tropical-fish-pattern:
+    material: TROPICAL_FISH_BUCKET
+    components:
+      tropical-fish/pattern: SUNSTREAK
+  villager-variant:
+    material: VILLAGER_SPAWN_EGG
+    components:
+      villager/variant: "minecraft:swamp"
+  wolf-collar:
+    material: WOLF_SPAWN_EGG
+    components:
+      wolf/collar: "BLUE"
+  wolf-sound-variant:
+    material: WOLF_SPAWN_EGG
+    components:
+      wolf/sound-variant: "minecraft:angry"
+  wolf-variant:
+    material: WOLF_SPAWN_EGG
+    components:
+      wolf/variant: "minecraft:ashen"
+
+  # --- Placeholder expressions ---
+
+  max-stack-size-dynamic:
+    material: DIAMOND
+    components:
+      max-stack-size: "%player_level%"
+  food-dynamic:
+    material: APPLE
+    components:
+      food:
+        nutrition: "%player_level%"
+        saturation: "%player_level%"
+        can-always-eat: "%player_is_flying%"
+  enchantments-dynamic:
+    material: DIAMOND_SWORD
+    components:
+      enchantments:
+        "minecraft:sharpness": "%player_level%"
+  weapon-dynamic:
+    material: DIAMOND_SWORD
+    components:
+      weapon:
+        item-damage-per-attack: "%player_level%"
+        disable-blocking-for-seconds: "%player_level%"
+  attack-range-dynamic:
+    material: IRON_SPEAR
+    components:
+      attack-range:
+        max-reach: "%player_level%"
+  kinetic-weapon-dynamic:
+    material: IRON_SPEAR
+    components:
+      kinetic-weapon:
+        delay-ticks: "%player_level%"
+        damage-multiplier: "%player_level%"
+  custom-model-data-dynamic:
+    material: STICK
+    components:
+      custom-model-data:
+        floats:
+          - "%player_level%"
+  lodestone-tracker-dynamic:
+    material: COMPASS
+    components:
+      lodestone-tracker:
+        target:
+          post:
+            - "%player_x%"
+            - "%player_y%"
+            - "%player_z%"
+          dimension: "%player_world%"

@@ -52,4 +52,9 @@ public final class ResolvableEntityType extends ParsableResolvable<EntityType> {
             return null;
         }
     }
+
+    @Override
+    protected @NotNull Object serializeValue(@NotNull EntityType value) {
+        return value.getKey().toString();
+    }
 }

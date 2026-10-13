@@ -7,6 +7,8 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class RefreshInventoryAction extends Action {
 
     @Override
@@ -14,5 +16,10 @@ public class RefreshInventoryAction extends Action {
         if (button != null) {
             inventory.getPlugin().getInventoryManager().updateInventory(player);
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "refresh-inventory");
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ConsoleCommandAction extends ActionHelper {
@@ -46,6 +47,13 @@ public class ConsoleCommandAction extends ActionHelper {
         } else {
             runnable.accept(null);
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "console-commands");
+        map.put("commands", this.commands);
+        if (this.stopOnFailure) map.put("stop-on-failure", true);
     }
 
     private void dispatch(List<String> parsedCommands) {

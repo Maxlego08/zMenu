@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class BroadcastTitleAction extends ActionHelper {
 
     private final String title;
@@ -29,6 +31,16 @@ public class BroadcastTitleAction extends ActionHelper {
         String finalTitle = this.papi(placeholders.parse(this.title), player);
         String finalSubtitle = this.papi(placeholders.parse(this.subtitle), player);
         Bukkit.getOnlinePlayers().forEach(target -> inventory.getPlugin().getMetaUpdater().sendTitle(target, finalTitle, finalSubtitle, this.start, this.duration, this.end));
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "broadcast_title");
+        map.put("title", this.title);
+        map.put("subtitle", this.subtitle);
+        if (this.start != 0) map.put("start", this.start);
+        if (this.duration != 0) map.put("duration", this.duration);
+        if (this.end != 0) map.put("end", this.end);
     }
 
 }

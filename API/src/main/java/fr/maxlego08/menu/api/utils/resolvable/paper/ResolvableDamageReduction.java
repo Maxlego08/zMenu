@@ -9,6 +9,9 @@ import org.bukkit.damage.DamageType;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvableDamageReduction implements Resolvable<DamageReduction> {
     private final Resolvable<RegistryKeySet<DamageType>> type;
     private final ResolvableFloat horizontalBlockingAngle;
@@ -32,5 +35,15 @@ public final class ResolvableDamageReduction implements Resolvable<DamageReducti
         Resolvable.applyResolvable(context, this.factor, builder::factor);
 
         return builder.build();
+    }
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.type != null) map.put("type", this.type.serialize());
+        if (this.horizontalBlockingAngle != null) map.put("horizontal-blocking-angle", this.horizontalBlockingAngle.serialize());
+        if (this.base != null) map.put("base", this.base.serialize());
+        if (this.factor != null) map.put("factor", this.factor.serialize());
+        return map;
     }
 }

@@ -9,6 +9,7 @@ import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,5 +32,12 @@ public abstract class RegistryVariantLoader<T extends Keyed> extends ItemCompone
         ResolvableRegistryEntry<T> resolvableRegistryEntry = ResolvableRegistry.autoOrNull(configuration.getString(path), this.registryKey);
         if (resolvableRegistryEntry == null) return null;
         return this.componentFactory.apply(resolvableRegistryEntry);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        Object value = this.getNamedData(itemStack);
+        return value instanceof Keyed ? this.componentFactory.apply(ResolvableRegistry.ofValue((T) value, this.registryKey)) : null;
     }
 }

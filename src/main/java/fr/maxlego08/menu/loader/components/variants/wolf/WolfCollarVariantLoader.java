@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.itemstack.components.variants.wolf.WolfCollarCompon
 import fr.maxlego08.menu.loader.components.variants.base.DyeColorLoader;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public class WolfCollarVariantLoader extends DyeColorLoader {
     public WolfCollarVariantLoader() {
         super("wolf/collar", WolfCollarComponent::new);

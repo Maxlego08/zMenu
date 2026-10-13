@@ -1,18 +1,14 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.OminousBottleAmplifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.OminousBottleMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-// ...
 
 @SuppressWarnings("unused")
 public class OminousBottleAmplifierComponent extends ItemComponent {
@@ -31,11 +27,12 @@ public class OminousBottleAmplifierComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return this.amplifier.serialize();
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, OminousBottleMeta.class, ominousBottleMeta -> {
-            this.applyResolvable(context, ominousBottleMeta::setAmplifier, this.amplifier);
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("OminousBottleAmplifierComponent couldn't be applied to " + itemStack.getType().name());
+        this.applyResolvable(context, amplifier -> itemStack.setData(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, OminousBottleAmplifier.amplifier(amplifier)), this.amplifier);
     }
 }

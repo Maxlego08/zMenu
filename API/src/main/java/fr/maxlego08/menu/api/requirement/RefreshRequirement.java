@@ -3,10 +3,13 @@ package fr.maxlego08.menu.api.requirement;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a set of requirements that a player must meet to perform a certain action.
@@ -87,4 +90,27 @@ public interface RefreshRequirement {
      * @return True if the requirement can be refreshed.
      */
     boolean canRefresh(@NotNull Player player,@NotNull Button button,@NotNull InventoryEngine inventoryEngine,@NotNull Placeholders placeholders);
+
+    /**
+     * Writes this refresh requirement in the format the refresh requirement loader reads.
+     *
+     * @param section The section to write into.
+     */
+    default void serialize(@NotNull ConfigurationSection section) {
+        List<Map<String, Object>> requirements = new ArrayList<>(this.getRequirements().size());
+        for (Permissible permissible : this.getRequirements()) {
+            requirements.add(permissible.serialize());
+        }
+        List<Map<String, Object>> enableRequirements = new ArrayList<>(this.getEnableRequirements().size());
+        for (Permissible permissible : this.getEnableRequirements()) {
+            enableRequirements.add(permissible.serialize());
+        }
+        if (!requirements.isEmpty()) section.set("requirements", requirements);
+        if (!enableRequirements.isEmpty()) section.set("enable-requirements", enableRequirements);
+        if (this.isTask()) section.set("task", true);
+        if (this.isRefreshLore()) section.set("refresh-lore", true);
+        if (this.isRefreshName()) section.set("refresh-name", true);
+        if (this.isRefreshButton()) section.set("refresh-button", true);
+        if (this.getUpdateInterval() != 500) section.set("update-interval", this.getUpdateInterval());
+    }
 }

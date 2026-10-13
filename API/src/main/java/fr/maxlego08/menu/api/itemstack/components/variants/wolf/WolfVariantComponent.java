@@ -22,4 +22,9 @@ public final class WolfVariantComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.variant, resolvedVariant -> itemStack.setData(DataComponentTypes.WOLF_VARIANT, resolvedVariant));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.variant.serialize();
+    }
 }

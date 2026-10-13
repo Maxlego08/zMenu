@@ -61,6 +61,11 @@ public final class ResolvableDyeColor extends ResolvableEnum<DyeColor> {
         return parseColor(value);
     }
 
+    @Override
+    protected @NotNull Object serializeValue(@NotNull DyeColor value) {
+        return ResolvableColor.toHex(value.getColor());
+    }
+
     private static @org.jetbrains.annotations.Nullable DyeColor parseColor(@NotNull Object value) {
         Color color = ColorUtils.parse(value);
         if (color == null) {

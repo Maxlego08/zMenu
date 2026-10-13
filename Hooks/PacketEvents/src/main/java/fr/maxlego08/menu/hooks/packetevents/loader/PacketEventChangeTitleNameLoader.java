@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 public class PacketEventChangeTitleNameLoader extends ActionLoader {
+    public static final String DEFAULT_INVENTORY_NAME = "menu";
+
     private final PacketManager packetManager;
 
     public PacketEventChangeTitleNameLoader(PacketManager packetManager) {
@@ -20,7 +22,7 @@ public class PacketEventChangeTitleNameLoader extends ActionLoader {
 
     @Override
     public @Nullable Action load(@NotNull String path, @NotNull TypedMapAccessor accessor, @NotNull File file) {
-        String newInventoryName = accessor.getString("inventory-name", "menu");
+        String newInventoryName = accessor.getString("inventory-name", DEFAULT_INVENTORY_NAME);
         return new PacketEventChangeTitleName(newInventoryName, this.packetManager);
     }
 }

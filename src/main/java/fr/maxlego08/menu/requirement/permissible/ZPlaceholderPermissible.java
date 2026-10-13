@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -44,6 +45,16 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
         this.value = value;
         this.targetPlayer = targetPlayer;
         this.enableMathExpression = enableMathExpression;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "placeholder");
+        map.put("placeholder", this.placeholder);
+        map.put("action", this.action.name());
+        map.put("value", this.value);
+        if (this.targetPlayer != null) map.put("target", this.targetPlayer);
+        if (this.enableMathExpression) map.put("math", true);
     }
 
     /**

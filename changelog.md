@@ -42,6 +42,26 @@
 
 # Unreleased
 
+## New Features
+
+* Added DeluxeMenus conversion support with `/zm convert deluxemenus [menu]` (also available as `dm`), allowing DeluxeMenus configurations to be converted into zMenu inventories and reporting unsupported or partially converted features.
+* Added ItemStack-to-zMenu conversion support, including conversion of supported Minecraft item components.
+* Added serialization support for inventories, menu items, buttons, actions, requirements, item components, commands and related API objects, allowing these objects to be written back in the format understood by zMenu.
+* Added parent/child placeholder scopes and placeholder modifiers, while improving placeholder processing performance.
+* Added inventory replacement modes with support for `CUMULUS` and `CHEST` (bedrock player).
+* Added support for using Bukkit dye color names when parsing colors, including `minecraft:<color>` names.
+* Added the `dialog_list` dialog type, the last vanilla dialog type zMenu did not support. It shows one button per dialog listed under `dialogs:`, labelled with that dialog's `external-title`. Entries are zMenu dialog names (`name` or `plugin:name`) or vanilla/datapack dialogs (`registry-key: minecraft:server_links`). Options: `number-of-columns`, `button-width`, an optional `exit-button`, and a `back-button` that is added to listed dialogs without an exit button so players can return to the list. Listed dialogs whose `open-requirement` the player does not meet are hidden. How many lists can be nested inside each other is set by `dialog-list-max-depth` in `config.yml` (default 4). See `dialogs/dialog_list-dialog.yml`.
+
+## Improvements
+
+* Dialogs now read `external_title` as well as `external-title`. The shipped example dialogs used `external_title`, which was ignored. An empty external title is no longer sent, so the client falls back to the dialog name.
+* `server_links` dialogs without a `server-links` button no longer show a blank exit button.
+* Improved hook loading so failures caused by third-party plugins, missing classes, invalid versions or broken APIs no longer abort the entire hook registration process.
+* Improved PacketEvents integration with API availability and readiness checks. Packet-based features are now safely disabled when PacketEvents is unavailable instead of causing zMenu to fail.
+* Improved plugin shutdown handling so partially initialized managers are still safely disabled and cleaned up after an initialization failure.
+* Added serialization coverage tests for registered actions, requirements and item components to ensure they can be serialized and loaded without losing their configuration.
+* Updated the minimum supported (documentation) Minecraft version to 1.20.6.
+
 ## Improvements
 
 - **Inventory hot reload**: new `hot-reload` section in `config.yml`, disabled by default. When enabled,

@@ -8,7 +8,7 @@ import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Art;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public class PaintingVariantLoader extends RegistryVariantLoader<Art> {
     public PaintingVariantLoader() {
         super("painting/variant", RegistryKey.PAINTING_VARIANT, PaintingVariantComponent::new);

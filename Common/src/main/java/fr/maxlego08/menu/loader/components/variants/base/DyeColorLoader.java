@@ -4,8 +4,10 @@ import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableDyeColor;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
+import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,5 +28,10 @@ public abstract class DyeColorLoader extends AbstractColorItemComponentLoader {
         ResolvableDyeColor resolvableDyeColor = ResolvableDyeColor.autoOrNull(configuration.get(path));
         if (resolvableDyeColor == null) return null;
         return this.componentFactory.apply(resolvableDyeColor);
+    }
+
+    @Override
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        return this.getNamedData(itemStack) instanceof DyeColor dyeColor ? this.componentFactory.apply(ResolvableDyeColor.of(dyeColor)) : null;
     }
 }

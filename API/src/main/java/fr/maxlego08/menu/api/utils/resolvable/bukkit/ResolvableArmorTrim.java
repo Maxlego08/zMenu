@@ -8,6 +8,9 @@ import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public record ResolvableArmorTrim(@NotNull ResolvableRegistryEntry<TrimMaterial> material,
                                   @NotNull ResolvableRegistryEntry<TrimPattern> pattern) implements Resolvable<ArmorTrim> {
 
@@ -19,5 +22,16 @@ public record ResolvableArmorTrim(@NotNull ResolvableRegistryEntry<TrimMaterial>
             return null;
         }
         return new ArmorTrim(resolvedMaterial, resolvedPattern);
+    }
+
+    /**
+     * Writes {@code material} and {@code pattern} as registry keys, the section the trim loader reads.
+     */
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("material", this.material.serialize());
+        map.put("pattern", this.pattern.serialize());
+        return map;
     }
 }

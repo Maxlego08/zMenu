@@ -27,9 +27,4 @@ public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern>
         }
         return new ZActionsPattern(name, this.plugin.getButtonManager().loadActions(configuration,"actions", file), this.plugin.getButtonManager().loadActions(configuration,"deny-actions", file));
     }
-
-    @Override
-    public void save(ActionPattern object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-    }
 }

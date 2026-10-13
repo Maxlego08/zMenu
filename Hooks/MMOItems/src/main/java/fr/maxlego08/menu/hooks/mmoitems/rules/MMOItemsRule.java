@@ -26,4 +26,9 @@ public class MMOItemsRule extends AbstractPluginItemRule {
         }
         return null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "mmoitems";
+    }
 }

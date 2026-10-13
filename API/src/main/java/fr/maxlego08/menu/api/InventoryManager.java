@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.utils.Message;
@@ -408,6 +409,16 @@ public interface InventoryManager extends Listener {
      * @param type
      */
     void saveItem(CommandSender sender, ItemStack itemStack, String name, String type);
+
+    /**
+     * Turns an item into a menu item, with item components for every setting the item changes.
+     * When a setting cannot be expressed, the whole item is kept as {@code base64:} so that nothing is lost.
+     *
+     * @param itemStack The item to convert.
+     * @return The menu item, and the components that forced the fallback.
+     */
+    @NotNull
+    MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack);
 
     /**
      * Transforms a string list into a click list type.

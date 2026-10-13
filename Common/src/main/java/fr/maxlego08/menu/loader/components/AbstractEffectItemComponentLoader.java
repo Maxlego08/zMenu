@@ -29,7 +29,7 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
 
     protected @Nullable ConsumeEffectType parseConsumableType(String type) {
         try {
-            return ConsumeEffectType.valueOf(type.toUpperCase(Locale.ROOT));
+            return ConsumeEffectType.valueOf(type.replace('-', '_').toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException | NullPointerException e) {
             return null;
         }
@@ -98,8 +98,8 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
             boolean amplified = (boolean) potionEffectMap.getOrDefault("amplified", false);
             byte amplifier = (byte) (amplified ? 1 : 0);
             boolean ambient = (boolean) potionEffectMap.getOrDefault("ambient", false);
-            boolean particles = (boolean) potionEffectMap.getOrDefault("show_particles", true);
-            boolean showIcon = (boolean) potionEffectMap.getOrDefault("show_icon", true);
+            boolean particles = (boolean) potionEffectMap.getOrDefault("show-particles", true);
+            boolean showIcon = (boolean) potionEffectMap.getOrDefault("show-icon", true);
 
             return Optional.of(new PotionEffect(
                     potionEffectType, duration, amplifier, ambient, particles, showIcon
@@ -126,8 +126,8 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
             }
 
             ResolvableBoolean ambient = ResolvableBoolean.of(potionEffectMap, "ambient", false);
-            ResolvableBoolean particles = ResolvableBoolean.of(potionEffectMap, "show_particles", true);
-            ResolvableBoolean showIcon = ResolvableBoolean.of(potionEffectMap, "show_icon", true);
+            ResolvableBoolean particles = ResolvableBoolean.of(potionEffectMap, "show-particles", true);
+            ResolvableBoolean showIcon = ResolvableBoolean.of(potionEffectMap, "show-icon", true);
 
             return new ResolvablePotionEffect(typeId, duration, amplifier, ambient, particles, showIcon);
         } catch (IllegalArgumentException e) {
@@ -217,8 +217,8 @@ public abstract class AbstractEffectItemComponentLoader extends AbstractColorIte
         }
 
         ResolvableBoolean ambient = asRawResolvableBoolean(map, "ambient", false);
-        ResolvableBoolean particles = asRawResolvableBoolean(map, "show_particles", true);
-        ResolvableBoolean showIcon = asRawResolvableBoolean(map, "show_icon", true);
+        ResolvableBoolean particles = asRawResolvableBoolean(map, "show-particles", true);
+        ResolvableBoolean showIcon = asRawResolvableBoolean(map, "show-icon", true);
 
         return new ResolvablePotionEffect(
                 asResolvableString(idString),

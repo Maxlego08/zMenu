@@ -2,42 +2,41 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.itemstack.ZToolRule;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableToolRule;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Tool;
-import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+/**
+ * The {@code tool} component: how fast the item mines, what it costs in durability, and the rules
+ * for specific blocks. When several rules match a block, the first one in the list wins.
+ */
 @SuppressWarnings("unused")
 public class ToolComponent extends ItemComponent {
 
     private final @NotNull ResolvableFloat defaultMiningSpeed;
     private final @NotNull ResolvableInt damagePerBlock;
     private final @NotNull ResolvableBoolean canDestroyBlocksInCreative;
-    private final List<ZToolRule<Material>> materialRules;
-    private final List<ZToolRule<Collection<Material>>> materialGroups;
-    private final List<ZToolRule<Tag<Material>>> tagRules;
+    private final @NotNull List<ResolvableToolRule> rules;
 
     public ToolComponent(@NotNull ResolvableFloat defaultMiningSpeed, @NotNull ResolvableInt damagePerBlock, @NotNull ResolvableBoolean canDestroyBlocksInCreative,
-                         List<ZToolRule<Material>> materialRules, List<ZToolRule<Collection<Material>>> materialGroups,
-                         List<ZToolRule<Tag<Material>>> tagRules) {
+                         @NotNull List<ResolvableToolRule> rules) {
         this.defaultMiningSpeed = defaultMiningSpeed;
         this.damagePerBlock = damagePerBlock;
         this.canDestroyBlocksInCreative = canDestroyBlocksInCreative;
-        this.materialRules = materialRules;
-        this.materialGroups = materialGroups;
-        this.tagRules = tagRules;
+        this.rules = rules;
     }
 
     public @NotNull ResolvableFloat getDefaultMiningSpeed() {
@@ -52,52 +51,33 @@ public class ToolComponent extends ItemComponent {
         return this.canDestroyBlocksInCreative;
     }
 
-    public List<ZToolRule<Material>> getMaterialRules() {
-        return this.materialRules;
-    }
-
-    public List<ZToolRule<Collection<Material>>> getMaterialGroups() {
-        return this.materialGroups;
-    }
-
-    public List<ZToolRule<Tag<Material>>> getTagRules() {
-        return this.tagRules;
+    /**
+     * @return the rules, in the order they are checked
+     */
+    public @NotNull List<ResolvableToolRule> getRules() {
+        return this.rules;
     }
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-//         ItemMeta itemMeta = itemStack.getItemMeta();
-//         if (itemMeta == null) return;
-//
-//         org.bukkit.inventory.meta.components.ToolComponent tool = itemMeta.getTool();
-//
-//         Resolvable.applyResolvable(context, this.defaultMiningSpeed, tool::setDefaultMiningSpeed);
-//         Resolvable.applyResolvable(context, this.damagePerBlock, tool::setDamagePerBlock);
-// //         Resolvable.applyResolvable(context, this.canDestroyBlocksInCreative, tool::setCanDestroyBlocksInCreative);
-//
-//
-//         for (ZToolRule<Material> rule : this.materialRules) {
-//             tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-//         }
-//         for (ZToolRule<Collection<Material>> rule : this.materialGroups) {
-//             tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-//         }
-//         for (ZToolRule<Tag<Material>> rule : this.tagRules) {
-//             tool.addRule(rule.data(), rule.speed(), rule.correctForDrop());
-//         }
-//
-//         itemStack.setItemMeta(itemMeta);
-
         Tool.Builder tool = Tool.tool();
 
         Resolvable.applyResolvable(context, this.defaultMiningSpeed, tool::defaultMiningSpeed);
         Resolvable.applyResolvable(context, this.damagePerBlock, tool::damagePerBlock);
         Resolvable.applyResolvable(context, this.canDestroyBlocksInCreative, tool::canDestroyBlocksInCreative);
-
-        //TODO: Add rules to the tool component
+        Resolvable.applyResolvable(context, this.rules, tool::addRules);
 
         itemStack.setData(DataComponentTypes.TOOL, tool.build());
+    }
 
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (!Objects.equals(this.defaultMiningSpeed.serialize(), 1.0f)) map.put("default-mining-speed", this.defaultMiningSpeed.serialize());
+        if (!Objects.equals(this.damagePerBlock.serialize(), 1)) map.put("damage-per-block", this.damagePerBlock.serialize());
+        if (!Boolean.TRUE.equals(this.canDestroyBlocksInCreative.serialize())) map.put("can-destroy-blocks-in-creative", this.canDestroyBlocksInCreative.serialize());
+        if (!this.rules.isEmpty()) map.put("rules", Resolvable.serializeList(this.rules));
+        return map;
     }
 
 }

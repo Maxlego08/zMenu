@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.StringJoiner;
+
 public final class ResolvableByteArray extends ParsableResolvable<byte[]> {
 
     private ResolvableByteArray(@Nullable byte[] resolvedValue, @Nullable String expression) {
@@ -36,6 +38,18 @@ public final class ResolvableByteArray extends ParsableResolvable<byte[]> {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * Writes the bytes comma separated ({@code 1,2,3}), the form {@link #auto(String)} reads.
+     */
+    @Override
+    protected @NotNull Object serializeValue(byte @NotNull [] value) {
+        StringJoiner joiner = new StringJoiner(",");
+        for (byte b : value) {
+            joiner.add(String.valueOf(b));
+        }
+        return joiner.toString();
     }
 
     private static byte @Nullable [] parseArray(@NotNull String value) {

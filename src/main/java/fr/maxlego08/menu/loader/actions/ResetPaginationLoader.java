@@ -26,7 +26,7 @@ public class ResetPaginationLoader extends ActionLoader {
 
     @Override
     public @Nullable Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        String typeStr = accessor.getString("type", "context").toLowerCase(Locale.ROOT);
+        String typeStr = accessor.getString("reset-type", "context").toLowerCase(Locale.ROOT);
         
         try {
             ResetPaginationAction.ResetType resetType = ResetPaginationAction.ResetType.valueOf(typeStr.toUpperCase(Locale.ROOT));
@@ -56,7 +56,7 @@ public class ResetPaginationLoader extends ActionLoader {
         }
         
         if (contextIds.isEmpty()) {
-            String contextId = accessor.getString("context-id");
+            String contextId = accessor.getString("context-id", null);
             if (contextId != null && !contextId.isEmpty()) {
                 contextIds.add(contextId);
             }

@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.GenericPaginateButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,15 @@ public abstract class PaginationButton extends Button {
         this.manager = plugin.getInventoryManager().getPaginationManager();
         this.contextId = contextId;
         this.onlyRefreshButton = onlyRefreshButton;
+    }
+
+    protected abstract @NotNull String getType();
+
+    @Override
+    protected void serializeProperties(@NotNull ConfigurationSection section) {
+        section.set("type", this.getType());
+        section.set("context-id", this.contextId);
+        if (this.onlyRefreshButton) section.set("only-refresh-button", true);
     }
 
     @Nullable

@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jspecify.annotations.NonNull;
@@ -14,6 +15,11 @@ public class ZMainMenuButton extends ZHomeButton {
     public ZMainMenuButton(InventoryManager inventoryManager) {
         super(inventoryManager);
         this.inventoryManager = inventoryManager;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull ConfigurationSection section) {
+        section.set("type", "mainmenu");
     }
 
 

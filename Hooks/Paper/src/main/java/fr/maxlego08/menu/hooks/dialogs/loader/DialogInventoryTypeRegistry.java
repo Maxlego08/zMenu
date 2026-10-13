@@ -12,6 +12,7 @@ public class DialogInventoryTypeRegistry extends Registry<DialogType, DialogInve
         instance.register(DialogType.CONFIRMATION, new ConfirmationDialogInventoryTypeLoader());
         instance.register(DialogType.MULTI_ACTION, new MultiActionDialogInventoryTypeLoader());
         instance.register(DialogType.SERVER_LINKS, new ServerLinksDialogInventoryTypeLoader());
+        instance.register(DialogType.DIALOG_LIST, new DialogListDialogInventoryTypeLoader());
     }
 
     public static DialogInventoryTypeRegistry getInstance() {

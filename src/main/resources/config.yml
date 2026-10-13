@@ -295,3 +295,9 @@ max-move-distance: 2.0
 # Close the menu as soon as the player takes or deals damage.
 # Prevents using menus (kits, shops, heals) during combat through a ghost GUI.
 close-on-damage: true
+
+# How many dialog_list dialogs can be nested inside each other (a list inside a list inside a list...).
+# This does not limit how many dialogs a list contains. A list sends every dialog it contains,
+# including the content of nested lists, in the packet that opens it, so deep nesting makes that
+# packet bigger and can disconnect the player. Lists nested deeper than this are left out.
+dialog-list-max-depth: 4

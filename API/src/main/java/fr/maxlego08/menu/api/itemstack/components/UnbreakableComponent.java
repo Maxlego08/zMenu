@@ -2,11 +2,10 @@ package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableBoolean;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,13 +26,18 @@ public class UnbreakableComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return this.unbreakable.serialize();
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-
-            Resolvable.applyResolvable(context, this.unbreakable, itemMeta::setUnbreakable);
-
-            itemStack.setItemMeta(itemMeta);
-        }
+        this.applyResolvable(context, unbreakable -> {
+            if (unbreakable) {
+                itemStack.setData(DataComponentTypes.UNBREAKABLE);
+            } else {
+                itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
+            }
+        }, this.unbreakable);
     }
 }

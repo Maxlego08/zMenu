@@ -21,3 +21,7 @@ java {
 paperweight {
     addServerDependencyTo = configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).map { setOf(it) }
 }
+
+tasks.test {
+    forkEvery = 1
+}

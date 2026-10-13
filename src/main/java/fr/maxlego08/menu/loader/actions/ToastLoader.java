@@ -14,6 +14,9 @@ import java.util.Locale;
 
 @AutoActionLoader
 public class ToastLoader extends ActionLoader {
+    public static final String DEFAULT_MESSAGE = "Default message";
+    public static final String DEFAULT_MATERIAL = "PAPER";
+    public static final String DEFAULT_MODEL_ID = "0";
 
     private final MenuPlugin plugin;
 

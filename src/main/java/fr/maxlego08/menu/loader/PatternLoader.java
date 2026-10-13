@@ -16,7 +16,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,22 +72,5 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
         }
 
         return new ZPattern(name, buttons, size, enableMultiPage);
-    }
-
-    @Override
-    public void save(Pattern object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-        configuration.set("name", object.name());
-        configuration.set("size", object.inventorySize());
-
-        for (Button button : object.buttons()) {
-            // TODO: SAVE BUTTONS
-        }
-
-        try {
-            configuration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

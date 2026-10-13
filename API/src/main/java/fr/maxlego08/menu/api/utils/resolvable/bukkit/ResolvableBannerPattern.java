@@ -10,6 +10,7 @@ import org.bukkit.block.banner.PatternType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ResolvableBannerPattern implements Resolvable<Pattern> {
@@ -44,5 +45,16 @@ public final class ResolvableBannerPattern implements Resolvable<Pattern> {
         if (color == null || patternType == null) return null;
 
         return new Pattern(color, patternType);
+    }
+
+    /**
+     * Writes the pattern map {@link #fromMap} reads: {@code color} as the dye name and {@code pattern} as a registry key.
+     */
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("color", this.color.serialize());
+        map.put("pattern", this.patternType.serialize());
+        return map;
     }
 }

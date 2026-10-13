@@ -397,6 +397,15 @@ public class Configuration {
     public static boolean closeInventoryOnDamage = true;
 
     @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Dialog list max depth",
+            startRange = 1,
+            endRange = 16,
+            stepRange = 1
+    )
+    public static int dialogListMaxDepth = 4;
+
+    @ConfigOption(
             type = DialogInputType.SINGLE_OPTION,
             label = "OP grant method"
     )
@@ -564,6 +573,7 @@ public class Configuration {
         closeInventoryOnMove = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), true);
         maxMoveDistance = fileConfiguration.getDouble(ConfigPath.MAX_MOVE_DISTANCE.getPath(), 2.0);
         closeInventoryOnDamage = fileConfiguration.getBoolean(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), true);
+        dialogListMaxDepth = Math.max(1, fileConfiguration.getInt(ConfigPath.DIALOG_LIST_MAX_DEPTH.getPath(), 4));
 
         enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
         performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
@@ -646,6 +656,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
         fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
         fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
+        fileConfiguration.set(ConfigPath.DIALOG_LIST_MAX_DEPTH.getPath(), dialogListMaxDepth);
         fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
         fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
@@ -718,6 +729,7 @@ public class Configuration {
         CLOSE_INVENTORY_ON_MOVE("close-on-move"),
         MAX_MOVE_DISTANCE("max-move-distance"),
         CLOSE_INVENTORY_ON_DAMAGE("close-on-damage"),
+        DIALOG_LIST_MAX_DEPTH("dialog-list-max-depth"),
 
         ENABLE_PERFORMANCE_DEBUG("enable-performance-debug"),
         PERFORMANCE_DEBUG_THRESHOLD_MS("performance-debug.threshold-ms"),

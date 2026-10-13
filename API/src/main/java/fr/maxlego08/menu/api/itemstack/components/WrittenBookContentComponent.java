@@ -1,20 +1,23 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableString;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.WrittenBookContent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class WrittenBookContentComponent extends ItemComponent {
@@ -47,14 +50,35 @@ public class WrittenBookContentComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.title != null) map.put("title", this.title.serialize());
+        if (this.author != null) map.put("author", this.author.serialize());
+        if (this.generation != null) map.put("generation", this.generation.serialize());
+        if (!this.pages.isEmpty()) {
+            List<Map<String, Object>> rawPages = new ArrayList<>();
+            for (ResolvableString page : this.pages) {
+                Map<String, Object> rawPage = new LinkedHashMap<>();
+                rawPage.put("raw", page.serialize());
+                rawPages.add(rawPage);
+            }
+            map.put("pages", rawPages);
+        }
+        return map;
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, BookMeta.class, bookMeta -> {
-            Resolvable.applyResolvable(context, this.title, bookMeta::setTitle);
-            Resolvable.applyResolvable(context, this.author, bookMeta::setAuthor);
-            Resolvable.applyResolvable(context, this.generation, bookMeta::setGeneration);
-            Resolvable.applyResolvable(context, this.pages, bookMeta::setPages);
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("Could not apply WritableBookContentComponent to item: " + itemStack.getType().name());
+        String resolvedTitle = Resolvable.resolve(context, this.title);
+        String resolvedAuthor = Resolvable.resolve(context, this.author);
+        WrittenBookContent.Builder builder = WrittenBookContent.writtenBookContent(resolvedTitle != null ? resolvedTitle : "", resolvedAuthor != null ? resolvedAuthor : "");
+
+        Resolvable.applyResolvable(context, this.generation, generation -> builder.generation(generation.ordinal()));
+        for (ResolvableString page : this.pages) {
+            Resolvable.applyResolvable(context, page, resolvedPage -> builder.addPage(LegacyComponentSerializer.legacySection().deserialize(resolvedPage)));
+        }
+        builder.resolved(true);
+
+        itemStack.setData(DataComponentTypes.WRITTEN_BOOK_CONTENT, builder.build());
     }
 }

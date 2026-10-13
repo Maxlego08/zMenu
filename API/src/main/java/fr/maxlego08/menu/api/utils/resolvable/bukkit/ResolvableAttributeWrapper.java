@@ -14,6 +14,7 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -92,5 +93,19 @@ public final class ResolvableAttributeWrapper implements Resolvable<AttributeWra
 
 
         return new AttributeWrapper(attribute, operation, amountVal, slot, nsk);
+    }
+
+    /**
+     * Writes the modifier map {@link #fromMap} reads: {@code type}, {@code operation}, {@code amount}, {@code slot} and, when set, {@code name}.
+     */
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("type", this.attributeKey.serialize());
+        map.put("operation", this.operation.serialize());
+        map.put("amount", this.amount.serialize());
+        map.put("slot", this.slotKey.serialize());
+        if (this.namespacedKey != null) map.put("name", this.namespacedKey.serialize());
+        return map;
     }
 }

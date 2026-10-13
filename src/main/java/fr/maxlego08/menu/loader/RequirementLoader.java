@@ -45,9 +45,4 @@ public class RequirementLoader implements Loader<Requirement> {
 
         return new ZRequirement(miniumRequirement, permissibles, denyActions, successActions, clickTypes);
     }
-
-    @Override
-    public void save(Requirement object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-    }
 }

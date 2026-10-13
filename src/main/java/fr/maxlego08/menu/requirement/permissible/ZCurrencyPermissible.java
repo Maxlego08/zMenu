@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public class ZCurrencyPermissible extends CurrencyPermissible {
 
@@ -46,5 +47,13 @@ public class ZCurrencyPermissible extends CurrencyPermissible {
     @Override
     public boolean isValid() {
         return this.currencies != null && this.amount != null;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "money");
+        map.put("amount", this.amount);
+        if (this.currencies != Currencies.VAULT) map.put("currency", this.currencies.name());
+        if (this.economyName != null) map.put("economy", this.economyName);
     }
 }

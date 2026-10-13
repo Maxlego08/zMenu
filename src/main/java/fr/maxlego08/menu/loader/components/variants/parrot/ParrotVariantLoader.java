@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.Parrot;
 
 @AutoComponentLoader
-@SinceVersion("1.12")
+@SinceVersion("1.21.5")
 public class ParrotVariantLoader extends EnumVariantLoader<Parrot.Variant> {
     public ParrotVariantLoader() {
         super("parrot/variant", Parrot.Variant.class, ParrotVariantComponent::new);

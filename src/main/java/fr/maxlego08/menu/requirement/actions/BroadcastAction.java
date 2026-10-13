@@ -9,7 +9,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BroadcastAction extends ActionHelper {
 
@@ -47,5 +49,19 @@ public class BroadcastAction extends ActionHelper {
                 });
             }
         });
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "broadcast");
+        map.put("messages", this.messages);
+        if (!this.miniMessage) map.put("minimessage", false);
+        if (!this.requirements.isEmpty()) {
+            List<Map<String, Object>> serializedRequirements = new ArrayList<>(this.requirements.size());
+            for (Permissible requirement : this.requirements) {
+                serializedRequirements.add(requirement.serialize());
+            }
+            map.put("requirements", serializedRequirements);
+        }
     }
 }

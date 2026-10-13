@@ -2,14 +2,23 @@ package fr.maxlego08.menu.api.loader;
 
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableSound;
 import fr.maxlego08.menu.api.utils.resolvable.lang.*;
+import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableComponent;
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,6 +76,69 @@ public abstract class ItemComponentLoader {
 
     @Nullable
     public abstract ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection);
+
+    /**
+     * Builds this component from the data an item already has, to turn an item into a menu item.
+     * It is only called when the item changes this component compared to the default item of its material.
+     *
+     * @param itemStack The item to read.
+     * @return The component, or null when this loader cannot express the item's value.
+     */
+    @Nullable
+    public ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        return null;
+    }
+
+    /**
+     * Same as {@link #fromItemStack}, for servers without Paper's data component API: reads the value through
+     * {@link org.bukkit.inventory.meta.ItemMeta} and returns the component that applies it the same way.
+     * Every loader is asked for every item, so null also means the item does not have this setting.
+     *
+     * @param itemStack The item to read.
+     * @return The component, or null when the item does not have this setting or it cannot be expressed.
+     */
+    @Nullable
+    public ItemComponent fromItemMeta(@NotNull ItemStack itemStack) {
+        return null;
+    }
+
+    /**
+     * Reads the data component named like this loader ({@code cat/collar} → {@code minecraft:cat/collar}).
+     *
+     * @return The value, or null when the item has none or the component carries no value.
+     */
+    protected @Nullable Object getNamedData(@NotNull ItemStack itemStack) {
+        NamespacedKey key = NamespacedKey.minecraft(this.componentName.replace('-', '_'));
+        DataComponentType type = RegistryAccess.registryAccess().getRegistry(RegistryKey.DATA_COMPONENT_TYPE).get(key);
+        return type instanceof DataComponentType.Valued<?> valued ? itemStack.getData(valued) : null;
+    }
+
+    /**
+     * @return The text with {@code §} codes, or null when they cannot express the component (fonts, events, translations…).
+     */
+    protected static @Nullable String toLegacyText(@NotNull Component component) {
+        LegacyComponentSerializer serializer = LegacyComponentSerializer.legacySection();
+        String text = serializer.serialize(component);
+        if (isPlaceholderLike(text)) return null;
+        return serializer.deserialize(text).compact().equals(component.compact()) ? text : null;
+    }
+
+    /**
+     * A text with two {@code %} is read back as a placeholder expression, so it would not stay the same text.
+     */
+    protected static boolean isPlaceholderLike(@NotNull String text) {
+        return Resolvable.isExpression(text);
+    }
+
+    /**
+     * @return The component, kept as is, or null when its MiniMessage text would not read back as the same component.
+     */
+    protected static @Nullable ResolvableComponent toResolvableComponent(@NotNull Component component, @NotNull PaperMetaUpdater metaUpdater) {
+        String miniMessage = metaUpdater.getMiniMessage(component);
+        if (miniMessage == null || isPlaceholderLike(miniMessage)) return null;
+        if (!metaUpdater.getComponent(miniMessage).compact().equals(component.compact())) return null;
+        return ResolvableComponent.ofValue(component, metaUpdater);
+    }
 
     protected String normalizePath(@NotNull String path) {
         if (path.endsWith(".")) {

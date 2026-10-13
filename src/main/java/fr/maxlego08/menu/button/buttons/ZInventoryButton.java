@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jspecify.annotations.NonNull;
@@ -30,6 +31,16 @@ public class ZInventoryButton extends InventoryButton {
         this.pluginName = pluginName;
         this.inventoryArgument = new InventoryArgument(commandManager, arguments);
         this.toPage = toPage;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull ConfigurationSection section) {
+        section.set("type", "inventory");
+        section.set("inventory", this.inventoryName);
+        if (this.pluginName != null) section.set("plugin", this.pluginName);
+        if (this.toPage != 1) section.set("to-page", this.toPage);
+        List<String> arguments = this.getArguments();
+        if (arguments != null && !arguments.isEmpty()) section.set("arguments", arguments);
     }
 
     @Override

@@ -33,4 +33,12 @@ public class InstrumentComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.instrument, musicInstrument -> itemStack.setData(DataComponentTypes.INSTRUMENT, musicInstrument));
     }
+
+    /**
+     * The instrument's key for a registry instrument, or the section of a custom one.
+     */
+    @Override
+    public @Nullable Object serialize() {
+        return this.instrument == null ? null : this.instrument.serialize();
+    }
 }

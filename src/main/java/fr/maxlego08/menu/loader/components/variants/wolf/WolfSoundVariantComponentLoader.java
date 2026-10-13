@@ -8,7 +8,7 @@ import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.entity.Wolf;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public final class WolfSoundVariantComponentLoader extends RegistryVariantLoader<Wolf.SoundVariant> {
 
     public WolfSoundVariantComponentLoader() {

@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.StringJoiner;
+
 public final class ResolvableIntArray extends ParsableResolvable<int[]> {
 
     private ResolvableIntArray(@Nullable int[] resolvedValue, @Nullable String expression) {
@@ -36,6 +38,18 @@ public final class ResolvableIntArray extends ParsableResolvable<int[]> {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * Writes the ints comma separated ({@code 1,2,3}), the form {@link #auto(String)} reads.
+     */
+    @Override
+    protected @NotNull Object serializeValue(int @NotNull [] value) {
+        StringJoiner joiner = new StringJoiner(",");
+        for (int i : value) {
+            joiner.add(String.valueOf(i));
+        }
+        return joiner.toString();
     }
 
     private static int @Nullable [] parseArray(@NotNull String value) {

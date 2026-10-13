@@ -490,9 +490,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setRefreshRequirement(loader.load(configuration, path + requirementPath, file));
     }
 
+    /**
+     * Buttons serialize themselves; this only supplies the inventory size they need to write
+     * slots relative to their page.
+     */
     @Override
-    public void save(Button object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-        // TODO: FINISH THE SAVE METHOD
+    public void serialize(@NonNull Button button, @NonNull ConfigurationSection section, Object... objects) {
+        button.serialize(section, this.inventorySize);
     }
 
     private ButtonOption createInstance(Plugin plugin, Class<? extends ButtonOption> aClass) {

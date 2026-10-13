@@ -23,4 +23,9 @@ public class EcoRule extends AbstractPluginItemRule {
         }
         return null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "eco";
+    }
 }

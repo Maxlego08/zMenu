@@ -9,7 +9,9 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.SectionSerializable;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -20,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public interface MenuItemStack extends MenuItemStackContext {
+public interface MenuItemStack extends MenuItemStackContext, SectionSerializable {
 
     /**
      * Build an item stack using the provided build context.
@@ -430,4 +432,15 @@ public interface MenuItemStack extends MenuItemStackContext {
     void setClearDefaultAttributes(boolean clearDefaultAttributes);
 
     void addItemComponent(@NotNull ItemComponent itemMetadata);
+
+    /**
+     * Writes this item in the format the item loader reads.
+     *
+     * @param section The section to write into.
+     * @throws UnsupportedOperationException If this implementation cannot be serialized.
+     */
+    @Override
+    default void serialize(@NotNull ConfigurationSection section) {
+        throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");
+    }
 }

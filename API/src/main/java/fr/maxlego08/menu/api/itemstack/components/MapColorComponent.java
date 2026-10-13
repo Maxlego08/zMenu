@@ -1,14 +1,12 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableColor;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.MapItemColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.MapMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,12 +24,13 @@ public class MapColorComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return this.color.serialize();
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, MapMeta.class, mapMeta -> {
-            this.applyResolvable(context, mapMeta::setColor, this.color);
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("Could not apply MapColorComponent to itemStack: " + itemStack.getType().name());
+        this.applyResolvable(context, color -> itemStack.setData(DataComponentTypes.MAP_COLOR, MapItemColor.mapItemColor().color(color).build()), this.color);
     }
 
 }

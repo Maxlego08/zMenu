@@ -53,4 +53,9 @@ public final class ResolvableUUID extends ParsableResolvable<UUID> {
             return null;
         }
     }
+
+    @Override
+    protected @NotNull Object serializeValue(@NotNull UUID value) {
+        return value.toString();
+    }
 }

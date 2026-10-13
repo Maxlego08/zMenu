@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.Llama;
 
 @AutoComponentLoader
-@SinceVersion("1.11")
+@SinceVersion("1.21.5")
 public class LlamaVariantLoader extends EnumVariantLoader<Llama.Color> {
     public LlamaVariantLoader() {
         super("llama/variant", Llama.Color.class, LlamaVariantComponent::new);

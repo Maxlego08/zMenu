@@ -43,7 +43,7 @@ public class ItemDragLoader extends ButtonLoader {
         String error_element = configuration.contains(path + "error_item") ? "error_item" : configuration.contains(path + "error-item") ? "error-item" : null;
         if (error_element != null) {
             int ticks = configuration.getInt(path + error_element + ".duration", 20);
-            boolean useCache = configuration.getBoolean(path + error_element + ".use_cache", true);
+            boolean useCache = configuration.getBoolean(path + error_element + ".use-cache", configuration.getBoolean(path + error_element + ".use_cache", true));
             MenuItemStack menuItemStack = this.inventoryManager.loadItemStack(configuration, path + error_element + ".item.", defaultButtonValue.getFile());
             button.setErrorItem(menuItemStack, ticks, useCache);
         }

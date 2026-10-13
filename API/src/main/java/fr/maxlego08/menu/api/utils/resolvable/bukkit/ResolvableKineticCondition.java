@@ -8,6 +8,9 @@ import io.papermc.paper.datacomponent.item.KineticWeapon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvableKineticCondition implements Resolvable<KineticWeapon.Condition> {
     private final @Nullable ResolvableInt maxDurationTicks;
     private final @Nullable ResolvableFloat minSpeed;
@@ -34,5 +37,14 @@ public final class ResolvableKineticCondition implements Resolvable<KineticWeapo
         }
 
         return KineticWeapon.condition(resolvedMaxDurationTicks, resolvedMinSpeed, resolvedMinRelativeSpeed);
+    }
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.maxDurationTicks != null) map.put("max-duration-ticks", this.maxDurationTicks.serialize());
+        if (this.minSpeed != null) map.put("min-speed", this.minSpeed.serialize());
+        if (this.minRelativeSpeed != null) map.put("min-relative-speed", this.minRelativeSpeed.serialize());
+        return map;
     }
 }

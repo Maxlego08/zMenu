@@ -1,0 +1,29 @@
+package fr.maxlego08.menu.api.itemstack.components.legacy;
+
+import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.context.BuildContext;
+import fr.maxlego08.menu.api.itemstack.components.OminousBottleAmplifierComponent;
+import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import fr.maxlego08.menu.zcore.logger.Logger;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.OminousBottleMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public class LegacyOminousBottleAmplifierComponent extends OminousBottleAmplifierComponent {
+
+    public LegacyOminousBottleAmplifierComponent(ResolvableInt amplifier) {
+        super(amplifier);
+    }
+
+    @Override
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+        boolean apply = ItemUtil.editMeta(itemStack, OminousBottleMeta.class, ominousBottleMeta -> {
+            this.applyResolvable(context, ominousBottleMeta::setAmplifier, this.getAmplifier());
+        });
+        if (!apply && Configuration.enableDebug)
+            Logger.info("OminousBottleAmplifierComponent couldn't be applied to " + itemStack.getType().name());
+    }
+}

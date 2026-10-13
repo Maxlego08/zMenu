@@ -1,13 +1,12 @@
 package fr.maxlego08.menu.hooks;
 
-import fr.maxlego08.menu.zcore.logger.Logger;
-
 import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -259,6 +258,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
         return message == null ? null : LegacyComponentSerializer.legacySection().serialize(this.getComponent(message));
     }
 
+    @Override
     public String getMiniMessage(Component component) {
         return component == null ? null : this.MINI_MESSAGE.serialize(component);
     }

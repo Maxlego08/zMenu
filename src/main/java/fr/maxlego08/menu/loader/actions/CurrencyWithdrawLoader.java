@@ -13,6 +13,7 @@ import java.util.Locale;
 
 @AutoActionLoader
 public class CurrencyWithdrawLoader extends ActionLoader {
+    public static final String DEFAULT_REASON = "no reason";
 
     public CurrencyWithdrawLoader() {
         super("withdraw", "money remove");
@@ -23,7 +24,7 @@ public class CurrencyWithdrawLoader extends ActionLoader {
         String bigDecimal = accessor.getString("amount");
         Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase(Locale.ROOT));
         String economyName = accessor.getString("economy", null);
-        String reason = accessor.getString("reason", "no reason");
+        String reason = accessor.getString("reason", DEFAULT_REASON);
         return new CurrencyWithdrawAction(bigDecimal, currencies, economyName, reason);
     }
 }

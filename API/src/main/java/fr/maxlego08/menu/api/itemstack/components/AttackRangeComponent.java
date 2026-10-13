@@ -11,6 +11,10 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public final class AttackRangeComponent extends ItemComponent {
 
     private final ResolvableFloat minReach;
@@ -74,5 +78,23 @@ public final class AttackRangeComponent extends ItemComponent {
                 DataComponentTypes.ATTACK_RANGE,
                 builder.build()
         );
+    }
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        putIfNotDefault(map, "min-reach", this.minReach, 0f);
+        putIfNotDefault(map, "max-reach", this.maxReach, 3f);
+        putIfNotDefault(map, "min-creative-reach", this.minCreativeReach, 0f);
+        putIfNotDefault(map, "max-creative-reach", this.maxCreativeReach, 5f);
+        putIfNotDefault(map, "hitbox-margin", this.hitboxMargin, 0.3f);
+        putIfNotDefault(map, "mob-factor", this.mobFactor, 1f);
+        return map;
+    }
+
+    private static void putIfNotDefault(@NotNull Map<String, Object> map, @NotNull String key, @Nullable ResolvableFloat value, float defaultValue) {
+        if (value == null) return;
+        Object serialized = value.serialize();
+        if (!Objects.equals(serialized, defaultValue)) map.put(key, serialized);
     }
 }

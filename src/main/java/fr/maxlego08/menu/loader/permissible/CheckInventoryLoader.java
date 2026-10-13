@@ -45,7 +45,7 @@ public class CheckInventoryLoader extends PermissibleLoader {
 
         List<Action> denyActions = this.loadAction(this.buttonManager, accessor, "deny", path, file);
         List<Action> successActions = this.loadAction(this.buttonManager, accessor, "success", path, file);
-        ItemStackSimilar itemStackSimilar = this.inventoryManager.getItemStackVerification(accessor.getString("type", "full")).orElseGet(FullSimilar::new);
+        ItemStackSimilar itemStackSimilar = this.inventoryManager.getItemStackVerification(accessor.getString("verification", "full")).orElseGet(FullSimilar::new);
         boolean inSpigotInventory = accessor.getBoolean("in-spigot-inventory", false);
 
         return new ZCheckInventoryPermissible(slot, menuItemStack, requirePlayerItem, isInPlayerInventory, denyActions, successActions, itemStackSimilar, inSpigotInventory);

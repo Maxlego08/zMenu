@@ -29,6 +29,7 @@ import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -701,10 +702,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     /**
-     * @return the modelID
+     * @return the modelID, as its placeholder expression or as the number it was set to
      */
     public String getModelID() {
-        return this.modelID != null ? this.modelID.getExpression() : null;
+        if (this.modelID == null) return null;
+        if (this.modelID.getExpression() != null) return this.modelID.getExpression();
+        Integer resolvedValue = this.modelID.getResolvedValue();
+        return resolvedValue != null ? String.valueOf(resolvedValue) : null;
     }
 
     /**
@@ -1278,5 +1282,167 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         return false;
+    }
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+
+        section.set("material", this.material);
+
+        if (this.displayName != null) section.set("name", this.displayName);
+        if (!this.lore.isEmpty()) section.set("lore", this.lore);
+        if (this.loreType != LoreType.REPLACE) section.set("lore-type", this.loreType.name());
+        if (this.centerName) section.set("center-name", true);
+        if (this.centerLore) section.set("center-lore", true);
+        this.serializeTranslations(section);
+
+        if (this.isGlowing) section.set("glow", true);
+        String modelId = this.getModelID();
+        if (modelId != null && !modelId.equalsIgnoreCase("0")) {
+            section.set("model-id", modelId);
+        }
+        try {
+            if (Integer.parseInt(this.data) > 0) section.set("data", this.data);
+        } catch (Exception ignored) {
+            section.set("data", this.data);
+        }
+        if (this.durability != null) section.set("durability", this.durability);
+        if (this.amount != null && !this.amount.equals("1")) {
+            try {
+                section.set("amount", Integer.parseInt(this.amount));
+            } catch (NumberFormatException exception) {
+                section.set("amount", this.amount);
+            }
+        }
+        if (this.amountType != AmountType.SET) section.set("amount-type", this.amountType.name());
+        if (this.targetPlayer != null) section.set("target", this.targetPlayer);
+        if (this.url != null) section.set("url", this.url);
+
+        if (this.potion != null) {
+            Color potionColor = this.potion.getColor();
+
+            section.set("potion", this.potion.getType().toString());
+            if (this.potion.getLevel() != 1) section.set("level", this.potion.getLevel());
+            if (this.potion.isSplash()) section.set("splash", true);
+            if (this.potion.hasExtendedDuration()) section.set("extended", true);
+            if (this.potion.isArrow()) section.set("arrow", true);
+
+            if (potionColor != null) {
+                section.set("color", potionColor.getAlpha() + "," + potionColor.getRed() + "," + potionColor.getGreen() + "," + potionColor.getBlue());
+            }
+        }
+
+        if (this.firework != null) {
+            ConfigurationSection fireworkSection = section.createSection("firework");
+            FireworkEffect effect = this.firework.getEffect();
+            List<String> stringColors = new ArrayList<>();
+            effect.getColors().forEach(color -> stringColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
+            List<String> stringFadeColors = new ArrayList<>();
+            effect.getFadeColors().forEach(color -> stringFadeColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
+
+            fireworkSection.set("star", this.firework.isStar());
+            fireworkSection.set("flicker", effect.hasFlicker());
+            fireworkSection.set("trail", effect.hasTrail());
+            fireworkSection.set("type", effect.getType().toString());
+
+            fireworkSection.set("colors", stringColors);
+            fireworkSection.set("fadeColors", stringFadeColors);
+        }
+
+        if (this.leatherArmor != null) {
+            Color leatherArmorColor = this.leatherArmor.getColor();
+            section.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
+        }
+
+        if (this.banner != null) {
+            List<Pattern> patterns = this.banner.getPatterns();
+
+            section.set("banner", this.banner.getBaseColor().name());
+            if (!patterns.isEmpty()) {
+                List<String> stringPatterns = new ArrayList<>();
+                for (Pattern pattern : patterns) {
+                    stringPatterns.add(pattern.getColor().name() + ":" + pattern.getPattern().name());
+                }
+                section.set("patterns", stringPatterns);
+            }
+        }
+
+        if (this.enchantments != null && !this.enchantments.isEmpty()) {
+            List<String> stringEnchantments = new ArrayList<>(this.enchantments.size());
+            this.enchantments.forEach((enchantment, level) -> stringEnchantments.add(this.enchantmentName(enchantment) + "," + level));
+            section.set("enchantments", stringEnchantments);
+        }
+
+        if (this.flags != null && !this.flags.isEmpty()) {
+            List<String> stringFlags = new ArrayList<>(this.flags.size());
+            for (ItemFlag flag : this.flags) {
+                stringFlags.add(flag.toString());
+            }
+            section.set("flags", stringFlags);
+        }
+
+        if (!this.attributes.isEmpty()) {
+            List<Map<String, Object>> serializedAttributes = new ArrayList<>(this.attributes.size());
+            for (AttributeWrapper attribute : this.attributes) {
+                serializedAttributes.add(attribute.serialize());
+            }
+            section.set("attributes", serializedAttributes);
+        }
+        if (this.attributeMergeStrategy != null && this.attributeMergeStrategy != AttributeMergeStrategy.ADD) {
+            section.set("attribute-merge-strategy", this.attributeMergeStrategy.name());
+        }
+        if (this.clearDefaultAttributes) section.set("clear-default-attributes", true);
+
+        this.serializeNewItemStackOptions(section);
+
+        if (this.trimConfiguration != null) {
+            section.set("trim.enable", this.trimConfiguration.isEnable());
+            section.set("trim.pattern", this.trimConfiguration.getPattern().getKey().toString());
+            section.set("trim.material", this.trimConfiguration.getMaterial().getKey().toString());
+        }
+
+        for (ItemComponent component : this.itemComponents) {
+            section.set("components." + component.getParentLoader().getComponentName(), component.serialize());
+        }
+    }
+
+    private void serializeNewItemStackOptions(ConfigurationSection section) {
+        if (this.maxStackSize > 0) section.set("max-stack-size", this.maxStackSize);
+        if (this.maxDamage > 0) section.set("max-damage", this.maxDamage);
+        if (this.damage != 0) section.set("damage", this.damage);
+        if (this.repairCost > 0) section.set("repair-cost", this.repairCost);
+        if (this.unbreakableEnabled != null) section.set("unbreakable", this.unbreakableEnabled);
+        if (this.unbreakableShowInTooltip != null) section.set("unbreakable-show-in-tooltip", this.unbreakableShowInTooltip);
+        if (this.fireResistant != null) section.set("fire-resistant", this.fireResistant);
+        if (this.hideTooltip != null) section.set("hide-tooltip", this.hideTooltip);
+        if (this.hideAdditionalTooltip != null) section.set("hide-additional-tooltip", this.hideAdditionalTooltip);
+        if (this.enchantmentGlint != null) section.set("enchantment-glint", this.enchantmentGlint);
+        if (this.enchantmentShowInTooltip != null) section.set("enchantment-show-in-tooltip", this.enchantmentShowInTooltip);
+        if (this.attributeShowInTooltip != null) section.set("attribute-show-in-tooltip", this.attributeShowInTooltip);
+        if (this.itemRarity != null) section.set("item-rarity", this.itemRarity.name());
+        if (this.tooltipStyle != null) section.set("tooltip-style", this.tooltipStyle);
+        if (this.itemModel != null) section.set("item-model", this.itemModel);
+        if (this.equippedModel != null) section.set("equipped-model", this.equippedModel);
+    }
+
+    private void serializeTranslations(ConfigurationSection section) {
+        if (!this.translatedDisplayName.isEmpty()) {
+            List<Map<String, Object>> names = new ArrayList<>(this.translatedDisplayName.size());
+            this.translatedDisplayName.forEach((locale, name) -> names.add(new LinkedHashMap<>(Map.of("locale", locale, "name", name))));
+            section.set("translated-name", names);
+        }
+        if (!this.translatedLore.isEmpty()) {
+            List<Map<String, Object>> lores = new ArrayList<>(this.translatedLore.size());
+            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", lore))));
+            section.set("translated-lore", lores);
+        }
+    }
+
+    private String enchantmentName(Enchantment enchantment) {
+        String key = enchantment.getKey().getKey();
+        boolean readsBack = this.inventoryManager.getEnchantments().getEnchantments(key)
+                .map(menuEnchantment -> menuEnchantment.enchantment().equals(enchantment))
+                .orElse(false);
+        return readsBack ? key : enchantment.getName();
     }
 }

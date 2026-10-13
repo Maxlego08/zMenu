@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class ResolvableEnchantmentEntry implements Resolvable<AbstractMap.SimpleEntry<Enchantment, Integer>> {
     private final ResolvableEnchantment enchantment;
@@ -25,5 +27,13 @@ public final class ResolvableEnchantmentEntry implements Resolvable<AbstractMap.
         Integer lvl = this.level.resolve(context);
         if (ench == null || lvl == null) return null;
         return new AbstractMap.SimpleEntry<>(ench, lvl);
+    }
+
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put(String.valueOf(this.enchantment.serialize()), this.level.serialize());
+        return map;
     }
 }

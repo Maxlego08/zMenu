@@ -57,6 +57,11 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     }
 
     @Override
+    public boolean isMathExpression() {
+        return this.enableMathExpression;
+    }
+
+    @Override
     public @NonNull Data toData(OfflinePlayer player) {
         return this.toData(player, new Placeholders());
     }

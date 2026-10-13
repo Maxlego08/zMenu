@@ -12,6 +12,8 @@ import fr.maxlego08.menu.zcore.utils.discord.DiscordWebhookComponent;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class DiscordComponentAction extends ActionHelper {
 
     private final DiscordConfigurationComponent configuration;
@@ -35,5 +37,14 @@ public class DiscordComponentAction extends ActionHelper {
                 }
             }
         });
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "discord component");
+        map.put("webhook", this.configuration.webhookUrl());
+        if (this.configuration.avatarUrl() != null) map.put("avatar-url", this.configuration.avatarUrl());
+        if (this.configuration.username() != null) map.put("username", this.configuration.username());
+        if (this.configuration.json() != null) map.put("component", this.configuration.json());
     }
 }

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,4 +24,14 @@ public interface TitleAnimation {
      */
     @Nullable
     PlayerTitleAnimation playTitleAnimation(@NotNull MenuPlugin plugin, int containerId, @NotNull InventoryType type, int size, @NotNull Object... args);
+
+    /**
+     * Writes this animation in the format its loader reads, under {@code title-animation}.
+     *
+     * @param section The section to write into.
+     * @throws UnsupportedOperationException If this animation cannot be serialized.
+     */
+    default void serialize(@NotNull ConfigurationSection section) {
+        throw new UnsupportedOperationException("The title animation " + this.getClass().getName() + " cannot be serialized");
+    }
 }

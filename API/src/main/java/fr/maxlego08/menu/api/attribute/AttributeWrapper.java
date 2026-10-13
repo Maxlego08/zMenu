@@ -9,10 +9,7 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Value object for encapsulating all data needed for an attribute modifier on an item: the attribute, operation, amount, and slot.
@@ -32,6 +29,15 @@ public record AttributeWrapper(@NotNull Attribute attribute,@NotNull AttributeMo
                 ((Number) attributeMap.get("amount")).doubleValue(),
                 EquipmentSlotGroup.getByName((String) attributeMap.get("slot"))
         );
+    }
+
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("attribute", this.attribute.getKey().toString());
+        map.put("operation", this.operation.name());
+        map.put("amount", this.amount);
+        map.put("slot", this.slot.toString());
+        return map;
     }
 
     public AttributeModifier toAttributeModifier(MenuPlugin plugin) {

@@ -13,4 +13,9 @@ public class LoreEqualsRule extends LoreRule {
     protected boolean matchesLine(@NotNull String line, @NotNull String value) {
         return line.equals(value);
     }
+
+    @Override
+    protected @NotNull String getMatchType() {
+        return "equals";
+    }
 }

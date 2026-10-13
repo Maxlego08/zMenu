@@ -2,11 +2,13 @@ package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -49,5 +51,15 @@ public class OpenWithItem {
             return false;
         }
         return this.itemStackSimilar.isSimilar(itemStackA, item);
+    }
+
+    public void serialize(@NotNull ConfigurationSection section) {
+        this.menuItemStack.serialize(section.createSection("item"));
+        List<String> actionNames = new ArrayList<>(this.actions.size());
+        for (Action action : this.actions) {
+            actionNames.add(action.name());
+        }
+        section.set("actions", actionNames);
+        if (!"full".equals(this.itemStackSimilar.getName())) section.set("type", this.itemStackSimilar.getName());
     }
 }

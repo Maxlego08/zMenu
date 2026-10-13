@@ -32,6 +32,10 @@ public final class MinecraftVersion implements Comparable<MinecraftVersion> {
         return currentVersion;
     }
 
+    public static boolean isServerAtLeast(@NotNull String version) {
+        return getCurrentVersion().isAtLeast(parse(version));
+    }
+
     @NotNull
     public static MinecraftVersion parse(@Nullable String rawVersion) {
         if (rawVersion == null || rawVersion.isBlank()) {

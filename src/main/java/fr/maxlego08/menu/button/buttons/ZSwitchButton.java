@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.SwitchButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.SwitchCaseButton;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.IntPredicate;
@@ -17,6 +19,22 @@ public class ZSwitchButton extends SwitchButton {
     public ZSwitchButton(String placeholder, List<SwitchCaseButton> buttons) {
         this.placeholder = placeholder;
         this.buttons = buttons;
+    }
+
+    @Override
+    protected void serializeProperties(@NotNull ConfigurationSection section) {
+        section.set("type", "switch");
+        section.set("key", this.placeholder);
+    }
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section, int inventorySize) {
+        super.serialize(section, inventorySize);
+        if (this.buttons.isEmpty()) return;
+        ConfigurationSection buttonsSection = section.createSection("buttons");
+        for (SwitchCaseButton button : this.buttons) {
+            button.button().serialize(buttonsSection.createSection(button.value()), inventorySize);
+        }
     }
 
     @Override

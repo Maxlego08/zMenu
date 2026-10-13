@@ -4,7 +4,7 @@
 [![Servers](https://img.shields.io/endpoint?url=https://faststats.dev/api/shields/zmenu?metric=servers)](https://faststats.dev/project/zmenu/minecraft-plugin)
 [![Discord](https://img.shields.io/discord/511516467615760405?logo=discord&label=Discord&color=5865F2)](https://discord.gg/daTBzuk)
 [![Java](https://img.shields.io/badge/Java-21+-orange?logo=openjdk)](https://www.oracle.com/java/)
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.19--26.2+-green)](https://www.minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.20.6--26.3+-green)](https://www.minecraft.net/)
 
 zMenu is a powerful Minecraft **[Paper](https://github.com/PaperMC/Paper)** plugin for creating custom inventory GUIs through YAML configuration files. No coding is required for server administrators, while developers get a complete API for integration.
 
@@ -27,7 +27,7 @@ zMenu is a powerful Minecraft **[Paper](https://github.com/PaperMC/Paper)** plug
 ## Requirements
 
 - Java 21 or newer
-- Paper 1.19 or newer, a compatible Paper fork, or Folia
+- Paper 1.20.6 or newer, a compatible Paper fork, or Folia
 - Java 25 for Paper 26.1 and newer
 
 > [!WARNING]

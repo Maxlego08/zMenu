@@ -14,6 +14,7 @@ import java.io.File;
 
 @AutoActionLoader
 public class TeleportLoader extends ActionLoader {
+    public static final String DEFAULT_WORLD = "world";
 
     private final MenuPlugin plugin;
 
@@ -24,7 +25,7 @@ public class TeleportLoader extends ActionLoader {
 
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
-        String world = accessor.getString("world", "world");
+        String world = accessor.getString("world", DEFAULT_WORLD);
         double x = Double.parseDouble(accessor.getString("x", "0.0"));
         double y = Double.parseDouble(accessor.getString("y", "0.0"));
         double z = Double.parseDouble(accessor.getString("z", "0.0"));

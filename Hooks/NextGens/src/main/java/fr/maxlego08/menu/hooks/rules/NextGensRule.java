@@ -20,4 +20,9 @@ public class NextGensRule extends AbstractPluginItemRule {
         Generator generator = NextGens.getApi().getGenerator(itemStack);
         return generator != null ? generator.id() : null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "nextgens";
+    }
 }

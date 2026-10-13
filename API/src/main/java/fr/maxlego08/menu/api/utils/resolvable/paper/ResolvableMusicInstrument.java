@@ -14,6 +14,9 @@ import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvableMusicInstrument implements Resolvable<MusicInstrument> {
     private final ResolvableNamespacedKey key;
     private final ResolvableFloat duration;
@@ -57,5 +60,22 @@ public final class ResolvableMusicInstrument implements Resolvable<MusicInstrume
         }
 
         return new ZMusicInstrument(namespacedKey, resolvedDuration, resolvedRange, resolvedDescription, resolvedSoundEvent);
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        if (this.instrumentEntry != null) {
+            return this.instrumentEntry.serialize();
+        }
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.description != null) map.put("description", this.description.serialize());
+        if (this.duration != null) map.put("use-duration", this.duration.serialize());
+        if (this.range != null) map.put("range", this.range.serialize());
+        if (this.soundEvent != null) {
+            map.put("sound-event", this.soundEvent.serialize());
+        } else if (this.key != null) {
+            map.put("sound-event", this.key.serialize());
+        }
+        return map;
     }
 }

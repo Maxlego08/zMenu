@@ -2,6 +2,7 @@ package fr.maxlego08.menu.zcore.utils.discord;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,6 +112,47 @@ public record DiscordEmbedConfiguration(String title, String description, String
         }
 
         return new Color(r, g, b, a);
+    }
+
+    /**
+     * Writes this embed in the format {@link #convertToEmbedObjects} reads.
+     *
+     * @return The embed as a map, ready to be put in the embeds list of a discord action.
+     */
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.title != null) map.put("title", this.title);
+        if (this.description != null) map.put("description", this.description);
+        if (this.url != null) map.put("url", this.url);
+        if (this.color != null) {
+            String hex = String.format("#%02X%02X%02X", this.color.getRed(), this.color.getGreen(), this.color.getBlue());
+            map.put("color", this.color.getAlpha() == 255 ? hex : hex + String.format("%02X", this.color.getAlpha()));
+        }
+        if (this.footer != null) map.put("footer", withoutNulls("text", this.footer.text(), "icon-url", this.footer.iconUrl()));
+        if (this.thumbnail != null) map.put("thumbnail", withoutNulls("url", this.thumbnail.url()));
+        if (this.image != null) map.put("image", withoutNulls("url", this.image.url()));
+        if (this.author != null) map.put("author", withoutNulls("name", this.author.name(), "url", this.author.url(), "icon-url", this.author.iconUrl()));
+        if (this.fields != null && !this.fields.isEmpty()) {
+            List<Map<String, Object>> serializedFields = new ArrayList<>(this.fields.size());
+            for (Field field : this.fields) {
+                Map<String, Object> fieldMap = withoutNulls("name", field.name(), "value", field.value());
+                if (field.inline()) fieldMap.put("inline", true);
+                serializedFields.add(fieldMap);
+            }
+            map.put("fields", serializedFields);
+        }
+        return map;
+    }
+
+    /**
+     * Builds a map from key/value pairs, leaving out the null values.
+     */
+    private static Map<String, Object> withoutNulls(Object... keysAndValues) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (int index = 0; index + 1 < keysAndValues.length; index += 2) {
+            if (keysAndValues[index + 1] != null) map.put((String) keysAndValues[index], keysAndValues[index + 1]);
+        }
+        return map;
     }
 
     public void apply(ReturnConsumer<String, String> consumer, DiscordWebhook discordWebhook) {

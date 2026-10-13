@@ -177,6 +177,7 @@ public enum Message implements IMessage {
     SAVE_ERROR_NAME("&cThe name already exists for this item, please select another one."),
     SAVE_ERROR_TYPE("&cCannot find save type."),
     SAVE_SUCCESS("&aYou just saved the item &f%name%&a."),
+    SAVE_BASE64_FALLBACK("&eThe item &f%name%&e was saved as base64, because these components cannot be written as YAML yet: &f%components%&e."),
     CLICK_COOLDOWN(MessageType.ACTION, "&cPlease wait a little between two clicks."),
     CURRENCY_NOT_ENOUGH("&cYou cannot afford this."),
     CURRENCY_ERROR("&cThe transaction could not be completed, nothing was taken."),

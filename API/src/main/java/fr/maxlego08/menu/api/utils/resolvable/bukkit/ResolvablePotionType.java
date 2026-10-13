@@ -50,4 +50,9 @@ public final class ResolvablePotionType extends ParsableResolvable<PotionType> {
             return null;
         }
     }
+
+    @Override
+    protected @NotNull Object serializeValue(@NotNull PotionType value) {
+        return value.getKey().toString();
+    }
 }

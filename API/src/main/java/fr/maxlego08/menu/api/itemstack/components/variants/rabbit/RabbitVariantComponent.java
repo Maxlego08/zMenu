@@ -21,4 +21,9 @@ public final class RabbitVariantComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.variant, resolvedVariant -> itemStack.setData(io.papermc.paper.datacomponent.DataComponentTypes.RABBIT_VARIANT, resolvedVariant));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.variant.serialize();
+    }
 }

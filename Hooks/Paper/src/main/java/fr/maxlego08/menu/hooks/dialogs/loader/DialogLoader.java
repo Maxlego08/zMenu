@@ -39,7 +39,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         File file = (File) objects[0];
 
         String name = configuration.getString("name", "");
-        String externalTitle = configuration.getString("external-title", "");
+        String externalTitle = configuration.getString("external-title", configuration.getString("external_title", ""));
 
         String typeString = configuration.getString("type", "NOTICE");
         DialogType dialogType;
@@ -76,16 +76,20 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
                 Logger.info("Failed to load open requirement: " + e.getMessage(), Logger.LogType.WARNING);
             }
         }
-        if (configuration.isConfigurationSection("inventory-replacement")){
-            String replacementName = configuration.getString("inventory-replacement.name", "");
-            String replacementPlugin = configuration.getString("inventory-replacement.plugin", "zMenu");
-            List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
-            InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
-            dialogInventory.setInventoryReplacement(inventoryReplacement);
+        if (configuration.isConfigurationSection("inventory-replacement")) {
+            ConfigurationSection inventorySection = configuration.getConfigurationSection("inventory-replacement");
+            if (inventorySection != null) {
+                InventoryReplacement inventoryReplacement = InventoryReplacement.deserialize(inventorySection);
+                if (inventoryReplacement != null) {
+                    dialogInventory.setInventoryReplacement(inventoryReplacement);
+                } else {
+                    Logger.info("The inventory-replacement of the dialog " + file.getName() + " has no name, it will be ignored.", Logger.LogType.WARNING);
+                }
+            }
         }
         if (configuration.isConfigurationSection("fallback-inventory")) {
             String fallbackName = configuration.getString("fallback-inventory.name", "");
-            String fallbackPlugin = configuration.getString("fallback-inventory.plugin", "zMenu");
+            String fallbackPlugin = configuration.getString("fallback-inventory.plugin", InventoryReplacement.DEFAULT_PLUGIN);
             int fallbackPage = configuration.getInt("fallback-inventory.page", 1);
             DialogFallback dialogFallback = new DialogFallback(fallbackName, fallbackPlugin, fallbackPage);
             if (!dialogFallback.isValid()) {
@@ -172,11 +176,6 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
             }
         }
         return buttons;
-    }
-
-    @Override
-    public void save(AbstractDialogInventory object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-        //TODO: Implement save logic if needed
     }
 
     protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {

@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.Horse;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public class HorseVariantLoader extends EnumVariantLoader<Horse.Color> {
     public HorseVariantLoader() {
         super("horse/variant", Horse.Color.class, HorseVariantComponent::new);
