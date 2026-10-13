@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.2.0
+
 ## New Features
 
 * Added DeluxeMenus conversion support with `/zm convert deluxemenus [menu]` (also available as `dm`), allowing DeluxeMenus configurations to be converted into zMenu inventories and reporting unsupported or partially converted features.
