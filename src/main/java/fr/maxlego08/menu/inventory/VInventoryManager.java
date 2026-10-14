@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fr.maxlego08.menu.zcore.logger.Logger;
 
+import fr.maxlego08.menu.ZCommandManager;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -458,5 +459,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         }
         this.cooldownClick.remove(player.getUniqueId());
         this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
+        if (this.plugin.getCommandManager() instanceof ZCommandManager commandManager) {
+            commandManager.removePlayerArguments(player.getUniqueId());
+        }
     }
 }

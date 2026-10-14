@@ -1,23 +1,42 @@
 package fr.maxlego08.menu.common.utils;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.placeholder.Placeholder;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class PapiUtils extends TranslationHelper {
 
+    private static final long MAXIMUM_CACHE_SIZE = 10_000;
+
     private static volatile Placeholder placeholder;
-    private transient final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
+    private transient volatile Cache<String, String> cache;
+    private transient volatile long cacheDuration = -1;
 
     private Placeholder use() {
         if (placeholder == null) {
             placeholder = Placeholder.Placeholders.getPlaceholder();
         }
         return placeholder;
+    }
+
+    private Cache<String, String> getCache() {
+        long duration = Configuration.cachePlaceholderAPI;
+        Cache<String, String> current = this.cache;
+        if (current == null || this.cacheDuration != duration) {
+            current = CacheBuilder.newBuilder()
+                    .maximumSize(MAXIMUM_CACHE_SIZE)
+                    .expireAfterWrite(Math.max(duration, 0), TimeUnit.MILLISECONDS)
+                    .build();
+            this.cache = current;
+            this.cacheDuration = duration;
+        }
+        return current;
     }
 
     public Object papi(Object placeHolder, OfflinePlayer player, boolean useCache) {
@@ -28,20 +47,28 @@ public class PapiUtils extends TranslationHelper {
         if (placeHolder == null) return null;
         if (player == null) return placeHolder;
         if (!placeHolder.contains("%")) return placeHolder;
+
+        if (!Configuration.enableCachePlaceholderAPI) {
+            return this.parse(placeHolder, player);
+        }
+
+        Cache<String, String> cache = this.getCache();
         String cacheKey = placeHolder + ";" + player.getUniqueId();
-        CacheEntry cachedResult = this.cache.get(cacheKey);
 
-        if (Configuration.enableCachePlaceholderAPI && cachedResult != null && cachedResult.isValid() && useCache) {
-            return cachedResult.value;
+        if (useCache) {
+            String cachedResult = cache.getIfPresent(cacheKey);
+            if (cachedResult != null) return cachedResult;
         }
 
-        String result = this.use().setPlaceholders(player, placeHolder).replace("%player%", player.getName());
-
-        if (Configuration.enableCachePlaceholderAPI) {
-            this.cache.put(cacheKey, new CacheEntry(result, System.currentTimeMillis()));
-        }
-
+        String result = this.parse(placeHolder, player);
+        cache.put(cacheKey, result);
         return result;
+    }
+
+    private String parse(String placeHolder, OfflinePlayer player) {
+        String result = this.use().setPlaceholders(player, placeHolder);
+        String playerName = player.getName();
+        return playerName == null ? result : result.replace("%player%", playerName);
     }
 
     public List<String> papi(List<String> placeHolders, OfflinePlayer player, boolean useCache) {
@@ -52,15 +79,4 @@ public class PapiUtils extends TranslationHelper {
         }
         return parsed;
     }
-
-    /**
-     * @param timeStamp Time when the cache entry was created
-     */
-    private record CacheEntry(String value, long timeStamp) {
-
-        public boolean isValid() {
-                // Check if the cache entry is still valid (not older than 1000 milliseconds)
-                return System.currentTimeMillis() - this.timeStamp <Configuration.cachePlaceholderAPI;
-            }
-        }
 }

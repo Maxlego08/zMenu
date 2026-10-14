@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
@@ -33,6 +34,7 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
         YamlFileCache.clearCache();
+        OfflinePlayerCache.clearCache();
         this.plugin.getMetaUpdater().clearCache();
 
         this.plugin.loadGlobalPlaceholders();

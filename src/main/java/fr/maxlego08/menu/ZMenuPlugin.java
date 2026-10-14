@@ -526,6 +526,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.safeDisable("configuration", () -> Configuration.getInstance().save(this.getConfig(), this.configFile));
 
         this.safeDisable("file cache", YamlFileCache::clearCache);
+        this.safeDisable("api offline player cache", fr.maxlego08.menu.api.utils.OfflinePlayerCache::clearCache);
 
         if (this.websiteManager != null) this.safeDisable("website manager", this.websiteManager::onDisable);
 

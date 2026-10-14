@@ -7,6 +7,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems;
+import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -43,6 +44,7 @@ public class PacketTitleListener implements PacketListener {
         UUID playerUniqueId = event.getUser().getUUID();
         if (playerUniqueId != null) {
             this.playerPacketInformation.remove(playerUniqueId);
+            PacketUtils.fakeContents.remove(playerUniqueId);
         }
     }
 
