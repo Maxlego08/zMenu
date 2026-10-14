@@ -43,6 +43,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
     private static final Timer TIMER = new Timer();
+    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
+    private static final Pattern HEX_COLOR_REVERSE_PATTERN = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
     // For plugin support from 1.8 to 1.12
     private static Material[] byId;
 
@@ -327,30 +329,26 @@ public abstract class ZUtils extends MessageUtils {
 
     protected String color(String message) {
         if (message == null) return null;
-        if (NMSUtils.isHexColor()) {
-            Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-            Matcher matcher = pattern.matcher(message);
+        if (NMSUtils.isHexColor() && message.indexOf('#') >= 0) {
+            Matcher matcher = HEX_COLOR_PATTERN.matcher(message);
+            StringBuilder builder = new StringBuilder(message.length() + 32);
             while (matcher.find()) {
-                String color = message.substring(matcher.start(), matcher.end());
-                message = message.replace(color, String.valueOf(net.md_5.bungee.api.ChatColor.of(color)));
-                matcher = pattern.matcher(message);
+                matcher.appendReplacement(builder, Matcher.quoteReplacement(net.md_5.bungee.api.ChatColor.of(matcher.group()).toString()));
             }
+            message = matcher.appendTail(builder).toString();
         }
         return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public String colorReverse(String message) {
-        Pattern pattern = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
-        Matcher matcher = pattern.matcher(message);
+        Matcher matcher = HEX_COLOR_REVERSE_PATTERN.matcher(message);
+        StringBuilder builder = new StringBuilder(message.length());
         while (matcher.find()) {
-            String color = message.substring(matcher.start(), matcher.end());
-            String colorReplace = color.replace("§x", "#");
-            colorReplace = colorReplace.replace("§", "");
-            message = message.replace(color, colorReplace);
-            matcher = pattern.matcher(message);
+            String colorReplace = matcher.group().replace("§x", "#").replace("§", "");
+            matcher.appendReplacement(builder, Matcher.quoteReplacement(colorReplace));
         }
 
-        return message.replace("§", "&");
+        return matcher.appendTail(builder).toString().replace("§", "&");
     }
 
     protected List<String> color(List<String> messages) {

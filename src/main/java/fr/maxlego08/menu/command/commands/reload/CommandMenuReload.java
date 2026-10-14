@@ -17,8 +17,6 @@ import fr.robie.paperdispatch.command.SubCommand;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-
 public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
 
     public CommandMenuReload(ZMenuPlugin plugin) {
@@ -58,12 +56,9 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
 
         ItemManager itemManager = this.plugin.getItemManager();
         itemManager.reloadCustomItems();
-        Collection<? extends Player> onlinePlayers = this.plugin.getServer().getOnlinePlayers();
-        this.plugin.getScheduler().runAsync(w->{
-            for (Player player : onlinePlayers) {
-                itemManager.executeCheckInventoryItems(player);
-            }
-        });
+        for (Player player : this.plugin.getServer().getOnlinePlayers()) {
+            this.plugin.getScheduler().runAtEntity(player, w -> itemManager.executeCheckInventoryItems(player));
+        }
 
         this.plugin.getDataManager().loadDefaultValues();
 
