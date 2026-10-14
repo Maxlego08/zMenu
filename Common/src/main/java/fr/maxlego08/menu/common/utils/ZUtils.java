@@ -36,13 +36,11 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
-    private static final Timer TIMER = new Timer();
     private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
     private static final Pattern HEX_COLOR_REVERSE_PATTERN = Pattern.compile(net.md_5.bungee.api.ChatColor.COLOR_CHAR + "x[a-fA-F0-9-" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "]{12}");
     // For plugin support from 1.8 to 1.12
@@ -289,43 +287,6 @@ public abstract class ZUtils extends MessageUtils {
         return permissible.hasPermission(permission);
     }
 
-
-    /**
-     * Schedules a fixed-rate execution of a task associated with the given plugin.
-     *
-     * @param plugin   the MenuPlugin for which the task is scheduled
-     * @param delay    the delay in milliseconds before task is to be executed and between successive task executions
-     * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
-     * @return the scheduled TimerTask
-     */
-    protected TimerTask scheduleFix(MenuPlugin plugin, long delay, BiConsumer<TimerTask, Boolean> consumer) {
-        return this.scheduleFix(plugin, delay, delay, consumer);
-    }
-
-    /**
-     * Schedules a fixed-rate execution of a task associated with the given plugin.
-     *
-     * @param plugin   the MenuPlugin for which the task is scheduled
-     * @param startAt  the delay in milliseconds before the task is first executed
-     * @param delay    the delay in milliseconds between successive task executions
-     * @param consumer the BiConsumer to be executed with the TimerTask and a boolean indicating the task's success
-     * @return the scheduled TimerTask
-     */
-    protected TimerTask scheduleFix(MenuPlugin plugin, long startAt, long delay, BiConsumer<TimerTask, Boolean> consumer) {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                if (!plugin.isEnabled()) {
-                    this.cancel();
-                    consumer.accept(this, false);
-                    return;
-                }
-                plugin.getScheduler().runNextTick(w -> consumer.accept(this, true));
-            }
-        };
-        TIMER.scheduleAtFixedRate(task, startAt, delay);
-        return task;
-    }
 
     protected String color(String message) {
         if (message == null) return null;
