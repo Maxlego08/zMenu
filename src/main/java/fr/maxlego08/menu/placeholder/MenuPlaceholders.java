@@ -28,7 +28,7 @@ public class MenuPlaceholders extends ZUtils {
         
         placeholder.register("player_page", (player, s) -> String.valueOf(inventoryManager.getPage(player)));
         placeholder.register("player_next_page", (player, s) -> String.valueOf(inventoryManager.getPage(player) + 1));
-        placeholder.register("player_previous_page", (player, s) -> String.valueOf(inventoryManager.getPage(player) - 1));
+        placeholder.register("player_previous_page", (player, s) -> String.valueOf(Math.max(0, inventoryManager.getPage(player) - 1)));
         placeholder.register("player_max_page", (player, s) -> String.valueOf(inventoryManager.getMaxPage(player)));
         
         placeholder.register("pagination_page_", (player, contextId) -> {
