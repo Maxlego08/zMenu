@@ -88,7 +88,7 @@ public class MenuPlaceholders extends ZUtils {
         placeholder.register("formatted_math_", (player, args) -> this.format(new ExpressionBuilder(plugin.parse(player, args.replace("{", "%").replace("}", "%"))).build().evaluate()));
 
         // Statistics
-        placeholder.register("statistic_hours_played", (player, s) -> String.valueOf((player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20) / 60));
+        placeholder.register("statistic_hours_played", (player, s) -> String.valueOf(player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60 / 60));
         placeholder.register("statistic_time_played", (player, s) -> TimerBuilder.getStringTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20));
 
         // Global Placeholders
