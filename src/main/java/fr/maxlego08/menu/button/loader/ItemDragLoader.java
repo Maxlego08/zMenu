@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.button.buttons.ZItemDragButton;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
@@ -50,6 +51,10 @@ public class ItemDragLoader extends ButtonLoader {
         ConfigurationSection ruleSection = configuration.getConfigurationSection(path + "rule");
         if (ruleSection != null) {
             Rule rule = ZRuleLoaderRegistry.getInstance().loadRule(ruleSection.getValues(true));
+            if (rule == null || !rule.isValid()) {
+                Logger.info("The rule of the item_drag button " + path + " in " + defaultButtonValue.getFile().getName() + " is invalid, the button will refuse every item.", Logger.LogType.WARNING);
+                rule = context -> false;
+            }
             button.setRule(rule);
         }
 
