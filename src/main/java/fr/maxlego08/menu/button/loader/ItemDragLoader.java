@@ -37,7 +37,10 @@ public class ItemDragLoader extends ButtonLoader {
         if (check_element != null) {
             MenuItemStack menuItemStack = this.inventoryManager.loadItemStack(configuration, path + check_element + ".item.", defaultButtonValue.getFile());
             String type = configuration.getString(path + check_element + ".type", "full");
-            ItemStackSimilar itemStackSimilar = this.inventoryManager.getItemStackVerification(type).orElseGet(FullSimilar::new);
+            ItemStackSimilar itemStackSimilar = this.inventoryManager.getItemStackVerification(type).orElseGet(() -> {
+                Logger.info("Unknown check-item type '" + type + "' for the item_drag button " + path + " in " + defaultButtonValue.getFile().getName() + ", using 'full'.", Logger.LogType.WARNING);
+                return new FullSimilar();
+            });
             button.setCheckItem(menuItemStack, itemStackSimilar);
         }
 
