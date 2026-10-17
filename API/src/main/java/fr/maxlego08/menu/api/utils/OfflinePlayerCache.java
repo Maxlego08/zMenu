@@ -19,10 +19,9 @@ public class OfflinePlayerCache {
      */
     @NotNull
     public static OfflinePlayer get(@NotNull String playerName) {
-        return offlinePlayer.computeIfAbsent(playerName, name -> {
-            Player player = Bukkit.getPlayer(name);
-            return player != null ? player : Bukkit.getOfflinePlayer(name);
-        });
+        Player player = Bukkit.getPlayer(playerName);
+        if (player != null) return player;
+        return offlinePlayer.computeIfAbsent(playerName, Bukkit::getOfflinePlayer);
     }
 
     public static void clearCache(){

@@ -10,24 +10,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 public class ItemStackUtils {
 
     private static final NmsVersion NMS_VERSION = NmsVersion.nmsVersion;
-    private static final Map<ItemStack, String> itemStackSerialized = new HashMap<>();
     private static final MinecraftVersion MINECRAFT_VERSION = MinecraftVersion.getCurrentVersion();
 
     public static String serializeItemStack(ItemStack paramItemStack) {
 
         if (paramItemStack == null) {
             return "null";
-        }
-
-        if (itemStackSerialized.containsKey(paramItemStack)) {
-            return itemStackSerialized.get(paramItemStack);
         }
 
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) {
@@ -60,9 +53,7 @@ public class ItemStackUtils {
                 Logger.error(localException);
             }
         }
-        String string = Base64.encode(localByteArrayOutputStream.toByteArray());
-        itemStackSerialized.put(paramItemStack, string);
-        return string;
+        return Base64.encode(localByteArrayOutputStream.toByteArray());
     }
 
     public static ItemStack deserializeItemStack(String paramString) {
@@ -116,8 +107,6 @@ public class ItemStackUtils {
         } catch (Exception localException) {
             // Logger.error(localException);
         }
-        if (localItemStack != null && !itemStackSerialized.containsKey(localItemStack))
-            itemStackSerialized.put(localItemStack, paramString);
         return localItemStack;
 
     }

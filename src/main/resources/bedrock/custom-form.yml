@@ -18,7 +18,7 @@ buttons:
   text:
     type: bedrock_text
     text: "Share your thoughts about our server:"
-    initial-value: "This server is amazing because..."
+    default-value: "This server is amazing because..."
   toggle:
     # Toggle choice example
     type: bedrock_toggle

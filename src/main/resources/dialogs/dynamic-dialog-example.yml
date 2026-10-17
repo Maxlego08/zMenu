@@ -8,7 +8,7 @@ name: "&6Dynamic Dialog Example"
 type: notice
 can-close-with-escape: true
 pause: false
-after_action: CLOSE
+after-action: CLOSE
 
 body:
   dynamic_message:

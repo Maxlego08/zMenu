@@ -24,6 +24,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ZItemDragButton extends ItemDragButton {
 
@@ -41,7 +42,7 @@ public class ZItemDragButton extends ItemDragButton {
     private boolean enableErrorItem = false;
     private MenuItemStack errorItems;
     private boolean useErrorItemCache = true;
-    private final Map<UUID, Map<Integer, Boolean>> activeTasks = new HashMap<>();
+    private final Map<UUID, Map<Integer, Boolean>> activeTasks = new ConcurrentHashMap<>();
     private int ticks;
 
     public ZItemDragButton(@NotNull MenuPlugin plugin) {
@@ -123,6 +124,7 @@ public class ZItemDragButton extends ItemDragButton {
 
     @Override
     public void onInventoryClose(@NonNull Player player, @NonNull InventoryEngine inventory) {
+        this.activeTasks.remove(player.getUniqueId());
         this.slots.forEach(slot -> {
             ItemStack itemStack = inventory.getInventory().getItem(slot);
 

@@ -4,12 +4,12 @@ import fr.maxlego08.menu.api.TitleAnimationManager;
 import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class ZTitleAnimationManager implements TitleAnimationManager {
-    private final Map<String, TitleAnimationLoader> loaders = new HashMap<>();
+    private final Map<String, TitleAnimationLoader> loaders = new LinkedHashMap<>();
 
     public ZTitleAnimationManager() {
     }
@@ -25,7 +25,9 @@ public class ZTitleAnimationManager implements TitleAnimationManager {
 
     @Override
     public Optional<TitleAnimationLoader> getLoader(@NotNull String id) {
-        return Optional.ofNullable(this.loaders.get(id));
+        TitleAnimationLoader loader = this.loaders.get(id);
+        if (loader != null) return Optional.of(loader);
+        return this.loaders.entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(id)).map(Map.Entry::getValue).findFirst();
     }
 
     @Override
