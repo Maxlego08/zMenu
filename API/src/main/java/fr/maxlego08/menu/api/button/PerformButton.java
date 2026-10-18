@@ -1,12 +1,14 @@
 package fr.maxlego08.menu.api.button;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.Contract;
@@ -15,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class PerformButton extends SlotButton {
 
@@ -171,11 +174,12 @@ public abstract class PerformButton extends SlotButton {
                     player.chat("/" + plugin.parse(player, command));
                 } else {
                     String finalCommand = command;
-                    Runnable runnable = () -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
-                    if (plugin.isFolia()) {
-                        if (executor instanceof Player) scheduler.runAtEntity(((Player) executor), w -> runnable.run());
-                        else scheduler.runNextTick(w -> runnable.run());
-                    } else runnable.run();
+                    Consumer<WrappedTask> task = w -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
+                    if (executor instanceof Entity entity) {
+                        scheduler.runAtEntity(entity, task);
+                    } else {
+                        scheduler.runNextTick(task);
+                    }
                 }
             } catch (Exception exception) {
                 if (Configuration.enableDebug){

@@ -91,8 +91,8 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
@@ -273,9 +273,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
                 this.clientVersionManager.registerProvider(new ProtocolSupportClientVersionProvider());
             });
         }
-        if (this.isPaperOrFolia()) {
-            this.safeHook("Paper client version", () -> this.clientVersionManager.registerProvider(new PaperProtocolClientVersionProvider()));
-        }
+        this.safeHook("Paper client version", () -> this.clientVersionManager.registerProvider(new PaperProtocolClientVersionProvider()));
         this.addListener(this.clientVersionManager);
         servicesManager.register(ClientVersionManager.class, this.clientVersionManager, this, ServicePriority.Highest);
 
@@ -566,8 +564,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
      * @return true if dialog support can be loaded
      */
     private boolean isDialogCapableServer() {
-        return this.isPaperOrFolia()
-                && MinecraftVersion.getCurrentVersion().isAtLeast(DIALOG_MINIMUM_SERVER_VERSION)
+        return MinecraftVersion.getCurrentVersion().isAtLeast(DIALOG_MINIMUM_SERVER_VERSION)
                 && this.hasClass("io{}papermc{}paper{}registry{}data{}dialog{}action{}DialogAction");
     }
 
