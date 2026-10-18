@@ -63,6 +63,10 @@ database-configuration:
   database: zmenu
   # Enable of not the SQL debug mode
   debug: false
+  # Maximum lifetime of a pooled MySQL or MariaDB connection, in seconds.
+  # A connection older than this is retired and replaced. 0 keeps connections until the pool closes.
+  # Hikari requires at least 30 seconds. 1800 is 30 minutes, the same default used when this option is omitted.
+  max-lifetime: 1800
 
 # Time in seconds for saving data in batches.
 # Instead of making an SQL query for each update, a single query will be executed every 10 seconds
