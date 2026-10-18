@@ -101,6 +101,11 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
+
     if (project.name == "API") {
         tasks.javadoc {
             options.encoding = "UTF-8"
@@ -171,6 +176,7 @@ dependencies {
 
 dependencies {
     compileOnly(project(":Hooks:Paper-26"))
+    compileOnly(project(":Hooks:Paper-26-3"))
 }
 
 
@@ -180,6 +186,9 @@ tasks {
         dependsOn(paper26.tasks.jar)
         val jarFile = paper26.tasks.jar.get().archiveFile.get().asFile
         from(zipTree(jarFile))
+        val paper263 = project(":Hooks:Paper-26-3")
+        dependsOn(paper263.tasks.jar)
+        from(zipTree(paper263.tasks.jar.get().archiveFile.get().asFile))
 
         relocate("com.tcoded.folialib", "fr.maxlego08.menu.hooks.folialib")
         relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
