@@ -19,7 +19,7 @@ adventure-text-minimessage = "4.26.1"
 item-nbt-api = "2.16.0"
 
 # Utilities / Libraries
-sarah = "1.25"
+sarah = "1.26"
 currenciesapi = "1.0.15"
 folialib = "0.5.1"
 xseries = "13.8.0"
