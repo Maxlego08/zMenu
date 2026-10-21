@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import com.cryptomorin.xseries.XSound;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.*;
@@ -21,6 +22,7 @@ import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.*;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
+import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -43,6 +45,7 @@ import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
+import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
@@ -150,6 +153,24 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public PaginationManager getPaginationManager() {
         return this.paginationManager;
+    }
+
+    @Override
+    public String serializeItemStack(ItemStack itemStack) {
+        return ItemStackUtils.serializeItemStack(itemStack);
+    }
+
+    @Override
+    public ItemStack deserializeItemStack(String serializedItemStack) {
+        return ItemStackUtils.deserializeItemStack(serializedItemStack);
+    }
+
+    @Override
+    public SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom) {
+        Optional<XSound> xSound = XSound.of(soundName);
+
+        return xSound.map(sound -> new ZSoundOption(sound, categoryName, soundName, pitch, volume, isCustom)).orElse(null);
+
     }
 
     @Override
