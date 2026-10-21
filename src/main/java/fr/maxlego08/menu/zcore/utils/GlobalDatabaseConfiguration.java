@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class GlobalDatabaseConfiguration {
 
@@ -101,5 +102,19 @@ public class GlobalDatabaseConfiguration {
      */
     public boolean isDebug() {
         return this.globalConfiguration == null ? this.pluginConfiguration.getBoolean("database-configuration.debug") : this.globalConfiguration.getBoolean("database-configuration.debug", this.pluginConfiguration.getBoolean("database-configuration.debug", false));
+    }
+
+    /**
+     * Maximum pooled-connection lifetime, in milliseconds, for MySQL and MariaDB.
+     * A missing or negative value keeps Sarah's default of 30 minutes. {@code 0} disables retirement.
+     *
+     * @return the lifetime in milliseconds, or {@code null} to keep the library default
+     */
+    public Long getMaxLifetimeMillis() {
+        long seconds = this.globalConfiguration == null ? this.pluginConfiguration.getLong("database-configuration.max-lifetime", -1L) : this.globalConfiguration.getLong("database-configuration.max-lifetime", this.pluginConfiguration.getLong("database-configuration.max-lifetime", -1L));
+        if (seconds < 0) {
+            return null;
+        }
+        return TimeUnit.SECONDS.toMillis(seconds);
     }
 }
