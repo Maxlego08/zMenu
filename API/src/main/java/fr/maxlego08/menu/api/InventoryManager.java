@@ -34,7 +34,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -770,95 +769,6 @@ public interface InventoryManager extends Listener {
         for (Key alias : loader.aliases()) {
             registry.alias(plugin.getName(), alias, loader.key());
         }
-    }
-
-    /**
-     * Returns whether the opening animation of an inventory has already been played for a player
-     * since they connected.
-     *
-     * <p>Only used by {@link fr.maxlego08.menu.api.animation.slot.AnimationPlayMode#ONCE}.</p>
-     *
-     * @param player       The player.
-     * @param animationKey The key identifying the inventory.
-     * @return true if the animation has already been played.
-     */
-    default boolean hasPlayedAnimation(@NotNull Player player, @NotNull String animationKey) {
-        return false;
-    }
-
-    /**
-     * Remembers that the opening animation of an inventory has been played for a player.
-     *
-     * @param player       The player.
-     * @param animationKey The key identifying the inventory.
-     */
-    default void markAnimationPlayed(@NotNull Player player, @NotNull String animationKey) {
-    }
-
-    /**
-     * Forgets every animation played for a player, when they disconnect.
-     *
-     * @param uniqueId The unique id of the player.
-     */
-    default void clearPlayedAnimations(@NotNull UUID uniqueId) {
-    }
-
-    /**
-     * Reads back which animations a player has already seen, when they join.
-     *
-     * <p>Called once per connection. The rows are fetched off the main thread and kept in memory,
-     * so that opening a menu never waits on the database.</p>
-     *
-     * @param player The player.
-     */
-    default void loadAnimationHistory(@NotNull Player player) {
-    }
-
-    /**
-     * When a player last saw an animation that remembers itself beyond the session.
-     *
-     * <p>Answered from memory: the rows are read once when the player joins, because a menu opens
-     * far too often to ask the database each time.</p>
-     *
-     * @param player       The player.
-     * @param animationKey The key identifying the inventory.
-     * @return the time it last played in milliseconds since the epoch, or null if it never has.
-     */
-    @Nullable
-    default Long getAnimationPlayedAt(@NotNull Player player, @NotNull String animationKey) {
-        return null;
-    }
-
-    /**
-     * Whether what a player has already seen is known yet.
-     *
-     * <p>False for the short moment between joining and the rows coming back, during which an
-     * animation that only plays once is held back rather than risking spending its single play.</p>
-     *
-     * @param player The player.
-     * @return true once the player's history is in memory.
-     */
-    default boolean isAnimationHistoryLoaded(@NotNull Player player) {
-        return true;
-    }
-
-    /**
-     * Remembers that an animation has played, in the database as well as in memory.
-     *
-     * @param player       The player.
-     * @param animationKey The key identifying the inventory.
-     * @param playedAt     When it played, in milliseconds since the epoch.
-     */
-    default void markAnimationPlayedForever(@NotNull Player player, @NotNull String animationKey, long playedAt) {
-    }
-
-    /**
-     * Forgets that a player has seen an animation, so one that only plays once plays again.
-     *
-     * @param uniqueId     The unique id of the player.
-     * @param animationKey The animation to forget, or null to forget all of them.
-     */
-    default void forgetPlayedAnimation(@NotNull UUID uniqueId, @Nullable String animationKey) {
     }
 
     String serializeItemStack(ItemStack itemStack);

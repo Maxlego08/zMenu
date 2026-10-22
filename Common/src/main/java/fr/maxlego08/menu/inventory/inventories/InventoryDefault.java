@@ -11,6 +11,7 @@ import fr.maxlego08.menu.animation.compile.StepAction;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.animation.slot.AnimationContext;
+import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
 import fr.maxlego08.menu.api.animation.slot.AnimationSlots;
@@ -519,15 +520,15 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         AnimationPlayMode playMode = settings.play();
         boolean tracksPlays = playMode.isOnce() || settings.cooldown() > 0;
         String historyKey = tracksPlays ? this.getAnimationHistoryKey() : null;
-        InventoryManager inventoryManager = this.plugin.getInventoryManager();
+        AnimationHistory history = this.plugin.getInventoryManager().getAnimationManager().getHistory();
 
         boolean historyInDatabase = settings.needsPersistence();
-        if (historyInDatabase && !inventoryManager.isAnimationHistoryLoaded(this.player)) return;
+        if (historyInDatabase && !history.isLoaded(this.player)) return;
 
         if (tracksPlays) {
             Long lastPlayedAt = historyInDatabase
-                    ? inventoryManager.getAnimationPlayedAt(this.player, historyKey)
-                    : (inventoryManager.hasPlayedAnimation(this.player, historyKey) ? 0L : null);
+                    ? history.getPlayedAt(this.player, historyKey)
+                    : (history.hasPlayedThisSession(this.player, historyKey) ? 0L : null);
 
             if (!playMode.canPlay(lastPlayedAt, System.currentTimeMillis(), settings.cooldown())) return;
         }
@@ -537,9 +538,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         if (!tracksPlays || duration <= 0) return;
 
         if (historyInDatabase) {
-            inventoryManager.markAnimationPlayedForever(this.player, historyKey, System.currentTimeMillis());
+            history.markPlayed(this.player, historyKey, System.currentTimeMillis());
         } else {
-            inventoryManager.markAnimationPlayed(this.player, historyKey);
+            history.markPlayedThisSession(this.player, historyKey);
         }
     }
 

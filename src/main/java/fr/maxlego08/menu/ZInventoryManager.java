@@ -32,7 +32,6 @@ import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.reload.ReloadContext;
 import fr.maxlego08.menu.api.registry.reload.ReloadReport;
 import fr.maxlego08.menu.api.sound.SoundOption;
-import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -97,14 +96,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final AnimationManager animationManager;
     private final ZRegistryManager registries = new ZRegistryManager();
     private boolean slotAnimationsLoaded;
-    private final Map<UUID, Set<String>> playedAnimations = new ConcurrentHashMap<>();
-
-    /**
-     * When each player last saw the animations that remember themselves, read from the database
-     * once on join. A player missing from this map has not been read back yet.
-     */
-    private final Map<UUID, Map<String, Long>> animationHistory = new ConcurrentHashMap<>();
-
     private final Map<String, List<Inventory>> inventories = new ConcurrentHashMap<>();
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new ConcurrentHashMap<>();
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new ConcurrentHashMap<>();
@@ -973,84 +964,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private boolean isAlreadyOpen(Player player, Inventory inventory) {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
         return holder instanceof InventoryDefault inventoryDefault && inventoryDefault.getMenuInventory() == inventory;
-    }
-
-    @Override
-    public boolean hasPlayedAnimation(@NotNull Player player, @NotNull String animationKey) {
-        Set<String> played = this.playedAnimations.get(player.getUniqueId());
-        return played != null && played.contains(animationKey);
-    }
-
-    @Override
-    public void markAnimationPlayed(@NotNull Player player, @NotNull String animationKey) {
-        this.playedAnimations.computeIfAbsent(player.getUniqueId(), key -> ConcurrentHashMap.newKeySet()).add(animationKey);
-    }
-
-    @Override
-    public void clearPlayedAnimations(@NotNull UUID uniqueId) {
-        this.playedAnimations.remove(uniqueId);
-        this.animationHistory.remove(uniqueId);
-    }
-
-    /**
-     * Reads back what a player has already seen, once, when they join.
-     *
-     * <p>The rows land in memory and every later check is answered from there: a menu opens far
-     * too often to ask the database each time.</p>
-     */
-    @Override
-    public void loadAnimationHistory(@NotNull Player player) {
-        UUID uniqueId = player.getUniqueId();
-        StorageManager storageManager = this.plugin.getStorageManager();
-
-        if (!storageManager.isEnable()) {
-            this.animationHistory.put(uniqueId, new ConcurrentHashMap<>());
-            return;
-        }
-
-        this.plugin.getScheduler().runAsync(task -> {
-            Map<String, Long> played = new ConcurrentHashMap<>(storageManager.loadPlayedAnimations(uniqueId));
-            if (!player.isOnline()) return;
-
-            this.animationHistory.merge(uniqueId, played, (known, loaded) -> {
-                loaded.forEach((key, playedAt) -> known.merge(key, playedAt, Math::max));
-                return known;
-            });
-        });
-    }
-
-    @Override
-    public @Nullable Long getAnimationPlayedAt(@NotNull Player player, @NotNull String animationKey) {
-        Map<String, Long> played = this.animationHistory.get(player.getUniqueId());
-        return played == null ? null : played.get(animationKey);
-    }
-
-    @Override
-    public boolean isAnimationHistoryLoaded(@NotNull Player player) {
-        return this.animationHistory.containsKey(player.getUniqueId());
-    }
-
-    @Override
-    public void markAnimationPlayedForever(@NotNull Player player, @NotNull String animationKey, long playedAt) {
-        this.animationHistory.computeIfAbsent(player.getUniqueId(), key -> new ConcurrentHashMap<>()).put(animationKey, playedAt);
-        this.plugin.getStorageManager().markAnimationPlayed(player.getUniqueId(), animationKey, playedAt);
-    }
-
-    @Override
-    public void forgetPlayedAnimation(@NotNull UUID uniqueId, @Nullable String animationKey) {
-        Map<String, Long> played = this.animationHistory.get(uniqueId);
-        if (played != null) {
-            if (animationKey == null) played.clear();
-            else played.remove(animationKey);
-        }
-
-        Set<String> session = this.playedAnimations.get(uniqueId);
-        if (session != null) {
-            if (animationKey == null) session.clear();
-            else session.remove(animationKey);
-        }
-
-        this.plugin.getStorageManager().clearPlayedAnimations(uniqueId, animationKey);
     }
 
     @Override

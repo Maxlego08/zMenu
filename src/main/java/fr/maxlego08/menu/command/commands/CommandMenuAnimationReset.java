@@ -46,12 +46,12 @@ public class CommandMenuAnimationReset extends SubCommand<ZMenuPlugin> {
         String playerName = OfflinePlayerCache.getGlobalInstance().getName(playerUniqueId);
 
         if (menu == null) {
-            plugin.getInventoryManager().forgetPlayedAnimation(playerUniqueId, null);
+            plugin.getInventoryManager().getAnimationManager().getHistory().forget(playerUniqueId, null);
             MessageUtils.message(plugin, commandDispatch.getSender(), Message.ANIMATION_RESET_ALL, "%player%", playerName);
             return CommandResultType.SUCCESS;
         }
 
-        plugin.getInventoryManager().forgetPlayedAnimation(playerUniqueId, plugin.getName() + ":" + menu);
+        plugin.getInventoryManager().getAnimationManager().getHistory().forget(playerUniqueId, plugin.getName() + ":" + menu);
         MessageUtils.message(plugin, commandDispatch.getSender(), Message.ANIMATION_RESET_ONE, "%player%", playerName, "%menu%", menu);
         return CommandResultType.SUCCESS;
     }

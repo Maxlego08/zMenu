@@ -3,6 +3,7 @@ package fr.maxlego08.menu.animation;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
+import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
 import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
 import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
@@ -50,6 +51,7 @@ public class ZAnimationManager implements AnimationManager {
 
     private final MenuPlugin plugin;
     private final ZRegistryManager registries;
+    private final AnimationHistory history;
 
     /**
      * What each plugin registered, by plugin name: the source its provider reads on every reload.
@@ -59,7 +61,13 @@ public class ZAnimationManager implements AnimationManager {
     public ZAnimationManager(@NotNull MenuPlugin plugin, @NotNull ZRegistryManager registries) {
         this.plugin = plugin;
         this.registries = registries;
+        this.history = new ZAnimationHistory(plugin);
         this.registries.provider(Registries.ANIMATION, FILES_OWNER, this::provideFiles);
+    }
+
+    @Override
+    public @NotNull AnimationHistory getHistory() {
+        return this.history;
     }
 
     private KeyedRegistry<Animation> registry() {

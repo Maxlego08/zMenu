@@ -115,4 +115,12 @@ public interface AnimationManager {
      * @param player the player
      */
     void stop(@NotNull Player player);
+
+    /**
+     * Gets which opening animations each player has already seen.
+     *
+     * @return the history of played animations
+     */
+    @NotNull
+    AnimationHistory getHistory();
 }

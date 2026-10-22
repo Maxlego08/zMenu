@@ -445,7 +445,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     @Override
     protected void onConnect(PlayerJoinEvent event, Player player) {
-        this.plugin.getInventoryManager().loadAnimationHistory(player);
+        this.plugin.getInventoryManager().getAnimationManager().getHistory().load(player);
 
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
@@ -461,7 +461,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         }
         this.cooldownClick.remove(player.getUniqueId());
         this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
-        this.plugin.getInventoryManager().clearPlayedAnimations(player.getUniqueId());
+        this.plugin.getInventoryManager().getAnimationManager().getHistory().unload(player.getUniqueId());
         if (this.plugin.getCommandManager() instanceof ZCommandManager commandManager) {
             commandManager.removePlayerArguments(player.getUniqueId());
         }

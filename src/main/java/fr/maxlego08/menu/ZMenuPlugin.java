@@ -331,7 +331,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.dataManager.loadPlayers();
         this.itemManager.loadAll();
 
-        Bukkit.getOnlinePlayers().forEach(this.inventoryManager::loadAnimationHistory);
+        Bukkit.getOnlinePlayers().forEach(this.inventoryManager.getAnimationManager().getHistory()::load);
 
         this.inventoryHotReload = new InventoryHotReload(this);
         if (!this.isMockBukkitServer) {
