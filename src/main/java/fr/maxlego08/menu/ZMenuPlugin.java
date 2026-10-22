@@ -37,7 +37,6 @@ import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
-import fr.maxlego08.menu.dupe.NMSDupeManager;
 import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
@@ -216,7 +215,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         fr.traqueur.currencies.CurrenciesAPI.init(this);
 
-        this.dupeManager = MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.14")) ? new PDCDupeManager(this) : new NMSDupeManager();
+        this.dupeManager = new PDCDupeManager(this);
         this.enchantments.register();
 
         this.preEnable();

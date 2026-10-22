@@ -161,10 +161,7 @@ dependencies {
     api(projects.api)
     api(projects.common)
     api(projects.hooks)
-    implementation(projects.nms.base)
     implementation(projects.nms.v121R1)
-    implementation(projects.nms.v120R4)
-    implementation(projects.nms.v120R3)
     implementation(libs.item.nbt.api)
     // Java-WebSocket pulls slf4j, which the server already provides - exclude it from the shaded jar to
     // avoid duplicate classes (Paper plugin-remap fails otherwise).
