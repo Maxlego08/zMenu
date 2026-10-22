@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.animation.slot.settings.item.TemporaryItem;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +30,7 @@ import java.util.Map;
  * public class GlowAnimation extends CustomAnimation {
  *
  *     public GlowAnimation() {
- *         super("glow");
+ *         super(Key.key("myplugin", "glow"));
  *     }
  *
  *     &#64;Override
@@ -48,32 +49,33 @@ import java.util.Map;
  *     }
  * }
  *
- * inventoryManager.getAnimationManager().registerAnimation(new GlowAnimation());
+ * inventoryManager.getAnimationManager().registerAnimation(plugin, new GlowAnimation());
  * </pre>
  *
  * <p>Every hook has a default, so an animation may be as small as an ordering. Nothing here is
- * required beyond the name.</p>
+ * required beyond the key.</p>
  */
 public abstract class CustomAnimation {
 
-    private final String name;
+    private final Key key;
 
     /**
-     * @param name the name the animation is registered under, and used by {@code file} in a menu
+     * @param key the key the animation is registered under, in the namespace of the plugin, such as
+     *            {@code myplugin:glow}; the {@code animation} action plays it with {@code file: myplugin:glow}
      */
-    protected CustomAnimation(@NotNull String name) {
-        this.name = name;
+    protected CustomAnimation(@NotNull Key key) {
+        this.key = key;
     }
 
     /**
-     * Gets the name of this animation.
+     * Gets the key of this animation.
      *
-     * @return the name
+     * @return the key
      */
     @Contract(pure = true)
     @NotNull
-    public final String getName() {
-        return this.name;
+    public final Key getKey() {
+        return this.key;
     }
 
     /**
@@ -237,7 +239,7 @@ public abstract class CustomAnimation {
     @Contract(pure = true)
     @NotNull
     public final Animation toAnimation() {
-        return new Animation(this.name, this.toSettings());
+        return new Animation(this.key, this.toSettings());
     }
 
     /**

@@ -126,7 +126,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public ZInventoryManager(@NotNull ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
-        this.animationManager = new ZAnimationManager(plugin);
+        this.animationManager = new ZAnimationManager(plugin, this.registries);
         this.registries.provider(Registries.INVENTORY, INVENTORY_OWNER, this::provideInventories);
     }
 

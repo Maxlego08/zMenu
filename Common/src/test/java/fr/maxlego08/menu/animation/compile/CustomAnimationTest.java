@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.animation.compile;
 
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.*;
 import fr.maxlego08.menu.api.animation.slot.order.SequentialSlotAnimation;
 import fr.maxlego08.menu.api.animation.slot.order.SpiralSlotAnimation;
@@ -29,7 +30,8 @@ class CustomAnimationTest {
     void anAnimationOverridingNothingIsStillUsable() {
         Animation animation = new MinimalAnimation().toAnimation();
 
-        assertEquals("minimal", animation.name());
+        assertEquals(ZMenuKeys.key("minimal"), animation.key());
+        assertEquals("zmenu:minimal", animation.name());
 
         SlotAnimationGroup defaults = animation.settings().defaults();
         assertInstanceOf(SequentialSlotAnimation.class, defaults.animation());
@@ -104,13 +106,13 @@ class CustomAnimationTest {
 
     private static final class MinimalAnimation extends CustomAnimation {
         private MinimalAnimation() {
-            super("minimal");
+            super(ZMenuKeys.key("minimal"));
         }
     }
 
     private static final class FullAnimation extends CustomAnimation {
         private FullAnimation() {
-            super("full");
+            super(ZMenuKeys.key("full"));
         }
 
         @Override
@@ -156,7 +158,7 @@ class CustomAnimationTest {
 
     private static final class GroupedAnimation extends CustomAnimation {
         private GroupedAnimation() {
-            super("grouped");
+            super(ZMenuKeys.key("grouped"));
         }
 
         @Override
@@ -179,7 +181,7 @@ class CustomAnimationTest {
 
     private static final class TemporaryAnimation extends CustomAnimation {
         private TemporaryAnimation() {
-            super("temporary");
+            super(ZMenuKeys.key("temporary"));
         }
 
         @Override

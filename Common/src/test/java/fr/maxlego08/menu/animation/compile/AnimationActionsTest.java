@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.animation.compile;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
 import fr.maxlego08.menu.api.animation.slot.CustomAnimation;
 import fr.maxlego08.menu.api.animation.slot.order.SequentialSlotAnimation;
@@ -74,7 +75,7 @@ class AnimationActionsTest {
         private static final Action END = new TestAction();
 
         private ActingAnimation() {
-            super("acting");
+            super(ZMenuKeys.key("acting"));
         }
 
         @Override
@@ -90,7 +91,7 @@ class AnimationActionsTest {
 
     private static final class PlainAnimation extends CustomAnimation {
         private PlainAnimation() {
-            super("plain");
+            super(ZMenuKeys.key("plain"));
         }
     }
 }

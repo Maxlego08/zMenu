@@ -11,7 +11,7 @@ from a player.
 
 ```java
 InventoryEngine engine = ...;                       // an action receives one
-Animation pulse = inventoryManager.getAnimationManager().getAnimation("pulse").orElseThrow();
+Animation pulse = inventoryManager.getAnimationManager().findAnimation("pulse").orElseThrow();
 
 engine.playAnimation(pulse, AnimationPlayback.OVERLAY);
 engine.playAnimation(pulse, AnimationPlayback.OVERLAY, true);   // and freeze the menu
@@ -31,9 +31,15 @@ The manager plays one on whatever menu a player has open, without having to find
 ```java
 AnimationManager manager = inventoryManager.getAnimationManager();
 
-manager.play(player, "pulse", AnimationPlayback.OVERLAY);
+manager.play(player, ZMenuKeys.key("pulse"), AnimationPlayback.OVERLAY);
 manager.stop(player);
 ```
+
+Named animations live in the reloadable `Registries.ANIMATION` registry. The files of the
+`animations` folder are known as `zmenu:<file name>`; `getAnimation(Key)` reads one by key, and
+`findAnimation(String)` reads a name written in a file (`pulse`, or `myplugin:glow` for one
+registered by a plugin). `/zm reload` rebuilds the registry: a file that cannot be read keeps its
+previous version, and `loadAnimations()` returns what the reload found.
 
 ## Reacting to an animation
 
@@ -136,7 +142,7 @@ hook has a default, so an animation may be as small as an ordering.
 public class GlowAnimation extends CustomAnimation {
 
     public GlowAnimation() {
-        super("glow");
+        super(Key.key("myplugin", "glow"));
     }
 
     @Override
@@ -155,11 +161,16 @@ public class GlowAnimation extends CustomAnimation {
     }
 }
 
-inventoryManager.getAnimationManager().registerAnimation(new GlowAnimation());
+inventoryManager.getAnimationManager().registerAnimation(plugin, new GlowAnimation());
 ```
 
-Menus then use it like any other: `open-animation: {file: glow}`. An animation registered this way
-survives `/zm reload`, so registering it once is enough.
+The `animation` action plays it with `file: myplugin:glow`, and the API with
+`play(player, Key.key("myplugin", "glow"), playback)`. The `open-animation` and `close-animation` of
+a menu only read files of the `animations` folder. Give it a key in the
+namespace of your plugin: the `zmenu` namespace holds the files of the animations folder, and a key
+that is already taken is refused with a `RegistrationException`. An animation registered this way
+belongs to your plugin and survives `/zm reload`, so registering it once is enough;
+`unregisterAnimation(key)` removes it.
 
 | Hook | Default | What it decides |
 |---|---|---|

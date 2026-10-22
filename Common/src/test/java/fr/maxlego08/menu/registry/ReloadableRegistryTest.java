@@ -167,9 +167,12 @@ class ReloadableRegistryTest {
         this.files.set(List.of(menu("a", "")));
 
         List<ReloadReport> reports = this.manager.reloadAll();
+        List<RegistryType<?>> reloaded = reports.stream().<RegistryType<?>>map(ReloadReport::type).toList();
+        long reloadable = this.manager.types().stream().filter(RegistryType::isReloadable).count();
 
-        assertEquals(2, reports.size(), "the test registry and the inventories");
-        assertEquals(MENUS, reports.get(1).type());
+        assertEquals(reloadable, reports.size(), "one report per reloadable registry");
+        assertTrue(reloaded.contains(MENUS));
+        assertFalse(reloaded.contains(fr.maxlego08.menu.api.registry.Registries.SLOT_ANIMATION), "a static registry is not reloaded");
     }
 
     @Test

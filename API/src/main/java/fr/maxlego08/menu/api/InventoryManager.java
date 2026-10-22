@@ -721,12 +721,13 @@ public interface InventoryManager extends Listener {
     PaginationManager getPaginationManager();
 
     /**
-     * Gets the manager holding the animations of the {@code animations} folder.
+     * Gets the manager holding the named animations: the files of the {@code animations} folder and
+     * the ones registered by plugins.
      *
-     * <p>Use it to fetch an animation by name, or to register one of your own:</p>
+     * <p>Use it to fetch an animation, or to register one of your own:</p>
      *
      * <pre>
-     * inventoryManager.getAnimationManager().registerAnimation(new Animation("my_animation", settings));
+     * inventoryManager.getAnimationManager().registerAnimation(plugin, new Animation(Key.key("myplugin", "my_animation"), settings));
      * </pre>
      *
      * @return The animation manager.

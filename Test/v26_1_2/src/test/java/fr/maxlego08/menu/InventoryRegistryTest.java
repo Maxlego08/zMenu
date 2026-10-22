@@ -3,15 +3,22 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.animation.slot.Animation;
+import fr.maxlego08.menu.api.animation.slot.AnimationManager;
+import fr.maxlego08.menu.api.animation.slot.order.SpiralSlotAnimation;
+import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationGroup;
+import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.registry.KeyedRegistry;
+import fr.maxlego08.menu.api.registry.RegistrationException;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.reload.ReloadableRegistry;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import net.kyori.adventure.key.Key;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.*;
 import org.mockbukkit.mockbukkit.MockBukkit;
 
@@ -58,6 +65,7 @@ public class InventoryRegistryTest {
     public void cleanup() {
         this.created.forEach(File::delete);
         this.reload();
+        this.inventoryManager.getAnimationManager().loadAnimations();
     }
 
     private void write(String name, String content) throws IOException {
@@ -118,6 +126,69 @@ public class InventoryRegistryTest {
         assertTrue(this.inventoryManager.findInventory("My Registry Shop").isPresent());
         assertTrue(this.inventoryManager.getInventory(ZMenuKeys.fileKey(plugin.getName(), "my registry shop")).isPresent());
         assertTrue(this.inventoryManager.getInventoryKeys().contains(Key.key("zmenu", "my_registry_shop")));
+    }
+
+    private void writeAnimation(String name, String content) throws IOException {
+        File file = new File(plugin.getDataFolder(), "animations/" + name + ".yml");
+        file.getParentFile().mkdirs();
+        Files.writeString(file.toPath(), content);
+        this.created.add(file);
+    }
+
+    private static Animation spiral(Key key) {
+        return new Animation(key, new SlotAnimationSettings(new SlotAnimationGroup(new SpiralSlotAnimation(), 50, 1, 0), true));
+    }
+
+    @Test
+    public void anIdleAnimationFileIsNotLoadedAsAnInventoryAnimation() {
+        AnimationManager animations = this.inventoryManager.getAnimationManager();
+
+        assertFalse(animations.findAnimation("heartbeat").isPresent(), "heartbeat is the idle animation of a button");
+        assertTrue(animations.findAnimation("pulse").isPresent());
+        assertEquals(ZMenuKeys.key("pulse"), animations.findAnimation("pulse").orElseThrow().key());
+    }
+
+    @Test
+    public void animationsLiveInTheirRegistryOwnedByWhatProvidedThem() {
+        KeyedRegistry<Animation> registry = this.inventoryManager.getRegistries().registry(Registries.ANIMATION);
+
+        assertEquals("zmenu", registry.owner(ZMenuKeys.key("pulse")).orElseThrow());
+        assertEquals(registry.values().size(), this.inventoryManager.getAnimationManager().getAnimations().size());
+    }
+
+    @Test
+    public void aBrokenAnimationFileKeepsItsPreviousVersion() throws IOException {
+        AnimationManager animations = this.inventoryManager.getAnimationManager();
+        this.writeAnimation("registry_spin", "type: spiral\ninterval: 80\n");
+        animations.loadAnimations();
+        Animation first = animations.findAnimation("registry_spin").orElseThrow();
+
+        this.writeAnimation("registry_spin", "type: [\n");
+        YamlFileCache.clearCache();
+        animations.loadAnimations();
+
+        assertSame(first, animations.findAnimation("registry_spin").orElseThrow());
+    }
+
+    @Test
+    public void anAnimationRegisteredByAPluginSurvivesAReloadUntilItIsUnregistered() {
+        AnimationManager animations = this.inventoryManager.getAnimationManager();
+        Plugin addon = MockBukkit.createMockPlugin("RegistryAddon");
+        Key key = Key.key("registryaddon", "glow");
+
+        animations.registerAnimation(addon, spiral(key));
+        animations.loadAnimations();
+
+        assertTrue(animations.findAnimation("registryaddon:glow").isPresent());
+        assertEquals("RegistryAddon", this.inventoryManager.getRegistries().registry(Registries.ANIMATION).owner(key).orElseThrow());
+        assertThrows(RegistrationException.class, () -> animations.registerAnimation(addon, spiral(key)));
+        assertThrows(RegistrationException.class, () -> animations.registerAnimation(addon, spiral(ZMenuKeys.key("pulse"))), "a file already has this key");
+
+        assertTrue(animations.unregisterAnimation(key));
+        assertFalse(animations.getAnimation(key).isPresent());
+        animations.loadAnimations();
+        assertFalse(animations.getAnimation(key).isPresent());
+        assertFalse(animations.unregisterAnimation(key));
     }
 
     @Test

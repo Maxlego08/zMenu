@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
 import fr.maxlego08.menu.api.button.Button;
@@ -8,6 +9,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,16 +23,16 @@ import java.util.Map;
 public class AnimationAction extends Action {
 
     private final MenuPlugin plugin;
-    private final String animationName;
+    private final Key animationKey;
     private final Animation inlineAnimation;
     private final AnimationPlayback playback;
     private final Boolean freeze;
     private final boolean stop;
 
-    public AnimationAction(@NotNull MenuPlugin plugin, @Nullable String animationName, @Nullable Animation inlineAnimation,
+    public AnimationAction(@NotNull MenuPlugin plugin, @Nullable Key animationKey, @Nullable Animation inlineAnimation,
                            @NotNull AnimationPlayback playback, @Nullable Boolean freeze, boolean stop) {
         this.plugin = plugin;
-        this.animationName = animationName;
+        this.animationKey = animationKey;
         this.inlineAnimation = inlineAnimation;
         this.playback = playback;
         this.freeze = freeze;
@@ -42,8 +44,9 @@ public class AnimationAction extends Action {
         map.put("type", "animation");
         if (this.stop) {
             map.put("stop", true);
-        } else if (this.animationName != null) {
-            map.put("file", this.animationName);
+        } else if (this.animationKey != null) {
+            boolean ownFile = ZMenuKeys.NAMESPACE.equals(this.animationKey.namespace());
+            map.put("file", ownFile ? this.animationKey.value() : this.animationKey.asString());
         } else if (this.inlineAnimation != null) {
             map.put("animation", this.inlineAnimation.settings().serializeToMap());
         }
@@ -60,7 +63,7 @@ public class AnimationAction extends Action {
 
         Animation animation = this.resolve();
         if (animation == null) {
-            Logger.info("The animation " + this.animationName + " does not exist, it cannot be played.", Logger.LogType.ERROR);
+            Logger.info("The animation " + this.animationKey.asString() + " does not exist, it cannot be played.", Logger.LogType.ERROR);
             return;
         }
 
@@ -78,8 +81,8 @@ public class AnimationAction extends Action {
     @Nullable
     private Animation resolve() {
         if (this.inlineAnimation != null) return this.inlineAnimation;
-        if (this.animationName == null) return null;
+        if (this.animationKey == null) return null;
 
-        return this.plugin.getInventoryManager().getAnimationManager().getAnimation(this.animationName).orElse(null);
+        return this.plugin.getInventoryManager().getAnimationManager().getAnimation(this.animationKey).orElse(null);
     }
 }

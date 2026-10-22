@@ -167,11 +167,14 @@ Developers reach the same animations through the manager:
 
 ```java
 AnimationManager manager = inventoryManager.getAnimationManager();
-Optional<Animation> pulse = manager.getAnimation("pulse");
+Optional<Animation> pulse = manager.findAnimation("pulse");
 
-// Registered animations survive a reload of the folder, so register yours once at startup.
-manager.registerAnimation(new Animation("my_animation", settings));
+manager.registerAnimation(plugin, new Animation(Key.key("myplugin", "my_animation"), settings));
 ```
+
+A registered animation belongs to the plugin that registered it and survives a reload of the folder,
+so register yours once at startup. The `animation` action plays it with
+`file: myplugin:my_animation`; `open-animation` and `close-animation` only read files of the folder.
 
 ## Drawing the order
 

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.loader.actions;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
 import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
@@ -48,7 +49,7 @@ public class AnimationActionLoader extends ActionLoader {
 
         String animationName = accessor.getString("file", null);
         if (animationName != null) {
-            return new AnimationAction(this.plugin, animationName, null, playback, freeze, false);
+            return new AnimationAction(this.plugin, ZMenuKeys.inventoryKey(animationName), null, playback, freeze, false);
         }
 
         Animation inline = this.loadInline(accessor, file);
@@ -71,6 +72,6 @@ public class AnimationActionLoader extends ActionLoader {
         configuration.createSection("animation", map);
 
         SlotAnimationSettings settings = new SlotAnimationSettingsLoader(this.plugin).load(configuration, "animation.", file);
-        return settings == null ? null : new Animation("inline", settings);
+        return settings == null ? null : new Animation(ZMenuKeys.key("inline"), settings);
     }
 }

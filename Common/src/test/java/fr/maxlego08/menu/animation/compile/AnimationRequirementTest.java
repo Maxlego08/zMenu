@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.animation.compile;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
 import fr.maxlego08.menu.api.animation.slot.CustomAnimation;
 import fr.maxlego08.menu.api.animation.slot.order.SequentialSlotAnimation;
@@ -64,7 +65,7 @@ class AnimationRequirementTest {
 
     private static final class GatedAnimation extends CustomAnimation {
         private GatedAnimation() {
-            super("gated");
+            super(ZMenuKeys.key("gated"));
         }
 
         @Override
@@ -75,7 +76,7 @@ class AnimationRequirementTest {
 
     private static final class PlainAnimation extends CustomAnimation {
         private PlainAnimation() {
-            super("plain");
+            super(ZMenuKeys.key("plain"));
         }
     }
 }

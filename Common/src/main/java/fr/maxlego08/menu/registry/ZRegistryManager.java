@@ -37,6 +37,7 @@ public final class ZRegistryManager implements RegistryManager {
     public ZRegistryManager() {
         this.create(Registries.SLOT_ANIMATION);
         this.create(Registries.INVENTORY);
+        this.create(Registries.ANIMATION);
     }
 
     /**

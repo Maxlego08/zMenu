@@ -532,7 +532,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             if (!playMode.canPlay(lastPlayedAt, System.currentTimeMillis(), settings.cooldown())) return;
         }
 
-        long duration = this.playAnimation(new Animation(this.inventory.getFileName(), settings), AnimationPlayback.REVEAL, settings.freeze());
+        long duration = this.playAnimation(new Animation(this.inventory.key(), settings), AnimationPlayback.REVEAL, settings.freeze());
 
         if (!tracksPlays || duration <= 0) return;
 
@@ -574,7 +574,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             whenDone.run();
         };
 
-        long duration = this.playAnimation(new Animation(this.inventory.getFileName(), settings),
+        long duration = this.playAnimation(new Animation(this.inventory.key(), settings),
                 AnimationPlayback.CONCEAL, settings.freeze(), onEnd);
 
         if (duration <= 0) whenDone.run();

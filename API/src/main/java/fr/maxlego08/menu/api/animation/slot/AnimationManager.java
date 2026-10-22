@@ -1,28 +1,42 @@
 package fr.maxlego08.menu.api.animation.slot;
 
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.reload.ReloadReport;
+import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Holds the animations of the {@code animations} folder, so that an inventory, an action or another
- * plugin can use one by name.
+ * Holds the named animations, so that an inventory, an action or another plugin can use one by key.
  *
- * <p>Animations registered by a plugin live alongside the ones loaded from disk, but are kept when
- * the folder is reloaded: a plugin registers its own once, at startup.</p>
+ * <p>They live in the reloadable {@link Registries#ANIMATION} registry: the files of the
+ * {@code animations} folder are known as {@code zmenu:<file name>}, and the animations registered by a
+ * plugin are provided again on every reload, so a plugin registers its own once, at startup.</p>
  */
 public interface AnimationManager {
 
     /**
-     * Gets an animation by name, ignoring the case.
+     * Gets an animation by its key.
+     *
+     * @param key the key of the animation
+     * @return the animation, if it exists
+     */
+    @NotNull
+    Optional<Animation> getAnimation(@NotNull Key key);
+
+    /**
+     * Finds an animation from a name written in a file: {@code pulse} is the file
+     * {@code animations/pulse.yml}, {@code myplugin:glow} an animation registered by a plugin.
      *
      * @param name the name of the animation
      * @return the animation, if it exists
      */
     @NotNull
-    Optional<Animation> getAnimation(@NotNull String name);
+    Optional<Animation> findAnimation(@NotNull String name);
 
     /**
      * Gets every animation currently known.
@@ -33,48 +47,55 @@ public interface AnimationManager {
     Collection<Animation> getAnimations();
 
     /**
-     * Registers an animation, replacing any animation of the same name.
+     * Registers an animation, owned by a plugin. Give it a key in the namespace of the plugin, such as
+     * {@code myplugin:glow}: the {@code zmenu} namespace holds the files of the animations folder.
      *
-     * <p>An animation registered this way survives a reload of the folder, so a plugin only has to
-     * register it once.</p>
+     * <p>The animation survives a reload of the folder, so a plugin only has to register it once.</p>
      *
+     * @param plugin    the plugin registering it
      * @param animation the animation to register
+     * @throws fr.maxlego08.menu.api.registry.RegistrationException if an animation already has this key
      */
-    void registerAnimation(@NotNull Animation animation);
+    void registerAnimation(@NotNull Plugin plugin, @NotNull Animation animation);
 
     /**
      * Registers an animation written in code.
      *
+     * @param plugin    the plugin registering it
      * @param animation the animation to register
      * @see CustomAnimation
      */
-    default void registerAnimation(@NotNull CustomAnimation animation) {
-        this.registerAnimation(animation.toAnimation());
+    default void registerAnimation(@NotNull Plugin plugin, @NotNull CustomAnimation animation) {
+        this.registerAnimation(plugin, animation.toAnimation());
     }
 
     /**
-     * Removes an animation.
+     * Removes an animation registered by a plugin.
      *
-     * @param name the name of the animation
+     * @param key the key of the animation
+     * @return whether an animation registered by a plugin had this key
      */
-    void unregisterAnimation(@NotNull String name);
+    boolean unregisterAnimation(@NotNull Key key);
 
     /**
-     * Reloads every animation from the {@code animations} folder, keeping the ones registered by a
-     * plugin.
+     * Reloads the animations: the files of the {@code animations} folder are read again, and the
+     * animations registered by plugins are kept. A file that cannot be read keeps its previous version.
+     *
+     * @return what the reload found
      */
-    void loadAnimations();
+    @NotNull
+    ReloadReport loadAnimations();
 
     /**
-     * Plays an animation on the inventory a player is looking at.
+     * Plays a named animation on the inventory a player is looking at.
      *
-     * @param player    the player
-     * @param name      the name of the animation
-     * @param playback  how to play it
+     * @param player   the player
+     * @param key      the key of the animation
+     * @param playback how to play it
      * @return how long the animation lasts, in milliseconds, 0 if the player is not looking at a
      *         zMenu inventory, the animation does not exist, or it had nothing to play
      */
-    long play(@NotNull Player player, @NotNull String name, @NotNull AnimationPlayback playback);
+    long play(@NotNull Player player, @NotNull Key key, @NotNull AnimationPlayback playback);
 
     /**
      * Plays an animation on the inventory a player is looking at.

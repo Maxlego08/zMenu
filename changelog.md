@@ -42,6 +42,35 @@
 
 # Unreleased
 
+## New Features
+
+* Added slot animations: an inventory can reveal its items one after the other when it opens (`open-animation`) and take them away when it closes (`close-animation`). Built-in orders: `sequential` (also `rows`), `horizontal_snake`, `vertical_snake`, `spiral`, `random`, `from_center`, `wave`, `checkerboard`, `columns`, `matrix` (drawn with a `matrix:` of characters) and `custom` (an `order:` of slots). See `docs/slot-animations.md` and the menus in `inventories/examples/animation*.yml`.
+  * Timing and grouping: `interval`, `slots-per-step`, `delay`, `reverse`, `interval-jitter` and a `sound` per group; buttons join a group with `animation.group`, and `groups:` overrides how each group is revealed.
+  * When it plays: `play: ALWAYS`, `ONCE` (once per session) or `ONCE_FOREVER` (remembered in the database), a `cooldown` such as `30s`, `10m` or `2h`, a `chance`, a `requirement`, and a `seed` (`random`, `player` or a number). `freeze` blocks clicks while it plays.
+  * Temporary items: `temporary-items` places decorative items for the duration of the animation, with `show`/`hide` anchors (`250`, `start`, `end`, `group:2`, `group:2.end`) or keyframes under `frames`, random `choices`, a `chance` (per item or per slot), a `count` of slots and `use-cache`. A button refuses to be covered unless it allows it with `animation.allow-temporary-items`.
+  * `variants` picks one of several animations by weight, and `start-actions`/`end-actions` run around it.
+  * Per button: `animation: false` keeps a button out of the animation, and `animation.delay`/`animation.sound` adjust it.
+* Added idle animations: `idle-animation` cycles the items of a button for as long as the menu stays open, with an `interval`, a `duration` and a `sound` per frame, `loop` and `random`.
+* Added reusable animations: files in the new `animations` folder (`fancy_open`, `glint`, `heartbeat`, `pulse`, `sparkle`, `wave_in`) are used with `file`, `files` or `extends`, combined in order, with any key overridden next to them. The `animation` action also plays animations registered by plugins, with `file: plugin:name`. On `/zm reload`, an animation file that cannot be read keeps its previous version.
+* Added the `animation` action, which plays an animation on the open menu: a `file` or an inline `animation` block, `mode: REVEAL`, `OVERLAY` or `CONCEAL`, an optional `freeze`, or `stop: true` to cut the current one short.
+* Added `/zm resetanimation <player> [menu]` (permission `zmenu.animation.reset`) so an animation that plays once, or has a cooldown, plays again.
+* Added the `max-animation-duration` (default 10000 ms) and `shared-idle-timer-threshold` (default 8) options to `config.yml`.
+* Slot animations, idle animations and the `animation` action are serialized with the rest of the inventory, and written back as `file:` when they only name an animation file.
+
+## Improvements
+
+* `/zm reload` and `/zm reload inventory` no longer leave menus half-loaded: a menu file that cannot be read is reported and keeps its previous version, while every other menu is updated. The load events fire once the new menus are in place.
+* A menu file with a YAML syntax error is now reported instead of being loaded as an empty 54-slot menu.
+* Menus of other plugins stay available by name after `/zm reload`.
+* `deleteInventory(String)` now returns `true` when it deleted a menu.
+
+## Internal Changes
+
+* Added typed registries (`RegistryManager`, `Registries`): namespaced keys, an owner for every entry, duplicates refused, static registries frozen once the server has loaded, and reloadable registries rebuilt and swapped as a whole. zMenu's own menus now live in the `Registries.INVENTORY` registry.
+* Added `Inventory#key()` (`plugin:file`) and key-based methods on `InventoryManager`: `getInventory(Key)`, `getInventoryKeys()`, `deleteInventory(Key)` and `openInventory(Player, Key)`. The name-based ones (`getInventory(String)`, `getInventoryNames()`, `openInventory(Player, String)`…) are deprecated for removal and delegate to them; `findInventory(String)` reads a name written by a user.
+* Slot animation types are registered with `InventoryManager#registerSlotAnimation(Plugin, SlotAnimationLoader)`; zMenu's own are `@AutoSlotAnimationLoader` classes. Named animations live in the reloadable `Registries.ANIMATION` registry; a plugin adds its own with `AnimationManager#registerAnimation(Plugin, Animation)` (or a `CustomAnimation` with a key such as `myplugin:glow`), reads them with `getAnimation(Key)` or `findAnimation(String)`, and plays them with `play(Player, Key, AnimationPlayback)`. Animations are listened to through `AnimationStartEvent` and `AnimationEndEvent` (see `docs/animations-api.md`).
+* Added a database table remembering the animations a player has seen.
+
 # 1.1.2.0
 
 ## New Features
