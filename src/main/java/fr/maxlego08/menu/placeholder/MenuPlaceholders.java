@@ -28,7 +28,7 @@ public class MenuPlaceholders extends ZUtils {
         
         placeholder.register("player_page", (player, s) -> String.valueOf(inventoryManager.getPage(player)));
         placeholder.register("player_next_page", (player, s) -> String.valueOf(inventoryManager.getPage(player) + 1));
-        placeholder.register("player_previous_page", (player, s) -> String.valueOf(inventoryManager.getPage(player) - 1));
+        placeholder.register("player_previous_page", (player, s) -> String.valueOf(Math.max(0, inventoryManager.getPage(player) - 1)));
         placeholder.register("player_max_page", (player, s) -> String.valueOf(inventoryManager.getMaxPage(player)));
         
         placeholder.register("pagination_page_", (player, contextId) -> {
@@ -88,7 +88,7 @@ public class MenuPlaceholders extends ZUtils {
         placeholder.register("formatted_math_", (player, args) -> this.format(new ExpressionBuilder(plugin.parse(player, args.replace("{", "%").replace("}", "%"))).build().evaluate()));
 
         // Statistics
-        placeholder.register("statistic_hours_played", (player, s) -> String.valueOf((player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20) / 60));
+        placeholder.register("statistic_hours_played", (player, s) -> String.valueOf(player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60 / 60));
         placeholder.register("statistic_time_played", (player, s) -> TimerBuilder.getStringTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20));
 
         // Global Placeholders

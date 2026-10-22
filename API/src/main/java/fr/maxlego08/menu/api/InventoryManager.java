@@ -15,6 +15,7 @@ import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
+import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -635,5 +636,15 @@ public interface InventoryManager extends Listener {
      * @see PaginationManager
      */
     PaginationManager getPaginationManager();
+
+    String serializeItemStack(ItemStack itemStack);
+
+    ItemStack deserializeItemStack(String serializedItemStack);
+
+    default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume) {
+        return this.createSoundOption(soundName, categoryName, pitch, volume, false);
+    }
+
+    SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom);
 
 }

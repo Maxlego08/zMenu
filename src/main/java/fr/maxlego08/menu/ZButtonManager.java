@@ -13,11 +13,13 @@ import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.loader.RequirementLoader;
 import fr.maxlego08.menu.loader.ZButtonLoader;
+import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -156,9 +158,14 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     @Override
     public void registerAction(@NotNull ActionLoader actionLoader) {
         for (String value : actionLoader.getKeys()) {
-            this.actionsLoader.put(value, actionLoader);
+            this.actionsLoader.put(value.toLowerCase(Locale.ROOT), actionLoader);
             this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, value);
         }
+    }
+
+    @Override
+    public void registerRuleLoader(@NotNull RuleLoader ruleLoader) {
+        ZRuleLoaderRegistry.getInstance().register(ruleLoader);
     }
 
     @Override
