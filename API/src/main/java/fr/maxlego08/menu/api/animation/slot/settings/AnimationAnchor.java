@@ -77,6 +77,23 @@ public record AnimationAnchor(@NotNull Type type, long millis, int group) {
     }
 
     /**
+     * Gets the compact form of this anchor, the way {@link #parseValue(Object)} reads it back.
+     *
+     * @return a number of milliseconds, or the text of the anchor
+     */
+    @Contract(pure = true)
+    @NotNull
+    public Object serialize() {
+        return switch (this.type) {
+            case START -> "start";
+            case END -> "end";
+            case MILLIS -> this.millis;
+            case GROUP_START -> "group:" + this.group;
+            case GROUP_END -> "group:" + this.group + ".end";
+        };
+    }
+
+    /**
      * Parses an anchor written in a configuration file, in either of its two forms.
      *
      * <p>The compact form is a single value, parsed by {@link #parse(String)}. The explicit form is a

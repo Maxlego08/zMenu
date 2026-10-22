@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * @deprecated a plain map with no owner and no duplicate detection. Use a {@link RegistryType}
- * held by {@link RegistrySet} instead.
+ * held by the {@link RegistryManager} instead.
  */
 @Deprecated
 public abstract class Registry<T, R> {

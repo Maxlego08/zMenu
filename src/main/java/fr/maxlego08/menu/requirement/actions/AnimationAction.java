@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 /**
  * Plays an animation on the inventory the player is looking at.
  */
@@ -33,6 +35,20 @@ public class AnimationAction extends Action {
         this.playback = playback;
         this.freeze = freeze;
         this.stop = stop;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "animation");
+        if (this.stop) {
+            map.put("stop", true);
+        } else if (this.animationName != null) {
+            map.put("file", this.animationName);
+        } else if (this.inlineAnimation != null) {
+            map.put("animation", this.inlineAnimation.settings().serializeToMap());
+        }
+        if (this.playback != AnimationPlayback.OVERLAY) map.put("mode", this.playback.name());
+        if (this.freeze != null) map.put("freeze", this.freeze);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,6 +13,11 @@ import java.util.List;
  * top left corner down to the bottom of the inventory.
  */
 public class HorizontalSnakeSlotAnimation implements SlotAnimation {
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "horizontal_snake");
+    }
 
     @Override
     public @NotNull List<Integer> order(int inventorySize, @NotNull List<Integer> slots) {

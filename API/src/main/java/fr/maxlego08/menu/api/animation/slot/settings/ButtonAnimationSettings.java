@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.animation.slot.settings;
 
 import fr.maxlego08.menu.api.sound.SoundOption;
+import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -45,5 +47,27 @@ public record ButtonAnimationSettings(boolean enabled, int group, long delay, @N
 
     public ButtonAnimationSettings {
         delay = Math.max(0, delay);
+    }
+
+    /**
+     * Writes the {@code animation} key of a button: nothing when the button keeps the settings of
+     * its class, {@code false} when it does not animate, otherwise a section with what differs.
+     *
+     * @param buttonSection                the section of the button
+     * @param allowTemporaryItemsByDefault whether the class of the button lets temporary items cover it
+     */
+    public void serialize(@NotNull ConfigurationSection buttonSection, boolean allowTemporaryItemsByDefault) {
+        if (this.equals(allowTemporaryItemsByDefault ? DEFAULT : NOT_COVERABLE)) return;
+
+        if (!this.enabled) {
+            buttonSection.set("animation", false);
+            return;
+        }
+
+        ConfigurationSection section = buttonSection.createSection("animation");
+        if (this.group != 1) section.set("group", this.group);
+        if (this.delay != 0) section.set("delay", this.delay);
+        if (this.sound != null) this.sound.serialize(section.createSection("sound"));
+        if (this.allowTemporaryItems != allowTemporaryItemsByDefault) section.set("allow-temporary-items", this.allowTemporaryItems);
     }
 }

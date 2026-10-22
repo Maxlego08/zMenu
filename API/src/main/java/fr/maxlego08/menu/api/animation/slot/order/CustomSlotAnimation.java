@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -38,6 +39,15 @@ public class CustomSlotAnimation implements SlotAnimation {
         for (int slot : unique) {
             this.positionBySlot.put(slot, position++);
         }
+    }
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        List<Integer> order = new ArrayList<>(this.positionBySlot.keySet());
+        order.sort(Comparator.comparingInt(this.positionBySlot::get));
+
+        section.set("type", "custom");
+        section.set("order", order);
     }
 
     @Override

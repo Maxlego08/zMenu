@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.animation.slot.settings.item;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.animation.slot.settings.AnimationAnchor;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,5 +42,29 @@ public record AnimationKeyframe(@NotNull AnimationAnchor at, @Nullable MenuItemS
      */
     public boolean isRemoval() {
         return this.item == null && this.choices.isEmpty();
+    }
+
+    /**
+     * Writes this keyframe the way a {@code frames} entry is read back.
+     *
+     * @param section the section of the keyframe
+     */
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("at", this.at.serialize());
+
+        if (this.isRemoval()) {
+            section.set("remove", true);
+        } else {
+            if (this.item != null) this.item.serialize(section.createSection("item"));
+            if (!this.choices.isEmpty()) {
+                ConfigurationSection choicesSection = section.createSection("choices");
+                for (int index = 0; index < this.choices.size(); index++) {
+                    this.choices.get(index).serialize(choicesSection.createSection(String.valueOf(index + 1)));
+                }
+            }
+            if (this.chance != 100) section.set("chance", this.chance);
+        }
+
+        if (this.sound != null) this.sound.serialize(section.createSection("sound"));
     }
 }

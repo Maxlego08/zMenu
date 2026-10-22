@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.settings.idle;
 
 import fr.maxlego08.menu.api.MenuItemStack;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -20,8 +21,20 @@ import java.util.List;
  * @param loop     whether the cycle restarts once it reaches the end; when false the button goes
  *                 back to its real item and the cycle stops
  * @param random   whether the next frame is picked at random rather than taken in order
+ * @param files    the files of the animations folder this animation was read from, when the button
+ *                 only named them; empty when anything was written next to them, or when it was
+ *                 written in place
  */
-public record ButtonIdleAnimation(@NotNull List<IdleFrame> frames, long interval, boolean loop, boolean random) {
+public record ButtonIdleAnimation(@NotNull List<IdleFrame> frames, long interval, boolean loop, boolean random, @NotNull List<String> files) {
+
+    /**
+     * The delay between two frames when nothing sets one, in milliseconds.
+     */
+    public static final long DEFAULT_INTERVAL = 200;
+
+    public ButtonIdleAnimation(@NotNull List<IdleFrame> frames, long interval, boolean loop, boolean random) {
+        this(frames, interval, loop, random, List.of());
+    }
 
     public ButtonIdleAnimation(@NotNull List<IdleFrame> frames, long interval, boolean loop) {
         this(frames, interval, loop, false);
@@ -30,6 +43,41 @@ public record ButtonIdleAnimation(@NotNull List<IdleFrame> frames, long interval
     public ButtonIdleAnimation {
         frames = List.copyOf(frames);
         interval = Math.max(1, interval);
+        files = List.copyOf(files);
+    }
+
+    /**
+     * Returns this animation, remembering that it was read from files of the animations folder, so
+     * that it is written back as a reference rather than in full.
+     *
+     * @param files the names of the files
+     * @return the same animation, with its files
+     */
+    @NotNull
+    public ButtonIdleAnimation withFiles(@NotNull List<String> files) {
+        return new ButtonIdleAnimation(this.frames, this.interval, this.loop, this.random, files);
+    }
+
+    /**
+     * Writes this animation into the {@code idle-animation} section of its button: a reference to
+     * its files when it was only read from files, otherwise its frames and options.
+     *
+     * @param section the idle animation section
+     */
+    public void serialize(@NotNull ConfigurationSection section) {
+        if (!this.files.isEmpty()) {
+            section.set("file", this.files.size() == 1 ? this.files.getFirst() : this.files);
+            return;
+        }
+
+        ConfigurationSection itemsSection = section.createSection("items");
+        for (int index = 0; index < this.frames.size(); index++) {
+            this.frames.get(index).serialize(itemsSection.createSection(String.valueOf(index + 1)));
+        }
+
+        if (this.interval != DEFAULT_INTERVAL) section.set("interval", this.interval);
+        if (!this.loop) section.set("loop", false);
+        if (this.random) section.set("random", true);
     }
 
     /**

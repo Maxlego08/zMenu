@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -25,12 +26,14 @@ import java.util.*;
  */
 public class MatrixSlotAnimation implements SlotAnimation {
 
+    private final List<String> rows;
     private final Map<Integer, Integer> stepBySlot;
 
     /**
      * @param rows the rows of the matrix, at most 9 characters each
      */
     public MatrixSlotAnimation(@NotNull List<String> rows) {
+        this.rows = List.copyOf(rows);
         Map<Integer, Character> charBySlot = new HashMap<>();
         TreeSet<Character> characters = new TreeSet<>();
 
@@ -48,6 +51,12 @@ public class MatrixSlotAnimation implements SlotAnimation {
         List<Character> ordered = new ArrayList<>(characters);
         this.stepBySlot = new HashMap<>(charBySlot.size());
         charBySlot.forEach((slot, character) -> this.stepBySlot.put(slot, ordered.indexOf(character)));
+    }
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "matrix");
+        section.set("matrix", this.rows);
     }
 
     @Override

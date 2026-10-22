@@ -1,10 +1,12 @@
 package fr.maxlego08.menu.api.sound;
 
 import com.cryptomorin.xseries.XSound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -65,6 +67,17 @@ public interface SoundOption {
         if (this.getPitch() != 1f) map.put("pitch", this.getPitch());
         if (this.getVolume() != 1f) map.put("volume", this.getVolume());
         if (!XSound.Category.MASTER.name().equals(this.getCategoryName())) map.put("sound-category", this.getCategoryName());
+    }
+
+    /**
+     * Writes this sound into a section of its own, with the keys of {@link #serialize(Map)}.
+     *
+     * @param section The section to write into.
+     */
+    default void serialize(@NotNull ConfigurationSection section) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        this.serialize(map);
+        map.forEach(section::set);
     }
 
 }

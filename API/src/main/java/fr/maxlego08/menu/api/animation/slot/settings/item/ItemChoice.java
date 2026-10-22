@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.settings.item;
 
 import fr.maxlego08.menu.api.MenuItemStack;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,5 +19,15 @@ public record ItemChoice(@NotNull MenuItemStack item, int weight) {
 
     public ItemChoice {
         weight = Math.max(1, weight);
+    }
+
+    /**
+     * Writes the item and its weight into the section of the choice.
+     *
+     * @param section the section of the choice
+     */
+    public void serialize(@NotNull ConfigurationSection section) {
+        this.item.serialize(section);
+        if (this.weight != 1) section.set("weight", this.weight);
     }
 }

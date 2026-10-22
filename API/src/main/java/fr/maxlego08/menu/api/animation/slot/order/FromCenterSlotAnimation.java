@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,6 +12,11 @@ import java.util.List;
  * Reveals the slots closest to the middle of the inventory first, expanding outwards.
  */
 public class FromCenterSlotAnimation implements SlotAnimation {
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "from_center");
+    }
 
     @Override
     public @NotNull List<Integer> order(int inventorySize, @NotNull List<Integer> slots) {

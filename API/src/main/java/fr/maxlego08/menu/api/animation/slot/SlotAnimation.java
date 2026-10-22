@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot;
 
 import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -39,5 +40,17 @@ public interface SlotAnimation {
     @NotNull
     default List<Integer> order(@NotNull AnimationContext context) {
         return this.order(context.inventorySize(), context.slots());
+    }
+
+    /**
+     * Writes the {@code type} of this animation and its options, the way its
+     * {@link fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader} reads them back.
+     *
+     * @param section the section of the group the animation belongs to
+     * @throws UnsupportedOperationException if this animation has no type a file can name, such as
+     *                                       one built in code
+     */
+    default void serialize(@NotNull ConfigurationSection section) {
+        throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");
     }
 }

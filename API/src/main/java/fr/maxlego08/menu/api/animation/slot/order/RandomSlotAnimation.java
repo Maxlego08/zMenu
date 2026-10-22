@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,6 +26,11 @@ public class RandomSlotAnimation implements SlotAnimation {
      */
     public RandomSlotAnimation(Random random) {
         this.random = random;
+    }
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "random");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,6 +12,11 @@ import java.util.List;
  * Reveals the slots as a diagonal sweep running from the top left corner to the bottom right one.
  */
 public class WaveSlotAnimation implements SlotAnimation {
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "wave");
+    }
 
     @Override
     public @NotNull List<Integer> order(int inventorySize, @NotNull List<Integer> slots) {

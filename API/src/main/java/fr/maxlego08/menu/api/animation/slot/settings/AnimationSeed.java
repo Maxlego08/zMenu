@@ -70,6 +70,21 @@ public record AnimationSeed(@NotNull Type type, long value) {
     }
 
     /**
+     * Gets the value this seed is written as, the way {@link #parse(String)} reads it back.
+     *
+     * @return {@code random}, {@code player}, or the fixed number
+     */
+    @Contract(pure = true)
+    @NotNull
+    public Object serialize() {
+        return switch (this.type) {
+            case RANDOM -> "random";
+            case PLAYER -> "player";
+            case FIXED -> this.value;
+        };
+    }
+
+    /**
      * Builds the source the animation takes its rolls from.
      *
      * <p>The name of the animation is mixed in, so two animations seeded from the same player do not

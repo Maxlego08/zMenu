@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.animation.slot.settings.item;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,5 +50,25 @@ public record TemporaryItem(@NotNull String name, @NotNull List<Integer> slots, 
         slots = List.copyOf(slots);
         frames = List.copyOf(frames);
         count = Math.max(0, count);
+    }
+
+    /**
+     * Writes this item into its section of {@code temporary-items}. The keyframes are always written
+     * as {@code frames}, the general form {@code show} and {@code hide} are loaded into.
+     *
+     * @param section the section named after the item
+     */
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("slots", this.slots);
+
+        ConfigurationSection framesSection = section.createSection("frames");
+        for (int index = 0; index < this.frames.size(); index++) {
+            this.frames.get(index).serialize(framesSection.createSection(String.valueOf(index + 1)));
+        }
+
+        if (this.chance != 100) section.set("chance", this.chance);
+        if (this.chancePerSlot) section.set("chance-per-slot", true);
+        if (this.count != 0) section.set("count", this.count);
+        if (!this.useCache) section.set("use-cache", false);
     }
 }

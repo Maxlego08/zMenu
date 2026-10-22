@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,6 +14,11 @@ import java.util.List;
  * <p>Unlike {@link VerticalSnakeSlotAnimation} every column is walked in the same direction.</p>
  */
 public class ColumnsSlotAnimation implements SlotAnimation {
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "columns");
+    }
 
     @Override
     public @NotNull List<Integer> order(int inventorySize, @NotNull List<Integer> slots) {

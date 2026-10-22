@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.animation.slot.settings.idle;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,5 +41,16 @@ public record IdleFrame(@NotNull MenuItemStack item, long duration, @Nullable So
      */
     public long duration(long interval) {
         return this.duration > 0 ? this.duration : interval;
+    }
+
+    /**
+     * Writes this frame into its section of the idle animation's {@code items}.
+     *
+     * @param section the section of the frame
+     */
+    public void serialize(@NotNull ConfigurationSection section) {
+        this.item.serialize(section);
+        if (this.duration != 0) section.set("duration", this.duration);
+        if (this.sound != null) this.sound.serialize(section.createSection("sound"));
     }
 }

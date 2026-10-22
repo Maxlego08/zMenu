@@ -6,6 +6,8 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -55,6 +57,26 @@ public class RandomPitchSoundOption implements SoundOption {
     @Override
     public boolean isCustom() {
         return this.isCustom;
+    }
+
+    @Override
+    public @Nullable String getSoundName() {
+        if (this.soundAsString != null) return this.soundAsString;
+        return this.sound == null ? null : this.sound.name();
+    }
+
+    @Override
+    public @NonNull String getCategoryName() {
+        return this.category;
+    }
+
+    @Override
+    public void serialize(@NonNull Map<String, Object> map) {
+        String soundName = this.getSoundName();
+        if (soundName != null) map.put("sound", soundName);
+        map.put("pitch", List.of(this.minPitch, this.maxPitch));
+        if (this.volume != 1f) map.put("volume", this.volume);
+        if (!XSound.Category.MASTER.name().equalsIgnoreCase(this.category)) map.put("sound-category", this.category);
     }
 
     @Override

@@ -43,7 +43,13 @@ import java.util.regex.Pattern;
  */
 public class SlotAnimationSettingsLoader {
 
-    private static final long DEFAULT_INTERVAL = 50;
+    private static final long DEFAULT_INTERVAL = SlotAnimationGroup.DEFAULT_INTERVAL;
+
+    /**
+     * The keys that name shared animations, and the weight a variant writes next to them: a section
+     * holding nothing else only refers to its files.
+     */
+    private static final Set<String> REFERENCE_KEYS = Set.of("extends", "file", "files", "weight");
 
     /**
      * A cooldown, as a number of milliseconds or a number followed by a unit.
@@ -76,9 +82,20 @@ public class SlotAnimationSettingsLoader {
     @Nullable
     public SlotAnimationSettings load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull File file) {
         YamlConfiguration shared = this.loadSharedAnimation(configuration, path, file);
-        if (shared != null) return this.loadFrom(shared, "", file);
+        if (shared != null) {
+            SlotAnimationSettings settings = this.loadFrom(shared, "", file);
+            if (settings == null || this.overridesFiles(configuration, path)) return settings;
+            return settings.withFiles(readAnimationNames(configuration, path));
+        }
 
         return this.loadFrom(configuration, path, file);
+    }
+
+    /**
+     * Whether a section that names shared animations also writes values of its own on top of them.
+     */
+    private boolean overridesFiles(@NotNull YamlConfiguration configuration, @NotNull String path) {
+        return this.sectionValues(configuration, path).keySet().stream().anyMatch(key -> !REFERENCE_KEYS.contains(key));
     }
 
     /**
@@ -288,7 +305,11 @@ public class SlotAnimationSettingsLoader {
         String idlePath = path + key + ".";
 
         YamlConfiguration shared = this.loadSharedAnimation(configuration, idlePath, file);
-        if (shared != null) return this.loadIdleFrom(shared, "", path + key, file);
+        if (shared != null) {
+            ButtonIdleAnimation idle = this.loadIdleFrom(shared, "", path + key, file);
+            if (idle == null || this.overridesFiles(configuration, idlePath)) return idle;
+            return idle.withFiles(readAnimationNames(configuration, idlePath));
+        }
 
         return this.loadIdleFrom(configuration, idlePath, path + key, file);
     }
@@ -327,7 +348,7 @@ public class SlotAnimationSettingsLoader {
             return null;
         }
 
-        long interval = configuration.getLong(path + "interval", 200);
+        long interval = configuration.getLong(path + "interval", ButtonIdleAnimation.DEFAULT_INTERVAL);
         boolean loop = configuration.getBoolean(path + "loop", true);
         boolean random = configuration.getBoolean(path + "random", false);
 
@@ -380,7 +401,8 @@ public class SlotAnimationSettingsLoader {
             float frameChance = this.loadChance(configuration, framePath + "chance", name + "." + frameName, file);
             List<ItemChoice> frameChoices = this.loadChoices(configuration, framePath, file);
             if (!frameChoices.isEmpty()) {
-                frames.add(new AnimationKeyframe(at, null, sound, frameChance, frameChoices));
+                MenuItemStack fallback = configuration.contains(framePath + "item") ? this.inventoryManager.loadItemStack(configuration, framePath + "item.", file) : null;
+                frames.add(new AnimationKeyframe(at, fallback, sound, frameChance, frameChoices));
                 continue;
             }
 

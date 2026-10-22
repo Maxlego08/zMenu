@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot.order;
 
 import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,6 +13,11 @@ import java.util.List;
  * pattern before it completes.
  */
 public class CheckerboardSlotAnimation implements SlotAnimation {
+
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", "checkerboard");
+    }
 
     @Override
     public @NotNull List<Integer> order(int inventorySize, @NotNull List<Integer> slots) {

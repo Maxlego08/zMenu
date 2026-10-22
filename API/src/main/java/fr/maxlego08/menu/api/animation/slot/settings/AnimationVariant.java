@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.animation.slot.settings;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,5 +18,15 @@ public record AnimationVariant(@NotNull String name, @NotNull SlotAnimationSetti
 
     public AnimationVariant {
         weight = Math.max(1, weight);
+    }
+
+    /**
+     * Writes this variant into its section of {@code variants}: its settings, and its weight.
+     *
+     * @param section the section named after the variant
+     */
+    public void serialize(@NotNull ConfigurationSection section) {
+        this.settings.serialize(section);
+        if (this.weight != 1) section.set("weight", this.weight);
     }
 }

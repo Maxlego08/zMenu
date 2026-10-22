@@ -3,12 +3,16 @@ package fr.maxlego08.menu.api.animation.slot.settings;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
 import fr.maxlego08.menu.api.animation.slot.settings.item.TemporaryItem;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.utils.SectionSerializable;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Settings of the animation played when an inventory opens.
@@ -33,6 +37,10 @@ import java.util.Map;
  * @param endActions     what runs when it is over, however it ended
  * @param cooldown       the minimum time between two plays for one player, in milliseconds; 0 for
  *                       none. Remembered in the database, so it survives a reconnect
+ * @param files          the files of the animations folder these settings were read from, when the
+ *                       configuration only named them with {@code file}, {@code files} or
+ *                       {@code extends}; empty when anything was written next to them, or when the
+ *                       settings were written in place
  */
 public record SlotAnimationSettings(
         @NotNull SlotAnimationGroup defaults,
@@ -46,8 +54,13 @@ public record SlotAnimationSettings(
         @NotNull AnimationSeed seed,
         @NotNull List<Action> startActions,
         @NotNull List<Action> endActions,
-        long cooldown
-) {
+        long cooldown,
+        @NotNull List<String> files
+) implements SectionSerializable {
+
+    public SlotAnimationSettings(@NotNull SlotAnimationGroup defaults, @NotNull Map<Integer, SlotAnimationGroup> groups, boolean freeze, @NotNull AnimationPlayMode play, @NotNull List<TemporaryItem> temporaryItems, @Nullable Requirement requirement, float chance, @NotNull List<AnimationVariant> variants, @NotNull AnimationSeed seed, @NotNull List<Action> startActions, @NotNull List<Action> endActions, long cooldown) {
+        this(defaults, groups, freeze, play, temporaryItems, requirement, chance, variants, seed, startActions, endActions, cooldown, List.of());
+    }
 
     public SlotAnimationSettings(@NotNull SlotAnimationGroup defaults, @NotNull Map<Integer, SlotAnimationGroup> groups, boolean freeze, @NotNull AnimationPlayMode play, @NotNull List<TemporaryItem> temporaryItems, @Nullable Requirement requirement, float chance, @NotNull List<AnimationVariant> variants, @NotNull AnimationSeed seed, @NotNull List<Action> startActions, @NotNull List<Action> endActions) {
         this(defaults, groups, freeze, play, temporaryItems, requirement, chance, variants, seed, startActions, endActions, 0);
@@ -93,6 +106,63 @@ public record SlotAnimationSettings(
         startActions = List.copyOf(startActions);
         endActions = List.copyOf(endActions);
         cooldown = Math.max(0, cooldown);
+        files = List.copyOf(files);
+    }
+
+    /**
+     * Returns these settings, remembering that they were read from files of the animations folder,
+     * so that they are written back as a reference rather than in full.
+     *
+     * @param files the names of the files
+     * @return the same settings, with their files
+     */
+    @NotNull
+    public SlotAnimationSettings withFiles(@NotNull List<String> files) {
+        return new SlotAnimationSettings(this.defaults, this.groups, this.freeze, this.play, this.temporaryItems, this.requirement,
+                this.chance, this.variants, this.seed, this.startActions, this.endActions, this.cooldown, files);
+    }
+
+    /**
+     * Writes these settings the way an animation section is read back: a reference to their files
+     * when they were only read from files, otherwise every value that differs from its default.
+     *
+     * @param section the animation section
+     * @throws UnsupportedOperationException if a group uses an animation that cannot be serialized
+     */
+    @Override
+    public void serialize(@NotNull ConfigurationSection section) {
+        if (!this.files.isEmpty()) {
+            section.set("file", this.files.size() == 1 ? this.files.getFirst() : this.files);
+            return;
+        }
+
+        this.defaults.serialize(section, null);
+
+        if (!this.groups.isEmpty()) {
+            ConfigurationSection groupsSection = section.createSection("groups");
+            new TreeMap<>(this.groups).forEach((number, group) -> group.serialize(groupsSection.createSection(String.valueOf(number)), this.defaults));
+        }
+
+        if (!this.freeze) section.set("freeze", false);
+        if (this.play != AnimationPlayMode.ALWAYS) section.set("play", this.play.name());
+
+        if (!this.temporaryItems.isEmpty()) {
+            ConfigurationSection itemsSection = section.createSection("temporary-items");
+            this.temporaryItems.forEach(temporaryItem -> temporaryItem.serialize(itemsSection.createSection(temporaryItem.name())));
+        }
+
+        if (this.requirement != null) this.requirement.serialize(section.createSection("requirement"));
+        if (this.chance != 100) section.set("chance", this.chance);
+
+        if (!this.variants.isEmpty()) {
+            ConfigurationSection variantsSection = section.createSection("variants");
+            this.variants.forEach(variant -> variant.serialize(variantsSection.createSection(variant.name())));
+        }
+
+        if (!this.seed.equals(AnimationSeed.RANDOM)) section.set("seed", this.seed.serialize());
+        if (!this.startActions.isEmpty()) section.set("start-actions", Permissible.serializeActions(this.startActions));
+        if (!this.endActions.isEmpty()) section.set("end-actions", Permissible.serializeActions(this.endActions));
+        if (this.cooldown > 0) section.set("cooldown", this.cooldown);
     }
 
     /**

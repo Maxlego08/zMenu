@@ -758,6 +758,9 @@ public abstract class Button extends PlaceholderButton {
         setIfNotEmpty(section, "messages", this.getMessages());
         if (this.openLink != null) this.openLink.serialize(section.createSection("open-link"));
 
+        this.getAnimationSettings().serialize(section, this.allowsTemporaryItems());
+        if (this.idleAnimation != null) this.idleAnimation.serialize(section.createSection("idle-animation"));
+
         if (this.soundOption != null) {
             Map<String, Object> sound = new LinkedHashMap<>();
             this.soundOption.serialize(sound);
