@@ -87,6 +87,7 @@
 * Deprecated `PlatformType`, `@PaperOnly` and `@SpigotOnly` for removal: zMenu only runs on Paper. A class marked `@SpigotOnly` is still never loaded.
 * Deprecated for removal the API types zMenu never uses: `NoneButton` (extend `Button`), `ClickAction`, `TrimHelper`, `ZPersistentDataType`, `ZDamageReductionRecord`, `ZToolRule`, `ResolvablePlayerProfile` (see `ResolvableProfileResolvable`), `ItemCreateException`, `StringConsumer` and `ReturnConsumer` (use `java.util.function.Function`), `ItemComponentLoaderInterface` and `EnumInventory.INVENTORY_MARKETPLACE`.
 * Deprecated for removal `BaseInventory#getSpigotInventory()` (use `getInventory()`, it returns the same inventory), `InventoryEngine#setMaxPage(int)` and `MenuItemStack#setNeedPlaceholderAPI(boolean)` / `setCacheItemStack(ItemStack)`, which zMenu sets itself.
+* Deprecated for removal the pre-1.9 parts of `Potion`: `fromDamage(int)`, `toDamageValue()`, `getNameId()`, `getBrewer()` and `setPotionBrewer(PotionBrewer)`.
 * Removed the NMS item tagging used to detect duplicated items before 1.14 (`NMSDupeManager`) and the modules it needed (`NMS/Base`, `NMS/v1_20_R3`, `NMS/v1_20_R4`); duplicated items are always detected through the persistent data container.
 * Removed the code paths for Minecraft versions older than 1.20.6 (`NmsVersion`, `NMSUtils`, the NMS reflection of the item serializer, titles and action bars, numeric material ids, the old toast format and the unused legacy `ItemStackLoader`).
 
