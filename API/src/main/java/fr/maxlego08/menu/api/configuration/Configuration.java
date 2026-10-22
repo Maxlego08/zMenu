@@ -78,7 +78,7 @@ public class Configuration {
     )
     public static boolean enableOpenMessage = true;
 
-    // Enable mini message format, allows you to activate the mini message format, available from 1.17 onwards, more information here: https://docs.advntr.dev/minimessage/index.html
+    // Enables Dialogs support. MiniMessage formatting is always enabled, more information here: https://docs.advntr.dev/minimessage/index.html
     @ConfigOption(
             type = DialogInputType.BOOLEAN,
             trueText = "<green>Enabled",

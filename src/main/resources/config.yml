@@ -93,7 +93,7 @@ enable-log-storage-file: false
 enable-open-message: true
 
 # Enable MiniMessage format.
-# Allows the use of MiniMessage formatting (colors, gradients, etc.). Requires Minecraft 1.17+.
+# Enables Dialogs support (Paper 1.21.7+). MiniMessage formatting is always enabled.
 # More info: https://docs.advntr.dev/minimessage/index.html
 enable-mini-message-format: true
 

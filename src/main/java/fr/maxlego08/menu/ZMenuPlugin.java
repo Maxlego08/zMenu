@@ -34,7 +34,6 @@ import fr.maxlego08.menu.api.website.WebsiteManager;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.command.commands.CommandMenu;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
-import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import fr.maxlego08.menu.config.ConfigManager;
 import fr.maxlego08.menu.dupe.DupeListener;
 import fr.maxlego08.menu.dupe.NMSDupeManager;
@@ -68,12 +67,10 @@ import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.storage.ZStorageManager;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
-import fr.maxlego08.menu.zcore.LegacyItemStackPlatformHelper;
 import fr.maxlego08.menu.zcore.ZPlugin;
 import fr.maxlego08.menu.zcore.logger.BukkitLogger;
 import fr.maxlego08.menu.zcore.logger.ComponentLogger;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.maxlego08.menu.zcore.utils.meta.ClassicMeta;
 import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
@@ -138,7 +135,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private CommandMenu commandMenu;
     private DupeManager dupeManager;
     private FontImage fontImage = new EmptyFont();
-    private MetaUpdater metaUpdater;
+    private ComponentMeta metaUpdater;
     private PacketManager packetManager;
     private InventoryHotReload inventoryHotReload;
 
@@ -150,8 +147,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.isMockBukkitServer = isMockBukkitServer != null && isMockBukkitServer;
 
         new BukkitLogger(this.getDescription().getFullName());
-
-        this.metaUpdater = new ClassicMeta();
 
         this.commandManagerLib = new fr.robie.paperdispatch.manager.CommandManager<>(this);
         this.storageManager = new ZStorageManager(this);
@@ -198,7 +193,9 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         instance = this;
 
-        this.loadMeta();
+        if (!this.loadMeta()) {
+            return;
+        }
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
@@ -440,9 +437,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private void registerHooks() {
         if (this.isEnable(Plugins.NEXO)) {
             this.safeHook("Nexo", () -> {
-                if (this.metaUpdater instanceof ComponentMeta componentMeta) {
-                    new NexoTagResolverLoader(this, componentMeta);
-                }
+                new NexoTagResolverLoader(this, this.metaUpdater);
             });
         }
 
@@ -835,25 +830,23 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
     }
 
-    private void loadMeta() {
-        if (!Configuration.enableMiniMessageFormat || !NMSUtils.isComponentColor()) {
-            this.metaUpdater = new ClassicMeta();
-            Logger.info("Use ClassicMeta");
-        } else {
-            try {
-                Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
-                this.metaUpdater = new ComponentMeta(this);
-                new ComponentLogger(this.getDescription().getFullName(), (ComponentMeta) this.metaUpdater);
-                Logger.info("Use ComponentMeta");
-            } catch (Exception ignored) {
-                this.metaUpdater = new ClassicMeta();
-                Logger.info("Use ClassicMeta");
-            }
-        }
-        if (this.metaUpdater instanceof ComponentMeta componentMeta) {
+    /**
+     * Creates the {@link ComponentMeta} used to format items, messages and titles.
+     *
+     * @return {@code false} if the formatter could not be created, in which case the plugin is disabled.
+     */
+    private boolean loadMeta() {
+        try {
+            ComponentMeta componentMeta = new ComponentMeta(this);
+            this.metaUpdater = componentMeta;
+            new ComponentLogger(this.getDescription().getFullName(), componentMeta);
             new ComponentItemStackPlatformHelper(componentMeta);
-        } else {
-            new LegacyItemStackPlatformHelper((ClassicMeta) this.metaUpdater);
+            Logger.info("Use ComponentMeta");
+            return true;
+        } catch (Exception exception) {
+            Logger.error("Unable to initialize the MiniMessage formatter, zMenu will be disabled.", exception);
+            this.getServer().getPluginManager().disablePlugin(this);
+            return false;
         }
     }
 

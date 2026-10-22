@@ -42,6 +42,10 @@
 
 # Unreleased
 
+## Changes
+
+* Removed the legacy `ClassicMeta` formatter. zMenu always formats items, messages and titles with MiniMessage through `ComponentMeta`. If it cannot start, zMenu logs an error and disables itself. `enable-mini-message-format` now only controls Dialogs support.
+
 ## New Features
 
 * Added slot animations: an inventory can reveal its items one after the other when it opens (`open-animation`) and take them away when it closes (`close-animation`). Built-in orders: `sequential` (also `rows`), `horizontal_snake`, `vertical_snake`, `spiral`, `random`, `from_center`, `wave`, `checkerboard`, `columns`, `matrix` (drawn with a `matrix:` of characters) and `custom` (an `order:` of slots). See `docs/slot-animations.md` and the menus in `inventories/examples/animation*.yml`.
