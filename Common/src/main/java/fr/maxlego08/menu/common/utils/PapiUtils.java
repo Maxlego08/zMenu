@@ -15,8 +15,8 @@ public class PapiUtils extends TranslationHelper {
     private static final long MAXIMUM_CACHE_SIZE = 10_000;
 
     private static volatile Placeholder placeholder;
-    private transient volatile Cache<String, String> cache;
-    private transient volatile long cacheDuration = -1;
+    private static volatile Cache<String, String> cache;
+    private static volatile long cacheDuration = -1;
 
     private Placeholder use() {
         if (placeholder == null) {
@@ -25,18 +25,23 @@ public class PapiUtils extends TranslationHelper {
         return placeholder;
     }
 
-    private Cache<String, String> getCache() {
+    private static Cache<String, String> getCache() {
         long duration = Configuration.cachePlaceholderAPI;
-        Cache<String, String> current = this.cache;
-        if (current == null || this.cacheDuration != duration) {
-            current = CacheBuilder.newBuilder()
-                    .maximumSize(MAXIMUM_CACHE_SIZE)
-                    .expireAfterWrite(Math.max(duration, 0), TimeUnit.MILLISECONDS)
-                    .build();
-            this.cache = current;
-            this.cacheDuration = duration;
+        Cache<String, String> current = cache;
+        if (current != null && cacheDuration == duration) return current;
+
+        synchronized (PapiUtils.class) {
+            current = cache;
+            if (current == null || cacheDuration != duration) {
+                current = CacheBuilder.newBuilder()
+                        .maximumSize(MAXIMUM_CACHE_SIZE)
+                        .expireAfterWrite(Math.max(duration, 0), TimeUnit.MILLISECONDS)
+                        .build();
+                cacheDuration = duration;
+                cache = current;
+            }
+            return current;
         }
-        return current;
     }
 
     public Object papi(Object placeHolder, OfflinePlayer player, boolean useCache) {
@@ -52,7 +57,7 @@ public class PapiUtils extends TranslationHelper {
             return this.parse(placeHolder, player);
         }
 
-        Cache<String, String> cache = this.getCache();
+        Cache<String, String> cache = getCache();
         String cacheKey = placeHolder + ";" + player.getUniqueId();
 
         if (useCache) {
