@@ -11,6 +11,32 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ZPaginationManager implements PaginationManager {
     private final Map<UUID, Map<String, PaginationState>> paginationStates = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> menuPages = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> menuMaxPages = new ConcurrentHashMap<>();
+
+    @Override
+    public int getMenuPage(@NotNull UUID playerId) {
+        return this.menuPages.getOrDefault(playerId, 0);
+    }
+
+    @Override
+    public int getMenuMaxPage(@NotNull UUID playerId) {
+        return this.menuMaxPages.getOrDefault(playerId, 0);
+    }
+
+    @Override
+    public void setMenuPage(@NotNull UUID playerId, int page, int maxPage) {
+        this.menuPages.put(playerId, page);
+        this.menuMaxPages.put(playerId, maxPage);
+    }
+
+    /**
+     * Forgets the menu page of every player, when the inventories are reloaded.
+     */
+    public void clearMenuPages() {
+        this.menuPages.clear();
+        this.menuMaxPages.clear();
+    }
 
     @Override
     public @NotNull PaginationState getOrCreateState(@NotNull UUID playerId, @NotNull String contextId) {
@@ -71,10 +97,13 @@ public class ZPaginationManager implements PaginationManager {
     @Override
     public void removePlayerStates(@NotNull UUID playerId) {
         this.paginationStates.remove(playerId);
+        this.menuPages.remove(playerId);
+        this.menuMaxPages.remove(playerId);
     }
 
     @Override
     public void clearAll() {
         this.paginationStates.clear();
+        this.clearMenuPages();
     }
 }

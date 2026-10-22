@@ -93,7 +93,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
-    private final PaginationManager paginationManager = new ZPaginationManager();
+    private final ZPaginationManager paginationManager = new ZPaginationManager();
     private final AnimationManager animationManager;
     private final ZRegistryManager registries = new ZRegistryManager();
     private boolean slotAnimationsLoaded;
@@ -107,8 +107,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<Plugin, FastEvent> fastEventMap = new ConcurrentHashMap<>();
     private final Map<String, ItemStackSimilar> itemStackSimilarMap = new ConcurrentHashMap<>();
 
-    private final Map<UUID, Integer> playerPages = new ConcurrentHashMap<>();
-    private final Map<UUID, Integer> playerMaxPages = new ConcurrentHashMap<>();
     private final Map<Key, Inventory> otherInventories = new ConcurrentHashMap<>();
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
@@ -731,8 +729,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void loadInventories() {
 
-        this.playerMaxPages.clear();
-        this.playerPages.clear();
+        this.paginationManager.clearMenuPages();
         this.inventoryLoadRequirements.removeIf(requirement -> requirement.getPlugin() == this.plugin);
 
         this.logReport(this.registries.reload(Registries.INVENTORY));
@@ -974,7 +971,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin.getScheduler().runAtEntity(player, w -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (holder instanceof InventoryDefault inventoryDefault) {
-                this.openInventory(player, inventoryDefault.getMenuInventory(), this.getPage(player), inventoryDefault.getOldInventories());
+                this.openInventory(player, inventoryDefault.getMenuInventory(), this.paginationManager.getMenuPage(player.getUniqueId()), inventoryDefault.getOldInventories());
             }
         });
     }
@@ -1047,10 +1044,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     public void onQuid(PlayerQuitEvent event) {
         UUID uniqueId = event.getPlayer().getUniqueId();
         this.currentInventories.remove(uniqueId);
-        // Cleared here too: otherwise they only reset on reload, and a returning player
-        // inherits the page they were on in a previous session.
-        this.playerPages.remove(uniqueId);
-        this.playerMaxPages.remove(uniqueId);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1122,21 +1115,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         return this.buttonOptions;
     }
 
-    @Override
-    public void setPlayerPage(OfflinePlayer player, int page, int maxPage) {
-        this.playerPages.put(player.getUniqueId(), page);
-        this.playerMaxPages.put(player.getUniqueId(), maxPage);
-    }
-
-    @Override
-    public int getPage(OfflinePlayer player) {
-        return this.playerPages.getOrDefault(player.getUniqueId(), 0);
-    }
-
-    @Override
-    public int getMaxPage(OfflinePlayer player) {
-        return this.playerMaxPages.getOrDefault(player.getUniqueId(), 0);
-    }
 
     @Override
     public InventoryDefault getFakeInventory() {

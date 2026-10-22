@@ -599,24 +599,36 @@ public interface InventoryManager extends Listener {
      * @param player  The {@link OfflinePlayer} instance representing the player whose page number is being set. This object allows for the operation to affect players who are not currently online as well.
      * @param page    The current page number to set for the player. This should be within the range of 1 to {@code maxPage}, inclusive.
      * @param maxPage The maximum number of pages available. This is used to validate the {@code page} parameter and ensure it does not exceed the available range of pages.
+     * @deprecated use {@link PaginationManager#setMenuPage(UUID, int, int)}.
      */
-    void setPlayerPage(OfflinePlayer player, int page, int maxPage);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default void setPlayerPage(OfflinePlayer player, int page, int maxPage) {
+        this.getPaginationManager().setMenuPage(player.getUniqueId(), page, maxPage);
+    }
 
     /**
      * Retrieves the current page number of a given player in a paginated context. This method is typically used in conjunction with {@link #setPlayerPage(OfflinePlayer, int, int)} to manage navigation through a multi-page UI component, allowing for a dynamic user experience based on the player's interaction.
      *
      * @param player The {@link OfflinePlayer} instance representing the player whose current page number is being queried. This enables the method to obtain information about players who are not currently online.
      * @return The current page number of the specified player. If the player's page has not been set previously, this method may return a default value or 0, depending on implementation.
+     * @deprecated use {@link PaginationManager#getMenuPage(UUID)}.
      */
-    int getPage(OfflinePlayer player);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default int getPage(OfflinePlayer player) {
+        return this.getPaginationManager().getMenuPage(player.getUniqueId());
+    }
 
     /**
      * Obtains the maximum page number set for a given player in a paginated context. This method allows for the retrieval of the upper limit of the pagination range for a player, facilitating UI boundary checks and preventing navigation beyond the available content.
      *
      * @param player The {@link OfflinePlayer} instance representing the player whose maximum page number is being retrieved. As with other methods, this supports offline players, allowing for a wide range of applications.
      * @return The maximum page number available for the specified player. Similar to {@link #getPage(OfflinePlayer)}, if the max page has not been set, this method might return a default value or 0, depending on how it's implemented.
+     * @deprecated use {@link PaginationManager#getMenuMaxPage(UUID)}.
      */
-    int getMaxPage(OfflinePlayer player);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default int getMaxPage(OfflinePlayer player) {
+        return this.getPaginationManager().getMenuMaxPage(player.getUniqueId());
+    }
 
     /**
      * Retrieves a fake inventory for testing or simulation purposes.

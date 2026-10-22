@@ -2,7 +2,6 @@ package fr.maxlego08.menu.inventory.inventories;
 
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.animation.compile.AnimationCompiler;
 import fr.maxlego08.menu.animation.compile.AnimationStep;
@@ -140,8 +139,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         this.updatedButtons = clickableUpdates;
         this.useSharedIdleTimer = idleButtons > 0 && idleButtons >= Configuration.sharedIdleTimerThreshold;
         this.openAsync = async;
-        InventoryManager manager = this.plugin.getInventoryManager();
-        manager.setPlayerPage(player, page, this.maxPage);
+        this.plugin.getInventoryManager().getPaginationManager().setMenuPage(player.getUniqueId(), page, this.maxPage);
 
         var scheduler = this.plugin.getScheduler();
         Consumer<WrappedTask> runnable = w -> {
