@@ -4,7 +4,6 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
-import fr.maxlego08.menu.common.utils.nms.NMSUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -39,9 +38,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
         for (int slot = 0; slot != this.MAX_INVENTORY_SIZE; slot++) {
             this.clear(slot, playerInventory, content, player, true, clearInvType);
         }
-        if (!NMSUtils.isOneHand()) {
-            this.clear(40, playerInventory, content, player, true, clearInvType);
-        }
+        this.clear(40, playerInventory, content, player, true, clearInvType);
     }
 
     @Override
@@ -53,9 +50,7 @@ public class ZInventoryPlayer implements InventoryPlayer {
         for (int slot = 0; slot != this.MAX_INVENTORY_SIZE; slot++) {
             removeItem.accept(player, slot, playerInventory);
         }
-        if (!NMSUtils.isOneHand()) {
-            removeItem.accept(player, 40, playerInventory);
-        }
+        removeItem.accept(player, 40, playerInventory);
     }
 
     private void clear(int slot, PlayerInventory playerInventory, ItemStack[] content, Player player, boolean save, ClearInvType clearInvType) {

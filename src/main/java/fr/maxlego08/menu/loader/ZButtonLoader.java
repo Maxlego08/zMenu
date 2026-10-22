@@ -26,7 +26,6 @@ import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
@@ -218,12 +217,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "player-head", configuration.getString(path + "item.playerHead", configuration.getString(path + "item.player-head", defaultButtonValue.getPlayerHead()))));
 
         if (playerHead != null) {
-            if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
-                itemStack.setMaterial("PLAYER_HEAD");
-            } else {
-                itemStack.setMaterial("SKULL_ITEM");
-                itemStack.setData("3");
-            }
+            itemStack.setMaterial("PLAYER_HEAD");
             button.setPlayerHead(playerHead);
         }
 

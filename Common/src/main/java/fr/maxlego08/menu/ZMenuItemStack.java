@@ -231,11 +231,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         String papiMaterial = this.papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
 
         try {
-            return this.getMaterial(Integer.parseInt(papiMaterial));
-        } catch (Exception ignored) {
-        }
-
-        try {
             return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase(Locale.ROOT)) : null;
         } catch (Exception ignored) {
             return null;
