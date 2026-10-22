@@ -146,7 +146,7 @@ public interface InventoryManager extends Listener {
      * @deprecated a file name and the key of its inventory can differ (case, spaces). Use
      * {@link #getInventory(Key)}, or {@link #findInventory(String)} for a name written by a user.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Inventory> getInventory(String name);
 
     /**
@@ -157,7 +157,7 @@ public interface InventoryManager extends Listener {
      * @return Optional of {@link Inventory}.
      * @deprecated use {@link #getInventory(Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Inventory> getInventory(Plugin plugin, String name);
 
     /**
@@ -168,7 +168,7 @@ public interface InventoryManager extends Listener {
      * @return Optional of {@link Inventory}.
      * @deprecated use {@link #getInventory(Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Inventory> getInventory(String pluginName, String name);
 
     /**
@@ -219,7 +219,7 @@ public interface InventoryManager extends Listener {
      * @return True if the inventory has been deleted.
      * @deprecated use {@link #deleteInventory(Key)}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean deleteInventory(String name);
 
     /**
@@ -233,7 +233,7 @@ public interface InventoryManager extends Listener {
      * @return the inventories as {@code plugin:file}, lowercased
      * @deprecated use {@link #getInventoryKeys()}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Set<String> getInventoryNames();
 
     /**
@@ -285,7 +285,11 @@ public interface InventoryManager extends Listener {
     /**
      * Loads buttons. The {@link ButtonLoaderRegisterEvent} event will be
      * called, allowing you to add your own buttons using this event.
+     *
+     * @deprecated part of zMenu's startup, not meant to be called by other plugins. Register your
+     * buttons with {@link ButtonManager#register(fr.maxlego08.menu.api.loader.ButtonLoader)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadButtons();
 
     /**
@@ -342,7 +346,7 @@ public interface InventoryManager extends Listener {
      * @param inventoryName Name of the inventory to be opened.
      * @deprecated use {@link #openInventory(Player, Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, Plugin plugin, String inventoryName);
 
     /**
@@ -353,7 +357,7 @@ public interface InventoryManager extends Listener {
      * @param inventoryName Name of the inventory to be opened.
      * @deprecated use {@link #openInventory(Player, Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String pluginName, String inventoryName);
 
     /**
@@ -365,7 +369,7 @@ public interface InventoryManager extends Listener {
      * @param page          The page number of the inventory to open.
      * @deprecated use {@link #openInventory(Player, Key, int)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String pluginName, String inventoryName, int page);
 
     /**
@@ -377,7 +381,7 @@ public interface InventoryManager extends Listener {
      * @deprecated use {@link #openInventory(Player, Key)}, or {@link #findInventory(String)} for a
      * name written by a user.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String inventoryName);
 
     /**
@@ -389,7 +393,7 @@ public interface InventoryManager extends Listener {
      * @deprecated use {@link #openInventory(Player, Key, int)}, or {@link #findInventory(String)}
      * for a name written by a user.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String inventoryName, int page);
 
     /**
@@ -397,7 +401,9 @@ public interface InventoryManager extends Listener {
      *
      * @param pluginName The name of the plugin to be found.
      * @return Optional of a plugin that can contain the plugin if it exists.
+     * @deprecated not related to inventories; use {@link org.bukkit.plugin.PluginManager#getPlugin(String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Plugin> getPluginIgnoreCase(String pluginName);
 
     /**
@@ -411,7 +417,9 @@ public interface InventoryManager extends Listener {
      * Sets item name and item meta using Spigot or Adventure API.
      *
      * @return MetaUpdater.
+     * @deprecated use {@link MenuPlugin#getMetaUpdater()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     MetaUpdater getMeta();
 
     /**
@@ -448,7 +456,10 @@ public interface InventoryManager extends Listener {
      * Displays the list of available inventories.
      *
      * @param sender Command sender.
+     * @deprecated the {@code /zm list} command, not meant to be called by other plugins; read the
+     * inventories with {@link #getInventories()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void sendInventories(CommandSender sender);
 
     /**
@@ -458,7 +469,9 @@ public interface InventoryManager extends Listener {
      * @param fileName      Inventory file name.
      * @param inventorySize Inventory size.
      * @param inventoryName Inventory name.
+     * @deprecated the {@code /zm create} command, not meant to be called by other plugins.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void createNewInventory(CommandSender sender, String fileName, int inventorySize, String inventoryName);
 
     /**
@@ -509,7 +522,9 @@ public interface InventoryManager extends Listener {
      *
      * @param loadClicks - Click type as string
      * @return Loaded click type
+     * @deprecated an internal helper of the menu loaders, not related to inventories.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     List<ClickType> loadClicks(List<String> loadClicks);
 
     /**
@@ -543,7 +558,9 @@ public interface InventoryManager extends Listener {
      * Gets the scheduler associated with this button option.
      *
      * @return The ZScheduler associated with this button option.
+     * @deprecated use {@link MenuPlugin#getScheduler()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     PlatformScheduler getScheduler();
 
     /**
@@ -612,14 +629,18 @@ public interface InventoryManager extends Listener {
      * Provides access to the enchantments management interface.
      *
      * @return An instance of {@link Enchantments} for managing custom enchantments.
+     * @deprecated use {@link MenuPlugin#getEnchantments()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Enchantments getEnchantments();
 
     /**
      * Retrieves the font image utility for managing custom fonts.
      *
      * @return An instance of {@link FontImage} for handling font images.
+     * @deprecated use {@link MenuPlugin#getFontImage()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     FontImage getFontImage();
 
     /**
@@ -627,7 +648,9 @@ public interface InventoryManager extends Listener {
      *
      * @param file The YAML file to load.
      * @return The loaded YAML configuration.
+     * @deprecated an internal helper of the menu loaders, not related to inventories.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     YamlConfiguration loadYamlConfiguration(File file);
 
     /**
@@ -639,7 +662,10 @@ public interface InventoryManager extends Listener {
      *              the specific aspect of the inventory being targeted.
      * @param value The value associated with the inventory requirement, used to
      *              configure or modify the inventory setting as per the type specified.
+     * @deprecated part of zMenu's loading of menus that wait for a button, an action or a
+     * pattern, not meant to be called by other plugins.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadElement(InventoryRequirementType type, String value);
 
     void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption);
@@ -660,10 +686,31 @@ public interface InventoryManager extends Listener {
 
     ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders);
 
+    /**
+     * Sends one of zMenu's messages.
+     *
+     * @param sender  the receiver
+     * @param message the message
+     * @param args    the placeholders, as pairs of key and value
+     * @deprecated zMenu's messages are not meant to be sent by other plugins.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void sendMessage(CommandSender sender, Message message, Object... args);
 
+    /**
+     * Loads the buttons, patterns, animations and inventories.
+     *
+     * @deprecated part of zMenu's startup, not meant to be called by other plugins; use
+     * {@link #loadInventories()} to read the menus again.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void load();
 
+    /**
+     * Gets the plugin this manager belongs to.
+     *
+     * @return the plugin
+     */
     MenuPlugin getPlugin();
 
     /**

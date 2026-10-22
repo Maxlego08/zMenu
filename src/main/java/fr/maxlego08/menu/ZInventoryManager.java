@@ -36,7 +36,9 @@ import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
+import fr.maxlego08.menu.common.utils.ClickTypeParser;
 import fr.maxlego08.menu.common.utils.PlayerUtil;
+import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
@@ -60,7 +62,6 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -414,15 +415,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
-        if (pluginName == null) {
-            return Optional.empty();
-        }
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            if (plugin.getName().equalsIgnoreCase(pluginName)) {
-                return Optional.of(plugin);
-            }
-        }
-        return Optional.empty();
+        return PluginUtils.getPluginIgnoreCase(pluginName);
     }
 
     private KeyedRegistry<Inventory> inventoryRegistry() {
@@ -1076,25 +1069,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public List<ClickType> loadClicks(List<String> loadClicks) {
-        List<ClickType> clickTypes = new ArrayList<>();
-        loadClicks.forEach(clickType -> {
-            if (clickType == null) return;
-            if (clickType.equalsIgnoreCase("all") || clickType.equalsIgnoreCase("any")) {
-                clickTypes.addAll(Configuration.allClicksType);
-            } else {
-                try {
-                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase(Locale.ROOT)));
-                } catch (Exception ignored) {
-                    Logger.info(clickType + " click type was not found.", LogType.ERROR);
-                }
-            }
-        });
-
-        if (clickTypes.isEmpty()) { // Use all clicks by default
-            clickTypes.addAll(Configuration.allClicksType);
-        }
-
-        return clickTypes;
+        return ClickTypeParser.parse(loadClicks);
     }
 
     @Override

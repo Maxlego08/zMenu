@@ -111,7 +111,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final ICommandManager<ZMenuPlugin> commandManagerLib;
     private final StorageManager storageManager;
     private final ButtonManager buttonManager;
-    private final InventoryManager inventoryManager;
+    private final ZInventoryManager inventoryManager;
     private final TitleAnimationManager titleAnimationManager;
     private final ZClientVersionManager clientVersionManager;
     private final CommandManager commandManager;
@@ -598,7 +598,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
      *
      * @return the inventoryManager
      */
-    public InventoryManager getInventoryManager() {
+    public ZInventoryManager getInventoryManager() {
         return this.inventoryManager;
     }
 

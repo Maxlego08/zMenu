@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.mechanics.onclick;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.common.utils.ClickTypeParser;
 import fr.maxlego08.menu.api.mechanic.Mechanic;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -43,7 +44,7 @@ public class OnClickMechanic extends Mechanic<OnClickMechanicFactory> {
         this.cooldown = section.getInt("cooldown", 0);
         this.cancelEvent = section.getBoolean("cancel-event", false);
         this.clickTarget = ClickTarget.fromString(section.getString("click-target"));
-        this.clickTypes = plugin.getInventoryManager().loadClicks(section.getStringList("click-types"));
+        this.clickTypes = ClickTypeParser.parse(section.getStringList("click-types"));
 
         ConfigurationSection reqSection = section.getConfigurationSection("click-requirements");
         try {

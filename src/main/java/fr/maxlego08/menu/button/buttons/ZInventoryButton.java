@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -69,7 +70,7 @@ public class ZInventoryButton extends InventoryButton {
         Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.findInventory(this.inventoryName) : this.inventoryManager.getInventory(ZMenuKeys.fileKey(this.pluginName, this.inventoryName));
         if (optional.isEmpty()) {
             player.closeInventory();
-            inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
+            MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);
             return;
         }
 

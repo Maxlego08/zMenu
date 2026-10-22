@@ -272,7 +272,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
      * {@inheritDoc}
      */
     private void loadEnchantements(ZMenuItemStack menuItemStack, YamlConfiguration configuration, String path, File file) {
-        Enchantments helperEnchantments = this.manager.getEnchantments();
+        Enchantments helperEnchantments = this.manager.getPlugin().getEnchantments();
 
         List<String> enchants = configuration.getStringList(path + "enchants");
         if (enchants.isEmpty()) enchants = configuration.getStringList(path + "enchantments");

@@ -12,7 +12,7 @@ import java.util.Set;
  * @deprecated a plain map with no owner and no duplicate detection. Use a {@link RegistryType}
  * held by the {@link RegistryManager} instead.
  */
-@Deprecated
+@Deprecated(since = "1.1.2.1")
 public abstract class Registry<T, R> {
     protected final Map<T, R> registry = new HashMap<>();
 

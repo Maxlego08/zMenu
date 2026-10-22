@@ -213,19 +213,25 @@ public interface MenuPlugin extends Plugin {
     /**
      * Checks if the plugin is a Paper plugin.
      * @return true if the plugin is a Paper plugin, false otherwise
+     * @deprecated zMenu only runs on Paper and its forks, so this is always true.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean isPaper();
 
     /**
      * Checks if the plugin is a Paper or Folia plugin.
      * @return true if the plugin is a Paper or Folia plugin, false otherwise
+     * @deprecated zMenu only runs on Paper and its forks, so this is always true.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean isPaperOrFolia();
 
     /**
      * Checks if the plugin is a Spigot plugin.
      * @return true if the plugin is a Spigot plugin, false otherwise
+     * @deprecated zMenu only runs on Paper and its forks, so this is always false.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean isSpigot();
 
     /**

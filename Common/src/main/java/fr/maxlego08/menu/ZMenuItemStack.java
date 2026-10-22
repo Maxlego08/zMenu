@@ -310,7 +310,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
         Material finalMaterial = itemStack.getType();
         String locale = this.findPlayerLocale(player);
-        FontImage fontImage = this.inventoryManager.getFontImage();
+        FontImage fontImage = this.inventoryManager.getPlugin().getFontImage();
 
         this.applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
         this.applyGlowing(itemMeta);
@@ -327,7 +327,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             return;
         }
 
-        Enchantments helperEnchantments = this.inventoryManager.getEnchantments();
+        Enchantments helperEnchantments = this.inventoryManager.getPlugin().getEnchantments();
         helperEnchantments.getEnchantments("power").ifPresent(menuEnchantment -> {
             itemMeta.addEnchant(menuEnchantment.enchantment(), 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -421,11 +421,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (itemName != null) {
-            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, player);
+            this.inventoryManager.getPlugin().getMetaUpdater().updateDisplayName(itemMeta, itemName, player);
         }
 
         if (!itemLore.isEmpty()) {
-            this.inventoryManager.getMeta().updateLore(itemMeta, itemLore, this.loreType);
+            this.inventoryManager.getPlugin().getMetaUpdater().updateLore(itemMeta, itemLore, this.loreType);
         }
     }
 
@@ -1456,7 +1456,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     private String enchantmentName(Enchantment enchantment) {
         String key = enchantment.getKey().getKey();
-        boolean readsBack = this.inventoryManager.getEnchantments().getEnchantments(key)
+        boolean readsBack = this.inventoryManager.getPlugin().getEnchantments().getEnchantments(key)
                 .map(menuEnchantment -> menuEnchantment.enchantment().equals(enchantment))
                 .orElse(false);
         return readsBack ? key : enchantment.getName();
