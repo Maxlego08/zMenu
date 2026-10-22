@@ -57,9 +57,18 @@ public interface BaseInventory extends InventoryHolder {
     @Nullable
     String getGuiName();
 
+    /**
+     * Gets the Bukkit inventory shown to the player.
+     *
+     * @return the inventory
+     * @deprecated returns the same inventory as {@link #getInventory()}.
+     */
     @Contract(pure = true)
     @NotNull
-    Inventory getSpigotInventory();
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default Inventory getSpigotInventory() {
+        return this.getInventory();
+    }
 
     @Contract(pure = true)
     @NotNull Inventory getInventory();

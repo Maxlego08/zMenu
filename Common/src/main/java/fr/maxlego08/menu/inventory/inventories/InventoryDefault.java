@@ -183,7 +183,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 if (fillItemStack != null) {
                     ItemStack builtItem = fillItemStack.build(player, containerInventory.isFillItemUseCache());
                     if (builtItem != null) {
-                        ItemStack[] contents = super.getSpigotInventory().getContents();
+                        ItemStack[] contents = super.getInventory().getContents();
                         for (int slot = 0; slot < contents.length; slot++) {
                             this.addItem(slot, builtItem.clone());
                         }
@@ -203,7 +203,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             if (this.openAsync) {
                 scheduler.runAtEntity(player, w2 -> {
                     this.playOpenAnimation();
-                    player.openInventory(this.getSpigotInventory());
+                    player.openInventory(this.getInventory());
                 });
             } else {
                 this.playOpenAnimation();
@@ -1053,7 +1053,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         int size = this.inventory.size();
         ItemStack[] contents = new ItemStack[AnimationSlots.totalSize(size)];
 
-        ItemStack[] menu = this.getSpigotInventory().getContents();
+        ItemStack[] menu = this.getInventory().getContents();
         System.arraycopy(menu, 0, contents, 0, Math.min(menu.length, size));
 
         if (this.player != null) {
@@ -1071,7 +1071,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     private ItemStack getAnimationSlotItem(int slot) {
         int size = this.inventory.size();
 
-        if (!AnimationSlots.isPlayer(size, slot)) return this.getSpigotInventory().getItem(slot);
+        if (!AnimationSlots.isPlayer(size, slot)) return this.getInventory().getItem(slot);
         return this.player == null ? null : this.player.getInventory().getItem(AnimationSlots.toPlayer(size, slot));
     }
 
@@ -1082,7 +1082,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         int size = this.inventory.size();
 
         if (!AnimationSlots.isPlayer(size, slot)) {
-            this.getSpigotInventory().setItem(slot, itemStack);
+            this.getInventory().setItem(slot, itemStack);
             return;
         }
         if (this.player == null) return;
@@ -1302,7 +1302,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return;
         }
 
-        this.getSpigotInventory().setItem(slot, itemStack);
+        this.getInventory().setItem(slot, itemStack);
 
         if (refreshRequirement.isRefreshButton()) {
             this.buildButton(button.getMasterParentButton(), placeholders);
@@ -1322,7 +1322,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return;
         }
 
-        this.getSpigotInventory().setItem(slot, itemStack);
+        this.getInventory().setItem(slot, itemStack);
     }
 
     private boolean applyMetaUpdates(Button button, ItemStack itemStack, boolean refreshLore, boolean refreshName) {

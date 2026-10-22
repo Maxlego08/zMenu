@@ -61,10 +61,15 @@ public interface InventoryEngine extends BaseInventory {
     @Contract(pure = true)
     int getMaxPage();
 
-    @Contract(pure = true)
+    /**
+     * Sets the number of pages of this inventory.
+     *
+     * @param maxPage the number of pages
+     * @deprecated computed by zMenu from the buttons and patterns when the inventory opens.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void setMaxPage(int maxPage);
 
-    @Contract(pure = true)
     void cancel(int slot);
 
     /**

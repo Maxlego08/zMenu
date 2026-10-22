@@ -249,14 +249,18 @@ public interface MenuItemStack extends MenuItemStackContext, SectionSerializable
      * Marks whether PlaceholderAPI is required for this item stack.
      *
      * @param needPlaceholderAPI {@code true} when PlaceholderAPI is needed.
+     * @deprecated set by zMenu from the item's text when it is loaded; changing it breaks the item cache.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void setNeedPlaceholderAPI(boolean needPlaceholderAPI);
 
     /**
      * Sets the cached item stack value used when caching is enabled.
      *
      * @param cacheItemStack the ItemStack to cache.
+     * @deprecated filled by zMenu when the item is built; setting it from outside serves a stale item.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void setCacheItemStack(ItemStack cacheItemStack);
 
     /**

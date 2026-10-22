@@ -123,7 +123,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
                 this.plugin.getScheduler().runAtEntity(player, wrappedTask -> {
                     clonedInventory.postOpen(this.plugin, player, page, objects);
 
-                    Inventory spigotInventory = clonedInventory.getSpigotInventory();
+                    Inventory spigotInventory = clonedInventory.getInventory();
                     player.openInventory(spigotInventory);
 
                     clonedInventory.onPostOpen(player, this.plugin, page, objects);

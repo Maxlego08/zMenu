@@ -230,11 +230,6 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         return this.args;
     }
 
-    @Override
-    public @NonNull Inventory getSpigotInventory() {
-        return this.inventory;
-    }
-
     public String getGuiName() {
         return this.guiName;
     }
