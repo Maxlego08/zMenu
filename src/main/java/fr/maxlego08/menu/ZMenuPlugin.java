@@ -812,22 +812,22 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     @Override
     public String parse(Player player, String string) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, string).replace("\uF000", "%");
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, string);
     }
 
     @Override
     public String parse(OfflinePlayer offlinePlayer, String string) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, string).replace("\uF000", "%");
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, string);
     }
 
     @Override
     public List<String> parse(Player player, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(player, strings);
     }
 
     @Override
     public List<String> parse(OfflinePlayer offlinePlayer, List<String> strings) {
-        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings).stream().map(s -> s.replace("\uF000", "%")).toList();
+        return Placeholder.Placeholders.getPlaceholder().setPlaceholders(offlinePlayer, strings);
     }
 
     /**

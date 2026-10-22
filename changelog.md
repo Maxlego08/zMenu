@@ -72,6 +72,7 @@
 
 * The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
 * `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
+* Without PlaceholderAPI, a `%` typed into a dialog input could come out as an invisible character in item names and lores; every placeholder path now restores it.
 
 ## Internal Changes
 
