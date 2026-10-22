@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.mechanics.onclick.OnClickMechanic.ClickTarget;
@@ -12,19 +13,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class OnClickMechanicListener extends MechanicListener {
 
     private final OnClickMechanicFactory factory;
     private final ItemManager itemManager;
     private final MenuPlugin plugin;
-    private final Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
+    private final Map<String, Map<UUID, Long>> cooldowns = new ConcurrentHashMap<>();
 
     public OnClickMechanicListener(OnClickMechanicFactory factory, MenuPlugin plugin) {
         this.factory = factory;
@@ -62,7 +64,9 @@ public class OnClickMechanicListener extends MechanicListener {
         }
 
         for (Action action : mechanic.getActions()) {
-            action.preExecute(player, null, inventory, placeholders);
+            if (action.preExecuteChain(player, null, inventory, placeholders) == ActionResult.STOP) {
+                break;
+            }
         }
 
         if (mechanic.shouldCancelEvent()) {
@@ -70,6 +74,12 @@ public class OnClickMechanicListener extends MechanicListener {
         }
 
         setCooldown(itemId, player.getUniqueId(), mechanic.getCooldown());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        UUID playerUuid = event.getPlayer().getUniqueId();
+        this.cooldowns.values().removeIf(playerCooldowns -> playerCooldowns.remove(playerUuid) != null && playerCooldowns.isEmpty());
     }
 
     private boolean isValidTarget(org.bukkit.event.block.Action action, ClickTarget target) {
@@ -105,6 +115,6 @@ public class OnClickMechanicListener extends MechanicListener {
     private void setCooldown(String itemId, UUID playerUuid, int cooldownSeconds) {
         if (cooldownSeconds <= 0) return;
         long expiry = System.currentTimeMillis() + (cooldownSeconds * 1000L);
-        this.cooldowns.computeIfAbsent(itemId, k -> new HashMap<>()).put(playerUuid, expiry);
+        this.cooldowns.computeIfAbsent(itemId, k -> new ConcurrentHashMap<>()).put(playerUuid, expiry);
     }
 }

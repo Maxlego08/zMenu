@@ -12,18 +12,23 @@ import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.inventory.dialog.DialogListDialogInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.record.dialogs.DialogListEntry;
 import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -80,7 +85,7 @@ public class ZDialogManager implements DialogManager, Listener {
     public Optional<DialogInventory> getDialogOptional(String name) {
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             for (AbstractDialogInventory dialog : dialogList) {
-                if (dialog.getFileName().equals(name) || dialog.getName().equals(name)) {
+                if (dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -89,13 +94,8 @@ public class ZDialogManager implements DialogManager, Listener {
     }
     @Override
     public Optional<DialogInventory> getDialog(String pluginName, String fileName) {
-        List<AbstractDialogInventory> pluginDialogs = this.dialogs.get(pluginName);
-        if (pluginDialogs == null) return Optional.empty();
-
-        return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName) || dialog.getName().equals(fileName))
-                .map(dialog -> (DialogInventory) dialog)
-                .findFirst();
+        Optional<Plugin> plugin = this.menuPlugin.getInventoryManager().getPluginIgnoreCase(pluginName);
+        return plugin.isEmpty() || fileName == null ? Optional.empty() : this.getDialog(plugin.get(), fileName);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class ZDialogManager implements DialogManager, Listener {
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equals(fileName))
+                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
                 .map(dialog -> (DialogInventory) dialog)
                 .findFirst();
     }
@@ -113,7 +113,7 @@ public class ZDialogManager implements DialogManager, Listener {
     public void deleteDialog(String name) {
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equals(name) || dialog.getName().equals(name)
+                    dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
             );
         }
         String suffix = ":" + name.toLowerCase(Locale.ROOT);
@@ -150,6 +150,27 @@ public class ZDialogManager implements DialogManager, Listener {
         } catch (IOException exception) {
             Logger.info("Failed to load dialogs", Logger.LogType.WARNING);
         }
+
+        this.validateDialogLists();
+    }
+
+    private void validateDialogLists() {
+        for (DialogInventory dialog : this.getDialogs()) {
+            if (!(dialog instanceof DialogListDialogInventory dialogList)) continue;
+
+            for (DialogListEntry entry : dialogList.getEntries()) {
+                boolean exists = switch (entry.source()) {
+                    case ZMENU -> this.getDialog(entry.reference()).isPresent();
+                    case REGISTRY -> {
+                        NamespacedKey key = NamespacedKey.fromString(entry.reference());
+                        yield key != null && RegistryAccess.registryAccess().getRegistry(RegistryKey.DIALOG).get(key) != null;
+                    }
+                };
+                if (!exists) {
+                    Logger.info("The dialog list " + dialog.getFileName() + " references the dialog " + entry.reference() + " which does not exist, it will be skipped.", Logger.LogType.WARNING);
+                }
+            }
+        }
     }
 
     @Override
@@ -183,7 +204,7 @@ public class ZDialogManager implements DialogManager, Listener {
 
         List<AbstractDialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
-        this.dialogNames.add((dialog.getPlugin().getName() + ":" + dialog.getFileName()).toLowerCase(Locale.ROOT));
+        this.dialogNames.add(dialog.getPlugin().getName() + ":" + dialog.getFileName());
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");

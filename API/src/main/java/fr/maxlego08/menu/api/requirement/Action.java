@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an action that can be executed based on certain conditions.
@@ -42,18 +44,62 @@ public abstract class Action {
      */
     protected abstract void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders);
 
+    /**
+     * Runs the action, ignoring whether the ones after it should still run.
+     *
+     * <p>Kept so that existing callers and existing subclasses keep working unchanged. Anything
+     * iterating a list of actions should prefer {@link #preExecuteChain} so that an action which
+     * failed a precondition can stop the rest of the list.</p>
+     */
     public void preExecute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
+        this.preExecuteChain(player, button, inventoryEngine, placeholders);
+    }
+
+    /**
+     * Runs the action and reports whether the actions after it should still run.
+     *
+     * <p>An action with a delay always reports {@link ActionResult#CONTINUE}: it has not run yet
+     * when this returns, so it has nothing to report. Do not put a delay on an action whose outcome
+     * is meant to gate the ones after it.</p>
+     *
+     * @param player          The player who triggers the action.
+     * @param button          The button associated with the action.
+     * @param inventoryEngine The inventory engine managing the inventory.
+     * @param placeholders    Placeholders
+     * @return Whether the remaining actions of the list should run.
+     */
+    public ActionResult preExecuteChain(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         placeholders.register("player", player.getName());
         if (this.chance < 100 && Math.random() > (this.chance / 100.0f)) {
             for (Action denyChanceAction : this.denyChanceActions) {
-                denyChanceAction.preExecute(player, button, inventoryEngine, placeholders);
+                if (denyChanceAction.preExecuteChain(player, button, inventoryEngine, placeholders) == ActionResult.STOP) {
+                    return ActionResult.STOP;
+                }
             }
-            return;
+            return ActionResult.CONTINUE;
         }
-        if (this.delay == 0) this.execute(player, button, inventoryEngine, placeholders);
-        else {
-            inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> this.execute(player, button, inventoryEngine, placeholders), this.delay);
-        }
+        if (this.delay == 0) return this.executeChain(player, button, inventoryEngine, placeholders);
+
+        inventoryEngine.getPlugin().getScheduler().runAtEntityLater(player, () -> this.executeChain(player, button, inventoryEngine, placeholders), this.delay);
+        return ActionResult.CONTINUE;
+    }
+
+    /**
+     * Performs the action and reports whether the actions after it should still run.
+     *
+     * <p>The default simply runs {@link #execute} and lets the list carry on, so a subclass that
+     * only implements {@code execute} behaves exactly as before. Override this instead when the
+     * action can fail in a way that must stop whatever follows it.</p>
+     *
+     * @param player          The player who triggers the action.
+     * @param button          The button associated with the action.
+     * @param inventoryEngine The inventory engine managing the inventory.
+     * @param placeholders    Placeholders
+     * @return Whether the remaining actions of the list should run.
+     */
+    protected ActionResult executeChain(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
+        this.execute(player, button, inventoryEngine, placeholders);
+        return ActionResult.CONTINUE;
     }
 
     @Contract(pure= true)
@@ -139,5 +185,42 @@ public abstract class Action {
     @NotNull
     public String getType() {
         return this.type;
+    }
+
+    /**
+     * Writes this action in the zMenu format, as one entry of an actions list.
+     * <p>
+     * The fields shared by every action ({@code delay}, {@code chance}, {@code debug} and
+     * {@code deny-chance-actions}) are written here; subclasses write their own fields in
+     * {@link #serializeProperties}. Values equal to their default are left out.
+     *
+     * @return The action as a map, ready to be put in a YAML list.
+     * @throws UnsupportedOperationException If this action type cannot be serialized.
+     */
+    @NotNull
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        this.serializeProperties(map);
+        if (this.delay != 0) map.put("delay", this.delay);
+        if (this.chance < 100) map.put("chance", this.chance);
+        if (this.debug) map.put("debug", true);
+        if (!this.denyChanceActions.isEmpty()) {
+            List<Map<String, Object>> denyChanceActions = new ArrayList<>();
+            for (Action denyChanceAction : this.denyChanceActions) {
+                denyChanceActions.add(denyChanceAction.serialize());
+            }
+            map.put("deny-chance-actions", denyChanceActions);
+        }
+        return map;
+    }
+
+    /**
+     * Writes the fields specific to this action, starting with its {@code type} key.
+     *
+     * @param map The map to write into.
+     * @throws UnsupportedOperationException If this action type cannot be serialized.
+     */
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        throw new UnsupportedOperationException("The action " + this.getClass().getName() + " cannot be serialized");
     }
 }

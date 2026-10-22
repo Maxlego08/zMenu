@@ -75,6 +75,17 @@ public class ZCheckInventoryPermissible extends Permissible {
     }
 
     @Override
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        map.put("type", "check-inventory");
+        map.put("slot", this.slot);
+        if (!"full".equalsIgnoreCase(this.itemStackSimilar.getName())) map.put("verification", this.itemStackSimilar.getName());
+        if (this.menuItemStack != null) map.put("item", this.menuItemStack.serializeToMap());
+        if (this.requirePlayerItem) map.put("require-player-item", true);
+        if (this.isInPlayerInventory) map.put("is-player-inventory", true);
+        if (this.inSpigotInventory) map.put("in-spigot-inventory", true);
+    }
+
+    @Override
     public boolean isValid() {
         return this.slot >= 0 && this.menuItemStack != null;
     }

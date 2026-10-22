@@ -1,10 +1,12 @@
 package fr.maxlego08.menu.api.utils;
 
 import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 
 public final class ColorUtils {
 
@@ -50,6 +52,11 @@ public final class ColorUtils {
             Color delimited = parseDelimited(trimmed);
             if (delimited != null) {
                 return delimited;
+            }
+
+            DyeColor dyeColor = parseDyeColor(trimmed);
+            if (dyeColor != null) {
+                return dyeColor.getColor();
             }
 
             try {
@@ -100,6 +107,16 @@ public final class ColorUtils {
             int a = clamp(parseComponent(parts[3]));
             return Color.fromARGB(a, r, g, b);
         } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static DyeColor parseDyeColor(@NotNull String value) {
+        String name = value.startsWith("minecraft:") ? value.substring("minecraft:".length()) : value;
+        try {
+            return DyeColor.valueOf(name.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
             return null;
         }
     }

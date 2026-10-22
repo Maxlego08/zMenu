@@ -21,4 +21,9 @@ public class ExecutableItemsRule extends AbstractPluginItemRule {
         Optional<ExecutableItemInterface> executableItem = ExecutableItemsAPI.getExecutableItemsManager().getExecutableItem(itemStack);
         return executableItem.map(ExecutableItemInterface::getId).orElse(null);
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "executableitems";
+    }
 }

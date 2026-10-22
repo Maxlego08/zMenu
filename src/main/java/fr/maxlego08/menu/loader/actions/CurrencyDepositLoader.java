@@ -13,6 +13,7 @@ import java.util.Locale;
 
 @AutoActionLoader
 public class CurrencyDepositLoader extends ActionLoader {
+    public static final String DEFAULT_REASON = "no reason";
 
     public CurrencyDepositLoader() {
         super("deposit", "money add");
@@ -23,7 +24,7 @@ public class CurrencyDepositLoader extends ActionLoader {
         String bigDecimal = accessor.getString("amount");
         Currencies currencies = Currencies.valueOf(accessor.getString("currency", Currencies.VAULT.name()).toUpperCase(Locale.ROOT));
         String economyName = accessor.getString("economy", null);
-        String reason = accessor.getString("reason", "no reason");
+        String reason = accessor.getString("reason", DEFAULT_REASON);
         return new CurrencyDepositAction(bigDecimal, currencies, economyName, reason);
     }
 }

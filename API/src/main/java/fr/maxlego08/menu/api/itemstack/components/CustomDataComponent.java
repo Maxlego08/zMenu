@@ -5,11 +5,12 @@ import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class CustomDataComponent extends ItemComponent {
@@ -26,13 +27,20 @@ public class CustomDataComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
+        itemStack.editPersistentDataContainer(container -> {
             for (ResolvablePersistentDataEntry entry : this.pdcEntries) {
-                entry.applyTo(itemMeta, context);
+                entry.applyTo(container, context);
             }
-            itemStack.setItemMeta(itemMeta);
+        });
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (ResolvablePersistentDataEntry entry : this.pdcEntries) {
+            map.put(String.valueOf(entry.serializeKey()), entry.serializeValue());
         }
+        return map;
     }
 
 }

@@ -17,6 +17,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public class TakeItemAction extends Action {
 
     private final ItemVerification itemVerification;
@@ -33,6 +35,18 @@ public class TakeItemAction extends Action {
         this.useCache = useCache;
         this.amount = amount;
         this.itemVerification = itemVerification;
+    }
+
+    @Override
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        map.put("type", "take-item");
+        if (this.menuItemStack != null) map.put("item", this.menuItemStack.serializeToMap());
+        if (this.useCache) map.put("use-cache", true);
+        if (this.amount != null) {
+            if (this.amount.isDynamic()) map.put("amount", this.amount.getExpression());
+            else if (this.amount.getResolvedValue() != 1) map.put("amount", this.amount.getResolvedValue());
+        }
+        if (this.itemVerification != ItemVerification.SIMILAR) map.put("verification", this.itemVerification.name());
     }
 
     @Override
@@ -158,6 +172,8 @@ public class TakeItemAction extends Action {
     private boolean matches(@NotNull ItemStack item, @NotNull ItemStack target) {
         return switch (this.itemVerification) {
             case SIMILAR -> item.isSimilar(target);
+
+            case MATERIAL -> item.getType() == target.getType();
 
             case MODELID -> {
                 if (!item.hasItemMeta()) yield false;

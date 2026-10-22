@@ -39,4 +39,12 @@ public abstract class AbstractButtonUtilsInventory extends AbstractDialogInvento
         }
         return ActionButton.create(paperComponent.getComponent(actionButtonRecord.label()), paperComponent.getComponent(actionButtonRecord.tooltip()), actionButtonRecord.width(), actionButtonRecord.action().build(inputs, player, this.menuPlugin, inventoryEngine, button, placeholders));
     }
+
+    /**
+     * Returns the configured exit button, or, when there is none and this dialog is being built by a
+     * {@code dialog_list}, the list's back button.
+     */
+    protected @Nullable ActionButton exitOrBackButton(@Nullable ActionButton exitButton) {
+        return exitButton != null ? exitButton : DialogListBuildContext.currentBackButton();
+    }
 }

@@ -35,8 +35,8 @@ public final class ResolvableFloat extends ParsableResolvable<Float> {
     @Contract("_, _, !null -> !null")
     public static ResolvableFloat of(@NotNull Map<String, Object> map, @NotNull String key, @Nullable Float defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Float floatValue) {
-            return new ResolvableFloat(floatValue, null);
+        if (value instanceof Number number) {
+            return new ResolvableFloat(number.floatValue(), null);
         } else if (value instanceof String strValue) {
             return new ResolvableFloat(null, strValue);
         } else {

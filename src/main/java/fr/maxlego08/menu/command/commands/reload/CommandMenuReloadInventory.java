@@ -2,6 +2,7 @@ package fr.maxlego08.menu.command.commands.reload;
 
 import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.utils.Message;
@@ -16,6 +17,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
 
@@ -24,9 +26,7 @@ public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_RELOAD_INVENTORY.getPermission());
 
         this.addOptionalArgument(Commands.argument("menu", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            plugin.getInventoryManager().getInventoryKeys().stream().map(Key::asString)
-                    .filter(entry -> entry.startsWith(builder.getRemainingLowerCase()))
-                    .forEach(builder::suggest);
+            NameSuggestions.suggest(builder, plugin.getInventoryManager().getInventoryKeys().stream().map(Key::asString).collect(Collectors.toSet()));
             return builder.buildFuture();
         }));
     }

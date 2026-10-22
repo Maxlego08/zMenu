@@ -19,6 +19,16 @@ import java.util.List;
 public interface MetaUpdater extends MessageSender {
 
     /**
+     * Empties any cache of parsed text this updater keeps.
+     *
+     * <p>Called on reload so that a name or lore edited in a configuration file is parsed again
+     * instead of being served from the previous parse. Implementations without a cache can ignore
+     * it, which is why this is a default no-op.</p>
+     */
+    default void clearCache() {
+    }
+
+    /**
      * Updates the display name of the {@link ItemMeta}.
      *
      * @param itemMeta The ItemMeta to be updated.

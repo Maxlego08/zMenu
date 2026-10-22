@@ -14,6 +14,22 @@ import java.lang.reflect.Method;
  */
 public class CompatibilityUtil {
 
+    /**
+     * getTopInventory is called on every move, click and packet, so the lookup is resolved once per view class.
+     * Holds null when the class has no such method.
+     */
+    private static final ClassValue<Method> TOP_INVENTORY_METHODS = new ClassValue<>() {
+        @Override
+        protected Method computeValue(@NotNull Class<?> type) {
+            try {
+                Method method = type.getMethod("getTopInventory");
+                method.setAccessible(true);
+                return method;
+            } catch (NoSuchMethodException | RuntimeException e) {
+                return null;
+            }
+        }
+    };
 
     /**
      * In API versions 1.20.6 and earlier, InventoryView is a class.
@@ -26,24 +42,22 @@ public class CompatibilityUtil {
      */
     @Nullable
     public static Inventory getTopInventory(@NotNull InventoryEvent event) {
-        try {
-            Object view = event.getView();
-            Method getTopInventory = view.getClass().getMethod("getTopInventory");
-            getTopInventory.setAccessible(true);
-            return (Inventory) getTopInventory.invoke(view);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            return null;
-        }
+        return getTopInventory(event.getView());
     }
 
     @Nullable
     public static Inventory getTopInventory(@NotNull Player player) {
+        return getTopInventory((Object) player.getOpenInventory());
+    }
+
+    @Nullable
+    private static Inventory getTopInventory(@Nullable Object view) {
+        if (view == null) return null;
+        Method getTopInventory = TOP_INVENTORY_METHODS.get(view.getClass());
+        if (getTopInventory == null) return null;
         try {
-            Object view = player.getOpenInventory();
-            Method getTopInventory = view.getClass().getMethod("getTopInventory");
-            getTopInventory.setAccessible(true);
             return (Inventory) getTopInventory.invoke(view);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             return null;
         }
     }

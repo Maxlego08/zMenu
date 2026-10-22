@@ -3,7 +3,9 @@ package fr.maxlego08.menu.api.requirement.data;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.SectionSerializable;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents an action associated with player data.
  */
-public interface ActionPlayerData {
+public interface ActionPlayerData extends SectionSerializable {
 
     /**
      * Gets the unique key for the action. Ensure keys are unique.
@@ -44,6 +46,27 @@ public interface ActionPlayerData {
      */
     @NotNull
     String getSeconds();
+
+    /**
+     * @return true when the value is a math expression evaluated before it is stored
+     */
+    default boolean isMathExpression() {
+        return false;
+    }
+
+    /**
+     * Writes this data action in the format the data loader reads. Values equal to their default are left out.
+     *
+     * @param section The section to write into.
+     */
+    @Override
+    default void serialize(@NotNull ConfigurationSection section) {
+        section.set("type", this.getType().name());
+        section.set("key", this.getKey());
+        section.set("value", this.getValue());
+        if (!"0".equals(this.getSeconds())) section.set("seconds", this.getSeconds());
+        if (this.isMathExpression()) section.set("math", true);
+    }
 
     /**
      * Converts the action into player data.

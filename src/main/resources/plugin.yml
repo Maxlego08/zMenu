@@ -1,0 +1,21 @@
+# Spigot-only descriptor.
+#
+# Paper reads paper-plugin.yml instead: when a jar ships both files Paper checks paper-plugin.yml
+# first and never looks at this one, so the real plugin (fr.maxlego08.menu.ZMenuPlugin) keeps
+# loading normally on Paper and on every Paper fork.
+#
+# This file exists so Spigot does not reject the jar with "does not contain plugin.yml", which
+# looks like a broken download. On Spigot the plugin enables, does nothing, and tells the
+# administrator to install Paper - in the console and when an operator joins.
+name: zMenu
+version: ${version}
+main: fr.maxlego08.menu.ZMenuSpigotFallback
+description: Inventory management plugin, requires Paper
+authors: [ Maxlego08 ]
+website: https://groupez.dev/resources/zmenu.253
+api-version: '1.19'
+
+permissions:
+  zmenu.paper.warning:
+    description: Receive the "zMenu requires Paper" warning when joining a non-Paper server
+    default: op

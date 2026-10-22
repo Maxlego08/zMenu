@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.Axolotl;
 
 @AutoComponentLoader
-@SinceVersion("1.17")
+@SinceVersion("1.21.5")
 public class AxolotlVariantLoader extends EnumVariantLoader<Axolotl.Variant> {
     public AxolotlVariantLoader() {
         super("axolotl/variant", Axolotl.Variant.class, AxolotlVariantComponent::new);

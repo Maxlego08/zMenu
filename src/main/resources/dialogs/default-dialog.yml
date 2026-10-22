@@ -5,13 +5,13 @@
 # Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
 
 name: "&6&lServer Information Dialog"
-external_title: "Welcome to our server!"
-type: notice # Available: notice, confirmation, multi_action, server_links,
+external-title: "&6Server information" # Shown on the button when this dialog is listed in a dialog_list
+type: notice # Available: notice, confirmation, multi_action, server_links, dialog_list
 
 # Dialog behavior settings
 can-close-with-escape: true  # Allow players to close with ESC key
 pause: false                 # Pause the game while dialog is open
-after_action: CLOSE         # What to do after dialog: CLOSE, PAUSE, or NONE
+after-action: CLOSE         # What to do after dialog: CLOSE, NONE, or WAIT_FOR_RESPONSE
 
 # Inventory opened instead of this dialog when the player's client is below Minecraft 1.21.6
 # and therefore cannot render dialogs.
@@ -88,7 +88,7 @@ inputs:
     label: "&6Share your thoughts about our server:"
     width: 400
     label-visible: true
-    initial-value: "This server is amazing because..."
+    default-value: "This server is amazing because..."
     max-length: 200
     multiline:
       max-lines: 4

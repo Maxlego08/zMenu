@@ -21,4 +21,9 @@ public class ExecutableBlocksRule extends AbstractPluginItemRule {
         Optional<ExecutableBlockInterface> executableBlock = ExecutableBlocksAPI.getExecutableBlocksManager().getExecutableBlock(itemStack);
         return executableBlock.map(ExecutableBlockInterface::getId).orElse(null);
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "executableblocks";
+    }
 }

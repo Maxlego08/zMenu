@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class ZItemPermissible extends ItemPermissible {
 
@@ -27,6 +28,14 @@ public class ZItemPermissible extends ItemPermissible {
         this.menuItemStack = menuItemStack;
         this.amount = amount;
         this.itemVerification = itemVerification;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "item");
+        if (this.menuItemStack != null) map.put("item", this.menuItemStack.serializeToMap());
+        map.put("amount", this.amount);
+        if (this.itemVerification != ItemVerification.SIMILAR) map.put("verification", this.itemVerification.name());
     }
 
     @Override
@@ -52,6 +61,11 @@ public class ZItemPermissible extends ItemPermissible {
                         break;
                     case MODELID:
                         if (itemMeta != null && itemMeta.hasCustomModelData() && String.valueOf(itemMeta.getCustomModelData()).equals(this.menuItemStack.getModelID())) {
+                            items += currentItemStack.getAmount();
+                        }
+                        break;
+                    case MATERIAL:
+                        if (currentItemStack.getType() == itemStack.getType()) {
                             items += currentItemStack.getAmount();
                         }
                         break;

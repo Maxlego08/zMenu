@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.itemstack.components.variants.shulker.ShulkerColorC
 import fr.maxlego08.menu.loader.components.variants.base.DyeColorLoader;
 
 @AutoComponentLoader
-@SinceVersion("1.11")
+@SinceVersion("1.21.5")
 public class ShulkerBoxColorVariantLoader extends DyeColorLoader {
     public ShulkerBoxColorVariantLoader() {
         super("shulker/color", ShulkerColorComponent::new);

@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MaxStackSizeComponent extends ItemComponent {
+public class MaxStackSizeComponent extends ItemComponent {
     private final ResolvableInt maxStackSize;
 
     public MaxStackSizeComponent(ResolvableInt maxStackSize) {
@@ -25,5 +25,10 @@ public final class MaxStackSizeComponent extends ItemComponent {
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.maxStackSize, resolved -> itemStack.setData(DataComponentTypes.MAX_STACK_SIZE, resolved));
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.maxStackSize.serialize();
     }
 }

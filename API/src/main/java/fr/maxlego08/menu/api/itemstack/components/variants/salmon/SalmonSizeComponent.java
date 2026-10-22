@@ -22,4 +22,9 @@ public final class SalmonSizeComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.size, resolvedSize -> itemStack.setData(DataComponentTypes.SALMON_SIZE, resolvedSize));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.size.serialize();
+    }
 }

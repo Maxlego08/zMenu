@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.Rabbit;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public class RabbitVariantLoader extends EnumVariantLoader<Rabbit.Type> {
     public RabbitVariantLoader() {
         super("rabbit/variant", Rabbit.Type.class, RabbitVariantComponent::new);

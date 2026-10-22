@@ -9,10 +9,13 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableBlockPredicate;
 import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableRegistryKeySet;
 import fr.maxlego08.menu.api.utils.resolvable.paper.TypedKeySetResolvable;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.block.BlockType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.3")
 public final class CanBreakItemComponentLoader extends ItemComponentLoader {
 
     public CanBreakItemComponentLoader() {
@@ -40,5 +43,13 @@ public final class CanBreakItemComponentLoader extends ItemComponentLoader {
             }
         }
         return blockPredicateList.isEmpty() ? null : new CanBreakComponent(blockPredicateList);
+    }
+
+    @Override
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        ItemAdventurePredicate predicate = itemStack.getData(DataComponentTypes.CAN_BREAK);
+        if (predicate == null) return null;
+        List<ResolvableBlockPredicate> blockPredicates = CanPlaceOnItemComponentLoader.toResolvableBlockPredicates(predicate);
+        return blockPredicates == null ? null : new CanBreakComponent(blockPredicates);
     }
 }

@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.HomeButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jspecify.annotations.NonNull;
@@ -42,6 +43,11 @@ public class ZHomeButton extends HomeButton {
         if (!oldInventories.isEmpty()) {
             this.inventory = oldInventories.getFirst();
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull ConfigurationSection section) {
+        section.set("type", "home");
     }
 
 }

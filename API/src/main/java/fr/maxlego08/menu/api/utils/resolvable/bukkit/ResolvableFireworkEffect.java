@@ -7,6 +7,9 @@ import org.bukkit.FireworkEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvableFireworkEffect implements Resolvable<FireworkEffect> {
 
     private final @Nullable Resolvable<FireworkEffect.Type> shape;
@@ -50,5 +53,16 @@ public final class ResolvableFireworkEffect implements Resolvable<FireworkEffect
         Resolvable.applyResolvable(context, this.hasTwinkle, builder::flicker);
 
         return builder.build();
+    }
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.shape != null) map.put("shape", this.shape.serialize());
+        if (this.color != null) map.put("colors", this.color.serialize());
+        if (this.fadeColor != null) map.put("fade-colors", this.fadeColor.serialize());
+        if (this.hasTrail != null) map.put("has-trail", this.hasTrail.serialize());
+        if (this.hasTwinkle != null) map.put("has-twinkle", this.hasTwinkle.serialize());
+        return map;
     }
 }

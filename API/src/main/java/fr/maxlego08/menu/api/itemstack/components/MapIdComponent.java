@@ -1,16 +1,12 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.api.utils.itemstack.ZMapView;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.MapId;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.MapMeta;
-import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,19 +27,12 @@ public class MapIdComponent extends ItemComponent {
     }
 
     @Override
-    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        Integer value = this.mapId.resolve(context);
-        if (value == null) return;
+    public @Nullable Object serialize() {
+        return this.mapId.serialize();
+    }
 
-        boolean apply = ItemUtil.editMeta(itemStack, MapMeta.class, mapMeta -> {
-            MapView mapView = mapMeta.getMapView();
-            if (mapView != null) {
-                mapMeta.setMapView(new ZMapView(value, mapView));
-            } else {
-                mapMeta.setMapView(new ZMapView(value));
-            }
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("Could not apply MapIdComponent to itemStack: " + itemStack.getType().name());
+    @Override
+    public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
+        this.applyResolvable(context, id -> itemStack.setData(DataComponentTypes.MAP_ID, MapId.mapId(id)), this.mapId);
     }
 }

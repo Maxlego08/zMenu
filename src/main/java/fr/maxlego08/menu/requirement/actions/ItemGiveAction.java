@@ -20,6 +20,12 @@ public class ItemGiveAction extends ActionHelper {
     }
 
     @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "item-give");
+        map.put("item", this.menuItemStack.serializeToMap());
+    }
+
+    @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         ItemStack itemStack = this.menuItemStack.build(player);
 

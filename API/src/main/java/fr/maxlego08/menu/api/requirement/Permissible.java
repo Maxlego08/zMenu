@@ -8,7 +8,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a condition that can be checked to determine if a player has permission.
@@ -65,5 +68,48 @@ public abstract class Permissible {
     @NotNull
     public List<Action> getSuccessActions() {
         return this.successActions;
+    }
+
+    /**
+     * Writes this permissible in the zMenu format, as one entry of a requirements list.
+     * <p>
+     * The {@code deny} and {@code success} actions are written here; subclasses write their own
+     * fields in {@link #serializeProperties}. Empty action lists are left out.
+     *
+     * @return The permissible as a map, ready to be put in a YAML list.
+     * @throws UnsupportedOperationException If this permissible type cannot be serialized.
+     */
+    @NotNull
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        this.serializeProperties(map);
+        if (!this.denyActions.isEmpty()) map.put("deny", serializeActions(this.denyActions));
+        if (!this.successActions.isEmpty()) map.put("success", serializeActions(this.successActions));
+        return map;
+    }
+
+    /**
+     * Writes the fields specific to this permissible, starting with its {@code type} key.
+     *
+     * @param map The map to write into.
+     * @throws UnsupportedOperationException If this permissible type cannot be serialized.
+     */
+    protected void serializeProperties(@NotNull Map<String, Object> map) {
+        throw new UnsupportedOperationException("The permissible " + this.getClass().getName() + " cannot be serialized");
+    }
+
+    /**
+     * Serializes a list of actions, in order.
+     *
+     * @param actions The actions to serialize.
+     * @return One map per action.
+     */
+    @NotNull
+    public static List<Map<String, Object>> serializeActions(@NotNull List<Action> actions) {
+        List<Map<String, Object>> serialized = new ArrayList<>(actions.size());
+        for (Action action : actions) {
+            serialized.add(action.serialize());
+        }
+        return serialized;
     }
 }

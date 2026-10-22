@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.Fox;
 
 @AutoComponentLoader
-@SinceVersion("1.13")
+@SinceVersion("1.21.5")
 public class FoxVariantLoader extends EnumVariantLoader<Fox.Type> {
     public FoxVariantLoader() {
         super("fox/variant", Fox.Type.class, FoxVariantComponent::new);

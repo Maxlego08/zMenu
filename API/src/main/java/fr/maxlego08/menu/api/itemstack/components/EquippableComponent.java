@@ -16,7 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class EquippableComponent extends ItemComponent {
@@ -128,6 +131,38 @@ public class EquippableComponent extends ItemComponent {
             //TODO: rework allowedEntities and allowedEntityTags to use RegistryKeySet and RegistrySet instead of List and Tag
 
             itemStack.setData(DataComponentTypes.EQUIPPABLE, equippable.build());
+        }
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.slot != null) map.put("slot", this.slot.serialize());
+        if (this.equipSound != null) map.put("equip-sound", this.equipSound.serialize());
+        if (this.assetId != null) map.put("asset-id", this.assetId.serialize());
+        this.putBoolean(map, "dispensable", this.dispensable, true);
+        this.putBoolean(map, "swappable", this.swappable, true);
+        this.putBoolean(map, "damage-on-hurt", this.damageOnHurt, true);
+        this.putBoolean(map, "equip-on-interact", this.equipOnInteract, false);
+        if (this.cameraOverlay != null) map.put("camera-overlay", this.cameraOverlay.serialize());
+        this.putBoolean(map, "can-be-sheared", this.canBeSheared, false);
+        if (this.shearingSound != null) map.put("shearing-sound", this.shearingSound.serialize());
+
+        List<Object> allowedEntities = new ArrayList<>();
+        if (this.allowedEntities != null) {
+            for (ResolvableEntityType entityType : this.allowedEntities) {
+                if (entityType != null) allowedEntities.add(entityType.serialize());
+            }
+        }
+        if (this.allowedEntityTags != null) allowedEntities.add("#" + this.allowedEntityTags.serialize());
+        if (!allowedEntities.isEmpty()) map.put("allowed-entities", allowedEntities);
+        return map;
+    }
+
+    private void putBoolean(@NotNull Map<String, Object> map, @NotNull String key, @Nullable ResolvableBoolean value, boolean defaultValue) {
+        if (value == null) return;
+        if (value.isDynamic() || !Boolean.valueOf(defaultValue).equals(value.getResolvedValue())) {
+            map.put(key, value.serialize());
         }
     }
 }

@@ -2,12 +2,15 @@ package fr.maxlego08.menu.hooks.bedrock.inventory;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockInputButton;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.AbstractBedrockInventory;
+import fr.maxlego08.menu.hooks.bedrock.BedrockInputPlaceholders;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.component.Component;
 import org.geysermc.cumulus.form.CustomForm;
@@ -45,16 +48,22 @@ public class ZCustomBedrockInventory extends AbstractBedrockInventory<CustomForm
         }).forEach(builder::component);
 
         builder.validResultHandler((form, responseData) -> {
+            Placeholders submit = placeholders.child();
             for (int i = 0; i < expandedButtons.size(); i++) {
                 BedrockInputButton input = expandedButtons.get(i);
-                Object rawValue = responseData.valueAt(i);
-                if (rawValue != null) {
-                    placeholders.register(input.getKey(), rawValue.toString());
+                try {
+                    Object rawValue = responseData.valueAt(i);
+                    Component component = form.content().get(i);
+                    BedrockInputPlaceholders.register(submit, input.getKey(), rawValue, component);
+                } catch (Exception e) {
+                    if (Configuration.enableDebug) {
+                        Logger.info("Error processing input for button: " + input.getKey() + ". Error: " + e.getMessage());
+                    }
                 }
             }
 
             for (Requirement requirement : this.getRequirements()) {
-                requirement.execute(player, null, inventoryEngine, placeholders);
+                requirement.execute(player, null, inventoryEngine, submit);
             }
         });
         return builder;

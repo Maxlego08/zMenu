@@ -22,4 +22,9 @@ public final class PaintingVariantComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.variant, resolvedVariant -> itemStack.setData(DataComponentTypes.PAINTING_VARIANT, resolvedVariant));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.variant.serialize();
+    }
 }

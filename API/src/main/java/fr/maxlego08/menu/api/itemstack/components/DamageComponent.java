@@ -1,15 +1,11 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,12 +28,12 @@ public class DamageComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, Damageable.class, damageable -> {
-            Resolvable.applyResolvable(context, this.damage, damageable::setDamage);
-        });
-        if (!apply && Configuration.enableDebug) {
-            Logger.info("Failed to apply DamageComponent to itemStack: " + itemStack.getType().name() + ". This item does not support damageable meta.");
-        }
+        this.applyResolvable(context, damage -> itemStack.setData(DataComponentTypes.DAMAGE, damage), this.damage);
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.damage.serialize();
     }
 
 }

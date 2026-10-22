@@ -1,0 +1,122 @@
+# One entry per permissible type, loaded, serialized and loaded again by ActionSerializationTest.
+# A registered permissible without an entry here fails the test: add one when adding a permissible.
+requirements:
+  - type: permission
+    permission: "zmenu.vip"
+    deny:
+      - type: message
+        messages:
+          - "<red>VIP only"
+    success:
+      - type: close
+  - type: permission
+    permission: "!zmenu.banned"
+  - type: placeholder
+    placeholder: "%player_level%"
+    action: SUPERIOR_OR_EQUAL
+    value: "10"
+    math: true
+  - type: regex
+    input: "%player_name%"
+    regex: "^[A-Z].*"
+  - type: money
+    amount: "500"
+    economy: coins
+  - type: item
+    item:
+      material: DIAMOND
+      name: "&bDiamond"
+    amount: 3
+    verification: MATERIAL
+  - type: check-inventory
+    slot: 4
+    item:
+      material: DIAMOND
+    require-player-item: true
+    is-player-inventory: true
+  - type: cuboid
+    cuboids:
+      - "world,0,60,0,10,70,10"
+  - type: playername
+    player-name: "Notch"
+  - type: item-rule
+    rule:
+      type: material
+      materials:
+        - diamond_sword
+    item-source: HAND
+    amount: 2
+  - type: item-rule
+    rule:
+      type: lore
+      match-type: equals
+      values:
+        - "Soulbound"
+      ignore-case: false
+    item-source: INVENTORY
+  - type: item-rule
+    rule:
+      type: name
+      match-type: prefix
+      names:
+        - "Legendary"
+  - type: item-rule
+    rule:
+      type: material-contains
+      patterns:
+        - "SWORD"
+  - type: item-rule
+    rule:
+      type: material-prefix
+      prefixes:
+        - "DIAMOND_"
+  - type: item-rule
+    rule:
+      type: material-suffix
+      suffixes:
+        - "_PICKAXE"
+    item-source: OFF_HAND
+  - type: item-rule
+    rule:
+      type: custom-model-data
+      values:
+        - 1001
+        - 1002
+  - type: item-rule
+    rule:
+      type: custom-model-data
+      ranges:
+        - min: 100
+          max: 200
+  - type: item-rule
+    rule:
+      type: tag
+      tags:
+        - LOGS
+  - type: item-rule
+    rule:
+      type: and
+      rules:
+        - type: material-suffix
+          suffixes:
+            - "_SWORD"
+        - type: name
+          match-type: contains
+          names:
+            - "Excalibur"
+          ignore-case: false
+  - type: item-rule
+    rule:
+      type: or
+      rules:
+        - type: material
+          materials:
+            - diamond
+            - emerald
+        - type: custom-model-data
+          ranges:
+            - min: 5
+  - type: job
+    job: "Miner"
+  - type: luckperm
+    group: "vip"

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.test;
 import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public abstract class DataComponentTestBase {
         List<String> present = new ArrayList<>();
 
         for (DataComponent component : DataComponent.values()) {
-            if (component.getSince().isAfter(current)) {
+            if (component.getSince().isAfter(current) || (component.getUntil() != null && current.isAfter(component.getUntil()))) {
                 continue;
             }
 
@@ -43,6 +44,7 @@ public abstract class DataComponentTestBase {
     }
 
     private enum DataComponent {
+        ATTACK_ANIMATION("attack_animation", "26.3"),
         ATTACK_RANGE("attack_range", "1.21.11"),
         ATTRIBUTE_MODIFIERS("attribute_modifiers"),
         BANNER_PATTERNS("banner_patterns"),
@@ -82,6 +84,7 @@ public abstract class DataComponentTestBase {
         GLIDER("glider", "1.21.2"),
         INSTRUMENT("instrument"),
         INTANGIBLE_PROJECTILE("intangible_projectile"),
+        INTERACT_ANIMATION("interact_animation", "26.3"),
         ITEM_MODEL("item_model", "1.21.2"),
         ITEM_NAME("item_name"),
         JUKEBOX_PLAYABLE("jukebox_playable", "1.21"),
@@ -89,12 +92,13 @@ public abstract class DataComponentTestBase {
 //         LOCK("lock"),
         LODESTONE_TRACKER("lodestone_tracker"),
         LORE("lore"),
-        MAP_COLOR("map_color"),
+        MAP_COLOR("map_color", "1.20.5", "26.2"),
         MAP_DECORATIONS("map_decorations"),
         MAP_ID("map_id"),
         MAX_DAMAGE("max_damage"),
         MAX_STACK_SIZE("max_stack_size"),
         MINIMUM_ATTACK_CHARGE("minimum_attack_charge", "1.21.11"),
+        MOB_VISIBILITY("mob_visibility", "26.3"),
         NOTE_BLOCK_SOUND("note_block_sound"),
         OMINOUS_BOTTLE_AMPLIFIER("ominous_bottle_amplifier"),
         PIERCING_WEAPON("piercing_weapon", "1.21.11"),
@@ -103,15 +107,18 @@ public abstract class DataComponentTestBase {
         POTION_DURATION_SCALE("potion_duration_scale", "1.21.5"),
         PROFILE("profile"),
         PROVIDES_BANNER_PATTERNS("provides_banner_patterns", "1.21.5"),
+        PROVIDES_POTTERY_PATTERN("provides_pottery_pattern", "26.3"),
         PROVIDES_TRIM_MATERIAL("provides_trim_material", "1.21.5"),
         RARITY("rarity"),
         RECIPES("recipes"),
         REPAIR_COST("repair_cost"),
         REPAIRABLE("repairable", "1.21.2"),
+        SIGN_TEXT_BACK("sign_text_back", "26.3"),
+        SIGN_TEXT_FRONT("sign_text_front", "26.3"),
         STORED_ENCHANTMENTS("stored_enchantments"),
         SULFUR_CUBE_CONTENT("sulfur_cube_content", "26.2"),
         SUSPICIOUS_STEW_EFFECTS("suspicious_stew_effects"),
-        SWING_ANIMATION("swing_animation", "1.21.11"),
+        SWING_ANIMATION("swing_animation", "1.21.11", "26.2"),
         TOOL("tool"),
         TOOLTIP_DISPLAY("tooltip_display", "1.21.5"),
         TOOLTIP_STYLE("tooltip_style", "1.21.2"),
@@ -120,6 +127,8 @@ public abstract class DataComponentTestBase {
         USE_COOLDOWN("use_cooldown", "1.21.2"),
         USE_EFFECTS("use_effects", "1.21.11"),
         USE_REMAINDER("use_remainder", "1.21.2"),
+        VILLAGER_FOOD("villager_food", "26.3"),
+        WAXED("waxed", "26.3"),
         WEAPON("weapon", "1.21.5"),
         WRITABLE_BOOK_CONTENT("writable_book_content"),
         WRITTEN_BOOK_CONTENT("written_book_content"),
@@ -127,9 +136,13 @@ public abstract class DataComponentTestBase {
         // Entity variant components (all introduced in 1.21.5 except where noted)
         AXOLOTL_VARIANT("axolotl/variant", "1.21.5"),
         CAT_COLLAR("cat/collar", "1.21.5"),
+        CAT_SOUND_VARIANT("cat/sound_variant", "26.1"),
         CAT_VARIANT("cat/variant", "1.21.5"),
+        CHICKEN_SOUND_VARIANT("chicken/sound_variant", "26.1"),
         CHICKEN_VARIANT("chicken/variant", "1.21.5"),
+        COW_SOUND_VARIANT("cow/sound_variant", "26.1"),
         COW_VARIANT("cow/variant", "1.21.5"),
+        CUSHION_COLOR("cushion/color", "26.3"),
         FOX_VARIANT("fox/variant", "1.21.5"),
         FROG_VARIANT("frog/variant", "1.21.5"),
         HORSE_VARIANT("horse/variant", "1.21.5"),
@@ -137,6 +150,7 @@ public abstract class DataComponentTestBase {
         MOOSHROOM_VARIANT("mooshroom/variant", "1.21.5"),
         PAINTING_VARIANT("painting/variant", "1.21.5"),
         PARROT_VARIANT("parrot/variant", "1.21.5"),
+        PIG_SOUND_VARIANT("pig/sound_variant", "26.1"),
         PIG_VARIANT("pig/variant", "1.21.5"),
         RABBIT_VARIANT("rabbit/variant", "1.21.5"),
         SALMON_SIZE("salmon/size", "1.21.5"),
@@ -149,18 +163,32 @@ public abstract class DataComponentTestBase {
         WOLF_COLLAR("wolf/collar", "1.21.5"),
         WOLF_SOUND_VARIANT("wolf/sound_variant", "1.21.5"),
         WOLF_VARIANT("wolf/variant", "1.21.5"),
+        ZOMBIE_NAUTILUS_VARIANT("zombie_nautilus/variant", "1.21.11"),
         ;
 
         private final String name;
         private final MinecraftVersion since;
+        private final @Nullable MinecraftVersion until;
 
         DataComponent(@NotNull String name) {
             this(name, "1.20.5");
         }
 
         DataComponent(@NotNull String name, @NotNull String since) {
+            this(name, since, null);
+        }
+
+        /**
+         * @param until The last version with this component, for a component Minecraft removed.
+         */
+        DataComponent(@NotNull String name, @NotNull String since, @Nullable String until) {
             this.name = name;
             this.since = MinecraftVersion.parse(since);
+            this.until = until == null ? null : MinecraftVersion.parse(until);
+        }
+
+        public @Nullable MinecraftVersion getUntil() {
+            return this.until;
         }
 
         public @NotNull String getName() {

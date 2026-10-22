@@ -21,4 +21,9 @@ public final class SwingAnimationComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.swingAnimation, resolvedSwingAnimation -> itemStack.setData(DataComponentTypes.SWING_ANIMATION, resolvedSwingAnimation));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.swingAnimation.serialize();
+    }
 }

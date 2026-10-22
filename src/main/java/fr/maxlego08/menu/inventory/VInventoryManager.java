@@ -1,7 +1,8 @@
 package fr.maxlego08.menu.inventory;
 
-import fr.maxlego08.menu.zcore.logger.Logger;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import fr.maxlego08.menu.ZCommandManager;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -20,16 +21,18 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -43,6 +46,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     private final Map<Integer, Map<InventoryType, VInventory>> inventories = new HashMap<>();
     private final ZMenuPlugin plugin;
     private final Map<UUID, Long> cooldownClick = new HashMap<>();
+    private static final int OUTSIDE_RAW_SLOT = -999;
+    private final Cache<String, Long> clickErrorLastLog = CacheBuilder.newBuilder().maximumSize(500).build();
 
 
     public VInventoryManager(ZMenuPlugin plugin) {
@@ -140,9 +145,25 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
     }
 
     @Override
+    protected void onInventoryOpen(InventoryOpenEvent event, Player player) {
+        if (event.getInventory().getHolder() instanceof VInventory inventory) {
+            inventory.setOpenLocation(player.getLocation().clone());
+        }
+    }
+
+    @Override
     protected void onInventoryClick(InventoryClickEvent event, Player player) {
 
         if (event.getClickedInventory() == null) {
+            return;
+        }
+
+        // Belt and braces. A raw slot outside the view already resolves to no clicked inventory,
+        // so the check above rejects it, and the slot is only ever used as a map key below, never
+        // as an array index. This makes the invariant explicit so a later change to the null check
+        // above cannot quietly widen what reaches a button.
+        if (!isRawSlotValid(event)) {
+            event.setCancelled(true);
             return;
         }
 
@@ -167,7 +188,14 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     private void handleClick(boolean inPlayerInventory, Player player, VInventory inventory, InventoryClickEvent event) {
 
+        if (this.hasMovedTooFar(player, inventory)) {
+            event.setCancelled(true);
+            this.closeGhostInventory(player);
+            return;
+        }
+
         if (Configuration.enableCooldownClick && this.cooldownClick.getOrDefault(player.getUniqueId(), 0L) > System.currentTimeMillis()) {
+            event.setCancelled(true);
             message(this.plugin, player, Message.CLICK_COOLDOWN);
             return;
         }
@@ -179,8 +207,56 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
             this.plugin.getInventoryManager().getInventoryListeners().forEach(listener -> listener.onButtonClick(player, button));
 
-            button.onClick(event);
+            try {
+                button.onClick(event);
+            } catch (Exception exception) {
+                // Contain the failure here. Letting it escape into the Bukkit event dispatch meant
+                // a full stack trace per click, so a player clicking a button whose actions throw
+                // could fill the console and the log file as fast as they could click.
+                event.setCancelled(true);
+                this.logClickError(player, inventory, event.getSlot(), exception);
+            }
         }
+    }
+
+    /**
+     * Checks that the raw slot of a click is one this view can actually contain.
+     *
+     * @param event The click.
+     * @return True when the raw slot is usable, or is the "clicked outside" marker.
+     */
+    private static boolean isRawSlotValid(InventoryClickEvent event) {
+        int rawSlot = event.getRawSlot();
+        if (rawSlot == OUTSIDE_RAW_SLOT) return true;
+        return rawSlot >= 0 && rawSlot < event.getView().countSlots();
+    }
+
+    /**
+     * Logs a button failure, at most once per cooldown per button.
+     *
+     * <p>The first failure for a given button is logged with its stack trace, later ones inside the
+     * cooldown window are dropped, so a repeated failure cannot flood the console or the disk.</p>
+     */
+    private void logClickError(Player player, VInventory inventory, int slot, Exception exception) {
+
+        String key = inventory.getClass().getName() + '#' + inventory.getId() + '@' + slot;
+        long now = System.currentTimeMillis();
+        long cooldown = Configuration.clickErrorLogCooldownSeconds * 1000L;
+
+        if (cooldown > 0) {
+            Long lastLog = this.clickErrorLastLog.getIfPresent(key);
+            if (lastLog != null && now - lastLog < cooldown) {
+                return;
+            }
+        }
+        this.clickErrorLastLog.put(key, now);
+
+        Logger.info("Error while handling a click of " + player.getName() + " on slot " + slot
+                + " of inventory " + inventory.getClass().getSimpleName()
+                + (Configuration.clickErrorLogCooldownSeconds > 0
+                ? " (further errors on this button are muted for " + Configuration.clickErrorLogCooldownSeconds + "s)"
+                : ""), Logger.LogType.ERROR);
+        Logger.error(exception);
     }
 
     @Override
@@ -272,6 +348,56 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         }
     }
 
+    @Override
+    protected void onMove(PlayerMoveEvent event, Player player) {
+        this.checkDistance(player);
+    }
+
+    @Override
+    protected void onTeleport(PlayerTeleportEvent event, Player player) {
+        this.checkDistance(player);
+    }
+
+    @Override
+    protected void onDamage(EntityDamageEvent event, Player player) {
+        if (!Configuration.closeInventoryOnDamage) return;
+
+        if (CompatibilityUtil.getTopInventory(player).getHolder() instanceof VInventory) {
+            this.closeGhostInventory(player);
+        }
+    }
+
+    /**
+     * Closes the open menu when the player left the location where it was opened.
+     */
+    private void checkDistance(Player player) {
+        if (!Configuration.closeInventoryOnMove) return;
+        if (CompatibilityUtil.getTopInventory(player).getHolder() instanceof VInventory inventory && this.hasMovedTooFar(player, inventory)) {
+            this.closeGhostInventory(player);
+        }
+    }
+
+    /**
+     * @return true if the player is further than max-move-distance from where the inventory was opened.
+     * Returns false when no opening location was captured, so a menu is never closed by mistake.
+     */
+    private boolean hasMovedTooFar(Player player, VInventory inventory) {
+        if (!Configuration.closeInventoryOnMove) return false;
+
+        Location openLocation = inventory.getOpenLocation();
+        if (openLocation == null || openLocation.getWorld() == null) return false;
+
+        Location currentLocation = player.getLocation();
+        if (!openLocation.getWorld().equals(currentLocation.getWorld())) return true;
+
+        double maxDistance = Configuration.maxMoveDistance;
+        return openLocation.distanceSquared(currentLocation) > maxDistance * maxDistance;
+    }
+
+    private void closeGhostInventory(Player player) {
+        this.plugin.getScheduler().runAtEntity(player, task -> player.closeInventory());
+    }
+
     /**
      * @param id - Inventory I'd
      * @return Optional - Allows returning the inventory in an optional
@@ -336,5 +462,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         this.cooldownClick.remove(player.getUniqueId());
         this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
         this.plugin.getInventoryManager().clearPlayedAnimations(player.getUniqueId());
+        if (this.plugin.getCommandManager() instanceof ZCommandManager commandManager) {
+            commandManager.removePlayerArguments(player.getUniqueId());
+        }
     }
 }

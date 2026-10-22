@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class BackAction extends Action {
 
@@ -17,6 +18,11 @@ public class BackAction extends Action {
 
     public BackAction(InventoryManager inventoryManager) {
         this.inventoryManager = inventoryManager;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "back");
     }
 
     @Override

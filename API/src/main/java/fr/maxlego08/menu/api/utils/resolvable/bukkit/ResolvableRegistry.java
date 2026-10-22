@@ -4,6 +4,7 @@ import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +52,21 @@ public final class ResolvableRegistry {
             @NotNull RegistryKey<T> registryKey
     ) {
         return ResolvableRegistryEntry.ofValue(value, resolverFor(registryKey));
+    }
+
+    @Nullable
+    public static <T extends Keyed> ResolvableRegistryEntry<T> ofRegisteredOrNull(
+            @NotNull T value,
+            @NotNull RegistryKey<T> registryKey
+    ) {
+        try {
+            Registry<T> registry = RegistryAccess.registryAccess().getRegistry(registryKey);
+            NamespacedKey key = registry.getKey(value);
+            if (key == null || !value.equals(registry.get(key))) return null;
+        } catch (Exception e) {
+            return null;
+        }
+        return ofValue(value, registryKey);
     }
 
     @NotNull

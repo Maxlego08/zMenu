@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class ConnectAction extends Action {
 
     private final String server;
@@ -26,5 +28,11 @@ public class ConnectAction extends Action {
         out.writeUTF("Connect");
         out.writeUTF(this.server);
         player.sendPluginMessage(this.plugin, "BungeeCord", out.toByteArray());
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "connect");
+        map.put("server", this.server);
     }
 }

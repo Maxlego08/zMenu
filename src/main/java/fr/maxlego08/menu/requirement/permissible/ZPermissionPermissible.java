@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the {@link PermissionPermissible} interface that checks player permissions
@@ -80,6 +81,12 @@ public class ZPermissionPermissible extends PermissionPermissible {
     @Override
     public boolean isReverse() {
         return this.isReverse;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "permission");
+        map.put("permission", this.isReverse ? "!" + this.permission : this.permission);
     }
 
 }

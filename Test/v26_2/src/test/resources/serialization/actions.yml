@@ -1,0 +1,185 @@
+# One entry per action type, loaded, serialized and loaded again by ActionSerializationTest.
+# A registered action without an entry here fails the test: add one when adding an action.
+actions:
+  - type: close
+  - type: refresh
+  - type: refresh-inventory
+  - type: console_command
+    commands:
+      - "say %player% clicked"
+    stop-on-failure: true
+    delay: 20
+    chance: 50.0
+  - type: player_command
+    commands:
+      - "spawn"
+    command-in-chat: true
+  - type: message
+    messages:
+      - "<green>Hello %player%"
+  - type: message
+    messages:
+      - "&cLegacy message"
+    minimessage: false
+  - type: broadcast
+    messages:
+      - "<yellow>%player% did something"
+    requirements:
+      - type: permission
+        permission: "zmenu.broadcast.receive"
+  - type: broadcast_message
+    messages:
+      - "&e%player% did something"
+    minimessage: false
+  - type: action
+    message: "<green>Action bar"
+  - type: chat
+    messages:
+      - "hello everyone"
+  - type: inventory
+    inventory: basic_inventory
+    plugin: zMenu
+    page: 2
+    arguments:
+      - first
+      - second
+  - type: connect
+    server: lobby
+  - type: sound
+    sound: ENTITY_PLAYER_LEVELUP
+    pitch: 1.5
+    volume: 0.5
+  - type: broadcast_sound
+    sound: UI_BUTTON_CLICK
+    sound-category: PLAYERS
+  - type: withdraw
+    amount: "100"
+    economy: coins
+    reason: "Shop purchase"
+  - type: deposit
+    amount: "%zmenu_player_value_reward%"
+    currency: VAULT
+  - type: title
+    title: "<gold>Welcome"
+    subtitle: "<gray>%player%"
+    start: 10
+    duration: 60
+    end: 10
+  - type: broadcast_title
+    title: "<red>Event"
+    subtitle: "Starting now"
+  - type: toast
+    message: "<green>Achievement"
+    material: DIAMOND
+    model-id: "5"
+    toast-type: GOAL
+    glowing: true
+  - type: book
+    title: "Guide"
+    author: "zMenu"
+    lines:
+      1:
+        - "First page"
+        - "second line"
+      2:
+        - "Second page"
+  - type: message-to
+    messages:
+      - "<green>Private message"
+    target-player: "%zmenu_player_value_friend%"
+  - type: player_command_as_op
+    commands:
+      - "gamemode creative"
+  - type: data
+    action: ADD
+    key: "clicks"
+    value: 1
+    seconds: "3600"
+  - type: data
+    key: "last_claim"
+    value: "%zmenu_time_unix_timestamp%"
+  - type: bedrock
+    bedrock: main_form
+    plugin: zMenu
+    arguments:
+      - first
+  - type: dialog
+    dialog: main_dialog
+    arguments:
+      - first
+  - type: take_item
+    item:
+      material: EMERALD
+    amount: 5
+    verification: MATERIAL
+  - type: take_item
+    item:
+      material: DIAMOND
+      name: "&bKey"
+    amount: "%zmenu_player_value_cost%"
+    use-cache: true
+  - type: item_give
+    item:
+      material: GOLDEN_APPLE
+      amount: 2
+  - type: item_edit
+    item:
+      material: PAPER
+      name: "&aEdited"
+    slot: "4"
+  - type: set_item
+    slots:
+      - 1
+      - 2
+    in-player-inventory: true
+    dupe-protection: false
+    item:
+      material: STONE
+  - type: refresh_slot
+    slots:
+      - 3
+      - 5
+    in-player-inventory: true
+  - type: reset-pagination
+    context-ids:
+      - shop
+  - type: reset-pagination
+    reset-type: all
+  - type: back
+  - type: teleport
+    world: world
+    x: 10.5
+    y: 64.0
+    z: -3.25
+    yaw: 90.0
+    pitch: 15.0
+  - type: discord
+    # A closed local port: the webhook check must never reach the network in tests
+    webhook: "http://127.0.0.1:1/webhook"
+    username: "zMenu"
+    message: "%player% clicked"
+    embeds:
+      - title: "Click"
+        description: "A player clicked"
+        color: "#FF0000"
+  - type: discord component
+    webhook: "http://127.0.0.1:1/webhook"
+    username: "zMenu"
+    component:
+      - type: 10
+        content: "Hello"
+  - type: permission-set
+    permission: "shop.discount"
+    value: false
+    expiration: 60
+    time-unit: MINUTES
+  - type: shopkeeper
+    name: "blacksmith"
+  - type: change-title
+    inventory-name: "shop"
+  - type: close
+    deny-chance-actions:
+      - type: message
+        messages:
+          - "<red>Unlucky"
+    chance: 25.0

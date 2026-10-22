@@ -47,6 +47,13 @@ public class ZComponentsManager implements ComponentsManager {
     }
 
     @Override
+    public @NotNull Collection<ItemComponentLoader> getLoaders() {
+        Set<ItemComponentLoader> loaders = Collections.newSetFromMap(new IdentityHashMap<>());
+        loaders.addAll(this.components.values());
+        return Collections.unmodifiableSet(loaders);
+    }
+
+    @Override
     public @NotNull Optional<ItemComponentLoader> getLoader(@NotNull String name) {
         return Optional.ofNullable(this.components.get(name));
     }

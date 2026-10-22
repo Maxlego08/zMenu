@@ -9,19 +9,20 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
   build:
     name: Build and Publish zMenu
-    uses: GroupeZ-dev/actions/.github/workflows/build.yml@main
+    uses: GroupeZ-dev/actions/.github/workflows/build.yml@v1.0.0
     with:
       project-name: "zMenu"
       java-version: '25'
       publish: true
       project-to-publish: "API:publish"
-      build-command: './gradlew build'
-      discord-avatar-url: "https://minecraft-inventory-builder.com/storage/images/9UgcfGZyrmbVrXw5lbj5kXq6fW8F4nhwj6Cx4nVG.png"
+      discord-avatar-url: "https://groupez.dev/storage/images/253.png"
+      artifact-glob: "target/*.jar"
+      changelog-exclude-pattern: '^[a-f0-9]+\s+(build|chore)\(deps\)'
     secrets:
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}

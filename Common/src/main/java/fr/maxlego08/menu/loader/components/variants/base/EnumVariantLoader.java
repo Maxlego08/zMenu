@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableEnum;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,5 +29,11 @@ public abstract class EnumVariantLoader<T extends Enum<T>> extends ItemComponent
         String value = configuration.getString(path);
         ResolvableEnum<T> resolvableEnum = ResolvableEnum.autoOrNull(this.enumClass, value);
         return resolvableEnum != null ? this.componentFactory.apply(resolvableEnum) : null;
+    }
+
+    @Override
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        Object value = this.getNamedData(itemStack);
+        return this.enumClass.isInstance(value) ? this.componentFactory.apply(ResolvableEnum.of(this.enumClass, this.enumClass.cast(value))) : null;
     }
 }

@@ -13,12 +13,14 @@ import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.RegistryManager;
 import fr.maxlego08.menu.api.registry.WritableRegistry;
+import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -493,6 +495,16 @@ public interface InventoryManager extends Listener {
     void saveItem(CommandSender sender, ItemStack itemStack, String name, String type);
 
     /**
+     * Turns an item into a menu item, with item components for every setting the item changes.
+     * When a setting cannot be expressed, the whole item is kept as {@code base64:} so that nothing is lost.
+     *
+     * @param itemStack The item to convert.
+     * @return The menu item, and the components that forced the fallback.
+     */
+    @NotNull
+    MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack);
+
+    /**
      * Transforms a string list into a click list type.
      * If the list contains ANY or ALL then the ClickType present in the plugin configuration will be added to the list.
      *
@@ -847,5 +859,15 @@ public interface InventoryManager extends Listener {
      */
     default void forgetPlayedAnimation(@NotNull UUID uniqueId, @Nullable String animationKey) {
     }
+
+    String serializeItemStack(ItemStack itemStack);
+
+    ItemStack deserializeItemStack(String serializedItemStack);
+
+    default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume) {
+        return this.createSoundOption(soundName, categoryName, pitch, volume, false);
+    }
+
+    SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom);
 
 }

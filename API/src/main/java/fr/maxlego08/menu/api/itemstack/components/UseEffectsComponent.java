@@ -11,6 +11,10 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 @SuppressWarnings("unused")
 public class UseEffectsComponent extends ItemComponent {
 
@@ -34,6 +38,15 @@ public class UseEffectsComponent extends ItemComponent {
 
     public @NotNull ResolvableBoolean isInteractVibration() {
         return this.interactVibration;
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (!Boolean.FALSE.equals(this.canSprint.serialize())) map.put("can-sprint", this.canSprint.serialize());
+        if (!Objects.equals(this.speedMultiplier.serialize(), 0.2f)) map.put("speed-multiplier", this.speedMultiplier.serialize());
+        if (!Boolean.TRUE.equals(this.interactVibration.serialize())) map.put("interact-vibrations", this.interactVibration.serialize());
+        return map;
     }
 
     @Override

@@ -14,7 +14,9 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class PotionContentsComponent extends ItemComponent {
@@ -44,6 +46,16 @@ public class PotionContentsComponent extends ItemComponent {
 
     public @NotNull List<ResolvablePotionEffect> getPotionEffects() {
         return this.potionEffects;
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.basePotionType != null) map.put("potion", this.basePotionType.serialize());
+        if (this.color != null) map.put("custom-color", this.color.serialize());
+        if (!this.potionEffects.isEmpty()) map.put("custom-effects", Resolvable.serializeList(this.potionEffects));
+        if (this.customName != null) map.put("custom-name", this.customName.serialize());
+        return map;
     }
 
     @Override

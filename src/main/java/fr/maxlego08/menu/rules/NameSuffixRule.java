@@ -1,12 +1,21 @@
 package fr.maxlego08.menu.rules;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
-import java.util.Locale;
 
 public class NameSuffixRule extends NameRule {
     public NameSuffixRule(List<String> names, boolean ignoreCase) {
-        super(names, ignoreCase
-                ? (display, name) -> display.toLowerCase(Locale.ROOT).endsWith(name.toLowerCase(Locale.ROOT))
-                : String::endsWith);
+        super(names, ignoreCase);
+    }
+
+    @Override
+    protected boolean matchesName(@NotNull String displayName, @NotNull String name) {
+        return displayName.endsWith(name);
+    }
+
+    @Override
+    protected @NotNull String getMatchType() {
+        return "suffix";
     }
 }

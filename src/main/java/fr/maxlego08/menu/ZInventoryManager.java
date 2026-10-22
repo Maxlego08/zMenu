@@ -1,5 +1,6 @@
 package fr.maxlego08.menu;
 
+import com.cryptomorin.xseries.XSound;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.animation.ZAnimationManager;
 import fr.maxlego08.menu.api.*;
@@ -21,6 +22,7 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventoryFileNotFound;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
+import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.*;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
@@ -29,6 +31,7 @@ import fr.maxlego08.menu.api.registry.RegistrationException;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.reload.ReloadContext;
 import fr.maxlego08.menu.api.registry.reload.ReloadReport;
+import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
@@ -38,6 +41,7 @@ import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
+import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
@@ -52,6 +56,7 @@ import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
+import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
@@ -84,6 +89,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
@@ -214,6 +221,24 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public String serializeItemStack(ItemStack itemStack) {
+        return ItemStackUtils.serializeItemStack(itemStack);
+    }
+
+    @Override
+    public ItemStack deserializeItemStack(String serializedItemStack) {
+        return ItemStackUtils.deserializeItemStack(serializedItemStack);
+    }
+
+    @Override
+    public SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom) {
+        Optional<XSound> xSound = XSound.of(soundName);
+
+        return xSound.map(sound -> new ZSoundOption(sound, categoryName, soundName, pitch, volume, isCustom)).orElse(null);
+
+    }
+
+    @Override
     public Inventory loadInventory(Plugin plugin, File file) throws InventoryException {
         return this.loadInventory(plugin, file, ZInventory.class);
     }
@@ -324,6 +349,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
         }
+        this.warnAboutSharedName(inventory);
 
         InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
         if (Configuration.enableFastEvent) this.getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
@@ -384,6 +410,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 Logger.info("Inventory load requirement: " + inventoryLoadRequirement.getDisplayError(), LogType.WARNING);
             }
 
+            // Only one pending load per file, the file may be loaded several times (hot reload)
+            this.removeInventoryLoadRequirement(file);
             this.inventoryLoadRequirements.add(optional.get());
 
             return null;
@@ -413,8 +441,28 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     /**
-     * @return zMenu's own inventory with this file name, ignoring the case
+     * Warns when several plugins provide an inventory with the same file name: the name on its own
+     * then always opens the same one, and the plugin:name form is needed to pick another.
      */
+    private void warnAboutSharedName(Inventory inventory) {
+        String shortName = inventory.key().value();
+        List<Inventory> matches = new ArrayList<>(this.getInventories().stream()
+                .filter(other -> other.key().value().equals(shortName))
+                .collect(Collectors.toMap(Inventory::key, other -> other, (first, second) -> second))
+                .values());
+        if (matches.size() < 2) return;
+
+        StringBuilder owners = new StringBuilder();
+        for (Inventory match : matches) {
+            if (!owners.isEmpty()) owners.append(", ");
+            owners.append(match.getPlugin().getName()).append(':').append(match.getFileName());
+        }
+        String winner = this.findInventory(shortName).map(found -> found.getPlugin().getName()).orElse("?");
+        Logger.info("The inventory name \"" + inventory.getFileName() + "\" is provided by several plugins ("
+                + owners + "). Using that name on its own will always open the one from " + winner
+                + ", use the plugin:name form to pick another.", LogType.WARNING);
+    }
+
     @Override
     public Optional<Inventory> getInventory(@NotNull Key key) {
         Optional<Inventory> own = this.inventoryRegistry().get(key);
@@ -470,16 +518,17 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         Optional<Inventory> optional = this.getInventory(ZMenuKeys.inventoryKey(inventoryName));
         if (optional.isPresent() || inventoryName.indexOf(':') >= 0) return optional;
 
-        for (Inventory inventory : this.otherInventories.values()) {
-            if (ZMenuKeys.matches(inventory.key(), inventoryName)) return Optional.of(inventory);
-        }
-        return Optional.empty();
+        return this.otherInventories.values().stream()
+                .filter(inventory -> ZMenuKeys.matches(inventory.key(), inventoryName))
+                .min(Comparator.comparing(inventory -> inventory.getPlugin().getName(), String.CASE_INSENSITIVE_ORDER));
     }
 
     @Override
     public void deleteInventory(Inventory inventory) {
         if (inventory.getPlugin() == this.plugin) {
-            this.logReport(this.registries.update(Registries.INVENTORY, INVENTORY_OWNER, editor -> editor.remove(inventory.key())));
+            this.logReport(this.registries.update(Registries.INVENTORY, INVENTORY_OWNER, editor -> {
+                if (editor.previous().get(inventory.key()).orElse(null) == inventory) editor.remove(inventory.key());
+            }));
             return;
         }
 
@@ -487,7 +536,31 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
-        this.otherInventories.remove(inventory.key(), inventory);
+        if (this.otherInventories.remove(inventory.key(), inventory)) {
+            inventories.stream()
+                    .filter(other -> other.key().equals(inventory.key()))
+                    .reduce((first, second) -> second)
+                    .ifPresent(other -> this.otherInventories.put(other.key(), other));
+        }
+    }
+
+    /**
+     * Remove the pending load of this file, if it is waiting for a load requirement.
+     *
+     * @param file the inventory file
+     */
+    public void removeInventoryLoadRequirement(File file) {
+        File absoluteFile = file.getAbsoluteFile();
+        this.removeInventoryLoadRequirements(requirementFile -> requirementFile.getAbsoluteFile().equals(absoluteFile));
+    }
+
+    /**
+     * Remove the pending loads whose file matches the predicate.
+     *
+     * @param predicate the file predicate
+     */
+    public void removeInventoryLoadRequirements(Predicate<File> predicate) {
+        this.inventoryLoadRequirements.removeIf(requirement -> predicate.test(requirement.getFile()));
     }
 
     @Override
@@ -609,10 +682,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (this.plugin.getDialogManager() != null) {
             buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
-        if (this.plugin.isActive(Plugins.PACKETEVENTS)) {
-            Optional<PacketManager> packetManager = this.plugin.getPacketManager();
-            packetManager.ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
-        }
+        this.plugin.getPacketManager().ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         if (this.plugin.getBedrockManager() != null) {
             buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
         }
@@ -1040,27 +1110,33 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
         }
 
-        Loader<MenuItemStack> loader = new MenuItemStackLoader(this);
-        ZMenuItemStack menuItemStack = ZMenuItemStack.fromItemStack(this, itemStack);
         if (type.equalsIgnoreCase("yml")) {
-            loader.save(menuItemStack, configuration, "items." + name + ".", file);
+            MenuItemStackConversion conversion = this.toMenuItemStack(itemStack);
+            conversion.menuItemStack().serialize(configuration.createSection("items." + name));
+            if (!conversion.isReadable()) {
+                message(this.plugin, sender, Message.SAVE_BASE64_FALLBACK, "%name%", name, "%components%", String.join(", ", conversion.unsupportedComponents()));
+            }
         } else if (type.equalsIgnoreCase("base64")) {
-
             String base64 = ItemStackUtils.serializeItemStack(itemStack);
             configuration.set("items." + name + ".material", "base64:" + base64);
-            try {
-                configuration.save(file);
-            } catch (IOException exception) {
-                Logger.error(exception);
-            }
-
         } else {
             message(this.plugin, sender, Message.SAVE_ERROR_TYPE, "%name%", name);
             return;
         }
 
+        try {
+            configuration.save(file);
+        } catch (IOException exception) {
+            Logger.error(exception);
+        }
+
         message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
 
+    }
+
+    @Override
+    public @NotNull MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack) {
+        return MenuItemStackFromItemStack.convert(this, itemStack);
     }
 
     @EventHandler

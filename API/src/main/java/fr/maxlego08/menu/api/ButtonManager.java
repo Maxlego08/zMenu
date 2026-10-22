@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -109,6 +110,16 @@ public interface ButtonManager {
      * @param actionLoader The {@link ActionLoader} instance to register.
      */
     void registerAction(@NotNull ActionLoader actionLoader);
+
+    /**
+     * Registers a {@link RuleLoader} so its rule type (and aliases) can be used in item rules,
+     * for example in an {@code item_drag} button or an {@code item-rule} requirement.
+     * <p>
+     * Unlike {@code @AutoRuleLoader}, which only scans the zMenu package, this lets external plugins add rule types.
+     *
+     * @param ruleLoader The {@link RuleLoader} instance to register.
+     */
+    void registerRuleLoader(@NotNull RuleLoader ruleLoader);
 
     /**
      * Retrieves an {@link Optional} {@link ActionLoader} based on a specific action key.

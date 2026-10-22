@@ -22,4 +22,9 @@ public final class TropicalFishPatternComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.pattern, resolvedPattern -> itemStack.setData(DataComponentTypes.TROPICAL_FISH_PATTERN, resolvedPattern));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.pattern.serialize();
+    }
 }

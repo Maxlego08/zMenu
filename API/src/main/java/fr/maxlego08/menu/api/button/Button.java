@@ -5,14 +5,15 @@ import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.slot.settings.ButtonAnimationSettings;
 import fr.maxlego08.menu.api.animation.slot.settings.idle.ButtonIdleAnimation;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.AnvilInventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.Pagination;
 import fr.maxlego08.menu.api.players.DataManager;
-import fr.maxlego08.menu.api.requirement.Action;
-import fr.maxlego08.menu.api.requirement.RefreshRequirement;
-import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.requirement.*;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
+import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -20,6 +21,7 @@ import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -30,8 +32,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
@@ -244,7 +245,10 @@ public abstract class Button extends PlaceholderButton {
     public void onClick(@NotNull Player player, @NotNull InventoryClickEvent event, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         AtomicBoolean isSuccess = this.handleClickCommon(player, inventory, event.getClick(), placeholders, true);
         this.options.forEach(option -> option.onClick(this, player, event, inventory, slot, isSuccess.get()));
-        this.execute(this.plugin, event.getClick(), placeholders, player);
+
+        if (isSuccess.get()) {
+            this.execute(this.plugin, event.getClick(), placeholders, player);
+        }
     }
 
     /**
@@ -256,8 +260,11 @@ public abstract class Button extends PlaceholderButton {
      */
     public void onClick(@NotNull Player player, @NotNull InventoryEngine inventory, int slot, @NotNull Placeholders placeholders) {
         ClickType clickType = ClickType.LEFT; // Default to left click for this method
-        this.handleClickCommon(player, inventory, clickType, placeholders, false);
-        this.execute(this.plugin, clickType, placeholders, player);
+        AtomicBoolean isSuccess = this.handleClickCommon(player, inventory, clickType, placeholders, false);
+
+        if (isSuccess.get()) {
+            this.execute(this.plugin, clickType, placeholders, player);
+        }
     }
 
     private AtomicBoolean handleClickCommon(@NotNull Player player, @NotNull InventoryEngine inventory, @NotNull ClickType clickType, @NotNull Placeholders placeholders, boolean clickRequirementsCheck) {
@@ -289,17 +296,22 @@ public abstract class Button extends PlaceholderButton {
         if (clickRequirementsCheck) {
             this.clickRequirements.forEach(requirement -> {
                 if (requirement.getClickTypes().contains(clickType)) {
-                    isSuccess.set(requirement.execute(player, this, inventory, placeholders));
+                    isSuccess.set(isSuccess.get() & requirement.execute(player, this, inventory, placeholders));
                 }
             });
         } else {
             this.clickRequirements.forEach(requirement -> {
-                isSuccess.set(requirement.execute(player, this, inventory, placeholders));
+                isSuccess.set(isSuccess.get() & requirement.execute(player, this, inventory, placeholders));
             });
         }
 
-
-        this.actions.forEach(action -> action.preExecute(player, this, inventory, placeholders));
+        if (isSuccess.get()) {
+            for (Action action : this.actions) {
+                if (action.preExecuteChain(player, this, inventory, placeholders) == ActionResult.STOP) {
+                    break;
+                }
+            }
+        }
 
         return isSuccess;
     }
@@ -470,12 +482,12 @@ public abstract class Button extends PlaceholderButton {
     }
 
     @Contract(pure = true)
-    @Nullable
+    @NotNull
     public List<Action> getActions() {
         return this.actions;
     }
 
-    public void setActions(@Nullable List<Action> actions) {
+    public void setActions(@NotNull List<Action> actions) {
         this.actions = actions;
     }
 
@@ -509,12 +521,15 @@ public abstract class Button extends PlaceholderButton {
     }
 
     @Contract(pure = true)
-    @Nullable
+    @NotNull
     public List<ButtonOption> getOptions() {
         return this.options;
     }
 
     public void setOptions(@Nullable List<ButtonOption> options) {
+        if (options == null) {
+            options = new ArrayList<>();
+        }
         this.options = options;
     }
 
@@ -702,5 +717,151 @@ public abstract class Button extends PlaceholderButton {
         skullMeta.setOwningPlayer(owner);
         itemStack.setItemMeta(skullMeta);
         return itemStack;
+    }
+
+    /**
+     * Writes this button in the format the button loader reads. The options shared by every button
+     * are written here, then {@link #serializeProperties} writes the ones specific to its type.
+     * <p>
+     * An else button is written relative to its parent, since the loader gives it its parent's
+     * values as defaults.
+     *
+     * @param section       The section to write into.
+     * @param inventorySize The size of the inventory the button is in, to write slots relative to their page.
+     * @throws UnsupportedOperationException If this button, or something it holds, cannot be serialized.
+     */
+    public void serialize(@NotNull ConfigurationSection section, int inventorySize) {
+        this.serializeProperties(section);
+
+        Button parent = this.getParentButton();
+        int pageOffset = (this.page - 1) * inventorySize;
+        List<Integer> buttonSlots = new ArrayList<>(this.getSlots());
+        if (buttonSlots.size() == 1) {
+            section.set("slot", buttonSlots.getFirst() - pageOffset);
+        } else if (!buttonSlots.isEmpty()) {
+            section.set("slots", compressSlots(buttonSlots, pageOffset));
+        }
+        if (parent != null || this.page != 1) section.set("page", this.page);
+
+        setIfDifferent(section, "is-permanent", this.isPermanent, parent != null && parent.isPermanent());
+        setIfDifferent(section, "update-on-click", this.updateOnClick, parent != null && parent.updateOnClick());
+        setIfDifferent(section, "close-inventory", this.closeInventory, false);
+        setIfDifferent(section, "update", this.isUpdated, parent != null && parent.isUpdated());
+        setIfDifferent(section, "update-master-button", this.isMasterButtonUpdated, parent != null && parent.isUpdatedMasterButton());
+        setIfDifferent(section, "refresh-on-click", this.refreshOnClick, false);
+        setIfDifferent(section, "refresh-on-drag", this.refreshOnDrag, false);
+        setIfDifferent(section, "use-cache", this.useCache, parent == null || parent.isUseCache());
+        setIfDifferent(section, "open-async", this.isOpenAsync, false);
+
+        if (this.itemStack != null) this.itemStack.serialize(section.createSection("item"));
+        if (this.playerHead != null) section.set("player-head", this.playerHead);
+        setIfNotEmpty(section, "messages", this.getMessages());
+        if (this.openLink != null) this.openLink.serialize(section.createSection("open-link"));
+
+        if (this.soundOption != null) {
+            Map<String, Object> sound = new LinkedHashMap<>();
+            this.soundOption.serialize(sound);
+            sound.forEach(section::set);
+        }
+
+        List<ActionPlayerData> datas = this.getData();
+        if (datas != null && !datas.isEmpty()) {
+            ConfigurationSection datasSection = section.createSection("datas");
+            for (int index = 0; index < datas.size(); index++) {
+                datas.get(index).serialize(datasSection.createSection(String.valueOf(index)));
+            }
+        }
+
+        setIfNotEmpty(section, "permissions", serializePermissions(this.getPermissions()));
+        setIfNotEmpty(section, "or-permissions", serializePermissions(this.getOrPermission()));
+
+        List<Map<String, Object>> placeholders = new ArrayList<>();
+        for (PlaceholderPermissible placeholder : this.getPlaceholders()) {
+            placeholders.add(placeholder.serialize());
+        }
+        setIfNotEmpty(section, "placeholders", placeholders);
+
+        setIfNotEmpty(section, "commands", this.getCommands());
+        setIfNotEmpty(section, "left-commands", this.getLeftCommands());
+        setIfNotEmpty(section, "right-commands", this.getRightCommands());
+        setIfNotEmpty(section, "console-commands", this.getConsoleCommands());
+        setIfNotEmpty(section, "console-right-commands", this.getConsoleRightCommands());
+        setIfNotEmpty(section, "console-left-commands", this.getConsoleLeftCommands());
+        setIfNotEmpty(section, "console-permission-commands", this.getConsolePermissionCommands());
+        if (this.getConsolePermission() != null) section.set("console-permission", this.getConsolePermission());
+
+        if (this.viewRequirement != null) this.viewRequirement.serialize(section.createSection("view-requirement"));
+        List<Requirement> clickRequirements = this.getClickRequirements();
+        if (clickRequirements != null && !clickRequirements.isEmpty()) {
+            ConfigurationSection clickSection = section.createSection("click-requirement");
+            for (Requirement requirement : clickRequirements) {
+                requirement.serialize(clickSection.createSection(requirementKey(requirement, clickSection)));
+            }
+        }
+
+        if (this.refreshRequirement != null) this.refreshRequirement.serialize(section.createSection("refresh-requirements"));
+        setIfNotEmpty(section, "actions", Permissible.serializeActions(this.getActions()));
+
+        for (ButtonOption option : this.getOptions()) {
+            option.serialize(this, section);
+        }
+
+        if (this.getElseButton() != null) {
+            this.getElseButton().serialize(section.createSection("else"), inventorySize);
+        }
+    }
+
+    /**
+     * Writes the options specific to this type of button, starting with its {@code type} key when
+     * it is not the default {@code NONE}.
+     *
+     * @param section The section of the button.
+     * @throws UnsupportedOperationException If this type of button cannot be serialized.
+     */
+    protected void serializeProperties(@NotNull ConfigurationSection section) {
+        throw new UnsupportedOperationException("The button " + this.buttonName + " of type " + this.getClass().getName() + " cannot be serialized yet");
+    }
+
+    private static List<Object> compressSlots(List<Integer> slots, int pageOffset) {
+        List<Object> compressed = new ArrayList<>();
+        int index = 0;
+        while (index < slots.size()) {
+            int start = slots.get(index) - pageOffset;
+            int end = start;
+            while (index + 1 < slots.size() && slots.get(index + 1) - pageOffset == end + 1) {
+                end++;
+                index++;
+            }
+            compressed.add(start == end ? start : start + "-" + end);
+            index++;
+        }
+        return compressed;
+    }
+
+    private static List<String> serializePermissions(List<PermissionPermissible> permissions) {
+        List<String> serialized = new ArrayList<>(permissions.size());
+        for (PermissionPermissible permission : permissions) {
+            serialized.add(permission.isReverse() ? "!" + permission.getPermission() : permission.getPermission());
+        }
+        return serialized;
+    }
+
+    private static String requirementKey(Requirement requirement, ConfigurationSection clickSection) {
+        List<ClickType> clickTypes = requirement.getClickTypes();
+        String base = new HashSet<>(clickTypes).equals(new HashSet<>(Configuration.allClicksType)) ? "all"
+                : clickTypes.size() == 1 ? clickTypes.getFirst().name().toLowerCase(Locale.ROOT) : "requirement";
+        String key = base;
+        for (int suffix = 2; clickSection.contains(key); suffix++) {
+            key = base + "-" + suffix;
+        }
+        return key;
+    }
+
+    private static void setIfDifferent(ConfigurationSection section, String key, boolean value, boolean defaultValue) {
+        if (value != defaultValue) section.set(key, value);
+    }
+
+    private static void setIfNotEmpty(ConfigurationSection section, String key, List<?> values) {
+        if (values != null && !values.isEmpty()) section.set(key, values);
     }
 }

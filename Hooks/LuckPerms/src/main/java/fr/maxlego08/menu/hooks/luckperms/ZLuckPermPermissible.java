@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class ZLuckPermPermissible extends LuckpermPermissible {
 
@@ -30,6 +31,12 @@ public class ZLuckPermPermissible extends LuckpermPermissible {
         if (user == null) return false;
         String primaryGroup = user.getPrimaryGroup();
         return primaryGroup.equals(this.groupName);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "luckperm");
+        if (this.groupName != null) map.put("group", this.groupName);
     }
 
     @Override

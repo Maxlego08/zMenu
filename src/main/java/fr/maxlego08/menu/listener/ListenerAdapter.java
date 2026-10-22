@@ -2,14 +2,18 @@ package fr.maxlego08.menu.listener;
 
 import fr.maxlego08.menu.common.utils.ZUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public abstract class ListenerAdapter extends ZUtils {
 
@@ -20,6 +24,9 @@ public abstract class ListenerAdapter extends ZUtils {
     }
 
     protected void onInventoryClick(InventoryClickEvent event, Player player) {
+    }
+
+    protected void onInventoryOpen(InventoryOpenEvent event, Player player) {
     }
 
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
@@ -36,5 +43,14 @@ public abstract class ListenerAdapter extends ZUtils {
 
     protected void onPrepareAnvil(PrepareAnvilEvent event, Player player) {
 
+    }
+
+    protected void onMove(PlayerMoveEvent event, Player player) {
+    }
+
+    protected void onTeleport(PlayerTeleportEvent event, Player player) {
+    }
+
+    protected void onDamage(EntityDamageEvent event, Player player) {
     }
 }

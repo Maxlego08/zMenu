@@ -1,14 +1,14 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
+import fr.maxlego08.menu.api.utils.resolvable.Resolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvablePotionEffect;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.SuspiciousStewEffects;
+import io.papermc.paper.potion.SuspiciousEffectEntry;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SuspiciousStewMeta;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,19 +29,22 @@ public class SuspiciousStewEffectsComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return Resolvable.serializeList(this.effects);
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, SuspiciousStewMeta.class, suspiciousStewMeta -> {
-            for (ResolvablePotionEffect effect : this.effects) {
-                if (effect != null) {
-                    PotionEffect resolvedEffect = effect.resolve(context);
-                    if (resolvedEffect != null) {
-                        suspiciousStewMeta.addCustomEffect(resolvedEffect, true);
-                    }
-                }
+        SuspiciousStewEffects.Builder builder = SuspiciousStewEffects.suspiciousStewEffects();
+
+        for (ResolvablePotionEffect effect : this.effects) {
+            PotionEffect resolvedEffect = Resolvable.resolve(context, effect);
+            if (resolvedEffect != null) {
+                builder.add(SuspiciousEffectEntry.create(resolvedEffect.getType(), resolvedEffect.getDuration()));
             }
-        });
-        if (!apply && Configuration.enableDebug)
-            Logger.info("Could not apply SuspiciousStewEffectsComponent to item: " + itemStack.getType().name());
+        }
+
+        itemStack.setData(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS, builder.build());
     }
 
 }

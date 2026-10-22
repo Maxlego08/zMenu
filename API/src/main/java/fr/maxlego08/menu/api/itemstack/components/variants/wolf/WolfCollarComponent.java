@@ -21,4 +21,9 @@ public final class WolfCollarComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.color, resolvedColor -> itemStack.setData(DataComponentTypes.WOLF_COLLAR, resolvedColor));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.color.serialize();
+    }
 }

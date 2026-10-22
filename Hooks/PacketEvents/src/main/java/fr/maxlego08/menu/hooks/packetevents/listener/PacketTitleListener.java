@@ -2,10 +2,12 @@ package fr.maxlego08.menu.hooks.packetevents.listener;
 
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.event.UserDisconnectEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems;
+import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -34,6 +36,15 @@ public class PacketTitleListener implements PacketListener {
 
         public void setWrapperPlayServerOpenWindow(WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow) {
             this.wrapperPlayServerOpenWindow = wrapperPlayServerOpenWindow;
+        }
+    }
+
+    @Override
+    public void onUserDisconnect(UserDisconnectEvent event) {
+        UUID playerUniqueId = event.getUser().getUUID();
+        if (playerUniqueId != null) {
+            this.playerPacketInformation.remove(playerUniqueId);
+            PacketUtils.fakeContents.remove(playerUniqueId);
         }
     }
 

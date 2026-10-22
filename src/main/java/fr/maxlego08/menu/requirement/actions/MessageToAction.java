@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class MessageToAction extends MessageAction {
     private final String targetPlayer;
@@ -22,6 +23,13 @@ public class MessageToAction extends MessageAction {
         String parsedPlayer = this.papi(placeholders.parse(this.targetPlayer), player);
         Player target = Bukkit.getPlayerExact(parsedPlayer);
         super.execute(target == null ? player : target, button, inventory, placeholders);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        super.serializeProperties(map);
+        map.put("type", "message-to");
+        if (!this.targetPlayer.isEmpty()) map.put("target-player", this.targetPlayer);
     }
 
 

@@ -46,8 +46,11 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
+
+    private static final Set<Class<? extends ButtonOption>> WARNED_OPTIONS = ConcurrentHashMap.newKeySet();
 
     private final MenuPlugin plugin;
     private final File file;
@@ -494,17 +497,35 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setRefreshRequirement(loader.load(configuration, path + requirementPath, file));
     }
 
+    /**
+     * Buttons serialize themselves; this only supplies the inventory size they need to write
+     * slots relative to their page.
+     */
     @Override
-    public void save(Button object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-        // TODO: FINISH THE SAVE METHOD
+    public void serialize(@NonNull Button button, @NonNull ConfigurationSection section, Object... objects) {
+        button.serialize(section, this.inventorySize);
     }
 
     private ButtonOption createInstance(Plugin plugin, Class<? extends ButtonOption> aClass) {
         try {
             Constructor<? extends ButtonOption> constructor = aClass.getConstructor(Plugin.class);
             return constructor.newInstance(plugin);
-        } catch (Exception ignored) {
+        } catch (NoSuchMethodException ignored) {
+            try {
+                return aClass.getConstructor().newInstance();
+            } catch (Exception exception) {
+                this.warnOptionOnce(aClass, "it needs a public constructor taking a Plugin, or a public no-argument constructor");
+                return null;
+            }
+        } catch (Exception exception) {
+            this.warnOptionOnce(aClass, exception.toString());
             return null;
+        }
+    }
+
+    private void warnOptionOnce(Class<? extends ButtonOption> aClass, String reason) {
+        if (WARNED_OPTIONS.add(aClass)) {
+            Logger.info("The button option " + aClass.getName() + " was ignored: " + reason + ".", Logger.LogType.WARNING);
         }
     }
 

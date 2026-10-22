@@ -7,6 +7,9 @@ import io.papermc.paper.datacomponent.item.blocksattacks.ItemDamageFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvableItemDamageFunction implements Resolvable<ItemDamageFunction> {
     private final ResolvableFloat threshold;
     private final ResolvableFloat base;
@@ -27,5 +30,14 @@ public final class ResolvableItemDamageFunction implements Resolvable<ItemDamage
         Resolvable.applyResolvable(context, this.factor, builder::factor);
 
         return builder.build();
+    }
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (this.threshold != null) map.put("threshold", this.threshold.serialize());
+        if (this.base != null) map.put("base", this.base.serialize());
+        if (this.factor != null) map.put("factor", this.factor.serialize());
+        return map;
     }
 }

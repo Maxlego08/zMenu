@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.pattern;
 
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.utils.SectionSerializable;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -9,7 +11,7 @@ import java.util.Collection;
  * <p>The Pattern interface represents a list of buttons that can be consistently used in multiple inventories.</p>
  * <p>For example, patterns can be used for decoration, allowing you to reuse the same set of buttons without duplicating code.</p>
  */
-public interface Pattern {
+public interface Pattern extends SectionSerializable {
 
     /**
      * Gets the name of this pattern.
@@ -52,5 +54,26 @@ public interface Pattern {
      * @return Whether the pattern supports multi-page inventories.
      */
     boolean enableMultiPage();
+
+    /**
+     * Writes this pattern in the format the pattern loader reads.
+     *
+     * @param section The section to write into, usually the root of the file.
+     * @throws UnsupportedOperationException If one of its buttons cannot be serialized.
+     */
+    @Override
+    default void serialize(@NotNull ConfigurationSection section) {
+        section.set("name", this.name());
+        section.set("size", this.inventorySize());
+        if (this.enableMultiPage()) section.set("enable-multi-page", true);
+
+        ConfigurationSection itemsSection = section.createSection("items");
+        int index = 0;
+        for (Button button : this.buttons()) {
+            String key = button.getName() == null || itemsSection.contains(button.getName()) ? "button-" + index : button.getName();
+            button.serialize(itemsSection.createSection(key), this.inventorySize());
+            index++;
+        }
+    }
 
 }

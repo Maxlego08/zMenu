@@ -12,6 +12,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvablePotionEffect implements Resolvable<PotionEffect> {
 
     private final Resolvable<String> typeId;
@@ -50,5 +53,27 @@ public final class ResolvablePotionEffect implements Resolvable<PotionEffect> {
             return null;
         }
         return new PotionEffect(type, intDuration, byteAmplifier, boolAmbient, boolParticles, boolShowIcon);
+    }
+
+    /**
+     * Writes the effect map the effect loaders read: {@code id}, {@code duration}, {@code amplified} (amplifier 1 as
+     * {@code true}, 0 as {@code false}, the expression when dynamic), {@code ambient}, {@code show_particles} and {@code show_icon}.
+     *
+     * @throws UnsupportedOperationException If the amplifier is fixed to anything but 0 or 1, which the loaders cannot read back.
+     */
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", this.typeId.serialize());
+        map.put("duration", this.duration.serialize());
+        Byte fixedAmplifier = this.amplifier.getResolvedValue();
+        if (fixedAmplifier != null && fixedAmplifier != 0 && fixedAmplifier != 1) {
+            throw new UnsupportedOperationException("Potion effect amplifier " + fixedAmplifier + " cannot be written, only 0 or 1 (amplified) can");
+        }
+        map.put("amplified", fixedAmplifier != null ? fixedAmplifier == 1 : this.amplifier.serialize());
+        map.put("ambient", this.ambient.serialize());
+        map.put("show-particles", this.particles.serialize());
+        map.put("show-icon", this.showIcon.serialize());
+        return map;
     }
 }

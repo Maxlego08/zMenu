@@ -27,10 +27,10 @@ public class CommandMenuDownload extends SubCommand<ZMenuPlugin> {
         String link = commandDispatch.getArgument("link", String.class);
         boolean force = commandDispatch.getArgument("force", Boolean.class, false);
 
-        if (Configuration.enableDownloadCommand) {
+        if (!Configuration.enableDownloadCommand) {
 
             Logger.info(commandDispatch.getSender().getName() + " try to download the link '" + link + "' (force: " + force + ") while the command is disable !", Logger.LogType.WARNING);
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), "&cThe command is disable for safety reason, you need to enable it in config.json.");
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), "&cThe command is disable for safety reason, you need to enable it in config.yml.");
             return CommandResultType.SUCCESS;
         }
 

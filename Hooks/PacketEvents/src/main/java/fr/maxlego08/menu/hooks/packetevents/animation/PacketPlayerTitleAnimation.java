@@ -17,9 +17,13 @@ import java.util.List;
 
 public class PacketPlayerTitleAnimation extends PlayerTitleAnimation {
     private final WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow;
-    private final PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
 
     private WrapperPlayServerWindowItems wrapperPlayServerWindowItems;
+
+    @SuppressWarnings("ConstantConditions")
+    private PlayerManager playerManager() {
+        return PacketEvents.getAPI() == null ? null : PacketEvents.getAPI().getPlayerManager();
+    }
 
     public PacketPlayerTitleAnimation(MenuPlugin plugin, TitleAnimationSettings settings, int containerId, InventoryType type, int size, Object... args) {
         super(plugin, settings, containerId, type, size);
@@ -32,14 +36,18 @@ public class PacketPlayerTitleAnimation extends PlayerTitleAnimation {
 
     @Override
     public void sendTitle(@NonNull Player player, @NonNull String title) {
+        PlayerManager playerManager = this.playerManager();
+        if (playerManager == null) return;
+
         this.wrapperPlayServerOpenWindow.setTitle(this.metaUpdater.getComponent(title));
-        this.playerManager.sendPacket(player, this.wrapperPlayServerOpenWindow);
+        playerManager.sendPacket(player, this.wrapperPlayServerOpenWindow);
     }
 
     @Override
     public void sendInventoryContent(@NotNull Player player, @NotNull List<ItemStack> inventoryContents) {
-        if (this.wrapperPlayServerWindowItems != null) {
-            this.playerManager.sendPacket(player, this.wrapperPlayServerWindowItems);
+        PlayerManager playerManager = this.playerManager();
+        if (playerManager != null && this.wrapperPlayServerWindowItems != null) {
+            playerManager.sendPacket(player, this.wrapperPlayServerWindowItems);
         }
     }
 }

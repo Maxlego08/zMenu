@@ -13,4 +13,9 @@ public class ContainsLoreRule extends LoreRule {
     protected boolean matchesLine(@NotNull String line, @NotNull String value) {
         return line.contains(value);
     }
+
+    @Override
+    protected @NotNull String getMatchType() {
+        return "contains";
+    }
 }

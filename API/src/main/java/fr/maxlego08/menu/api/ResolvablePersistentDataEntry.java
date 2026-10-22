@@ -1,15 +1,19 @@
 package fr.maxlego08.menu.api;
 
 import fr.maxlego08.menu.api.context.BuildContext;
+import fr.maxlego08.menu.api.utils.resolvable.ParsableResolvable;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.*;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class ResolvablePersistentDataEntry {
@@ -20,7 +24,35 @@ public abstract class ResolvablePersistentDataEntry {
         this.key = key;
     }
 
-    public abstract void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context);
+    public abstract void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context);
+
+    /**
+     * @return the key as {@link #fromKeyValue} reads it
+     */
+    public @NotNull Object serializeKey() {
+        return Objects.requireNonNull(this.key.serialize());
+    }
+
+    /**
+     * Writes the value as {@link #fromValue} reads it back: a plain YAML value when YAML holds the
+     * type, otherwise the value followed by its {@code @type} suffix.
+     *
+     * @throws UnsupportedOperationException If this entry cannot be serialized.
+     */
+    public @NotNull Object serializeValue() {
+        throw new UnsupportedOperationException("The data entry " + this.getClass().getName() + " cannot be serialized");
+    }
+
+    protected static @NotNull Object typed(@NotNull ParsableResolvable<?> value, @NotNull String type) {
+        return value.serialize() + "@" + type;
+    }
+
+    /**
+     * The value as it is when fixed, since YAML reads it back with the same type; an expression needs its type.
+     */
+    protected static @NotNull Object plainOrTyped(@NotNull ParsableResolvable<?> value, @NotNull String type) {
+        return value.isDynamic() ? typed(value, type) : Objects.requireNonNull(value.serialize());
+    }
 
 
     public static final class StringEntry extends ResolvablePersistentDataEntry {
@@ -32,11 +64,17 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            String text = String.valueOf(this.value.serialize());
+            return text.contains("@") ? text + "@string" : text;
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             String resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.STRING, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.STRING, resolvedValue);
             }
         }
     }
@@ -50,11 +88,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return plainOrTyped(this.value, "int");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Integer resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.INTEGER, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.INTEGER, resolvedValue);
             }
         }
     }
@@ -68,11 +111,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "long");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Long resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.LONG, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.LONG, resolvedValue);
             }
         }
     }
@@ -86,11 +134,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return plainOrTyped(this.value, "double");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Double resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.DOUBLE, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.DOUBLE, resolvedValue);
             }
         }
     }
@@ -104,11 +157,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "float");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Float resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.FLOAT, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.FLOAT, resolvedValue);
             }
         }
     }
@@ -122,11 +180,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "byte");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Byte resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.BYTE, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.BYTE, resolvedValue);
             }
         }
     }
@@ -140,11 +203,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return plainOrTyped(this.value, "boolean");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Boolean resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.BOOLEAN, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.BOOLEAN, resolvedValue);
             }
         }
     }
@@ -158,11 +226,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "short");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             Short resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.SHORT, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.SHORT, resolvedValue);
             }
         }
     }
@@ -176,11 +249,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "byte_array");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             byte[] resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.BYTE_ARRAY, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.BYTE_ARRAY, resolvedValue);
             }
         }
     }
@@ -194,11 +272,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "int_array");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             int[] resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.INTEGER_ARRAY, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.INTEGER_ARRAY, resolvedValue);
             }
         }
     }
@@ -212,11 +295,16 @@ public abstract class ResolvablePersistentDataEntry {
         }
 
         @Override
-        public void applyTo(@NotNull ItemMeta itemMeta, @NotNull BuildContext context) {
+        public @NotNull Object serializeValue() {
+            return typed(this.value, "long_array");
+        }
+
+        @Override
+        public void applyTo(@NotNull PersistentDataContainer container, @NotNull BuildContext context) {
             NamespacedKey resolvedKey = this.key.resolve(context);
             long[] resolvedValue = this.value.resolve(context);
             if (resolvedKey != null && resolvedValue != null) {
-                itemMeta.getPersistentDataContainer().set(resolvedKey, PersistentDataType.LONG_ARRAY, resolvedValue);
+                container.set(resolvedKey, PersistentDataType.LONG_ARRAY, resolvedValue);
             }
         }
     }
@@ -226,6 +314,35 @@ public abstract class ResolvablePersistentDataEntry {
             "string", "int", "integer", "long", "double", "float", "byte", "short", "boolean", "bool",
             "byte_array", "int_array", "long_array"
     );
+
+    private static final List<PersistentDataType<?, ?>> READABLE_TYPES = List.of(
+            PersistentDataType.STRING, PersistentDataType.INTEGER, PersistentDataType.LONG, PersistentDataType.DOUBLE,
+            PersistentDataType.FLOAT, PersistentDataType.SHORT, PersistentDataType.BYTE, PersistentDataType.BYTE_ARRAY,
+            PersistentDataType.INTEGER_ARRAY, PersistentDataType.LONG_ARRAY
+    );
+
+
+    @Nullable
+    public static ResolvablePersistentDataEntry fromContainer(@NotNull PersistentDataContainerView container, @NotNull NamespacedKey key) {
+        for (PersistentDataType<?, ?> type : READABLE_TYPES) {
+            if (container.has(key, type)) {
+                Object value = container.get(key, type);
+                return value == null ? null : fromValue(ResolvableNamespacedKey.of(key), value);
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static ResolvablePersistentDataEntry fromContainer(@NotNull PersistentDataContainer container, @NotNull NamespacedKey key) {
+        for (PersistentDataType<?, ?> type : READABLE_TYPES) {
+            if (container.has(key, type)) {
+                Object value = container.get(key, type);
+                return value == null ? null : fromValue(ResolvableNamespacedKey.of(key), value);
+            }
+        }
+        return null;
+    }
 
     @Nullable
     public static ResolvablePersistentDataEntry fromKeyValue(@NotNull String rawKey, @NotNull Object rawValue) {
@@ -238,6 +355,7 @@ public abstract class ResolvablePersistentDataEntry {
         return switch (rawValue) {
             case String str -> fromStringValue(key, str);
             case Integer intValue -> new IntEntry(key, ResolvableInt.of(intValue));
+            case Long longValue -> new LongEntry(key, ResolvableLong.of(longValue));
             case Boolean boolValue -> new BooleanEntry(key, ResolvableBoolean.of(boolValue));
             case Double doubleValue -> new DoubleEntry(key, ResolvableDouble.of(doubleValue));
             case Float floatValue -> new FloatEntry(key, ResolvableFloat.of(floatValue));

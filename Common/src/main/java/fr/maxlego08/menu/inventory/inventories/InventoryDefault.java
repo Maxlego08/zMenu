@@ -52,6 +52,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -61,7 +62,7 @@ import java.util.function.Consumer;
  */
 public class InventoryDefault extends VInventory implements InventoryEngine {
 
-    private final Map<Integer, TimerTask> refreshTimers = new ConcurrentHashMap<>();
+    private final Map<Integer, WrappedTask> timers = new ConcurrentHashMap<>();
     private final Map<Integer, Button> buttonsByAnimationSlot = new ConcurrentHashMap<>();
     private final Set<Integer> slotsOwnedByAnimation = ConcurrentHashMap.newKeySet();
     private final Map<Integer, WrappedTask> idleTasksBySlot = new ConcurrentHashMap<>();
@@ -230,9 +231,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
     @Override
     protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
-
         this.stopScheduledTasks();
-
         this.inventory.closeInventory(player, this);
         this.buttons.forEach(button -> button.onInventoryClose(player, this));
     }
@@ -251,8 +250,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             }
         }
 
-        this.refreshTimers.values().forEach(TimerTask::cancel);
-        this.refreshTimers.clear();
+        this.cancelTimers();
     }
 
     @Override
@@ -437,6 +435,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                     if (event.getClick() == ClickType.DOUBLE_CLICK) return;
 
+                    if (!this.isClickTypeAllowed(button, event.getClick())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+
                     event.setCancelled(true);
                     button.onClick(this.player, event, this, slot, new Placeholders());
 
@@ -470,19 +473,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                 if (needRefresh || button.isUpdated()) {
                     long interval = refreshRequirement != null ? refreshRequirement.getUpdateInterval() : this.inventory.getUpdateInterval();
-                    TimerTask timerTask = this.scheduleFix(this.plugin, interval, (task, canRun) -> {
-                        if (!canRun) {
-                            return;
-                        }
-
+                    WrappedTask timerTask = this.plugin.getScheduler().runAtEntityTimer(this.player, () -> {
                         if (this.isClose()) {
-                            task.cancel();
-                            return;
-                        }
-
-                        TimerTask tTask = this.refreshTimers.get(slot);
-                        if (!task.equals(tTask)) {
-                            task.cancel();
+                            this.cancelTimers();
                             return;
                         }
 
@@ -496,9 +489,12 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                         } else if (button.isUpdated()) {
                             this.handleUpdatedButton(button, itemStack, slot, placeholders);
                         }
-                    });
+                    }, interval, interval, TimeUnit.MILLISECONDS);
 
-                    this.refreshTimers.put(slot, timerTask);
+                    WrappedTask previousTask = this.timers.put(slot, timerTask);
+                    if (previousTask != null) {
+                        previousTask.cancel();
+                    }
                 }
             }
         }
@@ -1256,7 +1252,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
     @Override
     public void cancel(int slot) {
-        TimerTask task = this.refreshTimers.remove(slot);
+        WrappedTask task = this.timers.remove(slot);
         if (task != null) {
             task.cancel();
         }
@@ -1264,6 +1260,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         IdleCycle cycle = this.idleCycleBySlot.get(slot);
         if (cycle != null) this.idleCyclesAwaitingRebuild.put(slot, cycle);
         this.releaseIdleSlot(slot);
+    }
+
+    private void cancelTimers() {
+        this.timers.values().forEach(WrappedTask::cancel);
+        this.timers.clear();
     }
 
     @Override
@@ -1377,5 +1378,32 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         }
         Player targetPlayer = Bukkit.getPlayer(targetName);
         return targetPlayer != null ? targetPlayer : this.player;
+    }
+
+    /**
+     * Whether a button should react to a given click type.
+     *
+     * <p>A click type is allowed when it is listed in {@code all-clicks-type}, or when one of the
+     * button's own click-requirements names it explicitly. The second case matters so that a
+     * requirement written with {@code click_type: [DROP]} keeps working: the admin asked for that
+     * click type, so the button has a requirement covering it.</p>
+     *
+     * @param button    The button being clicked.
+     * @param clickType The click type received.
+     * @return True when the click should be dispatched to the button.
+     */
+    private boolean isClickTypeAllowed(Button button, ClickType clickType) {
+        if (!Configuration.enforceClickTypes) return true;
+
+        if (Configuration.allClicksType.contains(clickType)) return true;
+
+        List<Requirement> requirements = button.getClickRequirements();
+        if (requirements != null) {
+            for (Requirement requirement : requirements) {
+                if (requirement.getClickTypes().contains(clickType)) return true;
+            }
+        }
+
+        return false;
     }
 }

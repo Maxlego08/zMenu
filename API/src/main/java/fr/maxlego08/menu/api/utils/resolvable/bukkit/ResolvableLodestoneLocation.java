@@ -9,6 +9,10 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class ResolvableLodestoneLocation implements Resolvable<Location> {
 
     private final @Nullable ResolvableInt x;
@@ -42,5 +46,13 @@ public final class ResolvableLodestoneLocation implements Resolvable<Location> {
         if (world == null) return null;
 
         return new Location(world, xVal, yVal, zVal);
+    }
+
+    @Override
+    public @NotNull Object serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("pos", Resolvable.serializeList(Arrays.asList(this.x, this.y, this.z)));
+        map.put("dimension", this.world.serialize());
+        return map;
     }
 }

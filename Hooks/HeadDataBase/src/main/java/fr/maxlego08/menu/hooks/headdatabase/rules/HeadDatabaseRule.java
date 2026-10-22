@@ -20,4 +20,9 @@ public class HeadDatabaseRule extends AbstractPluginItemRule {
     protected @Nullable String resolveId(@NotNull ItemStack itemStack) {
         return this.headDatabaseAPI.getItemID(itemStack);
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "headdatabase";
+    }
 }

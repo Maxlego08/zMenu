@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.ActionResult;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -62,7 +63,9 @@ public class ZRequirement implements Requirement {
             boolean result = permissible.hasPermission(player, button, inventoryDefault, placeholders);
             List<Action> actions = result ? permissible.getSuccessActions() : permissible.getDenyActions();
             for (Action action : actions) {
-                action.preExecute(player, button, inventoryDefault, placeholders);
+                if (action.preExecuteChain(player, button, inventoryDefault, placeholders) == ActionResult.STOP) {
+                    break;
+                }
             }
 
             if (result) {
@@ -75,7 +78,11 @@ public class ZRequirement implements Requirement {
         boolean isSuccess = requirementSuccess >= this.miniumRequirement;
 
         List<Action> actions = isSuccess ? this.successActions : this.denyActions;
-        actions.forEach(action -> action.preExecute(player, button, inventoryDefault, placeholders));
+        for (Action action : actions) {
+            if (action.preExecuteChain(player, button, inventoryDefault, placeholders) == ActionResult.STOP) {
+                break;
+            }
+        }
 
         return isSuccess;
     }

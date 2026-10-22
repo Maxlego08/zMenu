@@ -8,7 +8,7 @@ import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.entity.Frog;
 
 @AutoComponentLoader
-@SinceVersion("1.18")
+@SinceVersion("1.21.5")
 public class FrogVariantLoader extends RegistryVariantLoader<Frog.Variant> {
     public FrogVariantLoader() {
         super("frog/variant", RegistryKey.FROG_VARIANT, FrogVariantComponent::new);

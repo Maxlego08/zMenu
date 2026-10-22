@@ -19,4 +19,9 @@ public class ItemsAdderRule extends AbstractPluginItemRule {
         CustomStack customStack = CustomStack.byItemStack(itemStack);
         return customStack != null ? customStack.getNamespacedID() : null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "itemsadder";
+    }
 }

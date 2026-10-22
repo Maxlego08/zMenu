@@ -35,8 +35,8 @@ public final class ResolvableByte extends ParsableResolvable<Byte> {
     @Contract("_, _, !null -> !null")
     public static ResolvableByte of(@NotNull Map<String, Object> map, @NotNull String key, @Nullable Byte defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Byte byteValue) {
-            return new ResolvableByte(byteValue, null);
+        if (value instanceof Number number) {
+            return new ResolvableByte(number.byteValue(), null);
         } else if (value instanceof String strValue) {
             return new ResolvableByte(null, strValue);
         } else {

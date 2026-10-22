@@ -44,4 +44,9 @@ public final class TypedKeyResolvable<T extends Keyed> extends ParsableResolvabl
         if (key == null) return null;
         return TypedKey.create(this.registryKey, key);
     }
+
+    @Override
+    protected @NotNull Object serializeValue(@NotNull TypedKey<T> value) {
+        return value.key().asString();
+    }
 }

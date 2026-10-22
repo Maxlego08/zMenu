@@ -2,6 +2,7 @@ package fr.maxlego08.menu.command.commands.dialogs;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.Message;
@@ -17,7 +18,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
 import java.util.Optional;
 
 public class CommandDialogOpen extends SubCommand<ZMenuPlugin> {
@@ -29,8 +29,7 @@ public class CommandDialogOpen extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_OPEN_DIALOG.getPermission());
 
         this.addRequiredArgument(Commands.argument("dialog-name", new NonSpaceStringArgumentType()).suggests(((context, builder) -> {
-            this.dialogManager.getDialogNames().stream().filter(entry -> entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
-                    .forEach(builder::suggest);
+            NameSuggestions.suggest(builder, this.dialogManager.getDialogNames());
             return builder.buildFuture();
         })));
         this.addOptionalArgument("player", ArgumentTypes.player());

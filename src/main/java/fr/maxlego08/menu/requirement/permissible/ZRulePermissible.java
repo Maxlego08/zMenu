@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class ZRulePermissible extends RulePermissible {
 
@@ -26,6 +27,14 @@ public class ZRulePermissible extends RulePermissible {
         this.rule = rule;
         this.itemSource = itemSource;
         this.amount = amount;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "item-rule");
+        map.put("rule", this.rule.serialize());
+        if (this.itemSource != ItemSource.HAND) map.put("item-source", this.itemSource.name());
+        if (this.amount != 1) map.put("amount", this.amount);
     }
 
     @Override

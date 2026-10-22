@@ -21,4 +21,9 @@ public final class CatCollarComponent extends ItemComponent {
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Resolvable.applyResolvable(context, this.collarColor, resolvedCollarColor -> itemStack.setData(DataComponentTypes.CAT_COLLAR, resolvedCollarColor));
     }
+
+    @Override
+    public @Nullable Object serialize() {
+        return this.collarColor.serialize();
+    }
 }

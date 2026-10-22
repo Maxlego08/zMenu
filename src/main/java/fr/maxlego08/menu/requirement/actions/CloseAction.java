@@ -7,10 +7,17 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
+
 public class CloseAction extends Action {
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         inventory.closeWithAnimation(player::closeInventory);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "close");
     }
 }

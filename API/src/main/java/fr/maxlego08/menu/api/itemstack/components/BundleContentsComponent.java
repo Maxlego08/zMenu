@@ -1,18 +1,18 @@
 package fr.maxlego08.menu.api.itemstack.components;
 
 import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BuildContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
-import fr.maxlego08.menu.api.utils.ItemUtil;
-import fr.maxlego08.menu.zcore.logger.Logger;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.BundleContents;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BundleMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class BundleContentsComponent extends ItemComponent {
@@ -29,14 +29,20 @@ public class BundleContentsComponent extends ItemComponent {
 
     @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
-        boolean apply = ItemUtil.editMeta(itemStack, BundleMeta.class, bundleMeta -> {
-            for (MenuItemStack menuItemStack : this.contents) {
-                bundleMeta.addItem(menuItemStack.build(player));
-            }
-        });
-        if (!apply && Configuration.enableDebug) {
-            Logger.info("Failed to apply BundleContents to ItemStack of type " + itemStack.getType().name() + " check if it's a bundle.");
+        BundleContents.Builder bundleContents = BundleContents.bundleContents();
+        for (MenuItemStack menuItemStack : this.contents) {
+            bundleContents.add(menuItemStack.build(player));
         }
+        itemStack.setData(DataComponentTypes.BUNDLE_CONTENTS, bundleContents.build());
+    }
+
+    @Override
+    public @Nullable Object serialize() {
+        List<Map<String, Object>> items = new ArrayList<>(this.contents.size());
+        for (MenuItemStack menuItemStack : this.contents) {
+            items.add(menuItemStack.serializeToMap());
+        }
+        return items;
     }
 
 }

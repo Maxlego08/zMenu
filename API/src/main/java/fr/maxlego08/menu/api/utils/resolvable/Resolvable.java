@@ -13,6 +13,28 @@ public interface Resolvable<T> {
 
     @Nullable T resolve(@NotNull BuildContext context);
 
+    /**
+     * Returns this value in the form the configuration holds it, so a component loader reading it
+     * back builds the same resolvable: the placeholder expression as written, or the value itself.
+     *
+     * @return A plain value, a list or a map, ready to be written in YAML.
+     * @throws UnsupportedOperationException If this resolvable cannot be written back.
+     */
+    default @Nullable Object serialize() {
+        throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");
+    }
+
+    /**
+     * Serializes a list of resolvables, in order; a null entry stays null.
+     */
+    static @NotNull List<Object> serializeList(@NotNull List<? extends @Nullable Resolvable<?>> resolvables) {
+        List<Object> values = new ArrayList<>(resolvables.size());
+        for (Resolvable<?> resolvable : resolvables) {
+            values.add(resolvable == null ? null : resolvable.serialize());
+        }
+        return values;
+    }
+
     static boolean isExpression(@NotNull String toResolve) {
         int first = toResolve.indexOf('%');
         return first != -1 && toResolve.indexOf('%', first + 1) != -1;

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ZRegexPermissible extends RegexPermissible {
@@ -43,5 +44,12 @@ public class ZRegexPermissible extends RegexPermissible {
     @Override
     public String getPlaceholder() {
         return this.placeholder;
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "regex");
+        map.put("input", this.placeholder);
+        map.put("regex", this.pattern.pattern());
     }
 }

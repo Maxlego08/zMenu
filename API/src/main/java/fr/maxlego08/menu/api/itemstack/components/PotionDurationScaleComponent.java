@@ -23,6 +23,11 @@ public class PotionDurationScaleComponent extends ItemComponent {
     }
 
     @Override
+    public @Nullable Object serialize() {
+        return this.durationScale.serialize();
+    }
+
+    @Override
     public void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player) {
         Float resolvedDurationScale = Resolvable.resolve(context, this.durationScale);
         if (resolvedDurationScale != null) {

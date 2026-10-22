@@ -39,6 +39,7 @@ import java.util.List;
 
 public abstract class ZPlugin extends JavaPlugin {
     private final List<ListenerAdapter> listenerAdapters = new ArrayList<>();
+    private final List<String> failedHooks = new ArrayList<>();
     protected VCommandManager zCommandManager;
     protected VInventoryManager vinventoryManager;
     private long enableTime;
@@ -160,6 +161,35 @@ public abstract class ZPlugin extends JavaPlugin {
      */
     protected Plugin getPlugin(Plugins plugin) {
         return Bukkit.getPluginManager().getPlugin(plugin.getName());
+    }
+
+    protected boolean safeHook(String name, Runnable action) {
+        try {
+            action.run();
+            return true;
+        } catch (Throwable throwable) {
+            if (!this.failedHooks.contains(name)) this.failedHooks.add(name);
+            Logger.error("Hook '" + name + "' failed to initialize, zMenu will continue without it.", throwable);
+            return false;
+        }
+    }
+
+
+    public List<String> getFailedHooks() {
+        return this.failedHooks;
+    }
+
+
+    protected void clearFailedHooks() {
+        this.failedHooks.clear();
+    }
+
+    protected void safeDisable(String name, Runnable action) {
+        try {
+            action.run();
+        } catch (Throwable throwable) {
+            Logger.error("Failed to shut down " + name + " cleanly.", throwable);
+        }
     }
 
     /**

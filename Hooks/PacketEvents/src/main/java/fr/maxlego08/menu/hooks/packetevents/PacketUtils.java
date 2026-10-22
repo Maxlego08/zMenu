@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.packetevents;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.PacketEventsAPI;
 import com.github.retrooper.packetevents.event.EventManager;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
@@ -26,34 +27,66 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketUtils implements InventoryListener, PacketManager {
-    private final PlayerManager playerManager = PacketEvents.getAPI().getPlayerManager();
 
     private PacketAnimationListener packetAnimationListener;
     private PacketTitleListener packetTitleListener;
     private PacketEventClickLimiterListener packetEventClickLimiterListener;
 
-    public static final Map<UUID, FakeInventory> fakeContents = new HashMap<>();
+    public static final Map<UUID, FakeInventory> fakeContents = new ConcurrentHashMap<>();
     private final MenuPlugin plugin;
+
+    private boolean ownsApi;
+    private boolean ready;
 
     public PacketUtils(MenuPlugin plugin) {
         this.plugin = plugin;
     }
 
-    @Override
-    public void onLoad() {
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this.plugin));
-        PacketEvents.getAPI().load();
+
+    private PacketEventsAPI<?> api() {
+        PacketEventsAPI<?> api = PacketEvents.getAPI();
+        if (api == null) {
+            throw new IllegalStateException("The packetevents API is not available, the packetevents plugin most likely failed to load.");
+        }
+        return api;
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
+    public boolean isReady() {
+        return this.ready && PacketEvents.getAPI() != null;
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public void onLoad() {
+        if (PacketEvents.getAPI() == null) {
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this.plugin));
+            this.ownsApi = true;
+        }
+        if (this.ownsApi) {
+            this.api().load();
+        }
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
     public void onEnable() {
-        PacketEvents.getAPI().init();
-        EventManager eventManager = PacketEvents.getAPI().getEventManager();
+        if (PacketEvents.getAPI() == null) {
+            Logger.info("The packetevents API is not available, packet features are disabled.", Logger.LogType.WARNING);
+            return;
+        }
+
+        if (this.ownsApi) {
+            this.api().init();
+        }
+
+        EventManager eventManager = this.api().getEventManager();
 //         eventManager.registerListener(new PacketListener(), PacketListenerPriority.LOW);
         eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
         eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW);
@@ -61,6 +94,8 @@ public class PacketUtils implements InventoryListener, PacketManager {
             this.packetEventClickLimiterListener = new PacketEventClickLimiterListener();
             eventManager.registerListener(this.packetEventClickLimiterListener, PacketListenerPriority.HIGH);
         }
+
+        this.ready = true;
     }
 
     @Override
@@ -71,8 +106,13 @@ public class PacketUtils implements InventoryListener, PacketManager {
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public void onDisable() {
-        PacketEvents.getAPI().terminate();
+        this.ready = false;
+        fakeContents.clear();
+        if (this.ownsApi && PacketEvents.getAPI() != null) {
+            this.api().terminate();
+        }
     }
 
     @Override
@@ -100,11 +140,6 @@ public class PacketUtils implements InventoryListener, PacketManager {
 
     @Override
     public void onInventoryPostOpen(Player player, BaseInventory inventory) {
-        if (fakeContents.containsKey(inventory.getPlayer().getUniqueId())) {
-            FakeInventory fakeInventory = fakeContents.get(inventory.getPlayer().getUniqueId());
-            Logger.info("OPEN");
-            Logger.info(fakeInventory.getSlots().toString());
-        }
     }
 
     @Override
@@ -132,13 +167,16 @@ public class PacketUtils implements InventoryListener, PacketManager {
 
     @Override
     public void editInventoryTitleName(@NotNull Player player, @NotNull Component title) {
+        if (!this.isReady()) return;
+
         this.packetTitleListener.getPlayerPacketInformation(player.getUniqueId()).ifPresent(playerPacketInformation -> {
             WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow = playerPacketInformation.getWrapperPlayServerOpenWindow();
             WrapperPlayServerOpenWindow newWrapperPlayServerOpenWindow1 = new WrapperPlayServerOpenWindow(wrapperPlayServerOpenWindow.getContainerId(),
                     wrapperPlayServerOpenWindow.getType(),
                     title);
-            this.playerManager.sendPacket(player, newWrapperPlayServerOpenWindow1);
-            this.playerManager.sendPacket(player, playerPacketInformation.getWrapperPlayServerWindowItems());
+            PlayerManager playerManager = this.api().getPlayerManager();
+            playerManager.sendPacket(player, newWrapperPlayServerOpenWindow1);
+            playerManager.sendPacket(player, playerPacketInformation.getWrapperPlayServerWindowItems());
         });
     }
 

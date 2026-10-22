@@ -1,8 +1,11 @@
 package fr.maxlego08.menu.api.command;
 
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.requirement.Permissible;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -65,4 +68,23 @@ public interface CommandArgument {
      * @return The default value associated with the argument.
      */
     String getDefaultValue();
+
+    /**
+     * Writes this argument in the format the command loader reads, as one entry of an arguments list.
+     * Values equal to their default are left out.
+     *
+     * @return The argument as a map.
+     */
+    default Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("name", this.getArgument());
+        if (!"STRING".equalsIgnoreCase(this.getType())) map.put("type", this.getType());
+        this.getInventory().ifPresent(inventory -> map.put("inventory", inventory));
+        if (!this.isRequired()) map.put("is-required", false);
+        if (!this.isPerformMainActions()) map.put("perform-main-action", false);
+        if (!this.getActions().isEmpty()) map.put("actions", Permissible.serializeActions(this.getActions()));
+        if (!this.getAutoCompletion().isEmpty()) map.put("auto-completion", this.getAutoCompletion());
+        if (this.getDefaultValue() != null) map.put("default-value", this.getDefaultValue());
+        return map;
+    }
 }

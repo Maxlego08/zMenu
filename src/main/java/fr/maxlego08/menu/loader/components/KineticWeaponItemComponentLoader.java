@@ -10,8 +10,13 @@ import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableKineticCondition;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableNamespacedKey;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.KineticWeapon;
+import net.kyori.adventure.key.Key;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,15 +34,15 @@ public final class KineticWeaponItemComponentLoader extends ItemComponentLoader 
     public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
         if (componentSection == null) return null;
 
-        ResolvableInt delayTick = ResolvableInt.autoOrNull(componentSection.getString("delay_ticks"));
-        ResolvableInt contactCooldownTicks = ResolvableInt.autoOrNull(componentSection.getString("contact_cooldown_ticks"));
-        ResolvableKineticCondition dismountConditions = this.loadKineticCondition(componentSection.getConfigurationSection("dismount_conditions"));
-        ResolvableKineticCondition knockbackConditions = this.loadKineticCondition(componentSection.getConfigurationSection("knockback_conditions"));
-        ResolvableKineticCondition damageConditions = this.loadKineticCondition(componentSection.getConfigurationSection("damage_conditions"));
-        ResolvableFloat forwardMovement = ResolvableFloat.autoOrNull(componentSection.getString("forward_movement"));
-        ResolvableFloat damageMultiplier = ResolvableFloat.autoOrNull(componentSection.getString("damage_multiplier"));
+        ResolvableInt delayTick = ResolvableInt.autoOrNull(componentSection.getString("delay-ticks"));
+        ResolvableInt contactCooldownTicks = ResolvableInt.autoOrNull(componentSection.getString("contact-cooldown-ticks"));
+        ResolvableKineticCondition dismountConditions = this.loadKineticCondition(componentSection.getConfigurationSection("dismount-conditions"));
+        ResolvableKineticCondition knockbackConditions = this.loadKineticCondition(componentSection.getConfigurationSection("knockback-conditions"));
+        ResolvableKineticCondition damageConditions = this.loadKineticCondition(componentSection.getConfigurationSection("damage-conditions"));
+        ResolvableFloat forwardMovement = ResolvableFloat.autoOrNull(componentSection.getString("forward-movement"));
+        ResolvableFloat damageMultiplier = ResolvableFloat.autoOrNull(componentSection.getString("damage-multiplier"));
         ResolvableNamespacedKey sound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("sound"));
-        ResolvableNamespacedKey hitSound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("hit_sound"));
+        ResolvableNamespacedKey hitSound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("hit-sound"));
 
         return new KineticWeaponComponent(
                 contactCooldownTicks,
@@ -52,11 +57,39 @@ public final class KineticWeaponItemComponentLoader extends ItemComponentLoader 
         );
     }
 
+    @Override
+    public @Nullable ItemComponent fromItemStack(@NotNull ItemStack itemStack) {
+        KineticWeapon kineticWeapon = itemStack.getData(DataComponentTypes.KINETIC_WEAPON);
+        if (kineticWeapon == null) return null;
+        return new KineticWeaponComponent(
+                ResolvableInt.of(kineticWeapon.contactCooldownTicks()),
+                ResolvableInt.of(kineticWeapon.delayTicks()),
+                this.toResolvableCondition(kineticWeapon.dismountConditions()),
+                this.toResolvableCondition(kineticWeapon.knockbackConditions()),
+                this.toResolvableCondition(kineticWeapon.damageConditions()),
+                ResolvableFloat.of(kineticWeapon.forwardMovement()),
+                ResolvableFloat.of(kineticWeapon.damageMultiplier()),
+                this.toResolvableKey(kineticWeapon.sound()),
+                this.toResolvableKey(kineticWeapon.hitSound())
+        );
+    }
+
+    private @Nullable ResolvableKineticCondition toResolvableCondition(KineticWeapon.@Nullable Condition condition) {
+        if (condition == null) return null;
+        return new ResolvableKineticCondition(ResolvableInt.of(condition.maxDurationTicks()), ResolvableFloat.of(condition.minSpeed()), ResolvableFloat.of(condition.minRelativeSpeed()));
+    }
+
+    private @Nullable ResolvableNamespacedKey toResolvableKey(@Nullable Key key) {
+        if (key == null) return null;
+        NamespacedKey namespacedKey = NamespacedKey.fromString(key.asString());
+        return namespacedKey == null ? null : ResolvableNamespacedKey.of(namespacedKey);
+    }
+
     private ResolvableKineticCondition loadKineticCondition(@Nullable ConfigurationSection section) {
         if (section == null) return null;
-        ResolvableInt maxDurationTicks = ResolvableInt.autoOrNull(section.getString("max_duration_ticks"));
-        ResolvableFloat minSpeed = ResolvableFloat.autoOrNull(section.getString("min_speed"));
-        ResolvableFloat minRelativeSpeed = ResolvableFloat.autoOrNull(section.getString("min_relative_speed"));
+        ResolvableInt maxDurationTicks = ResolvableInt.autoOrNull(section.getString("max-duration-ticks"));
+        ResolvableFloat minSpeed = ResolvableFloat.autoOrNull(section.getString("min-speed"));
+        ResolvableFloat minRelativeSpeed = ResolvableFloat.autoOrNull(section.getString("min-relative-speed"));
         return new ResolvableKineticCondition(maxDurationTicks, minSpeed, minRelativeSpeed);
     }
 }

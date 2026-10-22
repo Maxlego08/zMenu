@@ -19,6 +19,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.loader.components.LegacyComponentKeys;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
@@ -33,7 +34,6 @@ import org.bukkit.potion.PotionType;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -131,6 +131,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.20.5"))) { // 1.20.5+
             ConfigurationSection componentsSection = configuration.getConfigurationSection(path + "components.");
             if (componentsSection != null) {
+                LegacyComponentKeys.normalize(componentsSection, file);
                 ComponentsManager componentsManager = this.manager.getPlugin().getComponentsManager();
                 for (String componentKey : componentsSection.getKeys(false)) {
                     ConfigurationSection componentSection = componentsSection.getConfigurationSection(componentKey);
@@ -647,127 +648,6 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
         return colors;
-    }
-
-    /**
-     * Saves the properties of a MenuItemStack to a YamlConfiguration file.
-     * <p>
-     * This method serializes various properties of the given MenuItemStack, such as
-     * material, display name, lore, model ID, durability, amount, URL, potion effects,
-     * firework effects, leather armor color, banner patterns, enchantments, and flags.
-     * These properties are stored in the provided YamlConfiguration under the specified path.
-     * <p>
-     * Additionally, it attempts to save the configuration to the provided file, logging
-     * any IOExceptions that occur during the process.
-     *
-     * @param item          the MenuItemStack whose properties are to be saved
-     * @param configuration the YamlConfiguration to store the properties in
-     * @param path          the path within the configuration to store the properties under
-     * @param file          the file in which to save the configuration
-     * @param objects       additional objects for potential future use
-     */
-    public void save(MenuItemStack item, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-        configuration.set(path + "material", item.getMaterial());
-
-        if (item.getDisplayName() != null) configuration.set(path + "name", item.getDisplayName());
-        if (!item.getLore().isEmpty()) configuration.set(path + "lore", item.getLore());
-        if (item.isGlowing()) configuration.set(path + "glow", item.isGlowing());
-        if (item.getModelID() != null && !item.getModelID().equalsIgnoreCase("0")) {
-            configuration.set(path + "model-id", item.getModelID());
-        }
-        try {
-            if (Integer.parseInt(item.getData()) > 0) configuration.set(path + "data", item.getData());
-        } catch (Exception ignored) {
-            configuration.set(path + "data", item.getData());
-        }
-        if (item.getDura() != null) configuration.set(path + "durability", item.getDurability());
-        if (item.getAmount() != null) {
-            try {
-                int value = Integer.parseInt(item.getAmount());
-                if (value > 1) {
-                    configuration.set(path + "amount", value);
-                }
-            } catch (Exception exception) {
-                configuration.set(path + "amount", item.getAmount());
-            }
-        }
-        if (item.getUrl() != null) configuration.set(path + "url", item.getUrl());
-
-        Potion potion = item.getPotion();
-        Firework firework = item.getFirework();
-        LeatherArmor leatherArmor = item.getLeatherArmor();
-        Banner banner = item.getBanner();
-
-        if (potion != null) {
-            Color potionColor = potion.getColor();
-
-            configuration.set(path + "potion", potion.getType().toString());
-            if (potion.getLevel() != 0) configuration.set(path + "level", potion.getLevel());
-            if (potion.isSplash()) configuration.set(path + "splash", true);
-            if (potion.hasExtendedDuration()) configuration.set(path + "extended", true);
-
-            if (potionColor != null) {
-                configuration.set("color", potionColor.getAlpha() + "," + potionColor.getRed() + "," + potionColor.getGreen() + "," + potionColor.getBlue());
-            }
-        }
-
-        if (firework != null) {
-            ConfigurationSection fireworkSection = configuration.createSection(path + "firework");
-            FireworkEffect effect = firework.getEffect();
-            List<String> stringColors = new ArrayList<>();
-            effect.getColors().forEach(color -> stringColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
-            List<String> stringFadeColors = new ArrayList<>();
-            effect.getColors().forEach(color -> stringFadeColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
-
-            fireworkSection.set("star", firework.isStar());
-            fireworkSection.set("flicker", effect.hasFlicker());
-            fireworkSection.set("trail", effect.hasTrail());
-            fireworkSection.set("type", effect.getType().toString());
-
-
-            fireworkSection.set("colors", stringColors);
-            fireworkSection.set("fadeColors", stringFadeColors);
-        }
-
-        if (leatherArmor != null) {
-            Color leatherArmorColor = leatherArmor.getColor();
-            configuration.set("color", leatherArmorColor.getAlpha() + "," + leatherArmorColor.getRed() + "," + leatherArmorColor.getGreen() + "," + leatherArmorColor.getBlue());
-        }
-
-        if (banner != null) {
-            List<Pattern> patterns = banner.getPatterns();
-
-            configuration.set(path + "banner", banner.getBaseColor().toString());
-            if (!patterns.isEmpty()) {
-                List<String> stringPatterns = new ArrayList<>();
-                for (Pattern p : patterns) {
-                    stringPatterns.add(p.getColor() + ":" + p.getPattern());
-                }
-                configuration.set(path + "patterns", stringPatterns);
-            }
-        }
-
-        if (item.getEnchantments() != null && !item.getEnchantments().isEmpty()) {
-            List<String> stringEnchantments = new ArrayList<>(item.getEnchantments().size());
-            item.getEnchantments().forEach((enchantment, level) -> stringEnchantments.add(enchantment.getName() + "," + level));
-
-            configuration.set(path + "enchants", stringEnchantments);
-        }
-
-        if (item.getFlags() != null && !item.getFlags().isEmpty()) {
-            List<String> flags = new ArrayList<>(item.getFlags().size());
-            for (ItemFlag flag : item.getFlags()) {
-                flags.add(flag.toString());
-            }
-            configuration.set(path + "flags", flags);
-        }
-
-        try {
-            configuration.save(file);
-        } catch (IOException exception) {
-            Logger.error(exception);
-        }
     }
 
 }

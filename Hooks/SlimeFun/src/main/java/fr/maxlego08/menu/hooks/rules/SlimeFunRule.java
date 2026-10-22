@@ -19,4 +19,9 @@ public class SlimeFunRule extends AbstractPluginItemRule {
         SlimefunItem slimefunItem = SlimefunItem.getByItem(itemStack);
         return slimefunItem != null ? slimefunItem.getId() : null;
     }
+
+    @Override
+    protected @NotNull String getType() {
+        return "slimefun";
+    }
 }

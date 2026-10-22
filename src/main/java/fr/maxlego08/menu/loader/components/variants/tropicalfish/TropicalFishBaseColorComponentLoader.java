@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.itemstack.components.variants.tropicalfish.Tropical
 import fr.maxlego08.menu.loader.components.variants.base.DyeColorLoader;
 
 @AutoComponentLoader
-@SinceVersion("1.20.5")
+@SinceVersion("1.21.5")
 public final class TropicalFishBaseColorComponentLoader extends DyeColorLoader {
 
     public TropicalFishBaseColorComponentLoader() {

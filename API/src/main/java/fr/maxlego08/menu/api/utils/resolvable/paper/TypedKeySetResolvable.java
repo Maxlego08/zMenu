@@ -30,4 +30,9 @@ public record TypedKeySetResolvable<T extends Keyed>(
         if (resolved.isEmpty()) return null;
         return RegistrySet.keySet(this.registryKey, resolved);
     }
+
+    @Override
+    public @NotNull Object serialize() {
+        return Resolvable.serializeList(this.keys);
+    }
 }

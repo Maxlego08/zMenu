@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.rules.ItemRuleContext;
 import fr.maxlego08.menu.api.rules.Rule;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MaterialSuffixRule implements Rule {
     private final List<String> suffixes;
@@ -27,5 +29,13 @@ public class MaterialSuffixRule implements Rule {
     @Override
     public boolean isValid() {
         return !this.suffixes.isEmpty();
+    }
+
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("type", "material-suffix");
+        map.put("suffixes", this.suffixes);
+        return map;
     }
 }

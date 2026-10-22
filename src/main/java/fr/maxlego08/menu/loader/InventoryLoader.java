@@ -13,7 +13,6 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.exceptions.InventorySizeException;
 import fr.maxlego08.menu.api.exceptions.InventoryTypeException;
-import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.pattern.Pattern;
@@ -177,11 +176,13 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setClickLimiterEnabled(configuration.getBoolean(path + "click-limiter-enabled", true));
         inventory.setFile(file);
         if (configuration.isConfigurationSection("inventory-replacement")){
-            String replacementName = configuration.getString("inventory-replacement.name", "");
-            String replacementPlugin = configuration.getString("inventory-replacement.plugin", "zMenu");
-            List<Integer> replacementPages = configuration.getIntegerList("inventory-replacement.pages");
-            InventoryReplacement inventoryReplacement = new InventoryReplacement(replacementName, replacementPlugin, replacementPages);
-            inventory.setInventoryReplacement(inventoryReplacement);
+            ConfigurationSection replacementSection = configuration.getConfigurationSection("inventory-replacement");
+            if (replacementSection != null) {
+                InventoryReplacement inventoryReplacement = InventoryReplacement.deserialize(replacementSection);
+                if (inventoryReplacement != null) {
+                    inventory.setInventoryReplacement(inventoryReplacement);
+                }
+            }
         }
 
         this.loadFillItem(configuration, inventory, menuItemStackLoader, file);
@@ -195,7 +196,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         List<fr.maxlego08.menu.api.InventoryOption> inventoryOptions = new ArrayList<>();
         for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
             for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
-                InventoryOption instance = this.createInstance(entry.getKey(), optionClass);
+                InventoryOption instance = InventoryOption.create(entry.getKey(), optionClass);
                 if (instance != null) {
                     inventoryOptions.add(instance);
                 }
@@ -327,21 +328,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
     }
 
-    private InventoryOption createInstance(Plugin plugin, Class<? extends InventoryOption> aClass) {
-        try {
-            Constructor<? extends InventoryOption> constructor = aClass.getConstructor(Plugin.class);
-            return constructor.newInstance(plugin);
-        } catch (NoSuchMethodException ignored) {
-            try {
-                return aClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                return null;
-            }
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
-
     private void loadTitleAnimation(ContainerInventorySetter inventory, YamlConfiguration configuration, File file) throws InventoryException {
         if (configuration.isConfigurationSection("title-animation")) {
             String titleAnimationPath = "title-animation.";
@@ -357,6 +343,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 TitleAnimationLoader animationLoader = titleAnimationLoader.get();
                 TitleAnimation titleAnimation = animationLoader.load(configuration, titleAnimationPath, file);
                 inventory.setTitleAnimation(titleAnimation);
+            } else {
+                Logger.info("The title animation of " + file.getName() + " was ignored: no title animation provider " + (pluginName == null ? "is registered" : "named '" + pluginName + "' is registered (is PacketEvents installed?)") + ".", Logger.LogType.WARNING);
             }
         }
     }
@@ -457,20 +445,5 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 .ifPresent(slot -> Logger.info("The animation item " + temporaryItem.name() + " covers the slot " + slot
                         + " of the button " + refusing.get(slot).getName() + ", which does not allow it, in " + file.getAbsolutePath()
                         + ". Add `animation.allow-temporary-items: true` to that button to draw over it.", Logger.LogType.WARNING)));
-    }
-
-    @Override
-    public void save(Inventory inventory, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-        MenuItemStackLoader itemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
-
-        configuration.set("name", inventory.getName());
-        configuration.set("size", inventory.size());
-
-        if (inventory instanceof ContainerInventory containerInventory && containerInventory.getFillItemStack() != null) {
-            itemStackLoader.save(containerInventory.getFillItemStack(), configuration, "fill-item.", file);
-            if (!containerInventory.isFillItemUseCache()) configuration.set("fill-item.use-cache", false);
-        }
-
-        // TODO: FINISH THE SAVE METHOD
     }
 }

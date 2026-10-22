@@ -46,6 +46,18 @@ public abstract class ItemComponent {
         this.parentLoader = parentLoader;
     }
 
+    /**
+     * Returns this component in the form its loader reads, to be written under
+     * {@code components.<name>} of the item: a plain value for a component set with one value
+     * ({@code max-stack-size: 16}), or a map for a component with its own section.
+     *
+     * @return A plain value, a list or a map, ready to be written in YAML.
+     * @throws UnsupportedOperationException If this component cannot be serialized.
+     */
+    public @Nullable Object serialize() {
+        throw new UnsupportedOperationException("The item component " + this.getClass().getName() + " cannot be serialized");
+    }
+
     protected <T> void applyResolvable(@NotNull BuildContext context, @NotNull Consumer<T> consumer, @Nullable Resolvable<T> resolvable) {
         Resolvable.applyResolvable(context, resolvable, consumer);
     }

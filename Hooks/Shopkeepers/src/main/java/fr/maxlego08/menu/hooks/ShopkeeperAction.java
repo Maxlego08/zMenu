@@ -8,10 +8,12 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.hooks.loader.ShopkeeperLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class ShopkeeperAction extends Action {
@@ -34,5 +36,11 @@ public class ShopkeeperAction extends Action {
                 Logger.info("ShopKeeper " + this.shopName + " was not found ! Available ShopKeepers: " + ShopkeepersAPI.getShopkeeperRegistry().getAllShopkeepers().stream().map(Shopkeeper::getName).toList());
             }
         }
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "shopkeeper");
+        if (!ShopkeeperLoader.DEFAULT_NAME.equals(this.shopName)) map.put("name", this.shopName);
     }
 }

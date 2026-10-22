@@ -12,6 +12,7 @@ import net.luckperms.api.node.NodeBuilder;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +33,15 @@ public class LuckpermAction extends Action {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         this.setPermissionForPlayer(player, this.permission, this.value);
+    }
+
+    @Override
+    protected void serializeProperties(@NonNull Map<String, Object> map) {
+        map.put("type", "permission-set");
+        map.put("permission", this.permission);
+        if (!this.value) map.put("value", false);
+        if (this.expiration != -1L) map.put("expiration", this.expiration);
+        if (this.timeUnit != TimeUnit.SECONDS) map.put("time-unit", this.timeUnit.name());
     }
 
     public void setPermissionForPlayer(Player player, String permission, boolean value) {

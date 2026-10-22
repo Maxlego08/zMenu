@@ -9,8 +9,6 @@ import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.NonNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,22 +30,6 @@ public class OpenLinkLoader implements Loader<OpenLink> {
         List<String> hover = configuration.getStringList(path + "hover");
 
         return new ZOpenLink(this.plugin, action, message, link, replace, hover);
-    }
-
-    @Override
-    public void save(OpenLink object, @NonNull YamlConfiguration configuration, @NonNull String path, File file, Object... objects) {
-
-        configuration.set(path + "action", "OPEN_URL");
-        configuration.set(path + "link", object.getLink());
-        configuration.set(path + "message", object.getMessage());
-        configuration.set(path + "replace", object.getReplace());
-        configuration.set(path + "hover", object.getHover());
-
-        try {
-            configuration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

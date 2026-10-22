@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.items.ItemExecutor;
 import io.lumine.mythic.core.items.MythicItem;
@@ -34,6 +35,6 @@ public class MythicMobsItemsLoader extends MaterialLoader {
                 Logger.info("MythicMobsItemsLoader: Mythic item '" + materialString + "' not found, available items: " + this.itemManager.getItemNames());
             return null;
         }
-        return mythicItem.get().getCachedBaseItem();
+        return BukkitAdapter.adapt(mythicItem.get().generateItemStack(1));
     }
 }

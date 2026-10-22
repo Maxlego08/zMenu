@@ -35,8 +35,8 @@ public final class ResolvableShort extends ParsableResolvable<Short> {
     @Contract("_, _, !null -> !null")
     public static ResolvableShort of(@NotNull Map<String, Object> map, @NotNull String key, @Nullable Short defaultValue) {
         Object value = map.get(key);
-        if (value instanceof Short shortValue) {
-            return new ResolvableShort(shortValue, null);
+        if (value instanceof Number number) {
+            return new ResolvableShort(number.shortValue(), null);
         } else if (value instanceof String strValue) {
             return new ResolvableShort(null, strValue);
         } else {

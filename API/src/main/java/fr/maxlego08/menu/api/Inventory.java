@@ -12,8 +12,10 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.utils.SectionSerializable;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
@@ -31,7 +33,7 @@ import java.util.Map;
  * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">Inventory documentation</a>
  * <p>This class encapsulates information about an inventory, including its size, buttons, patterns, and associated requirements.</p>
  */
-public interface Inventory extends Keyed {
+public interface Inventory extends Keyed, SectionSerializable {
 
     /**
      * Returns the key of the inventory: the name of its plugin and its file name, lowercased, with
@@ -331,4 +333,15 @@ public interface Inventory extends Keyed {
     InventoryReplacement getInventoryReplacement();
 
     void setInventoryReplacement(InventoryReplacement inventoryReplacement);
+
+    /**
+     * Writes this inventory in the format the inventory loader reads.
+     *
+     * @param section The section to write into, usually the root of the file.
+     * @throws UnsupportedOperationException If this inventory, or something it holds, cannot be serialized.
+     */
+    @Override
+    default void serialize(@NotNull ConfigurationSection section) {
+        throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");
+    }
 }

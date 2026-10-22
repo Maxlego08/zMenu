@@ -15,6 +15,9 @@ import org.bukkit.inventory.meta.BlockDataMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class BlockStateComponent extends ItemComponent {
     private final @NotNull ResolvableString resolvableBlockState;
@@ -41,5 +44,29 @@ public class BlockStateComponent extends ItemComponent {
             if (Configuration.enableDebug)
                 Logger.info("Invalid block state '" + this.resolvableBlockState + "' for item type " + itemStack.getType().name());
         }
+    }
+
+    /**
+     * The loader joins the section's {@code key: value} entries into {@code [key=value, key2=value2]},
+     * so the section is read back from that string.
+     */
+    @Override
+    public @Nullable Object serialize() {
+        Object serialized = this.resolvableBlockState.serialize();
+        if (!(serialized instanceof String blockState)) {
+            throw new UnsupportedOperationException("The block state " + serialized + " cannot be serialized");
+        }
+        if (blockState.startsWith("[")) blockState = blockState.substring(1);
+        if (blockState.endsWith("]")) blockState = blockState.substring(0, blockState.length() - 1);
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (String entry : blockState.split(",")) {
+            int separator = entry.indexOf('=');
+            if (separator <= 0) {
+                throw new UnsupportedOperationException("The block state entry '" + entry + "' cannot be serialized");
+            }
+            map.put(entry.substring(0, separator).trim(), entry.substring(separator + 1).trim());
+        }
+        return map;
     }
 }

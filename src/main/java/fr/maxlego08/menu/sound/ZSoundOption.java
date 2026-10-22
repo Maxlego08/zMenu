@@ -63,6 +63,17 @@ public class ZSoundOption implements SoundOption {
     }
 
     @Override
+    public @Nullable String getSoundName() {
+        if (this.soundAsString != null) return this.soundAsString;
+        return this.sound == null ? null : this.sound.name();
+    }
+
+    @Override
+    public @NonNull String getCategoryName() {
+        return this.category.name();
+    }
+
+    @Override
     public void play(@NonNull Entity entity) {
 
         if (this.soundAsString != null && this.isCustom()) {

@@ -7,7 +7,7 @@ import fr.maxlego08.menu.loader.components.variants.base.EnumVariantLoader;
 import org.bukkit.entity.MushroomCow;
 
 @AutoComponentLoader
-@SinceVersion("1.13")
+@SinceVersion("1.21.5")
 public class MushroomCowVariantLoader extends EnumVariantLoader<MushroomCow.Variant> {
     public MushroomCowVariantLoader() {
         super("mooshroom/variant", MushroomCow.Variant.class, MushroomVariantComponent::new);
