@@ -375,14 +375,12 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (!this.isActive(Plugins.ZMENUPLUS)) {
             Logger.info("");
             Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/pricing");
-            // Logger.info("zMenu’s site includes an inventory editor, a marketplace an a surprise (soon)");
             Logger.info("");
         }
 
 
         this.dataManager.loadDefaultValues();
 
-//         this.inventoryManager.registerInventoryListener(this.packetUtils);
         if (this.packetManager != null) {
             this.safeHook("packetevents", () -> {
                 this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));

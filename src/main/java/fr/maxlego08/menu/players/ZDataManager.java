@@ -34,14 +34,6 @@ public class ZDataManager implements DataManager {
         this.plugin = plugin;
     }
 
-    /*public void save(Persist persist) {
-        persist.save(this, "players");
-    }
-
-    public void load(Persist persist) {
-        persist.loadOrSaveDefault(this, ZDataManager.class, "players");
-    }*/
-
     @Override
     public @NonNull Optional<PlayerData> getPlayer(@NonNull UUID uniqueId) {
         return Optional.ofNullable(this.players.getOrDefault(uniqueId, null));

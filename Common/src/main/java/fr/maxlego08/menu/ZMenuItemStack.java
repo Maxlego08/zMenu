@@ -960,21 +960,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         }
 
-        /*if (configuration.contains("firework")) {
-
-            ConfigurationSection section = configuration.getConfigurationSection("firework");
-            if (section != null) {
-                boolean isStar = section.getBoolean("star", false);
-                FireworkEffect.Builder builder = FireworkEffect.builder();
-                builder.flicker(section.getBoolean("flicker"));
-                builder.trail(section.getBoolean("trail"));
-                builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
-                builder.withColor(getColors(section, "colors"));
-                builder.withFade(getColors(section, "fadeColors"));
-                setFirework(new Firework(isStar, builder.build()));
-            }
-        }*/
-
         List<String> lore = configuration.getStringList("lore");
         if (lore.isEmpty()) {
             Object object = configuration.getObject("lore", null);
@@ -1044,17 +1029,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Color getColor(MapConfiguration configuration, String key, Color def) {
         Color color = parseColor(configuration.getString(key, ""), key);
         return color == null ? def : color;
-    }
-
-    private List<Color> getColors(MapConfiguration section, String key) {
-        List<Color> colors = new ArrayList<>();
-
-        for (String color : section.getStringList(key)) {
-            Color parsed = parseColor(color, key);
-            if (parsed != null) colors.add(parsed);
-        }
-
-        return colors;
     }
 
     /**
