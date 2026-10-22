@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.pattern.PatternManager;
@@ -255,8 +256,19 @@ public interface MenuPlugin extends Plugin {
      * @param path          the path within the configuration to load from.
      * @param file          the file from which the configuration was loaded, used for logging errors.
      * @return the loaded menu item stack.
+     * @deprecated use {@link ItemStackService#load(YamlConfiguration, String, File)}.
      */
-    MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
+        return this.getItemStackService().load(configuration, path, file);
+    }
+
+    /**
+     * Gets the service that reads, converts and compares the items of zMenu.
+     *
+     * @return the item stack service
+     */
+    ItemStackService getItemStackService();
 
     /**
      * Returns the ToastHelper object for this plugin.

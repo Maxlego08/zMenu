@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
@@ -53,6 +54,7 @@ import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvi
 import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.inventory.InventoryHotReload;
 import fr.maxlego08.menu.inventory.VInventoryManager;
+import fr.maxlego08.menu.itemstack.ZItemStackService;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.nms.v1_21_R1.inventory.inventories.AnvilInventoryDefault;
@@ -121,6 +123,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final PatternManager patternManager;
     private final Enchantments enchantments;
     private final ItemManager itemManager;
+    private final ItemStackService itemStackService = new ZItemStackService(this);
     private final FoliaLib foliaLib;
     private final ComponentsManager componentsManager;
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
@@ -701,8 +704,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     }
 
     @Override
-    public MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
-        return this.inventoryManager.loadItemStack(configuration, path, file);
+    public ItemStackService getItemStackService() {
+        return this.itemStackService;
     }
 
     @Override

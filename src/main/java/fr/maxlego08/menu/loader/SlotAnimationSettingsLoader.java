@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.loader;
 
 import com.cryptomorin.xseries.XSound;
-import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.ZMenuKeys;
@@ -10,6 +9,7 @@ import fr.maxlego08.menu.api.animation.slot.SlotAnimation;
 import fr.maxlego08.menu.api.animation.slot.order.SequentialSlotAnimation;
 import fr.maxlego08.menu.api.animation.slot.settings.*;
 import fr.maxlego08.menu.api.animation.slot.settings.idle.ButtonIdleAnimation;
+import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.animation.slot.settings.idle.IdleFrame;
 import fr.maxlego08.menu.api.animation.slot.settings.item.AnimationKeyframe;
 import fr.maxlego08.menu.api.animation.slot.settings.item.ItemChoice;
@@ -64,11 +64,11 @@ public class SlotAnimationSettingsLoader {
             new SlotAnimationGroup(new SequentialSlotAnimation(), DEFAULT_INTERVAL, 1, 0);
 
     private final MenuPlugin plugin;
-    private final InventoryManager inventoryManager;
+    private final ItemStackService itemStackService;
 
     public SlotAnimationSettingsLoader(@NotNull MenuPlugin plugin) {
         this.plugin = plugin;
-        this.inventoryManager = plugin.getInventoryManager();
+        this.itemStackService = plugin.getItemStackService();
     }
 
     /**
@@ -341,7 +341,7 @@ public class SlotAnimationSettingsLoader {
                 duration = 0;
             }
             SoundOption frameSound = this.loadSound(configuration, framePath + "sound");
-            frames.add(new IdleFrame(this.inventoryManager.loadItemStack(configuration, framePath, file), duration, frameSound));
+            frames.add(new IdleFrame(this.itemStackService.load(configuration, framePath, file), duration, frameSound));
         }
         if (frames.isEmpty()) {
             Logger.info("The idle animation at " + reportAt + " has no item in " + file.getAbsolutePath(), Logger.LogType.ERROR);
@@ -371,7 +371,7 @@ public class SlotAnimationSettingsLoader {
             boolean hasItem = configuration.contains(itemPath + "item");
             if (!hasItem && choices.isEmpty()) return List.of();
 
-            MenuItemStack menuItemStack = hasItem ? this.inventoryManager.loadItemStack(configuration, itemPath + "item.", file) : null;
+            MenuItemStack menuItemStack = hasItem ? this.itemStackService.load(configuration, itemPath + "item.", file) : null;
             AnimationAnchor show = this.loadAnchor(configuration, itemPath + "show", AnimationAnchor.START, name, file);
             AnimationAnchor hide = this.loadAnchor(configuration, itemPath + "hide", AnimationAnchor.END, name, file);
             SoundOption sound = this.loadSound(configuration, itemPath + "sound");
@@ -401,7 +401,7 @@ public class SlotAnimationSettingsLoader {
             float frameChance = this.loadChance(configuration, framePath + "chance", name + "." + frameName, file);
             List<ItemChoice> frameChoices = this.loadChoices(configuration, framePath, file);
             if (!frameChoices.isEmpty()) {
-                MenuItemStack fallback = configuration.contains(framePath + "item") ? this.inventoryManager.loadItemStack(configuration, framePath + "item.", file) : null;
+                MenuItemStack fallback = configuration.contains(framePath + "item") ? this.itemStackService.load(configuration, framePath + "item.", file) : null;
                 frames.add(new AnimationKeyframe(at, fallback, sound, frameChance, frameChoices));
                 continue;
             }
@@ -410,7 +410,7 @@ public class SlotAnimationSettingsLoader {
                 Logger.info("Animation frame " + name + "." + frameName + " has no item, no choices and no remove: true in " + file.getAbsolutePath(), Logger.LogType.ERROR);
                 continue;
             }
-            frames.add(new AnimationKeyframe(at, this.inventoryManager.loadItemStack(configuration, framePath + "item.", file), sound, frameChance));
+            frames.add(new AnimationKeyframe(at, this.itemStackService.load(configuration, framePath + "item.", file), sound, frameChance));
         }
         return frames;
     }
@@ -564,7 +564,7 @@ public class SlotAnimationSettingsLoader {
         for (String name : section.getKeys(false)) {
             String choicePath = path + "choices." + name + ".";
             int weight = configuration.getInt(choicePath + "weight", 1);
-            choices.add(new ItemChoice(this.inventoryManager.loadItemStack(configuration, choicePath, file), weight));
+            choices.add(new ItemChoice(this.itemStackService.load(configuration, choicePath, file), weight));
         }
         return choices;
     }

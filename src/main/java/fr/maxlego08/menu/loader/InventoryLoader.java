@@ -301,7 +301,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 }
 
                 String type = configuration.getString(loadString + ".type", "full");
-                ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
+                ItemStackSimilar itemStackSimilar = this.plugin.getItemStackService().getVerification(type).orElseGet(FullSimilar::new);
 
                 inventory.setOpenWithItem(new OpenWithItem(loadedItem, actions, itemStackSimilar));
             }

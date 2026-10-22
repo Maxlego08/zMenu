@@ -394,7 +394,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
         if (button.getPlayerHead() != null && itemStack.getItemMeta() instanceof SkullMeta) {
             this.plugin.getScheduler().runAsync(w -> {
-                var updatedItemStack = this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, button, this.player, placeholders);
+                var updatedItemStack = this.plugin.getItemStackService().applyPlayerHead(itemStack, button, this.player, placeholders);
                 this.plugin.getScheduler().runAtEntity(this.player, w2 -> {
                     for (int slot : slots) {
                         if (slot < 0 || slot >= maxSlotSize) continue;

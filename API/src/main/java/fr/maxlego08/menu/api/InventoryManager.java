@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
+import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
@@ -503,7 +504,10 @@ public interface InventoryManager extends Listener {
      * @param itemStack The itemStack
      * @param name      The item name
      * @param type
+     * @deprecated the {@code /zm save} command, not meant to be called by other plugins; use
+     * {@link ItemStackService#fromItemStack(ItemStack)} to turn an item into a menu item.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void saveItem(CommandSender sender, ItemStack itemStack, String name, String type);
 
     /**
@@ -512,9 +516,13 @@ public interface InventoryManager extends Listener {
      *
      * @param itemStack The item to convert.
      * @return The menu item, and the components that forced the fallback.
+     * @deprecated use {@link ItemStackService#fromItemStack(ItemStack)}.
      */
     @NotNull
-    MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack) {
+        return this.getPlugin().getItemStackService().fromItemStack(itemStack);
+    }
 
     /**
      * Transforms a string list into a click list type.
@@ -532,8 +540,12 @@ public interface InventoryManager extends Listener {
      * This method allows for adding a new ItemStack verification strategy to the system.
      *
      * @param itemStackSimilar The ItemStackSimilar instance to be registered.
+     * @deprecated use {@link ItemStackService#registerVerification(ItemStackSimilar)}.
      */
-    void registerItemStackVerification(ItemStackSimilar itemStackSimilar);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
+        this.getPlugin().getItemStackService().registerVerification(itemStackSimilar);
+    }
 
     /**
      * Retrieves an Optional ItemStackSimilar instance based on its name.
@@ -542,8 +554,12 @@ public interface InventoryManager extends Listener {
      *
      * @param name The name of the ItemStack verification strategy to retrieve.
      * @return An Optional containing the ItemStackSimilar instance if found, or an empty Optional otherwise.
+     * @deprecated use {@link ItemStackService#getVerification(String)}.
      */
-    Optional<ItemStackSimilar> getItemStackVerification(String name);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default Optional<ItemStackSimilar> getItemStackVerification(String name) {
+        return this.getPlugin().getItemStackService().getVerification(name);
+    }
 
     /**
      * Returns a collection of all registered ItemStackSimilar instances.
@@ -551,8 +567,12 @@ public interface InventoryManager extends Listener {
      * The collection contains instances of ItemStackSimilar, each representing a different verification strategy.
      *
      * @return A Collection of ItemStackSimilar instances representing all registered verification strategies.
+     * @deprecated use {@link ItemStackService#getVerifications()}.
      */
-    Collection<ItemStackSimilar> getItemStackVerifications();
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default Collection<ItemStackSimilar> getItemStackVerifications() {
+        return this.getPlugin().getItemStackService().getVerifications();
+    }
 
     /**
      * Gets the scheduler associated with this button option.
@@ -694,9 +714,34 @@ public interface InventoryManager extends Listener {
 
     List<InventoryListener> getInventoryListeners();
 
-    ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player);
+    /**
+     * Gives a player head the skin of the player named by the {@code player-head} of a button.
+     *
+     * @param itemStack the head
+     * @param button    the button
+     * @param player    the player
+     * @return the head
+     * @deprecated use {@link ItemStackService#applyPlayerHead(ItemStack, Button, Player, Placeholders)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
+        return this.getPlugin().getItemStackService().applyPlayerHead(itemStack, button, player, new Placeholders());
+    }
 
-    ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders);
+    /**
+     * Gives a player head the skin of the player named by the {@code player-head} of a button.
+     *
+     * @param itemStack    the head
+     * @param button       the button
+     * @param player       the player
+     * @param placeholders the placeholders of the inventory
+     * @return the head
+     * @deprecated use {@link ItemStackService#applyPlayerHead(ItemStack, Button, Player, Placeholders)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders) {
+        return this.getPlugin().getItemStackService().applyPlayerHead(itemStack, button, player, placeholders);
+    }
 
     /**
      * Sends one of zMenu's messages.
@@ -734,8 +779,12 @@ public interface InventoryManager extends Listener {
      * @param path          the path within the configuration to load from.
      * @param file          the file from which the configuration was loaded, used for logging errors.
      * @return the loaded menu item stack.
+     * @deprecated use {@link ItemStackService#load(YamlConfiguration, String, File)}.
      */
-    MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
+        return this.getPlugin().getItemStackService().load(configuration, path, file);
+    }
 
     /**
      * Loads a menu item stack from a file, using the specified path and additional parameters.
@@ -750,10 +799,25 @@ public interface InventoryManager extends Listener {
      * @param map  A map of additional parameters or overrides for customizing the item stack.
      * @return The loaded MenuItemStack object.
      * <p>
+     * @deprecated the path is not used; use {@link ItemStackService#load(File, Map)}.
      */
-    MenuItemStack loadItemStack(File file, String path, Map<String, Object> map);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
+        return this.getPlugin().getItemStackService().load(file, map);
+    }
 
-    MenuItemStack loadItemStack(File file, Map<String, Object> map);
+    /**
+     * Loads a menu item stack from a map of its settings.
+     *
+     * @param file the file the map was read from
+     * @param map  the settings of the item
+     * @return the menu item stack
+     * @deprecated use {@link ItemStackService#load(File, Map)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(File file, Map<String, Object> map) {
+        return this.getPlugin().getItemStackService().load(file, map);
+    }
 
     /**
      * Provides access to the pagination manager for handling paginated content in inventories.
@@ -830,9 +894,29 @@ public interface InventoryManager extends Listener {
         }
     }
 
-    String serializeItemStack(ItemStack itemStack);
+    /**
+     * Writes an item as a base64 string.
+     *
+     * @param itemStack the item
+     * @return the item as base64
+     * @deprecated use {@link ItemStackService#serialize(ItemStack)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default String serializeItemStack(ItemStack itemStack) {
+        return this.getPlugin().getItemStackService().serialize(itemStack);
+    }
 
-    ItemStack deserializeItemStack(String serializedItemStack);
+    /**
+     * Reads an item written as a base64 string.
+     *
+     * @param serializedItemStack the item as base64
+     * @return the item
+     * @deprecated use {@link ItemStackService#deserialize(String)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default ItemStack deserializeItemStack(String serializedItemStack) {
+        return this.getPlugin().getItemStackService().deserialize(serializedItemStack);
+    }
 
     default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume) {
         return this.createSoundOption(soundName, categoryName, pitch, volume, false);

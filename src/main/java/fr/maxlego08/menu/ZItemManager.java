@@ -89,7 +89,7 @@ public class ZItemManager implements ItemManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         for (String itemId : config.getKeys(false)) {
             String path = itemId + ".";
-            MenuItemStack menuItemStack = this.menuPlugin.loadItemStack(config, path, file);
+            MenuItemStack menuItemStack = this.menuPlugin.getItemStackService().load(config, path, file);
             if (menuItemStack != null) {
                 Set<String> mechanicIds = new HashSet<>();
 

@@ -6,7 +6,6 @@ import fr.maxlego08.menu.animation.ZAnimationManager;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.annotations.*;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
@@ -37,19 +36,16 @@ import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
 import fr.maxlego08.menu.common.utils.ClickTypeParser;
-import fr.maxlego08.menu.common.utils.PlayerUtil;
 import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
-import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.loader.InventoryLoader;
-import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.BedrockLoader;
 import fr.maxlego08.menu.loader.actions.DialogLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
@@ -60,9 +56,7 @@ import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import net.kyori.adventure.key.Key;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -75,7 +69,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +98,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final ZMenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new ConcurrentHashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new ConcurrentHashMap<>();
-    private final Map<String, ItemStackSimilar> itemStackSimilarMap = new ConcurrentHashMap<>();
 
     private final Map<Key, Inventory> otherInventories = new ConcurrentHashMap<>();
 
@@ -177,23 +169,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
-        return new MenuItemStackLoader(this).load(configuration, path, file);
-    }
-
-    @Override
-    public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
-        return this.loadItemStack(file, map);
-    }
-
-    @Override
-    public MenuItemStack loadItemStack(File file, Map<String, Object> map) {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.createSection("item", map);
-        return new MenuItemStackLoader(this).load(configuration, "item.", file);
-    }
-
-    @Override
     public ZRegistryManager getRegistries() {
         return this.registries;
     }
@@ -206,16 +181,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public PaginationManager getPaginationManager() {
         return this.paginationManager;
-    }
-
-    @Override
-    public String serializeItemStack(ItemStack itemStack) {
-        return ItemStackUtils.serializeItemStack(itemStack);
-    }
-
-    @Override
-    public ItemStack deserializeItemStack(String serializedItemStack) {
-        return ItemStackUtils.deserializeItemStack(serializedItemStack);
     }
 
     @Override
@@ -696,7 +661,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         ClassRegistry<ItemStackSimilar, MenuPlugin> itemStackRegistry = ClassRegistry.
-                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, this::registerItemStackVerification)
+                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, this.plugin.getItemStackService()::registerVerification)
                 .tryNoArgsConstructor()
                 .errorLogger(Logger::error);
 
@@ -1012,7 +977,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         if (type.equalsIgnoreCase("yml")) {
-            MenuItemStackConversion conversion = this.toMenuItemStack(itemStack);
+            MenuItemStackConversion conversion = this.plugin.getItemStackService().fromItemStack(itemStack);
             conversion.menuItemStack().serialize(configuration.createSection("items." + name));
             if (!conversion.isReadable()) {
                 message(this.plugin, sender, Message.SAVE_BASE64_FALLBACK, "%name%", name, "%components%", String.join(", ", conversion.unsupportedComponents()));
@@ -1033,11 +998,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         message(this.plugin, sender, Message.SAVE_SUCCESS, "%name%", name);
 
-    }
-
-    @Override
-    public @NotNull MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack) {
-        return MenuItemStackFromItemStack.convert(this, itemStack);
     }
 
     @EventHandler
@@ -1065,20 +1025,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         return ClickTypeParser.parse(loadClicks);
     }
 
-    @Override
-    public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
-        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(Locale.ROOT), itemStackSimilar);
-    }
-
-    @Override
-    public Optional<ItemStackSimilar> getItemStackVerification(String name) {
-        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(Locale.ROOT), null));
-    }
-
-    @Override
-    public Collection<ItemStackSimilar> getItemStackVerifications() {
-        return this.itemStackSimilarMap.values();
-    }
 
     @Override
     public PlatformScheduler getScheduler() {
@@ -1205,41 +1151,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public List<InventoryListener> getInventoryListeners() {
         return this.inventoryListeners;
-    }
-
-    @Override
-    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        return this.postProcessSkullItemStack(itemStack, button, player, new fr.maxlego08.menu.api.utils.Placeholders());
-    }
-
-    @Override
-    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders) {
-
-        PerformanceDebug performanceDebug = PerformanceDebug.create("Skull item stack processing");
-
-        performanceDebug.start("papi");
-        String name = this.papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
-        performanceDebug.end();
-
-        if (!PlayerUtil.isValidMinecraftUsername(name)) {
-            performanceDebug.printSummary();
-            return itemStack;
-        }
-
-        performanceDebug.start("findOfflinePlayer");
-        OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
-        performanceDebug.end();
-
-        if (itemStack.getItemMeta() instanceof SkullMeta skullMeta) {
-            performanceDebug.start("applyOwnerProfile");
-            skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
-            itemStack.setItemMeta(skullMeta);
-            performanceDebug.end();
-        }
-
-        performanceDebug.printSummary();
-
-        return itemStack;
     }
 
     @Override
