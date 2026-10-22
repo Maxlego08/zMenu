@@ -14,7 +14,6 @@ paperDevBundle2612 = "26.1.2.build.+"
 paperDevBundle262 = "26.2.build.+"
 adventure-api = "4.26.1"
 adventure-text-minimessage = "4.26.1"
-item-nbt-api = "2.16.0"
 
 # Utilities / Libraries
 sarah = "1.26"
@@ -66,7 +65,6 @@ paperDevBundle2612 = { group = "io.papermc.paper", name = "dev-bundle", version.
 paperDevBundle262 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle262" }
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure-api" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure-text-minimessage" }
-item-nbt-api = { group = "de.tr7zw", name = "item-nbt-api", version.ref = "item-nbt-api" }
 
 # Utilities / Libraries
 sarah = { group = "fr.maxlego08.sarah", name = "sarah", version.ref = "sarah" }
