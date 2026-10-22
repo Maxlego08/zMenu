@@ -45,8 +45,8 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
         PatternManager patternManager = this.plugin.getPatternManager();
         patternManager.loadActionsPatterns();
         patternManager.loadPatterns();
+        inventoryManager.getAnimationManager().loadAnimations();
 
-        inventoryManager.deleteInventories(this.plugin);
         inventoryManager.loadInventories();
 
         CommandManager commandManager = this.plugin.getCommandManager();

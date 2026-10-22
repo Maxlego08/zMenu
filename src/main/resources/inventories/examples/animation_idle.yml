@@ -1,0 +1,161 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
+# ╔════════════════════════════════════════════════════════════════╗
+# ║                    INVENTORY-IDLE-ANIMATION                    ║
+# ╚════════════════════════════════════════════════════════════════╝
+#
+# An idle animation is not the opening of the menu: it keeps playing on
+# the slots of one button for as long as the menu stays open.
+#
+# There is no timeline, no group and no freeze. The button keeps working
+# throughout, and clicking it does what it always does.
+#
+# It waits for the opening animation to reveal its slot before starting,
+# so the two never fight over it.
+
+name: "&8Idle animation"
+size: 27
+
+open-animation:
+  type: HORIZONTAL_SNAKE
+  interval: 25
+
+items:
+
+  border:
+    type: NONE
+    slots:
+      - 0-8
+      - 9
+      - 17
+      - 18-26
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+
+  # Cycles forever, so this button keeps glowing while the menu is open.
+  featured:
+    type: NONE
+    slot: 13
+    idle-animation:
+      interval: 400
+      loop: true
+      random: true      # picks an item at random instead of going in order
+      items:
+        one:
+          material: DIAMOND
+          name: "&bFeatured"
+        two:
+          material: EMERALD
+          name: "&aFeatured"
+        three:
+          material: GOLD_INGOT
+          name: "&6Featured"
+    item:
+      material: DIAMOND
+      name: "&bFeatured"
+      lore:
+        - "&7Cycles three items for as long as the"
+        - "&7menu stays open. That is what `loop: true`"
+        - "&7means: it never stops on its own."
+
+  # Plays its items once when the menu opens, then goes back to the item
+  # of the button and stops. Watch it as the menu appears: clicking it
+  # does nothing, the cycle already happened.
+  attention:
+    type: NONE
+    slot: 11
+    idle-animation:
+      interval: 500
+      loop: false
+      items:
+        one:
+          material: GLOWSTONE
+          name: "&eLook here"
+        two:
+          material: TORCH
+          name: "&6Look here"
+        three:
+          material: REDSTONE_TORCH
+          name: "&cLook here"
+        four:
+          material: GLOWSTONE
+          name: "&eLook here"
+    item:
+      material: PAPER
+      name: "&fBack to normal"
+      lore:
+        - "&7Flashes for two seconds when the menu"
+        - "&7opens, then settles on this paper."
+        - ""
+        - "&8Reopen the menu to see it again."
+
+  # Every frame above lasts the same `interval`. A frame can also say how
+  # long it stays, and ring as it appears, which is what turns a cycle
+  # into a beat rather than a metronome.
+  heartbeat:
+    type: NONE
+    slot: 12
+    idle-animation:
+      interval: 500
+      loop: true
+      items:
+        resting:
+          material: REDSTONE_BLOCK
+          name: "&cHeartbeat"
+          duration: 1600      # sits still
+        beat:
+          material: REDSTONE_LAMP
+          name: "&cHeartbeat"
+          duration: 90        # then thumps twice
+          sound:
+            sound: BLOCK_NOTE_BLOCK_BASEDRUM
+            pitch: 0.7
+        gap:
+          material: REDSTONE_BLOCK
+          name: "&cHeartbeat"
+          duration: 110
+        beat_again:
+          material: REDSTONE_LAMP
+          name: "&cHeartbeat"
+          duration: 90
+          sound:
+            sound: BLOCK_NOTE_BLOCK_BASEDRUM
+            pitch: 0.6
+    item:
+      material: REDSTONE_BLOCK
+      name: "&cHeartbeat"
+      lore:
+        - "&7Each frame sets its own `duration`, so this"
+        - "&7one holds still and then thumps twice."
+        - ""
+        - "&7A frame may also carry a `sound`."
+
+  # The same cycle, out of the animations folder rather than written here.
+  # A pattern shares a whole button; this shares only the cycle, so two
+  # buttons that look nothing alike can still beat together.
+  shared:
+    type: NONE
+    slot: 14
+    idle-animation:
+      file: heartbeat
+      interval: 300     # anything written here overrides the shared file
+    item:
+      material: DIAMOND
+      name: "&bShared cycle"
+      lore:
+        - "&7This beat lives in `animations/heartbeat.yml`"
+        - "&7and is used by name, like any animation."
+        - ""
+        - "&7`files` and `extends` work here too."
+
+  plain:
+    type: NONE
+    slot: 15
+    item:
+      material: BOOK
+      name: "&fNo idle animation"

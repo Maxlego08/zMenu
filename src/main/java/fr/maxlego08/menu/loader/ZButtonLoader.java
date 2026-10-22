@@ -198,6 +198,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
         button.setPage(page);
 
+        SlotAnimationSettingsLoader animationLoader = new SlotAnimationSettingsLoader(this.plugin);
+        button.setAnimationSettings(animationLoader.loadButton(configuration, path, button.allowsTemporaryItems()));
+        button.setIdleAnimation(animationLoader.loadIdle(configuration, path, this.file));
+
         button.setPermanent(configuration.getBoolean(path + "isPermanent", configuration.getBoolean(path + "is-permanent", defaultButtonValue.isPermanent())));
         button.setUpdateOnClick(configuration.getBoolean(path + "updateOnClick", configuration.getBoolean(path + "update-on-click", defaultButtonValue.isUpdateOnClick())));
         button.setCloseInventory(configuration.getBoolean(path + "closeInventory", configuration.getBoolean(path + "close-inventory", defaultButtonValue.isCloseInventory())));

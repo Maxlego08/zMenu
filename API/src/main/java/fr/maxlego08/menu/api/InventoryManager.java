@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
+import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.GenericPaginationButton;
@@ -13,10 +14,15 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.RegistryManager;
+import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import net.kyori.adventure.key.Key;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,6 +32,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -113,11 +120,32 @@ public interface InventoryManager extends Listener {
     Inventory loadInventory(Plugin plugin, File file) throws InventoryException;
 
     /**
+     * Returns an inventory by its key, {@code plugin:file}.
+     *
+     * <p>Build the key with {@link ZMenuKeys#fileKey(String, String)}, or read a reference written
+     * by a user with {@link #findInventory(String)}.</p>
+     *
+     * @param key the key of the inventory
+     * @return Optional of {@link Inventory}.
+     */
+    Optional<Inventory> getInventory(@NotNull Key key);
+
+    /**
+     * Returns the keys of every loaded inventory.
+     *
+     * @return the keys, {@code plugin:file}
+     */
+    Set<Key> getInventoryKeys();
+
+    /**
      * Returns an optional of {@link Inventory} based on its name.
      *
      * @param name Inventory name.
      * @return Optional of {@link Inventory}.
+     * @deprecated a file name and the key of its inventory can differ (case, spaces). Use
+     * {@link #getInventory(Key)}, or {@link #findInventory(String)} for a name written by a user.
      */
+    @Deprecated(forRemoval = true)
     Optional<Inventory> getInventory(String name);
 
     /**
@@ -126,7 +154,9 @@ public interface InventoryManager extends Listener {
      * @param plugin The plugin where the inventory comes from.
      * @param name   Inventory name.
      * @return Optional of {@link Inventory}.
+     * @deprecated use {@link #getInventory(Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(forRemoval = true)
     Optional<Inventory> getInventory(Plugin plugin, String name);
 
     /**
@@ -135,7 +165,9 @@ public interface InventoryManager extends Listener {
      * @param pluginName The plugin name where the inventory comes from.
      * @param name       Inventory name.
      * @return Optional of {@link Inventory}.
+     * @deprecated use {@link #getInventory(Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(forRemoval = true)
     Optional<Inventory> getInventory(String pluginName, String name);
 
     /**
@@ -153,6 +185,15 @@ public interface InventoryManager extends Listener {
      */
     Collection<Inventory> getInventories(Plugin plugin);
 
+    /**
+     * Finds an inventory from a reference written by a user, in a file or a command:
+     * {@code plugin:file} is looked up exactly, while a plain {@code file} is looked up in zMenu
+     * first, then in the other plugins.
+     *
+     * @param inventoryName the reference
+     * @return Optional of {@link Inventory}.
+     * @see ZMenuKeys#inventoryKey(String)
+     */
     Optional<Inventory> findInventory(@NotNull String inventoryName);
 
     /**
@@ -163,11 +204,21 @@ public interface InventoryManager extends Listener {
     void deleteInventory(Inventory inventory);
 
     /**
+     * Deletes an inventory by its key.
+     *
+     * @param key the key of the inventory
+     * @return True if the inventory has been deleted.
+     */
+    boolean deleteInventory(@NotNull Key key);
+
+    /**
      * Deletes an inventory based on its name.
      *
      * @param name Inventory name.
      * @return True if the inventory has been deleted.
+     * @deprecated use {@link #deleteInventory(Key)}.
      */
+    @Deprecated(forRemoval = true)
     boolean deleteInventory(String name);
 
     /**
@@ -177,6 +228,11 @@ public interface InventoryManager extends Listener {
      */
     void deleteInventories(Plugin plugin);
 
+    /**
+     * @return the inventories as {@code plugin:file}, lowercased
+     * @deprecated use {@link #getInventoryKeys()}.
+     */
+    @Deprecated(forRemoval = true)
     Set<String> getInventoryNames();
 
     /**
@@ -260,12 +316,32 @@ public interface InventoryManager extends Listener {
     Collection<MaterialLoader> getMaterialLoader();
 
     /**
+     * Opens an inventory by its key. When it does not exist, the player's inventory is closed and
+     * they are told so.
+     *
+     * @param player Player who will open the inventory.
+     * @param key    the key of the inventory
+     */
+    void openInventory(Player player, @NotNull Key key);
+
+    /**
+     * Opens an inventory by its key, on a page.
+     *
+     * @param player Player who will open the inventory.
+     * @param key    the key of the inventory
+     * @param page   The page number of the inventory to open.
+     */
+    void openInventory(Player player, @NotNull Key key, int page);
+
+    /**
      * Opens an inventory based on its name and the plugin.
      *
      * @param player        Player who will open the inventory.
      * @param plugin        The plugin where the inventory comes from.
      * @param inventoryName Name of the inventory to be opened.
+     * @deprecated use {@link #openInventory(Player, Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(forRemoval = true)
     void openInventory(Player player, Plugin plugin, String inventoryName);
 
     /**
@@ -274,7 +350,9 @@ public interface InventoryManager extends Listener {
      * @param player        Player who will open the inventory.
      * @param pluginName    The plugin where the inventory comes from.
      * @param inventoryName Name of the inventory to be opened.
+     * @deprecated use {@link #openInventory(Player, Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(forRemoval = true)
     void openInventory(Player player, String pluginName, String inventoryName);
 
     /**
@@ -284,28 +362,33 @@ public interface InventoryManager extends Listener {
      * @param pluginName    The plugin where the inventory comes from.
      * @param inventoryName Name of the inventory to be opened.
      * @param page          The page number of the inventory to open.
+     * @deprecated use {@link #openInventory(Player, Key, int)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(forRemoval = true)
     void openInventory(Player player, String pluginName, String inventoryName, int page);
 
     /**
      * Opens an inventory based on its name. Note that
-     * this method searches in all inventories; it is more appropriate to use
-     * the method {@link #openInventory(Player, Plugin, String)}.
+     * this method searches in all inventories.
      *
      * @param player        Player who will open the inventory.
      * @param inventoryName Name of the inventory to be opened.
+     * @deprecated use {@link #openInventory(Player, Key)}, or {@link #findInventory(String)} for a
+     * name written by a user.
      */
+    @Deprecated(forRemoval = true)
     void openInventory(Player player, String inventoryName);
 
     /**
      * Opens an inventory based on its name and a specific page number.
-     * This method allows a player to view a particular page of an inventory,
-     * facilitating navigation through multi-page inventories.
      *
      * @param player        Player who will open the inventory.
      * @param inventoryName Name of the inventory to be opened.
      * @param page          The page number of the inventory to open.
+     * @deprecated use {@link #openInventory(Player, Key, int)}, or {@link #findInventory(String)}
+     * for a name written by a user.
      */
+    @Deprecated(forRemoval = true)
     void openInventory(Player player, String inventoryName, int page);
 
     /**
@@ -624,5 +707,145 @@ public interface InventoryManager extends Listener {
      * @see PaginationManager
      */
     PaginationManager getPaginationManager();
+
+    /**
+     * Gets the manager holding the animations of the {@code animations} folder.
+     *
+     * <p>Use it to fetch an animation by name, or to register one of your own:</p>
+     *
+     * <pre>
+     * inventoryManager.getAnimationManager().registerAnimation(new Animation("my_animation", settings));
+     * </pre>
+     *
+     * @return The animation manager.
+     * @see AnimationManager
+     */
+    AnimationManager getAnimationManager();
+
+    /**
+     * Gets every registry of zMenu, such as the animations an inventory may use as its {@code type}.
+     *
+     * <p>Read an entry, and register your own from your {@code onEnable}:</p>
+     *
+     * <pre>
+     * inventoryManager.getRegistries().registry(Registries.SLOT_ANIMATION).get(ZMenuKeys.key("spiral"));
+     * inventoryManager.getRegistries().writable(Registries.MY_REGISTRY).register(plugin, myEntry);
+     * </pre>
+     *
+     * <p>Static registries stop accepting entries once the server has finished loading.</p>
+     *
+     * @return The registries.
+     * @see fr.maxlego08.menu.api.registry.Registries
+     */
+    RegistryManager getRegistries();
+
+    /**
+     * Registers an animation menus may use as their {@code type}, under its key and its aliases.
+     * Call it from your {@code onEnable}:
+     *
+     * <pre>
+     * inventoryManager.registerSlotAnimation(plugin, new MyAnimationLoader());
+     * </pre>
+     *
+     * @param plugin the plugin registering it, shown when two animations share a name
+     * @param loader the loader
+     * @throws fr.maxlego08.menu.api.registry.RegistrationException if a name is taken, or the server has finished loading
+     */
+    default void registerSlotAnimation(@NotNull Plugin plugin, @NotNull SlotAnimationLoader loader) {
+        WritableRegistry<SlotAnimationLoader> registry = this.getRegistries().writable(Registries.SLOT_ANIMATION);
+        registry.register(plugin, loader);
+        for (Key alias : loader.aliases()) {
+            registry.alias(plugin.getName(), alias, loader.key());
+        }
+    }
+
+    /**
+     * Returns whether the opening animation of an inventory has already been played for a player
+     * since they connected.
+     *
+     * <p>Only used by {@link fr.maxlego08.menu.api.animation.slot.AnimationPlayMode#ONCE}.</p>
+     *
+     * @param player       The player.
+     * @param animationKey The key identifying the inventory.
+     * @return true if the animation has already been played.
+     */
+    default boolean hasPlayedAnimation(@NotNull Player player, @NotNull String animationKey) {
+        return false;
+    }
+
+    /**
+     * Remembers that the opening animation of an inventory has been played for a player.
+     *
+     * @param player       The player.
+     * @param animationKey The key identifying the inventory.
+     */
+    default void markAnimationPlayed(@NotNull Player player, @NotNull String animationKey) {
+    }
+
+    /**
+     * Forgets every animation played for a player, when they disconnect.
+     *
+     * @param uniqueId The unique id of the player.
+     */
+    default void clearPlayedAnimations(@NotNull UUID uniqueId) {
+    }
+
+    /**
+     * Reads back which animations a player has already seen, when they join.
+     *
+     * <p>Called once per connection. The rows are fetched off the main thread and kept in memory,
+     * so that opening a menu never waits on the database.</p>
+     *
+     * @param player The player.
+     */
+    default void loadAnimationHistory(@NotNull Player player) {
+    }
+
+    /**
+     * When a player last saw an animation that remembers itself beyond the session.
+     *
+     * <p>Answered from memory: the rows are read once when the player joins, because a menu opens
+     * far too often to ask the database each time.</p>
+     *
+     * @param player       The player.
+     * @param animationKey The key identifying the inventory.
+     * @return the time it last played in milliseconds since the epoch, or null if it never has.
+     */
+    @Nullable
+    default Long getAnimationPlayedAt(@NotNull Player player, @NotNull String animationKey) {
+        return null;
+    }
+
+    /**
+     * Whether what a player has already seen is known yet.
+     *
+     * <p>False for the short moment between joining and the rows coming back, during which an
+     * animation that only plays once is held back rather than risking spending its single play.</p>
+     *
+     * @param player The player.
+     * @return true once the player's history is in memory.
+     */
+    default boolean isAnimationHistoryLoaded(@NotNull Player player) {
+        return true;
+    }
+
+    /**
+     * Remembers that an animation has played, in the database as well as in memory.
+     *
+     * @param player       The player.
+     * @param animationKey The key identifying the inventory.
+     * @param playedAt     When it played, in milliseconds since the epoch.
+     */
+    default void markAnimationPlayedForever(@NotNull Player player, @NotNull String animationKey, long playedAt) {
+    }
+
+    /**
+     * Forgets that a player has seen an animation, so one that only plays once plays again.
+     *
+     * @param uniqueId     The unique id of the player.
+     * @param animationKey The animation to forget, or null to forget all of them.
+     */
+    default void forgetPlayedAnimation(@NotNull UUID uniqueId, @Nullable String animationKey) {
+    }
 
 }

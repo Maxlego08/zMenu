@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -269,7 +270,7 @@ public class ZDialogManager implements DialogManager, Listener {
             return;
         }
 
-        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(fallback.plugin(), fallback.inventoryName());
+        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(ZMenuKeys.fileKey(fallback.plugin(), fallback.inventoryName()));
         if (optional.isEmpty()) {
             this.menuPlugin.getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", dialogInventory.getFileName(), "%toName%", fallback.inventoryName(), "%plugin%", fallback.plugin());
             return;

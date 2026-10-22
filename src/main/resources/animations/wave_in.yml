@@ -1,0 +1,23 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+#
+# A second shared animation, to show that this folder can hold as many as
+# you like. Use it from any inventory with:
+#
+#   open-animation:
+#     file: wave_in
+#
+# A diagonal sweep running backwards, so it arrives from the bottom right
+# corner instead of the top left one.
+
+type: WAVE
+reverse: true
+interval: 35
+slots-per-step: 2
+freeze: true
+play: ALWAYS
+
+sound:
+  sound: BLOCK_NOTE_BLOCK_CHIME
+  pitch: 1.5
+  volume: 0.35

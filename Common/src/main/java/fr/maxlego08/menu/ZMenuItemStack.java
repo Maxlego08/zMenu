@@ -1043,31 +1043,47 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private Color getColor(MapConfiguration configuration, String key, Color def) {
-        String[] split = configuration.getString(key, "").split(",");
-
-        if (split.length == 3) {
-            return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        } else if (split.length == 4) {
-            return Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
-        }
-
-        return def;
+        Color color = parseColor(configuration.getString(key, ""), key);
+        return color == null ? def : color;
     }
 
     private List<Color> getColors(MapConfiguration section, String key) {
         List<Color> colors = new ArrayList<>();
 
         for (String color : section.getStringList(key)) {
-            String[] split = color.split(",");
-
-            if (split.length == 3) {
-                colors.add(Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
-            } else if (split.length == 4) {
-                colors.add(Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3])));
-            }
+            Color parsed = parseColor(color, key);
+            if (parsed != null) colors.add(parsed);
         }
 
         return colors;
+    }
+
+    /**
+     * Parses an {@code r,g,b} or {@code a,r,g,b} colour.
+     * <p>
+     * Neither the number parsing nor {@link Color#fromRGB(int, int, int)}, which rejects anything
+     * outside 0-255, may throw here: a single typo would otherwise abort the whole item build.
+     *
+     * @return the colour, or {@code null} when the value is missing or malformed.
+     */
+    private static Color parseColor(String value, String key) {
+        if (value == null || value.isBlank()) return null;
+
+        String[] split = value.split(",");
+        if (split.length != 3 && split.length != 4) return null;
+
+        try {
+            int[] parts = new int[split.length];
+            for (int index = 0; index != split.length; index++) {
+                parts[index] = Integer.parseInt(split[index].trim());
+            }
+            return split.length == 3
+                    ? Color.fromRGB(parts[0], parts[1], parts[2])
+                    : Color.fromARGB(parts[0], parts[1], parts[2], parts[3]);
+        } catch (IllegalArgumentException exception) {
+            Logger.info("Color " + value + " is not valid at " + key + ", expected numbers between 0 and 255.", Logger.LogType.ERROR);
+            return null;
+        }
     }
 
     public Map<String, String> getTranslatedDisplayName() {

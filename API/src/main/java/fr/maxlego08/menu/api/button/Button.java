@@ -3,6 +3,8 @@ package fr.maxlego08.menu.api.button;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.animation.slot.settings.ButtonAnimationSettings;
+import fr.maxlego08.menu.api.animation.slot.settings.idle.ButtonIdleAnimation;
 import fr.maxlego08.menu.api.engine.AnvilInventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.Pagination;
@@ -60,6 +62,8 @@ public abstract class Button extends PlaceholderButton {
     private RefreshRequirement refreshRequirement;
     private int priority; // only use for convert DeluxeMenus config to zmenu object
     private boolean isInPlayerInventory;
+    private ButtonAnimationSettings animationSettings = ButtonAnimationSettings.DEFAULT;
+    private ButtonIdleAnimation idleAnimation;
 
     @Contract(pure = true)
     @Nullable
@@ -549,6 +553,66 @@ public abstract class Button extends PlaceholderButton {
 
     public void setRefreshRequirement(@Nullable RefreshRequirement refreshRequirement) {
         this.refreshRequirement = refreshRequirement;
+    }
+
+    /**
+     * Returns how this button takes part in the opening animation of its inventory.
+     *
+     * @return the animation settings, never null
+     */
+    @Contract(pure = true)
+    @NotNull
+    public ButtonAnimationSettings getAnimationSettings() {
+        if (this.animationSettings == ButtonAnimationSettings.DEFAULT && !this.allowsTemporaryItems()) {
+            return ButtonAnimationSettings.NOT_COVERABLE;
+        }
+        return this.animationSettings;
+    }
+
+    /**
+     * Returns the animation this button plays on its own slots for as long as the menu stays open.
+     *
+     * @return the idle animation, or null if it has none
+     */
+    @Contract(pure = true)
+    @Nullable
+    public ButtonIdleAnimation getIdleAnimation() {
+        return this.idleAnimation;
+    }
+
+    /**
+     * Sets the animation this button plays on its own slots for as long as the menu stays open.
+     *
+     * @param idleAnimation the idle animation, or null for none
+     */
+    public void setIdleAnimation(@Nullable ButtonIdleAnimation idleAnimation) {
+        this.idleAnimation = idleAnimation;
+    }
+
+    /**
+     * Returns whether a temporary item of an animation may be drawn over the slots of this button.
+     *
+     * <p>Buttons refuse by default: an animation drawing over a button hides it, and on a button
+     * holding something a player can take it could hand out an item that was only ever decoration.
+     * A button that is safe to cover, or that a placeholder is useful on, overrides this.</p>
+     *
+     * <p>This is the default the configuration starts from: a file may still set
+     * {@code animation.allow-temporary-items} either way for a button of its own.</p>
+     *
+     * @return true if a temporary item may cover this button
+     */
+    @Contract(pure = true)
+    public boolean allowsTemporaryItems() {
+        return false;
+    }
+
+    /**
+     * Sets how this button takes part in the opening animation of its inventory.
+     *
+     * @param animationSettings the animation settings, null resets it to the default
+     */
+    public void setAnimationSettings(@Nullable ButtonAnimationSettings animationSettings) {
+        this.animationSettings = animationSettings == null ? ButtonAnimationSettings.DEFAULT : animationSettings;
     }
 
     @Contract(pure = true)

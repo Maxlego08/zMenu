@@ -35,6 +35,7 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
         this.addSubCommand(new CommandDumplog(plugin));
         this.addSubCommand(new CommandContributors(plugin));
         this.addSubCommand(new CommandMenuGiveItem(plugin));
+        this.addSubCommand(new CommandMenuAnimationReset(plugin));
         this.addSubCommand(new CommandMenuWebsite(plugin));
 
         if (plugin.getDialogManager() != null) {

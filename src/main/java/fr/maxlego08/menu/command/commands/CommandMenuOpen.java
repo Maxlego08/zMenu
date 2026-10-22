@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
+import net.kyori.adventure.key.Key;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
@@ -34,7 +35,7 @@ public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
         this.inventoryManager = plugin.getInventoryManager();
 
         this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            this.inventoryManager.getInventoryNames().stream().filter(entry ->
+            this.inventoryManager.getInventoryKeys().stream().map(Key::asString).filter(entry ->
                             entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase())
                     )
                     .forEach(builder::suggest);

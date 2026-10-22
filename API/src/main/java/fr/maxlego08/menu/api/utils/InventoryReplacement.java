@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 
 import java.util.List;
-import java.util.Objects;
 
 public record InventoryReplacement(String inventoryName, String plugin, List<Integer> pages) {
     public InventoryReplacement(String inventoryName, String plugin, List<Integer> pages) {
@@ -14,12 +14,7 @@ public record InventoryReplacement(String inventoryName, String plugin, List<Int
 
     public boolean shouldTrigger(Inventory inventory, int page) {
 
-        // Inventory Name
-        if (!Objects.equals(this.inventoryName, inventory.getFileName())) {
-            return false;
-        }
-        // Plugin Name
-        if (!Objects.equals(this.plugin, inventory.getPlugin().getName())) {
+        if (this.inventoryName == null || !inventory.key().equals(ZMenuKeys.fileKey(this.plugin, this.inventoryName))) {
             return false;
         }
 

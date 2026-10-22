@@ -1,0 +1,56 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+#
+# A shared IDLE animation: a cycle a button plays on its own slots for as
+# long as the menu stays open, rather than a way of opening a menu.
+#
+# Use it from any button with:
+#
+#   items:
+#     featured:
+#       slot: 13
+#       idle-animation:
+#         file: heartbeat
+#       item:
+#         material: DIAMOND
+#
+# A button may still override anything next to `file`, exactly like an
+# opening animation:
+#
+#   idle-animation:
+#     file: heartbeat
+#     interval: 200       # a faster beat than this file asks for
+#
+# That is the difference from a pattern: a pattern shares the whole button,
+# this shares only the cycle, so two buttons that look nothing alike can
+# still beat together.
+
+interval: 400
+loop: true
+
+items:
+
+  # Sits still, then blinks twice: a duration per frame is what makes a
+  # cycle read as a beat rather than a metronome.
+  resting:
+    material: DIAMOND
+    name: "&bFeatured"
+    duration: 2000
+
+  beat:
+    material: GLOWSTONE
+    name: "&bFeatured"
+    duration: 90
+    sound:
+      sound: BLOCK_NOTE_BLOCK_PLING
+      pitch: 2.0
+
+  rest:
+    material: DIAMOND
+    name: "&bFeatured"
+    duration: 110
+
+  beat_again:
+    material: GLOWSTONE
+    name: "&bFeatured"
+    duration: 90

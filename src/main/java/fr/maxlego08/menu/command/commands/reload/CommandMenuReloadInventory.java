@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.command.commands.reload;
 
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -23,7 +24,7 @@ public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_RELOAD_INVENTORY.getPermission());
 
         this.addOptionalArgument(Commands.argument("menu", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            plugin.getInventoryManager().getInventoryNames().stream()
+            plugin.getInventoryManager().getInventoryKeys().stream().map(Key::asString)
                     .filter(entry -> entry.startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);
             return builder.buildFuture();
@@ -56,7 +57,6 @@ public class CommandMenuReloadInventory extends SubCommand<ZMenuPlugin> {
         }
 
         this.plugin.getVInventoryManager().close();
-        inventoryManager.deleteInventories(this.plugin);
         inventoryManager.loadInventories();
         MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD_INVENTORY, "%inventories%", inventoryManager.getInventories(this.plugin).size());
         return CommandResultType.SUCCESS;

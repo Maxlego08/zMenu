@@ -18,6 +18,11 @@ java {
     sourceCompatibility = JavaVersion.VERSION_25
 }
 
+tasks.test {
+    // Each test class boots zMenu with MockBukkit, and some of its helpers can only be set up once per JVM.
+    forkEvery = 1
+}
+
 paperweight {
     addServerDependencyTo = configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).map { setOf(it) }
 }

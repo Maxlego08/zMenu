@@ -12,6 +12,8 @@ import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
@@ -29,7 +31,19 @@ import java.util.Map;
  * Documentation: <a href="https://docs.zmenu.dev/api/create-inventory">Inventory documentation</a>
  * <p>This class encapsulates information about an inventory, including its size, buttons, patterns, and associated requirements.</p>
  */
-public interface Inventory {
+public interface Inventory extends Keyed {
+
+    /**
+     * Returns the key of the inventory: the name of its plugin and its file name, lowercased, with
+     * every character a key cannot hold replaced by "_".
+     *
+     * @return the key
+     * @see ZMenuKeys#fileKey(String, String)
+     */
+    @Override
+    default @NotNull Key key() {
+        return ZMenuKeys.fileKey(this.getPlugin().getName(), this.getFileName());
+    }
 
     /**
      * Returns the size of the inventory.
@@ -88,6 +102,9 @@ public interface Inventory {
 
     /**
      * Returns the name of the file associated with the inventory.
+     *
+     * <p>Use it to display or store the inventory, not to identify it: the case is kept, so it can
+     * differ from {@link #key()}. Compare and look up inventories with {@link #key()}.</p>
      *
      * @return The file name. This name is the name of the configuration file.
      */

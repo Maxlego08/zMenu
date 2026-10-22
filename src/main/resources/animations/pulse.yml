@@ -1,0 +1,47 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+#
+# A shared animation made only of temporary items: it draws over the menu
+# without hiding anything, so it is the kind of animation an action plays
+# on a menu that is already open.
+#
+#   open-animation:
+#     file: pulse
+#
+# Remember that a button refuses to be covered unless it says otherwise,
+# with `animation.allow-temporary-items: true`.
+
+type: SEQUENTIAL
+interval: 40
+freeze: false
+
+temporary-items:
+
+  pulse:
+    slots:
+      - 10-16
+    frames:
+      flash_on:
+        at: start
+        item:
+          material: REDSTONE_BLOCK
+          name: "&c"
+        sound:
+          sound: BLOCK_NOTE_BLOCK_BASS
+          pitch: 0.8
+          volume: 0.5
+      flash_off:
+        at: 200
+        remove: true
+      again:
+        at: 350
+        item:
+          material: REDSTONE_BLOCK
+          name: "&c"
+        sound:
+          sound: BLOCK_NOTE_BLOCK_BASS
+          pitch: 1.2
+          volume: 0.5
+      done:
+        at: 550
+        remove: true

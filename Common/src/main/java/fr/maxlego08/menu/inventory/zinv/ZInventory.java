@@ -3,6 +3,7 @@ package fr.maxlego08.menu.inventory.zinv;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
+import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.PaginateButton;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -41,6 +42,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     private Map<String, String> translatedNames = new HashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
+    private boolean fillItemUseCache = true;
     private int updateInterval;
     private File file;
     private boolean clearInventory;
@@ -52,6 +54,8 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     private InventoryType type = InventoryType.CHEST;
     private String targetPlayerNamePlaceholder = null;
     private TitleAnimation titleAnimation;
+    private SlotAnimationSettings slotAnimation;
+    private SlotAnimationSettings closeAnimation;
     private List<Action> openActions = new ArrayList<>();
     private List<Action> closeActions = new ArrayList<>();
 
@@ -341,6 +345,16 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     }
 
     @Override
+    public boolean isFillItemUseCache() {
+        return this.fillItemUseCache;
+    }
+
+    @Override
+    public void setFillItemUseCache(boolean fillItemUseCache) {
+        this.fillItemUseCache = fillItemUseCache;
+    }
+
+    @Override
     public void setFillItemStack(MenuItemStack fillItemStack) {
         this.fillItemStack = fillItemStack;
     }
@@ -442,6 +456,26 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     @Override
     public TitleAnimation getTitleAnimation() {
         return this.titleAnimation;
+    }
+
+    @Override
+    public SlotAnimationSettings getSlotAnimation() {
+        return this.slotAnimation;
+    }
+
+    @Override
+    public void setSlotAnimation(SlotAnimationSettings slotAnimation) {
+        this.slotAnimation = slotAnimation;
+    }
+
+    @Override
+    public SlotAnimationSettings getCloseAnimation() {
+        return this.closeAnimation;
+    }
+
+    @Override
+    public void setCloseAnimation(SlotAnimationSettings closeAnimation) {
+        this.closeAnimation = closeAnimation;
     }
 
     @Override

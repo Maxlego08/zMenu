@@ -1,0 +1,177 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
+# ╔════════════════════════════════════════════════════════════════╗
+# ║                   INVENTORY-RANDOM-ANIMATION                   ║
+# ╚════════════════════════════════════════════════════════════════╝
+#
+# Everything an animation can leave to chance, in one menu. Open it a few
+# times: it should not look the same twice.
+#
+# `chance` is a percentage everywhere, like the chance of an action:
+# 100 always happens and is the default, 0 never does.
+#
+# Every roll is taken once, when the menu opens. An item that wins its
+# roll stays for all of its keyframes rather than flickering.
+
+name: "&8Random animation"
+size: 27
+
+open-animation:
+  type: HORIZONTAL_SNAKE
+  interval: 30
+  freeze: true
+
+  # Each step lands up to 12ms either side of its scheduled time, so the
+  # reveal reads as organic rather than mechanical.
+  interval-jitter: 12
+
+  # The whole animation could be made rare with `chance: 20`. Left at the
+  # default here, or this example would usually do nothing.
+  chance: 100
+
+  # Where the randomness comes from. `random` rolls afresh every open, which
+  # is the default and what this example wants. `seed: player` would give
+  # each player their own version of this menu, the same every time they
+  # open it, and a number gives everyone the same one.
+  seed: random
+
+  temporary-items:
+
+    # ── A scatter ────────────────────────────────────────────────────
+    # `chance-per-slot` makes every slot decide for itself, and pick its
+    # own item, so the same six slots light up differently every time.
+    #
+    # Without it, one roll decides for the whole item: all six slots
+    # show the same thing, or none of them do.
+    sparks:
+      slots:
+        - 10-12
+        - 14-16
+      chance: 45
+      chance-per-slot: true
+      show: start
+      hide: group:1.end
+      choices:
+        redstone:
+          material: REDSTONE_BLOCK
+          name: "&c"
+        emerald:
+          material: EMERALD_BLOCK
+          name: "&a"
+          weight: 3       # three times as likely as the redstone
+        gold:
+          material: GOLD_BLOCK
+          name: "&6"
+          weight: 2
+
+    # ── An item that is simply rare ──────────────────────────────────
+    # One roll for the whole item: it covers the middle slot one open in
+    # five, and is not there at all the rest of the time.
+    treasure:
+      slot: 22
+      chance: 20
+      show: 150
+      hide: 700
+      item:
+        material: NETHER_STAR
+        name: "&eLucky open"
+      sound:
+        sound: BLOCK_NOTE_BLOCK_BELL
+        # Two values pick a pitch inside that range on every play.
+        pitch:
+          - 1.6
+          - 2.0
+
+    # ── A frame that may or may not happen ───────────────────────────
+    # The item always appears and always goes away; only the middle
+    # frame is a coin flip, so it either fades through orange or does
+    # not. A frame with `remove: true` never takes a chance: an item
+    # that might not be removed would be left in the finished menu.
+    beacon:
+      slot: 4
+      frames:
+        white:
+          at: start
+          item:
+            material: WHITE_STAINED_GLASS_PANE
+            name: " "
+        orange:
+          at: 200
+          chance: 50
+          item:
+            material: ORANGE_STAINED_GLASS_PANE
+            name: " "
+        gone:
+          at: 500
+          remove: true
+
+items:
+
+  border:
+    type: NONE
+    slots:
+      - 0-3
+      - 5-8
+      - 9
+      - 17
+      - 18-21
+      - 23-26
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+
+  # The slots the scatter draws on. Buttons refuse to be covered unless
+  # they say otherwise.
+  canvas:
+    type: NONE
+    slots:
+      - 10-12
+      - 14-16
+    animation:
+      allow-temporary-items: true
+    item:
+      material: LIGHT_GRAY_STAINED_GLASS_PANE
+      name: " "
+
+  # An idle cycle picking at random rather than going in order, so a
+  # short list never quite repeats.
+  flicker:
+    type: NONE
+    slot: 22
+    animation:
+      allow-temporary-items: true
+    idle-animation:
+      interval: 500
+      loop: true
+      random: true
+      items:
+        one:
+          material: LANTERN
+          name: "&eFlicker"
+        two:
+          material: SOUL_LANTERN
+          name: "&bFlicker"
+        three:
+          material: TORCH
+          name: "&6Flicker"
+    item:
+      material: LANTERN
+      name: "&eFlicker"
+
+  # An action may take a chance too, straight from the action system.
+  gamble:
+    type: NONE
+    slot: 13
+    item:
+      material: SUNFLOWER
+      name: "&eOne in three"
+      lore:
+        - "&7Plays the pulse animation, sometimes."
+    actions:
+      - type: animation
+        file: pulse
+        chance: 33

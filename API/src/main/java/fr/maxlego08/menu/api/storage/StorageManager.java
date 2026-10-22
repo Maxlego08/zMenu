@@ -6,8 +6,10 @@ import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,4 +43,34 @@ public interface StorageManager extends Listener {
     Set<String> getVisitedWorlds(@NotNull UUID playerId);
 
     void markWorldVisited(@NotNull UUID playerId, @NotNull String worldName);
+
+    /**
+     * Reads back when a player last saw each animation that remembers itself.
+     *
+     * <p>This hits the database, so it must not be called from the main thread. It is meant to be
+     * loaded once when the player joins and kept in memory afterwards, because a menu opens far
+     * too often to ask the database each time.</p>
+     *
+     * @param playerId the player
+     * @return the time each animation last played, in milliseconds since the epoch
+     */
+    @NotNull
+    Map<String, Long> loadPlayedAnimations(@NotNull UUID playerId);
+
+    /**
+     * Records that a player has just seen an animation.
+     *
+     * @param playerId     the player
+     * @param animationKey the animation, as the inventory identifies it
+     * @param playedAt     when it played, in milliseconds since the epoch
+     */
+    void markAnimationPlayed(@NotNull UUID playerId, @NotNull String animationKey, long playedAt);
+
+    /**
+     * Forgets that a player has seen an animation, so one that only plays once plays again.
+     *
+     * @param playerId     the player
+     * @param animationKey the animation to forget, or null to forget all of them
+     */
+    void clearPlayedAnimations(@NotNull UUID playerId, @Nullable String animationKey);
 }

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.inventory.setter;
 
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -19,6 +20,8 @@ public interface ContainerInventorySetter extends ContainerInventory {
     void setCancelItemPickup(boolean ItemPickupDisabled);
 
     void setFillItemStack(MenuItemStack fillItemStack);
+
+    void setFillItemUseCache(boolean fillItemUseCache);
 
     void setUpdateInterval(int updateInterval);
 
@@ -43,4 +46,8 @@ public interface ContainerInventorySetter extends ContainerInventory {
     void setClickLimiterEnabled(boolean enabled);
 
     void setClearInvType(ClearInvType clearInvType);
+
+    void setSlotAnimation(SlotAnimationSettings slotAnimation);
+
+    void setCloseAnimation(SlotAnimationSettings closeAnimation);
 }

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.button.buttons;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.InventoryButton;
@@ -54,7 +55,7 @@ public class ZInventoryButton extends InventoryButton {
         Inventory fromInventory = inventory.getMenuInventory();
         List<Inventory> oldInventories = inventory.getOldInventories();
 
-        Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.getInventory(this.inventoryName) : this.inventoryManager.getInventory(this.pluginName, this.inventoryName);
+        Optional<Inventory> optional = this.pluginName == null ? this.inventoryManager.findInventory(this.inventoryName) : this.inventoryManager.getInventory(ZMenuKeys.fileKey(this.pluginName, this.inventoryName));
         if (optional.isEmpty()) {
             player.closeInventory();
             inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventoryName, "%plugin%", this.pluginName == null ? "zMenu" : this.pluginName);

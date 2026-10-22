@@ -50,7 +50,8 @@ public enum Permission {
 
     ZMENU_BEDROCK,
     ZMENU_ADDONS,
-    ZMENU_DOCUMENTATION, ZMENU_WEBSITE;
+    ZMENU_DOCUMENTATION, ZMENU_WEBSITE,
+    ZMENU_ANIMATION_RESET;
 
 	private final String permission;
 

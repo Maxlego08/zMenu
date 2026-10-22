@@ -27,6 +27,16 @@ public interface BaseInventory extends InventoryHolder {
     @Contract(pure = true)
     boolean isClose();
 
+    /**
+     * Returns whether this inventory currently ignores every click, for instance while its opening
+     * animation plays.
+     *
+     * @return true if the inventory is frozen
+     */
+    default boolean isFrozen() {
+        return false;
+    }
+
     @Contract("_, null -> null; _, !null -> !null")
     @Nullable
     ItemButton addItem(int slot, @Nullable ItemStack itemStack);

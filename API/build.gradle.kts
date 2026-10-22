@@ -1,10 +1,20 @@
 plugins {
     alias(libs.plugins.groupez.publish)
+    `java-test-fixtures`
 }
 
 dependencies{
     compileOnly(libs.adventure.api)
     compileOnly(libs.adventure.text.minimessage)
+
+    testImplementation(libs.paper.api)
+    testFixturesCompileOnly(libs.paper.api)
+}
+
+// The test fixtures are shared with the tests of other modules, they are not published.
+(components["java"] as AdhocComponentWithVariants).apply {
+    withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
+    withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 }
 
 rootProject.extra.properties["sha"]?.let { sha ->

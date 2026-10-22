@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
@@ -33,7 +34,7 @@ public class CommandMenuGiveOpenItem extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_GIVE_OPEN_ITEM.getPermission());
 
         this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            this.inventoryManager.getInventoryNames().stream().filter(entry -> entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
+            this.inventoryManager.getInventoryKeys().stream().map(Key::asString).filter(entry -> entry.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);
             return builder.buildFuture();
         }));

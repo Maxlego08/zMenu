@@ -59,11 +59,7 @@ public class CommandInventory extends VCommand {
     private Optional<Inventory> getInventoryByName(String inventoryName) {
         if (inventoryName == null) return Optional.empty();
 
-        InventoryManager manager = this.plugin.getInventoryManager();
-        if (inventoryName.contains(":")) {
-            String[] values = inventoryName.split(":");
-            return manager.getInventory(values[0], values[1]);
-        } else return manager.getInventory(inventoryName);
+        return this.plugin.getInventoryManager().findInventory(inventoryName);
     }
 
     @Override

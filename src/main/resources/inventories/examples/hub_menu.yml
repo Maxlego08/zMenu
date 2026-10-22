@@ -1,0 +1,226 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
+# ╔════════════════════════════════════════════════════════════════╗
+# ║                          HUB MENU                              ║
+# ╚════════════════════════════════════════════════════════════════╝
+#
+# A menu of the kind a server actually ships, animated the way one
+# should be: the animation supports the menu, it is not the point of it.
+#
+# Three decisions worth copying:
+#
+#   play: ONCE       players open a hub menu dozens of times a day. It
+#                    animates the first time they see it in a session and
+#                    opens instantly after that, so it never gets in the
+#                    way of someone who just wants the shop.
+#
+#   two groups       the frame draws itself quickly, then the buttons
+#                    arrive from the middle. Roughly half a second in
+#                    total: long enough to notice, short enough to be
+#                    over before anyone reaches for the mouse.
+#
+#   one idle accent  a single button breathes, to pull the eye to the
+#                    thing the server wants clicked. More than one and
+#                    the menu looks restless.
+
+name: "&8» &6Server &8«"
+size: 45
+
+open-with-item:
+  material: COMPASS
+  left-click: true
+  right-click: true
+
+open-animation:
+  # The frame.
+  type: SPIRAL
+  interval: 18
+  freeze: true
+  play: ONCE
+
+  sound:
+    sound: BLOCK_NOTE_BLOCK_HAT
+    pitch:
+      - 1.7
+      - 2.0
+    volume: 0.25
+
+  start-actions:
+    - type: sound
+      sound: BLOCK_CHEST_OPEN
+      pitch: 1.5
+      volume: 0.4
+
+  groups:
+    # The buttons, once the frame is done.
+    2:
+      type: FROM_CENTER
+      interval: 55
+      delay: 80
+      sound:
+        sound: BLOCK_NOTE_BLOCK_HARP
+        pitch:
+          - 1.1
+          - 1.5
+        volume: 0.35
+
+  temporary-items:
+    # The middle of the menu would otherwise sit empty while the frame
+    # draws itself. These panes fill it, then hand the slots back as the
+    # buttons arrive.
+    loading:
+      slots:
+        - 11
+        - 13
+        - 15
+        - 21
+        - 23
+        - 31
+      show: start
+      hide: group:2
+      item:
+        material: GRAY_STAINED_GLASS_PANE
+        name: "&8..."
+
+items:
+
+  frame:
+    type: NONE
+    slots:
+      - 0-8
+      - 9
+      - 17
+      - 18
+      - 26
+      - 27
+      - 35
+      - 36-44
+    animation:
+      group: 1
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+
+  profile:
+    slot: 13
+    player-head: "%player_name%"
+    animation:
+      group: 2
+      allow-temporary-items: true
+    item:
+      material: PLAYER_HEAD
+      name: "&6%player_name%"
+      lore:
+        - "&8Your profile"
+        - ""
+        - "&7Rank &8• &f%vault_rank%"
+        - "&7Balance &8• &f%vault_eco_balance_formatted%"
+        - "&7Playtime &8• &f%statistic_time_played%"
+
+  shop:
+    slot: 11
+    animation:
+      group: 2
+      allow-temporary-items: true
+    item:
+      material: EMERALD
+      name: "&aShop"
+      lore:
+        - "&8Buy and sell"
+        - ""
+        - "&7Click to browse the shop."
+    actions:
+      - type: inventory
+        inventory: shop
+        plugin: zMenu
+
+  warps:
+    slot: 15
+    animation:
+      group: 2
+      allow-temporary-items: true
+    item:
+      material: ENDER_PEARL
+      name: "&bWarps"
+      lore:
+        - "&8Travel"
+        - ""
+        - "&7Click to open the warp list."
+    actions:
+      - type: player command
+        commands:
+          - "warps"
+      - type: close
+
+  kits:
+    slot: 21
+    animation:
+      group: 2
+      allow-temporary-items: true
+    item:
+      material: CHEST
+      name: "&eKits"
+      lore:
+        - "&8Free gear"
+        - ""
+        - "&7Click to see what you can claim."
+    actions:
+      - type: player command
+        commands:
+          - "kits"
+      - type: close
+
+  # The one button that keeps moving. It cycles slowly, so it reads as a
+  # highlight rather than as flashing.
+  vote:
+    slot: 23
+    animation:
+      group: 2
+      allow-temporary-items: true
+    idle-animation:
+      interval: 900
+      loop: true
+      items:
+        one:
+          material: DIAMOND
+          name: "&bVote"
+        two:
+          material: EMERALD
+          name: "&aVote"
+    item:
+      material: DIAMOND
+      name: "&bVote"
+      lore:
+        - "&8Rewards"
+        - ""
+        - "&7Vote once a day for a reward."
+        - "&7You have &f%votingplugin_points% &7points."
+    actions:
+      - type: player command
+        commands:
+          - "vote"
+      - type: close
+
+  discord:
+    slot: 31
+    animation:
+      group: 2
+      allow-temporary-items: true
+    item:
+      material: HEART_OF_THE_SEA
+      name: "&9Discord"
+      lore:
+        - "&8Community"
+        - ""
+        - "&7Click for the invite link."
+    actions:
+      - type: message
+        messages:
+          - ""
+          - " &9Discord &8• &7https://discord.gg/your-server"
+          - ""
+      - type: close

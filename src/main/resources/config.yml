@@ -176,6 +176,18 @@ all-clicks-type:
 # Caching helps improve performance by reducing object creation.
 enable-cache-item-stack: true
 
+# Longest an opening or closing animation may last, in milliseconds.
+# A longer one still plays, but is reported in the console and never freezes the menu,
+# so a mistyped interval cannot lock a player out of their menu.
+max-animation-duration: 10000
+
+# From how many idle-animation buttons a menu drives them all from one shared timer.
+# Below this, each idle button gets a task of its own, which keeps every frame exact to the tick.
+# At or above it, the menu uses a single task per viewer, however many buttons cycle,
+# and frames land on the next tick (only noticeable for durations that are not a multiple of 50 ms).
+# Lower it on a busy server with many idle buttons; 0 always shares, a very large value never does.
+shared-idle-timer-threshold: 8
+
 # Enable click cooldown.
 # Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.
 enable-cooldown-click: true

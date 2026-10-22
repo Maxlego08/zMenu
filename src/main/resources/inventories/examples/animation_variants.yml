@@ -1,0 +1,108 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+# Online editor: https://minecraft-inventory-builder.com/
+#
+# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+
+# ╔════════════════════════════════════════════════════════════════╗
+# ║                  INVENTORY-ANIMATION-VARIANTS                  ║
+# ╚════════════════════════════════════════════════════════════════╝
+#
+# One menu, several animations, one picked each time it opens.
+#
+# `chance` decides whether the animation plays at all; `variants` decides
+# which one plays when it does. A menu can be rare and varied at once.
+
+name: "&8Animation variants"
+size: 27
+
+open-animation:
+
+  # Where the randomness comes from:
+  #   random   a fresh roll every open, the default
+  #   player   the same roll every time for a given player, so each of
+  #            them always gets their own version of this menu
+  #   42       the same for everyone, handy while designing
+  #
+  # Try `seed: player` and reopen: the variant will not change again.
+  seed: random
+
+  # Played four opens out of five; the fifth simply shows the menu.
+  chance: 80
+
+  # One of these is picked when it plays. `weight` defaults to 1, so the
+  # sweep is twice as likely as either of the others.
+  variants:
+
+    spiral:
+      type: SPIRAL
+      interval: 25
+      interval-jitter: 10
+      sound:
+        sound: BLOCK_NOTE_BLOCK_HAT
+        # Two values pick a pitch inside that range on every play, so the
+        # same sound repeated does not grate.
+        pitch:
+          - 1.4
+          - 2.0
+        volume: 0.4
+
+    sweep:
+      # A variant may name a shared animation instead of describing one,
+      # and override whatever it wants next to it.
+      file: wave_in
+      weight: 2
+      interval: 30
+
+    rings:
+      type: MATRIX
+      interval: 70
+      matrix:
+        - "111111111"
+        - "122222221"
+        - "111111111"
+
+  temporary-items:
+
+    # `count` asks for exactly three of these slots, wherever they fall,
+    # rather than a chance on each of them. `chance-per-slot` would give
+    # a spread: sometimes one, sometimes six.
+    pips:
+      slots:
+        - 10-16
+      count: 3
+      show: start
+      hide: 500
+      choices:
+        amethyst:
+          material: AMETHYST_SHARD
+          name: "&d"
+        quartz:
+          material: QUARTZ
+          name: "&f"
+          weight: 2
+
+items:
+
+  border:
+    type: NONE
+    slots:
+      - 0-8
+      - 9
+      - 17
+      - 18-26
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+
+  # The row the pips land on. Buttons refuse to be covered unless they
+  # say otherwise.
+  row:
+    type: NONE
+    slots:
+      - 10-16
+    animation:
+      allow-temporary-items: true
+    item:
+      material: LIGHT_GRAY_STAINED_GLASS_PANE
+      name: " "

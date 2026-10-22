@@ -105,6 +105,24 @@ public class Configuration {
     )
     public static boolean enableFastEvent = false;
 
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Max animation duration in milliseconds",
+            startRange = 1000,
+            endRange = 60000,
+            stepRange = 500
+    )
+    public static int maxAnimationDuration = 10000;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Idle buttons before sharing one timer",
+            startRange = 0,
+            endRange = 54,
+            stepRange = 1
+    )
+    public static int sharedIdleTimerThreshold = 8;
+
     // Seconds save player data: The time in seconds for automatic backup of player data.
     @ConfigOption(
             type = DialogInputType.NUMBER_RANGE,
@@ -422,6 +440,8 @@ public class Configuration {
         allClicksType = clickTypes;
 
         enableCacheItemStack = fileConfiguration.getBoolean(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath());
+        maxAnimationDuration = fileConfiguration.getInt(ConfigPath.MAX_ANIMATION_DURATION.getPath(), 10000);
+        sharedIdleTimerThreshold = Math.max(0, fileConfiguration.getInt(ConfigPath.SHARED_IDLE_TIMER_THRESHOLD.getPath(), 8));
         enableCooldownClick = fileConfiguration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath());
         cooldownClickMilliseconds = fileConfiguration.getLong(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath());
 
@@ -501,6 +521,8 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ALL_CLICKS_TYPE.getPath(), clickTypeNames);
 
         fileConfiguration.set(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath(), enableCacheItemStack);
+        fileConfiguration.set(ConfigPath.MAX_ANIMATION_DURATION.getPath(), maxAnimationDuration);
+        fileConfiguration.set(ConfigPath.SHARED_IDLE_TIMER_THRESHOLD.getPath(), sharedIdleTimerThreshold);
         fileConfiguration.set(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), enableCooldownClick);
         fileConfiguration.set(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath(), cooldownClickMilliseconds);
         fileConfiguration.set(ConfigPath.CACHE_PLACEHOLDER_API.getPath(), cachePlaceholderAPI);
@@ -557,6 +579,8 @@ public class Configuration {
         ALL_CLICKS_TYPE("all-clicks-type"),
 
         ENABLE_CACHE_ITEM_STACK("enable-cache-item-stack"),
+        MAX_ANIMATION_DURATION("max-animation-duration"),
+        SHARED_IDLE_TIMER_THRESHOLD("shared-idle-timer-threshold"),
         ENABLE_COOLDOWN_CLICK("enable-cooldown-click"),
         COOLDOWN_CLICK_MILLISECONDS("cooldown-click-milliseconds"),
 

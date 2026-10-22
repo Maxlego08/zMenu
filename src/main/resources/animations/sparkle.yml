@@ -1,0 +1,41 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+#
+# A shared scatter: no motion of its own, just a handful of slots lighting
+# up differently every time. Use it on its own, or merged on top of a
+# motion:
+#
+#   open-animation:
+#     files:
+#       - fancy_open
+#       - sparkle
+#
+# Remember that a button refuses to be covered unless it says otherwise,
+# with `animation.allow-temporary-items: true`.
+
+type: SEQUENTIAL
+interval: 40
+freeze: false
+
+temporary-items:
+
+  sparkle:
+    slots:
+      - 0-53
+    # Each slot decides for itself, so about one in eight lights up, and
+    # each picks its own item.
+    chance: 12
+    chance-per-slot: true
+    show: start
+    hide: 500
+    choices:
+      white:
+        material: WHITE_STAINED_GLASS_PANE
+        name: " "
+      yellow:
+        material: YELLOW_STAINED_GLASS_PANE
+        name: " "
+        weight: 2
+      glow:
+        material: GLOWSTONE
+        name: " "
