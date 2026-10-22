@@ -71,6 +71,7 @@
 ## Fixes
 
 * The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
+* `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
 
 ## Internal Changes
 
