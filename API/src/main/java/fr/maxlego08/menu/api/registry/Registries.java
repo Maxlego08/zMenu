@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 
 public final class Registries {
@@ -29,6 +30,11 @@ public final class Registries {
      * The button types a menu can use, by their {@code type}: {@code next}, {@code inventory}...
      */
     public static final RegistryType<ButtonLoader> BUTTON = RegistryType.createOpen(ZMenuKeys.key("button"), ButtonLoader.class);
+
+    /**
+     * The item rule types, by their {@code type}: {@code material}, {@code tag}, {@code and}...
+     */
+    public static final RegistryType<RuleLoader> RULE = RegistryType.createOpen(ZMenuKeys.key("rule"), RuleLoader.class);
 
     private Registries() {
     }

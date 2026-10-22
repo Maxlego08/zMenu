@@ -224,7 +224,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.addListener(this.storageManager);
 
 
-        ZRuleLoaderRegistry.getInstance().registerDefaultLoaders(this);
+        ZRuleLoaderRegistry.registerDefaultLoaders(this);
         this.componentsManager.initializeDefaultComponents(this);
 
         List<String> files = this.getInventoriesFiles();

@@ -53,7 +53,7 @@ public class ItemDragLoader extends ButtonLoader {
         }
         ConfigurationSection ruleSection = configuration.getConfigurationSection(path + "rule");
         if (ruleSection != null) {
-            Rule rule = ZRuleLoaderRegistry.getInstance().loadRule(ruleSection.getValues(true));
+            Rule rule = ZRuleLoaderRegistry.loadRule(ruleSection.getValues(true));
             if (rule == null || !rule.isValid()) {
                 Logger.info("The rule of the item_drag button " + path + " in " + defaultButtonValue.getFile().getName() + " is invalid, the button will refuse every item.", Logger.LogType.WARNING);
                 rule = context -> false;
