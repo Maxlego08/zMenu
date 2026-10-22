@@ -68,6 +68,10 @@
 * Menus of other plugins stay available by name after `/zm reload`.
 * `deleteInventory(String)` now returns `true` when it deleted a menu.
 
+## Fixes
+
+* The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
+
 ## Internal Changes
 
 * Added typed registries (`RegistryManager`, `Registries`): namespaced keys, an owner for every entry, duplicates refused, static registries frozen once the server has loaded, and reloadable registries rebuilt and swapped as a whole. zMenu's own menus now live in the `Registries.INVENTORY` registry.
