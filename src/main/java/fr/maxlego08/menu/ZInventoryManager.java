@@ -60,7 +60,6 @@ import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
-import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -94,7 +93,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
-    private static final String INVENTORY_OWNER = "zmenu";
     private final PaginationManager paginationManager = new ZPaginationManager();
     private final AnimationManager animationManager;
     private final ZRegistryManager registries = new ZRegistryManager();
@@ -127,7 +125,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         super();
         this.plugin = plugin;
         this.animationManager = new ZAnimationManager(plugin, this.registries);
-        this.registries.provider(Registries.INVENTORY, INVENTORY_OWNER, this::provideInventories);
+        this.registries.provider(Registries.INVENTORY, ZMenuKeys.NAMESPACE, this::provideInventories);
     }
 
     @Override
@@ -270,7 +268,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (inventory == null) return null;
 
         if (plugin == this.plugin) {
-            ReloadReport report = this.registries.update(Registries.INVENTORY, INVENTORY_OWNER, editor -> {
+            ReloadReport report = this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> {
                 editor.remove(inventory.key());
                 editor.register(inventory);
                 editor.onPublish(() -> this.inventoryLoaded(plugin, file, inventory));
@@ -526,7 +524,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void deleteInventory(Inventory inventory) {
         if (inventory.getPlugin() == this.plugin) {
-            this.logReport(this.registries.update(Registries.INVENTORY, INVENTORY_OWNER, editor -> {
+            this.logReport(this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> {
                 if (editor.previous().get(inventory.key()).orElse(null) == inventory) editor.remove(inventory.key());
             }));
             return;
@@ -582,7 +580,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void deleteInventories(Plugin plugin) {
         if (plugin == this.plugin) {
-            this.logReport(this.registries.update(Registries.INVENTORY, INVENTORY_OWNER, editor -> editor.previous().keys().forEach(editor::remove)));
+            this.logReport(this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> editor.previous().keys().forEach(editor::remove)));
             return;
         }
 
