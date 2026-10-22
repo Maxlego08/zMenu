@@ -681,18 +681,21 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     }
 
     @Override
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public boolean isPaper() {
-        return this.foliaLib.isPaper();
+        return true;
     }
 
     @Override
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public boolean isPaperOrFolia() {
-        return this.foliaLib.isPaper() || this.foliaLib.isFolia();
+        return true;
     }
 
     @Override
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public boolean isSpigot() {
-        return this.foliaLib.isSpigot();
+        return false;
     }
 
     @Override

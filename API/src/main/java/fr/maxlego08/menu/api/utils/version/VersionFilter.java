@@ -3,7 +3,6 @@ package fr.maxlego08.menu.api.utils.version;
 import fr.maxlego08.menu.api.annotations.*;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
-import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.ReflectionsCache;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
@@ -19,10 +18,7 @@ public class VersionFilter {
     }
 
     public static boolean passes(@NotNull Class<?> clazz) {
-        if (clazz.isAnnotationPresent(PaperOnly.class) && !PlatformType.isPaper()) {
-            return false;
-        }
-        if (clazz.isAnnotationPresent(SpigotOnly.class) && PlatformType.isPaper()) {
+        if (clazz.isAnnotationPresent(SpigotOnly.class)) {
             return false;
         }
 

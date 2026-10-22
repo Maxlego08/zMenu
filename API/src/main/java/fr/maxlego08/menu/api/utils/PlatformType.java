@@ -1,5 +1,11 @@
 package fr.maxlego08.menu.api.utils;
 
+/**
+ * The server platform.
+ *
+ * @deprecated zMenu only runs on Paper and its forks, so the platform is always {@link #PAPER}.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public enum PlatformType {
     /**
      * Paper server with native Adventure API support.
