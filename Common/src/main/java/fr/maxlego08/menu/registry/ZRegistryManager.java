@@ -40,6 +40,7 @@ public final class ZRegistryManager implements RegistryManager {
         this.create(Registries.ANIMATION);
         this.create(Registries.PERMISSIBLE);
         this.create(Registries.ACTION);
+        this.create(Registries.BUTTON);
     }
 
     /**

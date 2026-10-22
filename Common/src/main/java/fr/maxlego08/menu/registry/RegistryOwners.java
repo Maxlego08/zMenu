@@ -48,8 +48,22 @@ public final class RegistryOwners {
      * @return whether the entry was registered
      */
     public static <T extends Keyed> boolean registerLegacy(@NotNull WritableRegistry<T> registry, @NotNull T value, @NotNull Collection<Key> aliases) {
+        return registerLegacy(registry, of(value), value, aliases);
+    }
+
+    /**
+     * Registers an entry under its key and aliases for a known owner, logging a clash instead of
+     * throwing it.
+     *
+     * @param registry the registry
+     * @param owner    the name of the plugin registering it
+     * @param value    the entry
+     * @param aliases  the other names of the entry
+     * @return whether the entry was registered
+     */
+    public static <T extends Keyed> boolean registerLegacy(@NotNull WritableRegistry<T> registry, @NotNull String owner, @NotNull T value, @NotNull Collection<Key> aliases) {
         try {
-            registry.register(of(value), value, aliases);
+            registry.register(owner, value, aliases);
             return true;
         } catch (RegistrationException exception) {
             Logger.info(exception.getMessage(), Logger.LogType.WARNING);

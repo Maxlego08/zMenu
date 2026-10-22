@@ -4,13 +4,12 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.checker.InventoryRequirementType;
-import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
+import fr.maxlego08.menu.api.registry.KeyedRegistry;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
@@ -39,7 +38,6 @@ import java.util.*;
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
     private final ZMenuPlugin plugin;
-    private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
 
     public ZButtonManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
@@ -47,99 +45,44 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void register(@NonNull ButtonLoader button) {
-
-        ButtonLoader existingLoader = null;
-        for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
-            for (ButtonLoader loader : buttonLoaders) {
-                // Check if name matches
-                if (loader.getName().equalsIgnoreCase(button.getName())) {
-                    existingLoader = loader;
-                    break;
-                }
-                // Check if any alias matches
-                for (String alias : loader.getAliases()) {
-                    if (alias.equalsIgnoreCase(button.getName())) {
-                        existingLoader = loader;
-                        break;
-                    }
-                }
-                // Check if any of the new button's aliases conflict with existing loader names/aliases
-                for (String newAlias : button.getAliases()) {
-                    if (loader.getName().equalsIgnoreCase(newAlias)) {
-                        existingLoader = loader;
-                        break;
-                    }
-                    for (String existingAlias : loader.getAliases()) {
-                        if (existingAlias.equalsIgnoreCase(newAlias)) {
-                            existingLoader = loader;
-                            break;
-                        }
-                    }
-                }
-                if (existingLoader != null) {
-                    break;
-                }
-            }
-            if (existingLoader != null) {
-                break;
-            }
-        }
-        if (existingLoader != null) {
-            throw new ButtonAlreadyRegisterException("Button " + button.getName() + " was already register in the " + existingLoader.getPlugin().getName());
-        }
-
-        Plugin plugin = button.getPlugin();
-        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
-        buttonLoaders.add(button);
-        this.loaders.put(plugin.getName(), buttonLoaders);
-
-        this.plugin.getInventoryManager().loadElement(InventoryRequirementType.BUTTON, button.getName());
+        RegistryOwners.registerLegacy(this.registries().writable(Registries.BUTTON), button.getPlugin().getName(), button, button.aliases());
     }
 
     @Override
     public void unregister(@NotNull ButtonLoader button) {
-        String pluginName = button.getPlugin().getName();
-        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(pluginName, new ArrayList<>());
-        buttonLoaders.remove(button);
-        this.loaders.put(pluginName, buttonLoaders);
+        if (this.registries().registry(Registries.BUTTON).containsValue(button)) {
+            this.registries().writable(Registries.BUTTON).unregister(button.key());
+        }
     }
 
     @Override
     public void unregisters(@NotNull Plugin plugin) {
-        this.loaders.remove(plugin.getName());
+        this.registries().writable(Registries.BUTTON).unregisterAll(plugin);
     }
 
     @Override
     public @NonNull Collection<ButtonLoader> getLoaders() {
-        List<ButtonLoader> flattened = new ArrayList<>();
-        for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
-            flattened.addAll(buttonLoaders);
-        }
-        return flattened;
+        return this.registries().registry(Registries.BUTTON).values();
     }
 
     @Override
     public @NotNull Collection<ButtonLoader> getLoaders(@NotNull Plugin plugin) {
-        return this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
+        KeyedRegistry<ButtonLoader> registry = this.registries().registry(Registries.BUTTON);
+        return registry.stream().filter(loader -> registry.owner(loader.key()).filter(plugin.getName()::equals).isPresent()).toList();
     }
 
     @Override
     public @NotNull Optional<ButtonLoader> getLoader(String name) {
-        Set<String> seenNames = new HashSet<>();
-        for (ButtonLoader loader : this.getLoaders()) {
-            if (loader.getName().equalsIgnoreCase(name)) {
-                return Optional.of(loader);
-            }
-            for (String alias : loader.getAliases()) {
-                if (alias.equalsIgnoreCase(name)) {
-                    return Optional.of(loader);
-                }
-            }
-            seenNames.add(loader.getName());
-            seenNames.addAll(loader.getAliases());
+        Key id = name == null ? null : ZMenuKeys.tryParse(name);
+        KeyedRegistry<ButtonLoader> registry = this.registries().registry(Registries.BUTTON);
+        Optional<ButtonLoader> loader = id == null ? Optional.empty() : registry.get(id);
+        if (loader.isEmpty()) {
+            Set<String> names = new TreeSet<>();
+            registry.keys().forEach(key -> names.add(key.value()));
+            registry.aliases().keySet().forEach(key -> names.add(key.value()));
+            Logger.info("Button " + name + " not found. Available buttons: " + String.join(", ", names), Logger.LogType.ERROR);
         }
-        Logger.info("Button " + name + " not found. Available buttons: " + String.join(", ", seenNames), Logger.LogType.ERROR);
-        return Optional.empty();
+        return loader;
     }
 
     @Override

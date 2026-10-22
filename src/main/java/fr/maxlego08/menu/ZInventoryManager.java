@@ -110,10 +110,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.registries.provider(Registries.INVENTORY, ZMenuKeys.NAMESPACE, this::provideInventories);
         this.registries.onRegister(Registries.PERMISSIBLE, key -> this.loadWaitingInventories(InventoryRequirementType.PERMISSIBLE, key));
         this.registries.onRegister(Registries.ACTION, key -> this.loadWaitingInventories(InventoryRequirementType.ACTION, key));
+        this.registries.onRegister(Registries.BUTTON, key -> this.loadWaitingInventories(InventoryRequirementType.BUTTON, key));
     }
 
     private void registerAction(ActionLoader loader) {
         this.registries.writable(Registries.ACTION).register(this.plugin, loader, loader.aliases());
+    }
+
+    private void registerButton(ButtonLoader loader) {
+        this.registries.writable(Registries.BUTTON).register(loader.getPlugin(), loader, loader.aliases());
     }
 
     /**
@@ -650,12 +655,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // NoneLoader
-        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
-        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
-        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
+        this.registerButton(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
+        this.registerButton(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
+        this.registerButton(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
 
         ClassRegistry<ButtonLoader, MenuPlugin> buttonRegistry = ClassRegistry.
-                <ButtonLoader, MenuPlugin>of(ButtonLoader.class, buttonManager::register)
+                <ButtonLoader, MenuPlugin>of(ButtonLoader.class, this::registerButton)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor(((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin)))
                 .tryNoArgsConstructor()

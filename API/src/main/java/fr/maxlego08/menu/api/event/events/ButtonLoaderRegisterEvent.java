@@ -49,7 +49,11 @@ public class ButtonLoaderRegisterEvent extends MenuEvent {
      * Register a ButtonLoader
      *
      * @param button the button to register
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#BUTTON} from your
+     * {@code onEnable}; this event is no longer needed to register button types.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     public void register(@NotNull ButtonLoader button) {
         this.buttonManager.register(button);
     }

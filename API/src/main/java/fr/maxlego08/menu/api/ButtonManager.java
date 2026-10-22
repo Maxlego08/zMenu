@@ -37,21 +37,30 @@ public interface ButtonManager {
      * Registers a new {@link ButtonLoader} responsible for button creation.
      *
      * @param button The {@link ButtonLoader} instance to register.
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#BUTTON}:
+     * {@code registries.writable(Registries.BUTTON).register(plugin, loader, loader.aliases())}, which
+     * throws on a name already taken instead of logging it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void register(@NotNull ButtonLoader button);
 
     /**
      * Unregisters an existing {@link ButtonLoader}, ceasing its button creation responsibilities.
      *
      * @param button The {@link ButtonLoader} instance to unregister.
+     * @deprecated use {@code registries.writable(Registries.BUTTON).unregister(loader.key())}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregister(@NotNull ButtonLoader button);
 
     /**
      * Unregisters all {@link ButtonLoader} instances linked to a specific plugin.
      *
      * @param plugin The plugin whose loaders should be unregistered.
+     * @deprecated a plugin's button types are removed when it disables; to remove them earlier use
+     * {@code registries.writable(Registries.BUTTON).unregisterAll(plugin)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisters(@NotNull Plugin plugin);
 
     /**
@@ -67,8 +76,11 @@ public interface ButtonManager {
      *
      * @param plugin The plugin whose loaders are to be retrieved.
      * @return A collection of {@link ButtonLoader} instances or an empty collection if none are found.
+     * @deprecated read {@link fr.maxlego08.menu.api.registry.Registries#BUTTON} and its
+     * {@link fr.maxlego08.menu.api.registry.KeyedRegistry#owner(net.kyori.adventure.key.Key) owners}.
      */
     @NotNull
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Collection<ButtonLoader> getLoaders(@NotNull Plugin plugin);
 
     /**

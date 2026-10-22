@@ -2,6 +2,12 @@ package fr.maxlego08.menu.api.exceptions;
 
 import java.io.Serial;
 
+/**
+ * @deprecated no longer thrown: a button type registered twice is refused by
+ * {@link fr.maxlego08.menu.api.registry.Registries#BUTTON} with a
+ * {@link fr.maxlego08.menu.api.registry.RegistrationException}.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public class ButtonAlreadyRegisterException extends Error {
 
     /**

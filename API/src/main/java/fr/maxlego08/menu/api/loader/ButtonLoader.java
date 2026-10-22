@@ -1,7 +1,10 @@
 package fr.maxlego08.menu.api.loader;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
@@ -27,7 +30,7 @@ import java.util.stream.IntStream;
  * For example, if your plugin is called "test" and your button is called "magic", the name should be 'test_magic'.
  * You can then return a new instance of your button with the essential elements initialized.
  */
-public abstract class ButtonLoader {
+public abstract class ButtonLoader implements Keyed {
 
     protected final Plugin plugin;
     protected final String name;
@@ -97,6 +100,26 @@ public abstract class ButtonLoader {
     @NotNull
     public List<String> getAliases() {
         return Collections.unmodifiableList(this.aliases);
+    }
+
+    /**
+     * The key of this button type in {@link fr.maxlego08.menu.api.registry.Registries#BUTTON}, read
+     * from {@link #getName()} like a {@code type} written in a file.
+     *
+     * @return the key
+     */
+    @Override
+    public @NotNull Key key() {
+        return ZMenuKeys.parse(this.name);
+    }
+
+    /**
+     * {@link #getAliases()} read like the key.
+     *
+     * @return the other names, as keys
+     */
+    public @NotNull List<Key> aliases() {
+        return this.aliases.stream().map(ZMenuKeys::parse).toList();
     }
 
     /**
