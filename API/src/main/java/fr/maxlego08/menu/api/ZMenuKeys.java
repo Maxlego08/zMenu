@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api;
 
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -37,7 +38,7 @@ public final class ZMenuKeys {
      * @return the key
      */
     public static @NotNull Key fileKey(@NotNull String namespace, @NotNull String fileName) {
-        return Key.key(sanitize(namespace), sanitize(fileName));
+        return Key.key(sanitize(namespace, false), sanitize(fileName, false));
     }
 
     /**
@@ -67,33 +68,49 @@ public final class ZMenuKeys {
 
     /**
      * Lowercases a name and replaces every character a key cannot hold with "_", so that a file
-     * named {@code My Shop} is {@code my_shop}.
+     * named {@code My Shop} is {@code my_shop}. A value may also hold "/", a namespace may not.
      */
-    private static String sanitize(String name) {
+    private static String sanitize(String name, boolean value) {
         String lower = name.trim().toLowerCase(Locale.ROOT);
         StringBuilder builder = new StringBuilder(lower.length());
         for (int index = 0; index < lower.length(); index++) {
             char character = lower.charAt(index);
-            boolean valid = (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9') || character == '_' || character == '-' || character == '.';
+            boolean valid = (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9') || character == '_' || character == '-' || character == '.'
+                    || (value && character == '/');
             builder.append(valid ? character : '_');
         }
         return builder.isEmpty() ? "_" : builder.toString();
     }
 
     /**
-     * Reads a key written in a file or a command. The case is ignored and "-" is read as "_".
-     * Without a namespace, the key belongs to {@link #NAMESPACE}: {@code spiral} is
+     * Reads a key written in a file or a command. The case is ignored, and "-" and spaces are read
+     * as "_": {@code Play Animation}, {@code play-animation} and {@code play_animation} are the same
+     * key. Without a namespace, the key belongs to {@link #NAMESPACE}: {@code spiral} is
      * {@code zmenu:spiral}, while {@code myplugin:spiral} keeps its own namespace.
+     *
+     * <p>Any name gives a key, so the names plugins used before the registries keep working: every
+     * other character a key cannot hold, such as {@code +}, {@code !}, an accent or a second
+     * {@code :}, is read as "_" too, so {@code Shop+Buy} is {@code zmenu:shop_buy}. The same name
+     * always gives the same key, both when it is registered and when a file names it.</p>
      *
      * @param input the text to read
      * @return the key
-     * @throws net.kyori.adventure.key.InvalidKeyException if the text is not a valid key
      */
     public static @NotNull Key parse(@NotNull String input) {
-        String text = input.trim().toLowerCase(Locale.ROOT);
+        String text = input.trim();
         int separator = text.indexOf(':');
-        String namespace = separator < 0 ? NAMESPACE : text.substring(0, separator);
-        String value = text.substring(separator + 1).replace('-', '_');
+        String namespace = separator < 0 ? NAMESPACE : sanitize(text.substring(0, separator), false);
+        String value = sanitize(text.substring(separator + 1).replace('-', '_'), true);
         return Key.key(namespace, value);
+    }
+
+    /**
+     * Reads a key like {@link #parse(String)}, or null when there is no text to read.
+     *
+     * @param input the text to read, may be null
+     * @return the key, or null if the text is null or blank
+     */
+    public static @Nullable Key tryParse(@Nullable String input) {
+        return input == null || input.isBlank() ? null : parse(input);
     }
 }

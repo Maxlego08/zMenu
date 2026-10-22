@@ -68,13 +68,8 @@ public final class SimpleRegistry<T extends Keyed> implements KeyedRegistry<T>, 
         this.aliasOwners.put(from, owner);
     }
 
-    /**
-     * Removes an entry and the aliases pointing to it, or an alias.
-     *
-     * @return whether something was removed
-     * @throws RegistrationException if the registry is frozen
-     */
-    public synchronized boolean remove(@NotNull Key key) {
+    @Override
+    public synchronized boolean unregister(@NotNull Key key) {
         this.checkWritable(key);
         if (this.aliases.remove(key) != null) {
             this.aliasOwners.remove(key);
@@ -86,6 +81,21 @@ public final class SimpleRegistry<T extends Keyed> implements KeyedRegistry<T>, 
         this.aliasOwners.keySet().retainAll(this.aliases.keySet());
         this.valueList = null;
         return true;
+    }
+
+    @Override
+    public synchronized int unregisterAll(@NotNull String owner) {
+        if (this.frozen) {
+            throw new RegistrationException("Registry " + this.type + " is frozen, the entries of " + owner + " cannot be removed");
+        }
+        int removed = 0;
+        for (Key alias : List.copyOf(this.aliasOwners.keySet())) {
+            if (owner.equals(this.aliasOwners.get(alias)) && this.unregister(alias)) removed++;
+        }
+        for (Key key : List.copyOf(this.owners.keySet())) {
+            if (owner.equals(this.owners.get(key)) && this.unregister(key)) removed++;
+        }
+        return removed;
     }
 
     /**

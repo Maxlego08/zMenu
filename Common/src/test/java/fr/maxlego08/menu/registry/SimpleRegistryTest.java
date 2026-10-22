@@ -7,10 +7,12 @@ import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.registry.KeyedRegistry;
 import fr.maxlego08.menu.api.registry.RegistrationException;
 import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.RegistryType;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,17 +56,85 @@ class SimpleRegistryTest {
     }
 
     @Test
-    void removeDropsTheEntryAndItsAliases() {
+    void parseReadsSpacesAndDashesAsUnderscores() {
+        assertEquals(Key.key("zmenu", "play_animation"), ZMenuKeys.parse("Play Animation"));
+        assertEquals(Key.key("zmenu", "play_animation"), ZMenuKeys.parse("play-animation"));
+        assertNull(ZMenuKeys.tryParse(null));
+        assertNull(ZMenuKeys.tryParse("  "));
+    }
+
+    @Test
+    void parseReadsWhatAKeyCannotHoldAsUnderscores() {
+        assertEquals(Key.key("zmenu", "shop_buy"), ZMenuKeys.parse("Shop+Buy"));
+        assertEquals(Key.key("zmenu", "caf__menu"), ZMenuKeys.parse("Café Menu"));
+        assertEquals(Key.key("addon_plugin", "thing"), ZMenuKeys.parse("Addon Plugin:thing"));
+        assertEquals(Key.key("a", "b_c"), ZMenuKeys.parse("a:b:c"));
+        assertEquals(Key.key("myplugin", "path/to.thing"), ZMenuKeys.parse("MyPlugin:path/to.thing"));
+        assertEquals(ZMenuKeys.parse("not a key!"), ZMenuKeys.tryParse("NOT A KEY!"));
+    }
+
+    @Test
+    void unregisterDropsTheEntryAndItsAliases() {
         SimpleRegistry<SlotAnimationLoader> registry = newRegistry();
         registry.register("zmenu", factory("sequential"));
         registry.alias("zmenu", ZMenuKeys.key("rows"), ZMenuKeys.key("sequential"));
 
-        assertTrue(registry.remove(ZMenuKeys.key("sequential")));
+        assertTrue(registry.unregister(ZMenuKeys.key("sequential")));
 
         assertFalse(registry.contains(ZMenuKeys.key("rows")));
         assertTrue(registry.owner(ZMenuKeys.key("rows")).isEmpty());
         assertEquals(0, registry.size());
-        assertFalse(registry.remove(ZMenuKeys.key("sequential")));
+        assertFalse(registry.unregister(ZMenuKeys.key("sequential")));
+    }
+
+    @Test
+    void unregisterAllRemovesOnlyWhatTheOwnerRegistered() {
+        SimpleRegistry<SlotAnimationLoader> registry = newRegistry();
+        registry.register("zmenu", factory("sequential"));
+        registry.register("addon", factory("glow"));
+        registry.alias("addon", ZMenuKeys.key("rows"), ZMenuKeys.key("sequential"));
+
+        assertEquals(2, registry.unregisterAll("addon"));
+
+        assertTrue(registry.contains(ZMenuKeys.key("sequential")));
+        assertFalse(registry.contains(ZMenuKeys.key("glow")));
+        assertFalse(registry.contains(ZMenuKeys.key("rows")));
+    }
+
+    @Test
+    void registerWithAliasesIsAllOrNothing() {
+        SimpleRegistry<SlotAnimationLoader> registry = newRegistry();
+        registry.register("zmenu", factory("rows"));
+
+        assertThrows(RegistrationException.class, () -> registry.register("addon", factory("sequential"), List.of(ZMenuKeys.key("line"), ZMenuKeys.key("rows"))));
+
+        assertFalse(registry.contains(ZMenuKeys.key("sequential")));
+        assertFalse(registry.contains(ZMenuKeys.key("line")));
+    }
+
+    @Test
+    void registerWithAliasesSkipsTheKeyAndRepeatedNames() {
+        SimpleRegistry<SlotAnimationLoader> registry = newRegistry();
+
+        registry.register("zmenu", factory("sequential"), List.of(ZMenuKeys.key("sequential"), ZMenuKeys.key("rows"), ZMenuKeys.key("rows")));
+
+        assertEquals(Map.of(ZMenuKeys.key("rows"), ZMenuKeys.key("sequential")), registry.aliases());
+    }
+
+    @Test
+    void freezeLeavesOpenRegistriesWritableAndOwnerCleanupOnlyTouchesThem() {
+        RegistryType<SlotAnimationLoader> openType = RegistryType.createOpen(ZMenuKeys.key("test_open"), SlotAnimationLoader.class);
+        ZRegistryManager manager = new ZRegistryManager();
+        manager.create(openType);
+        manager.writable(Registries.SLOT_ANIMATION).register("addon", factory("spiral"));
+        manager.freezeStatic();
+
+        manager.writable(openType).register("addon", factory("glow"));
+        assertThrows(RegistrationException.class, () -> manager.writable(Registries.SLOT_ANIMATION).register("addon", factory("wave")));
+
+        assertEquals(1, manager.unregisterOpen("addon"));
+        assertEquals(0, manager.registry(openType).size());
+        assertEquals(1, manager.registry(Registries.SLOT_ANIMATION).size());
     }
 
     @Test

@@ -56,12 +56,31 @@ public final class ZRegistryManager implements RegistryManager {
 
     /**
      * Stops every static registry from accepting entries. Done once the server has loaded.
-     * Reloadable registries are not affected, they change only through {@link #reload}.
+     * Reloadable registries are not affected, they change only through {@link #reload}, and open
+     * registries keep accepting entries.
      */
     public synchronized void freezeStatic() {
-        for (KeyedRegistry<?> registry : this.registries.values()) {
-            if (registry instanceof SimpleRegistry<?> simple) simple.freeze();
+        for (RegistryType<?> type : this.creationOrder) {
+            if (type.kind() == RegistryType.Kind.STATIC && this.registries.get(type.key()) instanceof SimpleRegistry<?> simple) {
+                simple.freeze();
+            }
         }
+    }
+
+    /**
+     * Removes what an owner registered in every open registry, when the plugin disables.
+     *
+     * @param owner the name the entries were registered with
+     * @return how many entries and aliases were removed
+     */
+    public synchronized int unregisterOpen(@NotNull String owner) {
+        int removed = 0;
+        for (RegistryType<?> type : this.creationOrder) {
+            if (type.isOpen() && this.registries.get(type.key()) instanceof SimpleRegistry<?> simple) {
+                removed += simple.unregisterAll(owner);
+            }
+        }
+        return removed;
     }
 
     private void checkExists(RegistryType<?> type) {
@@ -275,7 +294,7 @@ public final class ZRegistryManager implements RegistryManager {
 
                 @Override
                 public boolean remove(@NotNull Key key) {
-                    return build.next.remove(key);
+                    return build.next.unregister(key);
                 }
 
                 @Override
