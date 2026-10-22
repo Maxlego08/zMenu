@@ -1,7 +1,10 @@
 package fr.maxlego08.menu.api.loader;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +15,7 @@ import java.util.List;
 /**
  * A loader for creating instances of {@link Action} based on configuration.
  */
-public abstract class ActionLoader {
+public abstract class ActionLoader implements Keyed {
 
     private final List<String> keys;
 
@@ -43,6 +46,26 @@ public abstract class ActionLoader {
     @NotNull
     public List<String> getKeys() {
         return this.keys;
+    }
+
+    /**
+     * The key of this action in {@link fr.maxlego08.menu.api.registry.Registries#ACTION}: its first
+     * name, read like a {@code type} written in a file.
+     *
+     * @return the key
+     */
+    @Override
+    public @NotNull Key key() {
+        return ZMenuKeys.parse(this.keys.getFirst());
+    }
+
+    /**
+     * The other names of this action, read like the key.
+     *
+     * @return the other names, without the key
+     */
+    public @NotNull List<Key> aliases() {
+        return this.keys.stream().skip(1).map(ZMenuKeys::parse).toList();
     }
 
     /**

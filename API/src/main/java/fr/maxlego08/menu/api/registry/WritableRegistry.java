@@ -57,6 +57,10 @@ public interface WritableRegistry<T extends Keyed> {
         return value;
     }
 
+    default <V extends T> @NotNull V register(@NotNull Plugin owner, @NotNull V value, @NotNull Collection<Key> aliases) {
+        return this.register(owner.getName(), value, aliases);
+    }
+
     /**
      * Makes {@code from} another name of the entry {@code to}.
      *

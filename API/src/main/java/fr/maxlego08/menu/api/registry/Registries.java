@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.registry;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
+import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 
@@ -17,6 +18,11 @@ public final class Registries {
      * The requirement types a menu can use, by their {@code type}: {@code permission}, {@code placeholder}...
      */
     public static final RegistryType<PermissibleLoader> PERMISSIBLE = RegistryType.createOpen(ZMenuKeys.key("permissible"), PermissibleLoader.class);
+
+    /**
+     * The action types a menu can run, by their {@code type}: {@code message}, {@code console_command}...
+     */
+    public static final RegistryType<ActionLoader> ACTION = RegistryType.createOpen(ZMenuKeys.key("action"), ActionLoader.class);
 
     private Registries() {
     }

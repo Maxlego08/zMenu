@@ -40,7 +40,6 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     private final ZMenuPlugin plugin;
     private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
-    private final Map<String, ActionLoader> actionsLoader = new HashMap<>();
 
     public ZButtonManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
@@ -169,10 +168,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void registerAction(@NotNull ActionLoader actionLoader) {
-        for (String value : actionLoader.getKeys()) {
-            this.actionsLoader.put(value.toLowerCase(Locale.ROOT), actionLoader);
-            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, value);
-        }
+        RegistryOwners.registerLegacy(this.registries().writable(Registries.ACTION), actionLoader, actionLoader.aliases());
     }
 
     @Override
@@ -182,7 +178,8 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public @NotNull Optional<ActionLoader> getActionLoader(@NotNull String key) {
-        return Optional.ofNullable(this.actionsLoader.getOrDefault(key.toLowerCase(Locale.ROOT), null));
+        Key id = ZMenuKeys.tryParse(key);
+        return id == null ? Optional.empty() : this.registries().registry(Registries.ACTION).get(id);
     }
 
     @Override

@@ -109,6 +109,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.animationManager = new ZAnimationManager(plugin, this.registries);
         this.registries.provider(Registries.INVENTORY, ZMenuKeys.NAMESPACE, this::provideInventories);
         this.registries.onRegister(Registries.PERMISSIBLE, key -> this.loadWaitingInventories(InventoryRequirementType.PERMISSIBLE, key));
+        this.registries.onRegister(Registries.ACTION, key -> this.loadWaitingInventories(InventoryRequirementType.ACTION, key));
+    }
+
+    private void registerAction(ActionLoader loader) {
+        this.registries.writable(Registries.ACTION).register(this.plugin, loader, loader.aliases());
     }
 
     /**
@@ -623,18 +628,18 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Load actions
 
         if (Configuration.enablePlayerCommandsAsOPAction) { // Disabled by default for security reasons
-            buttonManager.registerAction(new PlayerCommandAsOPLoader());
+            this.registerAction(new PlayerCommandAsOPLoader());
         }
         if (this.plugin.getDialogManager() != null) {
-            buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
+            this.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
-        this.plugin.getPacketManager().ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
+        this.plugin.getPacketManager().ifPresent(manager -> this.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         if (this.plugin.getBedrockManager() != null) {
-            buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
+            this.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
         }
 
         ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
-                <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
+                <ActionLoader,MenuPlugin>of(ActionLoader.class, this::registerAction)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryNoArgsConstructor()
                 .errorLogger(Logger::error);

@@ -114,7 +114,11 @@ public interface ButtonManager {
      * Registers a new {@link ActionLoader} responsible for action creation.
      *
      * @param actionLoader The {@link ActionLoader} instance to register.
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#ACTION}:
+     * {@code registries.writable(Registries.ACTION).register(plugin, loader, loader.aliases())}, which
+     * throws on a name already taken instead of logging it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerAction(@NotNull ActionLoader actionLoader);
 
     /**
