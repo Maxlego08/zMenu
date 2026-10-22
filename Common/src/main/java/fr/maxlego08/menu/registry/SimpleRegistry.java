@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * A registry filled while plugins start, then frozen. Reads follow aliases.
@@ -30,6 +32,7 @@ public final class SimpleRegistry<T extends Keyed> implements KeyedRegistry<T>, 
     private final Map<Key, String> owners = new HashMap<>();
     private final Map<Key, Key> aliases = new LinkedHashMap<>();
     private final Map<Key, String> aliasOwners = new HashMap<>();
+    private final List<Consumer<Key>> listeners = new CopyOnWriteArrayList<>();
     private volatile List<T> valueList;
     private volatile boolean frozen;
 
@@ -42,30 +45,51 @@ public final class SimpleRegistry<T extends Keyed> implements KeyedRegistry<T>, 
         return this.type;
     }
 
-    @Override
-    public synchronized <V extends T> @NotNull V register(@NotNull String owner, @NotNull V value) {
-        Key key = value.key();
-        this.checkWritable(key);
-        if (!this.type.valueType().isInstance(value)) {
-            throw new RegistrationException(key.asString() + " is a " + value.getClass().getName() + ", but registry " + this.type + " holds " + this.type.valueType().getName());
-        }
-        this.checkFree(key, owner);
+    /**
+     * Calls {@code listener} with every key and alias registered from now on, once it is readable.
+     *
+     * @param listener the listener
+     */
+    public void addListener(@NotNull Consumer<Key> listener) {
+        this.listeners.add(listener);
+    }
 
-        this.entries.put(key, value);
-        this.owners.put(key, owner);
-        this.valueList = null;
+    @Override
+    public <V extends T> @NotNull V register(@NotNull String owner, @NotNull V value) {
+        Key key = value.key();
+        synchronized (this) {
+            this.checkWritable(key);
+            if (!this.type.valueType().isInstance(value)) {
+                throw new RegistrationException(key.asString() + " is a " + value.getClass().getName() + ", but registry " + this.type + " holds " + this.type.valueType().getName());
+            }
+            this.checkFree(key, owner);
+
+            this.entries.put(key, value);
+            this.owners.put(key, owner);
+            this.valueList = null;
+        }
+        this.notifyListeners(key);
         return value;
     }
 
     @Override
-    public synchronized void alias(@NotNull String owner, @NotNull Key from, @NotNull Key to) {
-        this.checkWritable(from);
-        this.checkFree(from, owner);
-        if (!this.entries.containsKey(to)) {
-            throw new RegistrationException("Alias " + from.asString() + " points to " + to.asString() + ", which is not in registry " + this.type);
+    public void alias(@NotNull String owner, @NotNull Key from, @NotNull Key to) {
+        synchronized (this) {
+            this.checkWritable(from);
+            this.checkFree(from, owner);
+            if (!this.entries.containsKey(to)) {
+                throw new RegistrationException("Alias " + from.asString() + " points to " + to.asString() + ", which is not in registry " + this.type);
+            }
+            this.aliases.put(from, to);
+            this.aliasOwners.put(from, owner);
         }
-        this.aliases.put(from, to);
-        this.aliasOwners.put(from, owner);
+        this.notifyListeners(from);
+    }
+
+    private void notifyListeners(Key key) {
+        for (Consumer<Key> listener : this.listeners) {
+            listener.accept(key);
+        }
     }
 
     @Override

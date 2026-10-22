@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.test.serialization.ObjectGraphComparator;
@@ -136,7 +137,7 @@ class ActionSerializationTest {
             buttonManager.getPermission(String.valueOf(entry.get("type"))).ifPresent(covered::add);
         }
         List<String> missing = new ArrayList<>();
-        for (PermissibleLoader loader : registered("permissibles", PermissibleLoader.class)) {
+        for (PermissibleLoader loader : plugin.getInventoryManager().getRegistries().registry(Registries.PERMISSIBLE)) {
             if (!covered.contains(loader)) missing.add(loader.getClass().getSimpleName() + " " + loader.getKey());
         }
         assertEquals(List.of(), missing, "add an entry for these permissibles to serialization/permissibles.yml");

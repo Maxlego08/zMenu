@@ -84,15 +84,21 @@ public interface ButtonManager {
      * Registers a new {@link PermissibleLoader} responsible for permissible creation.
      *
      * @param permissibleLoader The {@link PermissibleLoader} instance to register.
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#PERMISSIBLE}:
+     * {@code registries.writable(Registries.PERMISSIBLE).register(plugin, loader)}, which throws on a
+     * name already taken instead of logging it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerPermissible(@NotNull PermissibleLoader permissibleLoader);
 
     /**
      * Retrieves a mapping of permissible keys to their associated {@link PermissibleLoader} instances.
      *
-     * @return A map linking permissible keys to their corresponding {@link PermissibleLoader} instances.
+     * @return A copy of the registered types, by their lowercased name.
+     * @deprecated read {@link fr.maxlego08.menu.api.registry.Registries#PERMISSIBLE}.
      */
     @NotNull
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Map<String, PermissibleLoader> getPermissibles();
 
     /**

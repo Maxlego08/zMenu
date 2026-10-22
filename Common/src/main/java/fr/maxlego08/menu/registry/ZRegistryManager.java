@@ -38,6 +38,7 @@ public final class ZRegistryManager implements RegistryManager {
         this.create(Registries.SLOT_ANIMATION);
         this.create(Registries.INVENTORY);
         this.create(Registries.ANIMATION);
+        this.create(Registries.PERMISSIBLE);
     }
 
     /**
@@ -65,6 +66,17 @@ public final class ZRegistryManager implements RegistryManager {
                 simple.freeze();
             }
         }
+    }
+
+    /**
+     * Calls {@code listener} with every key and alias later registered in a static or open registry,
+     * whichever way it is registered.
+     *
+     * @param type     the registry
+     * @param listener the listener
+     */
+    public <T extends Keyed> void onRegister(@NotNull RegistryType<T> type, @NotNull Consumer<Key> listener) {
+        this.simple(type).addListener(listener);
     }
 
     /**

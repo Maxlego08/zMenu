@@ -108,6 +108,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin = plugin;
         this.animationManager = new ZAnimationManager(plugin, this.registries);
         this.registries.provider(Registries.INVENTORY, ZMenuKeys.NAMESPACE, this::provideInventories);
+        this.registries.onRegister(Registries.PERMISSIBLE, key -> this.loadWaitingInventories(InventoryRequirementType.PERMISSIBLE, key));
+    }
+
+    /**
+     * Loads the menus that were waiting for an element, now registered under {@code key}.
+     */
+    private void loadWaitingInventories(InventoryRequirementType type, Key key) {
+        this.loadElement(type, ZMenuKeys.NAMESPACE.equals(key.namespace()) ? key.value() : key.asString());
     }
 
     @Override
@@ -601,7 +609,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonManager buttonManager = this.plugin.getButtonManager();
         // Load Permissible before
         ClassRegistry<PermissibleLoader, MenuPlugin> permissibleRegistry = ClassRegistry.
-                <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, buttonManager::registerPermissible)
+                <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, loader -> this.registries.writable(Registries.PERMISSIBLE).register(this.plugin, loader))
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor(((clazz, plugin) -> clazz.getConstructor(ButtonManager.class).newInstance(buttonManager)))
                 .tryNoArgsConstructor()

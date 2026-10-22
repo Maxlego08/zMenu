@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.api.loader;
 
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class PermissibleLoader {
+public abstract class PermissibleLoader implements Keyed {
 
     private final String key;
 
@@ -31,6 +34,17 @@ public abstract class PermissibleLoader {
     @NotNull
     public String getKey(){
         return this.key;
+    }
+
+    /**
+     * The key of this type in {@link fr.maxlego08.menu.api.registry.Registries#PERMISSIBLE}, read from
+     * {@link #getKey()} like a {@code type} written in a file.
+     *
+     * @return the key
+     */
+    @Override
+    public @NotNull Key key() {
+        return ZMenuKeys.parse(this.key);
     }
 
     /**

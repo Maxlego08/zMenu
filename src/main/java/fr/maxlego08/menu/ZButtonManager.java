@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
@@ -10,6 +11,7 @@ import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
@@ -19,7 +21,10 @@ import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.loader.RequirementLoader;
 import fr.maxlego08.menu.loader.ZButtonLoader;
+import fr.maxlego08.menu.registry.RegistryOwners;
+import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,7 +40,6 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     private final ZMenuPlugin plugin;
     private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
-    private final Map<String, PermissibleLoader> permissibles = new HashMap<>();
     private final Map<String, ActionLoader> actionsLoader = new HashMap<>();
 
     public ZButtonManager(ZMenuPlugin plugin) {
@@ -141,18 +145,26 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void registerPermissible(@NotNull PermissibleLoader permissibleLoader) {
-        this.permissibles.put(permissibleLoader.getKey().toLowerCase(Locale.ROOT), permissibleLoader);
-        this.plugin.getInventoryManager().loadElement(InventoryRequirementType.PERMISSIBLE, permissibleLoader.getKey());
+        RegistryOwners.registerLegacy(this.registries().writable(Registries.PERMISSIBLE), permissibleLoader, List.of());
     }
 
     @Override
     public @NotNull Map<String, PermissibleLoader> getPermissibles() {
-        return this.permissibles;
+        Map<String, PermissibleLoader> permissibles = new LinkedHashMap<>();
+        for (PermissibleLoader loader : this.registries().registry(Registries.PERMISSIBLE)) {
+            permissibles.put(loader.getKey().toLowerCase(Locale.ROOT), loader);
+        }
+        return permissibles;
     }
 
     @Override
     public @NotNull Optional<PermissibleLoader> getPermission(@NotNull String key) {
-        return Optional.ofNullable(this.permissibles.getOrDefault(key.toLowerCase(Locale.ROOT), null));
+        Key id = ZMenuKeys.tryParse(key);
+        return id == null ? Optional.empty() : this.registries().registry(Registries.PERMISSIBLE).get(id);
+    }
+
+    private ZRegistryManager registries() {
+        return this.plugin.getInventoryManager().getRegistries();
     }
 
     @Override
