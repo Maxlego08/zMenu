@@ -12,12 +12,10 @@ import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
-import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.LoreType;
-import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
@@ -28,7 +26,6 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -36,7 +33,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
-import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -909,154 +905,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private void updatePlaceholder(String string) {
         if (string == null || this.needPlaceholderAPI) return;
         this.needPlaceholderAPI = string.contains("%");
-    }
-
-    public void setTypeMapAccessor(MapConfiguration configuration) {
-
-        this.setData(configuration.getString("data", "0"));
-        this.setDurability(configuration.getString("durability", null));
-        this.setAmount(configuration.getString("amount", "1"));
-        this.setAmountType(AmountType.valueOf(configuration.getString("amount-type", "SET").toUpperCase(Locale.ROOT)));
-        this.setMaterial(configuration.getString("material", null));
-        this.setTargetPlayer(configuration.getString("target", null));
-        this.setUrl(configuration.getString("url", null));
-
-        Color potionColor = this.getColor(configuration, "color", null);
-
-        try {
-            Material material = Material.valueOf(configuration.getString("material", "").toUpperCase(Locale.ROOT));
-            String materialName = material.toString();
-            if (materialName.startsWith("LEATHER_")) {
-                Color armorColor = this.getColor(configuration, "color", Color.fromRGB(160, 101, 64));
-                String type = materialName.replace("LEATHER_", "");
-                this.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
-            }
-        } catch (Exception ignored) {
-        }
-
-        if (configuration.contains("potion")) {
-            PotionType type = PotionType.valueOf(configuration.getString("potion", "REGEN").toUpperCase(Locale.ROOT));
-            int level = configuration.getInt("level", 1);
-            boolean splash = configuration.getBoolean("splash", false);
-            boolean extended = configuration.getBoolean("extended", false);
-            boolean arrow = configuration.getBoolean("arrow", false);
-
-            Potion potion = new Potion(type, level, splash, extended, arrow);
-            potion.setColor(potionColor);
-            this.setPotion(potion);
-        }
-
-        if (configuration.contains("banner")) {
-
-            DyeColor dyeColor = DyeColor.valueOf(configuration.getString("banner", "WHITE").toUpperCase(Locale.ROOT));
-            List<String> stringPattern = configuration.getStringList("patterns");
-            List<Pattern> patterns = new ArrayList<>();
-            for (String string : stringPattern) {
-                String[] split = string.split(":");
-                if (split.length != 2) continue;
-                patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
-            }
-            this.setBanner(new Banner(dyeColor, patterns));
-
-        }
-
-        List<String> lore = configuration.getStringList("lore");
-        if (lore.isEmpty()) {
-            Object object = configuration.getObject("lore", null);
-            if (object instanceof String loreString) {
-                lore = Arrays.asList(loreString.split("\n"));
-            }
-        }
-        this.setLore(lore);
-        this.setDisplayName(configuration.getString("name", null));
-        this.setGlowing(configuration.getBoolean("glow"));
-        this.setModelID(configuration.getString("modelID", configuration.getString("model-id", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0"))))));
-
-        List<String> enchants = configuration.getStringList("enchants");
-        Map<Enchantment, Integer> enchantments = new HashMap<>();
-
-        for (String enchantString : enchants) {
-
-            try {
-
-                String[] splitEnchant = enchantString.split(",");
-
-                if (splitEnchant.length == 1) throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
-
-                int level;
-                String enchant = splitEnchant[0];
-                try {
-                    level = Integer.parseInt(splitEnchant[1]);
-                } catch (NumberFormatException e) {
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
-                }
-
-                Enchantment enchantment = Enchantment.getByName(enchant);
-                if (enchantment == null) {
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
-                }
-
-                enchantments.put(enchantment, level);
-
-            } catch (ItemEnchantException e) {
-                Logger.error(e);
-            }
-        }
-
-        List<String> flagStrings = configuration.getStringList("flags");
-        List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
-        for (String flag : flagStrings) {
-            flags.add(this.getFlag(flag));
-        }
-
-        List<AttributeWrapper> attributeModifiers = new ArrayList<>();
-
-        if (configuration.contains("attributes")) {
-            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList("attributes");
-            if (attributesFromConfig != null) {
-                for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(AttributeWrapper.deserialize(attributeMap));
-                }
-            }
-        }
-
-        this.setEnchantments(enchantments);
-        this.setFlags(flags);
-        this.setAttributes(attributeModifiers);
-        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase(Locale.ROOT)));
-    }
-
-    private Color getColor(MapConfiguration configuration, String key, Color def) {
-        Color color = parseColor(configuration.getString(key, ""), key);
-        return color == null ? def : color;
-    }
-
-    /**
-     * Parses an {@code r,g,b} or {@code a,r,g,b} colour.
-     * <p>
-     * Neither the number parsing nor {@link Color#fromRGB(int, int, int)}, which rejects anything
-     * outside 0-255, may throw here: a single typo would otherwise abort the whole item build.
-     *
-     * @return the colour, or {@code null} when the value is missing or malformed.
-     */
-    private static Color parseColor(String value, String key) {
-        if (value == null || value.isBlank()) return null;
-
-        String[] split = value.split(",");
-        if (split.length != 3 && split.length != 4) return null;
-
-        try {
-            int[] parts = new int[split.length];
-            for (int index = 0; index != split.length; index++) {
-                parts[index] = Integer.parseInt(split[index].trim());
-            }
-            return split.length == 3
-                    ? Color.fromRGB(parts[0], parts[1], parts[2])
-                    : Color.fromARGB(parts[0], parts[1], parts[2], parts[3]);
-        } catch (IllegalArgumentException exception) {
-            Logger.info("Color " + value + " is not valid at " + key + ", expected numbers between 0 and 255.", Logger.LogType.ERROR);
-            return null;
-        }
     }
 
     public Map<String, String> getTranslatedDisplayName() {
