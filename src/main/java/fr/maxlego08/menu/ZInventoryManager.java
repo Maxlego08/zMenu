@@ -596,13 +596,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
-        List<Inventory> oldInventories = new ArrayList<>();
-        Collections.addAll(oldInventories, inventories);
-        this.openInventory(player, inventory, page, oldInventories);
-    }
-
-    @Override
     public void loadButtons() {
 
         ButtonManager buttonManager = this.plugin.getButtonManager();

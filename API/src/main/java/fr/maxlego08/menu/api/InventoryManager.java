@@ -280,8 +280,12 @@ public interface InventoryManager extends Listener {
      * @param inventory   The inventory to be opened.
      * @param page        Inventory page.
      * @param inventories List of old inventories.
+     * @deprecated use {@link #openInventory(Player, Inventory, int, List)}.
      */
-    void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
+        this.openInventory(player, inventory, page, new ArrayList<>(Arrays.asList(inventories)));
+    }
 
     /**
      * Loads buttons. The {@link ButtonLoaderRegisterEvent} event will be
