@@ -9,7 +9,10 @@ import java.util.Map;
 
 /**
  * Utility/helper for looking up available trim materials and patterns by name for item customization.
+ *
+ * @deprecated not used by zMenu; trim materials and patterns are read from Paper's registries.
  */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public class TrimHelper {
 
     private final Map<String, TrimMaterial> trimMaterials = new HashMap<>();

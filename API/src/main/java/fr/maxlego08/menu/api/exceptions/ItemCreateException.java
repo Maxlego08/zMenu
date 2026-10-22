@@ -2,6 +2,10 @@ package fr.maxlego08.menu.api.exceptions;
 
 import java.io.Serial;
 
+/**
+ * @deprecated never thrown by zMenu.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public class ItemCreateException extends Error {
 
     /**
