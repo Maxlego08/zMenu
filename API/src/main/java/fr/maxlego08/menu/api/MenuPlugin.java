@@ -11,6 +11,7 @@ import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
@@ -19,8 +20,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -269,6 +272,23 @@ public interface MenuPlugin extends Plugin {
      * @return the item stack service
      */
     ItemStackService getItemStackService();
+
+    /**
+     * Gets the service that creates the sounds of zMenu and reads them from files.
+     *
+     * @return the sound service
+     */
+    SoundService getSoundService();
+
+    /**
+     * Reads a YAML file through zMenu's file cache: a file read by several menus is parsed once, and
+     * read again when it changes on disk.
+     *
+     * @param path the file
+     * @return the configuration, or empty if the file does not exist
+     */
+    @NotNull
+    Optional<YamlConfiguration> readYamlFile(@NotNull Path path);
 
     /**
      * Returns the ToastHelper object for this plugin.

@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.loader;
 
-import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.ZMenuKeys;
@@ -21,10 +20,6 @@ import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.sound.SoundOption;
-import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
-import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
-import fr.maxlego08.menu.sound.RandomPitchSoundOption;
-import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -457,13 +452,13 @@ public class SlotAnimationSettingsLoader {
         }
 
         Path animationPath = this.plugin.getDataFolder().toPath().resolve("animations").resolve(name + ".yml");
-        Optional<YamlFileCacheEntry> entry = YamlFileCache.getYamlFileEntry(animationPath);
-        if (entry.isEmpty()) {
+        Optional<YamlConfiguration> file = this.plugin.readYamlFile(animationPath);
+        if (file.isEmpty()) {
             Logger.info("Animation file " + name + " does not exist in the animations folder, used by " + origin.getAbsolutePath(), Logger.LogType.ERROR);
             return;
         }
 
-        YamlConfiguration configuration = entry.get().getYamlConfiguration();
+        YamlConfiguration configuration = file.get();
 
         for (String parent : readAnimationNames(configuration, "")) {
             this.mergeAnimationFile(parent, target, visited, origin);
@@ -585,20 +580,7 @@ public class SlotAnimationSettingsLoader {
 
     @Nullable
     private SoundOption loadSound(@NotNull YamlConfiguration configuration, @NotNull String path) {
-        String sound = configuration.getString(path + ".sound");
-        if (sound == null || sound.isEmpty()) return null;
-
-        float volume = (float) configuration.getDouble(path + ".volume", 1);
-        String category = configuration.getString(path + ".sound-category", configuration.getString(path + ".category", XSound.Category.MASTER.name()));
-        XSound xSound = XSound.of(sound).orElse(null);
-
-        List<Double> pitches = configuration.getDoubleList(path + ".pitch");
-        if (pitches.size() >= 2) {
-            return new RandomPitchSoundOption(xSound, category, sound, pitches.get(0).floatValue(), pitches.get(1).floatValue(), volume, xSound == null);
-        }
-
-        float pitch = (float) configuration.getDouble(path + ".pitch", 1);
-        return new ZSoundOption(xSound, category, sound, pitch, volume, xSound == null);
+        return this.plugin.getSoundService().load(configuration, path);
     }
 
     @NotNull

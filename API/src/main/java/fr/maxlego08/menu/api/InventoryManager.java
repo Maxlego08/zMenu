@@ -21,7 +21,6 @@ import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.RegistryManager;
 import fr.maxlego08.menu.api.registry.WritableRegistry;
-import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -966,11 +965,4 @@ public interface InventoryManager extends Listener {
     default ItemStack deserializeItemStack(String serializedItemStack) {
         return this.getPlugin().getItemStackService().deserialize(serializedItemStack);
     }
-
-    default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume) {
-        return this.createSoundOption(soundName, categoryName, pitch, volume, false);
-    }
-
-    SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom);
-
 }

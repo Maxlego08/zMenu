@@ -16,6 +16,7 @@ import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.itemstack.ItemStackService;
+import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.loader.ClassRegistry;
@@ -55,6 +56,7 @@ import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.inventory.InventoryHotReload;
 import fr.maxlego08.menu.inventory.VInventoryManager;
 import fr.maxlego08.menu.itemstack.ZItemStackService;
+import fr.maxlego08.menu.sound.ZSoundService;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.nms.v1_21_R1.inventory.inventories.AnvilInventoryDefault;
@@ -88,8 +90,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -124,6 +128,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final Enchantments enchantments;
     private final ItemManager itemManager;
     private final ItemStackService itemStackService = new ZItemStackService(this);
+    private final SoundService soundService = new ZSoundService();
     private final FoliaLib foliaLib;
     private final ComponentsManager componentsManager;
     private final Map<String, Object> globalPlaceholders = new HashMap<>();
@@ -707,6 +712,16 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public ItemStackService getItemStackService() {
         return this.itemStackService;
+    }
+
+    @Override
+    public SoundService getSoundService() {
+        return this.soundService;
+    }
+
+    @Override
+    public @NotNull Optional<YamlConfiguration> readYamlFile(@NotNull Path path) {
+        return YamlFileCache.getYamlConfiguration(path);
     }
 
     @Override

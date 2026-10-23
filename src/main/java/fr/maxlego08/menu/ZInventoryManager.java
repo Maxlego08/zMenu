@@ -1,6 +1,5 @@
 package fr.maxlego08.menu;
 
-import com.cryptomorin.xseries.XSound;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.animation.ZAnimationManager;
 import fr.maxlego08.menu.api.*;
@@ -31,7 +30,6 @@ import fr.maxlego08.menu.api.registry.RegistrationException;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.reload.ReloadContext;
 import fr.maxlego08.menu.api.registry.reload.ReloadReport;
-import fr.maxlego08.menu.api.sound.SoundOption;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
@@ -55,7 +53,6 @@ import fr.maxlego08.menu.pagination.ZPaginationManager;
 import fr.maxlego08.menu.registry.RegistryOwners;
 import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
-import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import net.kyori.adventure.key.Key;
@@ -208,14 +205,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public PaginationManager getPaginationManager() {
         return this.paginationManager;
-    }
-
-    @Override
-    public SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom) {
-        Optional<XSound> xSound = XSound.of(soundName);
-
-        return xSound.map(sound -> new ZSoundOption(sound, categoryName, soundName, pitch, volume, isCustom)).orElse(null);
-
     }
 
     @Override
