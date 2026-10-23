@@ -70,4 +70,22 @@ public interface ContainerInventory extends Inventory {
     default SlotAnimationSettings getCloseAnimation() {
         return null;
     }
+
+    /**
+     * Sets the animation played when this inventory is opened. An inventory that cannot animate
+     * ignores it.
+     *
+     * @param slotAnimation the animation settings, or null to display the inventory at once
+     */
+    default void setSlotAnimation(@Nullable SlotAnimationSettings slotAnimation) {
+    }
+
+    /**
+     * Sets the animation played when this inventory closes itself. An inventory that cannot animate
+     * ignores it.
+     *
+     * @param closeAnimation the animation settings, or null to close at once
+     */
+    default void setCloseAnimation(@Nullable SlotAnimationSettings closeAnimation) {
+    }
 }

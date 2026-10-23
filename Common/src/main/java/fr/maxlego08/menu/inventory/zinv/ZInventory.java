@@ -581,8 +581,6 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         if (this.fillItemStack != null) this.fillItemStack.serialize(section.createSection("fill-item"));
         if (this.openWithItem != null) this.openWithItem.serialize(section.createSection("open-with-item"));
         if (this.titleAnimation != null) this.titleAnimation.serialize(section.createSection("title-animation"));
-        if (this.slotAnimation != null) this.slotAnimation.serialize(section.createSection("open-animation"));
-        if (this.closeAnimation != null) this.closeAnimation.serialize(section.createSection("close-animation"));
         if (this.inventoryReplacement != null) this.inventoryReplacement.serialize(section.createSection("inventory-replacement"));
         if (this.openRequirement != null) this.openRequirement.serialize(section.createSection("open-requirement"));
         if (!this.getOpenActions().isEmpty()) section.set("open-actions", Permissible.serializeActions(this.getOpenActions()));

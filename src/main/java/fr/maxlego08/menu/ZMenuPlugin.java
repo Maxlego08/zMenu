@@ -475,18 +475,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         files.add("inventories/examples/playtimes.yml");
         files.add("inventories/examples/switch.yml");
         files.add("inventories/examples/item_drag.yml");
-        files.add("inventories/examples/animation.yml");
-        files.add("inventories/examples/animation_advanced.yml");
-        files.add("inventories/examples/animation_matrix.yml");
-        files.add("inventories/examples/animation_custom.yml");
-        files.add("inventories/examples/animation_shared.yml");
-        files.add("inventories/examples/animation_loading.yml");
-        files.add("inventories/examples/animation_action.yml");
-        files.add("inventories/examples/animation_idle.yml");
-        files.add("inventories/examples/animation_close.yml");
-        files.add("inventories/examples/animation_random.yml");
-        files.add("inventories/examples/animation_variants.yml");
-        files.add("inventories/examples/hub_menu.yml");
 
         files.add("animations/fancy_open.yml");
         files.add("animations/wave_in.yml");

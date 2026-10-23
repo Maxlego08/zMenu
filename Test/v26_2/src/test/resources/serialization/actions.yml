@@ -1,23 +1,6 @@
 # One entry per action type, loaded, serialized and loaded again by ActionSerializationTest.
 # A registered action without an entry here fails the test: add one when adding an action.
 actions:
-  - type: animation
-    file: pulse
-  - type: animation
-    stop: true
-  - type: animation
-    mode: REVEAL
-    freeze: false
-    animation:
-      type: spiral
-      interval: 80
-      slots-per-step: 2
-      play: ONCE
-      chance: 50.0
-      groups:
-        2:
-          type: wave
-          delay: 100
   - type: close
   - type: refresh
   - type: refresh-inventory

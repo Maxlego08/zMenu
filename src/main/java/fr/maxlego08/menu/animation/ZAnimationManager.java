@@ -6,7 +6,6 @@ import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
 import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
-import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.registry.KeyedRegistry;
 import fr.maxlego08.menu.api.registry.RegistrationException;
@@ -14,42 +13,31 @@ import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.reload.ReloadContext;
 import fr.maxlego08.menu.api.registry.reload.ReloadReport;
 import fr.maxlego08.menu.api.utils.CompatibilityUtil;
-import fr.maxlego08.menu.loader.SlotAnimationSettingsLoader;
 import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Stream;
 
 /**
- * Keeps the named animations in the reloadable {@link Registries#ANIMATION} registry: the files of
- * the {@code animations} folder are provided by {@code zmenu}, and the animations a plugin registers
- * by a provider owned by that plugin, which hands them in again on every reload.
+ * Keeps the named animations in the reloadable {@link Registries#ANIMATION} registry: the animations
+ * a plugin registers are provided by a provider owned by that plugin, which hands them in again on
+ * every reload. Reading the files of the {@code animations} folder is left to an addon providing them.
  */
 public class ZAnimationManager implements AnimationManager {
 
-    private static final String FOLDER = "animations";
-    private static final String FILES_OWNER = ZMenuKeys.NAMESPACE;
+    private static final String OWNER = ZMenuKeys.NAMESPACE;
 
-    private final MenuPlugin plugin;
     private final ZRegistryManager registries;
     private final AnimationHistory history;
 
@@ -59,10 +47,8 @@ public class ZAnimationManager implements AnimationManager {
     private final Map<String, List<Animation>> registeredByPlugin = new ConcurrentHashMap<>();
 
     public ZAnimationManager(@NotNull MenuPlugin plugin, @NotNull ZRegistryManager registries) {
-        this.plugin = plugin;
         this.registries = registries;
         this.history = new ZAnimationHistory(plugin);
-        this.registries.provider(Registries.ANIMATION, FILES_OWNER, this::provideFiles);
     }
 
     @Override
@@ -114,7 +100,7 @@ public class ZAnimationManager implements AnimationManager {
         }
         if (!removed) return false;
 
-        this.logReport(this.registries.update(Registries.ANIMATION, FILES_OWNER, editor -> editor.remove(key)));
+        this.logReport(this.registries.update(Registries.ANIMATION, OWNER, editor -> editor.remove(key)));
         return true;
     }
 
@@ -123,10 +109,8 @@ public class ZAnimationManager implements AnimationManager {
         ReloadReport report = this.registries.reload(Registries.ANIMATION);
         this.logReport(report);
 
-        long files = this.registry().values().stream()
-                .filter(animation -> this.registry().owner(animation.key()).map(FILES_OWNER::equals).orElse(false))
-                .count();
-        Logger.info("Loaded " + files + " animation" + (files > 1 ? "s" : "") + ".", Logger.LogType.INFO);
+        int count = this.registry().values().size();
+        Logger.info("Loaded " + count + " animation" + (count > 1 ? "s" : "") + ".", Logger.LogType.INFO);
         return report;
     }
 
@@ -139,84 +123,6 @@ public class ZAnimationManager implements AnimationManager {
             }
             context.register(animation);
         }
-    }
-
-    /**
-     * Provides the files of the animations folder. A file that cannot be read keeps its previous
-     * version, and two files with the same name in different folders keep the first one.
-     */
-    private void provideFiles(@NotNull ReloadContext<Animation> context) {
-        File folder = new File(this.plugin.getDataFolder(), FOLDER);
-        if (!folder.exists() && !folder.mkdirs()) {
-            context.warn("Could not create the " + FOLDER + " folder");
-            return;
-        }
-
-        KeyedRegistry<Animation> next = context.registries().registry(Registries.ANIMATION);
-        SlotAnimationSettingsLoader loader = new SlotAnimationSettingsLoader(this.plugin);
-
-        for (File file : this.animationFiles(folder, context)) {
-            String name = file.getName().substring(0, file.getName().length() - ".yml".length());
-            Key key = ZMenuKeys.fileKey(FILES_OWNER, name);
-
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-            if (isIdleAnimation(configuration)) continue;
-
-            if (next.contains(key)) {
-                context.warn(key, "Two animation files are named " + name + ", the one in " + file.getAbsolutePath()
-                        + " is not loaded. Animations are known by their file name, whichever folder they sit in.");
-                continue;
-            }
-
-            SlotAnimationSettings settings;
-            try {
-                settings = loader.load(configuration, "", file);
-            } catch (RuntimeException exception) {
-                Logger.error(exception);
-                settings = null;
-            }
-
-            if (settings != null) {
-                context.register(new Animation(key, settings));
-                continue;
-            }
-
-            Optional<Animation> previous = context.previous().get(key);
-            if (previous.isPresent()) {
-                context.register(previous.get());
-                context.warn(key, file.getAbsolutePath() + " cannot be loaded, its previous version is kept");
-            } else {
-                context.warn(key, "Animation " + file.getAbsolutePath() + " has no type, it was not loaded");
-            }
-        }
-    }
-
-    @NotNull
-    private List<File> animationFiles(@NotNull File folder, @NotNull ReloadContext<Animation> context) {
-        List<File> files = new ArrayList<>();
-        try (Stream<Path> stream = Files.walk(folder.toPath())) {
-            stream.map(Path::toFile).filter(File::isFile).filter(file -> file.getName().endsWith(".yml")).forEach(files::add);
-        } catch (IOException exception) {
-            context.warn("Could not read the " + FOLDER + " folder: " + exception.getMessage());
-        }
-        return files;
-    }
-
-    /**
-     * Whether a file of the animations folder is the idle animation of a button rather than an
-     * animation of the whole inventory. Its {@code items} are frames, played on the slots of the
-     * button that names it, so none of them has a slot of its own; it is read only when a button
-     * names it with {@code idle-animation}.
-     */
-    private static boolean isIdleAnimation(@NotNull YamlConfiguration configuration) {
-        if (configuration.contains("type") || configuration.contains("variants") || configuration.contains("temporary-items")) return false;
-
-        ConfigurationSection items = configuration.getConfigurationSection("items");
-        if (items == null || items.getKeys(false).isEmpty()) return false;
-
-        return items.getKeys(false).stream()
-                .map(items::getConfigurationSection)
-                .allMatch(item -> item != null && !item.contains("slot") && !item.contains("slots"));
     }
 
     private void logReport(@NotNull ReloadReport report) {

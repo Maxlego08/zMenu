@@ -4,10 +4,6 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
-import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
-import fr.maxlego08.menu.api.animation.slot.AnimationSlots;
-import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
-import fr.maxlego08.menu.api.animation.slot.settings.item.TemporaryItem;
 import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -148,14 +144,6 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
 
         this.loadTitleAnimation(inventory, configuration, file);
-        SlotAnimationSettings slotAnimation = new SlotAnimationSettingsLoader(this.plugin).load(configuration, path + "open-animation.", file);
-        inventory.setSlotAnimation(slotAnimation);
-        this.validateAnimation(slotAnimation, buttons, size, file);
-
-        SlotAnimationSettings closeAnimation = new SlotAnimationSettingsLoader(this.plugin).load(configuration, path + "close-animation.", file);
-        inventory.setCloseAnimation(closeAnimation);
-        this.validateAnimation(closeAnimation, buttons, size, file);
-        this.warnAboutCloseOnlyKeys(closeAnimation, file);
 
         inventory.setType(inventoryType);
         inventory.setUpdateInterval(configuration.getInt(path + "update-interval", configuration.getInt(path + "updateInterval", 1000)));
@@ -348,101 +336,4 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
     }
 
-    /**
-     * Warns about a group that was configured but that no button belongs to, which is usually a
-     * typo: the group simply never plays.
-     */
-    private void warnAboutUnusedGroups(SlotAnimationSettings settings, List<Button> buttons, File file) {
-        if (settings.groups().isEmpty()) return;
-
-        Set<Integer> used = new HashSet<>();
-        for (Button button : buttons) {
-            if (button == null) continue;
-            if (button.getAnimationSettings().enabled()) used.add(button.getAnimationSettings().group());
-        }
-
-        settings.groups().keySet().stream()
-                .filter(group -> !used.contains(group))
-                .sorted()
-                .forEach(group -> Logger.info("The animation group " + group + " is configured in " + file.getAbsolutePath()
-                        + " but no button belongs to it, so it never plays. Buttons join a group with `animation.group: " + group + "`.",
-                        Logger.LogType.WARNING));
-    }
-
-    /**
-     * Warns about the keys a closing animation loads but never acts on.
-     *
-     * <p>A close plays through {@code closeWithAnimation}, which asks the animation whether it wants
-     * to play at all — so {@code chance} and {@code requirement} work there. It does not go through
-     * the remembering that an opening animation does, so {@code play} and {@code cooldown} are read
-     * and then ignored. Saying so is better than letting someone believe their menu leaves in a
-     * special way exactly once.</p>
-     */
-    private void warnAboutCloseOnlyKeys(SlotAnimationSettings settings, File file) {
-        if (settings == null) return;
-
-        if (settings.play() != AnimationPlayMode.ALWAYS) {
-            Logger.info("The close animation of " + file.getAbsolutePath() + " sets `play: " + settings.play()
-                    + "`, which only applies to an opening animation and is ignored here. Use `chance` or `requirement`"
-                    + " to decide whether a close animation plays.", Logger.LogType.WARNING);
-        }
-
-        if (settings.cooldown() > 0) {
-            Logger.info("The close animation of " + file.getAbsolutePath() + " sets a `cooldown`, which only applies"
-                    + " to an opening animation and is ignored here.", Logger.LogType.WARNING);
-        }
-    }
-
-    /**
-     * Warns about temporary items placed on a slot the menu does not have.
-     *
-     * <p>The compiler silently skips those, because it also serves animations shared between menus
-     * of different sizes. A menu declaring its own animation knows its size, so a typo can be
-     * reported here instead of quietly doing nothing.</p>
-     */
-    private void warnAboutSlotsOutOfRange(SlotAnimationSettings settings, int size, File file) {
-        int total = AnimationSlots.totalSize(size);
-
-        List<SlotAnimationSettings> toCheck = new ArrayList<>();
-        toCheck.add(settings);
-        settings.variants().forEach(variant -> toCheck.add(variant.settings()));
-
-        for (SlotAnimationSettings current : toCheck) {
-            for (TemporaryItem temporaryItem : current.temporaryItems()) {
-                List<Integer> outside = temporaryItem.slots().stream().filter(slot -> slot < 0 || slot >= total).toList();
-                if (outside.isEmpty()) continue;
-
-                Logger.info("The animation item " + temporaryItem.name() + " uses the slots " + outside + " in "
-                        + file.getAbsolutePath() + ", which this menu does not have. Valid slots are 0 to " + (size - 1)
-                        + " for the menu and " + size + " to " + (total - 1) + " for the player inventory. They will be ignored.",
-                        Logger.LogType.WARNING);
-            }
-        }
-    }
-
-    private void validateAnimation(SlotAnimationSettings settings, List<Button> buttons, int size, File file) {
-        if (settings == null) return;
-
-        this.warnAboutUnusedGroups(settings, buttons, file);
-        this.warnAboutSlotsOutOfRange(settings, size, file);
-        if (settings.temporaryItems().isEmpty()) return;
-
-        Map<Integer, Button> refusing = new HashMap<>();
-        for (Button button : buttons) {
-            if (button == null || button.isPlayerInventory()) continue;
-            if (button.getAnimationSettings().allowTemporaryItems()) continue;
-
-            for (int slot : button.getSlots()) {
-                refusing.putIfAbsent(slot, button);
-            }
-        }
-        if (refusing.isEmpty()) return;
-
-        settings.temporaryItems().forEach(temporaryItem -> temporaryItem.slots().stream()
-                .filter(refusing::containsKey)
-                .findFirst()
-                .ifPresent(slot -> Logger.info("The animation item " + temporaryItem.name() + " covers the slot " + slot
-                        + " of the button " + refusing.get(slot).getName() + ", which does not allow it, in " + file.getAbsolutePath()
-                        + ". Add `animation.allow-temporary-items: true` to that button to draw over it.", Logger.LogType.WARNING)));
-    }
 }
