@@ -2,9 +2,9 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
-import fr.maxlego08.menu.api.exceptions.ItemComponentAlreadyRegisterException;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
+import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.test.DataComponentTestBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class DataComponentTest extends DataComponentTestBase {
 
@@ -41,7 +41,7 @@ public class DataComponentTest extends DataComponentTestBase {
 
     @BeforeEach
     public void setup() {
-        this.componentsManager = new ZComponentsManager();
+        this.componentsManager = new ZComponentsManager(new ZRegistryManager());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class DataComponentTest extends DataComponentTestBase {
     }
 
     @Test
-    public void testRegistrationWithDuplicateNameThrowsException() {
+    public void testRegistrationWithDuplicateNameKeepsTheFirstLoader() {
         ItemComponentLoader first = new ItemComponentLoader("duplicate-test") {
             @Override
             public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
@@ -71,7 +71,10 @@ public class DataComponentTest extends DataComponentTestBase {
             }
         };
 
-        assertThrows(ItemComponentAlreadyRegisterException.class, () -> this.componentsManager.registerComponent(second));
+        this.componentsManager.registerComponent(second);
+
+        assertSame(first, this.componentsManager.getLoader("duplicate-test").orElseThrow());
+        assertSame(first, this.componentsManager.getLoader("minecraft:duplicate_test").orElseThrow());
     }
 
     @Test

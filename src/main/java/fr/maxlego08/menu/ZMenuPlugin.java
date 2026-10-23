@@ -165,7 +165,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.enchantments = new ZEnchantments();
         this.itemManager = new ZItemManager(this);
         this.foliaLib = new FoliaLib(this);
-        this.componentsManager = new ZComponentsManager();
+        this.componentsManager = new ZComponentsManager(this.inventoryManager.getRegistries());
         this.toastHelper = new ToastManager(this);
         this.attributApplier = new ApplySpigotAttribute();
         this.configFile = new File(this.getDataFolder(), "config.yml");

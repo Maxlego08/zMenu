@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
@@ -48,6 +49,12 @@ public final class Registries {
      * {@code hdb}, {@code base64}...
      */
     public static final RegistryType<MaterialLoader> MATERIAL_LOADER = RegistryType.createOpen(ZMenuKeys.key("material_loader"), MaterialLoader.class);
+
+    /**
+     * The item components an item can set, by name: {@code minecraft:lore} (also {@code lore}),
+     * {@code myplugin:glow}...
+     */
+    public static final RegistryType<ItemComponentLoader> ITEM_COMPONENT = RegistryType.createOpen(ZMenuKeys.key("item_component"), ItemComponentLoader.class);
 
     private Registries() {
     }
