@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.configuration.Feature;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
@@ -41,6 +42,7 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
         Configuration config = Configuration.getInstance();
         config.save(this.plugin.getConfig(), this.plugin.getConfigFile());
         config.load(this.plugin.getConfig());
+        this.plugin.warnChangedFeatures();
         if (this.plugin.getInventoryHotReload() != null) this.plugin.getInventoryHotReload().update();
 
         this.plugin.getVInventoryManager().close();
@@ -54,10 +56,12 @@ public class CommandMenuReload extends SubCommand<ZMenuPlugin> {
         CommandManager commandManager = this.plugin.getCommandManager();
         commandManager.loadCommands();
 
-        ItemManager itemManager = this.plugin.getItemManager();
-        itemManager.reloadCustomItems();
-        for (Player player : this.plugin.getServer().getOnlinePlayers()) {
-            this.plugin.getScheduler().runAtEntity(player, w -> itemManager.executeCheckInventoryItems(player));
+        if (this.plugin.isFeatureEnabled(Feature.CUSTOM_ITEMS)) {
+            ItemManager itemManager = this.plugin.getItemManager();
+            itemManager.reloadCustomItems();
+            for (Player player : this.plugin.getServer().getOnlinePlayers()) {
+                this.plugin.getScheduler().runAtEntity(player, w -> itemManager.executeCheckInventoryItems(player));
+            }
         }
 
         this.plugin.getDataManager().loadDefaultValues();

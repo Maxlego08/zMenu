@@ -12,6 +12,7 @@ import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.configuration.Feature;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
@@ -126,7 +127,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final InventoriesPlayer inventoriesPlayer;
     private final PatternManager patternManager;
     private final Enchantments enchantments;
-    private final ItemManager itemManager;
+    private final Set<Feature> enabledFeatures = EnumSet.noneOf(Feature.class);
+    private ItemManager itemManager = new DisabledItemManager();
     private final ItemStackService itemStackService = new ZItemStackService(this);
     private final SoundService soundService = new ZSoundService();
     private final FoliaLib foliaLib;
@@ -168,7 +170,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.inventoriesPlayer = new ZInventoriesPlayer(this);
         this.patternManager = new ZPatternManager(this);
         this.enchantments = new ZEnchantments();
-        this.itemManager = new ZItemManager(this);
         this.foliaLib = new FoliaLib(this);
         this.componentsManager = new ZComponentsManager(this.inventoryManager.getRegistries());
         this.toastHelper = new ToastManager(this);
@@ -206,6 +207,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         }
         this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
+        this.loadFeatures();
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
         Configuration.HAS_DIALOG_SUPPORT = this.isDialogCapableServer() && Configuration.enableMiniMessageFormat;
@@ -326,7 +328,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.safeHook("auto listeners", this::registerAutoListeners);
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
-        this.addListener(new ItemUpdaterListener(this.itemManager));
+        if (this.isFeatureEnabled(Feature.CUSTOM_ITEMS)) this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addListener(this.inventoryManager);
 
         this.safeHook("material loaders", this::registerMaterialLoaders);
@@ -507,9 +509,38 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
             files.add("bedrock/simple-form.yml");
         }
 
-        files.add("items/default-items.yml");
+        if (this.isFeatureEnabled(Feature.CUSTOM_ITEMS)) files.add("items/default-items.yml");
 
         return files;
+    }
+
+    private void loadFeatures() {
+        for (Feature feature : Feature.values()) {
+            if (Configuration.isEnabled(feature)) this.enabledFeatures.add(feature);
+        }
+        if (this.isFeatureEnabled(Feature.CUSTOM_ITEMS)) this.itemManager = new ZItemManager(this);
+        if (Configuration.enableInformationMessage) {
+            for (Feature feature : Feature.values()) {
+                if (!this.isFeatureEnabled(feature)) Logger.info("Feature " + feature.getPath() + " is disabled in config.yml.");
+            }
+        }
+    }
+
+    /**
+     * Logs a warning for every feature whose state in {@code config.yml} no longer matches the state
+     * zMenu started with, since features only change on restart.
+     */
+    public void warnChangedFeatures() {
+        for (Feature feature : Feature.values()) {
+            if (Configuration.isEnabled(feature) != this.isFeatureEnabled(feature)) {
+                Logger.info("Feature " + feature.getPath() + " was " + (Configuration.isEnabled(feature) ? "enabled" : "disabled") + " in config.yml, restart the server to apply it.", Logger.LogType.WARNING);
+            }
+        }
+    }
+
+    @Override
+    public boolean isFeatureEnabled(@NotNull Feature feature) {
+        return this.enabledFeatures.contains(feature);
     }
 
     @Override

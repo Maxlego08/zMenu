@@ -4,6 +4,12 @@
 #
 # Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
 
+# Turn off the parts of zMenu you do not use. A disabled feature registers nothing (no listener, command or default file).
+# Features are read when the server starts: restart the server after changing them, /zm reload does not apply them.
+features:
+  # Custom items of the items folder, their mechanics (itemjoin, on-click), the item update on join and /zm giveitem.
+  custom-items: true
+
 # Enables detailed information display in the console.
 # If you encounter an issue, enable this option and send the errors to support.
 enable-debug: false

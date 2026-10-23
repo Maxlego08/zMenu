@@ -16,8 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 public class Configuration {
@@ -489,6 +491,9 @@ public class Configuration {
     )
     public static long performanceThresholdMs = 10;
 
+    private static final String FEATURES_SECTION = "features";
+    private static final Set<Feature> enabledFeatures = defaultFeatures();
+
     @ConfigUpdate
     public static boolean updated = false;
     /**
@@ -517,7 +522,34 @@ public class Configuration {
         return instance;
     }
 
+    /**
+     * Tells whether {@code config.yml} enables a feature, as of the last {@link #load(FileConfiguration)}.
+     * zMenu reads features once at startup, use {@link fr.maxlego08.menu.api.MenuPlugin#isFeatureEnabled(Feature)}
+     * to know what is actually running.
+     *
+     * @param feature the feature
+     * @return whether the configuration enables it
+     */
+    public static boolean isEnabled(@NotNull Feature feature) {
+        return enabledFeatures.contains(feature);
+    }
+
+    private static Set<Feature> defaultFeatures() {
+        Set<Feature> features = EnumSet.noneOf(Feature.class);
+        for (Feature feature : Feature.values()) {
+            if (feature.isEnabledByDefault()) features.add(feature);
+        }
+        return features;
+    }
+
     public void load(@NotNull FileConfiguration fileConfiguration) {
+
+        enabledFeatures.clear();
+        for (Feature feature : Feature.values()) {
+            if (fileConfiguration.getBoolean(FEATURES_SECTION + "." + feature.getPath(), feature.isEnabledByDefault())) {
+                enabledFeatures.add(feature);
+            }
+        }
 
         enableDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_DEBUG.getPath());
         enableDebugTime = fileConfiguration.getBoolean(ConfigPath.ENABLE_DEBUG_TIME.getPath());

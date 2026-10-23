@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.configuration.Feature;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.itemstack.ItemStackService;
@@ -311,7 +312,22 @@ public interface MenuPlugin extends Plugin {
         return ClientVersionManager.SERVER_VERSION_ONLY;
     }
 
+    /**
+     * Returns the custom item manager. Never null: when {@link Feature#CUSTOM_ITEMS} is disabled it is
+     * a manager that knows no item and ignores every registration.
+     *
+     * @return the item manager
+     */
     ItemManager getItemManager();
+
+    /**
+     * Tells whether a feature is running. Features are read from {@code config.yml} once when zMenu
+     * enables, a change made afterwards only applies after a restart.
+     *
+     * @param feature the feature
+     * @return whether the feature is enabled
+     */
+    boolean isFeatureEnabled(@NotNull Feature feature);
 
     AttributApplier getAttributApplier();
 
