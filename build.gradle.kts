@@ -161,11 +161,7 @@ dependencies {
     api(projects.api)
     api(projects.common)
     api(projects.hooks)
-    implementation(projects.nms.base)
     implementation(projects.nms.v121R1)
-    implementation(projects.nms.v120R4)
-    implementation(projects.nms.v120R3)
-    implementation(libs.item.nbt.api)
     // Java-WebSocket pulls slf4j, which the server already provides - exclude it from the shaded jar to
     // avoid duplicate classes (Paper plugin-remap fails otherwise).
     implementation(libs.java.websocket) {
@@ -192,7 +188,6 @@ tasks {
 
         relocate("com.tcoded.folialib", "fr.maxlego08.menu.hooks.folialib")
         relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
-        relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
         relocate("com.cryptomorin.xseries", "fr.maxlego08.menu.hooks.xseries")
         relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")

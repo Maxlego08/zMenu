@@ -115,11 +115,37 @@ public interface CommandManager {
      */
     boolean reload(Command command);
 
+    /**
+     * Registers an argument type for custom commands.
+     *
+     * @param commandArgumentValidator the validator
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#COMMAND_ARGUMENT_VALIDATOR}:
+     * {@code registries.writable(Registries.COMMAND_ARGUMENT_VALIDATOR).register(plugin, validator)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerArgumentValidator(CommandArgumentValidator commandArgumentValidator);
 
+    /**
+     * Removes an argument type.
+     *
+     * @param commandArgumentValidator the validator
+     * @deprecated use {@code registries.writable(Registries.COMMAND_ARGUMENT_VALIDATOR).unregister(validator.key())}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisterArgumentValidator(CommandArgumentValidator commandArgumentValidator);
 
+    /**
+     * @return every argument type
+     * @deprecated read {@link fr.maxlego08.menu.api.registry.Registries#COMMAND_ARGUMENT_VALIDATOR}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     List<CommandArgumentValidator> getArgumentValidators();
 
+    /**
+     * Finds an argument type by the {@code type} written in a command file.
+     *
+     * @param argumentTypeName the type
+     * @return the validator, if one has this type
+     */
     Optional<CommandArgumentValidator> getArgumentValidator(String argumentTypeName);
 }

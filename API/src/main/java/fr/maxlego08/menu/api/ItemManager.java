@@ -32,8 +32,22 @@ public interface ItemManager {
 
     void unloadListeners();
 
+    /**
+     * Registers a mechanic that custom items can use.
+     *
+     * @param factory the factory of the mechanic
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#MECHANIC}:
+     * {@code registries.writable(Registries.MECHANIC).register(plugin, factory)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerMechanicFactory(MechanicFactory<?> factory);
 
+    /**
+     * Finds a mechanic by the id written in a custom item file.
+     *
+     * @param mechanicId the id of the mechanic
+     * @return the factory, if one has this id
+     */
     Optional<MechanicFactory<?>> getMechanicFactory(String mechanicId);
 
     void giveItem(Player player, String itemId);

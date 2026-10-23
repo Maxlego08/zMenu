@@ -1,10 +1,20 @@
 plugins {
     alias(libs.plugins.groupez.publish)
+    `java-test-fixtures`
 }
 
 dependencies{
     compileOnly(libs.adventure.api)
     compileOnly(libs.adventure.text.minimessage)
+
+    testImplementation(libs.paper.api)
+    testFixturesCompileOnly(libs.paper.api)
+}
+
+// The test fixtures are shared with the tests of other modules, they are not published.
+(components["java"] as AdhocComponentWithVariants).apply {
+    withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
+    withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 }
 
 rootProject.extra.properties["sha"]?.let { sha ->
@@ -15,7 +25,6 @@ tasks {
     shadowJar {
         relocate("com.tcoded.folialib", "fr.maxlego08.menu.hooks.folialib")
         relocate("fr.traqueur.currencies", "fr.maxlego08.menu.hooks.currencies")
-        relocate("de.tr7zw.changeme.nbtapi", "fr.maxlego08.menu.hooks.nbtapi")
         relocate("com.cryptomorin.xseries", "fr.maxlego08.menu.hooks.xseries")
         relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")

@@ -55,24 +55,32 @@ public interface Placeholder {
 
     class Local implements Placeholder {
 
+        private static String restorePercent(String string) {
+            return string == null ? null : string.replace("", "%");
+        }
+
+        private static List<String> restorePercent(List<String> list) {
+            return list == null ? null : list.stream().map(Local::restorePercent).toList();
+        }
+
         @Override
         public String setPlaceholders(Player player, String string) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player, string);
+            return restorePercent(LocalPlaceholder.getInstance().setPlaceholders(player, string));
         }
 
         @Override
         public String setPlaceholders(OfflinePlayer player, String string) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player, string);
+            return restorePercent(LocalPlaceholder.getInstance().setPlaceholders(player, string));
         }
 
         @Override
         public List<String> setPlaceholders(Player player, List<String> list) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player, list);
+            return restorePercent(LocalPlaceholder.getInstance().setPlaceholders(player, list));
         }
 
         @Override
         public List<String> setPlaceholders(OfflinePlayer player, List<String> list) {
-            return LocalPlaceholder.getInstance().setPlaceholders(player, list);
+            return restorePercent(LocalPlaceholder.getInstance().setPlaceholders(player, list));
         }
 
     }

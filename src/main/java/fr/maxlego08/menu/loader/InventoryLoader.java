@@ -2,6 +2,7 @@ package fr.maxlego08.menu.loader;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimationLoader;
 import fr.maxlego08.menu.api.button.Button;
@@ -78,6 +79,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 int nextMultiple = closestMultiple + 9;
                 int closest = (size - closestMultiple < nextMultiple - size) ? closestMultiple : nextMultiple;
                 throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath() + " because it's not a multiple of 9. The closest valid size would be " + closest);
+            }
+            if (size < 9 || size > 54) {
+                throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath() + " because a chest inventory must be between 9 and 54.");
             }
         }
 
@@ -179,12 +183,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setTranslatedNames(MenuItemStackLoader.getTranslatedName(configuration, path));
 
         List<fr.maxlego08.menu.api.InventoryOption> inventoryOptions = new ArrayList<>();
-        for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : this.plugin.getInventoryManager().getInventoryOptions().entrySet()) {
-            for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
-                InventoryOption instance = InventoryOption.create(entry.getKey(), optionClass);
-                if (instance != null) {
-                    inventoryOptions.add(instance);
-                }
+        for (InventoryOptionType type : this.plugin.getInventoryManager().getRegistries().registry(Registries.INVENTORY_OPTION)) {
+            InventoryOption instance = type.create();
+            if (instance != null) {
+                inventoryOptions.add(instance);
             }
         }
         for (InventoryOption inventoryOption : inventoryOptions) {
@@ -213,8 +215,11 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             String loadString = configuration.contains("fillItem") ? "fillItem" : configuration.contains("fill-item") ? "fill-item" : null;
             if (loadString != null) {
                 inventory.setFillItemStack(menuItemStackLoader.load(configuration, loadString + ".", file));
+                inventory.setFillItemUseCache(configuration.getBoolean(loadString + ".use-cache",
+                        configuration.getBoolean(loadString + ".useCache", true)));
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            Logger.info("Unable to load the fill item of " + file.getAbsolutePath() + ": " + exception.getMessage(), Logger.LogType.ERROR);
         }
     }
 
@@ -276,16 +281,19 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 for (String string : actionStrings) {
                     try {
                         actions.add(Action.valueOf(string.toUpperCase(Locale.ROOT)));
-                    } catch (Exception ignored) {
+                    } catch (IllegalArgumentException exception) {
+                        Logger.info("Action " + string + " is not valid at " + loadString + ".actions in " + file.getAbsolutePath()
+                                + ", expected one of " + Arrays.toString(Action.values()), Logger.LogType.ERROR);
                     }
                 }
 
                 String type = configuration.getString(loadString + ".type", "full");
-                ItemStackSimilar itemStackSimilar = this.plugin.getInventoryManager().getItemStackVerification(type).orElseGet(FullSimilar::new);
+                ItemStackSimilar itemStackSimilar = this.plugin.getItemStackService().getVerification(type).orElseGet(FullSimilar::new);
 
                 inventory.setOpenWithItem(new OpenWithItem(loadedItem, actions, itemStackSimilar));
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            Logger.info("Unable to load the open with item of " + file.getAbsolutePath() + ": " + exception.getMessage(), Logger.LogType.ERROR);
         }
     }
 
@@ -327,4 +335,5 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             }
         }
     }
+
 }

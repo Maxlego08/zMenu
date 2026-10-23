@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.test;
 
-import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +38,7 @@ public abstract class DataComponentTestBase {
         System.out.println("=== Missing: " + missing.size());
 
         if (!missing.isEmpty()) {
-            throw new AssertionError("Missing " + missing.size() + " component(s): " + missing + " for platform type " + PlatformType.get());
+            throw new AssertionError("Missing " + missing.size() + " component(s): " + missing);
         }
     }
 

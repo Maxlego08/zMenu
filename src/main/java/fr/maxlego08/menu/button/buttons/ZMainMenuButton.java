@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.button.buttons;
 
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -26,7 +28,7 @@ public class ZMainMenuButton extends ZHomeButton {
     @Override
     public void onClick(@NonNull Player player, @NonNull InventoryClickEvent event, @NonNull InventoryEngine inventory, int slot, @NonNull Placeholders placeholders) {
         super.onClick(player, event, inventory, slot, placeholders);
-        this.inventoryManager.openInventory(player,Configuration.mainMenu);
+        this.inventoryManager.openInventory(player, this.inventoryManager.findInventory(Configuration.mainMenu).map(Inventory::key).orElse(ZMenuKeys.inventoryKey(Configuration.mainMenu)));
     }
 
     @Override

@@ -20,6 +20,7 @@ import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderManager;
+import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -85,7 +86,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     }
     @Override
     public Optional<BedrockInventory<?,?,?>> getBedrockInventory(String pluginName, String fileName) {
-        Optional<Plugin> plugin = this.menuPlugin.getInventoryManager().getPluginIgnoreCase(pluginName);
+        Optional<Plugin> plugin = PluginUtils.getPluginIgnoreCase(pluginName);
         return plugin.isEmpty() || fileName == null ? Optional.empty() : this.getBedrockInventory(plugin.get(), fileName);
     }
 

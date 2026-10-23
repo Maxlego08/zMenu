@@ -3,6 +3,9 @@ package fr.maxlego08.menu;
 import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.registry.Registries;
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeUtil;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
@@ -12,12 +15,10 @@ import fr.maxlego08.menu.api.context.ZBuildContext;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
-import fr.maxlego08.menu.api.exceptions.ItemEnchantException;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.utils.LoreType;
-import fr.maxlego08.menu.api.utils.MapConfiguration;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
@@ -28,7 +29,6 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -36,7 +36,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
-import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -231,11 +230,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         String papiMaterial = this.papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
 
         try {
-            return this.getMaterial(Integer.parseInt(papiMaterial));
-        } catch (Exception ignored) {
-        }
-
-        try {
             return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase(Locale.ROOT)) : null;
         } catch (Exception ignored) {
             return null;
@@ -254,7 +248,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 String key = values[0];
                 String value = values[1];
 
-                Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
+                Optional<MaterialLoader> optional = this.findMaterialLoader(key);
                 if (optional.isPresent()) {
                     MaterialLoader loader = optional.get();
                     return loader.load(player, null, this.path, value);
@@ -310,7 +304,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
         Material finalMaterial = itemStack.getType();
         String locale = this.findPlayerLocale(player);
-        FontImage fontImage = this.inventoryManager.getFontImage();
+        FontImage fontImage = this.inventoryManager.getPlugin().getFontImage();
 
         this.applyDisplayNameLore(player, placeholders, itemMeta, offlinePlayer, locale, fontImage, useCache);
         this.applyGlowing(itemMeta);
@@ -327,7 +321,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             return;
         }
 
-        Enchantments helperEnchantments = this.inventoryManager.getEnchantments();
+        Enchantments helperEnchantments = this.inventoryManager.getPlugin().getEnchantments();
         helperEnchantments.getEnchantments("power").ifPresent(menuEnchantment -> {
             itemMeta.addEnchant(menuEnchantment.enchantment(), 1, true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -421,11 +415,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (itemName != null) {
-            this.inventoryManager.getMeta().updateDisplayName(itemMeta, itemName, player);
+            this.inventoryManager.getPlugin().getMetaUpdater().updateDisplayName(itemMeta, itemName, player);
         }
 
         if (!itemLore.isEmpty()) {
-            this.inventoryManager.getMeta().updateLore(itemMeta, itemLore, this.loreType);
+            this.inventoryManager.getPlugin().getMetaUpdater().updateLore(itemMeta, itemLore, this.loreType);
         }
     }
 
@@ -916,164 +910,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.needPlaceholderAPI = string.contains("%");
     }
 
-    public void setTypeMapAccessor(MapConfiguration configuration) {
-
-        this.setData(configuration.getString("data", "0"));
-        this.setDurability(configuration.getString("durability", null));
-        this.setAmount(configuration.getString("amount", "1"));
-        this.setAmountType(AmountType.valueOf(configuration.getString("amount-type", "SET").toUpperCase(Locale.ROOT)));
-        this.setMaterial(configuration.getString("material", null));
-        this.setTargetPlayer(configuration.getString("target", null));
-        this.setUrl(configuration.getString("url", null));
-
-        Color potionColor = this.getColor(configuration, "color", null);
-
-        try {
-            Material material = Material.valueOf(configuration.getString("material", "").toUpperCase(Locale.ROOT));
-            String materialName = material.toString();
-            if (materialName.startsWith("LEATHER_")) {
-                Color armorColor = this.getColor(configuration, "color", Color.fromRGB(160, 101, 64));
-                String type = materialName.replace("LEATHER_", "");
-                this.setLeatherArmor(new LeatherArmor(LeatherArmor.ArmorType.valueOf(type), armorColor));
-            }
-        } catch (Exception ignored) {
-        }
-
-        if (configuration.contains("potion")) {
-            PotionType type = PotionType.valueOf(configuration.getString("potion", "REGEN").toUpperCase(Locale.ROOT));
-            int level = configuration.getInt("level", 1);
-            boolean splash = configuration.getBoolean("splash", false);
-            boolean extended = configuration.getBoolean("extended", false);
-            boolean arrow = configuration.getBoolean("arrow", false);
-
-            Potion potion = new Potion(type, level, splash, extended, arrow);
-            potion.setColor(potionColor);
-            this.setPotion(potion);
-        }
-
-        if (configuration.contains("banner")) {
-
-            DyeColor dyeColor = DyeColor.valueOf(configuration.getString("banner", "WHITE").toUpperCase(Locale.ROOT));
-            List<String> stringPattern = configuration.getStringList("patterns");
-            List<Pattern> patterns = new ArrayList<>();
-            for (String string : stringPattern) {
-                String[] split = string.split(":");
-                if (split.length != 2) continue;
-                patterns.add(new Pattern(DyeColor.valueOf(split[0]), PatternType.valueOf(split[1])));
-            }
-            this.setBanner(new Banner(dyeColor, patterns));
-
-        }
-
-        /*if (configuration.contains("firework")) {
-
-            ConfigurationSection section = configuration.getConfigurationSection("firework");
-            if (section != null) {
-                boolean isStar = section.getBoolean("star", false);
-                FireworkEffect.Builder builder = FireworkEffect.builder();
-                builder.flicker(section.getBoolean("flicker"));
-                builder.trail(section.getBoolean("trail"));
-                builder.with(FireworkEffect.Type.valueOf(section.getString("type", "BALL")));
-                builder.withColor(getColors(section, "colors"));
-                builder.withFade(getColors(section, "fadeColors"));
-                setFirework(new Firework(isStar, builder.build()));
-            }
-        }*/
-
-        List<String> lore = configuration.getStringList("lore");
-        if (lore.isEmpty()) {
-            Object object = configuration.getObject("lore", null);
-            if (object instanceof String loreString) {
-                lore = Arrays.asList(loreString.split("\n"));
-            }
-        }
-        this.setLore(lore);
-        this.setDisplayName(configuration.getString("name", null));
-        this.setGlowing(configuration.getBoolean("glow"));
-        this.setModelID(configuration.getString("modelID", configuration.getString("model-id", configuration.getString("modelId", configuration.getString("customModelId", configuration.getString("customModelData", "0"))))));
-
-        List<String> enchants = configuration.getStringList("enchants");
-        Map<Enchantment, Integer> enchantments = new HashMap<>();
-
-        for (String enchantString : enchants) {
-
-            try {
-
-                String[] splitEnchant = enchantString.split(",");
-
-                if (splitEnchant.length == 1) throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
-
-                int level;
-                String enchant = splitEnchant[0];
-                try {
-                    level = Integer.parseInt(splitEnchant[1]);
-                } catch (NumberFormatException e) {
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
-                }
-
-                Enchantment enchantment = Enchantment.getByName(enchant);
-                if (enchantment == null) {
-                    throw new ItemEnchantException("an error occurred while loading the enchantment " + enchantString);
-                }
-
-                enchantments.put(enchantment, level);
-
-            } catch (ItemEnchantException e) {
-                Logger.error(e);
-            }
-        }
-
-        List<String> flagStrings = configuration.getStringList("flags");
-        List<ItemFlag> flags = new ArrayList<>(flagStrings.size());
-        for (String flag : flagStrings) {
-            flags.add(this.getFlag(flag));
-        }
-
-        List<AttributeWrapper> attributeModifiers = new ArrayList<>();
-
-        if (configuration.contains("attributes")) {
-            List<Map<String, Object>> attributesFromConfig = (List<Map<String, Object>>) configuration.getList("attributes");
-            if (attributesFromConfig != null) {
-                for (Map<String, Object> attributeMap : attributesFromConfig) {
-                    attributeModifiers.add(AttributeWrapper.deserialize(attributeMap));
-                }
-            }
-        }
-
-        this.setEnchantments(enchantments);
-        this.setFlags(flags);
-        this.setAttributes(attributeModifiers);
-        this.setAttributeMergeStrategy(AttributeMergeStrategy.valueOf(configuration.getString("attribute-merge-strategy", "REPLACE").toUpperCase(Locale.ROOT)));
-    }
-
-    private Color getColor(MapConfiguration configuration, String key, Color def) {
-        String[] split = configuration.getString(key, "").split(",");
-
-        if (split.length == 3) {
-            return Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        } else if (split.length == 4) {
-            return Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
-        }
-
-        return def;
-    }
-
-    private List<Color> getColors(MapConfiguration section, String key) {
-        List<Color> colors = new ArrayList<>();
-
-        for (String color : section.getStringList(key)) {
-            String[] split = color.split(",");
-
-            if (split.length == 3) {
-                colors.add(Color.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
-            } else if (split.length == 4) {
-                colors.add(Color.fromARGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3])));
-            }
-        }
-
-        return colors;
-    }
-
     public Map<String, String> getTranslatedDisplayName() {
         return this.translatedDisplayName;
     }
@@ -1278,10 +1114,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.material.contains(":")) {
             String[] values = this.material.split(":", 2);
             if (values.length == 2) {
-                return this.inventoryManager.getMaterialLoader(values[0]).isPresent();
+                return this.findMaterialLoader(values[0]).isPresent();
             }
         }
         return false;
+    }
+
+    private Optional<MaterialLoader> findMaterialLoader(String prefix) {
+        Key key = ZMenuKeys.tryParse(prefix);
+        return key == null ? Optional.empty() : this.inventoryManager.getRegistries().registry(Registries.MATERIAL_LOADER).get(key);
     }
 
     @Override
@@ -1440,7 +1281,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     private String enchantmentName(Enchantment enchantment) {
         String key = enchantment.getKey().getKey();
-        boolean readsBack = this.inventoryManager.getEnchantments().getEnchantments(key)
+        boolean readsBack = this.inventoryManager.getPlugin().getEnchantments().getEnchantments(key)
                 .map(menuEnchantment -> menuEnchantment.enchantment().equals(enchantment))
                 .orElse(false);
         return readsBack ? key : enchantment.getName();

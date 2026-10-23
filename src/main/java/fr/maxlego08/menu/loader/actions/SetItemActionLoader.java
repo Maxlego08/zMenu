@@ -36,9 +36,9 @@ public class SetItemActionLoader extends ActionLoader {
         boolean inPlayerInventory = accessor.getBoolean("in-player-inventory", false);
         MenuItemStack menuItemStack;
         if (accessor.contains("item")) {
-            menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, (java.util.Map<String, Object>) accessor.getObject("item"));
+            menuItemStack = this.menuPlugin.getItemStackService().load(file, (java.util.Map<String, Object>) accessor.getObject("item"));
         } else {
-            menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, accessor.map());
+            menuItemStack = this.menuPlugin.getItemStackService().load(file, accessor.map());
         }
         boolean dupeProtection = accessor.getBoolean("dupe-protection", true);
         return new SetItemAction(slots, inPlayerInventory, menuItemStack, dupeProtection);

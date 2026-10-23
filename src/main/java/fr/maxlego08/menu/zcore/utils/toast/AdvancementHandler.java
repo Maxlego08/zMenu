@@ -48,60 +48,6 @@ class AdvancementHandler {
     }
 
     /**
-     * Creates an advancement for displaying a toast notification for Minecraft versions before 1.20.5
-     * Uses NBT with integer CustomModelData (1.16-1.20.4)
-     *
-     * @param icon      The Minecraft item ID to use as the toast icon
-     * @param message   The message to display in the toast
-     * @param style     The advancement frame style (toast type)
-     * @param modelData The custom model data as integer
-     * @return The NamespacedKey of the created advancement
-     */
-    @NotNull
-    private NamespacedKey legacyType(String icon, String message, ToastType style, Object modelData, boolean glowing, NamespacedKey advancementKey) {
-
-        int modelDataInt = 0;
-        if (modelData instanceof Integer) {
-            modelDataInt = (Integer) modelData;
-        } else if (modelData instanceof Float) {
-            modelDataInt = ((Float) modelData).intValue();
-        } else if (modelData instanceof String) {
-            try {
-                modelDataInt = Integer.parseInt(modelData.toString());
-            } catch (NumberFormatException ignored) {
-                // TODO: If parsing fails, modelDataInt remains 0
-            }
-        }
-
-        String json = "{\n" + //
-                " \"criteria\": {\n" + //
-                " \"trigger\": {\n" + //
-                " \"trigger\": \"minecraft:impossible\"\n" + //
-                " }\n" + //
-                " },\n" + //
-                " \"display\": {\n" + //
-                " \"icon\": {\n" + //
-                " \"item\": \"minecraft:" + icon + "\",\n" + //
-                " \"nbt\": \"{CustomModelData:" + modelDataInt + //
-                (glowing ? ",Enchantments:[{lvl:1,id:\\\"minecraft:protection\\\"}]" : "") + "}\"\n" + //
-                " },\n" + //
-                " \"title\": " + message + ",\n" + //
-                " \"description\": {\n" + //
-                " \"text\": \"\"\n" + //
-                " },\n" + //
-                " \"background\": \"minecraft:textures/gui/advancements/backgrounds/adventure.png\",\n" + //
-                " \"frame\": \"" + style.toString().toLowerCase(Locale.ROOT) + "\",\n" + //
-                " \"announce_to_chat\": false,\n" + //
-                " \"show_toast\": true,\n" + //
-                " \"hidden\": true\n" + //
-                " }\n" + //
-                "}";
-
-        Bukkit.getUnsafe().loadAdvancement(advancementKey, json);
-        return advancementKey;
-    }
-
-    /**
      * Creates an advancement for displaying a toast notification for Minecraft versions 1.20.5-1.21.3
      * Uses components system with integer CustomModelData
      *
@@ -243,13 +189,6 @@ class AdvancementHandler {
         VersionType versionType = ServerVersion.getVersionType(serverVersion);
 
         return switch (versionType) {
-            case LEGACY -> {
-                // 1.16 - 1.20.4: NBT format with integer CustomModelData
-                if (modelData == null) {
-                    modelData = 0;
-                }
-                yield this.legacyType(icon, json, style, modelData, glowing, advancementKey);
-            }
             case MIDDLE -> {
                 // 1.20.5 - 1.21.3: Components format with integer CustomModelData
                 if (modelData == null) {

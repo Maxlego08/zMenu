@@ -16,8 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 public class Configuration {
@@ -78,7 +80,7 @@ public class Configuration {
     )
     public static boolean enableOpenMessage = true;
 
-    // Enable mini message format, allows you to activate the mini message format, available from 1.17 onwards, more information here: https://docs.advntr.dev/minimessage/index.html
+    // Enables Dialogs support. MiniMessage formatting is always enabled, more information here: https://docs.advntr.dev/minimessage/index.html
     @ConfigOption(
             type = DialogInputType.BOOLEAN,
             trueText = "<green>Enabled",
@@ -104,6 +106,24 @@ public class Configuration {
             label = "Enable FastEvent"
     )
     public static boolean enableFastEvent = false;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Max animation duration in milliseconds",
+            startRange = 1000,
+            endRange = 60000,
+            stepRange = 500
+    )
+    public static int maxAnimationDuration = 10000;
+
+    @ConfigOption(
+            type = DialogInputType.NUMBER_RANGE,
+            label = "Idle buttons before sharing one timer",
+            startRange = 0,
+            endRange = 54,
+            stepRange = 1
+    )
+    public static int sharedIdleTimerThreshold = 8;
 
     // Seconds save player data: The time in seconds for automatic backup of player data.
     @ConfigOption(
@@ -471,6 +491,9 @@ public class Configuration {
     )
     public static long performanceThresholdMs = 10;
 
+    private static final String FEATURES_SECTION = "features";
+    private static final Set<Feature> enabledFeatures = defaultFeatures();
+
     @ConfigUpdate
     public static boolean updated = false;
     /**
@@ -499,7 +522,34 @@ public class Configuration {
         return instance;
     }
 
+    /**
+     * Tells whether {@code config.yml} enables a feature, as of the last {@link #load(FileConfiguration)}.
+     * zMenu reads features once at startup, use {@link fr.maxlego08.menu.api.MenuPlugin#isFeatureEnabled(Feature)}
+     * to know what is actually running.
+     *
+     * @param feature the feature
+     * @return whether the configuration enables it
+     */
+    public static boolean isEnabled(@NotNull Feature feature) {
+        return enabledFeatures.contains(feature);
+    }
+
+    private static Set<Feature> defaultFeatures() {
+        Set<Feature> features = EnumSet.noneOf(Feature.class);
+        for (Feature feature : Feature.values()) {
+            if (feature.isEnabledByDefault()) features.add(feature);
+        }
+        return features;
+    }
+
     public void load(@NotNull FileConfiguration fileConfiguration) {
+
+        enabledFeatures.clear();
+        for (Feature feature : Feature.values()) {
+            if (fileConfiguration.getBoolean(FEATURES_SECTION + "." + feature.getPath(), feature.isEnabledByDefault())) {
+                enabledFeatures.add(feature);
+            }
+        }
 
         enableDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_DEBUG.getPath());
         enableDebugTime = fileConfiguration.getBoolean(ConfigPath.ENABLE_DEBUG_TIME.getPath());
@@ -541,6 +591,8 @@ public class Configuration {
         allClicksType = clickTypes;
 
         enableCacheItemStack = fileConfiguration.getBoolean(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath());
+        maxAnimationDuration = fileConfiguration.getInt(ConfigPath.MAX_ANIMATION_DURATION.getPath(), 10000);
+        sharedIdleTimerThreshold = Math.max(0, fileConfiguration.getInt(ConfigPath.SHARED_IDLE_TIMER_THRESHOLD.getPath(), 8));
         // Both read with an explicit default: the one-arg getters return false / 0 for a missing key,
         // which would silently disable the click throttle on a config that predates these options.
         enableCooldownClick = fileConfiguration.getBoolean(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), true);
@@ -635,6 +687,8 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ALL_CLICKS_TYPE.getPath(), clickTypeNames);
 
         fileConfiguration.set(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath(), enableCacheItemStack);
+        fileConfiguration.set(ConfigPath.MAX_ANIMATION_DURATION.getPath(), maxAnimationDuration);
+        fileConfiguration.set(ConfigPath.SHARED_IDLE_TIMER_THRESHOLD.getPath(), sharedIdleTimerThreshold);
         fileConfiguration.set(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), enableCooldownClick);
         fileConfiguration.set(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath(), cooldownClickMilliseconds);
         fileConfiguration.set(ConfigPath.CACHE_PLACEHOLDER_API.getPath(), cachePlaceholderAPI);
@@ -703,6 +757,8 @@ public class Configuration {
         ALL_CLICKS_TYPE("all-clicks-type"),
 
         ENABLE_CACHE_ITEM_STACK("enable-cache-item-stack"),
+        MAX_ANIMATION_DURATION("max-animation-duration"),
+        SHARED_IDLE_TIMER_THRESHOLD("shared-idle-timer-threshold"),
         ENABLE_COOLDOWN_CLICK("enable-cooldown-click"),
         COOLDOWN_CLICK_MILLISECONDS("cooldown-click-milliseconds"),
 

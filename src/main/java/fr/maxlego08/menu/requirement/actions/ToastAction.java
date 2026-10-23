@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.registry.Registries;
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
@@ -60,7 +63,8 @@ public class ToastAction extends Action {
                 String key = values[0];
                 String value = values[1];
 
-                Optional<MaterialLoader> optional = this.plugin.getInventoryManager().getMaterialLoader(key);
+                Key loaderKey = ZMenuKeys.tryParse(key);
+                Optional<MaterialLoader> optional = loaderKey == null ? Optional.empty() : this.plugin.getInventoryManager().getRegistries().registry(Registries.MATERIAL_LOADER).get(loaderKey);
                 if (optional.isPresent()) {
                     MaterialLoader loader = optional.get();
                     var itemStack = loader.load(player, null, "", value);

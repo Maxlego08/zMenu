@@ -25,11 +25,13 @@ public class CommandMenuReloadConfig extends SubCommand<ZMenuPlugin> {
         Configuration config = Configuration.getInstance();
         config.save(this.plugin.getConfig(), this.plugin.getConfigFile());
         config.load(this.plugin.getConfig());
+        this.plugin.warnChangedFeatures();
         if (this.plugin.getInventoryHotReload() != null) this.plugin.getInventoryHotReload().update();
 
         PatternManager patternManager = this.plugin.getPatternManager();
         patternManager.loadActionsPatterns();
         patternManager.loadPatterns();
+        this.plugin.getInventoryManager().getAnimationManager().loadAnimations();
 
         MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD_FILES);
         return CommandResultType.SUCCESS;

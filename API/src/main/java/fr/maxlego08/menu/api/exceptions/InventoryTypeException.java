@@ -15,7 +15,6 @@ public class InventoryTypeException extends InventoryException {
      */
     public InventoryTypeException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -27,7 +26,6 @@ public class InventoryTypeException extends InventoryException {
     public InventoryTypeException(String message, Throwable cause, boolean enableSuppression,
                                   boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -36,7 +34,6 @@ public class InventoryTypeException extends InventoryException {
      */
     public InventoryTypeException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -44,7 +41,6 @@ public class InventoryTypeException extends InventoryException {
      */
     public InventoryTypeException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -52,7 +48,6 @@ public class InventoryTypeException extends InventoryException {
      */
     public InventoryTypeException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

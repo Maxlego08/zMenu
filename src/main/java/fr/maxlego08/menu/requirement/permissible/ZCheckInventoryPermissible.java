@@ -42,7 +42,7 @@ public class ZCheckInventoryPermissible extends Permissible {
             if (this.isInPlayerInventory) {
                 itemStackA = player.getInventory().getItem(this.slot);
             } else {
-                Inventory spigotInventory = inventoryEngine.getSpigotInventory();
+                Inventory spigotInventory = inventoryEngine.getInventory();
                 itemStackA = spigotInventory.getItem(this.slot);
             }
         } else {

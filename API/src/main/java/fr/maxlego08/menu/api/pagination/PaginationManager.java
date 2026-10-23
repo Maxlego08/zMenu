@@ -88,7 +88,33 @@ public interface PaginationManager {
     void removeState(@NotNull UUID playerId, @NotNull String contextId);
 
     /**
-     * Removes all pagination states for a player.
+     * Gets the page of the zMenu inventory a player opened last.
+     *
+     * @param playerId the player's UUID
+     * @return the page, starting at 1, or 0 if the player has not opened an inventory since they joined
+     */
+    int getMenuPage(@NotNull UUID playerId);
+
+    /**
+     * Gets the number of pages of the zMenu inventory a player opened last.
+     *
+     * @param playerId the player's UUID
+     * @return the number of pages, or 0 if the player has not opened an inventory since they joined
+     */
+    int getMenuMaxPage(@NotNull UUID playerId);
+
+    /**
+     * Remembers the page of the zMenu inventory a player is opening, read by the {@code player_page}
+     * and {@code player_max_page} placeholders.
+     *
+     * @param playerId the player's UUID
+     * @param page     the page, starting at 1
+     * @param maxPage  the number of pages of the inventory
+     */
+    void setMenuPage(@NotNull UUID playerId, int page, int maxPage);
+
+    /**
+     * Removes all pagination states for a player, and the page of the inventory they opened last.
      * Useful on player logout.
      *
      * @param playerId the player's UUID

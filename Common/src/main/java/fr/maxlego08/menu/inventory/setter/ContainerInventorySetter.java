@@ -20,6 +20,8 @@ public interface ContainerInventorySetter extends ContainerInventory {
 
     void setFillItemStack(MenuItemStack fillItemStack);
 
+    void setFillItemUseCache(boolean fillItemUseCache);
+
     void setUpdateInterval(int updateInterval);
 
     void setFile(File file);

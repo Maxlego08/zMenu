@@ -2,6 +2,9 @@ package fr.maxlego08.menu.api.mechanic;
 
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -16,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public abstract class MechanicFactory<T extends Mechanic<?>> {
+public abstract class MechanicFactory<T extends Mechanic<?>> implements Keyed {
     private final MenuPlugin plugin;
     private final ItemManager itemManager;
     private final String mechanicId;
@@ -55,6 +58,17 @@ public abstract class MechanicFactory<T extends Mechanic<?>> {
     @NotNull
     public String getMechanicId() {
         return this.mechanicId;
+    }
+
+    /**
+     * The key of this factory in {@link fr.maxlego08.menu.api.registry.Registries#MECHANIC}, read from
+     * {@link #getMechanicId()} like a mechanic written in a custom item file.
+     *
+     * @return the key
+     */
+    @Override
+    public @NotNull Key key() {
+        return ZMenuKeys.parse(this.mechanicId);
     }
 
     @Contract

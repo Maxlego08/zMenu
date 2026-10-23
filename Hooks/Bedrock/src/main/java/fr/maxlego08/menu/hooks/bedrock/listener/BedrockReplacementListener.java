@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.bedrock.listener;
 import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
@@ -43,7 +44,7 @@ public class BedrockReplacementListener implements Listener {
                         }
                     }
                     case CHEST -> {
-                        Optional<Inventory> optionalInventory = this.inventoryManager.getInventory(inventoryReplacement.plugin(), inventoryReplacement.inventoryName());
+                        Optional<Inventory> optionalInventory = this.inventoryManager.getInventory(ZMenuKeys.fileKey(inventoryReplacement.plugin(), inventoryReplacement.inventoryName()));
                         if (optionalInventory.isEmpty()) {
                             return;
                         }

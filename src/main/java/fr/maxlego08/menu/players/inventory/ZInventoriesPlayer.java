@@ -29,8 +29,6 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
     @Override
     public void storeInventory(@NonNull Player player) {
         if (this.hasSavedInventory(player.getUniqueId())) {
-            // Something is wrong
-            // Logger.info("The plugin tries to save an inventory while the player already has an inventory saved!");
             return;
         }
 

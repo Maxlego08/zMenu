@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api;
 
 import com.tcoded.folialib.impl.PlatformScheduler;
+import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
 import fr.maxlego08.menu.api.button.GenericPaginationButton;
@@ -11,14 +12,19 @@ import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.font.FontImage;
+import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
-import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.RegistryManager;
+import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import net.kyori.adventure.key.Key;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,6 +33,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -115,11 +122,32 @@ public interface InventoryManager extends Listener {
     Inventory loadInventory(Plugin plugin, File file) throws InventoryException;
 
     /**
+     * Returns an inventory by its key, {@code plugin:file}.
+     *
+     * <p>Build the key with {@link ZMenuKeys#fileKey(String, String)}, or read a reference written
+     * by a user with {@link #findInventory(String)}.</p>
+     *
+     * @param key the key of the inventory
+     * @return Optional of {@link Inventory}.
+     */
+    Optional<Inventory> getInventory(@NotNull Key key);
+
+    /**
+     * Returns the keys of every loaded inventory.
+     *
+     * @return the keys, {@code plugin:file}
+     */
+    Set<Key> getInventoryKeys();
+
+    /**
      * Returns an optional of {@link Inventory} based on its name.
      *
      * @param name Inventory name.
      * @return Optional of {@link Inventory}.
+     * @deprecated a file name and the key of its inventory can differ (case, spaces). Use
+     * {@link #getInventory(Key)}, or {@link #findInventory(String)} for a name written by a user.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Inventory> getInventory(String name);
 
     /**
@@ -128,7 +156,9 @@ public interface InventoryManager extends Listener {
      * @param plugin The plugin where the inventory comes from.
      * @param name   Inventory name.
      * @return Optional of {@link Inventory}.
+     * @deprecated use {@link #getInventory(Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Inventory> getInventory(Plugin plugin, String name);
 
     /**
@@ -137,7 +167,9 @@ public interface InventoryManager extends Listener {
      * @param pluginName The plugin name where the inventory comes from.
      * @param name       Inventory name.
      * @return Optional of {@link Inventory}.
+     * @deprecated use {@link #getInventory(Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Inventory> getInventory(String pluginName, String name);
 
     /**
@@ -155,6 +187,15 @@ public interface InventoryManager extends Listener {
      */
     Collection<Inventory> getInventories(Plugin plugin);
 
+    /**
+     * Finds an inventory from a reference written by a user, in a file or a command:
+     * {@code plugin:file} is looked up exactly, while a plain {@code file} is looked up in zMenu
+     * first, then in the other plugins.
+     *
+     * @param inventoryName the reference
+     * @return Optional of {@link Inventory}.
+     * @see ZMenuKeys#inventoryKey(String)
+     */
     Optional<Inventory> findInventory(@NotNull String inventoryName);
 
     /**
@@ -165,11 +206,21 @@ public interface InventoryManager extends Listener {
     void deleteInventory(Inventory inventory);
 
     /**
+     * Deletes an inventory by its key.
+     *
+     * @param key the key of the inventory
+     * @return True if the inventory has been deleted.
+     */
+    boolean deleteInventory(@NotNull Key key);
+
+    /**
      * Deletes an inventory based on its name.
      *
      * @param name Inventory name.
      * @return True if the inventory has been deleted.
+     * @deprecated use {@link #deleteInventory(Key)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean deleteInventory(String name);
 
     /**
@@ -179,6 +230,11 @@ public interface InventoryManager extends Listener {
      */
     void deleteInventories(Plugin plugin);
 
+    /**
+     * @return the inventories as {@code plugin:file}, lowercased
+     * @deprecated use {@link #getInventoryKeys()}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Set<String> getInventoryNames();
 
     /**
@@ -224,13 +280,21 @@ public interface InventoryManager extends Listener {
      * @param inventory   The inventory to be opened.
      * @param page        Inventory page.
      * @param inventories List of old inventories.
+     * @deprecated use {@link #openInventory(Player, Inventory, int, List)}.
      */
-    void openInventory(Player player, Inventory inventory, int page, Inventory... inventories);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
+        this.openInventory(player, inventory, page, new ArrayList<>(Arrays.asList(inventories)));
+    }
 
     /**
      * Loads buttons. The {@link ButtonLoaderRegisterEvent} event will be
      * called, allowing you to add your own buttons using this event.
+     *
+     * @deprecated part of zMenu's startup, not meant to be called by other plugins. Register your
+     * buttons with {@link ButtonManager#register(fr.maxlego08.menu.api.loader.ButtonLoader)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadButtons();
 
     /**
@@ -243,7 +307,10 @@ public interface InventoryManager extends Listener {
      *
      * @param materialLoader New material loader.
      * @return True if registered.
+     * @deprecated register it in {@link Registries#MATERIAL_LOADER}:
+     * {@code registries.writable(Registries.MATERIAL_LOADER).register(plugin, loader)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean registerMaterialLoader(MaterialLoader materialLoader);
 
     /**
@@ -251,15 +318,37 @@ public interface InventoryManager extends Listener {
      *
      * @param key The key to identify the material loader.
      * @return Optional of {@link MaterialLoader}.
+     * @deprecated read {@link Registries#MATERIAL_LOADER} with {@link ZMenuKeys#parse(String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<MaterialLoader> getMaterialLoader(String key);
 
     /**
      * Returns a list of material loaders.
      *
      * @return List of {@link MaterialLoader}.
+     * @deprecated read {@link Registries#MATERIAL_LOADER}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Collection<MaterialLoader> getMaterialLoader();
+
+    /**
+     * Opens an inventory by its key. When it does not exist, the player's inventory is closed and
+     * they are told so.
+     *
+     * @param player Player who will open the inventory.
+     * @param key    the key of the inventory
+     */
+    void openInventory(Player player, @NotNull Key key);
+
+    /**
+     * Opens an inventory by its key, on a page.
+     *
+     * @param player Player who will open the inventory.
+     * @param key    the key of the inventory
+     * @param page   The page number of the inventory to open.
+     */
+    void openInventory(Player player, @NotNull Key key, int page);
 
     /**
      * Opens an inventory based on its name and the plugin.
@@ -267,7 +356,9 @@ public interface InventoryManager extends Listener {
      * @param player        Player who will open the inventory.
      * @param plugin        The plugin where the inventory comes from.
      * @param inventoryName Name of the inventory to be opened.
+     * @deprecated use {@link #openInventory(Player, Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, Plugin plugin, String inventoryName);
 
     /**
@@ -276,7 +367,9 @@ public interface InventoryManager extends Listener {
      * @param player        Player who will open the inventory.
      * @param pluginName    The plugin where the inventory comes from.
      * @param inventoryName Name of the inventory to be opened.
+     * @deprecated use {@link #openInventory(Player, Key)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String pluginName, String inventoryName);
 
     /**
@@ -286,28 +379,33 @@ public interface InventoryManager extends Listener {
      * @param pluginName    The plugin where the inventory comes from.
      * @param inventoryName Name of the inventory to be opened.
      * @param page          The page number of the inventory to open.
+     * @deprecated use {@link #openInventory(Player, Key, int)} with {@link ZMenuKeys#fileKey(String, String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String pluginName, String inventoryName, int page);
 
     /**
      * Opens an inventory based on its name. Note that
-     * this method searches in all inventories; it is more appropriate to use
-     * the method {@link #openInventory(Player, Plugin, String)}.
+     * this method searches in all inventories.
      *
      * @param player        Player who will open the inventory.
      * @param inventoryName Name of the inventory to be opened.
+     * @deprecated use {@link #openInventory(Player, Key)}, or {@link #findInventory(String)} for a
+     * name written by a user.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String inventoryName);
 
     /**
      * Opens an inventory based on its name and a specific page number.
-     * This method allows a player to view a particular page of an inventory,
-     * facilitating navigation through multi-page inventories.
      *
      * @param player        Player who will open the inventory.
      * @param inventoryName Name of the inventory to be opened.
      * @param page          The page number of the inventory to open.
+     * @deprecated use {@link #openInventory(Player, Key, int)}, or {@link #findInventory(String)}
+     * for a name written by a user.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void openInventory(Player player, String inventoryName, int page);
 
     /**
@@ -315,7 +413,9 @@ public interface InventoryManager extends Listener {
      *
      * @param pluginName The name of the plugin to be found.
      * @return Optional of a plugin that can contain the plugin if it exists.
+     * @deprecated not related to inventories; use {@link org.bukkit.plugin.PluginManager#getPlugin(String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Plugin> getPluginIgnoreCase(String pluginName);
 
     /**
@@ -329,7 +429,9 @@ public interface InventoryManager extends Listener {
      * Sets item name and item meta using Spigot or Adventure API.
      *
      * @return MetaUpdater.
+     * @deprecated use {@link MenuPlugin#getMetaUpdater()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     MetaUpdater getMeta();
 
     /**
@@ -366,7 +468,10 @@ public interface InventoryManager extends Listener {
      * Displays the list of available inventories.
      *
      * @param sender Command sender.
+     * @deprecated the {@code /zm list} command, not meant to be called by other plugins; read the
+     * inventories with {@link #getInventories()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void sendInventories(CommandSender sender);
 
     /**
@@ -376,7 +481,9 @@ public interface InventoryManager extends Listener {
      * @param fileName      Inventory file name.
      * @param inventorySize Inventory size.
      * @param inventoryName Inventory name.
+     * @deprecated the {@code /zm create} command, not meant to be called by other plugins.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void createNewInventory(CommandSender sender, String fileName, int inventorySize, String inventoryName);
 
     /**
@@ -408,7 +515,10 @@ public interface InventoryManager extends Listener {
      * @param itemStack The itemStack
      * @param name      The item name
      * @param type
+     * @deprecated the {@code /zm save} command, not meant to be called by other plugins; use
+     * {@link ItemStackService#fromItemStack(ItemStack)} to turn an item into a menu item.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void saveItem(CommandSender sender, ItemStack itemStack, String name, String type);
 
     /**
@@ -417,9 +527,13 @@ public interface InventoryManager extends Listener {
      *
      * @param itemStack The item to convert.
      * @return The menu item, and the components that forced the fallback.
+     * @deprecated use {@link ItemStackService#fromItemStack(ItemStack)}.
      */
     @NotNull
-    MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack) {
+        return this.getPlugin().getItemStackService().fromItemStack(itemStack);
+    }
 
     /**
      * Transforms a string list into a click list type.
@@ -427,7 +541,9 @@ public interface InventoryManager extends Listener {
      *
      * @param loadClicks - Click type as string
      * @return Loaded click type
+     * @deprecated an internal helper of the menu loaders, not related to inventories.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     List<ClickType> loadClicks(List<String> loadClicks);
 
     /**
@@ -435,8 +551,13 @@ public interface InventoryManager extends Listener {
      * This method allows for adding a new ItemStack verification strategy to the system.
      *
      * @param itemStackSimilar The ItemStackSimilar instance to be registered.
+     * @deprecated register it in {@link Registries#ITEM_VERIFICATION}:
+     * {@code registries.writable(Registries.ITEM_VERIFICATION).register(plugin, comparison)}.
      */
-    void registerItemStackVerification(ItemStackSimilar itemStackSimilar);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
+        this.getRegistries().writable(Registries.ITEM_VERIFICATION).register(JavaPlugin.getProvidingPlugin(itemStackSimilar.getClass()), itemStackSimilar);
+    }
 
     /**
      * Retrieves an Optional ItemStackSimilar instance based on its name.
@@ -445,8 +566,12 @@ public interface InventoryManager extends Listener {
      *
      * @param name The name of the ItemStack verification strategy to retrieve.
      * @return An Optional containing the ItemStackSimilar instance if found, or an empty Optional otherwise.
+     * @deprecated use {@link ItemStackService#getVerification(String)}.
      */
-    Optional<ItemStackSimilar> getItemStackVerification(String name);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default Optional<ItemStackSimilar> getItemStackVerification(String name) {
+        return this.getPlugin().getItemStackService().getVerification(name);
+    }
 
     /**
      * Returns a collection of all registered ItemStackSimilar instances.
@@ -454,14 +579,20 @@ public interface InventoryManager extends Listener {
      * The collection contains instances of ItemStackSimilar, each representing a different verification strategy.
      *
      * @return A Collection of ItemStackSimilar instances representing all registered verification strategies.
+     * @deprecated read {@link Registries#ITEM_VERIFICATION}.
      */
-    Collection<ItemStackSimilar> getItemStackVerifications();
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default Collection<ItemStackSimilar> getItemStackVerifications() {
+        return this.getRegistries().registry(Registries.ITEM_VERIFICATION).values();
+    }
 
     /**
      * Gets the scheduler associated with this button option.
      *
      * @return The ZScheduler associated with this button option.
+     * @deprecated use {@link MenuPlugin#getScheduler()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     PlatformScheduler getScheduler();
 
     /**
@@ -469,29 +600,39 @@ public interface InventoryManager extends Listener {
      *
      * @param plugin       The plugin with which the button option is to be registered.
      * @param buttonOption The class of the button option to register.
+     * @deprecated register it in {@link Registries#BUTTON_OPTION}:
+     * {@code registries.writable(Registries.BUTTON_OPTION).register(plugin, ButtonOptionType.of(plugin, MyOption.class))}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption);
 
     /**
      * Unregisters all button options associated with the given plugin.
      *
      * @param plugin The plugin whose button options are to be unregistered.
+     * @deprecated a plugin's options are removed when it disables; to remove them earlier use
+     * {@code registries.writable(Registries.BUTTON_OPTION).unregisterAll(plugin)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisterOptions(Plugin plugin);
 
     /**
      * Retrieves a map of all registered button options grouped by plugin.
      *
-     * @return A Map where each key is a Plugin and each value is a List of button option classes associated with that plugin.
+     * @return A copy of the registered options, grouped by plugin.
+     * @deprecated read {@link Registries#BUTTON_OPTION}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Map<Plugin, List<Class<? extends ButtonOption>>> getOptions();
 
     /**
      * Retrieves an Optional containing the class of the button option with the given name.
      *
-     * @param name The name of the button option to retrieve.
+     * @param name The fully qualified name of the class of the button option.
      * @return An Optional containing the button option class if found, or an empty Optional if not found.
+     * @deprecated read {@link Registries#BUTTON_OPTION}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Class<? extends ButtonOption>> getOption(String name);
 
     /**
@@ -500,24 +641,36 @@ public interface InventoryManager extends Listener {
      * @param player  The {@link OfflinePlayer} instance representing the player whose page number is being set. This object allows for the operation to affect players who are not currently online as well.
      * @param page    The current page number to set for the player. This should be within the range of 1 to {@code maxPage}, inclusive.
      * @param maxPage The maximum number of pages available. This is used to validate the {@code page} parameter and ensure it does not exceed the available range of pages.
+     * @deprecated use {@link PaginationManager#setMenuPage(UUID, int, int)}.
      */
-    void setPlayerPage(OfflinePlayer player, int page, int maxPage);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default void setPlayerPage(OfflinePlayer player, int page, int maxPage) {
+        this.getPaginationManager().setMenuPage(player.getUniqueId(), page, maxPage);
+    }
 
     /**
      * Retrieves the current page number of a given player in a paginated context. This method is typically used in conjunction with {@link #setPlayerPage(OfflinePlayer, int, int)} to manage navigation through a multi-page UI component, allowing for a dynamic user experience based on the player's interaction.
      *
      * @param player The {@link OfflinePlayer} instance representing the player whose current page number is being queried. This enables the method to obtain information about players who are not currently online.
      * @return The current page number of the specified player. If the player's page has not been set previously, this method may return a default value or 0, depending on implementation.
+     * @deprecated use {@link PaginationManager#getMenuPage(UUID)}.
      */
-    int getPage(OfflinePlayer player);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default int getPage(OfflinePlayer player) {
+        return this.getPaginationManager().getMenuPage(player.getUniqueId());
+    }
 
     /**
      * Obtains the maximum page number set for a given player in a paginated context. This method allows for the retrieval of the upper limit of the pagination range for a player, facilitating UI boundary checks and preventing navigation beyond the available content.
      *
      * @param player The {@link OfflinePlayer} instance representing the player whose maximum page number is being retrieved. As with other methods, this supports offline players, allowing for a wide range of applications.
      * @return The maximum page number available for the specified player. Similar to {@link #getPage(OfflinePlayer)}, if the max page has not been set, this method might return a default value or 0, depending on how it's implemented.
+     * @deprecated use {@link PaginationManager#getMenuMaxPage(UUID)}.
      */
-    int getMaxPage(OfflinePlayer player);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default int getMaxPage(OfflinePlayer player) {
+        return this.getPaginationManager().getMenuMaxPage(player.getUniqueId());
+    }
 
     /**
      * Retrieves a fake inventory for testing or simulation purposes.
@@ -530,14 +683,18 @@ public interface InventoryManager extends Listener {
      * Provides access to the enchantments management interface.
      *
      * @return An instance of {@link Enchantments} for managing custom enchantments.
+     * @deprecated use {@link MenuPlugin#getEnchantments()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Enchantments getEnchantments();
 
     /**
      * Retrieves the font image utility for managing custom fonts.
      *
      * @return An instance of {@link FontImage} for handling font images.
+     * @deprecated use {@link MenuPlugin#getFontImage()}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     FontImage getFontImage();
 
     /**
@@ -545,7 +702,9 @@ public interface InventoryManager extends Listener {
      *
      * @param file The YAML file to load.
      * @return The loaded YAML configuration.
+     * @deprecated an internal helper of the menu loaders, not related to inventories.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     YamlConfiguration loadYamlConfiguration(File file);
 
     /**
@@ -557,15 +716,44 @@ public interface InventoryManager extends Listener {
      *              the specific aspect of the inventory being targeted.
      * @param value The value associated with the inventory requirement, used to
      *              configure or modify the inventory setting as per the type specified.
+     * @deprecated part of zMenu's loading of menus that wait for a button, an action or a
+     * pattern, not meant to be called by other plugins.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadElement(InventoryRequirementType type, String value);
 
+    /**
+     * Registers an option added to every inventory.
+     *
+     * @param plugin          the plugin the option belongs to
+     * @param inventoryOption the class of the option
+     * @deprecated register it in {@link Registries#INVENTORY_OPTION}:
+     * {@code registries.writable(Registries.INVENTORY_OPTION).register(plugin, InventoryOptionType.of(plugin, MyOption.class))}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption);
 
+    /**
+     * @return a copy of the registered inventory options, grouped by plugin
+     * @deprecated read {@link Registries#INVENTORY_OPTION}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions();
 
+    /**
+     * @param name the fully qualified name of the class of the option
+     * @return the class of the option, if one is registered with this name
+     * @deprecated read {@link Registries#INVENTORY_OPTION}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Class<? extends InventoryOption>> getInventoryOption(String name);
 
+    /**
+     * @param plugin the plugin whose options are removed
+     * @deprecated a plugin's options are removed when it disables; to remove them earlier use
+     * {@code registries.writable(Registries.INVENTORY_OPTION).unregisterAll(plugin)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisterInventoryOptions(Plugin plugin);
 
     void registerInventoryListener(InventoryListener inventoryListener);
@@ -574,14 +762,60 @@ public interface InventoryManager extends Listener {
 
     List<InventoryListener> getInventoryListeners();
 
-    ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player);
+    /**
+     * Gives a player head the skin of the player named by the {@code player-head} of a button.
+     *
+     * @param itemStack the head
+     * @param button    the button
+     * @param player    the player
+     * @return the head
+     * @deprecated use {@link ItemStackService#applyPlayerHead(ItemStack, Button, Player, Placeholders)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
+        return this.getPlugin().getItemStackService().applyPlayerHead(itemStack, button, player, new Placeholders());
+    }
 
-    ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders);
+    /**
+     * Gives a player head the skin of the player named by the {@code player-head} of a button.
+     *
+     * @param itemStack    the head
+     * @param button       the button
+     * @param player       the player
+     * @param placeholders the placeholders of the inventory
+     * @return the head
+     * @deprecated use {@link ItemStackService#applyPlayerHead(ItemStack, Button, Player, Placeholders)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders) {
+        return this.getPlugin().getItemStackService().applyPlayerHead(itemStack, button, player, placeholders);
+    }
 
+    /**
+     * Sends one of zMenu's messages.
+     *
+     * @param sender  the receiver
+     * @param message the message
+     * @param args    the placeholders, as pairs of key and value
+     * @deprecated zMenu's messages are not meant to be sent by other plugins.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void sendMessage(CommandSender sender, Message message, Object... args);
 
+    /**
+     * Loads the buttons, patterns, animations and inventories.
+     *
+     * @deprecated part of zMenu's startup, not meant to be called by other plugins; use
+     * {@link #loadInventories()} to read the menus again.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void load();
 
+    /**
+     * Gets the plugin this manager belongs to.
+     *
+     * @return the plugin
+     */
     MenuPlugin getPlugin();
 
     /**
@@ -593,8 +827,12 @@ public interface InventoryManager extends Listener {
      * @param path          the path within the configuration to load from.
      * @param file          the file from which the configuration was loaded, used for logging errors.
      * @return the loaded menu item stack.
+     * @deprecated use {@link ItemStackService#load(YamlConfiguration, String, File)}.
      */
-    MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
+        return this.getPlugin().getItemStackService().load(configuration, path, file);
+    }
 
     /**
      * Loads a menu item stack from a file, using the specified path and additional parameters.
@@ -609,10 +847,25 @@ public interface InventoryManager extends Listener {
      * @param map  A map of additional parameters or overrides for customizing the item stack.
      * @return The loaded MenuItemStack object.
      * <p>
+     * @deprecated the path is not used; use {@link ItemStackService#load(File, Map)}.
      */
-    MenuItemStack loadItemStack(File file, String path, Map<String, Object> map);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
+        return this.getPlugin().getItemStackService().load(file, map);
+    }
 
-    MenuItemStack loadItemStack(File file, Map<String, Object> map);
+    /**
+     * Loads a menu item stack from a map of its settings.
+     *
+     * @param file the file the map was read from
+     * @param map  the settings of the item
+     * @return the menu item stack
+     * @deprecated use {@link ItemStackService#load(File, Map)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(File file, Map<String, Object> map) {
+        return this.getPlugin().getItemStackService().load(file, map);
+    }
 
     /**
      * Provides access to the pagination manager for handling paginated content in inventories.
@@ -637,14 +890,79 @@ public interface InventoryManager extends Listener {
      */
     PaginationManager getPaginationManager();
 
-    String serializeItemStack(ItemStack itemStack);
+    /**
+     * Gets the manager holding the named animations: the files of the {@code animations} folder and
+     * the ones registered by plugins.
+     *
+     * <p>Use it to fetch an animation, or to register one of your own:</p>
+     *
+     * <pre>
+     * inventoryManager.getAnimationManager().registerAnimation(plugin, new Animation(Key.key("myplugin", "my_animation"), settings));
+     * </pre>
+     *
+     * @return The animation manager.
+     * @see AnimationManager
+     */
+    AnimationManager getAnimationManager();
 
-    ItemStack deserializeItemStack(String serializedItemStack);
+    /**
+     * Gets every registry of zMenu, such as the animations an inventory may use as its {@code type}.
+     *
+     * <p>Read an entry, and register your own from your {@code onEnable}:</p>
+     *
+     * <pre>
+     * inventoryManager.getRegistries().registry(Registries.SLOT_ANIMATION).get(ZMenuKeys.key("spiral"));
+     * inventoryManager.getRegistries().writable(Registries.MY_REGISTRY).register(plugin, myEntry);
+     * </pre>
+     *
+     * <p>Static registries stop accepting entries once the server has finished loading.</p>
+     *
+     * @return The registries.
+     * @see fr.maxlego08.menu.api.registry.Registries
+     */
+    RegistryManager getRegistries();
 
-    default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume) {
-        return this.createSoundOption(soundName, categoryName, pitch, volume, false);
+    /**
+     * Registers an animation menus may use as their {@code type}, under its key and its aliases.
+     * Call it from your {@code onEnable}:
+     *
+     * <pre>
+     * inventoryManager.registerSlotAnimation(plugin, new MyAnimationLoader());
+     * </pre>
+     *
+     * @param plugin the plugin registering it, shown when two animations share a name
+     * @param loader the loader
+     * @throws fr.maxlego08.menu.api.registry.RegistrationException if a name is taken, or the server has finished loading
+     */
+    default void registerSlotAnimation(@NotNull Plugin plugin, @NotNull SlotAnimationLoader loader) {
+        WritableRegistry<SlotAnimationLoader> registry = this.getRegistries().writable(Registries.SLOT_ANIMATION);
+        registry.register(plugin, loader);
+        for (Key alias : loader.aliases()) {
+            registry.alias(plugin.getName(), alias, loader.key());
+        }
     }
 
-    SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom);
+    /**
+     * Writes an item as a base64 string.
+     *
+     * @param itemStack the item
+     * @return the item as base64
+     * @deprecated use {@link ItemStackService#serialize(ItemStack)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default String serializeItemStack(ItemStack itemStack) {
+        return this.getPlugin().getItemStackService().serialize(itemStack);
+    }
 
+    /**
+     * Reads an item written as a base64 string.
+     *
+     * @param serializedItemStack the item as base64
+     * @return the item
+     * @deprecated use {@link ItemStackService#deserialize(String)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default ItemStack deserializeItemStack(String serializedItemStack) {
+        return this.getPlugin().getItemStackService().deserialize(serializedItemStack);
+    }
 }

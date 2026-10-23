@@ -48,7 +48,7 @@ public class ZItemDragButton extends ItemDragButton {
     public ZItemDragButton(@NotNull MenuPlugin plugin) {
         super();
         this.dupeManager = plugin.getDupeManager();
-        this.scheduler = plugin.getInventoryManager().getScheduler();
+        this.scheduler = plugin.getScheduler();
     }
 
     public void setCheckItem(MenuItemStack menuItemStack, ItemStackSimilar itemStackSimilar) {

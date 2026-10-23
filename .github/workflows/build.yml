@@ -20,7 +20,7 @@ jobs:
       java-version: '25'
       publish: true
       project-to-publish: "API:publish"
-      discord-avatar-url: "https://groupez.dev/storage/images/253.png"
+      discord-avatar-url: "https://groupez.dev/storage/images/resources/icons/253.webp"
       artifact-glob: "target/*.jar"
       changelog-exclude-pattern: '^[a-f0-9]+\s+(build|chore)\(deps\)'
     secrets:
