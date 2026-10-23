@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -77,24 +76,11 @@ public interface ItemStackService {
     ItemStack applyPlayerHead(ItemStack itemStack, Button button, Player player, Placeholders placeholders);
 
     /**
-     * Registers a way to compare items, used by the requirements and buttons that look for an item.
-     *
-     * @param itemStackSimilar the comparison, known by its name
-     */
-    void registerVerification(ItemStackSimilar itemStackSimilar);
-
-    /**
-     * Gets a way to compare items by its name, whatever its case.
+     * Gets a way to compare items by its name as written in a file, whatever its case. Comparisons
+     * are registered in {@link fr.maxlego08.menu.api.registry.Registries#ITEM_VERIFICATION}.
      *
      * @param name the name of the comparison
      * @return the comparison, if one has this name
      */
     Optional<ItemStackSimilar> getVerification(String name);
-
-    /**
-     * Gets every way to compare items.
-     *
-     * @return the comparisons
-     */
-    Collection<ItemStackSimilar> getVerifications();
 }

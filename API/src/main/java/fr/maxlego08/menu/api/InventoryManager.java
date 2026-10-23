@@ -34,6 +34,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -544,11 +545,12 @@ public interface InventoryManager extends Listener {
      * This method allows for adding a new ItemStack verification strategy to the system.
      *
      * @param itemStackSimilar The ItemStackSimilar instance to be registered.
-     * @deprecated use {@link ItemStackService#registerVerification(ItemStackSimilar)}.
+     * @deprecated register it in {@link Registries#ITEM_VERIFICATION}:
+     * {@code registries.writable(Registries.ITEM_VERIFICATION).register(plugin, comparison)}.
      */
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
-        this.getPlugin().getItemStackService().registerVerification(itemStackSimilar);
+        this.getRegistries().writable(Registries.ITEM_VERIFICATION).register(JavaPlugin.getProvidingPlugin(itemStackSimilar.getClass()), itemStackSimilar);
     }
 
     /**
@@ -571,11 +573,11 @@ public interface InventoryManager extends Listener {
      * The collection contains instances of ItemStackSimilar, each representing a different verification strategy.
      *
      * @return A Collection of ItemStackSimilar instances representing all registered verification strategies.
-     * @deprecated use {@link ItemStackService#getVerifications()}.
+     * @deprecated read {@link Registries#ITEM_VERIFICATION}.
      */
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     default Collection<ItemStackSimilar> getItemStackVerifications() {
-        return this.getPlugin().getItemStackService().getVerifications();
+        return this.getRegistries().registry(Registries.ITEM_VERIFICATION).values();
     }
 
     /**

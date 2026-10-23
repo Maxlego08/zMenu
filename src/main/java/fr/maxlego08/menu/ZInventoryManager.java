@@ -51,6 +51,7 @@ import fr.maxlego08.menu.loader.actions.DialogLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.pagination.ZPaginationManager;
+import fr.maxlego08.menu.registry.RegistryOwners;
 import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
 import fr.maxlego08.menu.sound.ZSoundOption;
@@ -111,6 +112,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.registries.onRegister(Registries.PERMISSIBLE, key -> this.loadWaitingInventories(InventoryRequirementType.PERMISSIBLE, key));
         this.registries.onRegister(Registries.ACTION, key -> this.loadWaitingInventories(InventoryRequirementType.ACTION, key));
         this.registries.onRegister(Registries.BUTTON, key -> this.loadWaitingInventories(InventoryRequirementType.BUTTON, key));
+    }
+
+    @Override
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
+        RegistryOwners.registerLegacy(this.registries.writable(Registries.ITEM_VERIFICATION), itemStackSimilar, List.of());
     }
 
     private void registerAction(ActionLoader loader) {
@@ -672,7 +679,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         ClassRegistry<ItemStackSimilar, MenuPlugin> itemStackRegistry = ClassRegistry.
-                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, this.plugin.getItemStackService()::registerVerification)
+                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, similar -> this.registries.writable(Registries.ITEM_VERIFICATION).register(this.plugin, similar))
                 .tryNoArgsConstructor()
                 .errorLogger(Logger::error);
 

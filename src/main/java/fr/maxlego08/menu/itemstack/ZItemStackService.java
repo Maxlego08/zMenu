@@ -2,10 +2,12 @@ package fr.maxlego08.menu.itemstack;
 
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.PlayerUtil;
@@ -14,6 +16,7 @@ import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import net.kyori.adventure.key.Key;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -22,16 +25,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ZItemStackService extends ZUtils implements ItemStackService {
 
     private final MenuPlugin plugin;
-    private final Map<String, ItemStackSimilar> verifications = new ConcurrentHashMap<>();
 
     public ZItemStackService(MenuPlugin plugin) {
         this.plugin = plugin;
@@ -95,17 +94,8 @@ public class ZItemStackService extends ZUtils implements ItemStackService {
     }
 
     @Override
-    public void registerVerification(ItemStackSimilar itemStackSimilar) {
-        this.verifications.put(itemStackSimilar.getName().toLowerCase(Locale.ROOT), itemStackSimilar);
-    }
-
-    @Override
     public Optional<ItemStackSimilar> getVerification(String name) {
-        return Optional.ofNullable(this.verifications.get(name.toLowerCase(Locale.ROOT)));
-    }
-
-    @Override
-    public Collection<ItemStackSimilar> getVerifications() {
-        return this.verifications.values();
+        Key key = ZMenuKeys.tryParse(name);
+        return key == null ? Optional.empty() : this.plugin.getInventoryManager().getRegistries().registry(Registries.ITEM_VERIFICATION).get(key);
     }
 }

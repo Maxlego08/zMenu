@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.registry;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
+import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
@@ -35,6 +36,11 @@ public final class Registries {
      * The item rule types, by their {@code type}: {@code material}, {@code tag}, {@code and}...
      */
     public static final RegistryType<RuleLoader> RULE = RegistryType.createOpen(ZMenuKeys.key("rule"), RuleLoader.class);
+
+    /**
+     * The ways to compare two items, by name: {@code full}, {@code material}, {@code lore}...
+     */
+    public static final RegistryType<ItemStackSimilar> ITEM_VERIFICATION = RegistryType.createOpen(ZMenuKeys.key("item_verification"), ItemStackSimilar.class);
 
     private Registries() {
     }
