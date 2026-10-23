@@ -308,7 +308,10 @@ public interface InventoryManager extends Listener {
      *
      * @param materialLoader New material loader.
      * @return True if registered.
+     * @deprecated register it in {@link Registries#MATERIAL_LOADER}:
+     * {@code registries.writable(Registries.MATERIAL_LOADER).register(plugin, loader)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean registerMaterialLoader(MaterialLoader materialLoader);
 
     /**
@@ -316,14 +319,18 @@ public interface InventoryManager extends Listener {
      *
      * @param key The key to identify the material loader.
      * @return Optional of {@link MaterialLoader}.
+     * @deprecated read {@link Registries#MATERIAL_LOADER} with {@link ZMenuKeys#parse(String)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<MaterialLoader> getMaterialLoader(String key);
 
     /**
      * Returns a list of material loaders.
      *
      * @return List of {@link MaterialLoader}.
+     * @deprecated read {@link Registries#MATERIAL_LOADER}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Collection<MaterialLoader> getMaterialLoader();
 
     /**

@@ -5,6 +5,7 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import dev.faststats.bukkit.BukkitContext;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoFontImage;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.annotations.AutoListener;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.attribute.ApplySpigotAttribute;
@@ -451,7 +452,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     }
 
     private void registerMaterialLoaders() {
-        ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry.<MaterialLoader, MenuPlugin>of(MaterialLoader.class, this.inventoryManager::registerMaterialLoader).tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin)).tryNoArgsConstructor().errorLogger(Logger::error);
+        ClassRegistry<MaterialLoader, MenuPlugin> registry = ClassRegistry.<MaterialLoader, MenuPlugin>of(MaterialLoader.class, loader -> this.inventoryManager.getRegistries().writable(Registries.MATERIAL_LOADER).register(this, loader)).tryConstructor((clazz, plugin) -> clazz.getDeclaredConstructor(MenuPlugin.class).newInstance(plugin)).tryNoArgsConstructor().errorLogger(Logger::error);
 
         int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this, AutoMaterialLoader.class, registry);
 

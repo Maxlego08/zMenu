@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
+import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
@@ -41,6 +42,12 @@ public final class Registries {
      * The ways to compare two items, by name: {@code full}, {@code material}, {@code lore}...
      */
     public static final RegistryType<ItemStackSimilar> ITEM_VERIFICATION = RegistryType.createOpen(ZMenuKeys.key("item_verification"), ItemStackSimilar.class);
+
+    /**
+     * The loaders of items from other plugins, by the prefix of a material: {@code itemsadder},
+     * {@code hdb}, {@code base64}...
+     */
+    public static final RegistryType<MaterialLoader> MATERIAL_LOADER = RegistryType.createOpen(ZMenuKeys.key("material_loader"), MaterialLoader.class);
 
     private Registries() {
     }

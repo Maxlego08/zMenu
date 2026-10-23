@@ -3,6 +3,9 @@ package fr.maxlego08.menu;
 import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
+import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.registry.Registries;
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeUtil;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
@@ -245,7 +248,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 String key = values[0];
                 String value = values[1];
 
-                Optional<MaterialLoader> optional = this.inventoryManager.getMaterialLoader(key);
+                Optional<MaterialLoader> optional = this.findMaterialLoader(key);
                 if (optional.isPresent()) {
                     MaterialLoader loader = optional.get();
                     return loader.load(player, null, this.path, value);
@@ -1111,10 +1114,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.material.contains(":")) {
             String[] values = this.material.split(":", 2);
             if (values.length == 2) {
-                return this.inventoryManager.getMaterialLoader(values[0]).isPresent();
+                return this.findMaterialLoader(values[0]).isPresent();
             }
         }
         return false;
+    }
+
+    private Optional<MaterialLoader> findMaterialLoader(String prefix) {
+        Key key = ZMenuKeys.tryParse(prefix);
+        return key == null ? Optional.empty() : this.inventoryManager.getRegistries().registry(Registries.MATERIAL_LOADER).get(key);
     }
 
     @Override

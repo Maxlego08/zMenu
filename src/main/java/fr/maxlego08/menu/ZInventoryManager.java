@@ -95,7 +95,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new ConcurrentHashMap<>();
     private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new ConcurrentHashMap<>();
     private final List<InventoryListener> inventoryListeners = new ArrayList<>();
-    private final List<MaterialLoader> loaders = new ArrayList<>();
     private final ZMenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new ConcurrentHashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new ConcurrentHashMap<>();
@@ -720,29 +719,18 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public boolean registerMaterialLoader(MaterialLoader materialLoader) {
-
-        Optional<MaterialLoader> optional = this.getMaterialLoader(materialLoader.getKey());
-        if (optional.isPresent()) {
-            return false;
-        }
-
-        this.loaders.add(materialLoader);
-        return true;
+        return RegistryOwners.registerLegacy(this.registries.writable(Registries.MATERIAL_LOADER), materialLoader, List.of());
     }
 
     @Override
     public Optional<MaterialLoader> getMaterialLoader(String key) {
-        for (MaterialLoader loader : this.loaders) {
-            if (loader.getKey().equalsIgnoreCase(key)) {
-                return Optional.of(loader);
-            }
-        }
-        return Optional.empty();
+        Key id = ZMenuKeys.tryParse(key);
+        return id == null ? Optional.empty() : this.registries.registry(Registries.MATERIAL_LOADER).get(id);
     }
 
     @Override
     public Collection<MaterialLoader> getMaterialLoader() {
-        return Collections.unmodifiableCollection(this.loaders);
+        return this.registries.registry(Registries.MATERIAL_LOADER).values();
     }
 
     @Override
