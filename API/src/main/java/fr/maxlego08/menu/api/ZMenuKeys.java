@@ -11,6 +11,7 @@ import java.util.Locale;
  * This class cannot be instantiated.
  */
 public final class ZMenuKeys {
+    public static final String PLUGIN_NAME = "zMenu";
     public static final String NAMESPACE = "zmenu";
 
     /**

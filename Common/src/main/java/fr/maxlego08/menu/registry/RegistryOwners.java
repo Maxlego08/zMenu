@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.registry;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.registry.RegistrationException;
 import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -16,11 +17,6 @@ import java.util.Collection;
  */
 public final class RegistryOwners {
 
-    /**
-     * The owner of what no plugin class loader provides, such as zMenu's own entries in tests.
-     */
-    public static final String FALLBACK = "zMenu";
-
     private RegistryOwners() {
     }
 
@@ -28,13 +24,13 @@ public final class RegistryOwners {
      * Finds the plugin an entry belongs to: the one whose class loader loaded its class.
      *
      * @param value the entry
-     * @return the name of that plugin, or {@link #FALLBACK}
+     * @return the name of that plugin, or {@link ZMenuKeys#PLUGIN_NAME}
      */
     public static @NotNull String of(@NotNull Object value) {
         try {
             return JavaPlugin.getProvidingPlugin(value.getClass()).getName();
         } catch (IllegalArgumentException | IllegalStateException | ClassCastException exception) {
-            return FALLBACK;
+            return ZMenuKeys.PLUGIN_NAME;
         }
     }
 
