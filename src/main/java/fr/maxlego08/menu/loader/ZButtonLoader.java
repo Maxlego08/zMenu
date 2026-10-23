@@ -3,6 +3,8 @@ package fr.maxlego08.menu.loader;
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.button.ButtonOptionType;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -26,7 +28,6 @@ import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
-import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
@@ -214,12 +215,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "player-head", configuration.getString(path + "item.playerHead", configuration.getString(path + "item.player-head", defaultButtonValue.getPlayerHead()))));
 
         if (playerHead != null) {
-            if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
-                itemStack.setMaterial("PLAYER_HEAD");
-            } else {
-                itemStack.setMaterial("SKULL_ITEM");
-                itemStack.setData("3");
-            }
+            itemStack.setMaterial("PLAYER_HEAD");
             button.setPlayerHead(playerHead);
         }
 
@@ -401,12 +397,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
         List<ButtonOption> buttonOptions = new ArrayList<>();
-        for (Map.Entry<Plugin, List<Class<? extends ButtonOption>>> entry : inventoryManager.getOptions().entrySet()) {
-            for (Class<? extends ButtonOption> optionClass : entry.getValue()) {
-                ButtonOption instance = this.createInstance(entry.getKey(), optionClass);
-                if (instance != null) {
-                    buttonOptions.add(instance);
-                }
+        for (ButtonOptionType type : inventoryManager.getRegistries().registry(Registries.BUTTON_OPTION)) {
+            ButtonOption instance = this.createInstance(type.plugin(), type.optionClass());
+            if (instance != null) {
+                buttonOptions.add(instance);
             }
         }
         buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, this.file));

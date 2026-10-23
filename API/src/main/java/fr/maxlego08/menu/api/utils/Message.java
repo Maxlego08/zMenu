@@ -94,6 +94,9 @@ public enum Message implements IMessage {
     GIVE_ITEM_SUCCESS_SELF("&aYou have received the item &f%itemId%&a."),
     GIVE_ITEM_SUCCESS_OTHER("&aYou have given the item &f%itemId%&a to &3%player%&a."),
 
+    ANIMATION_RESET_ALL("&aThe animations of &f%player% &awill all play again."),
+    ANIMATION_RESET_ONE("&aThe animation of &f%menu% &awill play again for &f%player%&a."),
+
     PLAYERS_DATA_CLEAR_ALL("&aYou have just deleted the datas of all the players."),
     PLAYERS_DATA_CLEAR_PLAYER("&aYou have just deleted the player's data &f%player%&a."),
 

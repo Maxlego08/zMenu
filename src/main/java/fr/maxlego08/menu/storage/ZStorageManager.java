@@ -11,7 +11,9 @@ import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.FirstWorldJoinDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
+import fr.maxlego08.menu.api.storage.dto.PlayerAnimationDTO;
 import fr.maxlego08.menu.storage.migrations.FirstWorldJoinMigration;
+import fr.maxlego08.menu.storage.migrations.PlayerAnimationMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
@@ -58,6 +60,7 @@ public class ZStorageManager implements StorageManager {
         MigrationManager.registerMigration(new PlayerDataMigration());
         MigrationManager.registerMigration(new PlayerInventoriesMigration());
         MigrationManager.registerMigration(new FirstWorldJoinMigration());
+        MigrationManager.registerMigration(new PlayerAnimationMigration());
 
         GlobalDatabaseConfiguration globalDatabaseConfiguration = new GlobalDatabaseConfiguration(this.plugin.getConfig());
         String user = globalDatabaseConfiguration.getUser();
@@ -302,6 +305,39 @@ public class ZStorageManager implements StorageManager {
         this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.FIRST_WORLD_JOIN, table -> {
             table.uuid("player_id", playerId).primary();
             table.string("world_name", worldName).primary();
+        }));
+    }
+
+    @Override
+    public @NonNull Map<String, Long> loadPlayedAnimations(@NonNull UUID playerId) {
+        if (!this.isEnable()) return Map.of();
+
+        Map<String, Long> played = new HashMap<>();
+        for (PlayerAnimationDTO dto : this.requestHelper.select(Tables.PLAYER_ANIMATIONS, PlayerAnimationDTO.class,
+                table -> table.where("player_id", playerId))) {
+            played.put(dto.animationKey(), dto.playedAt());
+        }
+        return played;
+    }
+
+    @Override
+    public void markAnimationPlayed(@NonNull UUID playerId, @NonNull String animationKey, long playedAt) {
+        if (!this.isEnable()) return;
+
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.PLAYER_ANIMATIONS, table -> {
+            table.uuid("player_id", playerId).primary();
+            table.string("animation_key", animationKey).primary();
+            table.bigInt("played_at", playedAt);
+        }));
+    }
+
+    @Override
+    public void clearPlayedAnimations(@NonNull UUID playerId, String animationKey) {
+        if (!this.isEnable()) return;
+
+        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_ANIMATIONS, table -> {
+            table.where("player_id", playerId);
+            if (animationKey != null) table.where("animation_key", animationKey);
         }));
     }
 

@@ -9,14 +9,11 @@ paper-api = "1.21.11-R0.1-SNAPSHOT"
 paper-api-latest = "26.2.build.+"
 paperApi263 = "26.3.build.+"
 paperApi2612 = "26.1.2.build.+"
-paperDevBundle120R3 = "1.20.4-R0.1-SNAPSHOT"
-paperDevBundle120R4 = "1.20.6-R0.1-SNAPSHOT"
 paperDevBundle121R1 = "1.21.1-R0.1-SNAPSHOT"
 paperDevBundle2612 = "26.1.2.build.+"
 paperDevBundle262 = "26.2.build.+"
 adventure-api = "4.26.1"
 adventure-text-minimessage = "4.26.1"
-item-nbt-api = "2.16.0"
 
 # Utilities / Libraries
 sarah = "1.26"
@@ -63,14 +60,11 @@ paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "pap
 paper-api-latest = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api-latest" }
 paperApi2612 = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi2612" }
 paperApi263 = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi263" }
-paperDevBundle120R3 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R3" }
-paperDevBundle120R4 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle120R4" }
 paperDevBundle121R1 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle121R1" }
 paperDevBundle2612 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle2612" }
 paperDevBundle262 = { group = "io.papermc.paper", name = "dev-bundle", version.ref = "paperDevBundle262" }
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure-api" }
 adventure-text-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure-text-minimessage" }
-item-nbt-api = { group = "de.tr7zw", name = "item-nbt-api", version.ref = "item-nbt-api" }
 
 # Utilities / Libraries
 sarah = { group = "fr.maxlego08.sarah", name = "sarah", version.ref = "sarah" }

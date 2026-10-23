@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.requirement.actions;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
@@ -8,6 +9,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -51,23 +53,23 @@ public class InventoryAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
 
-        inventory.getPlugin().getScheduler().runNextTick(w -> {
+        inventory.getPlugin().getScheduler().runAtEntity(player, w -> {
 
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
 
             String inventoryName = this.papi(placeholders.parse(this.inventory), player);
-            Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.getInventory(inventoryName) : this.inventoryManager.getInventory(this.plugin, inventoryName);
+            Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.findInventory(inventoryName) : this.inventoryManager.getInventory(ZMenuKeys.fileKey(this.plugin, inventoryName));
             if (optional.isPresent()) {
 
                 int page = this.stringPage == null ? this.intPage : this.getInt(this.papi(placeholders.parse(this.stringPage), player));
                 oldInventories.add(fromInventory);
 
                 this.inventoryArgument.process(player,placeholders);
-                this.inventoryManager.openInventory(player, optional.get(), page, oldInventories);
+                inventory.closeWithAnimation(() -> this.inventoryManager.openInventory(player, optional.get(), page, oldInventories));
 
             } else {
-                inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }

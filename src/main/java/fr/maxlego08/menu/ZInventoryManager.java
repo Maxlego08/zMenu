@@ -1,16 +1,18 @@
 package fr.maxlego08.menu;
 
-import com.cryptomorin.xseries.XSound;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import fr.maxlego08.menu.animation.ZAnimationManager;
 import fr.maxlego08.menu.api.*;
+import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.annotations.*;
-import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.button.ButtonOptionType;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.engine.OpenCause;
 import fr.maxlego08.menu.api.event.FastEvent;
 import fr.maxlego08.menu.api.event.events.ButtonLoaderRegisterEvent;
 import fr.maxlego08.menu.api.event.events.InventoryLoadEvent;
@@ -21,38 +23,42 @@ import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.*;
+import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
-import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.registry.KeyedRegistry;
+import fr.maxlego08.menu.api.registry.RegistrationException;
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.reload.ReloadContext;
+import fr.maxlego08.menu.api.registry.reload.ReloadReport;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.version.VersionFilter;
 import fr.maxlego08.menu.button.buttons.ZNoneButton;
 import fr.maxlego08.menu.command.validators.MaterialArgumentValidator;
-import fr.maxlego08.menu.common.utils.PlayerUtil;
+import fr.maxlego08.menu.common.utils.ClickTypeParser;
+import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCacheEntry;
-import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.loader.InventoryLoader;
-import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.loader.actions.BedrockLoader;
 import fr.maxlego08.menu.loader.actions.DialogLoader;
 import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.loader.deluxemenu.InventoryDeluxeMenuLoader;
 import fr.maxlego08.menu.pagination.ZPaginationManager;
+import fr.maxlego08.menu.registry.RegistryOwners;
+import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.requirement.checker.InventoryRequirementChecker;
-import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
-import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,9 +68,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,41 +79,68 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
-    private final PaginationManager paginationManager = new ZPaginationManager();
-
-    private final Set<String> inventoryNames = ConcurrentHashMap.newKeySet();
+    private final ZPaginationManager paginationManager = new ZPaginationManager();
+    private final AnimationManager animationManager;
+    private final ZRegistryManager registries = new ZRegistryManager();
+    private boolean slotAnimationsLoaded;
     private final Map<String, List<Inventory>> inventories = new ConcurrentHashMap<>();
-    private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new ConcurrentHashMap<>();
-    private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new ConcurrentHashMap<>();
     private final List<InventoryListener> inventoryListeners = new ArrayList<>();
-    private final List<MaterialLoader> loaders = new ArrayList<>();
     private final ZMenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new ConcurrentHashMap<>();
     private final Map<Plugin, FastEvent> fastEventMap = new ConcurrentHashMap<>();
-    private final Map<String, ItemStackSimilar> itemStackSimilarMap = new ConcurrentHashMap<>();
 
-    private final Map<UUID, Integer> playerPages = new ConcurrentHashMap<>();
-    private final Map<UUID, Integer> playerMaxPages = new ConcurrentHashMap<>();
-    private final Map<String, List<Inventory>> inventoryByName = new ConcurrentHashMap<>();
+    private final Map<Key, Inventory> otherInventories = new ConcurrentHashMap<>();
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
     public ZInventoryManager(@NotNull ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
+        this.animationManager = new ZAnimationManager(plugin, this.registries);
+        this.registries.provider(Registries.INVENTORY, ZMenuKeys.NAMESPACE, this::provideInventories);
+        this.registries.onRegister(Registries.PERMISSIBLE, key -> this.loadWaitingInventories(InventoryRequirementType.PERMISSIBLE, key));
+        this.registries.onRegister(Registries.ACTION, key -> this.loadWaitingInventories(InventoryRequirementType.ACTION, key));
+        this.registries.onRegister(Registries.BUTTON, key -> this.loadWaitingInventories(InventoryRequirementType.BUTTON, key));
+    }
+
+    @Override
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
+        RegistryOwners.registerLegacy(this.registries.writable(Registries.ITEM_VERIFICATION), itemStackSimilar, List.of());
+    }
+
+    private void registerAction(ActionLoader loader) {
+        this.registries.writable(Registries.ACTION).register(this.plugin, loader, loader.aliases());
+    }
+
+    private void registerValidator(CommandArgumentValidator validator) {
+        this.registries.writable(Registries.COMMAND_ARGUMENT_VALIDATOR).register(this.plugin, validator);
+    }
+
+    private void registerButton(ButtonLoader loader) {
+        this.registries.writable(Registries.BUTTON).register(loader.getPlugin(), loader, loader.aliases());
+    }
+
+    /**
+     * Loads the menus that were waiting for an element, now registered under {@code key}.
+     */
+    private void loadWaitingInventories(InventoryRequirementType type, Key key) {
+        this.loadElement(type, ZMenuKeys.NAMESPACE.equals(key.namespace()) ? key.value() : key.asString());
     }
 
     @Override
     public void load() {
+        this.loadSlotAnimations();
         this.loadButtons();
         this.plugin.getPatternManager().loadActionsPatterns();
         this.plugin.getPatternManager().loadPatterns();
+        this.animationManager.loadAnimations();
         this.loadInventories();
         DialogManager dialogManager = this.plugin.getDialogManager();
         if (dialogManager != null) {
@@ -118,6 +151,32 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             bedrockManager.loadBedrockInventory();
         }
         this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
+    }
+
+    /**
+     * Registers the slot animations of zMenu, once: their registry stops accepting entries when the
+     * server has finished loading.
+     */
+    private void loadSlotAnimations() {
+        if (this.slotAnimationsLoaded) return;
+        this.slotAnimationsLoaded = true;
+
+        ClassRegistry<SlotAnimationLoader, MenuPlugin> registry = ClassRegistry.
+                <SlotAnimationLoader, MenuPlugin>of(SlotAnimationLoader.class, loader -> {
+                    try {
+                        this.registerSlotAnimation(this.plugin, loader);
+                    } catch (RegistrationException exception) {
+                        Logger.info(exception.getMessage(), LogType.ERROR);
+                    }
+                })
+                .tryNoArgsConstructor()
+                .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
+                .errorLogger(Logger::error);
+
+        int count = VersionFilter.scanAndRegister("fr.maxlego08.menu", this.plugin, AutoSlotAnimationLoader.class, registry);
+        if (Configuration.enableInformationMessage) {
+            Logger.info("Registered " + count + " auto slot animation loader(s).");
+        }
     }
 
     private void startOfflineTask(int seconds) {
@@ -134,43 +193,18 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
-    public MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
-        return new MenuItemStackLoader(this).load(configuration, path, file);
+    public ZRegistryManager getRegistries() {
+        return this.registries;
     }
 
     @Override
-    public MenuItemStack loadItemStack(File file, String path, Map<String, Object> map) {
-        return this.loadItemStack(file, map);
-    }
-
-    @Override
-    public MenuItemStack loadItemStack(File file, Map<String, Object> map) {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.createSection("item", map);
-        return new MenuItemStackLoader(this).load(configuration, "item.", file);
+    public AnimationManager getAnimationManager() {
+        return this.animationManager;
     }
 
     @Override
     public PaginationManager getPaginationManager() {
         return this.paginationManager;
-    }
-
-    @Override
-    public String serializeItemStack(ItemStack itemStack) {
-        return ItemStackUtils.serializeItemStack(itemStack);
-    }
-
-    @Override
-    public ItemStack deserializeItemStack(String serializedItemStack) {
-        return ItemStackUtils.deserializeItemStack(serializedItemStack);
-    }
-
-    @Override
-    public SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom) {
-        Optional<XSound> xSound = XSound.of(soundName);
-
-        return xSound.map(sound -> new ZSoundOption(sound, categoryName, soundName, pitch, volume, isCustom)).orElse(null);
-
     }
 
     @Override
@@ -194,10 +228,127 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         return this.loadInventory(plugin, file, classz);
     }
 
+    /**
+     * Loads an inventory. One of zMenu's own replaces the entry of the same file name in the
+     * inventory registry; one of another plugin goes in the maps kept for other plugins.
+     */
     @Override
     public Inventory loadInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
 
-        Optional<YamlFileCacheEntry> yamlFileEntry = YamlFileCache.getYamlFileEntry(file.toPath());
+        Inventory inventory = this.parseInventory(plugin, file, classz);
+        if (inventory == null) return null;
+
+        if (plugin == this.plugin) {
+            ReloadReport report = this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> {
+                editor.remove(inventory.key());
+                editor.register(inventory);
+                editor.onPublish(() -> this.inventoryLoaded(plugin, file, inventory));
+            });
+            this.logReport(report);
+            return report.applied() ? inventory : null;
+        }
+
+        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
+        inventories.add(inventory);
+        this.inventories.put(plugin.getName(), inventories);
+        this.otherInventories.put(inventory.key(), inventory);
+        this.inventoryLoaded(plugin, file, inventory);
+
+        return inventory;
+    }
+
+    /**
+     * Provides the inventories of zMenu's own folder to the inventory registry. A file that cannot
+     * be read keeps its previous version, and the load events fire only once the new snapshot is live.
+     */
+    private void provideInventories(ReloadContext<Inventory> context) {
+        KeyedRegistry<Inventory> next = context.registries().registry(Registries.INVENTORY);
+
+        for (File file : this.inventoryFiles()) {
+            try {
+                Inventory inventory = this.parseInventory(this.plugin, file, ZInventory.class);
+                if (inventory == null) continue;
+
+                if (next.contains(inventory.key())) {
+                    context.warn(inventory.key(), file.getPath() + " has the same name as another inventory, it is not loaded");
+                    continue;
+                }
+                context.register(inventory);
+                context.onPublish(() -> this.inventoryLoaded(this.plugin, file, inventory));
+            } catch (Exception exception) {
+                Logger.error(exception);
+                Optional<Inventory> previous = context.previous().stream().filter(inventory -> file.equals(inventory.getFile())).findFirst();
+                if (previous.isPresent() && !next.contains(previous.get().key())) {
+                    context.register(previous.get());
+                    context.warn(previous.get().key(), file.getPath() + " cannot be loaded, its previous version is kept: " + exception.getMessage());
+                } else {
+                    context.warn(file.getPath() + " cannot be loaded: " + exception.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * @return the files of the inventories folder, then the ones of {@code specify-path-menus}
+     */
+    private List<File> inventoryFiles() {
+        List<File> files = new ArrayList<>();
+
+        File folder = new File(this.plugin.getDataFolder(), "inventories");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
+        try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
+            stream.skip(1).map(Path::toFile).filter(file -> file.isFile() && file.getName().endsWith(".yml")).forEach(files::add);
+        } catch (IOException exception) {
+            Logger.error(exception);
+        }
+
+        for (String path : Configuration.specifyPathMenus) {
+            File file = new File(path);
+            if (file.isFile() && file.getName().endsWith(".yml")) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
+    private void inventoryLoaded(Plugin plugin, File file, Inventory inventory) {
+        if (Configuration.enableInformationMessage) {
+            Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
+        }
+        this.warnAboutSharedName(inventory);
+
+        InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
+        if (Configuration.enableFastEvent) this.getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
+        else inventoryLoadEvent.call();
+    }
+
+    private void logReport(ReloadReport report) {
+        for (ReloadReport.Issue issue : report.issues()) {
+            String line = (issue.subject() == null ? "" : issue.subject().asString() + ": ") + issue.message();
+            Logger.info(line, issue.severity() == ReloadReport.Severity.ERROR ? LogType.ERROR : LogType.WARNING);
+        }
+        if (!report.applied()) {
+            Logger.info("The reload of " + report.type() + " was rejected, the previous version stays loaded.", LogType.ERROR);
+        }
+    }
+
+    /**
+     * Reads an inventory file, without registering it anywhere.
+     *
+     * @return the inventory, or null if it is disabled or waits for a requirement
+     */
+    @Nullable
+    private Inventory parseInventory(Plugin plugin, File file, Class<? extends Inventory> classz) throws InventoryException {
+
+        Optional<YamlFileCacheEntry> yamlFileEntry;
+        try {
+            yamlFileEntry = YamlFileCache.getYamlFileEntryStrict(file.toPath());
+        } catch (IOException | InvalidConfigurationException exception) {
+            throw new InventoryException("Cannot read " + file.getPath() + ": " + exception.getMessage(), exception);
+        }
 
         if (yamlFileEntry.isEmpty()) throw new InventoryFileNotFound("Cannot find " + file.getAbsolutePath() + ". File does not exist.");
 
@@ -238,114 +389,78 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         boolean isDeluxeMenu = configuration.contains("menu_title");
 
         Loader<Inventory> loader = isDeluxeMenu ? new InventoryDeluxeMenuLoader(this.plugin) : new InventoryLoader(this.plugin);
-        Inventory inventory = loader.load(configuration, "", file, classz, plugin);
-
-        List<Inventory> inventories = this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
-        inventories.add(inventory);
-        this.inventories.put(plugin.getName(), inventories);
-        this.registerShortName(inventory);
-        this.inventoryNames.add((inventory.getPlugin().getName()+":"+inventory.getFileName()).toLowerCase(Locale.ROOT));
-
-        if (Configuration.enableInformationMessage) {
-            Logger.info(file.getPath() + " loaded successfully !", LogType.INFO);
-        }
-
-        InventoryLoadEvent inventoryLoadEvent = new InventoryLoadEvent(plugin, file, inventory);
-        if (Configuration.enableFastEvent) this.getFastEvents().forEach(event -> event.onInventoryLoad(inventoryLoadEvent));
-        else inventoryLoadEvent.call();
-
-        return inventory;
+        return loader.load(configuration, "", file, classz, plugin);
     }
 
     @Override
     public Optional<Plugin> getPluginIgnoreCase(String pluginName) {
-        if (pluginName == null) {
-            return Optional.empty();
-        }
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            if (plugin.getName().equalsIgnoreCase(pluginName)) {
-                return Optional.of(plugin);
-            }
-        }
-        return Optional.empty();
+        return PluginUtils.getPluginIgnoreCase(pluginName);
     }
 
-    private void registerShortName(Inventory inventory) {
-        String shortName = inventory.getFileName().toLowerCase(Locale.ROOT);
-        List<Inventory> matches = this.inventoryByName.computeIfAbsent(shortName, key -> new CopyOnWriteArrayList<>());
-
-        matches.removeIf(existing -> existing.getPlugin().equals(inventory.getPlugin())
-                && existing.getFileName().equalsIgnoreCase(inventory.getFileName()));
-        matches.add(inventory);
-
-        if (matches.size() > 1) {
-            StringBuilder owners = new StringBuilder();
-            for (Inventory match : matches) {
-                if (!owners.isEmpty()) owners.append(", ");
-                owners.append(match.getPlugin().getName()).append(':').append(match.getFileName());
-            }
-            String winner = this.getInventory(shortName).map(found -> found.getPlugin().getName()).orElse("?");
-            Logger.info("The inventory name \"" + inventory.getFileName() + "\" is provided by several plugins ("
-                    + owners + "). Using that name on its own will always open the one from " + winner
-                    + ", use the plugin:name form to pick another.", LogType.WARNING);
-        }
+    private KeyedRegistry<Inventory> inventoryRegistry() {
+        return this.registries.registry(Registries.INVENTORY);
     }
 
-    private void unregisterShortName(Inventory inventory) {
-        String shortName = inventory.getFileName().toLowerCase(Locale.ROOT);
-        List<Inventory> matches = this.inventoryByName.get(shortName);
-        if (matches == null) {
-            return;
+    /**
+     * Warns when several plugins provide an inventory with the same file name: the name on its own
+     * then always opens the same one, and the plugin:name form is needed to pick another.
+     */
+    private void warnAboutSharedName(Inventory inventory) {
+        String shortName = inventory.key().value();
+        List<Inventory> matches = new ArrayList<>(this.getInventories().stream()
+                .filter(other -> other.key().value().equals(shortName))
+                .collect(Collectors.toMap(Inventory::key, other -> other, (first, second) -> second))
+                .values());
+        if (matches.size() < 2) return;
+
+        StringBuilder owners = new StringBuilder();
+        for (Inventory match : matches) {
+            if (!owners.isEmpty()) owners.append(", ");
+            owners.append(match.getPlugin().getName()).append(':').append(match.getFileName());
         }
-        matches.remove(inventory);
-        if (matches.isEmpty()) {
-            this.inventoryByName.remove(shortName);
-        }
+        String winner = this.findInventory(shortName).map(found -> found.getPlugin().getName()).orElse("?");
+        Logger.info("The inventory name \"" + inventory.getFileName() + "\" is provided by several plugins ("
+                + owners + "). Using that name on its own will always open the one from " + winner
+                + ", use the plugin:name form to pick another.", LogType.WARNING);
     }
 
     @Override
+    public Optional<Inventory> getInventory(@NotNull Key key) {
+        Optional<Inventory> own = this.inventoryRegistry().get(key);
+        return own.isPresent() ? own : Optional.ofNullable(this.otherInventories.get(key));
+    }
+
+    @Override
+    public Set<Key> getInventoryKeys() {
+        Set<Key> keys = new HashSet<>(this.inventoryRegistry().keys());
+        keys.addAll(this.otherInventories.keySet());
+        return Collections.unmodifiableSet(keys);
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public Optional<Inventory> getInventory(String name) {
-        if (name == null) {
-            return Optional.empty();
-        }
-
-        List<Inventory> matches = this.inventoryByName.get(name.toLowerCase(Locale.ROOT));
-        if (matches == null || matches.isEmpty()) {
-            return Optional.empty();
-        }
-        if (matches.size() == 1) {
-            return Optional.of(matches.getFirst());
-        }
-
-        return matches.stream()
-                .filter(inventory -> inventory.getPlugin().equals(this.plugin))
-                .findFirst()
-                .or(() -> matches.stream()
-                        .min(Comparator.comparing(inventory -> inventory.getPlugin().getName(), String.CASE_INSENSITIVE_ORDER)));
+        return name == null ? Optional.empty() : this.findInventory(name);
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public Optional<Inventory> getInventory(Plugin plugin, String name) {
-        if (name == null) {
-            return Optional.empty();
-        }
-        for (Inventory inventory : this.getInventories(plugin)) {
-            if (inventory.getFileName().equalsIgnoreCase(name)) {
-                return Optional.of(inventory);
-            }
-        }
-        return Optional.empty();
+        return plugin == null || name == null ? Optional.empty() : this.getInventory(ZMenuKeys.fileKey(plugin.getName(), name));
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public Optional<Inventory> getInventory(String pluginName, String name) {
-        Optional<Plugin> optional = this.getPluginIgnoreCase(pluginName);
-        return optional.isEmpty() || name == null ? Optional.empty() : this.getInventory(optional.get(), name);
+        return pluginName == null || name == null ? Optional.empty() : this.getInventory(ZMenuKeys.fileKey(pluginName, name));
     }
 
     @Override
     public Collection<Inventory> getInventories() {
-        List<Inventory> allInventories = new ArrayList<>();
+        List<Inventory> allInventories = new ArrayList<>(this.inventoryRegistry().values());
         for (List<Inventory> inventoryList : this.inventories.values()) {
             allInventories.addAll(inventoryList);
         }
@@ -354,41 +469,39 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Collection<Inventory> getInventories(Plugin plugin) {
-        return plugin == null ? new ArrayList<>() : this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
+        if (plugin == null) return new ArrayList<>();
+        if (plugin == this.plugin) return new ArrayList<>(this.inventoryRegistry().values());
+        return this.inventories.getOrDefault(plugin.getName(), new ArrayList<>());
     }
 
     @Override
     public Optional<Inventory> findInventory(@NotNull String inventoryName) {
-        Optional<Inventory> optional;
-        if (inventoryName.contains(":")) {
-            String[] parts = inventoryName.split(":", 2);
-            if (parts.length == 2) {
-                optional = this.getInventory(parts[0], parts[1]);
-            } else {
-                optional = this.getInventory(inventoryName);
-            }
-        } else {
-            optional = this.getInventory(inventoryName);
-        }
-        return optional;
+        Optional<Inventory> optional = this.getInventory(ZMenuKeys.inventoryKey(inventoryName));
+        if (optional.isPresent() || inventoryName.indexOf(':') >= 0) return optional;
+
+        return this.otherInventories.values().stream()
+                .filter(inventory -> ZMenuKeys.matches(inventory.key(), inventoryName))
+                .min(Comparator.comparing(inventory -> inventory.getPlugin().getName(), String.CASE_INSENSITIVE_ORDER));
     }
 
     @Override
     public void deleteInventory(Inventory inventory) {
+        if (inventory.getPlugin() == this.plugin) {
+            this.logReport(this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> {
+                if (editor.previous().get(inventory.key()).orElse(null) == inventory) editor.remove(inventory.key());
+            }));
+            return;
+        }
+
         String pluginName = inventory.getPlugin().getName();
         List<Inventory> inventories = this.inventories.getOrDefault(pluginName, new ArrayList<>());
         inventories.remove(inventory);
         this.inventories.put(pluginName, inventories);
-        this.unregisterShortName(inventory);
-        // Another inventory with the same name may still be loaded from another folder, it keeps the name
-        Optional<Inventory> sameName = inventories.stream().filter(other -> other.getFileName().equalsIgnoreCase(inventory.getFileName())).reduce((first, second) -> second);
-        if (sameName.isPresent()) {
-            List<Inventory> matches = this.inventoryByName.get(inventory.getFileName().toLowerCase(Locale.ROOT));
-            if (matches == null || matches.stream().noneMatch(match -> match.getPlugin().equals(inventory.getPlugin()))) {
-                this.registerShortName(sameName.get());
-            }
-        } else {
-            this.inventoryNames.remove((inventory.getPlugin().getName() + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
+        if (this.otherInventories.remove(inventory.key(), inventory)) {
+            inventories.stream()
+                    .filter(other -> other.key().equals(inventory.key()))
+                    .reduce((first, second) -> second)
+                    .ifPresent(other -> this.otherInventories.put(other.key(), other));
         }
     }
 
@@ -412,32 +525,45 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     }
 
     @Override
+    public boolean deleteInventory(@NotNull Key key) {
+        Optional<Inventory> optional = this.getInventory(key);
+        optional.ifPresent(this::deleteInventory);
+        return optional.isPresent();
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public boolean deleteInventory(String name) {
-        Optional<Inventory> optional = this.getInventory(name);
-        if (optional.isPresent()) {
-            this.deleteInventory(optional.get());
-            return false;
-        }
-        return false;
+        Optional<Inventory> optional = this.findInventory(name);
+        optional.ifPresent(this::deleteInventory);
+        return optional.isPresent();
     }
 
     @Override
     public void deleteInventories(Plugin plugin) {
+        if (plugin == this.plugin) {
+            this.logReport(this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> editor.previous().keys().forEach(editor::remove)));
+            return;
+        }
+
         List<Inventory> removed = this.inventories.remove(plugin.getName());
         if (removed != null) {
             for (Inventory inventory : removed) {
-                this.unregisterShortName(inventory);
-                this.inventoryNames.remove(
-                        (inventory.getPlugin().getName() + ":" + inventory.getFileName())
-                                .toLowerCase(Locale.ROOT)
-                );
+                this.otherInventories.remove(inventory.key(), inventory);
             }
         }
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public Set<String> getInventoryNames() {
-        return Collections.unmodifiableSet(this.inventoryNames);
+        Set<String> names = new HashSet<>();
+        for (Key key : this.getInventoryKeys()) {
+            names.add(key.asString());
+        }
+        return Collections.unmodifiableSet(names);
     }
 
     @Override
@@ -479,15 +605,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         page = playerOpenInventoryEvent.getPage();
         oldInventories = playerOpenInventoryEvent.getOldInventories();
 
-        this.currentInventories.put(player.getUniqueId(), inventory);
-        this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories);
-    }
+        OpenCause cause = this.isAlreadyOpen(player, inventory) ? OpenCause.REFRESH : OpenCause.OPEN;
 
-    @Override
-    public void openInventory(Player player, Inventory inventory, int page, Inventory... inventories) {
-        List<Inventory> oldInventories = new ArrayList<>();
-        Collections.addAll(oldInventories, inventories);
-        this.openInventory(player, inventory, page, oldInventories);
+        this.currentInventories.put(player.getUniqueId(), inventory);
+        this.createInventory(this.plugin, player, EnumInventory.INVENTORY_DEFAULT, page, inventory, oldInventories, cause);
     }
 
     @Override
@@ -496,7 +617,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonManager buttonManager = this.plugin.getButtonManager();
         // Load Permissible before
         ClassRegistry<PermissibleLoader, MenuPlugin> permissibleRegistry = ClassRegistry.
-                <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, buttonManager::registerPermissible)
+                <PermissibleLoader,MenuPlugin>of(PermissibleLoader.class, loader -> this.registries.writable(Registries.PERMISSIBLE).register(this.plugin, loader))
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor(((clazz, plugin) -> clazz.getConstructor(ButtonManager.class).newInstance(buttonManager)))
                 .tryNoArgsConstructor()
@@ -510,18 +631,18 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         // Load actions
 
         if (Configuration.enablePlayerCommandsAsOPAction) { // Disabled by default for security reasons
-            buttonManager.registerAction(new PlayerCommandAsOPLoader());
+            this.registerAction(new PlayerCommandAsOPLoader());
         }
         if (this.plugin.getDialogManager() != null) {
-            buttonManager.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
+            this.registerAction(new DialogLoader(this.plugin, this.plugin.getDialogManager()));
         }
-        this.plugin.getPacketManager().ifPresent(manager -> buttonManager.registerAction(new PacketEventChangeTitleNameLoader(manager)));
+        this.plugin.getPacketManager().ifPresent(manager -> this.registerAction(new PacketEventChangeTitleNameLoader(manager)));
         if (this.plugin.getBedrockManager() != null) {
-            buttonManager.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
+            this.registerAction(new BedrockLoader(this.plugin, this.plugin.getBedrockManager()));
         }
 
         ClassRegistry<ActionLoader, MenuPlugin> actionRegistry = ClassRegistry.
-                <ActionLoader,MenuPlugin>of(ActionLoader.class, buttonManager::registerAction)
+                <ActionLoader,MenuPlugin>of(ActionLoader.class, this::registerAction)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryNoArgsConstructor()
                 .errorLogger(Logger::error);
@@ -532,12 +653,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         // NoneLoader
-        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
-        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
-        buttonManager.register(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
+        this.registerButton(new NoneLoader(this.plugin, ZNoneButton.class, "none"));
+        this.registerButton(new NoneLoader(this.plugin, ZNoneButton.class, "none_slot"));
+        this.registerButton(new NoneLoader(this.plugin, ZNoneButton.class, "perform_command"));
 
         ClassRegistry<ButtonLoader, MenuPlugin> buttonRegistry = ClassRegistry.
-                <ButtonLoader, MenuPlugin>of(ButtonLoader.class, buttonManager::register)
+                <ButtonLoader, MenuPlugin>of(ButtonLoader.class, this::registerButton)
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor(((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin)))
                 .tryNoArgsConstructor()
@@ -549,7 +670,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         ClassRegistry<ItemStackSimilar, MenuPlugin> itemStackRegistry = ClassRegistry.
-                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, this::registerItemStackVerification)
+                <ItemStackSimilar, MenuPlugin>of(ItemStackSimilar.class, similar -> this.registries.writable(Registries.ITEM_VERIFICATION).register(this.plugin, similar))
                 .tryNoArgsConstructor()
                 .errorLogger(Logger::error);
 
@@ -561,13 +682,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
-        var commandManager = this.plugin.getCommandManager();
-        // MaterialArgumentValidator
-        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
-        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
+        this.registerValidator(MaterialArgumentValidator.material());
+        this.registerValidator(MaterialArgumentValidator.block());
 
         ClassRegistry<CommandArgumentValidator, MenuPlugin> validatorRegistry = ClassRegistry.
-                <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, commandManager::registerArgumentValidator)
+                <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, this::registerValidator)
                 .tryNoArgsConstructor()
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin))
@@ -582,127 +701,82 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void loadInventories() {
 
-        this.playerMaxPages.clear();
-        this.playerPages.clear();
-        this.inventoryByName.clear();
-        this.inventoryNames.clear();
+        this.paginationManager.clearMenuPages();
+        this.inventoryLoadRequirements.removeIf(requirement -> requirement.getPlugin() == this.plugin);
 
-        File folder = new File(this.plugin.getDataFolder(), "inventories");
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-
-        // Load inventories
-        try (Stream<Path> stream = Files.walk(Paths.get(folder.getPath()))) {
-            Iterator<Path> iterator = stream.iterator();
-            if (iterator.hasNext()) {
-                iterator.next();
-            }
-            while (iterator.hasNext()) {
-                Path path = iterator.next();
-                File file = path.toFile();
-                if (file.isFile() && file.getName().endsWith(".yml")) {
-                    try {
-                        this.loadInventory(this.plugin, file);
-                    } catch (InventoryException exception) {
-                        Logger.error(exception);
-                    }
-                }
-            }
-        } catch (IOException exception) {
-            Logger.error(exception);
-        }
-
-        // Load specifies path inventories
-        List<String> list = Configuration.specifyPathMenus;
-        for (String s : list) {
-            File file = new File(s);
-            if (file.isFile()) {
-                if (file.getName().endsWith(".yml")) {
-                    try {
-                        this.loadInventory(this.plugin, file);
-                    } catch (Exception exception) {
-                        Logger.error(exception);
-                    }
-                }
-            }
-        }
+        this.logReport(this.registries.reload(Registries.INVENTORY));
     }
 
     @Override
     public boolean registerMaterialLoader(MaterialLoader materialLoader) {
-
-        Optional<MaterialLoader> optional = this.getMaterialLoader(materialLoader.getKey());
-        if (optional.isPresent()) {
-            return false;
-        }
-
-        this.loaders.add(materialLoader);
-        return true;
+        return RegistryOwners.registerLegacy(this.registries.writable(Registries.MATERIAL_LOADER), materialLoader, List.of());
     }
 
     @Override
     public Optional<MaterialLoader> getMaterialLoader(String key) {
-        for (MaterialLoader loader : this.loaders) {
-            if (loader.getKey().equalsIgnoreCase(key)) {
-                return Optional.of(loader);
-            }
-        }
-        return Optional.empty();
+        Key id = ZMenuKeys.tryParse(key);
+        return id == null ? Optional.empty() : this.registries.registry(Registries.MATERIAL_LOADER).get(id);
     }
 
     @Override
     public Collection<MaterialLoader> getMaterialLoader() {
-        return Collections.unmodifiableCollection(this.loaders);
+        return this.registries.registry(Registries.MATERIAL_LOADER).values();
     }
 
     @Override
-    public void openInventory(Player player, Plugin plugin, String inventoryName) {
+    public void openInventory(Player player, @NotNull Key key) {
+        this.openInventory(player, key, 1);
+    }
 
-        Optional<Inventory> optional = this.getInventory(plugin, inventoryName);
+    @Override
+    public void openInventory(Player player, @NotNull Key key, int page) {
+        this.openOrTell(player, this.getInventory(key), key.value(), key.namespace(), page);
+    }
 
+    /**
+     * Opens the inventory, or closes the player's one and tells them it does not exist.
+     */
+    private void openOrTell(Player player, Optional<Inventory> optional, String name, String pluginName, int page) {
         if (optional.isEmpty()) {
             player.closeInventory();
-            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", plugin.getName());
+            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", name, "%toName%", name, "%plugin%", pluginName);
             return;
         }
 
-        this.openInventory(player, optional.get());
+        this.openInventory(player, optional.get(), page);
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
+    public void openInventory(Player player, Plugin plugin, String inventoryName) {
+        this.openOrTell(player, this.getInventory(ZMenuKeys.fileKey(plugin.getName(), inventoryName)), inventoryName, plugin.getName(), 1);
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public void openInventory(Player player, String pluginName, String inventoryName) {
         this.openInventory(player, pluginName, inventoryName, 1);
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public void openInventory(Player player, String pluginName, String inventoryName, int page) {
-        Optional<Inventory> optional = this.getInventory(pluginName, inventoryName);
-
-        if (optional.isEmpty()) {
-            player.closeInventory();
-            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", pluginName);
-            return;
-        }
-
-        this.openInventory(player, optional.get(), page);
+        this.openOrTell(player, this.getInventory(ZMenuKeys.fileKey(pluginName, inventoryName)), inventoryName, pluginName, page);
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public void openInventory(Player player, String inventoryName, int page) {
-
-        Optional<Inventory> optional = this.getInventory(inventoryName);
-
-        if (optional.isEmpty()) {
-            player.closeInventory();
-            message(this.plugin, player, Message.INVENTORY_NOT_FOUND, "%name%", inventoryName, "%toName%", inventoryName, "%plugin%", this.plugin.getName());
-            return;
-        }
-
-        this.openInventory(player, optional.get(), page);
+        this.openOrTell(player, this.findInventory(inventoryName), inventoryName, this.plugin.getName(), page);
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public void openInventory(Player player, String inventoryName) {
         this.openInventory(player, inventoryName, 1);
     }
@@ -710,7 +784,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void reloadInventory(Inventory inventory) {
 
-        this.deleteInventory(inventory);
+        if (inventory.getPlugin() != this.plugin) {
+            this.deleteInventory(inventory);
+        }
 
         /*
          * CommandManager commandManager = this.plugin.getCommandManager();
@@ -778,12 +854,19 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public void sendInventories(CommandSender sender) {
 
-        if (this.inventories.isEmpty()) {
+        Map<String, List<Inventory>> byPlugin = new LinkedHashMap<>();
+        List<Inventory> own = new ArrayList<>(this.inventoryRegistry().values());
+        if (!own.isEmpty()) byPlugin.put(this.plugin.getName(), own);
+        this.inventories.forEach((plugin, inventories) -> {
+            if (!inventories.isEmpty()) byPlugin.put(plugin, inventories);
+        });
+
+        if (byPlugin.isEmpty()) {
             message(this.plugin, sender, Message.LIST_EMPTY);
             return;
         }
 
-        this.inventories.forEach((plugin, inventories) -> {
+        byPlugin.forEach((plugin, inventories) -> {
             List<String> fileNames = new ArrayList<>(inventories.size());
             for (Inventory inventory : inventories) {
                 fileNames.add(inventory.getFileName());
@@ -829,6 +912,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
     }
 
+    private boolean isAlreadyOpen(Player player, Inventory inventory) {
+        InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
+        return holder instanceof InventoryDefault inventoryDefault && inventoryDefault.getMenuInventory() == inventory;
+    }
+
     @Override
     public void updateInventory(Player player) {
         this.plugin.getScheduler().runAtEntity(player, w -> {
@@ -844,7 +932,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.plugin.getScheduler().runAtEntity(player, w -> {
             InventoryHolder holder = CompatibilityUtil.getTopInventory(player).getHolder();
             if (holder instanceof InventoryDefault inventoryDefault) {
-                this.openInventory(player, inventoryDefault.getMenuInventory(), this.getPage(player), inventoryDefault.getOldInventories());
+                this.openInventory(player, inventoryDefault.getMenuInventory(), this.paginationManager.getMenuPage(player.getUniqueId()), inventoryDefault.getOldInventories());
             }
         });
     }
@@ -885,7 +973,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         }
 
         if (type.equalsIgnoreCase("yml")) {
-            MenuItemStackConversion conversion = this.toMenuItemStack(itemStack);
+            MenuItemStackConversion conversion = this.plugin.getItemStackService().fromItemStack(itemStack);
             conversion.menuItemStack().serialize(configuration.createSection("items." + name));
             if (!conversion.isReadable()) {
                 message(this.plugin, sender, Message.SAVE_BASE64_FALLBACK, "%name%", name, "%components%", String.join(", ", conversion.unsupportedComponents()));
@@ -908,68 +996,31 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     }
 
-    @Override
-    public @NotNull MenuItemStackConversion toMenuItemStack(@NotNull ItemStack itemStack) {
-        return MenuItemStackFromItemStack.convert(this, itemStack);
-    }
-
     @EventHandler
     public void onQuid(PlayerQuitEvent event) {
         UUID uniqueId = event.getPlayer().getUniqueId();
         this.currentInventories.remove(uniqueId);
-        // Cleared here too: otherwise they only reset on reload, and a returning player
-        // inherits the page they were on in a previous session.
-        this.playerPages.remove(uniqueId);
-        this.playerMaxPages.remove(uniqueId);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getItem() == null) return;
+
         for (Inventory inventory : this.getInventories()) {
             OpenWithItem openWithItem = inventory.getOpenWithItem();
             if (openWithItem != null && openWithItem.shouldTrigger(event)) {
+                event.setCancelled(true);
                 this.openInventory(event.getPlayer(), inventory);
+                return;
             }
         }
     }
 
     @Override
     public List<ClickType> loadClicks(List<String> loadClicks) {
-        List<ClickType> clickTypes = new ArrayList<>();
-        loadClicks.forEach(clickType -> {
-            if (clickType == null) return;
-            if (clickType.equalsIgnoreCase("all") || clickType.equalsIgnoreCase("any")) {
-                clickTypes.addAll(Configuration.allClicksType);
-            } else {
-                try {
-                    clickTypes.add(ClickType.valueOf(clickType.toUpperCase(Locale.ROOT)));
-                } catch (Exception ignored) {
-                    Logger.info(clickType + " click type was not found.", LogType.ERROR);
-                }
-            }
-        });
-
-        if (clickTypes.isEmpty()) { // Use all clicks by default
-            clickTypes.addAll(Configuration.allClicksType);
-        }
-
-        return clickTypes;
+        return ClickTypeParser.parse(loadClicks);
     }
 
-    @Override
-    public void registerItemStackVerification(ItemStackSimilar itemStackSimilar) {
-        this.itemStackSimilarMap.put(itemStackSimilar.getName().toLowerCase(Locale.ROOT), itemStackSimilar);
-    }
-
-    @Override
-    public Optional<ItemStackSimilar> getItemStackVerification(String name) {
-        return Optional.ofNullable(this.itemStackSimilarMap.getOrDefault(name.toLowerCase(Locale.ROOT), null));
-    }
-
-    @Override
-    public Collection<ItemStackSimilar> getItemStackVerifications() {
-        return this.itemStackSimilarMap.values();
-    }
 
     @Override
     public PlatformScheduler getScheduler() {
@@ -978,49 +1029,32 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Class<? extends ButtonOption>> getOption(String name) {
-        for (List<Class<? extends ButtonOption>> options : this.buttonOptions.values()) {
-            for (Class<? extends ButtonOption> buttonOption : options) {
-                if (buttonOption.getName().equalsIgnoreCase(name)) {
-                    return Optional.of(buttonOption);
-                }
-            }
-        }
-        return Optional.empty();
+        return this.registries.registry(Registries.BUTTON_OPTION).stream()
+                .<Class<? extends ButtonOption>>map(ButtonOptionType::optionClass)
+                .filter(optionClass -> optionClass.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     @Override
     public void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption) {
-
         if (this.getOption(buttonOption.getName()).isPresent()) return;
-
-        this.buttonOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(buttonOption);
+        RegistryOwners.registerLegacy(this.registries.writable(Registries.BUTTON_OPTION), plugin.getName(), ButtonOptionType.of(plugin, buttonOption), List.of());
     }
 
     @Override
     public void unregisterOptions(Plugin plugin) {
-        this.buttonOptions.remove(plugin);
+        this.registries.writable(Registries.BUTTON_OPTION).unregisterAll(plugin);
     }
 
     @Override
     public Map<Plugin, List<Class<? extends ButtonOption>>> getOptions() {
-        return this.buttonOptions;
+        Map<Plugin, List<Class<? extends ButtonOption>>> options = new LinkedHashMap<>();
+        for (ButtonOptionType type : this.registries.registry(Registries.BUTTON_OPTION)) {
+            options.computeIfAbsent(type.plugin(), plugin -> new ArrayList<>()).add(type.optionClass());
+        }
+        return options;
     }
 
-    @Override
-    public void setPlayerPage(OfflinePlayer player, int page, int maxPage) {
-        this.playerPages.put(player.getUniqueId(), page);
-        this.playerMaxPages.put(player.getUniqueId(), maxPage);
-    }
-
-    @Override
-    public int getPage(OfflinePlayer player) {
-        return this.playerPages.getOrDefault(player.getUniqueId(), 0);
-    }
-
-    @Override
-    public int getMaxPage(OfflinePlayer player) {
-        return this.playerMaxPages.getOrDefault(player.getUniqueId(), 0);
-    }
 
     @Override
     public InventoryDefault getFakeInventory() {
@@ -1070,32 +1104,30 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption) {
-
         if (this.getInventoryOption(inventoryOption.getName()).isPresent()) return;
-
-        this.inventoryOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(inventoryOption);
+        RegistryOwners.registerLegacy(this.registries.writable(Registries.INVENTORY_OPTION), plugin.getName(), InventoryOptionType.of(plugin, inventoryOption), List.of());
     }
 
     @Override
     public Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions() {
-        return this.inventoryOptions;
+        Map<Plugin, List<Class<? extends InventoryOption>>> options = new LinkedHashMap<>();
+        for (InventoryOptionType type : this.registries.registry(Registries.INVENTORY_OPTION)) {
+            options.computeIfAbsent(type.plugin(), plugin -> new ArrayList<>()).add(type.optionClass());
+        }
+        return options;
     }
 
     @Override
     public Optional<Class<? extends InventoryOption>> getInventoryOption(String name) {
-        for (List<Class<? extends InventoryOption>> options : this.inventoryOptions.values()) {
-            for (Class<? extends InventoryOption> inventoryOption : options) {
-                if (inventoryOption.getName().equalsIgnoreCase(name)) {
-                    return Optional.of(inventoryOption);
-                }
-            }
-        }
-        return Optional.empty();
+        return this.registries.registry(Registries.INVENTORY_OPTION).stream()
+                .<Class<? extends InventoryOption>>map(InventoryOptionType::optionClass)
+                .filter(optionClass -> optionClass.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     @Override
     public void unregisterInventoryOptions(Plugin plugin) {
-        this.inventoryOptions.remove(plugin);
+        this.registries.writable(Registries.INVENTORY_OPTION).unregisterAll(plugin);
     }
 
     @Override
@@ -1111,41 +1143,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Override
     public List<InventoryListener> getInventoryListeners() {
         return this.inventoryListeners;
-    }
-
-    @Override
-    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player) {
-        return this.postProcessSkullItemStack(itemStack, button, player, new fr.maxlego08.menu.api.utils.Placeholders());
-    }
-
-    @Override
-    public ItemStack postProcessSkullItemStack(ItemStack itemStack, Button button, Player player, Placeholders placeholders) {
-
-        PerformanceDebug performanceDebug = PerformanceDebug.create("Skull item stack processing");
-
-        performanceDebug.start("papi");
-        String name = this.papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
-        performanceDebug.end();
-
-        if (!PlayerUtil.isValidMinecraftUsername(name)) {
-            performanceDebug.printSummary();
-            return itemStack;
-        }
-
-        performanceDebug.start("findOfflinePlayer");
-        OfflinePlayer offlinePlayer = OfflinePlayerCache.get(name);
-        performanceDebug.end();
-
-        if (itemStack.getItemMeta() instanceof SkullMeta skullMeta) {
-            performanceDebug.start("applyOwnerProfile");
-            skullMeta.setOwnerProfile(offlinePlayer.getPlayerProfile().getTextures().isEmpty() ? offlinePlayer.getPlayerProfile().update().join() : offlinePlayer.getPlayerProfile());
-            itemStack.setItemMeta(skullMeta);
-            performanceDebug.end();
-        }
-
-        performanceDebug.printSummary();
-
-        return itemStack;
     }
 
     @Override

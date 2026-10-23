@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.listener;
 
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.annotations.AutoListener;
@@ -22,11 +24,11 @@ public class SwapKeyListener implements Listener {
 
             if (Configuration.useSwapItemOffHandKeyToOpenMainMenuNeedsShift) {
                 if (player.isSneaking()) {
-                    inventoryManager.openInventory(player,Configuration.mainMenu);
+                    inventoryManager.openInventory(player, inventoryManager.findInventory(Configuration.mainMenu).map(Inventory::key).orElse(ZMenuKeys.inventoryKey(Configuration.mainMenu)));
                     event.setCancelled(true);
                 }
             } else {
-                inventoryManager.openInventory(player,Configuration.mainMenu);
+                inventoryManager.openInventory(player, inventoryManager.findInventory(Configuration.mainMenu).map(Inventory::key).orElse(ZMenuKeys.inventoryKey(Configuration.mainMenu)));
                 event.setCancelled(true);
             }
         }

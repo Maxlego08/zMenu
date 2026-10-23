@@ -42,6 +42,61 @@
 
 # Unreleased
 
+## Changes
+
+* Removed the legacy `ClassicMeta` formatter. zMenu always formats items, messages and titles with MiniMessage through `ComponentMeta`. If it cannot start, zMenu logs an error and disables itself. `enable-mini-message-format` now only controls Dialogs support.
+
+## New Features
+
+* Added the slot animation engine: an inventory can reveal its items one after the other when it opens and take them away when it closes, buttons can cycle their items while the menu stays open (idle animations), and an animation can be played on an open menu at any time. Built-in reveal orders: `sequential` (also `rows`), `horizontal_snake`, `vertical_snake`, `spiral`, `random`, `from_center`, `wave`, `checkerboard`, `columns`, `matrix` and `custom`. Menus configure them in YAML with zMenuPlus, which reads `open-animation`, `close-animation`, the button `animation` and `idle-animation`, the `animation` action and the files of zMenu's new `animations` folder (`fancy_open`, `glint`, `heartbeat`, `pulse`, `sparkle`, `wave_in`).
+* Added the `features` section to `config.yml`, to turn off parts of zMenu a server does not use. A disabled feature registers nothing; a change applies after a restart, `/zm reload` only warns about it. First feature: `custom-items`, which turns off the `items` folder, its mechanics (`itemjoin`, `on-click`), the item update on join and `/zm giveitem`.
+* Added `/zm resetanimation <player> [menu]` (permission `zmenu.animation.reset`) so an animation that plays once, or has a cooldown, plays again.
+* Added the `max-animation-duration` (default 10000 ms) and `shared-idle-timer-threshold` (default 8) options to `config.yml`.
+
+## Improvements
+
+* `/zm reload` and `/zm reload inventory` no longer leave menus half-loaded: a menu file that cannot be read is reported and keeps its previous version, while every other menu is updated. The load events fire once the new menus are in place.
+* A menu file with a YAML syntax error is now reported instead of being loaded as an empty 54-slot menu.
+* Menus of other plugins stay available by name after `/zm reload`.
+* `deleteInventory(String)` now returns `true` when it deleted a menu.
+
+## Fixes
+
+* The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
+* `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
+* The `block` argument type of custom commands was registered as a second `material` type and could never be used; it now exists and accepts only materials that are blocks.
+* Without PlaceholderAPI, a `%` typed into a dialog input could come out as an invisible character in item names and lores; every placeholder path now restores it.
+
+## Internal Changes
+
+* Added typed registries (`RegistryManager`, `Registries`): namespaced keys, an owner for every entry, duplicates refused, static registries frozen once the server has loaded, and reloadable registries rebuilt and swapped as a whole. zMenu's own menus now live in the `Registries.INVENTORY` registry.
+* Added open registries (`RegistryType.createOpen`): they accept entries at any time and drop those of a plugin when it disables. `WritableRegistry` gains `unregister(Key)`, `unregisterAll(owner)` and `register(owner, value, aliases)`, which registers every name or none. `ZMenuKeys.parse` turns any name into a key, so the names plugins registered before the registries keep working: spaces, `-` and every other character a key cannot hold are read as `_` (`Play Animation` is `zmenu:play_animation`, `Shop+Buy` is `zmenu:shop_buy`), the same way when a loader is registered and when a file names it. `ZMenuKeys.tryParse` returns null for a null or blank name.
+* Requirement types live in the open `Registries.PERMISSIBLE` registry; `PermissibleLoader` is `Keyed`. `ButtonManager#registerPermissible` and `getPermissibles()` are deprecated for removal: the old register logs a name already taken instead of replacing the existing type, and `getPermissibles()` returns a copy.
+* Action types live in the open `Registries.ACTION` registry; `ActionLoader` is `Keyed` (its first name) with `aliases()` (the others). `ButtonManager#registerAction` is deprecated for removal and logs a name already taken instead of replacing the existing action. Every spelling of an action name now works: `console commands`, `console-commands` and `Console_Commands` are the same type.
+* Button types live in the open `Registries.BUTTON` registry; `ButtonLoader` is `Keyed` (its name) with `aliases()`. `ButtonManager#register`, `unregister`, `unregisters(Plugin)`, `getLoaders(Plugin)` and `ButtonLoaderRegisterEvent#register` are deprecated for removal; a button type registered twice is now logged instead of throwing `ButtonAlreadyRegisterException`. A plugin's button types are removed when it disables.
+* Item rule types live in the open `Registries.RULE` registry; `RuleLoader` is `Keyed` (its type) with `aliases()`. `RuleLoaderRegistry` is deprecated for removal.
+* Material loaders live in the open `Registries.MATERIAL_LOADER` registry; `MaterialLoader` is `Keyed` (its prefix). `InventoryManager#registerMaterialLoader` and both `getMaterialLoader` methods are deprecated for removal.
+* Item components live in the open `Registries.ITEM_COMPONENT` registry under `minecraft:<name>` (also readable as `<name>`) or `<plugin>:<name>`; `ItemComponentLoader` is `Keyed`. `ComponentsManager#registerComponent` is deprecated for removal and logs a name already taken instead of throwing `ItemComponentAlreadyRegisterException`, which is deprecated.
+* Custom command argument types live in the open `Registries.COMMAND_ARGUMENT_VALIDATOR` registry; `CommandArgumentValidator` is `Keyed` (its type). `CommandManager#registerArgumentValidator`, `unregisterArgumentValidator` and `getArgumentValidators` are deprecated for removal.
+* Custom item mechanics live in the open `Registries.MECHANIC` registry; `MechanicFactory` is `Keyed` (its id). `ItemManager#registerMechanicFactory` is deprecated for removal.
+* Button and inventory options live in the open `Registries.BUTTON_OPTION` and `Registries.INVENTORY_OPTION` registries, as `ButtonOptionType` / `InventoryOptionType` (`of(plugin, MyOption.class)`). The `InventoryManager` option methods (`registerOption`, `unregisterOptions`, `getOptions`, `getOption` and their inventory counterparts) are deprecated for removal, and a plugin's options are removed when it disables.
+* Added `Inventory#key()` (`plugin:file`) and key-based methods on `InventoryManager`: `getInventory(Key)`, `getInventoryKeys()`, `deleteInventory(Key)` and `openInventory(Player, Key)`. The name-based ones (`getInventory(String)`, `getInventoryNames()`, `openInventory(Player, String)`…) are deprecated for removal and delegate to them; `findInventory(String)` reads a name written by a user.
+* Slot animation types are registered with `InventoryManager#registerSlotAnimation(Plugin, SlotAnimationLoader)`; zMenu's own are `@AutoSlotAnimationLoader` classes. Named animations live in the reloadable `Registries.ANIMATION` registry; a plugin adds its own with `AnimationManager#registerAnimation(Plugin, Animation)` (or a `CustomAnimation` with a key such as `myplugin:glow`), reads them with `getAnimation(Key)` or `findAnimation(String)`, and plays them with `play(Player, Key, AnimationPlayback)`. Animations are listened to through `AnimationStartEvent` and `AnimationEndEvent`. Which animations a player has already seen is read and reset through `AnimationManager#getHistory()` (`AnimationHistory`).
+* Added a database table remembering the animations a player has seen.
+* Deprecated for removal on `InventoryManager` the methods that only repeat `MenuPlugin` (`getScheduler()`, `getEnchantments()`, `getFontImage()`, `getMeta()`, use `MenuPlugin#getMetaUpdater()`) and the ones meant for zMenu itself (`load()`, `loadButtons()`, `loadElement(...)`, `loadClicks(...)`, `loadYamlConfiguration(File)`, `sendInventories(...)`, `createNewInventory(...)`, `sendMessage(...)`, `getPluginIgnoreCase(String)`). Deprecated `MenuPlugin#isPaper()`, `isPaperOrFolia()` and `isSpigot()`: zMenu only runs on Paper.
+* The page of the inventory a player opened last moved to `PaginationManager#getMenuPage(UUID)`, `getMenuMaxPage(UUID)` and `setMenuPage(UUID, int, int)`; `InventoryManager#getPage`, `getMaxPage` and `setPlayerPage` are deprecated for removal and delegate to them.
+* `ContainerInventory` gains `setSlotAnimation` and `setCloseAnimation`, so an inventory option can set the animations of a menu. `SlotAnimationSettings`, `ButtonAnimationSettings` and `ButtonIdleAnimation` write themselves back with `serialize`.
+* Added the `Feature` enum and `MenuPlugin#isFeatureEnabled(Feature)`. When `Feature.CUSTOM_ITEMS` is disabled, `MenuPlugin#getItemManager()` returns a manager that knows no item and ignores mechanic and listener registrations.
+* Added `SoundService` (`MenuPlugin#getSoundService()`), which creates a sound (`create`, `createRandomPitch` for a pitch picked in a range) and reads one from a configuration section (`load`: `sound`, `volume`, `category`, `pitch` as a number or `[min, max]`), and `MenuPlugin#readYamlFile(Path)`, which reads a YAML file through zMenu's file cache.
+* Added `ItemStackService` (`MenuPlugin#getItemStackService()`), which loads menu items (`load`), converts an item into a menu item (`fromItemStack`), writes and reads items as base64 (`serialize`, `deserialize`), applies the skin of a `player-head` (`applyPlayerHead`) and finds an item comparison by name (`getVerification`). Item comparisons live in the open `Registries.ITEM_VERIFICATION` registry and `ItemStackSimilar` is `Keyed`. The matching `InventoryManager` methods (`loadItemStack`, `toMenuItemStack`, `serializeItemStack`, `deserializeItemStack`, `postProcessSkullItemStack`, `registerItemStackVerification`, `getItemStackVerification`, `getItemStackVerifications`) and `MenuPlugin#loadItemStack` are deprecated for removal and delegate to them; `InventoryManager#saveItem` is deprecated as the `/zm save` command.
+* Deprecated `InventoryManager#openInventory(Player, Inventory, int, Inventory...)` for removal; use the overload taking a `List<Inventory>`.
+* Deprecated `PlatformType`, `@PaperOnly` and `@SpigotOnly` for removal: zMenu only runs on Paper. A class marked `@SpigotOnly` is still never loaded.
+* Deprecated for removal the API types zMenu never uses: `NoneButton` (extend `Button`), `ClickAction`, `TrimHelper`, `ZPersistentDataType`, `ZDamageReductionRecord`, `ZToolRule`, `ResolvablePlayerProfile` (see `ResolvableProfileResolvable`), `ItemCreateException`, `StringConsumer` and `ReturnConsumer` (use `java.util.function.Function`), `ItemComponentLoaderInterface` and `EnumInventory.INVENTORY_MARKETPLACE`.
+* Deprecated for removal `BaseInventory#getSpigotInventory()` (use `getInventory()`, it returns the same inventory), `InventoryEngine#setMaxPage(int)` and `MenuItemStack#setNeedPlaceholderAPI(boolean)` / `setCacheItemStack(ItemStack)`, which zMenu sets itself.
+* Deprecated for removal the pre-1.9 parts of `Potion`: `fromDamage(int)`, `toDamageValue()`, `getNameId()`, `getBrewer()` and `setPotionBrewer(PotionBrewer)`.
+* Removed the NMS item tagging used to detect duplicated items before 1.14 (`NMSDupeManager`) and the modules it needed (`NMS/Base`, `NMS/v1_20_R3`, `NMS/v1_20_R4`); duplicated items are always detected through the persistent data container.
+* Removed the code paths for Minecraft versions older than 1.20.6 (`NmsVersion`, `NMSUtils`, the NMS reflection of the item serializer, titles and action bars, numeric material ids, the old toast format and the unused legacy `ItemStackLoader`).
+
 # 1.1.2.0
 
 ## New Features

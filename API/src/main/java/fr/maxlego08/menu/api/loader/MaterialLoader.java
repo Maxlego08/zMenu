@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.loader;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * Documentation: <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
  * <p>The MaterialLoader interface defines methods for loading an {@link ItemStack} from a configuration.</p>
  */
-public abstract class MaterialLoader {
+public abstract class MaterialLoader implements Keyed {
 
     private final String key;
 
@@ -28,6 +31,18 @@ public abstract class MaterialLoader {
     @NotNull
     public String getKey() {
         return this.key;
+    }
+
+    /**
+     * The key of this loader in {@link fr.maxlego08.menu.api.registry.Registries#MATERIAL_LOADER},
+     * read from {@link #getKey()} like the prefix of a material written in a file
+     * ({@code itemsadder} in {@code itemsadder:ruby}).
+     *
+     * @return the key
+     */
+    @Override
+    public @NotNull Key key() {
+        return ZMenuKeys.parse(this.key);
     }
 
     /**

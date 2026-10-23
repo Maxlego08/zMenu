@@ -22,7 +22,7 @@ public class ItemEditLoader extends ActionLoader {
 
     @Override
     public Action load(String path, TypedMapAccessor accessor, File file) {
-        MenuItemStack menuItemStack = this.menuPlugin.getInventoryManager().loadItemStack(file, path, (Map<String, Object>) accessor.getObject("item"));
+        MenuItemStack menuItemStack = this.menuPlugin.getItemStackService().load(file, (Map<String, Object>) accessor.getObject("item"));
         String slot = accessor.getString("slot");
         return new ItemEditAction(menuItemStack, slot);
     }

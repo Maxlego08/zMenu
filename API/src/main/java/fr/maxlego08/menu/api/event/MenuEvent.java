@@ -15,7 +15,6 @@ public class MenuEvent extends Event {
      */
     public MenuEvent() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -23,7 +22,6 @@ public class MenuEvent extends Event {
      */
     public MenuEvent(boolean isAsync) {
         super(isAsync);
-        // TODO Auto-generated constructor stub
     }
 
     public static HandlerList getHandlerList() {

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.command.commands;
 
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.Inventory;
@@ -23,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CommandMenuGiveOpenItem extends SubCommand<ZMenuPlugin> {
     private final InventoryManager inventoryManager;
@@ -33,7 +35,7 @@ public class CommandMenuGiveOpenItem extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_GIVE_OPEN_ITEM.getPermission());
 
         this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            NameSuggestions.suggest(builder, this.inventoryManager.getInventoryNames());
+            NameSuggestions.suggest(builder, this.inventoryManager.getInventoryKeys().stream().map(Key::asString).collect(Collectors.toSet()));
             return builder.buildFuture();
         }));
         this.addOptionalArgument(Commands.argument("player", ArgumentTypes.player()));

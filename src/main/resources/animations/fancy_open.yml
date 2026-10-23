@@ -1,0 +1,40 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+#
+# ╔════════════════════════════════════════════════════════════════╗
+# ║                     REUSABLE ANIMATION                         ║
+# ╚════════════════════════════════════════════════════════════════╝
+#
+# Every file in this folder is an animation that any inventory can use
+# by name, instead of repeating the same block in every menu:
+#
+#   open-animation:
+#     file: fancy_open
+#
+# An inventory may still override anything it wants next to `file`:
+#
+#   open-animation:
+#     file: fancy_open
+#     interval: 10        # faster than what this file says
+#
+# The content is exactly what you would write inline under `open-animation`.
+
+type: SPIRAL
+interval: 25
+slots-per-step: 1
+freeze: true
+
+sound:
+  sound: BLOCK_NOTE_BLOCK_HAT
+  pitch: 1.8
+  volume: 0.4
+
+groups:
+  2:
+    type: FROM_CENTER
+    interval: 60
+    delay: 150
+    sound:
+      sound: BLOCK_NOTE_BLOCK_HARP
+      pitch: 1.2
+      volume: 0.5

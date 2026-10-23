@@ -56,7 +56,16 @@ public class InventoryLoadRequirement {
     }
 
     public void removeRequirement(@NotNull InventoryRequirementType inventoryRequirementType, @NotNull String name) {
-        this.requirements.get(inventoryRequirementType).removeIf(e -> e.equalsIgnoreCase(name));
+        String loaded = normalize(name);
+        this.requirements.get(inventoryRequirementType).removeIf(e -> normalize(e).equals(loaded));
+    }
+
+    /**
+     * Reads a name the way registries read keys, so that a menu waiting for {@code play animation}
+     * loads once {@code play_animation} is registered.
+     */
+    private static String normalize(String name) {
+        return name.trim().toLowerCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
     }
 
     @Contract(pure = true)

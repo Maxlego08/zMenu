@@ -339,7 +339,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         item.put("material", material);
         String modelData = section.getString("model_data", section.getString("modeldata"));
         if (modelData != null) item.put("model-id", modelData);
-        MenuItemStack menuItemStack = inventoryManager.loadItemStack(file, item);
+        MenuItemStack menuItemStack = inventoryManager.getPlugin().getItemStackService().load(file, item);
 
         int amount = section.getInt("amount", 1);
         ItemVerification verification = modelData != null ? ItemVerification.MODELID : ItemVerification.MATERIAL;

@@ -18,9 +18,8 @@ public abstract class CompositeRuleLoader implements RuleLoader {
         List<Map<String, Object>> rulesConfig = RuleConfigHelper.getMapList(configuration, "rules");
         if (rulesConfig.isEmpty()) return null;
 
-        ZRuleLoaderRegistry instance = ZRuleLoaderRegistry.getInstance();
         List<Rule> rules = rulesConfig.stream()
-                .map(instance::loadRule)
+                .map(ZRuleLoaderRegistry::loadRule)
                 .filter(Objects::nonNull)
                 .toList();
 

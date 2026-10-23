@@ -1,7 +1,6 @@
 package fr.maxlego08.menu.players;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.interfaces.ReturnConsumer;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
@@ -21,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 public class ZDataManager implements DataManager {
 
@@ -33,14 +33,6 @@ public class ZDataManager implements DataManager {
         super();
         this.plugin = plugin;
     }
-
-    /*public void save(Persist persist) {
-        persist.save(this, "players");
-    }
-
-    public void load(Persist persist) {
-        persist.loadOrSaveDefault(this, ZDataManager.class, "players");
-    }*/
 
     @Override
     public @NonNull Optional<PlayerData> getPlayer(@NonNull UUID uniqueId) {
@@ -206,13 +198,13 @@ public class ZDataManager implements DataManager {
         });
     }
 
-    private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, ReturnConsumer<Data, String> consumer) {
+    private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, Function<Data, String> consumer) {
         Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
         if (optional.isEmpty()) return this.getDefaultKey(key);
 
         PlayerData playerData = optional.get();
         Optional<Data> optionalData = playerData.getData(key);
-        return optionalData.isPresent() ? consumer.accept(optionalData.get()) : this.getDefaultKey(key);
+        return optionalData.isPresent() ? consumer.apply(optionalData.get()) : this.getDefaultKey(key);
     }
 
     private String getDefaultKey(String key) {

@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -22,6 +23,8 @@ import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
 import fr.maxlego08.menu.hooks.ComponentMeta;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
+import fr.maxlego08.menu.common.utils.MessageUtils;
+import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.RegistryAccess;
@@ -93,7 +96,7 @@ public class ZDialogManager implements DialogManager, Listener {
     }
     @Override
     public Optional<DialogInventory> getDialog(String pluginName, String fileName) {
-        Optional<Plugin> plugin = this.menuPlugin.getInventoryManager().getPluginIgnoreCase(pluginName);
+        Optional<Plugin> plugin = PluginUtils.getPluginIgnoreCase(pluginName);
         return plugin.isEmpty() || fileName == null ? Optional.empty() : this.getDialog(plugin.get(), fileName);
     }
 
@@ -286,13 +289,13 @@ public class ZDialogManager implements DialogManager, Listener {
         DialogFallback fallback = dialogInventory.getFallbackInventory();
 
         if (fallback == null || !fallback.isValid()) {
-            this.menuPlugin.getInventoryManager().sendMessage(player, Message.DIALOG_NOT_SUPPORTED, "%version%", ClientVersionManager.DIALOG_MINIMUM_VERSION.toString(), "%name%", dialogInventory.getFileName());
+            MessageUtils.message(this.menuPlugin, player, Message.DIALOG_NOT_SUPPORTED, "%version%", ClientVersionManager.DIALOG_MINIMUM_VERSION.toString(), "%name%", dialogInventory.getFileName());
             return;
         }
 
-        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(fallback.plugin(), fallback.inventoryName());
+        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(ZMenuKeys.fileKey(fallback.plugin(), fallback.inventoryName()));
         if (optional.isEmpty()) {
-            this.menuPlugin.getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", dialogInventory.getFileName(), "%toName%", fallback.inventoryName(), "%plugin%", fallback.plugin());
+            MessageUtils.message(this.menuPlugin, player, Message.INVENTORY_NOT_FOUND, "%name%", dialogInventory.getFileName(), "%toName%", fallback.inventoryName(), "%plugin%", fallback.plugin());
             return;
         }
 
