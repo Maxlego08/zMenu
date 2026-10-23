@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.inventory.zinv;
 
 import fr.maxlego08.menu.api.InventoryManager;
+import fr.maxlego08.menu.api.InventoryOptionType;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.InventoryOption;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -596,11 +598,9 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
 
         InventoryManager inventoryManager = Bukkit.getServicesManager().load(InventoryManager.class);
         if (inventoryManager == null) return;
-        for (Map.Entry<Plugin, List<Class<? extends InventoryOption>>> entry : inventoryManager.getInventoryOptions().entrySet()) {
-            for (Class<? extends InventoryOption> optionClass : entry.getValue()) {
-                InventoryOption option = InventoryOption.create(entry.getKey(), optionClass);
-                if (option != null) option.serialize(this, section);
-            }
+        for (InventoryOptionType type : inventoryManager.getRegistries().registry(Registries.INVENTORY_OPTION)) {
+            InventoryOption option = type.create();
+            if (option != null) option.serialize(this, section);
         }
     }
 }

@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.animation.slot.AnimationManager;
 import fr.maxlego08.menu.api.annotations.*;
 import fr.maxlego08.menu.api.button.ButtonOption;
+import fr.maxlego08.menu.api.button.ButtonOptionType;
 import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
@@ -92,8 +93,6 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final ZRegistryManager registries = new ZRegistryManager();
     private boolean slotAnimationsLoaded;
     private final Map<String, List<Inventory>> inventories = new ConcurrentHashMap<>();
-    private final Map<Plugin, List<Class<? extends ButtonOption>>> buttonOptions = new ConcurrentHashMap<>();
-    private final Map<Plugin, List<Class<? extends InventoryOption>>> inventoryOptions = new ConcurrentHashMap<>();
     private final List<InventoryListener> inventoryListeners = new ArrayList<>();
     private final ZMenuPlugin plugin;
     private final Map<UUID, Inventory> currentInventories = new ConcurrentHashMap<>();
@@ -1041,32 +1040,30 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Class<? extends ButtonOption>> getOption(String name) {
-        for (List<Class<? extends ButtonOption>> options : this.buttonOptions.values()) {
-            for (Class<? extends ButtonOption> buttonOption : options) {
-                if (buttonOption.getName().equalsIgnoreCase(name)) {
-                    return Optional.of(buttonOption);
-                }
-            }
-        }
-        return Optional.empty();
+        return this.registries.registry(Registries.BUTTON_OPTION).stream()
+                .<Class<? extends ButtonOption>>map(ButtonOptionType::optionClass)
+                .filter(optionClass -> optionClass.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     @Override
     public void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption) {
-
         if (this.getOption(buttonOption.getName()).isPresent()) return;
-
-        this.buttonOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(buttonOption);
+        RegistryOwners.registerLegacy(this.registries.writable(Registries.BUTTON_OPTION), plugin.getName(), ButtonOptionType.of(plugin, buttonOption), List.of());
     }
 
     @Override
     public void unregisterOptions(Plugin plugin) {
-        this.buttonOptions.remove(plugin);
+        this.registries.writable(Registries.BUTTON_OPTION).unregisterAll(plugin);
     }
 
     @Override
     public Map<Plugin, List<Class<? extends ButtonOption>>> getOptions() {
-        return this.buttonOptions;
+        Map<Plugin, List<Class<? extends ButtonOption>>> options = new LinkedHashMap<>();
+        for (ButtonOptionType type : this.registries.registry(Registries.BUTTON_OPTION)) {
+            options.computeIfAbsent(type.plugin(), plugin -> new ArrayList<>()).add(type.optionClass());
+        }
+        return options;
     }
 
 
@@ -1118,32 +1115,30 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption) {
-
         if (this.getInventoryOption(inventoryOption.getName()).isPresent()) return;
-
-        this.inventoryOptions.computeIfAbsent(plugin, e -> new ArrayList<>()).add(inventoryOption);
+        RegistryOwners.registerLegacy(this.registries.writable(Registries.INVENTORY_OPTION), plugin.getName(), InventoryOptionType.of(plugin, inventoryOption), List.of());
     }
 
     @Override
     public Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions() {
-        return this.inventoryOptions;
+        Map<Plugin, List<Class<? extends InventoryOption>>> options = new LinkedHashMap<>();
+        for (InventoryOptionType type : this.registries.registry(Registries.INVENTORY_OPTION)) {
+            options.computeIfAbsent(type.plugin(), plugin -> new ArrayList<>()).add(type.optionClass());
+        }
+        return options;
     }
 
     @Override
     public Optional<Class<? extends InventoryOption>> getInventoryOption(String name) {
-        for (List<Class<? extends InventoryOption>> options : this.inventoryOptions.values()) {
-            for (Class<? extends InventoryOption> inventoryOption : options) {
-                if (inventoryOption.getName().equalsIgnoreCase(name)) {
-                    return Optional.of(inventoryOption);
-                }
-            }
-        }
-        return Optional.empty();
+        return this.registries.registry(Registries.INVENTORY_OPTION).stream()
+                .<Class<? extends InventoryOption>>map(InventoryOptionType::optionClass)
+                .filter(optionClass -> optionClass.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     @Override
     public void unregisterInventoryOptions(Plugin plugin) {
-        this.inventoryOptions.remove(plugin);
+        this.registries.writable(Registries.INVENTORY_OPTION).unregisterAll(plugin);
     }
 
     @Override

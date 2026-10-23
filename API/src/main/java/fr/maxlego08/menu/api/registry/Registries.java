@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.registry;
 
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.InventoryOptionType;
+import fr.maxlego08.menu.api.button.ButtonOptionType;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
@@ -68,6 +70,16 @@ public final class Registries {
      * The mechanics a custom item can have, by their id: {@code itemjoin}, {@code on-click}...
      */
     public static final RegistryType<MechanicFactory<?>> MECHANIC = RegistryType.<MechanicFactory<?>>createOpen(ZMenuKeys.key("mechanic"), MechanicFactory.class);
+
+    /**
+     * The options added to every button, such as zMenuPlus's {@code error-item}.
+     */
+    public static final RegistryType<ButtonOptionType> BUTTON_OPTION = RegistryType.createOpen(ZMenuKeys.key("button_option"), ButtonOptionType.class);
+
+    /**
+     * The options added to every inventory, such as zMenuPlus's conditional names.
+     */
+    public static final RegistryType<InventoryOptionType> INVENTORY_OPTION = RegistryType.createOpen(ZMenuKeys.key("inventory_option"), InventoryOptionType.class);
 
     private Registries() {
     }

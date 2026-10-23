@@ -47,6 +47,8 @@ public final class ZRegistryManager implements RegistryManager {
         this.create(Registries.ITEM_COMPONENT);
         this.create(Registries.COMMAND_ARGUMENT_VALIDATOR);
         this.create(Registries.MECHANIC);
+        this.create(Registries.BUTTON_OPTION);
+        this.create(Registries.INVENTORY_OPTION);
     }
 
     /**

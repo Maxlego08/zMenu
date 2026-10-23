@@ -601,29 +601,39 @@ public interface InventoryManager extends Listener {
      *
      * @param plugin       The plugin with which the button option is to be registered.
      * @param buttonOption The class of the button option to register.
+     * @deprecated register it in {@link Registries#BUTTON_OPTION}:
+     * {@code registries.writable(Registries.BUTTON_OPTION).register(plugin, ButtonOptionType.of(plugin, MyOption.class))}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerOption(Plugin plugin, Class<? extends ButtonOption> buttonOption);
 
     /**
      * Unregisters all button options associated with the given plugin.
      *
      * @param plugin The plugin whose button options are to be unregistered.
+     * @deprecated a plugin's options are removed when it disables; to remove them earlier use
+     * {@code registries.writable(Registries.BUTTON_OPTION).unregisterAll(plugin)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisterOptions(Plugin plugin);
 
     /**
      * Retrieves a map of all registered button options grouped by plugin.
      *
-     * @return A Map where each key is a Plugin and each value is a List of button option classes associated with that plugin.
+     * @return A copy of the registered options, grouped by plugin.
+     * @deprecated read {@link Registries#BUTTON_OPTION}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Map<Plugin, List<Class<? extends ButtonOption>>> getOptions();
 
     /**
      * Retrieves an Optional containing the class of the button option with the given name.
      *
-     * @param name The name of the button option to retrieve.
+     * @param name The fully qualified name of the class of the button option.
      * @return An Optional containing the button option class if found, or an empty Optional if not found.
+     * @deprecated read {@link Registries#BUTTON_OPTION}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Class<? extends ButtonOption>> getOption(String name);
 
     /**
@@ -713,12 +723,38 @@ public interface InventoryManager extends Listener {
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadElement(InventoryRequirementType type, String value);
 
+    /**
+     * Registers an option added to every inventory.
+     *
+     * @param plugin          the plugin the option belongs to
+     * @param inventoryOption the class of the option
+     * @deprecated register it in {@link Registries#INVENTORY_OPTION}:
+     * {@code registries.writable(Registries.INVENTORY_OPTION).register(plugin, InventoryOptionType.of(plugin, MyOption.class))}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerInventoryOption(Plugin plugin, Class<? extends InventoryOption> inventoryOption);
 
+    /**
+     * @return a copy of the registered inventory options, grouped by plugin
+     * @deprecated read {@link Registries#INVENTORY_OPTION}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Map<Plugin, List<Class<? extends InventoryOption>>> getInventoryOptions();
 
+    /**
+     * @param name the fully qualified name of the class of the option
+     * @return the class of the option, if one is registered with this name
+     * @deprecated read {@link Registries#INVENTORY_OPTION}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Optional<Class<? extends InventoryOption>> getInventoryOption(String name);
 
+    /**
+     * @param plugin the plugin whose options are removed
+     * @deprecated a plugin's options are removed when it disables; to remove them earlier use
+     * {@code registries.writable(Registries.INVENTORY_OPTION).unregisterAll(plugin)}.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisterInventoryOptions(Plugin plugin);
 
     void registerInventoryListener(InventoryListener inventoryListener);

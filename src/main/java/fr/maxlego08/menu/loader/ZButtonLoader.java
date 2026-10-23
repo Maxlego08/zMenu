@@ -3,6 +3,8 @@ package fr.maxlego08.menu.loader;
 import com.cryptomorin.xseries.XSound;
 import fr.maxlego08.menu.ZMenuItemStack;
 import fr.maxlego08.menu.api.ButtonManager;
+import fr.maxlego08.menu.api.button.ButtonOptionType;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -399,12 +401,10 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
 
         List<ButtonOption> buttonOptions = new ArrayList<>();
-        for (Map.Entry<Plugin, List<Class<? extends ButtonOption>>> entry : inventoryManager.getOptions().entrySet()) {
-            for (Class<? extends ButtonOption> optionClass : entry.getValue()) {
-                ButtonOption instance = this.createInstance(entry.getKey(), optionClass);
-                if (instance != null) {
-                    buttonOptions.add(instance);
-                }
+        for (ButtonOptionType type : inventoryManager.getRegistries().registry(Registries.BUTTON_OPTION)) {
+            ButtonOption instance = this.createInstance(type.plugin(), type.optionClass());
+            if (instance != null) {
+                buttonOptions.add(instance);
             }
         }
         buttonOptions.forEach(option -> option.loadButton(button, configuration, path, inventoryManager, buttonManager, itemStackLoader, this.file));

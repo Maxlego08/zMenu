@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.bedrock.loader;
 
 import fr.maxlego08.menu.api.InventoryOption;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
@@ -68,7 +69,7 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
         bedrockInventory.setFile(file);
         bedrockInventory.setTargetPlayerNamePlaceholder(configuration.getString(path + "target-player-name-placeholder", configuration.getString(path + "target_player_name_placeholder", "%player_name%")));
 
-        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getInventoryOptions().entrySet().stream().flatMap(entry -> entry.getValue().stream().map(inventoryOption -> this.createInstance(entry.getKey(), inventoryOption))).filter(Objects::nonNull).toList();
+        List<InventoryOption> inventoryOptions = this.menuPlugin.getInventoryManager().getRegistries().registry(Registries.INVENTORY_OPTION).stream().map(type -> this.createInstance(type.plugin(), type.optionClass())).filter(Objects::nonNull).toList();
         for (InventoryOption inventoryOption : inventoryOptions) {
             inventoryOption.loadInventory(bedrockInventory, file, configuration, this.menuPlugin.getInventoryManager(), this.menuPlugin.getButtonManager());
         }
