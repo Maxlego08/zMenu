@@ -10,6 +10,7 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
+import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 
@@ -62,6 +63,11 @@ public final class Registries {
      * {@code integer}, {@code material}...
      */
     public static final RegistryType<CommandArgumentValidator> COMMAND_ARGUMENT_VALIDATOR = RegistryType.createOpen(ZMenuKeys.key("command_argument_validator"), CommandArgumentValidator.class);
+
+    /**
+     * The mechanics a custom item can have, by their id: {@code itemjoin}, {@code on-click}...
+     */
+    public static final RegistryType<MechanicFactory<?>> MECHANIC = RegistryType.<MechanicFactory<?>>createOpen(ZMenuKeys.key("mechanic"), MechanicFactory.class);
 
     private Registries() {
     }
