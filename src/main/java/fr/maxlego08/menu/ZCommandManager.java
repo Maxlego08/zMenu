@@ -1,18 +1,23 @@
 package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.command.Command;
 import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.command.VCommandManager;
 import fr.maxlego08.menu.loader.CommandLoader;
+import fr.maxlego08.menu.registry.RegistryOwners;
+import fr.maxlego08.menu.registry.ZRegistryManager;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import fr.maxlego08.menu.zcore.utils.storage.Persist;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,7 +38,6 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     private final Map<String, List<Command>> commands = new HashMap<>();
     private final Map<UUID, Map<String, String>> playerArguments = new ConcurrentHashMap<>();
-    private final List<CommandArgumentValidator> commandArgumentValidators = new ArrayList<>();
     private final ZMenuPlugin plugin;
 
     public ZCommandManager(ZMenuPlugin plugin) {
@@ -239,26 +243,28 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
     @Override
     public void registerArgumentValidator(CommandArgumentValidator commandArgumentValidator) {
-        this.commandArgumentValidators.add(commandArgumentValidator);
+        RegistryOwners.registerLegacy(this.validators().writable(Registries.COMMAND_ARGUMENT_VALIDATOR), commandArgumentValidator, List.of());
     }
 
     @Override
     public void unregisterArgumentValidator(CommandArgumentValidator commandArgumentValidator) {
-        this.commandArgumentValidators.remove(commandArgumentValidator);
+        if (this.validators().registry(Registries.COMMAND_ARGUMENT_VALIDATOR).containsValue(commandArgumentValidator)) {
+            this.validators().writable(Registries.COMMAND_ARGUMENT_VALIDATOR).unregister(commandArgumentValidator.key());
+        }
     }
 
     @Override
     public List<CommandArgumentValidator> getArgumentValidators() {
-        return this.commandArgumentValidators;
+        return this.validators().registry(Registries.COMMAND_ARGUMENT_VALIDATOR).values();
     }
 
     @Override
     public Optional<CommandArgumentValidator> getArgumentValidator(String argumentTypeName) {
-        for (CommandArgumentValidator validator : this.commandArgumentValidators) {
-            if (validator.getType().equalsIgnoreCase(argumentTypeName)) {
-                return Optional.of(validator);
-            }
-        }
-        return Optional.empty();
+        Key key = ZMenuKeys.tryParse(argumentTypeName);
+        return key == null ? Optional.empty() : this.validators().registry(Registries.COMMAND_ARGUMENT_VALIDATOR).get(key);
+    }
+
+    private ZRegistryManager validators() {
+        return this.plugin.getInventoryManager().getRegistries();
     }
 }

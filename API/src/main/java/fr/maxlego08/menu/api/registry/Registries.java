@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.registry;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
+import fr.maxlego08.menu.api.command.CommandArgumentValidator;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
@@ -55,6 +56,12 @@ public final class Registries {
      * {@code myplugin:glow}...
      */
     public static final RegistryType<ItemComponentLoader> ITEM_COMPONENT = RegistryType.createOpen(ZMenuKeys.key("item_component"), ItemComponentLoader.class);
+
+    /**
+     * The argument types a custom command can check, by their {@code type}: {@code player},
+     * {@code integer}, {@code material}...
+     */
+    public static final RegistryType<CommandArgumentValidator> COMMAND_ARGUMENT_VALIDATOR = RegistryType.createOpen(ZMenuKeys.key("command_argument_validator"), CommandArgumentValidator.class);
 
     private Registries() {
     }

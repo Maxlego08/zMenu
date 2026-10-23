@@ -72,6 +72,7 @@
 
 * The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
 * `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
+* The `block` argument type of custom commands was registered as a second `material` type and could never be used; it now exists and accepts only materials that are blocks.
 * Without PlaceholderAPI, a `%` typed into a dialog input could come out as an invisible character in item names and lores; every placeholder path now restores it.
 
 ## Internal Changes
@@ -84,6 +85,7 @@
 * Item rule types live in the open `Registries.RULE` registry; `RuleLoader` is `Keyed` (its type) with `aliases()`. `RuleLoaderRegistry` is deprecated for removal.
 * Material loaders live in the open `Registries.MATERIAL_LOADER` registry; `MaterialLoader` is `Keyed` (its prefix). `InventoryManager#registerMaterialLoader` and both `getMaterialLoader` methods are deprecated for removal.
 * Item components live in the open `Registries.ITEM_COMPONENT` registry under `minecraft:<name>` (also readable as `<name>`) or `<plugin>:<name>`; `ItemComponentLoader` is `Keyed`. `ComponentsManager#registerComponent` is deprecated for removal and logs a name already taken instead of throwing `ItemComponentAlreadyRegisterException`, which is deprecated.
+* Custom command argument types live in the open `Registries.COMMAND_ARGUMENT_VALIDATOR` registry; `CommandArgumentValidator` is `Keyed` (its type). `CommandManager#registerArgumentValidator`, `unregisterArgumentValidator` and `getArgumentValidators` are deprecated for removal.
 * Added `Inventory#key()` (`plugin:file`) and key-based methods on `InventoryManager`: `getInventory(Key)`, `getInventoryKeys()`, `deleteInventory(Key)` and `openInventory(Player, Key)`. The name-based ones (`getInventory(String)`, `getInventoryNames()`, `openInventory(Player, String)`…) are deprecated for removal and delegate to them; `findInventory(String)` reads a name written by a user.
 * Slot animation types are registered with `InventoryManager#registerSlotAnimation(Plugin, SlotAnimationLoader)`; zMenu's own are `@AutoSlotAnimationLoader` classes. Named animations live in the reloadable `Registries.ANIMATION` registry; a plugin adds its own with `AnimationManager#registerAnimation(Plugin, Animation)` (or a `CustomAnimation` with a key such as `myplugin:glow`), reads them with `getAnimation(Key)` or `findAnimation(String)`, and plays them with `play(Player, Key, AnimationPlayback)`. Animations are listened to through `AnimationStartEvent` and `AnimationEndEvent` (see `docs/animations-api.md`). Which animations a player has already seen is read and reset through `AnimationManager#getHistory()` (`AnimationHistory`).
 * Added a database table remembering the animations a player has seen.

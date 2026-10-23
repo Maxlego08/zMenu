@@ -123,6 +123,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         this.registries.writable(Registries.ACTION).register(this.plugin, loader, loader.aliases());
     }
 
+    private void registerValidator(CommandArgumentValidator validator) {
+        this.registries.writable(Registries.COMMAND_ARGUMENT_VALIDATOR).register(this.plugin, validator);
+    }
+
     private void registerButton(ButtonLoader loader) {
         this.registries.writable(Registries.BUTTON).register(loader.getPlugin(), loader, loader.aliases());
     }
@@ -690,13 +694,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         ButtonLoaderRegisterEvent event = new ButtonLoaderRegisterEvent(buttonManager, this, this.plugin.getPatternManager());
         event.call();
 
-        var commandManager = this.plugin.getCommandManager();
-        // MaterialArgumentValidator
-        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_MATERIAL));
-        commandManager.registerArgumentValidator(new MaterialArgumentValidator(Message.COMMAND_ARGUMENT_BLOCK));
+        this.registerValidator(MaterialArgumentValidator.material());
+        this.registerValidator(MaterialArgumentValidator.block());
 
         ClassRegistry<CommandArgumentValidator, MenuPlugin> validatorRegistry = ClassRegistry.
-                <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, commandManager::registerArgumentValidator)
+                <CommandArgumentValidator, MenuPlugin>of(CommandArgumentValidator.class, this::registerValidator)
                 .tryNoArgsConstructor()
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(MenuPlugin.class).newInstance(plugin))
                 .tryConstructor((clazz, plugin) -> clazz.getConstructor(Plugin.class).newInstance(plugin))
