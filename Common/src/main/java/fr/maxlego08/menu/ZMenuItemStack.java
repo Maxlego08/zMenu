@@ -4,8 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.ZMenuKeys;
-import fr.maxlego08.menu.api.registry.Registries;
-import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.api.attribute.AttributeMergeStrategy;
 import fr.maxlego08.menu.api.attribute.AttributeUtil;
 import fr.maxlego08.menu.api.attribute.AttributeWrapper;
@@ -18,6 +16,7 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -27,6 +26,7 @@ import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import net.kyori.adventure.key.Key;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.configuration.ConfigurationSection;
@@ -887,7 +887,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), offlinePlayer, true));
         } catch (Exception ignored) {
         }
-        return amount;
+        return Math.clamp(amount, 1, 99);
     }
 
     @Override
