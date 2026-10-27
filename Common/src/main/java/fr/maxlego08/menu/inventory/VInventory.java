@@ -146,6 +146,42 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
         return button;
     }
 
+    /**
+     * Replaces the item of a button already placed, keeping its click handlers.
+     * Goes through the same anti-dupe and inventory listeners as {@link #addItem(boolean, int, ItemStack, boolean)},
+     * so a button placed in the player inventory is updated in the player inventory and not in the menu.
+     */
+    public void updateItem(boolean inPlayerInventory, int slot, @NotNull ItemStack itemStack, boolean enableAntiDupe) {
+
+        if (this.isClose) return;
+
+        ItemButton button = (inPlayerInventory ? this.playerInventoryItems : this.items).get(slot);
+        if (button == null) return;
+
+        ItemStack displayStack = itemStack.clone();
+
+        if (Configuration.enableAntiDupe && enableAntiDupe) {
+            displayStack = this.plugin.getDupeManager().protectItem(displayStack);
+        }
+
+        button.setDisplayItem(itemStack);
+
+        boolean needCancel = false;
+        for (InventoryListener inventoryListener : this.plugin.getInventoryManager().getInventoryListeners()) {
+            if (inventoryListener.updateItem(this, inPlayerInventory, button)) {
+                needCancel = true;
+            }
+        }
+
+        if (needCancel) return;
+
+        if (inPlayerInventory) {
+            this.player.getInventory().setItem(slot, displayStack);
+        } else {
+            this.inventory.setItem(slot, displayStack);
+        }
+    }
+
     @Override
     public void removeItem(int slot) {
         this.items.remove(slot);
