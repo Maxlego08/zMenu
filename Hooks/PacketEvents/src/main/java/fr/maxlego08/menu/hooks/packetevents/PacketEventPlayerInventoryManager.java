@@ -52,6 +52,20 @@ public class PacketEventPlayerInventoryManager implements InventoryListener {
         return false;
     }
 
+    public boolean updateItem(BaseInventory baseInventory, boolean inPlayerInventory, ItemButton itemButton) {
+        Player player = baseInventory.getPlayer();
+        if (baseInventory.getClearInvType() == ClearInvType.PACKET_EVENT && inPlayerInventory && player != null) {
+            // Still waiting for the post open flush: replace the pending packet, otherwise send it now
+            if (this.pendingInventoryUpdates.containsKey(player.getUniqueId())) {
+                this.addItemLater(player, itemButton.getSlot(), itemButton.getDisplayItem());
+            } else {
+                this.addItemInstantly(player, itemButton.getSlot(), itemButton.getDisplayItem());
+            }
+            return true;
+        }
+        return false;
+    }
+
     public void onInventoryPreOpen(Player player, BaseInventory baseInventory, int page, Object... objects){
         this.pendingInventoryUpdates.remove(player.getUniqueId());
     }

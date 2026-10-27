@@ -331,13 +331,17 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
 
         if (button.getPlayerHead() != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            this.plugin.getScheduler().runAsync(w -> {
+            var scheduler = this.plugin.getScheduler();
+            scheduler.runAsync(w -> {
                 var updatedItemStack = this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, button, this.player, placeholders);
-                for (int slot : slots) {
-                    if (slot < 0 || slot >= maxSlotSize) continue;
+                // Back on the player's thread, and in the inventory the button was placed in (menu or player inventory)
+                scheduler.runAtEntity(this.player, w2 -> {
+                    for (int slot : slots) {
+                        if (slot < 0 || slot >= maxSlotSize) continue;
 
-                    this.getSpigotInventory().setItem(slot, updatedItemStack);
-                }
+                        this.updateItem(button.isPlayerInventory(), slot, updatedItemStack, true);
+                    }
+                });
             });
         }
 
