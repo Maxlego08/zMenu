@@ -2,13 +2,11 @@ package fr.maxlego08.menu.command.commands.players;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.players.Data;
-import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
-import fr.maxlego08.menu.players.ZData;
 import fr.robie.paperdispatch.argument.OfflinePlayerArgument;
 import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.command.CommandDispatch;
@@ -17,7 +15,7 @@ import fr.robie.paperdispatch.command.SubCommand;
 import io.papermc.paper.command.brigadier.Commands;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class CommandMenuPlayersSubtract extends SubCommand<ZMenuPlugin> {
@@ -48,20 +46,8 @@ public class CommandMenuPlayersSubtract extends SubCommand<ZMenuPlugin> {
         String key = commandDispatch.getArgument("key", String.class);
         int value = commandDispatch.getArgument("number", Integer.class);
 
-        PlayerDataCommands.whenLoaded(commandDispatch.getPlugin(), commandDispatch.getSender(), targetId, () -> {
-            DataManager dataManager = commandDispatch.getPlugin().getDataManager();
-            Optional<Data> optional = dataManager.getData(targetId, key);
-            if (optional.isEmpty()) {
-                Data data = new ZData(key, -value, 0);
-                dataManager.addData(targetId, data);
-            } else {
-                Data data = optional.get();
-                data.remove(value);
-                commandDispatch.getPlugin().getStorageManager().upsertData(targetId, data);
-            }
-
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_SUBTRACT, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId), "%key%", key);
-        });
+        commandDispatch.getPlugin().getVariableService().increment(VariableRef.player(targetId, key), BigDecimal.valueOf(-value), null);
+        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_SUBTRACT, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId), "%key%", key);
 
         return CommandResultType.SUCCESS;
     }

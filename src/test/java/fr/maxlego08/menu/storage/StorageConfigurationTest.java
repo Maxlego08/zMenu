@@ -3,9 +3,13 @@ package fr.maxlego08.menu.storage;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StorageConfigurationTest {
 
@@ -38,6 +42,19 @@ class StorageConfigurationTest {
         assertEquals("shared-host", configuration.host());
         assertEquals("plugin-user", configuration.user());
         assertEquals(600_000L, configuration.maxLifetimeMillis());
+    }
+
+    @Test
+    void theServerIdIsGeneratedOnceWhenNotSet(@TempDir File folder) {
+        StorageConfiguration empty = StorageConfiguration.read(new YamlConfiguration(), null);
+        String generated = empty.resolveServerId(folder);
+
+        assertTrue(generated.startsWith("server-"));
+        assertEquals(generated, empty.resolveServerId(folder));
+
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.set("server-id", " lobby-1 ");
+        assertEquals("lobby-1", StorageConfiguration.read(configuration, null).resolveServerId(folder));
     }
 
     @Test

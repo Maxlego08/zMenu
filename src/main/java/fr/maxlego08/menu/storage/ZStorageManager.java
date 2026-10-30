@@ -14,11 +14,14 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import fr.maxlego08.menu.api.storage.spi.InventoryOpenRecord;
-import fr.maxlego08.menu.api.storage.spi.PlayerDataEntry;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
+import fr.maxlego08.menu.api.variable.Variable;
+import fr.maxlego08.menu.api.variable.VariableRef;
+import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.storage.memory.MemoryStorageProvider;
 import fr.maxlego08.menu.storage.sql.SqlStorageProvider;
+import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
 import net.kyori.adventure.key.Key;
@@ -31,7 +34,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -48,18 +50,12 @@ import java.util.function.Supplier;
 public class ZStorageManager implements StorageManager {
 
     private static final long FLUSH_TIMEOUT_SECONDS = 30;
-    private static final long PURGE_INTERVAL_MINUTES = 10;
 
     private final MenuPlugin plugin;
     private final TypeSafeCache cache = new TypeSafeCache();
-
-    /**
-     * Player data values waiting for the next batch, by player and key. A newer value replaces the
-     * one waiting for the same key.
-     */
-    private final Map<PendingKey, PlayerDataEntry> pendingData = new ConcurrentHashMap<>();
     private final AtomicBoolean flushing = new AtomicBoolean(false);
     private StorageProvider provider;
+    private ZVariableService variableService;
 
     public ZStorageManager(MenuPlugin plugin) {
         this.plugin = plugin;
@@ -114,46 +110,18 @@ public class ZStorageManager implements StorageManager {
             Logger.info("You are not using a database, data is kept in memory until the server stops.");
         }
 
+        this.variableService = new ZVariableService(this.plugin, candidate.variables(), configuration.resolveServerId(this.plugin.getDataFolder()));
+        this.variableService.enable();
+        this.plugin.getServer().getPluginManager().registerEvents(this.variableService, this.plugin);
+
         this.startBatchTask(configuration.batchSeconds());
-        this.plugin.getScheduler().runTimerAsync(this::purgeExpiredData, 1, PURGE_INTERVAL_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
-     * Deletes expired player data from the database. Expired values used to stay there until
-     * someone read them.
+     * @return the variables of every scope, or null when the storage could not be opened
      */
-    private void purgeExpiredData() {
-        if (!this.isEnable()) return;
-        this.logFailure(this.provider.playerData().deleteExpired(System.currentTimeMillis()), "delete the expired player data");
-    }
-
-    /**
-     * Loads the values of one player, with the values still waiting to be written laid over them.
-     */
-    public CompletableFuture<List<PlayerDataEntry>> loadPlayerData(@NonNull UUID playerId) {
-        if (!this.isEnable()) return CompletableFuture.completedFuture(List.of());
-
-        return this.provider.playerData().load(playerId).thenApply(stored -> {
-            Map<String, PlayerDataEntry> entries = new LinkedHashMap<>();
-            stored.forEach(entry -> entries.put(entry.key(), entry));
-            this.pendingData.forEach((key, entry) -> {
-                if (key.playerId().equals(playerId)) entries.put(key.key(), entry);
-            });
-            return new ArrayList<>(entries.values());
-        });
-    }
-
-    /**
-     * @return every key used by at least one player, including the ones still waiting to be written
-     */
-    public CompletableFuture<Set<String>> loadDataKeys() {
-        if (!this.isEnable()) return CompletableFuture.completedFuture(Set.of());
-
-        return this.provider.playerData().keys().thenApply(stored -> {
-            Set<String> keys = new HashSet<>(stored);
-            this.pendingData.keySet().forEach(key -> keys.add(key.key()));
-            return keys;
-        });
+    public @Nullable ZVariableService getVariableService() {
+        return this.variableService;
     }
 
     public CompletableFuture<Optional<String>> loadSavedInventory(@NonNull UUID playerId) {
@@ -162,30 +130,8 @@ public class ZStorageManager implements StorageManager {
         return this.provider.savedInventories().load(playerId);
     }
 
-    /**
-     * @return whether a value of this player still waits to be written
-     */
-    public boolean hasPendingData(@NonNull UUID playerId) {
-        for (PendingKey key : this.pendingData.keySet()) {
-            if (key.playerId().equals(playerId)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Removes the waiting values matching a filter. A value replaced concurrently is kept.
-     */
-    private List<PlayerDataEntry> drainPendingData(java.util.function.Predicate<PendingKey> filter) {
-        List<PlayerDataEntry> drained = new ArrayList<>();
-        for (Map.Entry<PendingKey, PlayerDataEntry> entry : this.pendingData.entrySet()) {
-            if (filter.test(entry.getKey()) && this.pendingData.remove(entry.getKey(), entry.getValue())) {
-                drained.add(entry.getValue());
-            }
-        }
-        return drained;
-    }
-
-    private record PendingKey(UUID playerId, String key) {
+    private VariableRef playerRef(UUID playerId, String key) {
+        return VariableRef.player(playerId, key);
     }
 
     /**
@@ -199,15 +145,17 @@ public class ZStorageManager implements StorageManager {
 
         if (seconds <= 0) return;
 
-        this.plugin.getScheduler().runTimerAsync(this::storeBuffered, seconds, seconds, TimeUnit.SECONDS);
+        this.plugin.getScheduler().runTimerAsync(() -> this.storeBuffered(false), seconds, seconds, TimeUnit.SECONDS);
     }
 
     /**
      * Hands the buffered values and log entries to the provider.
      *
+     * @param all whether to also write the player changes still waiting for their player to be
+     *            read, when zMenu stops
      * @return completes once they are stored
      */
-    private CompletableFuture<Void> storeBuffered() {
+    private CompletableFuture<Void> storeBuffered(boolean all) {
         if (!this.isEnable()) return CompletableFuture.completedFuture(null);
 
         List<CompletableFuture<Void>> writes = new ArrayList<>();
@@ -217,10 +165,7 @@ public class ZStorageManager implements StorageManager {
             this.provider.inventoryLogs().ifPresent(store -> writes.add(this.logFailure(store.append(records), "store the opened inventories")));
         }
 
-        List<PlayerDataEntry> entries = this.drainPendingData(key -> true);
-        if (!entries.isEmpty()) {
-            writes.add(this.logFailure(this.provider.playerData().save(entries), "store the player data"));
-        }
+        if (this.variableService != null) writes.add(this.variableService.flush(all));
 
         return CompletableFuture.allOf(writes.toArray(new CompletableFuture[0]));
     }
@@ -252,7 +197,7 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) return;
 
         try {
-            this.storeBuffered().get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            this.storeBuffered(true).get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException | TimeoutException exception) {
@@ -294,7 +239,7 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.flushing.compareAndSet(false, true)) return;
 
-        this.storeBuffered().whenComplete((result, throwable) -> this.flushing.set(false));
+        this.storeBuffered(false).whenComplete((result, throwable) -> this.flushing.set(false));
     }
 
     @Override
@@ -302,54 +247,56 @@ public class ZStorageManager implements StorageManager {
         return this.provider != null;
     }
 
+    /**
+     * Replaces a player data value, through the variables of the player scope.
+     */
     @Override
     public void upsertData(@NonNull UUID uuid, @NonNull Data data) {
         if (!this.isEnable()) return;
 
         Object value = data.getValue();
-        this.pendingData.put(new PendingKey(uuid, data.getKey()), new PlayerDataEntry(uuid, data.getKey(), value == null ? "" : value.toString(), data.getExpiredAt()));
+        this.variableService.set(this.playerRef(uuid, data.getKey()), value == null ? "" : value.toString(), data.getExpiredAt());
     }
 
     @Override
     public void clearData() {
         if (!this.isEnable()) return;
 
-        this.pendingData.clear();
-        this.logFailure(this.provider.playerData().deleteAll(), "delete the player data");
+        this.variableService.deleteScope(VariableScope.PLAYER);
     }
 
     @Override
     public void clearData(@NonNull UUID uniqueId) {
         if (!this.isEnable()) return;
 
-        this.drainPendingData(key -> key.playerId().equals(uniqueId));
-        this.logFailure(this.provider.playerData().deletePlayer(uniqueId), "delete the player data of " + uniqueId);
+        this.variableService.deleteOwner(VariableScope.PLAYER, uniqueId.toString());
     }
 
     @Override
     public void clearData(@NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.drainPendingData(pending -> pending.key().equals(key));
-        this.logFailure(this.provider.playerData().deleteKey(key), "delete the player data key " + key);
+        this.variableService.deleteName(VariableScope.PLAYER, key);
     }
 
     @Override
     public void removeData(@NonNull UUID uuid, @NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.pendingData.remove(new PendingKey(uuid, key));
-        this.logFailure(this.provider.playerData().delete(uuid, key), "delete the player data key " + key + " of " + uuid);
+        this.variableService.delete(this.playerRef(uuid, key));
     }
 
+    /**
+     * The player data values in memory: online players and players looked up recently. Player
+     * data is no longer read for every player.
+     */
     @Override
     public @NonNull List<DataDTO> loadPlayers() {
         if (!this.isEnable()) return List.of();
 
-        List<PlayerDataEntry> entries = this.await(() -> this.provider.playerData().loadAll(), List.of(), "load the player data");
-        List<DataDTO> dataList = new ArrayList<>(entries.size());
-        for (PlayerDataEntry entry : entries) {
-            dataList.add(new DataDTO(entry.playerId(), entry.key(), entry.value(), entry.expiresAt() == 0 ? null : new Date(entry.expiresAt())));
+        List<DataDTO> dataList = new ArrayList<>();
+        for (Variable variable : this.variableService.getCachedScope(VariableScope.PLAYER)) {
+            dataList.add(new DataDTO(UUID.fromString(variable.ref().owner()), variable.ref().name(), variable.text(), variable.expiresAt() == 0 ? null : new Date(variable.expiresAt())));
         }
         return dataList;
     }

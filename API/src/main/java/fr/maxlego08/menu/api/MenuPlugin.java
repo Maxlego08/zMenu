@@ -15,6 +15,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.variable.VariableService;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
@@ -22,6 +23,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -206,6 +208,13 @@ public interface MenuPlugin extends Plugin {
      * @return the storage manager
      */
     StorageManager getStorageManager();
+
+    /**
+     * @return the variables of every scope: player data, per-server values and values shared by
+     * every server
+     */
+    @ApiStatus.Experimental
+    VariableService getVariableService();
 
     /**
      * Checks if the plugin is a Folia plugin.

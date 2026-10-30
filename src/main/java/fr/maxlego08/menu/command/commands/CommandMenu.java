@@ -6,6 +6,7 @@ import fr.maxlego08.menu.command.commands.bedrock.CommandBedrock;
 import fr.maxlego08.menu.command.commands.convert.CommandMenuConvert;
 import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
 import fr.maxlego08.menu.command.commands.players.CommandMenuPlayers;
+import fr.maxlego08.menu.command.commands.variables.CommandMenuVariables;
 import fr.maxlego08.menu.command.commands.reload.CommandMenuReload;
 import fr.maxlego08.menu.command.commands.website.CommandMenuWebsite;
 import fr.maxlego08.menu.common.enums.Permission;
@@ -27,6 +28,7 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
         this.addSubCommand(new CommandMenuReload(plugin));
         this.addSubCommand(new CommandMenuVersion(plugin));
         this.addSubCommand(new CommandMenuPlayers(plugin));
+        this.addSubCommand(new CommandMenuVariables(plugin));
         this.addSubCommand(new CommandMenuOpenMainMenu(plugin));
         this.addSubCommand(new CommandMenuTestDupe(plugin));
         this.addSubCommand(new CommandMenuSave(plugin));

@@ -3,13 +3,19 @@ package fr.maxlego08.menu.storage.sql;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.storage.spi.AnimationStore;
 import fr.maxlego08.menu.api.storage.spi.InventoryLogStore;
-import fr.maxlego08.menu.api.storage.spi.PlayerDataStore;
+import fr.maxlego08.menu.api.storage.Tables;
+import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.spi.SavedInventoryStore;
 import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
+import fr.maxlego08.menu.api.storage.spi.VariableStore;
 import fr.maxlego08.menu.api.storage.spi.WorldVisitStore;
+import fr.maxlego08.menu.api.variable.Variable;
+import fr.maxlego08.menu.api.variable.VariableRef;
+import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.storage.StorageConfiguration;
+import fr.maxlego08.menu.storage.migrations.VariablesMigration;
 import fr.maxlego08.menu.storage.migrations.FirstWorldJoinMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerAnimationMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
@@ -20,14 +26,18 @@ import fr.maxlego08.sarah.DatabaseConnection;
 import fr.maxlego08.sarah.HikariDatabaseConnection;
 import fr.maxlego08.sarah.MigrationManager;
 import fr.maxlego08.sarah.RequestHelper;
+import fr.maxlego08.sarah.SchemaBuilder;
 import fr.maxlego08.sarah.SqliteConnection;
 import fr.maxlego08.sarah.database.DatabaseType;
+import fr.maxlego08.sarah.database.Schema;
 import fr.maxlego08.sarah.logger.JULogger;
 import fr.maxlego08.sarah.logger.Logger;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class SqlStorageProvider implements StorageProvider {
 
     private static final long CLOSE_TIMEOUT_SECONDS = 30;
+    private static final int LEGACY_COPY_PAGE = 500;
 
     /**
      * Sarah keeps its migrations in a static list, so they are registered once even if a provider
@@ -51,7 +62,7 @@ public final class SqlStorageProvider implements StorageProvider {
 
     private SqlDatabase database;
     private DatabaseType databaseType;
-    private PlayerDataStore playerData;
+    private VariableStore variables;
     private SavedInventoryStore savedInventories;
     private WorldVisitStore worldVisits;
     private AnimationStore animations;
@@ -78,8 +89,8 @@ public final class SqlStorageProvider implements StorageProvider {
     @Override
     public @NotNull Set<StorageCapability> capabilities() {
         return this.databaseType == null || this.databaseType == DatabaseType.SQLITE
-                ? EnumSet.of(StorageCapability.PERSISTENT)
-                : EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED);
+                ? EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.ATOMIC_INCREMENT)
+                : EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT);
     }
 
     @Override
@@ -112,13 +123,23 @@ public final class SqlStorageProvider implements StorageProvider {
             MigrationManager.registerMigration(new PlayerInventoriesMigration());
             MigrationManager.registerMigration(new FirstWorldJoinMigration());
             MigrationManager.registerMigration(new PlayerAnimationMigration());
+            MigrationManager.registerMigration(new VariablesMigration());
         }
         MigrationManager.setDatabaseConfiguration(connection.getDatabaseConfiguration());
         MigrationManager.execute(connection, logger);
 
+        RequestHelper requestHelper = new RequestHelper(connection, logger);
+        try {
+            int copied = copyLegacyPlayerData(requestHelper);
+            if (copied > 0) context.logger().info("Copied " + copied + " player data values to the variables table.");
+        } catch (RuntimeException exception) {
+            connection.disconnect();
+            return CompletableFuture.failedFuture(exception);
+        }
+
         this.databaseType = type;
-        this.database = new SqlDatabase(connection, new RequestHelper(connection, logger));
-        this.playerData = new SqlPlayerDataStore(this.database);
+        this.database = new SqlDatabase(connection, requestHelper);
+        this.variables = new SqlVariableStore(this.database);
         this.savedInventories = new SqlSavedInventoryStore(this.database);
         this.worldVisits = new SqlWorldVisitStore(this.database);
         this.animations = new SqlAnimationStore(this.database);
@@ -142,9 +163,55 @@ public final class SqlStorageProvider implements StorageProvider {
         }
     }
 
+    /**
+     * Copies the values of the old {@code player_datas} table into {@code variables}, once: only
+     * when no player variable exists yet. The copy runs in one transaction, so a failure leaves
+     * {@code variables} empty and the copy runs again on the next start. The old table is kept.
+     *
+     * @return how many values were copied
+     */
+    static int copyLegacyPlayerData(RequestHelper requestHelper) {
+        if (requestHelper.count(Tables.VARIABLES, table -> table.where("scope", VariableScope.PLAYER.id())) > 0) return 0;
+        if (requestHelper.count(Tables.PLAYER_DATAS, table -> {
+        }) == 0) return 0;
+
+        return requestHelper.inTransaction(helper -> {
+            int copied = 0;
+            int offset = 0;
+            while (true) {
+                int pageOffset = offset;
+                List<DataDTO> rows = helper.select(Tables.PLAYER_DATAS, DataDTO.class, table -> {
+                    table.orderBy("`player_id`, `key`");
+                    table.limit(LEGACY_COPY_PAGE).offset(pageOffset);
+                });
+                if (rows.isEmpty()) break;
+
+                List<Schema> schemas = new ArrayList<>(rows.size());
+                for (DataDTO row : rows) {
+                    if (row.player_id() == null || row.key() == null) continue;
+                    Variable variable = Variable.of(VariableRef.player(row.player_id(), row.key()), row.data() == null ? "" : row.data(),
+                            row.expired_at() == null ? 0 : row.expired_at().getTime());
+                    schemas.add(SchemaBuilder.upsert(Tables.VARIABLES, table -> {
+                        table.string("scope", VariableScope.PLAYER.id()).primary();
+                        table.string("owner", variable.ref().owner()).primary();
+                        table.string("name", variable.ref().name()).primary();
+                        table.object("text_value", variable.number() == null ? variable.text() : null);
+                        table.object("number_value", variable.number());
+                        table.bigInt("expires_at", variable.expiresAt());
+                        table.bigInt("version", 1);
+                    }));
+                }
+                if (!schemas.isEmpty()) helper.upsertMultiple(schemas);
+                copied += schemas.size();
+                offset += rows.size();
+            }
+            return copied;
+        });
+    }
+
     @Override
-    public @NotNull PlayerDataStore playerData() {
-        return this.playerData;
+    public @NotNull VariableStore variables() {
+        return this.variables;
     }
 
     @Override

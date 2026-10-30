@@ -73,6 +73,7 @@ import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.sound.ZSoundService;
 import fr.maxlego08.menu.storage.ZStorageManager;
+import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
 import fr.maxlego08.menu.zcore.ZPlugin;
@@ -343,7 +344,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.safeHook("auto listeners", this::registerAutoListeners);
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
-        this.addListener((ZDataManager) this.dataManager);
         if (this.isFeatureEnabled(Feature.CUSTOM_ITEMS)) this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addListener(this.inventoryManager);
 
@@ -721,6 +721,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public StorageManager getStorageManager() {
         return this.storageManager;
+    }
+
+    @Override
+    public ZVariableService getVariableService() {
+        return ((ZStorageManager) this.storageManager).getVariableService();
     }
 
     @Override

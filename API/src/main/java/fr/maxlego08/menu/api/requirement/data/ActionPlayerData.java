@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.SectionSerializable;
+import fr.maxlego08.menu.api.variable.VariableScope;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -55,6 +56,14 @@ public interface ActionPlayerData extends SectionSerializable {
     }
 
     /**
+     * @return who the value belongs to: the player (default), this server, or every server
+     */
+    @NotNull
+    default VariableScope getScope() {
+        return VariableScope.PLAYER;
+    }
+
+    /**
      * Writes this data action in the format the data loader reads. Values equal to their default are left out.
      *
      * @param section The section to write into.
@@ -66,6 +75,7 @@ public interface ActionPlayerData extends SectionSerializable {
         section.set("value", this.getValue());
         if (!"0".equals(this.getSeconds())) section.set("seconds", this.getSeconds());
         if (this.isMathExpression()) section.set("math", true);
+        if (this.getScope() != VariableScope.PLAYER) section.set("scope", this.getScope().id());
     }
 
     /**

@@ -3,22 +3,19 @@ package fr.maxlego08.menu.storage.memory;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.storage.spi.AnimationStore;
 import fr.maxlego08.menu.api.storage.spi.InventoryLogStore;
-import fr.maxlego08.menu.api.storage.spi.PlayerDataEntry;
-import fr.maxlego08.menu.api.storage.spi.PlayerDataStore;
 import fr.maxlego08.menu.api.storage.spi.SavedInventoryStore;
 import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
+import fr.maxlego08.menu.api.storage.spi.VariableStore;
 import fr.maxlego08.menu.api.storage.spi.WorldVisitStore;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -34,70 +31,11 @@ public final class MemoryStorageProvider implements StorageProvider {
 
     private static final CompletableFuture<Void> DONE = CompletableFuture.completedFuture(null);
 
-    private final Map<UUID, Map<String, PlayerDataEntry>> playerData = new ConcurrentHashMap<>();
     private final Map<UUID, String> savedInventories = new ConcurrentHashMap<>();
     private final Map<UUID, Set<String>> worldVisits = new ConcurrentHashMap<>();
     private final Map<UUID, Map<String, Long>> animations = new ConcurrentHashMap<>();
 
-    private final PlayerDataStore playerDataStore = new PlayerDataStore() {
-
-        @Override
-        public @NotNull CompletableFuture<List<PlayerDataEntry>> loadAll() {
-            List<PlayerDataEntry> entries = new ArrayList<>();
-            playerData.values().forEach(values -> entries.addAll(values.values()));
-            return CompletableFuture.completedFuture(entries);
-        }
-
-        @Override
-        public @NotNull CompletableFuture<List<PlayerDataEntry>> load(@NotNull UUID playerId) {
-            Map<String, PlayerDataEntry> values = playerData.get(playerId);
-            return CompletableFuture.completedFuture(values == null ? new ArrayList<>() : new ArrayList<>(values.values()));
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Set<String>> keys() {
-            Set<String> keys = new HashSet<>();
-            playerData.values().forEach(values -> keys.addAll(values.keySet()));
-            return CompletableFuture.completedFuture(keys);
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Void> deleteExpired(long now) {
-            playerData.values().forEach(values -> values.values().removeIf(entry -> entry.expiresAt() != 0 && entry.expiresAt() < now));
-            return DONE;
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Void> save(@NotNull List<PlayerDataEntry> entries) {
-            entries.forEach(entry -> playerData.computeIfAbsent(entry.playerId(), id -> new ConcurrentHashMap<>()).put(entry.key(), entry));
-            return DONE;
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Void> delete(@NotNull UUID playerId, @NotNull String key) {
-            Map<String, PlayerDataEntry> values = playerData.get(playerId);
-            if (values != null) values.remove(key);
-            return DONE;
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Void> deletePlayer(@NotNull UUID playerId) {
-            playerData.remove(playerId);
-            return DONE;
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Void> deleteKey(@NotNull String key) {
-            playerData.values().forEach(values -> values.remove(key));
-            return DONE;
-        }
-
-        @Override
-        public @NotNull CompletableFuture<Void> deleteAll() {
-            playerData.clear();
-            return DONE;
-        }
-    };
+    private final VariableStore variableStore = new MemoryVariableStore();
 
     private final SavedInventoryStore savedInventoryStore = new SavedInventoryStore() {
 
@@ -170,7 +108,7 @@ public final class MemoryStorageProvider implements StorageProvider {
 
     @Override
     public @NotNull Set<StorageCapability> capabilities() {
-        return EnumSet.noneOf(StorageCapability.class);
+        return EnumSet.of(StorageCapability.ATOMIC_INCREMENT);
     }
 
     @Override
@@ -184,8 +122,8 @@ public final class MemoryStorageProvider implements StorageProvider {
     }
 
     @Override
-    public @NotNull PlayerDataStore playerData() {
-        return this.playerDataStore;
+    public @NotNull VariableStore variables() {
+        return this.variableStore;
     }
 
     @Override

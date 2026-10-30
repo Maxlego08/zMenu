@@ -51,6 +51,12 @@ skip-update-check: false
 # This will be fixed in future plugin updates
 storage-type: SQLITE
 
+# Name of this server, used for the variables of the "server" scope (data action with scope: server,
+# %zmenu_server_value_<key>%, /zm variables ... server ...).
+# Servers sharing one database must each have their own name. Leave empty to use a name generated
+# once and kept in plugins/zMenu/server-id.txt.
+server-id: ""
+
 # Configuration of your database, it is recommended to use the database to store your data.
 database-configuration:
   # The prefix that will be applied to all tables,

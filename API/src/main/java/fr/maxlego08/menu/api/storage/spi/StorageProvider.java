@@ -48,7 +48,7 @@ public interface StorageProvider extends Keyed {
     CompletableFuture<Void> close();
 
     @NotNull
-    PlayerDataStore playerData();
+    VariableStore variables();
 
     @NotNull
     SavedInventoryStore savedInventories();

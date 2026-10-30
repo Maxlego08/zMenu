@@ -1,9 +1,12 @@
 package fr.maxlego08.menu.storage;
 
 import fr.maxlego08.menu.api.storage.spi.InventoryOpenRecord;
-import fr.maxlego08.menu.api.storage.spi.PlayerDataEntry;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
+import fr.maxlego08.menu.api.storage.spi.VariableMutation;
+import fr.maxlego08.menu.api.variable.Variable;
+import fr.maxlego08.menu.api.variable.VariableRef;
+import fr.maxlego08.menu.api.variable.VariableScope;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,15 +14,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.util.Comparator;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -52,66 +59,135 @@ abstract class StorageProviderContractTest {
         this.provider.close().join();
     }
 
-    private List<PlayerDataEntry> sorted(List<PlayerDataEntry> entries) {
-        return entries.stream().sorted(Comparator.comparing(PlayerDataEntry::key)).toList();
+    private static VariableRef player(UUID playerId, String name) {
+        return VariableRef.player(playerId, name);
+    }
+
+    private static VariableMutation set(VariableRef ref, String value, long expiresAt) {
+        return new VariableMutation.Set(Variable.of(ref, value, expiresAt));
+    }
+
+    private Map<String, Variable> owner(VariableScope scope, String owner) {
+        Map<String, Variable> variables = new TreeMap<>();
+        this.provider.variables().loadOwner(scope, owner).join().forEach(variable -> variables.put(variable.ref().name(), variable));
+        return variables;
+    }
+
+    private Map<String, Variable> player(UUID playerId) {
+        return this.owner(VariableScope.PLAYER, playerId.toString());
     }
 
     @Test
-    void playerDataIsSavedReplacedAndLoaded() {
+    void variablesAreSetReplacedAndLoadedPerOwner() {
         long expiresAt = 4_102_444_800_000L;
-        this.provider.playerData().save(List.of(
-                new PlayerDataEntry(PLAYER, "coins", "10", 0),
-                new PlayerDataEntry(PLAYER, "rank", "vip", expiresAt),
-                new PlayerDataEntry(OTHER, "coins", "3", 0))).join();
-        this.provider.playerData().save(List.of(new PlayerDataEntry(PLAYER, "coins", "25", 0))).join();
+        this.provider.variables().apply(List.of(
+                set(player(PLAYER, "coins"), "10", 0),
+                set(player(PLAYER, "rank"), "vip", expiresAt),
+                set(player(OTHER, "coins"), "3", 0),
+                set(VariableRef.global("event"), "on", 0),
+                set(VariableRef.server("lobby", "event"), "off", 0))).join();
+        this.provider.variables().apply(List.of(set(player(PLAYER, "coins"), "25.50", 0))).join();
 
-        List<PlayerDataEntry> player = this.sorted(this.provider.playerData().load(PLAYER).join());
-        assertEquals(List.of(new PlayerDataEntry(PLAYER, "coins", "25", 0), new PlayerDataEntry(PLAYER, "rank", "vip", expiresAt)), player);
-        assertEquals(3, this.provider.playerData().loadAll().join().size());
+        Map<String, Variable> player = this.player(PLAYER);
+        assertEquals(Set.of("coins", "rank"), player.keySet());
+        assertEquals("25.5", player.get("coins").text());
+        assertEquals(0, new BigDecimal("25.5").compareTo(player.get("coins").number()));
+        assertEquals("vip", player.get("rank").text());
+        assertNull(player.get("rank").number());
+        assertEquals(expiresAt, player.get("rank").expiresAt());
+
+        assertEquals("on", this.owner(VariableScope.GLOBAL, VariableRef.GLOBAL_OWNER).get("event").text());
+        assertEquals("off", this.owner(VariableScope.SERVER, "lobby").get("event").text());
+        assertTrue(this.owner(VariableScope.SERVER, "other").isEmpty());
     }
 
     @Test
-    void playerDataIsDeletedByKeyPlayerAndAll() {
-        this.provider.playerData().save(List.of(
-                new PlayerDataEntry(PLAYER, "coins", "10", 0),
-                new PlayerDataEntry(PLAYER, "rank", "vip", 0),
-                new PlayerDataEntry(OTHER, "coins", "3", 0),
-                new PlayerDataEntry(OTHER, "rank", "mvp", 0))).join();
+    void incrementsAddToNumbersAndReplaceText() {
+        VariableRef coins = VariableRef.global("coins");
+        VariableRef label = VariableRef.global("label");
 
-        this.provider.playerData().delete(PLAYER, "rank").join();
-        assertEquals(List.of(new PlayerDataEntry(PLAYER, "coins", "10", 0)), this.provider.playerData().load(PLAYER).join());
+        assertEquals(0, BigDecimal.valueOf(5).compareTo(this.provider.variables().incrementAndGet(coins, BigDecimal.valueOf(5), 0).join()));
+        assertEquals(0, new BigDecimal("2.5").compareTo(this.provider.variables().incrementAndGet(coins, new BigDecimal("-2.5"), 0).join()));
 
-        this.provider.playerData().deleteKey("coins").join();
-        assertEquals(List.of(new PlayerDataEntry(OTHER, "rank", "mvp", 0)), this.provider.playerData().loadAll().join());
+        this.provider.variables().apply(List.of(set(label, "hello", 0))).join();
+        assertEquals(0, BigDecimal.valueOf(3).compareTo(this.provider.variables().incrementAndGet(label, BigDecimal.valueOf(3), 0).join()));
 
-        this.provider.playerData().deletePlayer(OTHER).join();
-        assertTrue(this.provider.playerData().loadAll().join().isEmpty());
-
-        this.provider.playerData().save(List.of(new PlayerDataEntry(PLAYER, "coins", "1", 0))).join();
-        this.provider.playerData().deleteAll().join();
-        assertTrue(this.provider.playerData().loadAll().join().isEmpty());
+        Map<String, Variable> global = this.owner(VariableScope.GLOBAL, VariableRef.GLOBAL_OWNER);
+        assertEquals("2.5", global.get("coins").text());
+        assertEquals("3", global.get("label").text());
     }
 
     @Test
-    void keysAreListedOnce() {
-        this.provider.playerData().save(List.of(
-                new PlayerDataEntry(PLAYER, "coins", "10", 0),
-                new PlayerDataEntry(PLAYER, "rank", "vip", 0),
-                new PlayerDataEntry(OTHER, "coins", "3", 0))).join();
+    void anIncrementKeepsTheExpiryOfAnExistingValue() {
+        VariableRef ref = player(PLAYER, "boost");
+        this.provider.variables().apply(List.of(new VariableMutation.Increment(ref, BigDecimal.ONE, 4_102_444_800_000L))).join();
+        this.provider.variables().apply(List.of(new VariableMutation.Increment(ref, BigDecimal.ONE, 1_000L))).join();
 
-        assertEquals(Set.of("coins", "rank"), this.provider.playerData().keys().join());
+        Variable boost = this.player(PLAYER).get("boost");
+        assertEquals("2", boost.text());
+        assertEquals(4_102_444_800_000L, boost.expiresAt());
+    }
+
+    @Test
+    void parallelIncrementsAllCount() {
+        VariableRef ref = VariableRef.global("counter");
+        List<CompletableFuture<BigDecimal>> futures = new ArrayList<>();
+        for (int index = 0; index < 200; index++) {
+            futures.add(CompletableFuture.supplyAsync(() -> this.provider.variables().incrementAndGet(ref, BigDecimal.ONE, 0).join()));
+        }
+        futures.forEach(CompletableFuture::join);
+
+        assertEquals("200", this.owner(VariableScope.GLOBAL, VariableRef.GLOBAL_OWNER).get("counter").text());
+    }
+
+    @Test
+    void variablesAreDeletedByNameOwnerAndScope() {
+        this.provider.variables().apply(List.of(
+                set(player(PLAYER, "coins"), "10", 0),
+                set(player(PLAYER, "rank"), "vip", 0),
+                set(player(OTHER, "coins"), "3", 0),
+                set(player(OTHER, "rank"), "mvp", 0),
+                set(VariableRef.global("coins"), "1", 0))).join();
+
+        this.provider.variables().apply(List.of(new VariableMutation.Delete(player(PLAYER, "rank")))).join();
+        assertEquals(Set.of("coins"), this.player(PLAYER).keySet());
+
+        this.provider.variables().deleteName(VariableScope.PLAYER, "coins").join();
+        assertTrue(this.player(PLAYER).isEmpty());
+        assertEquals(Set.of("rank"), this.player(OTHER).keySet());
+        assertEquals(Set.of("coins"), this.owner(VariableScope.GLOBAL, VariableRef.GLOBAL_OWNER).keySet());
+
+        this.provider.variables().deleteOwner(VariableScope.PLAYER, OTHER.toString()).join();
+        assertTrue(this.player(OTHER).isEmpty());
+
+        this.provider.variables().apply(List.of(set(player(PLAYER, "coins"), "1", 0))).join();
+        this.provider.variables().deleteScope(VariableScope.PLAYER).join();
+        assertTrue(this.player(PLAYER).isEmpty());
+        assertEquals(Set.of("coins"), this.owner(VariableScope.GLOBAL, VariableRef.GLOBAL_OWNER).keySet());
+    }
+
+    @Test
+    void namesAreListedOncePerScope() {
+        this.provider.variables().apply(List.of(
+                set(player(PLAYER, "coins"), "10", 0),
+                set(player(PLAYER, "rank"), "vip", 0),
+                set(player(OTHER, "coins"), "3", 0),
+                set(VariableRef.global("event"), "on", 0))).join();
+
+        assertEquals(Set.of("coins", "rank"), this.provider.variables().names(VariableScope.PLAYER).join());
+        assertEquals(Set.of("event"), this.provider.variables().names(VariableScope.GLOBAL).join());
     }
 
     @Test
     void onlyExpiredValuesArePurged() {
-        this.provider.playerData().save(List.of(
-                new PlayerDataEntry(PLAYER, "expired", "1", 1_000L),
-                new PlayerDataEntry(PLAYER, "later", "2", 4_102_444_800_000L),
-                new PlayerDataEntry(PLAYER, "never", "3", 0))).join();
+        this.provider.variables().apply(List.of(
+                set(player(PLAYER, "expired"), "1", 1_000L),
+                set(player(PLAYER, "later"), "2", 4_102_444_800_000L),
+                set(player(PLAYER, "never"), "3", 0))).join();
 
-        this.provider.playerData().deleteExpired(1_700_000_000_000L).join();
+        this.provider.variables().deleteExpired(1_700_000_000_000L).join();
 
-        assertEquals(Set.of("later", "never"), this.provider.playerData().keys().join());
+        assertEquals(Set.of("later", "never"), this.provider.variables().names(VariableScope.PLAYER).join());
     }
 
     @Test
@@ -124,12 +200,12 @@ abstract class StorageProviderContractTest {
 
     @Test
     void writesApplyInTheOrderTheyAreMade() {
-        this.provider.playerData().save(List.of(new PlayerDataEntry(PLAYER, "coins", "10", 0)));
-        this.provider.playerData().delete(PLAYER, "coins");
+        this.provider.variables().apply(List.of(set(player(PLAYER, "coins"), "10", 0)));
+        this.provider.variables().apply(List.of(new VariableMutation.Delete(player(PLAYER, "coins"))));
         this.provider.savedInventories().save(PLAYER, "0:abc");
         this.provider.savedInventories().delete(PLAYER).join();
 
-        assertTrue(this.provider.playerData().load(PLAYER).join().isEmpty());
+        assertTrue(this.player(PLAYER).isEmpty());
         assertTrue(this.provider.savedInventories().loadAll().join().isEmpty());
     }
 

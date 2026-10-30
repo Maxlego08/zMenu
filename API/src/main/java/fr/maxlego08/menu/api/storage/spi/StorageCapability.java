@@ -16,5 +16,11 @@ public enum StorageCapability {
     /**
      * Several servers can use the same store at the same time.
      */
-    SHARED
+    SHARED,
+
+    /**
+     * {@link VariableStore#incrementAndGet} is atomic even when several servers add to the same
+     * value at once.
+     */
+    ATOMIC_INCREMENT
 }

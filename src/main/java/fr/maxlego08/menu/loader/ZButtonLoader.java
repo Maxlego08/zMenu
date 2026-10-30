@@ -252,7 +252,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             button.setSoundOption(new ZSoundOption(null, categoryName, sound, pitch, volume, true));
         }
 
-        Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader(this.plugin.getStorageManager());
+        Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader(this.plugin);
 
         List<ActionPlayerData> actionPlayerDatas = new ArrayList<>();
         if (configuration.isConfigurationSection(path + "datas")) {

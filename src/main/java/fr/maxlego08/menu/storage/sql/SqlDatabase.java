@@ -63,6 +63,21 @@ final class SqlDatabase {
         }
     }
 
+    /**
+     * Queues a write that produces a result, behind every write already queued.
+     */
+    <T> CompletableFuture<T> writeAndGet(Supplier<T> task) {
+        try {
+            return CompletableFuture.supplyAsync(task, this.writer);
+        } catch (RejectedExecutionException exception) {
+            try {
+                return CompletableFuture.completedFuture(task.get());
+            } catch (RuntimeException failure) {
+                return CompletableFuture.failedFuture(failure);
+            }
+        }
+    }
+
     <T> CompletableFuture<T> read(Supplier<T> task) {
         try {
             return CompletableFuture.supplyAsync(task, this.readers);

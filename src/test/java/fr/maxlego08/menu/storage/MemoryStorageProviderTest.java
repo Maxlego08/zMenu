@@ -1,10 +1,13 @@
 package fr.maxlego08.menu.storage;
 
+import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
 import fr.maxlego08.menu.storage.memory.MemoryStorageProvider;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.EnumSet;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MemoryStorageProviderTest extends StorageProviderContractTest {
 
@@ -15,6 +18,6 @@ class MemoryStorageProviderTest extends StorageProviderContractTest {
 
     @Test
     void memoryIsNeitherPersistentNorShared() {
-        assertTrue(this.provider.capabilities().isEmpty());
+        assertEquals(EnumSet.of(StorageCapability.ATOMIC_INCREMENT), this.provider.capabilities());
     }
 }
