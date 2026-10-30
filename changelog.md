@@ -45,6 +45,10 @@
 ## Changes
 
 * The ItemsAdder hook now targets ItemsAdder 4 (`beer.devs:itemsadder-api` 4.0.17). ItemsAdder 3 is no longer supported.
+* `storage-type: NONE` now keeps player data, saved inventories, visited worlds and played animations in memory until the server stops, instead of not storing them at all. MockBukkit test servers use the same memory storage.
+* A value of `database-configuration.yml` (the file shared by every plugin of the server) that is not set now falls back to `config.yml` and then to the defaults of `config.yml`, as documented; a missing value was read as empty when the shared file did not exist.
+* The MySQL and MariaDB connection pool is now closed when zMenu disables, after the queued writes are stored.
+* Removed the internal `GlobalDatabaseConfiguration` class, replaced by `StorageConfiguration`.
 * Removed the legacy `ClassicMeta` formatter. zMenu always formats items, messages and titles with MiniMessage through `ComponentMeta`. If it cannot start, zMenu logs an error and disables itself. `enable-mini-message-format` now only controls Dialogs support.
 
 ## New Features
@@ -53,6 +57,7 @@
 * Dialog canvases measure the vanilla font and `minecraft:` images from the pack of Nexo, ItemsAdder or CraftEngine when that pack replaces them (a custom `font/ascii.png`, for example), so text and images line up with what players see. A Nexo glyph, ItemsAdder font image or CraftEngine image whose texture cannot be read is reported and skipped instead of being measured as a square.
 * Added `CanvasPackTarget#readPackFile`, so a pack target can give the files its pack puts over the client's own.
 * Added the canvas API (`fr.maxlego08.menu.api.dialog.canvas`, `MenuPlugin#getCanvasManager()`) and the `GLYPH_PROVIDER`, `CANVAS_PACK_TARGET` and `CANVAS_ELEMENT` registries, so addons can add glyph sources, resource pack plugins and element types.
+* Added storage providers (experimental API, `fr.maxlego08.menu.api.storage.spi`): zMenu now keeps its data through a `StorageProvider` chosen by `storage-type`. The built-in `zmenu:sql` provider serves `SQLITE`, `MYSQL` and `MARIADB` and `zmenu:memory` serves `NONE`. An addon can add its own backend by registering a provider in the new `STORAGE_PROVIDER` registry during `onLoad` and setting `storage-type` to its key, such as `myaddon:redis`. A `storage-type` that names no provider now disables zMenu with an error.
 * Added the slot animation engine: an inventory can reveal its items one after the other when it opens and take them away when it closes, buttons can cycle their items while the menu stays open (idle animations), and an animation can be played on an open menu at any time. Built-in reveal orders: `sequential` (also `rows`), `horizontal_snake`, `vertical_snake`, `spiral`, `random`, `from_center`, `wave`, `checkerboard`, `columns`, `matrix` and `custom`. Menus configure them in YAML with zMenuPlus, which reads `open-animation`, `close-animation`, the button `animation` and `idle-animation`, the `animation` action and the files of zMenu's new `animations` folder (`fancy_open`, `glint`, `heartbeat`, `pulse`, `sparkle`, `wave_in`).
 * Added the `features` section to `config.yml`, to turn off parts of zMenu a server does not use. A disabled feature registers nothing; a change applies after a restart, `/zm reload` only warns about it. First feature: `custom-items`, which turns off the `items` folder, its mechanics (`itemjoin`, `on-click`), the item update on join and `/zm giveitem`.
 * Added `/zm resetanimation <player> [menu]` (permission `zmenu.animation.reset`) so an animation that plays once, or has a cooldown, plays again.
@@ -73,6 +78,9 @@
 * Database writes now run one at a time, in the order they were made. A saved inventory could be deleted before it was written, leaving a copy that was given back again later, and a player data value removed right after a change could come back.
 * The items given the first time a player enters a world no longer read the database on the main thread at every join and world change: the visited worlds are read once, off the main thread, and kept until the player leaves.
 * Player data is now safe to read from placeholder threads and Folia region threads.
+* The worlds a player has visited are read back correctly. They always came back empty, so the items of a first world visit were given again at every visit.
+* The animations that play once or have a cooldown are now remembered after a restart. Reading them back always failed, so they played again after each restart.
+* Saving a player's inventory replaces the copy saved before instead of adding another one.
 * The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
 * `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
 * The `block` argument type of custom commands was registered as a second `material` type and could never be used; it now exists and accepts only materials that are blocks.

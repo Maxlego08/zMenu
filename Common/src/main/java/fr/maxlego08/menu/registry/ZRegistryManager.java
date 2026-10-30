@@ -53,6 +53,7 @@ public final class ZRegistryManager implements RegistryManager {
         this.create(Registries.CANVAS_PACK_TARGET);
         this.create(Registries.CANVAS_ELEMENT);
         this.create(Registries.DIALOG_ACTION);
+        this.create(Registries.STORAGE_PROVIDER);
     }
 
     /**

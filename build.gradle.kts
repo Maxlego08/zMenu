@@ -231,6 +231,8 @@ dependencies {
         exclude(group = "org.slf4j")
     }
 
+    testImplementation(libs.paper.api)
+    testRuntimeOnly(libs.sqlite.jdbc)
 }
 
 dependencies {

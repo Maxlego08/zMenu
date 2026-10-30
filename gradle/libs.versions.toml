@@ -27,6 +27,7 @@ folialib = "0.5.1"
 xseries = "13.8.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
+sqlite-jdbc = "3.47.1.0"
 paper-dispatch = "1.1.0"
 faststats = "0.30.1"
 
@@ -78,6 +79,7 @@ folialib = { group = "com.tcoded", name = "FoliaLib", version.ref = "folialib" }
 xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "xseries" }
 exp4j = { group = "net.objecthunter", name = "exp4j", version.ref = "exp4j" }
 java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
+sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-jdbc" }
 fastStatsBukkit = { group = "dev.faststats.metrics", name = "bukkit", version.ref = "faststats" }
 
 # Integration Hooks

@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.loader.*;
 import fr.maxlego08.menu.api.loader.animation.slot.SlotAnimationLoader;
 import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.rules.loader.RuleLoader;
+import fr.maxlego08.menu.api.storage.spi.StorageProvider;
 
 public final class Registries {
     public static final RegistryType<SlotAnimationLoader> SLOT_ANIMATION = RegistryType.createStatic(ZMenuKeys.key("slot_animation"), SlotAnimationLoader.class);
@@ -98,6 +99,12 @@ public final class Registries {
     public static final RegistryType<CanvasElementLoader> CANVAS_ELEMENT = RegistryType.createOpen(ZMenuKeys.key("canvas_element"), CanvasElementLoader.class);
 
     public static final RegistryType<DialogActionLoader> DIALOG_ACTION = RegistryType.createOpen(ZMenuKeys.key("dialog_action"), DialogActionLoader.class);
+
+    /**
+     * The backends zMenu can keep its data in, by the key {@code storage-type} names: {@code zmenu:sql},
+     * {@code zmenu:memory}, or a backend an addon registers in {@code onLoad}.
+     */
+    public static final RegistryType<StorageProvider> STORAGE_PROVIDER = RegistryType.createOpen(ZMenuKeys.key("storage_provider"), StorageProvider.class);
 
     private Registries() {
     }
