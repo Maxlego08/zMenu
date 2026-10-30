@@ -5,7 +5,9 @@ import fr.maxlego08.menu.api.storage.spi.AnimationStore;
 import fr.maxlego08.menu.api.storage.spi.InventoryLogStore;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import fr.maxlego08.menu.api.storage.spi.MessageBroker;
 import fr.maxlego08.menu.api.storage.spi.SavedInventoryStore;
+import fr.maxlego08.menu.api.storage.spi.SessionStore;
 import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
@@ -15,6 +17,7 @@ import fr.maxlego08.menu.api.variable.Variable;
 import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.storage.StorageConfiguration;
+import fr.maxlego08.menu.storage.migrations.MultiServerMigration;
 import fr.maxlego08.menu.storage.migrations.VariablesMigration;
 import fr.maxlego08.menu.storage.migrations.FirstWorldJoinMigration;
 import fr.maxlego08.menu.storage.migrations.PlayerAnimationMigration;
@@ -67,6 +70,8 @@ public final class SqlStorageProvider implements StorageProvider {
     private WorldVisitStore worldVisits;
     private AnimationStore animations;
     private InventoryLogStore inventoryLogs;
+    private SqlSessionStore sessions;
+    private SqlPollingBroker broker;
 
     /**
      * @return the database type a {@code storage-type} value selects, or null when the value does
@@ -124,6 +129,7 @@ public final class SqlStorageProvider implements StorageProvider {
             MigrationManager.registerMigration(new FirstWorldJoinMigration());
             MigrationManager.registerMigration(new PlayerAnimationMigration());
             MigrationManager.registerMigration(new VariablesMigration());
+            MigrationManager.registerMigration(new MultiServerMigration());
         }
         MigrationManager.setDatabaseConfiguration(connection.getDatabaseConfiguration());
         MigrationManager.execute(connection, logger);
@@ -132,6 +138,8 @@ public final class SqlStorageProvider implements StorageProvider {
         try {
             int copied = copyLegacyPlayerData(requestHelper);
             if (copied > 0) context.logger().info("Copied " + copied + " player data values to the variables table.");
+            int inventories = SqlSavedInventoryStore.copyLegacyInventories(requestHelper, context.serverId());
+            if (inventories > 0) context.logger().info("Copied " + inventories + " saved inventories to this server (" + context.serverId() + ").");
         } catch (RuntimeException exception) {
             connection.disconnect();
             return CompletableFuture.failedFuture(exception);
@@ -140,10 +148,19 @@ public final class SqlStorageProvider implements StorageProvider {
         this.databaseType = type;
         this.database = new SqlDatabase(connection, requestHelper);
         this.variables = new SqlVariableStore(this.database);
-        this.savedInventories = new SqlSavedInventoryStore(this.database);
+        this.savedInventories = new SqlSavedInventoryStore(this.database, context.serverId());
         this.worldVisits = new SqlWorldVisitStore(this.database);
         this.animations = new SqlAnimationStore(this.database);
         this.inventoryLogs = new SqlInventoryLogStore(this.database);
+
+        boolean forced = configuration.messagingType().equalsIgnoreCase("SQL");
+        if (type != DatabaseType.SQLITE || forced) {
+            this.sessions = new SqlSessionStore(this.database);
+            if (!configuration.messagingType().equalsIgnoreCase("NONE")) {
+                this.broker = new SqlPollingBroker(this.database, context.serverId(), context.logger());
+                this.broker.start(configuration.pollIntervalMillis());
+            }
+        }
 
         context.logger().info("The database connection is valid ! (" + (type == DatabaseType.SQLITE ? "SQLITE" : configuration.host()) + ")");
         return CompletableFuture.completedFuture(null);
@@ -152,6 +169,7 @@ public final class SqlStorageProvider implements StorageProvider {
     @Override
     public @NotNull CompletableFuture<Void> close() {
         if (this.database == null) return CompletableFuture.completedFuture(null);
+        if (this.broker != null) this.broker.stop();
         try {
             if (!this.database.close(CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                 return CompletableFuture.failedFuture(new IllegalStateException("Some database writes did not finish within " + CLOSE_TIMEOUT_SECONDS + " seconds"));
@@ -212,6 +230,21 @@ public final class SqlStorageProvider implements StorageProvider {
     @Override
     public @NotNull VariableStore variables() {
         return this.variables;
+    }
+
+    /**
+     * @return the event table of MySQL and MariaDB, unless {@code messaging-type} is {@code NONE}.
+     * SQLite is not shared between servers, so it has none unless {@code messaging-type} is
+     * {@code SQL}.
+     */
+    @Override
+    public @NotNull Optional<MessageBroker> broker() {
+        return Optional.ofNullable(this.broker);
+    }
+
+    @Override
+    public @NotNull Optional<SessionStore> sessions() {
+        return Optional.ofNullable(this.sessions);
     }
 
     @Override

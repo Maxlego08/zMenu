@@ -36,7 +36,7 @@ class LegacyPlayerDataCopyTest {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.set("storage-type", "SQLITE");
         SqlStorageProvider provider = new SqlStorageProvider();
-        provider.open(new StorageContext(null, configuration, this.folder, Logger.getLogger("zMenu-test"))).join();
+        provider.open(new StorageContext(null, configuration, this.folder, Logger.getLogger("zMenu-test"), "test")).join();
 
         var logger = JULogger.from(Logger.getLogger("zMenu-test"));
         RequestHelper helper = new RequestHelper(new SqliteConnection(new DatabaseConfiguration("zmenu_", "", "", 0, "", "", false, DatabaseType.SQLITE), this.folder, logger), logger);

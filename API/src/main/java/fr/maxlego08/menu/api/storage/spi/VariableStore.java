@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -22,6 +23,12 @@ public interface VariableStore {
      */
     @NotNull
     CompletableFuture<List<Variable>> loadOwner(@NotNull VariableScope scope, @NotNull String owner);
+
+    /**
+     * @return one variable, expired or not, or empty when it does not exist
+     */
+    @NotNull
+    CompletableFuture<Optional<Variable>> load(@NotNull VariableRef ref);
 
     /**
      * Applies changes in the order given.

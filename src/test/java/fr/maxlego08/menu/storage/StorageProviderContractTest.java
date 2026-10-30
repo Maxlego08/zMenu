@@ -51,7 +51,7 @@ abstract class StorageProviderContractTest {
     @BeforeEach
     void open() {
         this.provider = this.createProvider();
-        this.provider.open(new StorageContext(null, this.configuration(), this.dataFolder, Logger.getLogger("zMenu-test"))).join();
+        this.provider.open(new StorageContext(null, this.configuration(), this.dataFolder, Logger.getLogger("zMenu-test"), "test")).join();
     }
 
     @AfterEach

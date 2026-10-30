@@ -13,5 +13,9 @@ public interface Tables {
     @NotNull String FIRST_WORLD_JOIN = "%prefix%first_world_join";
     @NotNull String PLAYER_ANIMATIONS = "%prefix%player_animations";
     @NotNull String VARIABLES = "%prefix%variables";
+    @NotNull String SAVED_INVENTORIES = "%prefix%saved_inventories";
+    @NotNull String STORAGE_EVENTS = "%prefix%storage_events";
+    @NotNull String PLAYER_SESSIONS = "%prefix%player_sessions";
+    @NotNull String SERVERS = "%prefix%servers";
 
 }

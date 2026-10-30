@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import fr.maxlego08.menu.api.storage.spi.InventoryOpenRecord;
+import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
 import fr.maxlego08.menu.api.variable.Variable;
@@ -97,8 +98,10 @@ public class ZStorageManager implements StorageManager {
         }
 
         StorageProvider candidate = optional.get();
+        String serverId;
         try {
-            candidate.open(new StorageContext(this.plugin, this.plugin.getConfig(), this.plugin.getDataFolder(), this.plugin.getLogger())).join();
+            serverId = configuration.resolveServerId(this.plugin.getDataFolder());
+            candidate.open(new StorageContext(this.plugin, this.plugin.getConfig(), this.plugin.getDataFolder(), this.plugin.getLogger(), serverId)).join();
         } catch (Exception exception) {
             Logger.error("Unable to connect to database !", exception);
             Bukkit.getPluginManager().disablePlugin(this.plugin);
@@ -110,7 +113,11 @@ public class ZStorageManager implements StorageManager {
             Logger.info("You are not using a database, data is kept in memory until the server stops.");
         }
 
-        this.variableService = new ZVariableService(this.plugin, candidate.variables(), configuration.resolveServerId(this.plugin.getDataFolder()));
+        this.variableService = new ZVariableService(this.plugin, candidate.variables(), serverId, candidate.broker().orElse(null),
+                candidate.sessions().orElse(null), configuration.handoffTimeoutMillis());
+        if (candidate.capabilities().contains(StorageCapability.SHARED) && candidate.broker().isEmpty()) {
+            Logger.info("This database can be shared by several servers, but messaging-type is NONE: a server only sees the changes of the others when it reads them again.");
+        }
         this.variableService.enable();
         this.plugin.getServer().getPluginManager().registerEvents(this.variableService, this.plugin);
 
@@ -213,6 +220,7 @@ public class ZStorageManager implements StorageManager {
 
         if (this.provider == null) return;
 
+        if (this.variableService != null) this.variableService.disable();
         try {
             this.provider.close().get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException exception) {

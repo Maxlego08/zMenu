@@ -57,6 +57,19 @@ storage-type: SQLITE
 # once and kept in plugins/zMenu/server-id.txt.
 server-id: ""
 
+# How servers sharing a MySQL or MariaDB database tell each other about changes to player and global
+# variables, so a value changed on one server is updated on the others.
+# AUTO - Through a table of the database, read every messaging-poll-interval seconds (SQLite is never
+#        shared, so it does nothing there).
+# NONE - Nothing is sent: a server only sees the changes of the others when it reads them again
+#        (a player joining it, a restart).
+messaging-type: AUTO
+messaging-poll-interval: 2
+
+# When a player moves from one server to another, the new server waits up to this many milliseconds
+# for the old one to save the player's data before reading it (only with a shared database).
+session-handoff-timeout: 3000
+
 # Configuration of your database, it is recommended to use the database to store your data.
 database-configuration:
   # The prefix that will be applied to all tables,

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,6 +43,11 @@ final class MemoryVariableStore implements VariableStore {
             if (ref.scope() == scope && ref.owner().equals(owner)) found.add(variable);
         });
         return CompletableFuture.completedFuture(found);
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Optional<Variable>> load(@NotNull VariableRef ref) {
+        return CompletableFuture.completedFuture(Optional.ofNullable(this.variables.get(ref)));
     }
 
     @Override

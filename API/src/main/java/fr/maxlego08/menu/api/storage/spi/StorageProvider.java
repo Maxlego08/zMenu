@@ -64,4 +64,22 @@ public interface StorageProvider extends Keyed {
      */
     @NotNull
     Optional<InventoryLogStore> inventoryLogs();
+
+    /**
+     * @return the broker carrying changes between the servers sharing this store, or empty when
+     * the store is not shared or has none
+     */
+    @NotNull
+    default Optional<MessageBroker> broker() {
+        return Optional.empty();
+    }
+
+    /**
+     * @return the sessions of the players on the servers sharing this store, or empty when the
+     * store is not shared
+     */
+    @NotNull
+    default Optional<SessionStore> sessions() {
+        return Optional.empty();
+    }
 }

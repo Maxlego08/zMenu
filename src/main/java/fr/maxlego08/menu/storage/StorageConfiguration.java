@@ -35,10 +35,17 @@ import java.util.concurrent.TimeUnit;
  * @param batchSeconds       {@code batch-task}: seconds between two writes of the buffered data
  * @param serverId           {@code server-id}: the owner of this server's variables, empty to use a
  *                           generated one
+ * @param messagingType      {@code messaging-type}: {@code AUTO} (the storage's own way, for a
+ *                           database several servers share), {@code NONE}, or {@code SQL} (the
+ *                           event table, even on SQLite)
+ * @param pollIntervalMillis {@code messaging-poll-interval}: how often the event table is read
+ * @param handoffTimeoutMillis {@code session-handoff-timeout}: how long a joining player waits for
+ *                           the server they left to store their data
  */
 public record StorageConfiguration(@NotNull String storageType, @NotNull String tablePrefix, @NotNull String host, int port,
                                    @NotNull String user, @NotNull String password, @NotNull String database, boolean debug,
-                                   @Nullable Long maxLifetimeMillis, int batchSeconds, @NotNull String serverId) {
+                                   @Nullable Long maxLifetimeMillis, int batchSeconds, @NotNull String serverId,
+                                   @NotNull String messagingType, long pollIntervalMillis, long handoffTimeoutMillis) {
 
     private static final String SERVER_ID_FILE = "server-id.txt";
     private static final int MAX_SERVER_ID_LENGTH = 64;
@@ -92,7 +99,10 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
                 flag(configuration, shared, "debug"),
                 maxLifetimeSeconds < 0 ? null : TimeUnit.SECONDS.toMillis(maxLifetimeSeconds),
                 configuration.getInt("batch-task", 10),
-                configuration.getString("server-id", "")
+                configuration.getString("server-id", ""),
+                configuration.getString("messaging-type", "AUTO"),
+                Math.max(250L, (long) (configuration.getDouble("messaging-poll-interval", 2) * 1000)),
+                Math.max(0L, configuration.getLong("session-handoff-timeout", 3000))
         );
     }
 

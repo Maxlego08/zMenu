@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -106,6 +107,14 @@ final class SqlVariableStore implements VariableStore {
                 variables.add(toVariable(scope, row));
             }
             return variables;
+        });
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Optional<Variable>> load(@NotNull VariableRef ref) {
+        return this.database.read(() -> {
+            List<Map<String, Object>> rows = this.database.requestHelper().select(Tables.VARIABLES, table -> whereRef(table, ref));
+            return rows.isEmpty() ? Optional.empty() : Optional.of(toVariable(ref.scope(), rows.get(0)));
         });
     }
 

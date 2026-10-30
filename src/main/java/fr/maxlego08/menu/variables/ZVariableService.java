@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.variables;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.storage.spi.MessageBroker;
+import fr.maxlego08.menu.api.storage.spi.SessionStore;
+import fr.maxlego08.menu.api.storage.spi.StorageEvent;
 import fr.maxlego08.menu.api.storage.spi.VariableMutation;
 import fr.maxlego08.menu.api.storage.spi.VariableStore;
 import fr.maxlego08.menu.api.utils.Message;
@@ -55,10 +58,18 @@ public class ZVariableService implements VariableService, Listener {
     private static final long OFFLINE_TTL_MILLIS = TimeUnit.MINUTES.toMillis(5);
     private static final long PRE_LOGIN_TIMEOUT_SECONDS = 10;
     private static final long PURGE_INTERVAL_MINUTES = 10;
+    private static final long HEARTBEAT_SECONDS = 10;
+    private static final long STALE_MILLIS = TimeUnit.SECONDS.toMillis(30);
+    private static final long HANDOFF_POLL_MILLIS = 250;
 
     private final MenuPlugin plugin;
     private final VariableStore store;
     private final String serverId;
+    private final String instanceId = UUID.randomUUID().toString();
+    private final @Nullable MessageBroker broker;
+    private final @Nullable SessionStore sessions;
+    private final long handoffTimeoutMillis;
+    private final Map<UUID, CompletableFuture<Void>> releases = new ConcurrentHashMap<>();
     private final Map<OwnerKey, OwnerCache> owners = new ConcurrentHashMap<>();
     private final Map<OwnerKey, CompletableFuture<Collection<Variable>>> loading = new ConcurrentHashMap<>();
     private final Map<VariableScope, Set<String>> names = new EnumMap<>(VariableScope.class);
@@ -74,13 +85,23 @@ public class ZVariableService implements VariableService, Listener {
      */
     private final Object writeLock = new Object();
 
-    public ZVariableService(@NotNull MenuPlugin plugin, @NotNull VariableStore store, @NotNull String serverId) {
+    /**
+     * @param broker               carries changes between servers, or null on a single server
+     * @param sessions             tracks which server each player is on, or null on a single server
+     * @param handoffTimeoutMillis how long a joining player waits for the server they left
+     */
+    public ZVariableService(@NotNull MenuPlugin plugin, @NotNull VariableStore store, @NotNull String serverId,
+                            @Nullable MessageBroker broker, @Nullable SessionStore sessions, long handoffTimeoutMillis) {
         this.plugin = plugin;
         this.store = store;
         this.serverId = serverId;
+        this.broker = broker;
+        this.sessions = sessions;
+        this.handoffTimeoutMillis = handoffTimeoutMillis;
         for (VariableScope scope : VariableScope.values()) {
             this.names.put(scope, ConcurrentHashMap.newKeySet());
         }
+        if (broker != null) broker.subscribe(this::onEvent);
     }
 
     /**
@@ -109,6 +130,208 @@ public class ZVariableService implements VariableService, Listener {
 
         this.plugin.getScheduler().runTimerAsync(this::evictOfflinePlayers, 1, 1, TimeUnit.MINUTES);
         this.plugin.getScheduler().runTimerAsync(this::purgeExpired, 1, PURGE_INTERVAL_MINUTES, TimeUnit.MINUTES);
+
+        if (this.sessions != null) {
+            this.checkDuplicateServerId();
+            this.heartbeat();
+            this.plugin.getScheduler().runTimerAsync(this::heartbeat, HEARTBEAT_SECONDS, HEARTBEAT_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Marks this server as stopped, so its players can join another server at once and the next
+     * start is not taken for a second server with the same id.
+     */
+    public void disable() {
+        if (this.sessions == null) return;
+        this.logFailure(this.sessions.heartbeat(this.serverId, this.instanceId, 0), "mark this server as stopped");
+    }
+
+    /**
+     * Reports another running server with the same {@code server-id}: their server variables, saved
+     * inventories and player sessions would mix.
+     */
+    void checkDuplicateServerId() {
+        if (this.sessions == null) return;
+        try {
+            this.sessions.loadServer(this.serverId).join().ifPresent(instance -> {
+                if (!instance.instanceId().equals(this.instanceId) && System.currentTimeMillis() - instance.heartbeat() < STALE_MILLIS) {
+                    Logger.error("Another server is running with the server-id " + this.serverId + ". Every server sharing the database needs its own server-id in config.yml.", null);
+                }
+            });
+        } catch (Exception exception) {
+            Logger.error("Unable to check the server-id " + this.serverId, exception);
+        }
+    }
+
+    private void heartbeat() {
+        if (this.sessions == null) return;
+        this.logFailure(this.sessions.heartbeat(this.serverId, this.instanceId, System.currentTimeMillis()), "send the server heartbeat");
+    }
+
+    private void publishCleared(VariableScope scope, StorageEvent event) {
+        if (scope != VariableScope.SERVER) this.publish(List.of(event));
+    }
+
+    private void publish(List<StorageEvent> events) {
+        if (this.broker == null || events.isEmpty()) return;
+        this.logFailure(this.broker.publish(events), "send the storage events");
+    }
+
+    /**
+     * Server variables belong to one server, so only player and global changes are sent.
+     */
+    private void publishChanged(Collection<VariableRef> refs) {
+        List<StorageEvent> events = new ArrayList<>();
+        for (VariableRef ref : refs) {
+            if (ref.scope() != VariableScope.SERVER) events.add(new StorageEvent.VariableChanged(this.serverId, ref));
+        }
+        this.publish(events);
+    }
+
+    /**
+     * Applies a change made by another server. The value is read again from the store, and a
+     * change of this server still waiting to be written is laid over it: an addition is added to
+     * the new value, a replacement or a removal wins.
+     */
+    void onEvent(@NotNull StorageEvent event) {
+        if (event.origin().equals(this.serverId)) return;
+        switch (event) {
+            case StorageEvent.VariableChanged changed -> {
+                VariableRef ref = changed.ref();
+                if (!this.isLoaded(ref.scope(), ref.owner())) return;
+                this.store.load(ref).whenComplete((loaded, throwable) -> {
+                    if (throwable != null) {
+                        Logger.error("Unable to read the variable " + ref.name() + " changed by " + event.origin(), throwable);
+                        return;
+                    }
+                    this.applyRemote(ref, loaded.orElse(null));
+                });
+            }
+            case StorageEvent.NameCleared cleared -> this.owners.forEach((key, cache) -> {
+                if (key.scope() == cleared.scope()) this.removeUnlessPending(cache, new VariableRef(key.scope(), key.owner(), cleared.name()));
+            });
+            case StorageEvent.OwnerCleared cleared -> {
+                OwnerCache cache = this.owners.get(new OwnerKey(cleared.scope(), cleared.owner()));
+                if (cache != null) this.clearUnlessPending(cache, cleared.scope(), cleared.owner());
+            }
+            case StorageEvent.ScopeCleared cleared -> this.owners.forEach((key, cache) -> {
+                if (key.scope() == cleared.scope()) this.clearUnlessPending(cache, key.scope(), key.owner());
+            });
+            case StorageEvent.SessionReleased released -> {
+                CompletableFuture<Void> waiting = this.releases.get(released.playerId());
+                if (waiting != null) waiting.complete(null);
+            }
+        }
+    }
+
+    private void applyRemote(VariableRef ref, @Nullable Variable loaded) {
+        OwnerCache cache = this.owners.get(new OwnerKey(ref.scope(), ref.owner()));
+        if (cache == null) return;
+        synchronized (cache) {
+            VariableMutation waiting = this.pending.get(ref);
+            if (waiting instanceof VariableMutation.Increment increment) {
+                long expiresAt = loaded == null ? increment.expiresAtIfCreated() : loaded.expiresAt();
+                cache.values.put(ref.name(), Variable.ofNumber(ref, base(loaded).add(increment.delta()), expiresAt));
+            } else if (waiting == null) {
+                if (loaded == null) cache.values.remove(ref.name());
+                else {
+                    cache.values.put(ref.name(), loaded);
+                    this.names.get(ref.scope()).add(ref.name());
+                }
+            }
+        }
+    }
+
+    private void removeUnlessPending(OwnerCache cache, VariableRef ref) {
+        if (!this.pending.containsKey(ref)) cache.values.remove(ref.name());
+    }
+
+    private void clearUnlessPending(OwnerCache cache, VariableScope scope, String owner) {
+        cache.values.keySet().removeIf(name -> !this.pending.containsKey(new VariableRef(scope, owner, name)));
+    }
+
+    /**
+     * Waits for the server a player comes from to store their data, then records that they are on
+     * this server.
+     *
+     * <p>When the player was last on another server, the variables this server kept from an
+     * earlier visit are forgotten, so they are read again.</p>
+     */
+    void prepareLogin(@NotNull UUID playerId) {
+        if (this.sessions == null) return;
+
+        Optional<SessionStore.PlayerSession> session = this.sessions.load(playerId).join();
+        if (session.isPresent() && !session.get().serverId().equals(this.serverId)) {
+            if (this.isHeldElsewhere(session.get()) && !this.waitForRelease(playerId)) {
+                Logger.error("The server " + session.get().serverId() + " did not release " + playerId + " within " + this.handoffTimeoutMillis
+                        + " ms, their variables are read anyway.", null);
+            }
+            String owner = playerId.toString();
+            if (!this.hasPending(VariableScope.PLAYER, owner)) this.owners.remove(new OwnerKey(VariableScope.PLAYER, owner));
+        }
+
+        this.sessions.claim(playerId, this.serverId, System.currentTimeMillis()).join();
+    }
+
+    private boolean isHeldElsewhere(SessionStore.PlayerSession session) {
+        return session.online() && !session.serverId().equals(this.serverId) && System.currentTimeMillis() - session.heartbeat() < STALE_MILLIS;
+    }
+
+    /**
+     * @return whether the player was released before the timeout
+     */
+    private boolean waitForRelease(UUID playerId) {
+        CompletableFuture<Void> released = this.releases.computeIfAbsent(playerId, id -> new CompletableFuture<>());
+        long deadline = System.currentTimeMillis() + this.handoffTimeoutMillis;
+        try {
+            while (System.currentTimeMillis() < deadline) {
+                try {
+                    released.get(Math.min(HANDOFF_POLL_MILLIS, Math.max(1, deadline - System.currentTimeMillis())), TimeUnit.MILLISECONDS);
+                    return true;
+                } catch (java.util.concurrent.TimeoutException ignored) {
+                }
+                Optional<SessionStore.PlayerSession> session = this.sessions.load(playerId).join();
+                if (session.isEmpty() || !this.isHeldElsewhere(session.get())) return true;
+            }
+            return false;
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (Exception exception) {
+            Logger.error("Unable to wait for the release of " + playerId, exception);
+            return false;
+        } finally {
+            this.releases.remove(playerId, released);
+        }
+    }
+
+    /**
+     * Stores what a leaving player changed, then releases them, so the server they join next reads
+     * up-to-date values.
+     */
+    @NotNull
+    CompletableFuture<Void> releasePlayer(@NotNull UUID playerId) {
+        String owner = playerId.toString();
+        CompletableFuture<Void> stored = this.flushOwner(VariableScope.PLAYER, owner);
+        if (this.sessions == null) return stored;
+        return stored.handle((ignored, throwable) -> null)
+                .thenCompose(ignored -> this.sessions.release(playerId, this.serverId))
+                .thenRun(() -> this.publish(List.of(new StorageEvent.SessionReleased(this.serverId, playerId))));
+    }
+
+    private CompletableFuture<Void> flushOwner(VariableScope scope, String owner) {
+        synchronized (this.writeLock) {
+            List<VariableMutation> mutations = this.drain(ref -> ref.scope() == scope && ref.owner().equals(owner));
+            return this.applyAndPublish(mutations);
+        }
+    }
+
+    private CompletableFuture<Void> applyAndPublish(List<VariableMutation> mutations) {
+        if (mutations.isEmpty()) return CompletableFuture.completedFuture(null);
+        List<VariableRef> refs = new ArrayList<>(mutations.size());
+        mutations.forEach(mutation -> refs.add(mutation.ref()));
+        return this.logFailure(this.store.apply(mutations), "write the variables").thenRun(() -> this.publishChanged(refs));
     }
 
     /**
@@ -293,6 +516,7 @@ public class ZVariableService implements VariableService, Listener {
             }
             Variable stored = Variable.ofNumber(ref, value, cache.values.getOrDefault(ref.name(), updated).expiresAt());
             cache.values.put(ref.name(), stored);
+            this.publishChanged(List.of(ref));
         });
     }
 
@@ -324,7 +548,7 @@ public class ZVariableService implements VariableService, Listener {
                 this.pending.merge(mutation.ref(), mutation, ZVariableService::merge);
                 return;
             }
-            this.logFailure(this.store.apply(List.of(mutation)), "write the variable " + mutation.ref().name());
+            this.applyAndPublish(List.of(mutation));
         }
     }
 
@@ -341,8 +565,7 @@ public class ZVariableService implements VariableService, Listener {
     public @NotNull CompletableFuture<Void> flush(boolean all) {
         synchronized (this.writeLock) {
             List<VariableMutation> mutations = this.drain(ref -> all || this.isLoaded(ref.scope(), ref.owner()));
-            if (mutations.isEmpty()) return CompletableFuture.completedFuture(null);
-            return this.logFailure(this.store.apply(mutations), "write the player variables");
+            return this.applyAndPublish(mutations);
         }
     }
 
@@ -374,7 +597,8 @@ public class ZVariableService implements VariableService, Listener {
         this.names.get(scope).remove(name);
         synchronized (this.writeLock) {
             this.drain(ref -> ref.scope() == scope && ref.name().equals(name));
-            return this.logFailure(this.store.deleteName(scope, name), "delete the variable " + name);
+            return this.logFailure(this.store.deleteName(scope, name), "delete the variable " + name)
+                    .thenRun(() -> this.publishCleared(scope, new StorageEvent.NameCleared(this.serverId, scope, name)));
         }
     }
 
@@ -384,7 +608,8 @@ public class ZVariableService implements VariableService, Listener {
         if (cache != null) cache.values.clear();
         synchronized (this.writeLock) {
             this.drain(ref -> ref.scope() == scope && ref.owner().equals(owner));
-            return this.logFailure(this.store.deleteOwner(scope, owner), "delete the variables of " + owner);
+            return this.logFailure(this.store.deleteOwner(scope, owner), "delete the variables of " + owner)
+                    .thenRun(() -> this.publishCleared(scope, new StorageEvent.OwnerCleared(this.serverId, scope, owner)));
         }
     }
 
@@ -396,7 +621,8 @@ public class ZVariableService implements VariableService, Listener {
         this.names.get(scope).clear();
         synchronized (this.writeLock) {
             this.drain(ref -> ref.scope() == scope);
-            return this.logFailure(this.store.deleteScope(scope), "delete the " + scope.id() + " variables");
+            return this.logFailure(this.store.deleteScope(scope), "delete the " + scope.id() + " variables")
+                    .thenRun(() -> this.publishCleared(scope, new StorageEvent.ScopeCleared(this.serverId, scope)));
         }
     }
 
@@ -419,6 +645,7 @@ public class ZVariableService implements VariableService, Listener {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
 
         try {
+            this.prepareLogin(event.getUniqueId());
             this.load(VariableScope.PLAYER, event.getUniqueId().toString()).get(PRE_LOGIN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (Exception exception) {
             if (exception instanceof InterruptedException) Thread.currentThread().interrupt();
@@ -442,8 +669,10 @@ public class ZVariableService implements VariableService, Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
-        OwnerCache cache = this.owners.get(new OwnerKey(VariableScope.PLAYER, event.getPlayer().getUniqueId().toString()));
+        UUID playerId = event.getPlayer().getUniqueId();
+        OwnerCache cache = this.owners.get(new OwnerKey(VariableScope.PLAYER, playerId.toString()));
         if (cache != null) cache.setOnline(false);
+        this.releasePlayer(playerId);
     }
 
     /**
