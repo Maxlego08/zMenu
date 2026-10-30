@@ -156,7 +156,7 @@ public final class SqlStorageProvider implements StorageProvider {
         boolean forced = configuration.messagingType().equalsIgnoreCase("SQL");
         if (type != DatabaseType.SQLITE || forced) {
             this.sessions = new SqlSessionStore(this.database);
-            if (!configuration.messagingType().equalsIgnoreCase("NONE")) {
+            if (configuration.messagingType().equalsIgnoreCase("AUTO") || forced) {
                 this.broker = new SqlPollingBroker(this.database, context.serverId(), context.logger());
                 this.broker.start(configuration.pollIntervalMillis());
             }
@@ -233,9 +233,9 @@ public final class SqlStorageProvider implements StorageProvider {
     }
 
     /**
-     * @return the event table of MySQL and MariaDB, unless {@code messaging-type} is {@code NONE}.
-     * SQLite is not shared between servers, so it has none unless {@code messaging-type} is
-     * {@code SQL}.
+     * @return the event table of MySQL and MariaDB with {@code messaging-type: AUTO}. SQLite is not
+     * shared between servers, so it has none unless {@code messaging-type} is {@code SQL}. With
+     * {@code REDIS} or {@code NONE} there is none either.
      */
     @Override
     public @NotNull Optional<MessageBroker> broker() {

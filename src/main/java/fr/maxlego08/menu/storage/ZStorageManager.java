@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
 import fr.maxlego08.menu.api.storage.spi.InventoryOpenRecord;
+import fr.maxlego08.menu.api.storage.spi.MessageBroker;
 import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
@@ -21,6 +22,8 @@ import fr.maxlego08.menu.api.variable.Variable;
 import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.storage.memory.MemoryStorageProvider;
+import fr.maxlego08.menu.storage.redis.RedisMessaging;
+import fr.maxlego08.menu.storage.redis.RedisStorageProvider;
 import fr.maxlego08.menu.storage.sql.SqlStorageProvider;
 import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -57,6 +60,7 @@ public class ZStorageManager implements StorageManager {
     private final AtomicBoolean flushing = new AtomicBoolean(false);
     private StorageProvider provider;
     private ZVariableService variableService;
+    private RedisMessaging redisMessaging;
 
     public ZStorageManager(MenuPlugin plugin) {
         this.plugin = plugin;
@@ -70,6 +74,7 @@ public class ZStorageManager implements StorageManager {
     static @Nullable Key providerKey(String storageType) {
         if (SqlStorageProvider.databaseType(storageType) != null) return ZMenuKeys.key("sql");
         if (storageType.equalsIgnoreCase("NONE")) return ZMenuKeys.key("memory");
+        if (storageType.equalsIgnoreCase("REDIS")) return ZMenuKeys.key("redis");
         return ZMenuKeys.tryParse(storageType.toLowerCase(Locale.ROOT));
     }
 
@@ -79,6 +84,7 @@ public class ZStorageManager implements StorageManager {
         WritableRegistry<StorageProvider> providers = this.plugin.getInventoryManager().getRegistries().writable(Registries.STORAGE_PROVIDER);
         providers.register(this.plugin, new SqlStorageProvider());
         providers.register(this.plugin, new MemoryStorageProvider());
+        providers.register(this.plugin, new RedisStorageProvider());
 
         StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfig());
         Key key;
@@ -113,9 +119,19 @@ public class ZStorageManager implements StorageManager {
             Logger.info("You are not using a database, data is kept in memory until the server stops.");
         }
 
-        this.variableService = new ZVariableService(this.plugin, candidate.variables(), serverId, candidate.broker().orElse(null),
+        MessageBroker broker = candidate.broker().orElse(null);
+        if (configuration.messagingType().equalsIgnoreCase("REDIS") && !key.equals(ZMenuKeys.key("redis"))) {
+            try {
+                this.redisMessaging = RedisMessaging.open(this.plugin.getConfig(), serverId, this.plugin.getLogger());
+                broker = this.redisMessaging.broker();
+            } catch (RuntimeException exception) {
+                Logger.error("Unable to connect to Redis for messaging-type REDIS, changes are not sent to the other servers", exception);
+            }
+        }
+
+        this.variableService = new ZVariableService(this.plugin, candidate.variables(), serverId, broker,
                 candidate.sessions().orElse(null), configuration.handoffTimeoutMillis());
-        if (candidate.capabilities().contains(StorageCapability.SHARED) && candidate.broker().isEmpty()) {
+        if (candidate.capabilities().contains(StorageCapability.SHARED) && broker == null) {
             Logger.info("This database can be shared by several servers, but messaging-type is NONE: a server only sees the changes of the others when it reads them again.");
         }
         this.variableService.enable();
@@ -221,6 +237,13 @@ public class ZStorageManager implements StorageManager {
         if (this.provider == null) return;
 
         if (this.variableService != null) this.variableService.disable();
+        if (this.redisMessaging != null) {
+            try {
+                this.redisMessaging.close();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+            }
+        }
         try {
             this.provider.close().get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException exception) {

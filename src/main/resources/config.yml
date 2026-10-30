@@ -44,6 +44,8 @@ skip-update-check: false
 # SQLITE - For the launch of the plugin only.
 # MYSQL - RECOMMENDED
 # MARIADB - RECOMMENDED
+# REDIS - Keeps everything in Redis (settings in the redis section below). Make sure Redis writes its
+#         data to disk (appendonly yes in redis.conf), or a restart of Redis loses it.
 # NONE - If you do not need a database, you can disable it.
 #
 # We advise you to use MARIADB or MYSQL, the SQLITE storage is only there to install the plugin and do some tests, not all features are available with SQLITE yet.
@@ -59,12 +61,27 @@ server-id: ""
 
 # How servers sharing a MySQL or MariaDB database tell each other about changes to player and global
 # variables, so a value changed on one server is updated on the others.
-# AUTO - Through a table of the database, read every messaging-poll-interval seconds (SQLite is never
-#        shared, so it does nothing there).
+# AUTO - With MySQL or MariaDB, through a table of the database read every messaging-poll-interval
+#        seconds; with storage-type REDIS, through Redis pub/sub. SQLite is never shared, so it does
+#        nothing there.
+# REDIS - Through Redis pub/sub (redis section below), even with MySQL or MariaDB as storage: changes
+#         reach the other servers at once.
 # NONE - Nothing is sent: a server only sees the changes of the others when it reads them again
 #        (a player joining it, a restart).
 messaging-type: AUTO
 messaging-poll-interval: 2
+
+# Redis, used by storage-type REDIS and messaging-type REDIS. zMenu downloads the Redis client on
+# the next start after you choose one of them.
+redis:
+  # redis://[user:password@]host:port/database, or rediss:// for TLS
+  uri: "redis://localhost:6379/0"
+  # true for a Redis Cluster; uri then names one of its nodes
+  cluster: false
+  # The start of every key zMenu writes, change it when several networks share one Redis
+  key-prefix: "zmenu"
+  # Refuse to start when Redis does not write its data to disk (appendonly no)
+  require-aof: false
 
 # When a player moves from one server to another, the new server waits up to this many milliseconds
 # for the old one to save the player's data before reading it (only with a shared database).

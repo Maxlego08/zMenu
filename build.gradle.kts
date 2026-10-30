@@ -233,8 +233,12 @@ dependencies {
         exclude(group = "org.slf4j")
     }
 
+    compileOnly(libs.jedis)
+
     testImplementation(libs.paper.api)
     testRuntimeOnly(libs.sqlite.jdbc)
+    testImplementation(libs.jedis)
+    testImplementation(libs.jedis.mock)
 }
 
 dependencies {

@@ -28,6 +28,8 @@ xseries = "13.8.0"
 exp4j = "0.4.8"
 java-websocket = "1.6.0"
 sqlite-jdbc = "3.47.1.0"
+jedis = "5.2.0"
+jedis-mock = "1.1.4"
 paper-dispatch = "1.1.0"
 faststats = "0.30.1"
 
@@ -80,6 +82,8 @@ xseries = { group = "com.github.cryptomorin", name = "XSeries", version.ref = "x
 exp4j = { group = "net.objecthunter", name = "exp4j", version.ref = "exp4j" }
 java-websocket = { group = "org.java-websocket", name = "Java-WebSocket", version.ref = "java-websocket" }
 sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite-jdbc" }
+jedis = { group = "redis.clients", name = "jedis", version.ref = "jedis" }
+jedis-mock = { group = "com.github.fppt", name = "jedis-mock", version.ref = "jedis-mock" }
 fastStatsBukkit = { group = "dev.faststats.metrics", name = "bukkit", version.ref = "faststats" }
 
 # Integration Hooks
