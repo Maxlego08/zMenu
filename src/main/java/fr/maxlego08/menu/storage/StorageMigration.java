@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -20,8 +21,8 @@ import java.util.function.Consumer;
  * played animations.
  *
  * <p>Values are written over the ones of the target with the same key; nothing is deleted. The
- * opened-inventory log is not copied. Runs on the calling thread; the writes to the target are
- * queued, and closing the target waits for them.</p>
+ * opened-inventory log is not copied. Runs on the calling thread and returns once everything is
+ * stored in the target.</p>
  */
 public final class StorageMigration {
 
@@ -55,14 +56,16 @@ public final class StorageMigration {
             this.progress.accept("Copied " + copied + " " + scope.id() + " variables.");
         }
 
+        List<CompletableFuture<Void>> writes = new ArrayList<>();
+
         Map<UUID, String> inventories = this.source.savedInventories().loadAll().join();
-        inventories.forEach((playerId, inventory) -> this.target.savedInventories().save(playerId, inventory));
+        inventories.forEach((playerId, inventory) -> writes.add(this.target.savedInventories().save(playerId, inventory)));
         this.progress.accept("Copied " + inventories.size() + " saved inventories.");
 
         int worlds = 0;
         for (UUID playerId : this.source.worldVisits().players().join()) {
             for (String world : this.source.worldVisits().load(playerId).join()) {
-                this.target.worldVisits().markVisited(playerId, world);
+                writes.add(this.target.worldVisits().markVisited(playerId, world));
                 worlds++;
             }
         }
@@ -71,12 +74,13 @@ public final class StorageMigration {
         int animations = 0;
         for (UUID playerId : this.source.animations().players().join()) {
             for (Map.Entry<String, Long> entry : this.source.animations().load(playerId).join().entrySet()) {
-                this.target.animations().markPlayed(playerId, entry.getKey(), entry.getValue());
+                writes.add(this.target.animations().markPlayed(playerId, entry.getKey(), entry.getValue()));
                 animations++;
             }
         }
         this.progress.accept("Copied " + animations + " played animations.");
 
+        CompletableFuture.allOf(writes.toArray(new CompletableFuture[0])).join();
         return new Result(variables, inventories.size(), worlds, animations);
     }
 

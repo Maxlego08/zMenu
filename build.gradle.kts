@@ -242,6 +242,9 @@ dependencies {
     testImplementation(libs.jedis.mock)
     testImplementation(libs.mongodb.driver.sync)
     testImplementation(libs.mongo.java.server)
+    testRuntimeOnly("com.mysql:mysql-connector-j:8.4.0")
+    testRuntimeOnly("org.mariadb.jdbc:mariadb-java-client:3.5.6")
+    testRuntimeOnly("org.postgresql:postgresql:42.7.4")
 }
 
 dependencies {
@@ -251,6 +254,13 @@ dependencies {
 
 
 tasks {
+    // -Dzmenu.it.<backend>=host:port runs the storage tests against a real server, see RealDatabases
+    test {
+        System.getProperties().stringPropertyNames()
+            .filter { it.startsWith("zmenu.it.") }
+            .forEach { systemProperty(it, System.getProperty(it)) }
+    }
+
     shadowJar {
         val paper26 = project(":Hooks:Paper-26")
         dependsOn(paper26.tasks.jar)

@@ -11,6 +11,8 @@ import fr.maxlego08.sarah.database.Schema;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.sql.SQLTransactionRollbackException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,8 +20,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 final class SqlVariableStore implements VariableStore {
+
+    private static final int MAX_ATTEMPTS = 5;
 
     private final SqlDatabase database;
 
@@ -118,11 +124,41 @@ final class SqlVariableStore implements VariableStore {
         });
     }
 
+    /**
+     * Runs a transaction again when the database cancelled it to break a deadlock or a
+     * serialization conflict (SQLSTATE 40001 or 40P01). It happens on MySQL and MariaDB when two
+     * servers create the same row at once. The cancelled transaction changed nothing, so running it
+     * again applies its changes exactly once.
+     */
+    static <T> T retryOnConflict(Supplier<T> transaction) {
+        for (int attempt = 1; ; attempt++) {
+            try {
+                return transaction.get();
+            } catch (RuntimeException exception) {
+                if (attempt >= MAX_ATTEMPTS || !isConflict(exception)) throw exception;
+                try {
+                    Thread.sleep(ThreadLocalRandom.current().nextLong(5, 25L * attempt));
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw exception;
+                }
+            }
+        }
+    }
+
+    private static boolean isConflict(Throwable throwable) {
+        for (Throwable cause = throwable; cause != null; cause = cause.getCause()) {
+            if (cause instanceof SQLTransactionRollbackException) return true;
+            if (cause instanceof SQLException sql && ("40001".equals(sql.getSQLState()) || "40P01".equals(sql.getSQLState()))) return true;
+        }
+        return false;
+    }
+
     @Override
     public @NotNull CompletableFuture<Void> apply(@NotNull List<VariableMutation> mutations) {
         if (mutations.isEmpty()) return CompletableFuture.completedFuture(null);
 
-        return this.database.write(() -> this.database.requestHelper().inTransaction(helper -> {
+        return this.database.write(() -> retryOnConflict(() -> this.database.requestHelper().inTransaction(helper -> {
             for (VariableMutation mutation : mutations) {
                 switch (mutation) {
                     case VariableMutation.Set set -> upsert(helper, set.variable());
@@ -131,15 +167,15 @@ final class SqlVariableStore implements VariableStore {
                 }
             }
             return null;
-        }));
+        })));
     }
 
     @Override
     public @NotNull CompletableFuture<BigDecimal> incrementAndGet(@NotNull VariableRef ref, @NotNull BigDecimal delta, long expiresAtIfCreated) {
-        return this.database.writeAndGet(() -> this.database.requestHelper().inTransaction(helper -> {
+        return this.database.writeAndGet(() -> retryOnConflict(() -> this.database.requestHelper().inTransaction(helper -> {
             increment(helper, ref, delta, expiresAtIfCreated);
             return readNumber(helper, ref);
-        }));
+        })));
     }
 
     @Override

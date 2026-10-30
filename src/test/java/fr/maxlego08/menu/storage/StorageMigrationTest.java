@@ -45,7 +45,7 @@ class StorageMigrationTest {
         return provider;
     }
 
-    private static Map<String, String> snapshot(StorageProvider provider) {
+    static Map<String, String> snapshot(StorageProvider provider) {
         Map<String, String> values = new TreeMap<>();
         for (VariableScope scope : VariableScope.values()) {
             for (String owner : provider.variables().owners(scope).join()) {

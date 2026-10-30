@@ -74,8 +74,17 @@ public final class MongoPollingBroker implements MessageBroker {
         this.poller.scheduleWithFixedDelay(this::poll, intervalMillis, intervalMillis, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Stops reading, waiting for a read in progress so it does not use the database after it is
+     * closed.
+     */
     public void stop() {
-        this.poller.shutdownNow();
+        this.poller.shutdown();
+        try {
+            if (!this.poller.awaitTermination(5, TimeUnit.SECONDS)) this.poller.shutdownNow();
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private long nextId() {

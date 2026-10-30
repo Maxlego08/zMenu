@@ -102,6 +102,8 @@
 * The worlds a player has visited are read back correctly. They always came back empty, so the items of a first world visit were given again at every visit.
 * The animations that play once or have a cooldown are now remembered after a restart. Reading them back always failed, so they played again after each restart.
 * Saving a player's inventory replaces the copy saved before instead of adding another one.
+* On MySQL and MariaDB, two servers adding to a value that does not exist yet could make the database cancel one of the additions (deadlock). zMenu now runs a cancelled change again, so both additions count.
+* Stopping zMenu waits for an event read in progress before closing the database.
 * The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
 * `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
 * The `block` argument type of custom commands was registered as a second `material` type and could never be used; it now exists and accepts only materials that are blocks.
