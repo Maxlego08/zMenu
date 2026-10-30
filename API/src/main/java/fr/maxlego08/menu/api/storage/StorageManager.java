@@ -32,20 +32,52 @@ public interface StorageManager extends Listener {
 
     boolean isEnable();
 
+    /**
+     * @deprecated use {@code VariableService#set}, or {@code VariableService#increment} to add to a
+     * number.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     void upsertData(@NotNull UUID uuid,@NotNull Data data);
 
+    /**
+     * @deprecated use {@code VariableService#deleteScope(VariableScope.PLAYER)}.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     void clearData();
 
+    /**
+     * @deprecated use {@code VariableService#deleteOwner(VariableScope.PLAYER, uuid)}.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     void clearData(@NotNull UUID uniqueId);
 
+    /**
+     * @deprecated use {@code VariableService#delete}.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     void removeData(@NotNull UUID uuid,@NotNull String key);
 
+    /**
+     * @return the player data values in memory only: player data is no longer read for every
+     * player at startup
+     * @deprecated use {@code VariableService#load} for one player.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     @NotNull
     List<DataDTO> loadPlayers();
 
+    /**
+     * @return every inventory saved on this server
+     * @deprecated saved inventories are read for each player before they join.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     @NotNull
     List<InventoryDTO> loadInventories();
 
+    /**
+     * @deprecated use {@code VariableService#deleteName(VariableScope.PLAYER, key)}.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     void clearData(@NotNull String key);
 
     void storeInventory(@NotNull UUID uuid,@NotNull InventoryPlayer inventoryPlayer);

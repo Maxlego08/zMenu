@@ -10,7 +10,12 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * <p>Player Data Management</p>
+ *
+ * @deprecated use {@link fr.maxlego08.menu.api.variable.VariableService} with
+ * {@link fr.maxlego08.menu.api.variable.VariableScope#PLAYER}: it also handles server and global
+ * variables, and adds to numbers atomically ({@code VariableService#increment}).
  */
+@Deprecated(since = "1.1.2.2", forRemoval = true)
 public interface DataManager {
 
     /**

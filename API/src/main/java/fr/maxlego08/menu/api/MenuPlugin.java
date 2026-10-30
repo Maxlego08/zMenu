@@ -155,7 +155,9 @@ public interface MenuPlugin extends Plugin {
      * The data manager is used for managing data related to players.
      *
      * @return the data manager
+     * @deprecated use {@link #getVariableService()}.
      */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     DataManager getDataManager();
 
     /**

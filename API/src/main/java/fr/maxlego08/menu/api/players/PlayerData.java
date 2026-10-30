@@ -8,7 +8,11 @@ import java.util.UUID;
 
 /**
  * <p>Player's {@link Data}</p>
+ *
+ * @deprecated use {@link fr.maxlego08.menu.api.variable.VariableService#getCachedAll} with
+ * {@link fr.maxlego08.menu.api.variable.VariableScope#PLAYER}.
  */
+@Deprecated(since = "1.1.2.2", forRemoval = true)
 public interface PlayerData {
 
     /**

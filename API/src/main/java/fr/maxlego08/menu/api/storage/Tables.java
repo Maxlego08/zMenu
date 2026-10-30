@@ -8,7 +8,17 @@ import org.jetbrains.annotations.NotNull;
 public interface Tables {
 
     @NotNull String PLAYER_OPEN_INVENTORIES = "%prefix%player_open_inventories";
+    /**
+     * @deprecated replaced by {@link #VARIABLES}; its rows are copied there once and the table is
+     * no longer written.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     @NotNull String PLAYER_DATAS = "%prefix%player_datas";
+
+    /**
+     * @deprecated replaced by {@link #SAVED_INVENTORIES}, which keeps one copy per server.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     @NotNull String PLAYER_INVENTORIES = "%prefix%player_inventories";
     @NotNull String FIRST_WORLD_JOIN = "%prefix%first_world_join";
     @NotNull String PLAYER_ANIMATIONS = "%prefix%player_animations";
